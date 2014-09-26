@@ -1,0 +1,20 @@
+<!-- Paginate Widget -->
+<div class="row page-row">
+    <div class="col-lg-8">
+        <ul class="pagination">
+           <li ng-hide="list_data.page == 1"><a href ng-click="getPage(1,target)"><i class="fa fa-angle-double-left"></i></a></li>
+           <li ng-hide="list_data.page == 1"><a href ng-click="getPage(list_data.page - 1,target)"><i class="fa fa-angle-left"></i></a></li>
+           <li ng-repeat="page_item in list_data.page_range" ng-class="(list_data.page == page_item) ? 'active' : ''"><a href ng-click="getPage(page_item,target)">{{ page_item }}</a></li>
+           <li ng-hide="list_data.page >= list_data.num_pages"><a href ng-click="getPage(list_data.page + 1,target)"><i class="fa fa-angle-right"></i></a></li>
+           <li ng-hide="list_data.page >= list_data.num_pages"><a href ng-click="getPage(list_data.num_pages,target)"><i class="fa fa-angle-double-right"></i></a></li>
+        </ul>
+    </div>
+    <div class="col-lg-4">
+        <div class="page-label" ng-show="loading == 0 && num_roles">
+        Page {{list_data.page}} of {{list_data.num_pages}}. &nbsp;{{num_roles}} total roles.
+        </div>
+        <div class="page-label" ng-show="loading == 0 && num_users">
+        Page {{list_data.page}} of {{list_data.num_pages}}. &nbsp;{{num_users}} total users.
+        </div>
+    </div>
+</div>

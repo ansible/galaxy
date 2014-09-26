@@ -1,0 +1,14 @@
+---
+
+- name: start and enable the rabbitmq service
+  service: name=rabbitmq-server state=restarted enabled=true
+
+- name: wait for rabbitmq service to be running
+  wait_for: port={{galaxy_rabbit_port}} delay=10
+
+- name: create the rabbitmq vhost
+  rabbitmq_vhost: name={{galaxy_rabbit_vhost}} state=present
+
+- name: create the rabbitmq user
+  rabbitmq_user: user={{galaxy_rabbit_username}} password={{galaxy_rabbit_password}} vhost={{galaxy_rabbit_vhost}} configure_priv=.* read_priv=.* write_priv=.* state=present force=yes
+

@@ -1,0 +1,47 @@
+{% load galaxyhelpers %}
+    <tr{% if not role.active %} class="danger"{% endif %}>
+     <td>
+      {% if role.active %}<a href="{% url "main:list-category" %}#/roles/{{role.id}}">{{role.name}}</a>{% else %}{{role.original_name}} (inactive){% endif %}<br />
+      <!-- <a href="{% url "main:list-category" %}#/users/{{role.owner.id}}">{{role.owner.username}}</a><br />
+      {% if role.average_rating > 0.0 %}<strong>{{role.average_rating|floatformat:"2"}}</strong><br />{% endif %}
+      {{role.ratings.all|length}} review{{ role.ratings.all|length|pluralize }}<br /> -->
+     </td>
+     <td>{% if role.versions.all|length > 0 %}{% for version in role.versions.all %}{{ version.name }}<br />{% endfor %}{% else %}(none){% endif %}</td>
+     <td>{% if role.categories.all|length > 0 %}{% for tag in role.categories.all %}<a href="{% url "main:list-category" %}">{{ tag.name }}</a><br />{% endfor %}{% else %}(no categories set){% endif %}</td>
+     {% comment %}
+     <td>{% if role.authors.all|length > 0 %}{% for author in role.authors.all|querysort:"username" %}<a href="{% url "main:user-view" author.username %}">{{ author.username }}</a><br />{% endfor %}{% else %}(no other authors){% endif %}</td>
+     {% endcomment %}
+     <td>{{ role.description }}</td>
+     {% if show_celery_info %}
+     <td>
+      {% with latest_import=role.imports.latest %}
+      {% if latest_import %}
+       {% if latest_import.state == "RUNNING" %}
+       <span class="text-info"><i class="fa fa-spinner fa-spin fa-lg"></i> running</span>
+       {% elif latest_import.state == "SUCCESS" %}
+       <span class="text-success"><i class="fa fa-ok-sign fa-lg"></i> ok</span>
+       {% elif latest_import.state == "FAILURE" %}
+       <span class="text-error">failed <a href tooltip-trigger="mouseenter" tooltip-placement="bottom" tooltip-append-to-body=true tooltip="{{latest_import.status_message}}"><i class="fa fa-info-circle"></i></a></span>
+       {% elif latest_import.state == "" %}
+       Import task pending.
+       {% else %}
+       (import status unknown: {{ latest_import.state }})
+       {% endif %}
+      {% else %}
+      no import task found
+      {% endif %}
+      {% endwith %}
+      </div>
+      </td>
+      <td>
+          <a style="width: 100px; margin-bottom: 5px;" class="btn btn-default btn-xs" href="{% url "main:accounts-role-refresh" role.id%}"><i class="fa fa-refresh"></i> Re-import</a><br />
+      {% if user.id == role.owner.id %}
+          {% if role.active %}
+          <a style="width: 100px" class="btn btn-danger btn-xs" href="{% url "main:accounts-role-delete" role.id %}"><i class="fa fa-trash-o"></i> Delete</a>
+          {% else %}
+          <a style="width: 100px" class="btn btn-danger btn-xs" href="{% url "main:accounts-role-undelete" role.id %}"><i class="fa fa-wrench"></i> Reactivate</a>
+          {% endif %}
+      {% endif %}
+      </td>
+     {% endif %}
+    </tr>

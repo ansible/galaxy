@@ -1,0 +1,39 @@
+ <div class="row title-row">
+    <div class="col-lg-12"><strong>Top Reviewers</strong></div>
+ </div>
+ <div class="row">
+  <div class="col-lg-6 hdr-row">
+   <a href ng-click="toggle_item(top_reviewers, 'username'); getTopReviewers()">Username
+    <span ng-switch on="top_reviewers.reverse" ng-show="top_reviewers.sort_col == 'username'">
+    <i ng-switch-when="false" class="fa fa-caret-down"></i>
+    <i ng-switch-default class="fa fa-caret-up"></i>
+    </span>
+   </a>
+  </div>
+  <div class="col-lg-3 hdr-row text-right">
+   <a href ng-click="toggle_item(top_reviewers, 'num_ratings'); getTopReviewers()"># Reviews
+    <span ng-switch on="top_reviewers.reverse" ng-show="top_reviewers.sort_col == 'num_ratings'">
+    <i ng-switch-when="false" class="fa fa-caret-down"></i>
+    <i ng-switch-default class="fa fa-caret-up"></i>
+    </span>
+   </a>
+  </div>
+  <div class="col-lg-3 hdr-row text-right">
+   <a href ng-click="toggle_item(top_reviewers, 'karma'); getTopReviewers()">Karma
+    <span ng-switch on="top_reviewers.reverse" ng-show="top_reviewers.sort_col == 'karma'">
+    <i ng-switch-when="false" class="fa fa-caret-down"></i>
+    <i ng-switch-default class="fa fa-caret-up"></i>
+    </span>
+   </a>
+  </div>
+ </div>
+ <div class="row" ng-repeat="user in top_reviewers.data">
+  <div class="col-lg-6 nowrap"><a href="/list#/users/{{user.id}}">{{user.username}}</a></div>
+  <div class="col-lg-3 nowrap text-right">{{user.num_ratings}}</a></div>
+  <div class="col-lg-3 nowrap text-right"><strong>{{user.karma}}</strong></div>
+ </div>
+ <!--
+ <div class="row-fluid">
+  <div class="span12"><a class="btn" href>view more&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></a></div>
+ </div>
+ -->

@@ -1,0 +1,45 @@
+{% include 'header.html' %}
+
+<div class="wrap">
+{% block body %}
+
+{% if url_items|length == 1 %}
+<div class="home-hdr-row intro-hdr">
+    <div class="container">
+        <div class="row">
+            <div class="collapse navbar-collapse navbar-right intro-menu">
+            {% include 'menu.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="home-hdr-row non-intro-hdr">
+    <div class="container header-nav">
+        <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/"><img src="/static/img/galaxy_logo_small.png"></a>
+                
+            </div>
+
+            <div class="collapse navbar-collapse navbar-right non-intro-menu" id="navbar-collapse-1">
+            {% include 'menu.html' %}
+            </div>
+        </nav>
+    </div>
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+{% endblock %}
+
+  <div class="push"></div>
+</div> <!-- end wrap -->
+
+{% include 'footer.html' %}

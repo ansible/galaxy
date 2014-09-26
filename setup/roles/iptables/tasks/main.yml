@@ -1,0 +1,31 @@
+---
+
+- name: determine if iptables is installed
+  command: iptables --version
+  register: iptables_installed
+  ignore_errors: True
+  tags: iptables
+
+- name: check to see if there is an iptables config file
+  file: path=/etc/sysconfig/iptables
+  ignore_errors: True
+  register: iptables_exists
+  when: iptables_installed.rc == 0
+  tags: iptables
+
+- name: ensure iptables config file exists
+  shell: /sbin/service iptables save creates=/etc/sysconfig/iptables
+  when: iptables_installed.rc == 0
+  tags: iptables
+
+- name: insert iptables rule for httpd (port 443)
+  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="^.*INPUT.*tcp.*443.*ACCEPT" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport 443 -j ACCEPT"
+  when: iptables_installed.rc == 0 and iptables_exists.state != 'absent'
+  notify: restart iptables
+  tags: iptables
+
+- name: insert iptables rule for httpd (port 80)
+  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="^.*INPUT.*tcp.*80.*ACCEPT" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport 80 -j ACCEPT"
+  when: iptables_installed.rc == 0 and iptables_exists.state != 'absent'
+  notify: restart iptables
+  tags: iptables

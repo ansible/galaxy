@@ -1,0 +1,11 @@
+You are receiving this email because someone (hopefully you) created an account at https://galaxy.ansible.com. To confirm this is correct, please click on the following link to verify your email address:
+
+{{ activate_url }}
+
+If you believe you have received this email in error, please disregard it.
+
+If you have any questions regarding this email, or if you have trouble with the link provided above, please contact us at support@ansible.com.
+
+Thanks!
+
+The Ansible Team

@@ -1,0 +1,8 @@
+*.pyc
+*.swp
+build/
+dist/
+galaxy.egg-info/
+galaxy/celerybeat-schedule
+rpm-build/
+nohup.out

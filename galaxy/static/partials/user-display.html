@@ -1,0 +1,25 @@
+ <div class="col-lg-4">
+  <div class="pull-left avatar"><img src="{{user.avatar_url}}" /></div>
+  <span class="username"><a href="#/users/{{user.id}}">{{user.username}}</a></span>
+  <div>
+    <span class="realname">{{user.full_name}}</span><br />
+    <span class="email" ng-show="user.email">{{user.email}}</span><br />
+    <span class="karma">Karma: {{user.karma|number:0}}</span><br />
+    <span class="average">Average Role: {{user.avg_role_score|number:2}}</span>
+  </div>
+ </div>
+ <div class="col-lg-3">
+  <div ng-repeat="role in user.summary_fields.roles"><a href="#/roles/{{role.id}}">{{role.name}} ({{role.average_score|number:2}})</a></div>
+  <div ng-show="user.num_roles == 0">This user has no roles</div>
+ </div>
+ <div class="col-lg-5">
+  <div ng-show="user.summary_fields.ratings.length" ng-init="rating = user.summary_fields.ratings[0]">
+   <div>Score: {{rating.score|number:2}}</div>
+   <div>{{rating.comment}}</div>
+   <div>
+    <span class="date">Added: {{rating.created|date:"short"}}</span>
+    <span class="date" ng-show="rating.created != rating.modified">(edited: {{rating.modified|date:"short"}})</span>
+   </div>
+  </div>
+  <div ng-hide="user.summary_fields.ratings.length">No ratings found.</div>
+ </div>

@@ -1,0 +1,61 @@
+---
+
+- name: create the /etc/galaxy directory
+  file: path=/etc/galaxy owner=root group=apache mode=0750 state=directory
+
+# Install galaxy tarball
+- name: make the sdist tar
+  shell: make clean &>/dev/null && OFFICIAL=yes make sdist &>/dev/null && ls -1 $(pwd)/dist/*.tar.gz chdir="../"
+  register: app_tar
+
+- name: install the galaxy app
+  pip: name={{ app_tar.stdout }}
+
+# TODO: Install galaxy rpm
+## - name: install EL6 galaxy yum repository
+##   template: src=yum_repo.j2 dest=/etc/yum.repos.d/galaxy.repo
+##   register: yum_repo
+##   when: aw_repo_url is defined
+##
+## - name: yum clean cached galaxy repository information
+##   command: yum clean all --disablerepo=* --enablerepo=ansibleworks-galaxy
+##   when: aw_repo_url is defined and yum_repo.changed
+##
+## - name: install galaxy RPM for EL6
+##   yum: name={{ galaxy_package_name }} enablerepo=ansibleworks-galaxy disable_gpg_check=yes state=latest
+##   when: aw_repo_url is defined
+
+- name: configure galaxy public/static directory
+  file: path=/var/lib/galaxy/public/static state=directory mode=0755
+
+- name: deploy settings file
+  template: src=settings.py.j2 dest=/etc/galaxy/settings.py owner=root group=apache mode=0640
+
+- name: create the SECRET_KEY file
+  command: >
+    /usr/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)" creates=/etc/galaxy/SECRET_KEY
+
+- name: adjust SECRET_KEY permissions
+  file: path=/etc/galaxy/SECRET_KEY state=file owner=root group=apache mode=0640
+
+- name: deploy apache configuration file
+  template: src=galaxy.conf.j2 dest=/etc/httpd/conf.d/galaxy.conf
+  notify: restart apache
+
+- name: start services and make sure they're enabled at boot
+  service: name={{ item }} state=running enabled=true
+  with_items:
+  - memcached
+  - httpd
+
+- name: create galaxy database schema
+  command: galaxy-manage syncdb --noinput
+
+- name: migrate galaxy database schema
+  command: galaxy-manage migrate --noinput
+
+- name: collect galaxy static files
+  command: galaxy-manage collectstatic --clear --noinput
+
+- name: fix galaxy log permissions
+  file: path=/var/log/galaxy state=directory owner=apache group=apache recurse=yes

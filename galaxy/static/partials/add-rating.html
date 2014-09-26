@@ -1,0 +1,39 @@
+<div class="modal-dialog">
+  <div class="modal-header">
+    <h4 ng-hide="rating.id">Add a rating:</h4>
+    <h4 ng-show="rating.id">Edit your rating:</h4>
+  </div>
+  <div class="modal-body rating-form">
+    <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
+    <div class="row">
+      <div class="col-sm-3">
+        <div>
+          <h4>Wow! Factor:</h4>
+          <rating value="rating.wow_factor" max="5" state-on="'fa fa-star fa-lg'" state-off="'fa fa-star-o fa-lg'" ng-class="{'text-danger':highlight.wow_factor}" ng-click="highlight.wow_factor=true"></rating>
+        </div>
+        <div>
+          <h4>Documentation:</h4>
+          <rating value="rating.documentation" max="5" state-on="'fa fa-star fa-lg'" state-off="'fa fa-star-o fa-lg'" ng-class="{'text-danger':highlight.documentation}" ng-click="highlight.documentation=true"></rating>
+        </div>
+        <div>
+          <h4>Reliability:</h4>
+          <rating value="rating.reliability" max="5" state-on="'fa fa-star fa-lg'" state-off="'fa fa-star-o fa-lg'" ng-class="{'text-danger':highlight.reliability}" ng-click="highlight.reliability=true"></rating>
+        </div>
+        <div>
+          <h4>Code Quality:</h4>
+          <rating value="rating.code_quality" max="5" state-on="'fa fa-star fa-lg'" state-off="'fa fa-star-o fa-lg'" ng-class="{'text-danger':highlight.code_quality}" ng-click="highlight.code_quality=true"></rating>
+        </div>
+      </div>
+      <div class="col-sm-9">
+        <div class="rating-comment">
+          <h4>Comment (5000 characters max, <span ng-class="(rating.comment.length>5000) ? 'text-danger':''">{{5000 - rating.comment.length}} left</span>):</h4>
+          <textarea name="comment" id="comment" ng-model="rating.comment" ng-trim="false" class="form-control"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok()">OK</button>
+    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+  </div>
+</div>

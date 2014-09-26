@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% load galaxyhelpers %}
+
+{% block general_content %}
+
+<div class="container">
+<div class="row">
+    <div class="col-lg-12 page-title">
+        <div class="txt">About</div>
+        <div class="rule"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+
+<h3>Welcome to Ansible Galaxy</h3>
+
+<p>Ansible Galaxy is Ansible’s official community hub for finding, downloading, rating, and sharing Ansible roles -- Ansible’s way of bundling automation content and making it reusable.</p>
+
+<h3>How To Find And Download Roles</h3>
+
+<p>You can find the most popular roles and recently added roles on the <a href="/explore#/">Explore</a> page, or use <a href="/list#/roles">Browse Roles</a> to see all the roles available on Galaxy.</p>
+<p>When you find something you like, click on the role to read reviews and learn the “ansible-galaxy” command line command you would run to download the role onto your Ansible host.   ansible-galaxy is a command line tool part of Ansible 1.4.2 or later.</p>
+
+<p>For instance:</p>
+
+<pre><code>$ ansible-galaxy install username.rolename</code></pre>
+
+<p>Roles can also be specified in a file. The roles should be specified one per line in the format <code>username.rolename[,version]</code>, as follows:</p>
+
+<pre>
+ <code>
+ user1.role1,v1.0.0
+ user2.role2,v0.5
+ ...
+ </code>
+</pre>
+
+<p>Then just use <code>-r/--role-file=</code> with the <code>ansible-galaxy</code> command.</p>
+
+<p>After testing a role, we welcome you to write a review so users can more easily find role content they would be interested in.</p>
+
+<h3>GitHub Integration</h3>
+
+<p>All roles are hosted in public GitHub repositories.  As such on all role detail pages, you can find a link to the GitHub repository and the issue tracker for the role.</p>
+
+<p>You should report any problems with the role on the GitHub tracker for that particular role.</p>
+
+<h3>How To Review Roles You’ve Tested</h3>
+
+<p>Once you’ve tested a role, you can let others know what you think by rating and it providing some review comments.<p>
+
+<p>We recommend the following ratings scale in each category:</p>
+<ol>
+    <li>NEEDS WORK</li>
+    <li>OK, BUT COULD BE IMPROVED SOME</li>
+    <li>NICE</li>
+    <li>AWESOME</li>
+    <li>I OWE THIS PERSON A BEVERAGE</li>
+</ol>
+
+<h4>Reliability</h4>
+<p>
+    Are there any errors?<br />
+    Can it be run repeatably and it only makes changes that are needed?<br />
+</p>
+
+<h4>Documentation</h4>
+<p>
+    Is the documentation accurate and easily understandable?<br />
+    Is it obvious what parameters can be passed to the role, if any?<br />
+    Does it run well on the listed platforms?  
+</p>
+
+<h4>Code Quality</h4>
+<p>
+    Are tasks in the role all named with good descriptions?<br />
+    Is the playbook simple and easy to understand?<br />
+    Is there good use of whitespace?<br />
+    Does it use relevant ansible modules as opposed to relying on the ‘shell’, ‘command’, or ‘script’ tasks?<br />
+    Does the role use things like “when_changed” and “creates” to control reporting of when it makes changes on the remote system.<br />
+    Does the module adhere to other documented <a href="http://docs.ansible.com/playbooks_best_practices.html">Ansible best practices</a>?
+</p>
+
+<h4>Wow Factor</h4>
+<p>
+    Did this role do something useful for you?<br />
+    How awesome is this role?
+</p>
+
+<h4>Comment</h4>
+
+<p>Every review should have a comment. If the review helped you solve a problem, tell others how! Similarly, if you encountered problems, what problems did you encounter? Be helpful and don’t be a jerk!</p>
+
+<p>Galaxy also allows you to like or dislike reviews provided by others. In doing so, this builds up the karma of reviewers. From the Showcase page, you can quickly identify top reviewers and see what roles they recommend!</p>
+
+<h3>How To Share Roles You’ve Written</h3>
+
+<p>One of the best things you can do is share roles you’ve written with others.  This can include examples of how to deploy popular applications, as well as automation around a product your company makes.</p>
+
+<p>To create a basic role structure, for example, one called “acme”, first start by <a href="https://help.github.com/articles/create-a-repo">creating a new repository on github</a>.  Once created, checkout the repository locally:</p>
+
+<pre><code>$ git clone https://username@github.com/username/acme acme</code></pre>
+
+<p>Next, use the ansible-galaxy CLI to create the scaffolding of a role:</p>
+
+<pre><code>$ ansible-galaxy init acme --force</code></pre>
+
+<p>From there, edit the README.md template and meta/main.yml templates to provide documentation and metadata about your role.   Data from both of these files will be browseable in the Galaxy system.</p>
+<pre><code>$ vim README.md
+$ vim meta/main.yml
+</code></pre>
+
+<p class="alert alert-info"><strong>A note about variables:</strong><br />When writing roles that will be shared, it's always good to prefix the variable names with your role name (whether stored in <code>defaults/main.yml</code> or in <code>vars/main.yml</code>). This helps ensure that other roles will not accidentally step on your variable names when the variables are evaluated.<br />
+<br />
+<strong>For example:</strong><br />
+Bad: <code>port: 1234</code><br />
+Good: <code>myrole_port: 1234</code>
+</p>
+
+<p>Once you are happy with your role, test it in a playbook, and make sure it’s really ready to go.</p>
+<pre><code>- hosts: example
+  roles:
+  - { role: acme, param1: 42 }
+
+$ ansible-playbook test.yml
+</code></pre>
+
+<p>Now it’s time to upload your latest to github.</p>
+<pre><code>$ git commit -a
+$ git push
+</code></pre>
+
+<p>Now, log into <a href="http://galaxy.ansible.com">galaxy.ansible.com</a>, and click “Add a Role”. Type in your GitHub username and role name, and galaxy will import your role and make it available to everyone.</p>
+
+<p>If you have applied any tags in your repo, Ansible Galaxy will automatically make a “version” object for each tag.  This means users will be able to choose which version (tag) to download.</p>
+
+<p>The default behavior, if you have no tags provided, is to just make the “HEAD” version available.  This means that users downloading the role will always get the latest in your github repository.</p>
+
+<p>To import new tags that you might have added, you can trigger a re-import from the “Your Roles” page.</p>
+
+<h3>Further Questions?</h3>
+
+<p>If you have questions not answered above about Galaxy, feel free to ask them on the <a href="https://groups.google.com/forum/#!forum/ansible-project">Ansible mailing list</a>.</p>
+
+<p>Please note that the content of specific roles (or how to use them) are not supported for the list, and you should simply comment on the role and contact the role author over GitHub.</p>
+
+
+  </div><!-- col-lg-12 -->
+</div><!-- row -->
+
+</div>
+{% endblock %}
+

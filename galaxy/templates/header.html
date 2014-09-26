@@ -1,0 +1,66 @@
+{% load url from future %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us"{% if ng_app %} ng-app="{{ ng_app }}"{% endif %}{% if ng_controller %} ng-controller="{{ ng_controller }}"{% endif %}>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Ansible, Inc" />
+  <link rel="shortcut icon" href="/static/img/favicon.ico" />
+
+  <title>Ansible Galaxy | Find, reuse, and share the best Ansible content</title>
+
+  {% block extra_head %}{% endblock %}
+
+  <!-- CSS -->
+  <link rel="stylesheet" type="text/css" href="/static/css/jquery-ui.min.css" />
+  <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="/static/css/font-awesome.css" />
+  <link rel="stylesheet" type="text/css" href="/static/css/select2.css" />
+  <link rel="stylesheet" type="text/css" href="/static/css/select2-bootstrap.css" />
+  <link rel="stylesheet/less" type="text/css" href="/static/less/galaxy.less" />
+
+  <!-- <link rel="stylesheet" type="text/css" href="/static/css/style.css" /> --> 
+  <!-- <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'> -->
+  <!-- <link href='https://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'> -->
+  <!-- <link href='https://fonts.googleapis.com/css?family=Arizonia' rel='stylesheet' type='text/css'> -->
+  {% for extra in extra_css %}<link href='{{extra}}' rel='stylesheet' type='text/css' />
+  {% endfor %}
+
+  <!--[if lt IE 9]>
+    <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- JS -->
+  <script type="text/javascript" src="/static/js/less-1.5.0.min.js"></script>
+  <script type="text/javascript" src="/static/js/jquery-1.9.1.js"></script>
+  <script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/static/js/angular.min.js"></script>
+  <script type="text/javascript" src="/static/js/angular-resource.min.js"></script>
+  <script type="text/javascript" src="/static/js/angular-route.min.js"></script>
+  <script type="text/javascript" src="/static/js/angular-sanitize.min.js"></script>
+  <script type="text/javascript" src="/static/js/angular-cookies.min.js"></script>
+  <script type="text/javascript" src="/static/js/ui-bootstrap-custom-0.7.0.js"></script>
+  <!-- <script type="text/javascript" src="/static/js/ui-bootstrap-custom-0.7.0.min.js"></script> -->
+  <!-- <script type="text/javascript" src="/static/js/ui-bootstrap-custom-tpls-0.7.0.min.js"></script> -->
+  <script type="text/javascript" src="/static/js/ui-bootstrap-custom-tpls-0.7.0.js"></script>
+  <script type="text/javascript" src="/static/js/select2.js"></script>
+
+  {% for extra in extra_js %}<script type="text/javascript" src="{{ extra }}"></script>
+  {% endfor %}
+
+  <!-- Google Tag Manager Data Layer -->
+  <script>
+   dataLayer = [];
+  </script>
+  <!-- End Google Tag Manager Data Layer -->
+
+</head>
+<body>
+
+  <!-- Google Tag Manager -->
+  <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-PSB293" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-PSB293');</script>
+  <!-- End Google Tag Manager -->
+

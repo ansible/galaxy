@@ -1,0 +1,9 @@
+---
+# Celery/RabbitMQ settings
+
+galaxy_rabbit_hostname: "localhost"
+galaxy_rabbit_port: 5672
+galaxy_rabbit_vhost: "/galaxy"
+galaxy_rabbit_username: "galaxy"
+galaxy_rabbit_password: "galaxy"
+

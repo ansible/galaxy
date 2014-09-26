@@ -1,0 +1,24 @@
+# general Django settings
+
+galaxy_site_env: "DEV"
+galaxy_site_name: "galaxy.local"
+galaxy_site_aliases: []
+
+# Outbound SMTP settings
+
+galaxy_email_hostname: ""
+galaxy_email_port: 25
+galaxy_email_username: ""
+galaxy_email_password: ""
+
+# Apache configuration settings
+
+galaxy_ssl_cert: "/etc/pki/tls/certs/localhost.crt"
+galaxy_ssl_key: "/etc/pki/tls/private/localhost.key"
+#galaxy_ssl_cachain: "/etc/pki/tls/certs/ca-bundle.crt"
+galaxy_ssl_cachain: null
+
+# Github API settings
+
+galaxy_github_api_token: ""
+

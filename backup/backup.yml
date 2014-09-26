@@ -1,0 +1,17 @@
+---
+
+# This playbook executes a pg_dump of the galaxy database (and encrypts 
+# it), then downloads the resulting file to the local machine where 
+# it is uploaded to an S3 bucket for safe-keeping.
+
+- hosts: localhost
+  connection: local
+  gather_facts: yes
+  tasks:
+  - name: create encrypted backup
+    shell: >
+       sudo -u postgres pg_dump -Fc galaxy | openssl aes-256-cbc -a -salt -pass file:/root/dbbackup/encpass | gzip - > /root/dbbackup/data/galaxy-sql-{{ansible_date_time.date}}-{{ansible_date_time.time}}.gz
+
+  - name: save the file to S3
+    s3: bucket=galaxy.ansibleworks.com mode=put src=/root/dbbackup/data/galaxy-sql-{{ansible_date_time.date}}-{{ansible_date_time.time}}.gz object=/data/{{ansible_date_time.year}}/{{ansible_date_time.month}}/{{ansible_date_time.day}}/galaxy-sql-{{ansible_date_time.date}}-{{ansible_date_time.time}}.gz
+

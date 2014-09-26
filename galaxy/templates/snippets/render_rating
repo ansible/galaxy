@@ -1,0 +1,22 @@
+{% load avatar_tags %}
+<div class="rating">
+ <div class="pull-left avatar">{% avatar role_rating.voter 64 %}</div>
+ <div>
+  <div>
+   <span class="username"><a href="{% url 'main:user-view' role_rating.voter.username %}">{{role_rating.voter.username}}</a></span><br />Score: <strong>{{role_rating.score}}</strong>
+  </div>
+  <div class="overflow-hidden">
+   Ease of Use: <strong>{{role_rating.ease_of_use}}</strong> |
+   Documentation: <strong>{{role_rating.documentation}}</strong> |
+   Best Practices: <strong>{{role_rating.best_practices}}</strong> |
+   Repeatability: <strong>{{role_rating.repeatability}}</strong> |
+   Platform Support: <strong>{{role_rating.platform_support}}</strong> |
+   Overall: <strong>{{role_rating.overall}}</strong>
+  </div>
+  <div class="overflow-hidden">
+    <span class="upvote"><i class="icon-thumbs-up"></i> {{role_rating.up_votes.all|length}}</span><span class="downvote"><i class="icon-thumbs-down"></i> {{role_rating.down_votes.all|length}}</span><br />
+    {{role_rating.comment}}<br />
+    <span class="date">{{role_rating.created_on}}{% if role_rating.created_on.datetime != role_rating.last_edited.datetime %}(edited: {{role_rating.last_edited}}){% endif %}</span>
+  </div>
+ </div>
+</div>

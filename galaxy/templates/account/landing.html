@@ -1,0 +1,11 @@
+{% extends 'account/base.html' %}
+{% block account_content %}
+{% if transient %}
+<div class="alert alert-transient alert-{{ transient.status }}">
+ <button type="button" class="close" data-dismiss="alert"><i class="icon-remove-sign"></i></button>
+ {{ transient.msg|safe }}
+</div>
+{% endif %}
+<h2>Congratulations!</h2>
+Your registration is complete. You can now proceed to the <a href="{% url 'account_login' %}">login</a> page to access your account.
+{% endblock %}

@@ -1,0 +1,69 @@
+ <div class="row title-row">
+   <div class="col-lg-12"><strong>Top Roles</strong></div>
+ </div>
+ <div class="row hdr-row">
+  <div class="col-lg-6 nowrap">
+   <a href ng-click="toggle_item(top_roles, 'name'); getTopRoles()">Role
+    <span ng-switch on="top_roles.reverse" ng-show="top_roles.sort_col == 'name'">
+    <i ng-switch-when="false" class="fa fa-caret-down"></i>
+    <i ng-switch-default class="fa fa-caret-up"></i>
+    </span>
+   </a>
+  </div>
+  <div class="col-lg-3 hdr-row text-right">
+   <a href ng-click="toggle_item(top_roles, 'num_ratings'); getTopRoles()"># Ratings
+    <span ng-switch on="top_roles.reverse" ng-show="top_roles.sort_col == 'num_ratings'">
+    <i ng-switch-when="false" class="icon-caret-down"></i>
+    <i ng-switch-default class="icon-caret-up"></i>
+    </span>
+   </a>
+  </div>
+  <div class="col-lg-3 hdr-row text-right">
+   <a href ng-click="toggle_item(top_roles, 'average_score'); getTopRoles()">Score
+    <span ng-switch on="top_roles.reverse" ng-show="top_roles.sort_col == 'average_score'">
+    <i ng-switch-when="false" class="icon-caret-down"></i>
+    <i ng-switch-default class="fa fa-caret-up"></i>
+    </span>
+   </a>
+  </div>
+ </div>
+ <div class="row" ng-repeat="role in top_roles.data">
+  <div class="col-lg-6"><a href="/list#/roles/{{role.id}}">{{ role.name }}</a></div>
+  <div class="col-lg-3 text-right">{{ role.summary_fields.ratings.length }}</a></div>
+  <div class="col-lg-3 text-right"><strong>{{role.average_score|number:2}}</strong></div>
+ </div>
+ <!--
+ <div class="row-fluid">
+  <div class="span12"><a class="btn" href>view more&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></a></div>
+ </div>
+ -->
+
+<table class="table table-responsive table-condensed">
+     <caption>Top Roles</caption>
+     <tr>
+         <th ng-click=ng-click="toggle_item(top_roles, 'name'); getTopRoles()">Role
+             <span ng-switch on="top_roles.reverse" ng-show="top_roles.sort_col == 'name'">
+             <i ng-switch-when="false" class="fa fa-caret-down"></i>
+             <i ng-switch-default class="fa fa-caret-up"></i>
+             </span>
+         </th>
+         <th ng-click="toggle_item(top_roles, 'num_ratings'); getTopRoles()"># Ratings
+             <span ng-switch on="top_roles.reverse" ng-show="top_roles.sort_col == 'num_ratings'">
+             <i ng-switch-when="false" class="icon-caret-down"></i>
+             <i ng-switch-default class="icon-caret-up"></i>
+             </span>
+         </th>
+         <th ng-click="toggle_item(top_roles, 'average_score'); getTopRoles()">Score
+             <span ng-switch on="top_roles.reverse" ng-show="top_roles.sort_col == 'average_score'">
+             <i ng-switch-when="false" class="icon-caret-down"></i>
+             <i ng-switch-default class="fa fa-caret-up"></i>
+             </span>
+         </th>
+     </tr>
+     <tbody>
+     <tr ng-repeat="role in top_roles.data">
+         <th><a href="/list#/roles/{{role.id}}">{{ role.name }}</a></th>
+         <th>{{ role.summary_fields.ratings.length }}</th>
+         <th><strong>{{role.average_score|number:2}}</strong></th>
+     </tr>
+ </table>

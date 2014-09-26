@@ -1,0 +1,46 @@
+<div class="row">
+    <div class="col-lg-12">
+        <table class="table table-condensed ga-table-striped table-hover user-list-table">
+        <thead>
+        <tr>
+            <th>Role</th>
+            <th>Versions</th>
+            <th>Categories</th>
+            <th class="col-lg-3">Description</th>
+            <th class="col-lg-2">Import Status <a><span tooltip-trigger="mouseenter" tooltip-placement="bottom" tooltip-append-to-body=true tooltip="Import tasks run in the background. This column shows the status of the background tasks related to your role."><i class="fa fa-question-circle"></i></span></a></th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="role in my_info.summary_fields.roles" ng-class="{'danger':!role.active}">
+                <td>
+                 <a href="/list#/roles/{{role.id}}"><span ng-show="role.active">{{role.name}}</span><span ng-hide="role.active">{{role.original_name}}</span></a>
+                </td>
+                <td><div ng-repeat="version in role.versions" ng-show="$index < 4">{{version}}</div></td>
+                <td><div ng-repeat="category in role.categories"><a href="/list#/roles/category/{{category}}">{{category}}</a></div></td>
+                <td>{{ role.description }}</td>
+                <td ng-switch="role.import.state">
+                    <span ng-switch-when="RUNNING" class="text-info"><i class="fa fa-spinner fa-spin fa-lg"></i> running</span>
+                    <span ng-switch-when="SUCCESS" class="text-success"><i class="fa fa-ok-sign fa-lg"></i> OK</span>
+                    <span ng-switch-when="FAILED">FAILED:<br />{{role.import.status_message}}</span>
+                    <span ng-switch-when="">Import task pending.</span>
+                </td>
+                <td>
+                    <div>
+                        <a style="width: 80px; margin-bottom: 5px;" class="btn btn-default btn-xs" href="/accounts/role/refresh/{{ role.id }}"><i class="fa fa-refresh"></i> Re-import</a><br />
+                    </div>
+                    <div ng-show="role.active && role.is_valid" style="width: 80px; margin-bottom: 5px;">
+                        <a class="btn btn-warning btn-block btn-xs" href="/accounts/role/deactivate/{{ role.id }}"><i class="fa fa-minus-circle"></i> Deactivate</a>
+                    </div>
+                    <div ng-show="!role.active && role.is_valid" style="width: 80px; margin-bottom: 5px;">
+                        <a class="btn btn-success btn-block btn-xs" href="/accounts/role/reactivate/{{ role.id }}"><i class="fa fa-wrench"></i> Reactivate</a>
+                    </div>
+                    <div ng-show="!role.active || !role.is_valid" style="width: 80px; margin-bottom: 5px;">
+                        <a class="btn btn-danger btn-block btn-xs" href="/accounts/role/delete/{{ role.id }}"><i class="fa fa-trash-o"></i> Delete</a>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        </table>
+    </div><!-- col-lg-12 -->
+</div><!-- row -->

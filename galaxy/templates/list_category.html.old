@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% load galaxyhelpers %}
+
+{% block general_content %}
+ <div ng-view></div>
+ <!-- Pagination links -->
+ <div class="row-fluid">
+  <h2>Roles by Tag - {{ category|capfirst }}</h2>
+  <div class="pagination">
+   <ul class="pull-left">
+   {% if cur_page > 1 %}
+    <li><a href="{% url "main:list-category" category 1 %}"><i class="icon-double-angle-left"></i></a></li>
+    <li><a href="{% url "main:list-category" category cur_page|add:"-1" %}"><i class="icon-angle-left"></i></a></li>
+   {% else %}
+    <li class="disabled"><span><i class="icon-double-angle-left"></i></span></li>
+    <li class="disabled"><span><i class="icon-angle-left"></i></span></li>
+   {% endif %}
+   {% if more.0 %}
+    <li class="disabled"><span>...</span></li>
+   {% endif %}
+   {% for page in page_range %}
+    {% if page == cur_page %}
+    <li class="active"><span>{{page}}</span></li>
+    {% else %}
+    <li><a href="{% url "main:list-category" category page %}">{{page}}</a></li>
+    {% endif %}
+   {% endfor %}
+   {% if more.1 %}
+    <li class="disabled"><span>...</span></li>
+   {% endif %}
+   {% if cur_page < max_page %}
+    <li><a href="{% url "main:list-category" category cur_page|add:1 %}"><i class="icon-angle-right"></i></a></li>
+    <li><a href="{% url "main:list-category" category max_page %}"><i class="icon-double-angle-right"></i></a></li>
+   {% else %}
+    <li class="disabled"><span><i class="icon-angle-right"></i></span></li>
+    <li class="disabled"><span><i class="icon-double-angle-right"></i></span></li>
+   {% endif %}
+   </ul>
+   <form id="sortform" class="form form-horizontal pull-left" action="{% url "main:prefs-set-sort" %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="redirect_url" value="{{ redirect_url }}" />
+    <input type="hidden" name="sort_category" value="{{ category }}" />
+    <div class="input-prepend input-append">
+     <span class="add-on">sort:</span>
+     <select name="sort_order" class="input-small">
+     {% for choice in sort_order_choices %}
+      <option value="{{choice}}"{% if cur_sort_order == choice %} SELECTED{% endif %}>{{choice}}</option>
+     {% endfor %}
+     </select>
+     <input type="submit" class="btn btn-primary"/>
+    </div>
+   </form>
+  </div>
+  <div class="roles">
+  {% if roles %}
+   <table class="table">
+   {% for role in roles %}
+   {% include 'snippets/render_role' with role=role only %}
+   {% endfor %}
+   </table>
+  {% else %}
+   <p>There are not yet any roles in this category.</p>
+  {% endif %}
+  </div> <!-- end roles div -->
+ </div> <!-- end row-fluid -->
+{% endblock %}

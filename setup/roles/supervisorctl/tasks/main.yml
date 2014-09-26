@@ -1,0 +1,35 @@
+---
+
+- name: create the galaxy group for the galaxy user
+  group: name=galaxy system=yes
+
+- name: create the galaxy user for celery
+  user: name=galaxy group=galaxy groups=apache system=yes createhome=no shell=/sbin/nologin
+
+- name: update supervisor config
+  ini_file: dest={{sup_conf_location}} section="program:galaxy-celeryd" option="{{item.option}}" value="{{item.value}}"
+  with_items:
+    - option: command
+      value: "/usr/bin/galaxy-manage celeryd -B -l info --autoscale=20,2"
+    - option: directory
+      value: "/var/lib/galaxy"
+    - option: user
+      value: "galaxy"
+    - option: autostart
+      value: "true"
+    - option: autorestart
+      value: "true"
+    - option: stopwaitsecs
+      value: 600
+    - option: log_stdout
+      value: "true"
+    - option: log_stderr
+      value: "true"
+    - option: logfile
+      value: "/var/log/supervisor/galaxy-celeryd.log"
+    - option: logfile_maxbytes
+      value: 50MB
+    - option: logfile_backups
+      value: 999
+  notify: restart supervisor
+  tags: supervisor

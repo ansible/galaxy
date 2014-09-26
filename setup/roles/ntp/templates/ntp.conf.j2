@@ -1,0 +1,50 @@
+#{{ ansible_managed }}
+
+driftfile {{ ntp_driftfile }}
+{% for i in ntp_server %}
+server {{ i }}
+{% endfor %}
+
+{% for i in ntp_restrict %}
+{{ i }}
+{% endfor %}
+
+{% if ntp_crypto %}
+crypto
+{% endif %}
+
+{% if ntp_includefile %}
+includefile  {{ ntp_includefile }}
+{% endif %}
+
+{% if ntp_keys %}
+keys {{ ntp_keys }}
+{% endif %}
+
+{% if ntp_trustedkey %}
+trustedkey {{ ntp_trustedkey }}
+{% endif %}
+
+{% if ntp_requestkey %}
+requestkey  {{ ntp_requestkey }}
+{% endif %}
+
+{% if ntp_controlkey %}
+controlkey {{ ntp_controlkey }}
+{% endif %}
+
+{% if ntp_statistics %}
+statistics {{ ntp_statistics }}
+{% endif %}
+
+{% if ntp_broadcast %}
+broadcast {{ ntp_broadcast }}
+{% endif %}
+
+{% if ntp_broadcastclient %}
+broadcastclient
+{% endif %}   
+
+{% if ntp_multicastclient %}
+multicastclient {{ ntp_multicastclient }}
+{% endif %}   

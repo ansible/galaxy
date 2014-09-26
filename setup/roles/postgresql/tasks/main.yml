@@ -1,0 +1,25 @@
+---
+
+- name: install postgresql
+  yum: name=postgresql-server
+
+- name: init the postgresql database
+  command: service postgresql initdb creates=/var/lib/pgsql/data/PG_VERSION
+  
+- name: update postgresql authentication settings
+  template: src=pg_hba.conf.j2 dest=/var/lib/pgsql/data/pg_hba.conf owner=postgres
+  register: hba_updated
+
+- name: restart postgresql
+  service: name=postgresql state=restarted enabled=true
+  when: hba_updated.changed
+
+- name: wait for postgresql to be up
+  wait_for: port=5432
+
+- name: create the galaxy user for postgresql
+  postgresql_user: name=galaxy password={{ galaxy_postgresql_password }}
+
+- name: create the galaxy database
+  postgresql_db: name=galaxy owner=galaxy
+
