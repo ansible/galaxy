@@ -10,7 +10,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "https://vagrant-kvm-boxes-si.s3.amazonaws.com/trusty64-kvm-20140418.box"
+  config.vm.provider "kvm" do
+    config.vm.box = "https://vagrant-kvm-boxes-si.s3.amazonaws.com/trusty64-kvm-20140418.box"
+  end
+
+  config.vm.provider "virtualbox" do
+    config.vm.box = "ubuntu/trusty64"
+  end
+
+  config.vm.provider "vmware_fusion" do
+    config.vm.box = "phusion/ubuntu-14.04-amd64"
+  end
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
