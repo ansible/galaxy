@@ -7,3 +7,4 @@ galaxy/celerybeat-schedule
 rpm-build/
 nohup.out
 .vagrant
+/Vagrantfile
