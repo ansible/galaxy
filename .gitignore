@@ -6,3 +6,4 @@ galaxy.egg-info/
 galaxy/celerybeat-schedule
 rpm-build/
 nohup.out
+.vagrant

@@ -1,0 +1,90 @@
+---
+- name: Galaxy Provision
+  hosts: all
+  sudo: true
+  vars:
+    project_dir: /galaxy_devel
+    galaxy_postgresql_password: galaxy
+  tasks:
+
+    - name: Install base packagse
+      apt: name={{item}} update_cache=yes state=present
+      with_items:
+        - software-properties-common
+        - python-software-properties
+
+    - name: Additional repositories
+      apt_repository: repo={{item}} state=present update_cache=yes
+      with_items:
+        - ppa:chris-lea/redis-server
+        - ppa:chris-lea/zeromq
+
+    - name: Install development dependencies
+      apt: name={{item}} state=present
+      with_items:
+        - tmux
+        - git
+        - make
+        - postgresql
+        - nodejs
+        - npm
+        - libyaml-dev
+        - python-yaml
+        - python-dev
+        - python-pip
+        - python-paramiko
+        - python-jinja2
+        - python-memcache
+        - python-psycopg2
+
+    - name: Install less compiler
+      npm: name=less state=present global=yes
+
+    - name: Install django 1.5 for galaxy
+      pip: name=django version=1.5
+
+    - name: Create postgres galaxy user
+      sudo_user: postgres
+      postgresql_user: name=galaxy password={{galaxy_postgresql_password}}
+
+    - name: Create the galaxy database
+      sudo_user: postgres
+      postgresql_db: name=galaxy owner=galaxy
+
+    - name: Install python-specific dependencies
+      pip: name={{item}}
+      with_items:
+        - ansible
+        - decorator
+        - django-allauth
+        - django-autofixture
+        - django-avatar
+        - django-bootstrap-form
+        - django-celery
+        - django-filter
+        - django-site-maintenance
+        - djangorestframework
+        - markdown==2.4.1 # 2.5 currently has a python 2.6.x incompatibility
+        - PyGithub
+        - requests
+        - requests-oauthlib
+        - south
+
+    - name: Ensure config directory exists
+      file: path=/etc/galaxy state=directory
+
+    - name: Copy settings to /etc
+      command: cp {{project_dir}}/config/settings.py /etc/galaxy/settings.py
+
+    - name: Generate SECRET_KEY file
+      shell: echo abcd1234 > /etc/galaxy/SECRET_KEY
+
+    - name: Configure package for development
+      command: make develop chdir={{project_dir}}
+
+    - name: Setup database
+      command: galaxy-manage syncdb --noinput chdir={{project_dir}}
+
+    - name: Setup database
+      command: galaxy-manage migrate --noinput chdir={{project_dir}}
+
