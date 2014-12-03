@@ -76,6 +76,12 @@ develop:
 # Refresh development environment after pulling new code.
 refresh: clean requirements develop migrate
 
+Vagrantfile:
+	cp provisioning/development/$@ $@
+
+start_vm: Vagrantfile
+	vagrant up
+
 # Create Django superuser.
 adduser:
 	$(PYTHON) manage.py createsuperuser

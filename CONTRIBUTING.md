@@ -24,6 +24,36 @@ Some steps may still be needed on occasion if you're creating a new virtualenv,
 destroying your database and starting clean, or switching to a different
 version of Ansible.
 
+Vagrant
+-------
+
+TO get up and running quickly the `provisioning` folder provides a Vagrant configuration to spin up a VM with all dependencies needed for running a development Galaxy server.
+
+To get going with Vagrant, make sure you have [Vagrant installed](http://www.vagrantup.com) and then run:
+
+```
+make start_vm
+```
+
+in the directory where your Galaxy checkout resides. To start the server SSH into the VM with `vagrant ssh` and then run:
+
+```
+cd /galaxy_devel
+make runserver
+```
+
+You should then be able to browse to <http://localhost:8000> from your __host__ computer and see a running Galaxy.
+
+Note: If you're using the `vagrant-kvm` driver and have trouble accessing `http://localhost:8000` then you can run `python manage.py runserver 0.0.0.0:8000` in the guest VM, and on the host use `vagrant ssh-config` to see the IP address of the VM. Browse to that IP on port 8000 to access the site.
+
+The Vagrantfile mounts the current directory as a share in the VM. This means that you can continue to edit code on your local machine like you normally would and changes will reflect in the VM.
+
+All dependencies are installed and the database is setup via the Ansible provisioner. You can find the playbook at `provisioning/development/book.yml`. At the moment the VM is running Ubuntu 14.04; a future enhancement would be to add another VM with CentOS to ease testing on different OS distributions.
+
+Finally, the Vagrantfile also forwards port 8000 on the host to port 8000 on the guest. This should allow you to easily access the development server from your local machine across vagrant rebuilds.
+
+Refer to the [Develop, Test and Build](#Develop,_Test_and_Build) section for further instructions on running with Vagrant.
+
 Prerequisites
 -------------
 
@@ -278,6 +308,11 @@ Develop, Test and Build
 After your development environment has been setup, refer to the following
 sections for routine procedures you'll use for developing, testing and building
 AWX.
+
+Vagrant
+-------
+
+If you're using Vagrant, you can follow the instructions below as written, but be sure to SSH into the VM with `vagrant ssh` before running any commands that need python or other app dependencies (you can still run git commands from your local machine assuming you have git setup there already). Also, the Vagrant VM installs all dependencies globally, so you can exclude any virtualenv-specific instructions.
 
 Contributing Code
 -----------------
