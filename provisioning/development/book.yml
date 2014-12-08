@@ -28,6 +28,9 @@
         - postgresql
         - nodejs
         - npm
+        - memcached
+        - sendmail
+        - redis-server
         - libyaml-dev
         - python-yaml
         - python-dev
@@ -43,9 +46,12 @@
     - name: Install django 1.5 for galaxy
       pip: name=django version=1.5
 
+    - name: Install djangorestframework 2.3.9 for galaxy
+      pip: name=djangorestframework version=2.3.9
+
     - name: Create postgres galaxy user
       sudo_user: postgres
-      postgresql_user: name=galaxy password={{galaxy_postgresql_password}}
+      postgresql_user: name=galaxy password={{galaxy_postgresql_password}} role_attr_flags=CREATEDB
 
     - name: Create the galaxy database
       sudo_user: postgres
