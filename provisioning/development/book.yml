@@ -31,6 +31,7 @@
         - memcached
         - sendmail
         - redis-server
+        - rabbitmq-server
         - libyaml-dev
         - python-yaml
         - python-dev
@@ -57,6 +58,18 @@
       sudo_user: postgres
       postgresql_db: name=galaxy owner=galaxy
 
+    - name: Start and enable rabbitmq service
+      service: name=rabbitmq-server state=restarted enabled=yes
+
+    - name: wait for rabbitmq service to be running
+      wait_for: port=5672
+
+    - name: Create rabbitmq vhost
+      rabbitmq_vhost: name=galaxy state=present
+
+    - name: Create rabbitmq user
+      rabbitmq_user: user=galaxy password=galaxy vhost=galaxy configure_priv=.* read_priv=.* write_priv=.* state=present force=yes
+
     - name: Install python-specific dependencies
       pip: name={{item}}
       with_items:
@@ -81,6 +94,21 @@
 
     - name: Copy settings to /etc
       command: cp {{project_dir}}/config/settings.py /etc/galaxy/settings.py
+
+    - name: Use localhost for email sending
+      lineinfile: dest=/etc/galaxy/settings.py regexp="{{item.pattern}}" line="{{item.replacement}}" state=present
+      with_items:
+        - pattern: ^EMAIL_HOST=
+          replacement: EMAIL_HOST=\"localhost\"
+        - pattern: ^EMAIL_PORT=
+          replacement: EMAIL_PORT=25
+
+    - name: Remove extra email configuration
+      lineinfile: dest=/etc/galaxy/settings.py regexp="{{item}}" state="absent"
+      with_items:
+        - ^EMAIL_HOST_USER=
+        - ^EMAIL_HOST_PASSWORD=
+        - ^EMAIL_USE_TLS=
 
     - name: Generate SECRET_KEY file
       shell: echo abcd1234 > /etc/galaxy/SECRET_KEY
