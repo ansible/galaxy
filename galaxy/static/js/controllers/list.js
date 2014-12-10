@@ -23,8 +23,43 @@
 
 var listControllers = angular.module('listControllers', ['Utilities', 'Search']);
 
+function from_query_params(data) {
+    var result = {};
+
+    result.list_filter = data.f;
+    result.page = data.page;
+    result.results_per_page = data.per_page;
+    result.sort_order = data.sort_order;
+    result.reverse = data.reverse;
+    result.selected_categories = data.cats;
+
+    return result;
+}
+
+function query_params(data) {
+    var result = {};
+
+    if (data.list_filter) {
+        result.f = data.list_filter;
+    }
+
+    result.page = data.page;
+    result.per_page = data.results_per_page;
+    result.sort_order = data.sort_order;
+
+    if (data.reverse) {
+        result.reverse = data.reverse;
+    }
+
+    if (data.selected_categories) {
+        result.cats = data.selected_categories;
+    }
+
+    return result;
+}
+
 listControllers.controller('RoleListCtrl', ['$scope','$routeParams','$location','$timeout','roleFactory','categoryFactory',
-'storageFactory','my_info', 'Empty', 'SearchInit', 'PaginateInit',
+'queryStorageFactory','my_info', 'Empty', 'SearchInit', 'PaginateInit',
 function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory, storageFactory, my_info, Empty, SearchInit, PaginateInit) {
     
     //$scope.orderby={ sort_order: 'owner__username,name' };
@@ -40,7 +75,7 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
         'selected_categories': [],
         'sort_order'         : 'owner__username,name',
         'refresh'            : function () {
-            storageFactory.save_state('role_list', $scope.list_data);
+            storageFactory.save_state('role_list', query_params($scope.list_data));
             $scope.list_data.sort_order = $scope.getSortOrder();  //Check if user changed sort order
             $scope.loading = 1;
             roleFactory.getRoles(
@@ -70,7 +105,7 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
                     $scope.setPageRange();
     
                     $scope.status = "";
-                    storageFactory.save_state('role_list', $scope.list_data);
+                    storageFactory.save_state('role_list', query_params($scope.list_data));
                     $scope.loading = 0;
     
                     // Force window back to the top
@@ -180,7 +215,12 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
         $scope.list_data.refresh();
         }
     
-    $scope.list_data = storageFactory.restore_state('role_list', $scope.list_data);
+    var restored_query = storageFactory
+        .restore_state('role_list', query_params($scope.list_data));
+
+    $scope.list_data = angular.extend({},
+            $scope.list_data,
+            from_query_params(restored_query));
 
     if ($routeParams.category_name) {
         $scope.list_data.selected_categories = [$routeParams.category_name];
@@ -526,7 +566,7 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
     ]);
 
 
-listControllers.controller('UserListCtrl', ['$scope','$timeout','$location','$routeParams', 'userFactory','storageFactory','my_info', 'SearchInit',
+listControllers.controller('UserListCtrl', ['$scope','$timeout','$location','$routeParams', 'userFactory','queryStorageFactory','my_info', 'SearchInit',
 'PaginateInit', 'Stars',
 function($scope, $timeout, $location, $routeParams, userFactory, storageFactory, my_info, SearchInit, PaginateInit, Stars) {
       
@@ -542,7 +582,7 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
         'selected_categories': [],
         'sort_order'         : 'username',
         'refresh'            : function() {
-            storageFactory.save_state('user_list', $scope.list_data);
+            storageFactory.save_state('user_list', query_params($scope.list_data));
             $scope.list_data.sort_order = $scope.getSortOrder();
             console.log("sort order is " + $scope.list_data.sort_order);
             $scope.loading = 1;
@@ -577,7 +617,7 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
                     $scope.setPageRange();
                     
                     $scope.status = "";
-                    storageFactory.save_state('user_list', $scope.list_data);
+                    storageFactory.save_state('user_list', query_params($scope.list_data));
                     $scope.loading = 0;
 
                     // Force window back to the top
@@ -615,7 +655,12 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
         $scope.list_data.refresh();
         };
 
-    $scope.list_data = storageFactory.restore_state('user_list', $scope.list_data);
+    var restored_query = storageFactory
+        .restore_state('user_list', query_params($scope.list_data));
+
+    $scope.list_data = angular.extend({},
+            $scope.list_data,
+            from_query_params(restored_query));
     
     if ($routeParams.sort_order) {
         switch ($routeParams.sort_order) {

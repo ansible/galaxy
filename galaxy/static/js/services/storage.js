@@ -20,30 +20,59 @@
 'use strict';
 
 var storageServices = angular.module('storageServices', ['ngResource']);
- 
-storageServices.factory('storageFactory', [
-  function () {
+
+function defineStorageService(adapter) {
     var dataFactory = {};
+
     dataFactory.save_state = function(target, fields) { 
-      var data = {};
-      for (var fname in fields) {
-         data[fname] = fields[fname];
-      }
-      localStorage[target] = JSON.stringify(data);
-    };
-    dataFactory.restore_state = function(target, default_fields) {
-      try {
-        var data = JSON.parse(localStorage[target]);
-        for (var fname in default_fields) {
-          if (typeof(data[fname]) == 'undefined') {
-            data[fname] = default_fields[fname];
-          }
+        var data = {};
+        for (var fname in fields) {
+            data[fname] = fields[fname];
         }
-        return data;
-      } catch(err) {
-        return default_fields;
-      }
+        adapter.save(target, data);
     };
+
+    dataFactory.restore_state = function(target, default_fields) {
+        try {
+            var data = adapter.restore(target);
+            for (var fname in default_fields) {
+                if (typeof(data[fname]) == 'undefined') {
+                    data[fname] = default_fields[fname];
+                }
+            }
+            return data;
+        } catch(err) {
+            return default_fields;
+        }
+    };
+
     return dataFactory;
-  }
+}
+
+storageServices.factory('queryStorageFactory', ['$location',
+        function($location) {
+            return defineStorageService({
+                save: function(key, data) {
+                    return $location
+                        .search(JSON.parse(JSON.stringify(data)));
+                },
+                restore: function() {
+                    return $location.search();
+                }
+            })
+        }
+]);
+
+storageServices.factory('storageFactory', [
+        function () {
+            return defineStorageService({
+                save: function(target, data) {
+                    localStorage[target] = JSON.stringify(data);
+                    return localStorage[target];
+                },
+                restore: function(target) {
+                    return JSON.parse(localStorage[target]);
+                }
+            });
+        }
 ]);
