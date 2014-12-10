@@ -102,6 +102,15 @@ dbchange:
 dbshell:
 	sudo -u postgres psql -d galaxy
 
+server_noattach:
+	tmux new-session -d -s galaxy 'exec make runserver'
+	tmux rename-window 'Galaxy'
+	tmux select-window -t galaxy:0
+	tmux split-window -v 'exec make celeryd'
+
+server: server_noattach
+	tmux -2 attach-session -t galaxy
+
 # Run the built-in development webserver (by default on http://localhost:8013).
 runserver:
 	$(PYTHON) manage.py runserver
