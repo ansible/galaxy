@@ -53,8 +53,17 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
                 )
                 .success(function (data) {
                     $scope.roles = data['results'];
+
                     $scope.list_data.page = parseInt(data['cur_page']);
                     $scope.list_data.num_pages = parseInt(data['num_pages']);
+
+                    // Bug in API causes it to not return `cur_page` or `num_pages` when less than a single page of data in database
+                    // This causes the query to be cached with null values, which means subsequent requests return no data
+                    // Defaulting these values to 1 ensures we never cache the query with null values
+                    $scope.list_data.page = $scope.list_data.page || 1;
+                    $scope.list_data.num_pages = $scope.list_data.num_pages || 1;
+
+
                     $scope.num_roles = parseInt(data['count']);
                     $scope.list_data.page_range = [];
     
