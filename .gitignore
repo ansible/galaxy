@@ -8,3 +8,5 @@ rpm-build/
 nohup.out
 .vagrant
 /Vagrantfile
+package.json
+node_modules

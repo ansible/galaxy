@@ -5,8 +5,32 @@ SITELIB=$(shell $(PYTHON) -c "from distutils.sysconfig import get_python_lib; pr
 GIT_DATE := $(shell git log -n 1 --format="%ai")
 DATE := $(shell date -u +%Y%m%d%H%M)
 
+NAME = ansible-galaxy
+GIT_REMOTE_URL = https://github.com/ansible/galaxy
 VERSION=$(shell $(PYTHON) -c "from galaxy import __version__; print(__version__.split('-')[0])")
 RELEASE=$(shell $(PYTHON) -c "from galaxy import __version__; print(__version__.split('-')[1])")
+
+SRC = ./galaxy
+DIST = $(SRC)/static
+STATIC_WEB_ROOT = /static
+STATIC_IMG_ROOT = $(STATIC_WEB_ROOT)/img
+
+LESS = $(SRC)/static/less
+
+IMG_DIST = $(DIST)/img
+SHOWCASE = $(SRC)/showcase
+
+SHOWCASE_HOMEPAGE_SPRITE_CONFIG = $(SHOWCASE)-homepage.js
+SHOWCASE_HOMEPAGE_SPRITE_INPUT = $(SHOWCASE)/homepage/*-1x.png
+SHOWCASE_HOMEPAGE_SPRITE_FILENAME = showcase/homepage.png
+SHOWCASE_HOMEPAGE_SPRITE_OUTPUT = $(IMG_DIST)/$(SHOWCASE_HOMEPAGE_SPRITE_FILENAME)
+
+SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RETINA = $(SHOWCASE)-homepage-retina.js
+SHOWCASE_HOMEPAGE_SPRITE_INPUT_RETINA = $(SHOWCASE)/homepage/*-2x.png
+SHOWCASE_HOMEPAGE_SPRITE_FILENAME_RETINA = showcase/homepage@2x.png
+SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA = \
+	$(IMG_DIST)/$(SHOWCASE_HOMEPAGE_SPRITE_FILENAME_RETINA)
+
 ifneq ($(OFFICIAL),yes)
 BUILD=dev$(DATE)
 SDIST_TAR_FILE=galaxy-$(VERSION)-$(BUILD).tar.gz
@@ -23,13 +47,31 @@ DEB_BUILD_DIR=deb-build/galaxy-$(VERSION)
 DEB_PKG_RELEASE=$(VERSION)-$(RELEASE)
 endif
 
+$(SHOWCASE_HOMEPAGE_SPRITE_CONFIG): $(SHOWCASE).js.template
+	sed -e 's#%DEST_IMAGE%#$(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT)#;s#%DEST_CSS%#$(LESS)/showcase-homepage-2x.less#;s#%SRC%#$(SHOWCASE_HOMEPAGE_SPRITE_INPUT)#;s#%IMG_PATH%#$(STATIC_IMG_ROOT)/$(SHOWCASE_HOMEPAGE_SPRITE_FILENAME)#' $(SHOWCASE).js.template > $@
+
+$(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RETINA): $(SHOWCASE).js.template
+	sed -e 's#%DEST_IMAGE%#$(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)#;s#%DEST_CSS%#$(LESS)/showcase-homepage-2x.less#;s#%SRC%#$(SHOWCASE_HOMEPAGE_SPRITE_INPUT_RETINA)#;s#%IMG_PATH%#$(STATIC_IMG_ROOT)/$(SHOWCASE_HOMEPAGE_SPRITE_FILENAME_RETINA)#' $(SHOWCASE).js.template > $@
+
+$(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT): $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG)
+	./node_modules/.bin/spritesmith --rc $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG)
+
+$(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA): $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RETINA)
+	./node_modules/.bin/spritesmith --rc $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RETINA)
+
 .PHONY: clean rebase push requirements requirements_pypi develop refresh \
 	adduser syncdb migrate dbchange dbshell runserver celeryd test \
 	test_coverage coverage_html test_ui test_jenkins dev_build \
-	release_build release_clean sdist rpm
+	release_build release_clean sdist rpm showcase
+
+showcase: $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT) $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)
 
 # Remove temporary build files, compiled Python files.
 clean:
+	rm $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RETINA)
+	rm $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)
+	rm $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG)
+	rm $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT)
 	rm -rf dist/*
 	rm -rf build rpm-build *.egg-info
 	rm -rf debian deb-build
@@ -75,6 +117,13 @@ develop:
 
 # Refresh development environment after pulling new code.
 refresh: clean requirements develop migrate
+
+package.json:
+	sed -e 's#%NAME%#$(NAME)#;s#%VERSION%#$(VERSION)#;s#%GIT_REMOTE_URL%#$(GIT_REMOTE_URL)#;' packaging/assets/package.template > $@
+
+# Update local npm install
+node_modules: package.json
+	npm install
 
 Vagrantfile:
 	cp provisioning/development/$@ $@

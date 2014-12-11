@@ -1,0 +1,11 @@
+{
+  "name": "%NAME%",
+  "version": "%VERSION%",
+  "repository": {
+    "type": "git",
+    "url": "%GIT_REMOTE_URL%"
+  },
+  "devDependencies": {
+    "spritesmith-cli": "^1.0.6"
+  }
+}

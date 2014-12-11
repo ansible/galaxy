@@ -1,0 +1,8 @@
+// This file is a template processed by make. See Makefile for actual values.
+
+module.exports = {
+    src: '%SRC%',
+    destImage: '%DEST_IMAGE%',
+    destCSS: '%DEST_CSS%',
+    imgPath: '%IMG_PATH%'
+};

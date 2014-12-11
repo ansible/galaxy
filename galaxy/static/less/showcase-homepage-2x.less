@@ -1,0 +1,226 @@
+/*
+LESS variables are information about icon's compiled state, stored under its original file name
+
+.icon-home {
+  width: @icon-home-width;
+}
+
+The large array-like variables contain all information about a single icon
+@icon-home: x y offset_x offset_y width height total_width total_height image_path;
+*/
+@arista-homepage-2x-x: 568px;
+@arista-homepage-2x-y: 342px;
+@arista-homepage-2x-offset-x: -568px;
+@arista-homepage-2x-offset-y: -342px;
+@arista-homepage-2x-width: 358px;
+@arista-homepage-2x-height: 58px;
+@arista-homepage-2x-total-width: 1476px;
+@arista-homepage-2x-total-height: 1072px;
+@arista-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@arista-homepage-2x: 568px 342px -568px -342px 358px 58px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@cumulus-homepage-2x-x: 260px;
+@cumulus-homepage-2x-y: 408px;
+@cumulus-homepage-2x-offset-x: -260px;
+@cumulus-homepage-2x-offset-y: -408px;
+@cumulus-homepage-2x-width: 334px;
+@cumulus-homepage-2x-height: 334px;
+@cumulus-homepage-2x-total-width: 1476px;
+@cumulus-homepage-2x-total-height: 1072px;
+@cumulus-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@cumulus-homepage-2x: 260px 408px -260px -408px 334px 334px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@django-homepage-2x-x: 594px;
+@django-homepage-2x-y: 408px;
+@django-homepage-2x-offset-x: -594px;
+@django-homepage-2x-offset-y: -408px;
+@django-homepage-2x-width: 356px;
+@django-homepage-2x-height: 126px;
+@django-homepage-2x-total-width: 1476px;
+@django-homepage-2x-total-height: 1072px;
+@django-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@django-homepage-2x: 594px 408px -594px -408px 356px 126px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@docker-homepage-2x-x: 568px;
+@docker-homepage-2x-y: 0px;
+@docker-homepage-2x-offset-x: -568px;
+@docker-homepage-2x-offset-y: 0px;
+@docker-homepage-2x-width: 408px;
+@docker-homepage-2x-height: 342px;
+@docker-homepage-2x-total-width: 1476px;
+@docker-homepage-2x-total-height: 1072px;
+@docker-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@docker-homepage-2x: 568px 0px -568px 0px 408px 342px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@elk-stack-homepage-2x-x: 0px;
+@elk-stack-homepage-2x-y: 0px;
+@elk-stack-homepage-2x-offset-x: 0px;
+@elk-stack-homepage-2x-offset-y: 0px;
+@elk-stack-homepage-2x-width: 354px;
+@elk-stack-homepage-2x-height: 408px;
+@elk-stack-homepage-2x-total-width: 1476px;
+@elk-stack-homepage-2x-total-height: 1072px;
+@elk-stack-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@elk-stack-homepage-2x: 0px 0px 0px 0px 354px 408px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@hadoop-homepage-2x-x: 772px;
+@hadoop-homepage-2x-y: 742px;
+@hadoop-homepage-2x-offset-x: -772px;
+@hadoop-homepage-2x-offset-y: -742px;
+@hadoop-homepage-2x-width: 636px;
+@hadoop-homepage-2x-height: 152px;
+@hadoop-homepage-2x-total-width: 1476px;
+@hadoop-homepage-2x-total-height: 1072px;
+@hadoop-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@hadoop-homepage-2x: 772px 742px -772px -742px 636px 152px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@jenkins-homepage-2x-x: 354px;
+@jenkins-homepage-2x-y: 0px;
+@jenkins-homepage-2x-offset-x: -354px;
+@jenkins-homepage-2x-offset-y: 0px;
+@jenkins-homepage-2x-width: 214px;
+@jenkins-homepage-2x-height: 342px;
+@jenkins-homepage-2x-total-width: 1476px;
+@jenkins-homepage-2x-total-height: 1072px;
+@jenkins-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@jenkins-homepage-2x: 354px 0px -354px 0px 214px 342px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@jira-homepage-2x-x: 594px;
+@jira-homepage-2x-y: 534px;
+@jira-homepage-2x-offset-x: -594px;
+@jira-homepage-2x-offset-y: -534px;
+@jira-homepage-2x-width: 308px;
+@jira-homepage-2x-height: 122px;
+@jira-homepage-2x-total-width: 1476px;
+@jira-homepage-2x-total-height: 1072px;
+@jira-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@jira-homepage-2x: 594px 534px -594px -534px 308px 122px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@juniper-homepage-2x-x: 976px;
+@juniper-homepage-2x-y: 598px;
+@juniper-homepage-2x-offset-x: -976px;
+@juniper-homepage-2x-offset-y: -598px;
+@juniper-homepage-2x-width: 472px;
+@juniper-homepage-2x-height: 132px;
+@juniper-homepage-2x-total-width: 1476px;
+@juniper-homepage-2x-total-height: 1072px;
+@juniper-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@juniper-homepage-2x: 976px 598px -976px -598px 472px 132px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@mongodb-homepage-2x-x: 976px;
+@mongodb-homepage-2x-y: 460px;
+@mongodb-homepage-2x-offset-x: -976px;
+@mongodb-homepage-2x-offset-y: -460px;
+@mongodb-homepage-2x-width: 478px;
+@mongodb-homepage-2x-height: 138px;
+@mongodb-homepage-2x-total-width: 1476px;
+@mongodb-homepage-2x-total-height: 1072px;
+@mongodb-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@mongodb-homepage-2x: 976px 460px -976px -460px 478px 138px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@mysql-homepage-2x-x: 976px;
+@mysql-homepage-2x-y: 0px;
+@mysql-homepage-2x-offset-x: -976px;
+@mysql-homepage-2x-offset-y: 0px;
+@mysql-homepage-2x-width: 500px;
+@mysql-homepage-2x-height: 260px;
+@mysql-homepage-2x-total-width: 1476px;
+@mysql-homepage-2x-total-height: 1072px;
+@mysql-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@mysql-homepage-2x: 976px 0px -976px 0px 500px 260px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@new-relic-homepage-2x-x: 954px;
+@new-relic-homepage-2x-y: 920px;
+@new-relic-homepage-2x-offset-x: -954px;
+@new-relic-homepage-2x-offset-y: -920px;
+@new-relic-homepage-2x-width: 446px;
+@new-relic-homepage-2x-height: 82px;
+@new-relic-homepage-2x-total-width: 1476px;
+@new-relic-homepage-2x-total-height: 1072px;
+@new-relic-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@new-relic-homepage-2x: 954px 920px -954px -920px 446px 82px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@nodejs-homepage-2x-x: 0px;
+@nodejs-homepage-2x-y: 920px;
+@nodejs-homepage-2x-offset-x: 0px;
+@nodejs-homepage-2x-offset-y: -920px;
+@nodejs-homepage-2x-width: 554px;
+@nodejs-homepage-2x-height: 152px;
+@nodejs-homepage-2x-total-width: 1476px;
+@nodejs-homepage-2x-total-height: 1072px;
+@nodejs-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@nodejs-homepage-2x: 0px 920px 0px -920px 554px 152px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@postgres-homepage-2x-x: 1256px;
+@postgres-homepage-2x-y: 260px;
+@postgres-homepage-2x-offset-x: -1256px;
+@postgres-homepage-2x-offset-y: -260px;
+@postgres-homepage-2x-width: 168px;
+@postgres-homepage-2x-height: 174px;
+@postgres-homepage-2x-total-width: 1476px;
+@postgres-homepage-2x-total-height: 1072px;
+@postgres-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@postgres-homepage-2x: 1256px 260px -1256px -260px 168px 174px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@rails-homepage-2x-x: 0px;
+@rails-homepage-2x-y: 408px;
+@rails-homepage-2x-offset-x: 0px;
+@rails-homepage-2x-offset-y: -408px;
+@rails-homepage-2x-width: 260px;
+@rails-homepage-2x-height: 334px;
+@rails-homepage-2x-total-width: 1476px;
+@rails-homepage-2x-total-height: 1072px;
+@rails-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@rails-homepage-2x: 0px 408px 0px -408px 260px 334px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@redis-homepage-2x-x: 554px;
+@redis-homepage-2x-y: 920px;
+@redis-homepage-2x-offset-x: -554px;
+@redis-homepage-2x-offset-y: -920px;
+@redis-homepage-2x-width: 400px;
+@redis-homepage-2x-height: 128px;
+@redis-homepage-2x-total-width: 1476px;
+@redis-homepage-2x-total-height: 1072px;
+@redis-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@redis-homepage-2x: 554px 920px -554px -920px 400px 128px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@tomcat-homepage-2x-x: 976px;
+@tomcat-homepage-2x-y: 260px;
+@tomcat-homepage-2x-offset-x: -976px;
+@tomcat-homepage-2x-offset-y: -260px;
+@tomcat-homepage-2x-width: 280px;
+@tomcat-homepage-2x-height: 200px;
+@tomcat-homepage-2x-total-width: 1476px;
+@tomcat-homepage-2x-total-height: 1072px;
+@tomcat-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@tomcat-homepage-2x: 976px 260px -976px -260px 280px 200px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+@wordpress-homepage-2x-x: 0px;
+@wordpress-homepage-2x-y: 742px;
+@wordpress-homepage-2x-offset-x: 0px;
+@wordpress-homepage-2x-offset-y: -742px;
+@wordpress-homepage-2x-width: 772px;
+@wordpress-homepage-2x-height: 178px;
+@wordpress-homepage-2x-total-width: 1476px;
+@wordpress-homepage-2x-total-height: 1072px;
+@wordpress-homepage-2x-image: '/static/img/showcase/homepage@2x.png';
+@wordpress-homepage-2x: 0px 742px 0px -742px 772px 178px 1476px 1072px '/static/img/showcase/homepage@2x.png';
+
+/*
+The provided classes are intended to be used with the array-like variables
+
+.icon-home {
+  .sprite-width(@icon-home);
+}
+.icon-email {
+  .sprite(@icon-email);
+}
+*/
+.sprite-width(@sprite) {
+  width: ~`"@{sprite}".split(', ')[4]`;
+}
+
+.sprite-height(@sprite) {
+  height: ~`"@{sprite}".split(', ')[5]`;
+}
+
+.sprite-position(@sprite) {
+  @sprite-offset-x: ~`"@{sprite}".split(', ')[2]`;
+  @sprite-offset-y: ~`"@{sprite}".split(', ')[3]`;
+  background-position: @sprite-offset-x  @sprite-offset-y;
+}
+
+.sprite-image(@sprite) {
+  @sprite-image: ~`"@{sprite}".split(', ')[8].slice(1, -2)`;
+  background-image: url(@sprite-image);
+}
+
+.sprite(@sprite) {
+  .sprite-image(@sprite);
+  .sprite-position(@sprite);
+  .sprite-width(@sprite);
+  .sprite-height(@sprite);
+}
