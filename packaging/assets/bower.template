@@ -9,7 +9,8 @@
   "dependencies": {
     "bootstrap": "~3.0.3",
     "components-font-awesome": "~4.0.3",
-    "select2": "~3.5.1"
+    "select2": "~3.5.1",
+    "jquery-ui": "1.10.3"
   }
 }
 

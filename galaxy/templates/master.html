@@ -13,13 +13,8 @@
   {% block extra_head %}{% endblock %}
 
   <!-- CSS -->
-  <link rel="stylesheet" type="text/css" href="/static/css/jquery-ui.min.css" />
   <link rel="stylesheet" type="text/css" href="/static/css/galaxy.css" />
 
-  <!-- <link rel="stylesheet" type="text/css" href="/static/css/style.css" /> --> 
-  <!-- <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'> -->
-  <!-- <link href='https://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'> -->
-  <!-- <link href='https://fonts.googleapis.com/css?family=Arizonia' rel='stylesheet' type='text/css'> -->
   {% for extra in extra_css %}<link href='{{extra}}' rel='stylesheet' type='text/css' />
   {% endfor %}
 

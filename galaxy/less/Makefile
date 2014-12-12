@@ -9,8 +9,9 @@ LESSC = $(NODE_MODULES)/.bin/lessc
 BOOTSTRAP = $(BOWER_COMPONENTS)/bootstrap/less
 SELECT2 = $(BOWER_COMPONENTS)/select2
 FONT_AWESOME = $(BOWER_COMPONENTS)/components-font-awesome/less
+JQUERY_UI = $(BOWER_COMPONENTS)/jquery-ui/themes
 
-LESS_LOAD_PATH = $(BOOTSTRAP):$(SELECT2):$(FONT_AWESOME)
+LESS_LOAD_PATH = $(BOOTSTRAP):$(SELECT2):$(FONT_AWESOME):$(JQUERY_UI)
 LESSCFLAGS = --include-path=$(LESS_LOAD_PATH)
 
 sources = $(INPUT_PATH)/galaxy.less
