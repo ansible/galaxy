@@ -142,12 +142,7 @@ def explore(request):
     context = build_standard_context(request)
     context["ng_app"] = "mainApp"
     context["extra_js"] = [
-      '/static/js/apps/main_app.js',
-      '/static/js/controllers/main.js',
-      '/static/js/services/roles.js',
-      '/static/js/services/categories.js',
-      '/static/js/services/users.js',
-      '/static/js/lib/utilities.js',
+      '/static/js/main.js'
     ]
     return render_to_response('explore.html', context)
 
@@ -169,19 +164,7 @@ def list_category(request, category=None, page=1):
     context["extra_css"] = [
     ]
     context["extra_js"] = [
-      '/static/js/angular-slider.min.js',
-      '/static/js/apps/list_app.js',
-      '/static/js/controllers/list.js',
-      '/static/js/services/categories.js',
-      '/static/js/services/me.js',
-      '/static/js/services/ratings.js',
-      '/static/js/services/roles.js',
-      '/static/js/services/storage.js',
-      '/static/js/services/users.js',
-      '/static/js/lib/utilities.js',
-      '/static/js/lib/search.js',
-      '/static/js/services/related.js',
-      '/static/js/lib/paginate.js',
+        '/static/js/list.js'
     ]
     return render_to_response('list_category.html', context)
 
@@ -268,12 +251,7 @@ def accounts_profile(request):
     context["extra_css"] = [
     ]
     context["extra_js"] = [
-      '/static/js/services/me.js',
-      '/static/js/services/storage.js',
-      '/static/js/services/related.js',
-      '/static/js/lib/utilities.js',
-      '/static/js/controllers/accounts.js',
-      '/static/js/apps/accounts_app.js',
+        '/static/js/accounts.js'
     ]
 
     if request.session.has_key("transient"):

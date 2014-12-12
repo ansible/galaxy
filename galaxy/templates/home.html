@@ -116,39 +116,6 @@
     </div><!-- container -->
 </div><!-- banner -->
 
-<script>
-    $(document).ready(function() {
-        // user clicks back button
-        $('.back-btn-link').click(function(e) {
-            var target = $(this).attr('data-target');
-            var parent = $(this).parent().parent(); 
-            parent.hide(); 
-            $('#' + target).show('slide', {direction: 'up'}, 500);
-            e.preventDefault();
-            });
-        // user clicks signup button
-        $('#sign-up-btn').click(function(e) {
-            $('#signin-home').hide();
-            $('#signup-instructions').show('slide', { direction: 'up' }, 500);
-            e.preventDefault();
-            });
-        $('#create-account-link').click(function(e) {
-            $('#signup-instructions').hide();
-            $('#create-account-form').show('slide', { direction: 'up' }, 500, function() {
-                $('#username').focus();
-                });
-            e.preventDefault();
-            });
-        $('#sign-in-btn').click(function(e) {
-            $('#signin-home').hide();
-            $('#login-page').show('slide', { direction: 'up' }, 500, function() {
-                $('#login').focus();
-                });
-            e.preventDefault();
-            });
-        });
-</script>
-
 <div class="info-row">
     <div class="container">
         <div class="row body">
@@ -198,6 +165,40 @@
 </div>
 
 <div ng-view></div>
+{% endblock %}
 
+{% block document_ready %}
+<script>
+    $(document).ready(function() {
+        // user clicks back button
+        $('.back-btn-link').click(function(e) {
+            var target = $(this).attr('data-target');
+            var parent = $(this).parent().parent(); 
+            parent.hide(); 
+            $('#' + target).show('slide', {direction: 'up'}, 500);
+            e.preventDefault();
+            });
+        // user clicks signup button
+        $('#sign-up-btn').click(function(e) {
+            $('#signin-home').hide();
+            $('#signup-instructions').show('slide', { direction: 'up' }, 500);
+            e.preventDefault();
+            });
+        $('#create-account-link').click(function(e) {
+            $('#signup-instructions').hide();
+            $('#create-account-form').show('slide', { direction: 'up' }, 500, function() {
+                $('#username').focus();
+                });
+            e.preventDefault();
+            });
+        $('#sign-in-btn').click(function(e) {
+            $('#signin-home').hide();
+            $('#login-page').show('slide', { direction: 'up' }, 500, function() {
+                $('#login').focus();
+                });
+            e.preventDefault();
+            });
+        });
+</script>
 {% endblock %}
 

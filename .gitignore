@@ -12,3 +12,4 @@ package.json
 bower.json
 bower_components
 node_modules
+tmp

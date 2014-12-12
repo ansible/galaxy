@@ -20,10 +20,13 @@
   <!-- <button class="btn btn-primary" type="submit">{% trans 'Sign Out' %}</button> -->
 </form>
 
+{% endblock %}
+
+{% block document_ready %}
 <script>
     $(document).ready(function() {
         $("#logout-form").submit();     
     });
 </script>
-
 {% endblock %}
+

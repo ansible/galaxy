@@ -74,6 +74,7 @@ $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA): $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RET
 showcase: $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT) $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)
 
 include ./galaxy/less/Makefile
+include ./galaxy/js/Makefile
 # Remove temporary build files, compiled Python files.
 clean:
 	rm $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)
