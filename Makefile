@@ -10,6 +10,9 @@ GIT_REMOTE_URL = https://github.com/ansible/galaxy
 VERSION=$(shell $(PYTHON) -c "from galaxy import __version__; print(__version__.split('-')[0])")
 RELEASE=$(shell $(PYTHON) -c "from galaxy import __version__; print(__version__.split('-')[1])")
 
+PACKAGE_JSON = ./packaging/assets/package.template
+BOWER_JSON = ./packaging/assets/bower.template
+
 SRC = ./galaxy
 DIST = $(SRC)/static
 STATIC_WEB_ROOT = /static
@@ -51,26 +54,29 @@ $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG): $(SHOWCASE).js.template
 	sed -e 's#%DEST_IMAGE%#$(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT)#;s#%DEST_CSS%#$(LESS)/showcase-homepage-2x.less#;s#%SRC%#$(SHOWCASE_HOMEPAGE_SPRITE_INPUT)#;s#%IMG_PATH%#$(STATIC_IMG_ROOT)/$(SHOWCASE_HOMEPAGE_SPRITE_FILENAME)#' $(SHOWCASE).js.template > $@
 
 $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RETINA): $(SHOWCASE).js.template
-	sed -e 's#%DEST_IMAGE%#$(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)#;s#%DEST_CSS%#$(LESS)/showcase-homepage-2x.less#;s#%SRC%#$(SHOWCASE_HOMEPAGE_SPRITE_INPUT_RETINA)#;s#%IMG_PATH%#$(STATIC_IMG_ROOT)/$(SHOWCASE_HOMEPAGE_SPRITE_FILENAME_RETINA)#' $(SHOWCASE).js.template > $@
+	sed -e 's#%DEST_IMAGE%#$(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)#;s#%DEST_CSS%#$(LESS)/showcase-homepage-2x.less#;s#%SRC%#$(SHOWCASE_HOMEPAGE_SPRITE_INPUT_RETINA)#;s#%IMG_PATH%#$(STATIC_IMG_ROOT)/$(SHOWCASE_HOMEPAGE_SPRITE_FILENAME_RETINA)#' $^ > $@
 
 $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT): $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG)
-	./node_modules/.bin/spritesmith --rc $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG)
+	./node_modules/.bin/spritesmith --rc $^
 
 $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA): $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RETINA)
-	./node_modules/.bin/spritesmith --rc $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RETINA)
+	./node_modules/.bin/spritesmith --rc $^
+
+.DELETE_ON_ERROR:
 
 .PHONY: clean rebase push requirements requirements_pypi develop refresh \
 	adduser syncdb migrate dbchange dbshell runserver celeryd test \
 	test_coverage coverage_html test_ui test_jenkins dev_build \
 	release_build release_clean sdist rpm showcase
 
+.INTERMEDIATE: $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG) $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RETINA)
+
 showcase: $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT) $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)
 
+include ./galaxy/less/Makefile
 # Remove temporary build files, compiled Python files.
 clean:
-	rm $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RETINA)
 	rm $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)
-	rm $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG)
 	rm $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT)
 	rm -rf dist/*
 	rm -rf build rpm-build *.egg-info
@@ -118,8 +124,14 @@ develop:
 # Refresh development environment after pulling new code.
 refresh: clean requirements develop migrate
 
-package.json:
-	sed -e 's#%NAME%#$(NAME)#;s#%VERSION%#$(VERSION)#;s#%GIT_REMOTE_URL%#$(GIT_REMOTE_URL)#;' packaging/assets/package.template > $@
+package.json: $(PACKAGE_JSON)
+	sed -e 's#%NAME%#$(NAME)#;s#%VERSION%#$(VERSION)#;s#%GIT_REMOTE_URL%#$(GIT_REMOTE_URL)#;' $^ > $@
+
+bower.json: $(BOWER_JSON)
+	sed -e 's#%NAME%#$(NAME)#;' $^ > $@
+
+bower_components: bower.json
+	bower install
 
 # Update local npm install
 node_modules: package.json
@@ -162,7 +174,7 @@ server: server_noattach
 
 # Run the built-in development webserver (by default on http://localhost:8013).
 runserver:
-	$(PYTHON) manage.py runserver
+	$(PYTHON) manage.py runserver 0.0.0.0:8000
 
 # Run to start the background celery worker for development.
 celeryd:

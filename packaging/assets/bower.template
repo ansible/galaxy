@@ -1,0 +1,15 @@
+{
+  "name": "#NAME#",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.0.3",
+    "components-font-awesome": "~4.0.3",
+    "select2": "~3.5.1"
+  }
+}
+

@@ -9,4 +9,6 @@ nohup.out
 .vagrant
 /Vagrantfile
 package.json
+bower.json
+bower_components
 node_modules
