@@ -38,13 +38,23 @@
 
 }
 
+.hero__search {
+  margin: 0 auto;
+  margin-top: 3em;
+  text-align: center;
+  width: 90%;
+  @media screen and (min-width: @screen-lap) {
+    margin-top: 4.5em;
+  }
+}
+
 .tagline {
   font-size: 1em;
   color: white;
-  @media screen and (min-width: 390px) and (max-width: 760px) {
+  @media screen and (min-width: 390px) and (max-width: @screen-lap) {
     font-size: 1.4em;
   }
-  @media screen and (min-width: 760px) {
+  @media screen and (min-width: @screen-lap) {
     font-size: 2em;
   }
 }

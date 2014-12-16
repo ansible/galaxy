@@ -58,6 +58,33 @@ Maecenas sed diam eget risus varius blandit sit amet non magna. Donec id elit no
     <div class="hero__title grid__item e-8 e-4--palm">
       <img class="title" src="/static/img2014/galaxy-title.svg">
     </div>
+
+    <div class="hero__search">
+      <div class="search">
+        <input type="search" placeholder="nginx, postgresql, redis, etc...">
+        <button class="button-pseudo search__button">
+          <svg class="icon--search">
+            <use xlink:href="#icon-search">
+          </svg>
+        </button>
+      </div>
+    </div>
   </header>
 </div>
+
+<h3>Search</h3>
+
+<div class="example">
+  <div class="search">
+    <form action="" type="get">
+      <input type="search" name="q" placeholder="nginx, postgresql, redis, etc...">
+      <button class="button-pseudo search__button">
+        <svg class="icon--search">
+          <use xlink:href="#icon-search">
+        </svg>
+      </button>
+    </form>
+  </div>
+</div>
+
 {% endblock %}

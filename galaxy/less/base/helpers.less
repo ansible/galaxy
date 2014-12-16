@@ -41,3 +41,27 @@
     background-size: 100%;
   }
 }
+
+.placeholder-custom(@rules) {
+  ::-webkit-input-placeholder {
+    @rules();
+  }
+
+  :-moz-placeholder { /* Firefox 18- */
+    @rules();
+  }
+
+  ::-moz-placeholder {  /* Firefox 19+ */
+    @rules();
+  }
+
+  :-ms-input-placeholder {
+    @rules();
+  }
+}
+
+.bigger-screens(@rules) {
+  @media screen and (min-width: @screen-lap) {
+    @rules();
+  }
+}
