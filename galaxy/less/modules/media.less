@@ -1,0 +1,57 @@
+// Media object
+// -------------------------
+// Ported from @stubbornella
+
+.media,
+.media__body {
+  overflow: hidden;
+}
+
+.media__obj {
+  float: left;
+  margin-right: @condensed-whitespace;
+  display: block;
+}
+
+.media__obj--rev {
+  float: right;
+  margin-left: @condensed-whitespace;
+  display: block;
+}
+
+.media__heading {
+  margin-top: 0 0 (@condensed-whitespace / 2) 0;
+}
+
+
+// Flexible media styles
+// ---------------------
+
+.flex-container {
+  position: relative;
+  padding: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.flex__item,
+iframe,   
+object,  
+embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+// Added these based on @necolas FlexEmbed
+
+.flex-container--16x9 {
+  padding-bottom: 56.25%;
+}
+
+.flex-container--4x3 {
+  padding-bottom: 75%;
+}
+

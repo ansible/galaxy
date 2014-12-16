@@ -1,0 +1,63 @@
+{% extends 'refresh2014/master.html' %}
+
+{%block title %}Sytle Guide{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/style-guide.css">
+{% endblock %}
+
+{% block main_container %}
+<h1>Style Guide</h1>
+
+<h2>Body Copy</h2>
+
+<div class="example">
+Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.
+
+Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec ullamcorper nulla non metus auctor fringilla.
+
+Maecenas sed diam eget risus varius blandit sit amet non magna. Donec id elit non mi porta gravida at eget metus. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.
+</div>
+
+<blockquote>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+<footer>Someone famous in <cite title="Source Title">Source Title</cite></footer>
+</blockquote>
+
+<h2>Typography</h2>
+
+<div class="example">
+  <table>
+    <tr>
+      <td><h1>h1. Primary Heading</h1></td>
+    </tr>
+    <tr>
+      <td><h2>h2. Secondary Heading</h2></td>
+    </tr>
+    <tr>
+      <td><h3>h3. Tertiary Heading</h3></td>
+    </tr>
+    <tr>
+      <td><h4>h4. Quaternary Heading</h4></td>
+    </tr>
+    <tr>
+      <td><h5>h5. Quinary Heading</h5></td>
+    </tr>
+  </table>
+</div>
+
+<h2>Modules</h2>
+
+<h3>Home Page Heading</h3>
+
+<div class="example">
+  <header class="hero grid grid--center grid--middle">
+    <div class="hero__tagline grid__item e-6--palm e-12 grid--center grid--center--palm">
+      <h1 class="tagline">Find, reuse and share the best Ansible content</h1>
+    </div>
+    <div class="hero__title grid__item e-8 e-4--palm">
+      <img class="title" src="/static/img2014/galaxy-title.svg">
+    </div>
+  </header>
+</div>
+{% endblock %}

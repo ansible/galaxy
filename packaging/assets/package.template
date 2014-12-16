@@ -8,6 +8,7 @@
   "devDependencies": {
     "spritesmith-cli": "^1.0.6",
     "bower": "~1.3.12",
-    "less": "~2.1.0"
+    "less": "~2.1.0",
+    "fontfacegen": "^0.1.4"
   }
 }

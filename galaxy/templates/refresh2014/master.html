@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Ansible Galaxy | {% block title %}Find, reuse and share the best Ansible content{% endblock %}</title>
+        <meta name="description" content="Ansible Galaxy: Find, reuse and share the best Ansible content.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Ubuntu:400,700" type="text/css">
+        <link rel="stylesheet" href="/static/css/galaxy-refresh2014.css">
+        {% block extra_css %}{% endblock %}
+
+        <!--[if lt IE 9]>
+            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+            <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+        <![endif]-->
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="header-container">
+            <header class="wrapper clearfix">
+                <h1 class="title">h1.title</h1>
+                <nav>
+                    <ul>
+                        <li><a href="#">nav ul li a</a></li>
+                        <li><a href="#">nav ul li a</a></li>
+                        <li><a href="#">nav ul li a</a></li>
+                    </ul>
+                </nav>
+            </header>
+        </div>
+
+        <div class="l-container">
+          {% block main_container %}{% endblock %}
+        </div> <!-- #main-container -->
+
+        <div class="footer-container">
+            <footer class="wrapper">
+                <h3>footer</h3>
+            </footer>
+        </div>
+
+        <script src="/static/js/vendor.js"></script>
+
+        <script>
+          var _hsq = _hsq || [];
+          _hsq.push(["setContentType", "standard-page"]);
+            (function(d,s,i,r) {
+            if (d.getElementById(i)){return;}
+            var n = d.createElement(s),e = document.getElementsByTagName(s)[0];
+            n.id=i;n.src = '//js.hs-analytics.net/analytics/'+(Math.ceil(new Date()/r)*r)+'/330046.js';
+            e.parentNode.insertBefore(n, e);
+            })(document, "script", "hs-analytics",300000);
+        </script>
+    </body>
+</html>

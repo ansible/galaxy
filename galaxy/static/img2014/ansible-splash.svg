@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="502px" height="477px" viewBox="0 0 502 477" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.1 (9971) - http://www.bohemiancoding.com/sketch -->
+    <title>ansible-splash</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Galaxy-Homepage-Redesign" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Spacey-Round-3" sketch:type="MSArtboardGroup" transform="translate(0.000000, -2431.000000)" fill="#FF726B">
+            <g id="Footer" sketch:type="MSLayerGroup" transform="translate(0.000000, 2431.000000)">
+                <path d="M177.984992,67.0767131 L336.124595,465.261667 L97.2836758,273.320563 L177.984992,67.0767131 Z M215.698213,-40.2446488 C208.752724,-57.4558126 194.854638,-66.5654721 177.984992,-66.5654721 C161.115346,-66.5654721 146.229109,-57.4558126 139.29073,-40.2446488 L-127.687593,614.853009 L-36.3796561,614.853009 L69.3239968,344.769014 L384.700361,604.727942 C397.3757,615.179391 406.524977,619.915543 418.453871,619.915543 C442.254788,619.915543 463.091253,601.696224 463.091253,575.375401 C463.091253,571.110688 461.598364,564.314708 458.932491,557.011024 L215.698213,-40.2446488 Z" id="ansible-splash" sketch:type="MSShapeGroup" transform="translate(167.701830, 276.675036) rotate(-12.000000) translate(-167.701830, -276.675036) "></path>
+            </g>
+        </g>
+    </g>
+</svg>

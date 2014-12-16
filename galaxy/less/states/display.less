@@ -1,0 +1,24 @@
+// States
+// Borrowed from Nicolas Gallagher's SUIT
+// Hide from browsers and screen readers
+.is-hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
+// Hide from browsers, but let screenreaders access
+.is-hidden-visually {
+  position: absolute !important;
+  padding: 0;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  clip: rect(1px, 1px, 1px, 1px);
+  border: 0;
+}
+// Hide from browsers but don't remove from flow
+.is-invisible {
+  visibility: hidden;
+}
+.is-visible {
+  visibility: visible;
+}

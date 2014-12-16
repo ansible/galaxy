@@ -138,6 +138,10 @@ def home(request):
     context = build_standard_context(request)
     return render_to_response('home.html', context)
 
+def styles(request):
+    context = build_standard_context(request)
+    return render_to_response('styles.html', context)
+
 def explore(request):
     context = build_standard_context(request)
     context["ng_app"] = "mainApp"

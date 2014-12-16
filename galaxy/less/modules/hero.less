@@ -1,0 +1,56 @@
+.hero {
+  .background-image('/static/img2014/spacey-bg-small.jpg');
+  background-color: #02040A;
+  background-size: 744px auto;
+  background-position: top center;
+  background-repeat: no-repeat;
+  text-align: center;
+  overflow: hidden;
+  padding: 1em 0;
+  @media screen and (min-width: 760px) {
+    .background-image('/static/img2014/spacey-bg.jpg');
+    backgroud-size: 100% auto;
+  }
+}
+
+.hero__tagline {
+  background-image: radial-gradient(62% 50%, rgba(3,1,10,0.29) 37%, rgba(0,0,0,0.00) 71%);
+  @media screen and (min-width: 760px) {
+    margin-top: 2.5em;
+  }
+}
+
+.hero__title {
+  // background-image: radial-gradient(50% 41%,  rgba(255,255,255,0.67) 37%,  rgba(255,255,255,0.00) 92%);
+  background: rgba(255,255,255,0.45);
+  padding: 1.6em 0 0.9em;
+  width: 100%;
+  text-align: center;
+  margin-top: 1.5em;
+  border: solid thin white;
+  border-left: none;
+  border-right: none;
+  // padding: 1.5em;
+  @media screen and (min-width: 760px) {
+    margin-top: 2em;
+    // padding: 2em;
+  }
+
+}
+
+.tagline {
+  font-size: 1em;
+  color: white;
+  @media screen and (min-width: 390px) and (max-width: 760px) {
+    font-size: 1.4em;
+  }
+  @media screen and (min-width: 760px) {
+    font-size: 2em;
+  }
+}
+
+.title {
+  .e-4--palm();
+  max-width: 328px;
+  height: auto;
+}

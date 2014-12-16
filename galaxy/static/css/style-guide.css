@@ -1,0 +1,15 @@
+.example {
+  border: solid thin #aaa;
+  position: relative;
+  padding: 45px 45px 15px;
+}
+.example:after {
+  display: block;
+  position: absolute;
+  content: "Example";
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #959595;
+  top: 15px;
+  left: 15px;
+}

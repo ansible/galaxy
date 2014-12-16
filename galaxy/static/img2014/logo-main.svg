@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="63px" height="61px" viewBox="0 0 63 61" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.1 (9971) - http://www.bohemiancoding.com/sketch -->
+    <title>logo-main</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Galaxy-Homepage-Redesign" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Spacey-Round-3" sketch:type="MSArtboardGroup" transform="translate(-21.000000, -28.000000)">
+            <g id="logo-main" sketch:type="MSLayerGroup" transform="translate(21.000000, 28.000000)">
+                <path d="M62.7943242,30.4849283 C62.7943242,47.2701001 48.7513621,60.8752891 31.4271238,60.8752891 C14.1047195,60.8752891 0.0605902336,47.2701001 0.0605902336,30.4849283 C0.0605902336,13.7016951 14.1047195,0.0944059898 31.4271238,0.0944059898 C48.7513621,0.0944059898 62.7943242,13.7016951 62.7943242,30.4849283" id="Fill-1" fill="#69C1B9" sketch:type="MSShapeGroup"></path>
+                <path d="M31.9550124,18.6595765 L40.0723364,38.0696677 L27.8120677,28.7125867 L31.9550124,18.6595765 Z M46.375288,42.5411903 L33.8895982,13.4284766 C33.5331263,12.5886123 32.8200156,12.1443678 31.9550124,12.1443678 C31.0888422,12.1443678 30.323878,12.5886123 29.9679062,13.4284766 L16.264076,45.3619004 L20.9517326,45.3619004 L26.3768428,32.1956249 L42.565306,44.8672544 C43.2165594,45.3775701 43.686242,45.6079311 44.2973131,45.6079311 C45.5199553,45.6079311 46.588871,44.7194421 46.588871,43.4371103 C46.588871,43.2288808 46.5128415,42.8972321 46.375288,42.5411903 L46.375288,42.5411903 Z" id="Fill-3" fill="#FFFFFF" sketch:type="MSShapeGroup"></path>
+            </g>
+        </g>
+    </g>
+</svg>

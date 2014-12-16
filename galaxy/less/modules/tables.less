@@ -1,0 +1,63 @@
+// TABLE STYLES
+// ------------
+
+.table {
+  margin-bottom: @default-whitespace;
+  width: 100%;
+
+  thead {
+    border-bottom: 1px solid @default-border-color;
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid @default-border-color;
+    }
+  }
+
+  th,
+  td {
+    padding: 10px;
+  }
+
+  th {
+    text-align: left;
+    font-weight: bold;
+  }
+
+  .table--striped {
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background-color: #f3f3f3;
+        }
+      }
+    }
+  }
+
+  &:hover {
+    tbody {
+      tr {
+        &:hover {
+          background-color: #eee;
+        }
+      }
+    }
+  }
+}
+
+// Responsive tables
+
+.table-wrapper {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: @condensed-whitespace;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scrollable {
+  overflow: auto;
+  overflow-y: hidden;
+}
+

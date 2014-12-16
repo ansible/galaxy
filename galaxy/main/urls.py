@@ -20,6 +20,7 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('galaxy.main.views',
     # Non-secure URLs
     url(r'^$', 'home', name='home'),
+    url(r'^styles$', 'styles', name='styles'),
     url(r'^explore$', 'explore', name='explore'),
     url(r'^intro$', 'intro', name='intro'),
     url(r'^accounts/landing[/]?$', 'accounts_landing', name='accounts-landing'),

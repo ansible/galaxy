@@ -1,0 +1,33 @@
+// BASE STYLES
+// -----------------------------
+// For styling elements directly
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+body {
+  font-family: @sans-serif-font;
+  line-height: @default-leading;
+  color: @default-text-color;
+}
+a {
+  color: @link-color;
+  &:hover,
+  &:focus {
+    color: darken(@link-color, 10%);
+  }
+}
+// Base table styles
+table {
+  max-width: 100%;
+  background-color: transparent;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+// Responsive media
+img,
+object,
+embed {
+  max-width: 100%;
+}
