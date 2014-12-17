@@ -13,7 +13,7 @@ space = $(eval) $(eval)
 LESS_LOAD_PATH = $(addprefix $(BOWER_COMPONENTS)/,$(VENDOR))
 LESSCFLAGS = --include-path=$(subst $(space),:,$(LESS_LOAD_PATH))
 
-$(OUTPUT_PATH)/%.css: $(INPUT_PATH)/**/*.less
+$(OUTPUT_PATH)/%.css: $(INPUT_PATH)/*.less $(INPUT_PATH)/**/*.less
 	$(LESSC) $(LESSCFLAGS) $(INPUT_PATH)/$*.less $@
 
 css: $(addprefix $(OUTPUT_PATH)/,$(OUTPUT))

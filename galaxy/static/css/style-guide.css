@@ -13,3 +13,22 @@
   top: 15px;
   left: 15px;
 }
+.example-padded {
+  padding: 1em;
+}
+.example-padded--dark {
+  background-color: black;
+}
+.example__logo--small {
+  width: 179px;
+  height: 61px;
+}
+.example + h2 {
+  margin-top: 2em;
+}
+.example + h3 {
+  margin-top: 2em;
+}
+.example + h4 {
+  margin-top: 1em;
+}

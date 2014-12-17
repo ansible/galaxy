@@ -16,7 +16,7 @@
             <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
         <![endif]-->
     </head>
-    <body>
+    <body ontouchstart="">
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -56,6 +56,13 @@
         </div>
 
         <script src="/static/js/vendor.js"></script>
+
+        <script>
+          $(".nav-bar__menu-button").on("click", function(e) {
+            e.preventDefault();
+            $('.nav-bar--menu').toggleClass('nav-bar--menu--active');
+          });
+        </script>
 
         <script>
           var _hsq = _hsq || [];

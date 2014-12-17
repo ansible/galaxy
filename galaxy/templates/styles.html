@@ -19,10 +19,14 @@ Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus
 Maecenas sed diam eget risus varius blandit sit amet non magna. Donec id elit non mi porta gravida at eget metus. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.
 </div>
 
+<h2>Block Quote</h3>
+
+<div class="example">
 <blockquote>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
 <footer>Someone famous in <cite title="Source Title">Source Title</cite></footer>
 </blockquote>
+</div>
 
 <h2>Typography</h2>
 
@@ -94,16 +98,61 @@ Maecenas sed diam eget risus varius blandit sit amet non magna. Donec id elit no
 <h3>Search</h3>
 
 <div class="example">
-  <div class="search">
-    <form action="" type="get">
-      <input type="search" name="q" placeholder="nginx, postgresql, redis, etc...">
-      <button class="button-pseudo search__button">
-        <svg class="icon--search">
-          <use xlink:href="#icon-search">
-        </svg>
-      </button>
-    </form>
+  {% include "partials/search.html" %}
+</div>
+
+<h3>Main Logo</h3>
+
+<h4>Small</h4>
+<div class="example">
+  <div class="example__logo--small">
+    {% include "svg/main-logo.svg" %}
   </div>
+</div>
+
+<h4>Light on Dark</h4>
+
+<div class="example example--dark">
+  <div class="example-padded example-padded--dark">
+    <div class="example__logo--small main-logo--light">
+      {% include "svg/main-logo.svg" %}
+    </div>
+  </div>
+</div>
+
+
+<h3>Navigation Bar</h3>
+
+<div class="example">
+  <nav class="nav-bar nav-bar--dark nav-bar--mobile">
+    <a href="#" class="nav-bar__menu-button">
+      {% include "svg/icon-wimpy.svg" %}
+    </a>
+  </nav>
+  <nav class="nav-bar nav-bar--dark nav-bar--menu">
+    <div class="nav-bar__logo-wrapper">
+      <a href="/" class="nav-bar__main-logo main-logo--light">
+        {% include "svg/main-logo.svg" %}
+        {# For homepage variant: #}
+        {# include "svg/main-logo.svg" with view_box="0 0 113 115" #}
+      </a>
+    </div>
+    <div class="nav-bar__links">
+      <div class="nav-bar__search">
+        {% include "partials/search.html" %}
+      </div>
+      <a href="#" class="nav-bar__link">
+        Link
+      </a>
+      <a href="#" class="nav-bar__link">
+        Link
+      </a>
+      <a href="#" class="nav-bar__link">
+        Link
+      </a>
+    </div>
+
+  </nav>
 </div>
 
 {% endblock %}
