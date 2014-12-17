@@ -1417,6 +1417,49 @@ embed {
     background-size: 100%;
   }
 }
+.hero__actions {
+  margin-top: 2.2em;
+  color: white;
+  background: rgba(0, 0, 0, 0.45);
+  border: solid 1px #333;
+  border-left: none;
+  border-right: none;
+}
+@media screen and (min-width: 768px) {
+  .hero__actions {
+    border: none;
+    background: none;
+  }
+}
+.action p,
+.action--copy p {
+  font-size: 1.5em;
+}
+@media screen and (min-width: 768px) {
+  .action p,
+  .action--copy p {
+    font-size: 1em;
+  }
+}
+@media screen and (min-width: 768px) {
+  .action,
+  .action--copy {
+    padding: 1em 0;
+  }
+}
+.action--signup,
+.action--copy--signup {
+  margin-bottom: 3.5em;
+  text-align: center;
+}
+@media screen and (min-width: 768px) {
+  .action--signup,
+  .action--copy--signup {
+    border-right: solid thin white;
+    margin-bottom: 0;
+    padding: 1em 0;
+  }
+}
 .hero__tagline {
   background-image: radial-gradient(62% 50%, rgba(3, 1, 10, 0.29) 37%, rgba(0, 0, 0, 0) 71%);
 }
@@ -1473,6 +1516,61 @@ embed {
 .heading--light {
   color: white;
 }
+button,
+.button {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  display: inline-block;
+  position: relative;
+  margin: 0;
+  padding: 8px 12px;
+  cursor: pointer;
+  line-height: normal;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  color: #333333;
+  background: #ffffff;
+  border: 1px solid #111111;
+  border-radius: 3px;
+  -webkit-appearance: none;
+}
+button:hover,
+.button:hover,
+button:focus,
+.button:focus {
+  text-decoration: none;
+  color: #333333;
+  background-color: #e6e6e6;
+}
+button:disabled,
+.button:disabled,
+button.is-disabled,
+.button.is-disabled {
+  cursor: default;
+}
+button--full,
+.button--full {
+  display: block;
+  width: 100%;
+}
+.button--primary {
+  margin-top: 0;
+  font-family: Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.2;
+  text-transform: uppercase;
+  background-color: #ff5850;
+  border: none;
+  color: white;
+}
+.button--primary:hover,
+.button--primary:focus {
+  background-color: #ff271d;
+  color: white;
+}
 .button-pseudo {
   display: inline-block;
   padding: 8px 0;
@@ -1513,6 +1611,10 @@ embed {
   .search .search__button {
     top: -4px;
   }
+}
+.icon--arrow-r {
+  width: 16px;
+  height: 13px;
 }
 .icon--search {
   width: 19px;

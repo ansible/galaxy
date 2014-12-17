@@ -11,7 +11,47 @@
     .background-image('/static/img2014/spacey-bg.jpg');
     backgroud-size: 100% auto;
   }
+
+  &__actions {
+    margin-top: 2.2em;
+    color: white;
+    background: rgba(0,0,0,0.45);
+    border: solid 1px #333;
+    border-left: none;
+    border-right: none;
+    .bigger-screens({
+      border: none;
+      background: none;
+    });
+  }
 }
+
+.action {
+  // margin: 0 auto;
+  p {
+    font-size: 1.5em;
+    .bigger-screens({
+      font-size: 1em;
+    });
+  }
+  .bigger-screens({
+    padding: 1em 0;
+  });
+
+  &--copy:extend(.action all) {
+  }
+
+  &--signup {
+    margin-bottom: 3.5em;
+    text-align: center;
+    .bigger-screens({
+      border-right: solid thin white;
+      margin-bottom: 0;
+      padding: 1em 0;
+    });
+  }
+}
+
 
 .hero__tagline {
   background-image: radial-gradient(62% 50%, rgba(3,1,10,0.29) 37%, rgba(0,0,0,0.00) 71%);
