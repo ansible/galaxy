@@ -1,30 +1,59 @@
 {% extends 'refresh2014/master.html' %}
 
-<div class="main wrapper clearfix">
+{% block main_container %}
+<header class="hero grid--middle">
+  <nav class="nav-bar nav-bar--mobile nav-bar--mobile--desktop">
+    <a href="#" class="nav-bar__menu-button">
+      {% include "svg/icon-wimpy.svg" %}
+    </a>
+  </nav>
+  <nav class="nav-bar nav-bar--homepage nav-bar--menu">
+    <div class="nav-bar__logo-wrapper">
+      <a href="/" class="nav-bar__main-logo main-logo--light">
+        {# include "svg/main-logo.svg" #}
+        {# For homepage variant: #}
+        {% include "svg/main-logo.svg" with view_box="0 0 113 115" %}
+      </a>
+    </div>
+    <div class="nav-bar__links">
+      {% include "partials/nav-links.html" %}
+    </div>
+  </nav>
+  <div class="hero__tagline grid__item e-6--palm e-12 grid--center grid--center--palm">
+    <h1 class="tagline">Find, reuse and share the best Ansible content</h1>
+  </div>
+  <div class="hero__title grid__item e-8 e-4--palm">
+    <img class="title" src="/static/img2014/galaxy-title.svg">
+  </div>
 
-    <article>
-        <header>
-            <h1>article header h1</h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales urna non odio egestas tempor. Nunc vel vehicula ante. Etiam bibendum iaculis libero, eget molestie nisl pharetra in. In semper consequat est, eu porta velit mollis nec.</p>
-        </header>
-        <section>
-            <h2>article section h2</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales urna non odio egestas tempor. Nunc vel vehicula ante. Etiam bibendum iaculis libero, eget molestie nisl pharetra in. In semper consequat est, eu porta velit mollis nec. Curabitur posuere enim eget turpis feugiat tempor. Etiam ullamcorper lorem dapibus velit suscipit ultrices. Proin in est sed erat facilisis pharetra.</p>
-        </section>
-        <section>
-            <h2>article section h2</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales urna non odio egestas tempor. Nunc vel vehicula ante. Etiam bibendum iaculis libero, eget molestie nisl pharetra in. In semper consequat est, eu porta velit mollis nec. Curabitur posuere enim eget turpis feugiat tempor. Etiam ullamcorper lorem dapibus velit suscipit ultrices. Proin in est sed erat facilisis pharetra.</p>
-        </section>
-        <footer>
-            <h3>article footer h3</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales urna non odio egestas tempor. Nunc vel vehicula ante. Etiam bibendum iaculis libero, eget molestie nisl pharetra in. In semper consequat est, eu porta velit mollis nec. Curabitur posuere enim eget turpis feugiat tempor.</p>
-        </footer>
-    </article>
-
-    <aside>
-        <h3>aside</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales urna non odio egestas tempor. Nunc vel vehicula ante. Etiam bibendum iaculis libero, eget molestie nisl pharetra in. In semper consequat est, eu porta velit mollis nec. Curabitur posuere enim eget turpis feugiat tempor. Etiam ullamcorper lorem dapibus velit suscipit ultrices.</p>
-    </aside>
-
-</div> <!-- #main -->
-
+  <div class="hero__search">
+    <div class="search">
+      <input type="search" placeholder="nginx, postgresql, redis, etc...">
+      <button class="button-pseudo search__button">
+        <svg class="icon--search">
+          <use xlink:href="#icon-search">
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="hero__actions">
+    <div class="actions grid grid--middle">
+      <div class="action--copy grid__item grid--left grid--center--palm e-full--palm e-4 grid">
+        <p>Review roles and earn karma</p>
+        <p>Publish your own reusable roles</p>
+      </div>
+      <div class="grid__item e-4 action--signup">
+        <button class="button--primary">Sign Up</button>
+      </div>
+      <div class="action grid__item grid--center grid--center--palm e-full--palm e-8">
+        <button class="button--primary">
+          Roles Showcase
+          <svg class="icon--arrow-r">
+            <use xlink:href="#icon-arrow-r">
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+{% endblock %}

@@ -6,7 +6,7 @@
   background-repeat: no-repeat;
   text-align: center;
   overflow: hidden;
-  padding: 1em 0;
+  position: relative;
   @media screen and (min-width: 760px) {
     .background-image('/static/img2014/spacey-bg.jpg');
     backgroud-size: 100% auto;
@@ -83,6 +83,9 @@
   margin-top: 3em;
   text-align: center;
   width: 90%;
+  .bigger-screens({
+    width: 60%;
+  });
   @media screen and (min-width: @screen-lap) {
     margin-top: 4.5em;
   }

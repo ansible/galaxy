@@ -1,0 +1,34 @@
+<nav class="nav-bar nav-bar--dark nav-bar--mobile">
+  <a href="#" class="nav-bar__menu-button">
+    {% include "svg/icon-wimpy.svg" %}
+  </a>
+</nav>
+<nav class="nav-bar nav-bar--menu">
+  <div class="nav-bar__logo-wrapper">
+    <a href="/" class="nav-bar__main-logo main-logo--light">
+      {% if short_logo|default:no %}
+      {% include "svg/main-logo.svg" with view_box="0 0 113 115" %}
+      {% else %}
+      {% include "svg/main-logo.svg" %}
+      {% endif %}
+    </a>
+  </div>
+  <div class="nav-bar__links">
+    {% if search|default:yes %}
+    <div class="nav-bar__search">
+      {% include "partials/search.html" %}
+    </div>
+    {% endif %}
+    <a href="#" class="nav-bar__link">
+      Link
+    </a>
+    <a href="#" class="nav-bar__link">
+      Link
+    </a>
+    <a href="#" class="nav-bar__link">
+      Link
+    </a>
+  </div>
+
+</nav>
+
