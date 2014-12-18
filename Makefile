@@ -65,7 +65,7 @@ $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA): $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RET
 .PHONY: clean rebase push requirements requirements_pypi develop refresh \
 	adduser syncdb migrate dbchange dbshell runserver celeryd test \
 	test_coverage coverage_html test_ui test_jenkins dev_build \
-	release_build release_clean sdist rpm showcase
+	release_build release_clean sdist rpm showcase static
 
 .INTERMEDIATE: $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG) $(SHOWCASE_HOMEPAGE_SPRITE_CONFIG_RETINA)
 
@@ -73,6 +73,8 @@ showcase: $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT) $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_R
 
 include ./galaxy/less/Makefile
 include ./galaxy/js/Makefile
+
+static: js css
 # Remove temporary build files, compiled Python files.
 clean:
 	rm $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)
