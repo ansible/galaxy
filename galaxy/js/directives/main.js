@@ -23,9 +23,18 @@
 
 var mainDirectives = angular.module('mainDirectives', []);
 
-mainDirectives.directive('showcase', [function() {
+mainDirectives.directive('showcase', function() {
     return {
         restrict: 'E',
-        templateUrl: '/static/partials/showcase-homepage.html'
+        templateUrl: '/static/partials/showcase-homepage.html',
+        transclude: true,
+        scope: {},
+        // controller: function($scope) {
+        //     console.log('loading roles into: ', $scope);
+        //     $scope.roles = showcaseFactory.getRoles();
+        // },
+        // link: function() {
+        //     console.log('linked');
+        // }
     };
-}]);
+});

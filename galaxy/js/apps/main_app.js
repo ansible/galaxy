@@ -26,9 +26,11 @@ var mainApp = angular.module('mainApp', [
   'ngSanitize',
   'ngCookies',
   'mainControllers',
+  'mainDirectives',
   'categoryServices',
   'roleServices',
   'userServices',
+  'showcaseServices',
 ]);
 
 mainApp.config(['$routeProvider',

@@ -16,7 +16,7 @@
             <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
         <![endif]-->
     </head>
-    <body ontouchstart="">
+    <body ng-app="mainApp" ontouchstart="">
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -45,6 +45,7 @@
         </div>
 
         <script src="/static/js/vendor.js"></script>
+        {% block extra_js %}{% endblock %}
 
         <script>
           $(".nav-bar__menu-button").on("click", function(e) {

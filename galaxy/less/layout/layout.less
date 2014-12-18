@@ -19,5 +19,8 @@
   float: right;
 }
 .l-wide-container {
-  overflow-x: scroll;
+  padding: 1em 0;
+  @media screen and (max-width: @l-max-width) {
+    overflow-x: scroll;
+  }
 }

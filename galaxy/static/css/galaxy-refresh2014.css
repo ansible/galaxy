@@ -1223,14 +1223,15 @@ body {
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.6;
   color: #333333;
+  background-color: #FAF7F7;
 }
 a {
-  color: #3476af;
+  color: #6ab1c8;
   text-decoration: none;
 }
 a:hover,
 a:focus {
-  color: #285b88;
+  color: #459dba;
   text-decoration: underline;
 }
 table {
@@ -1281,6 +1282,7 @@ h4 {
   margin-top: 0;
   font-family: Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.2;
+  font-weight: 200;
   font-size: 1.5em;
 }
 h5 {
@@ -1301,9 +1303,17 @@ h5 {
 .txt-justify {
   text-align: justify;
 }
+hr {
+  background-color: #ff5850;
+  border: none;
+  height: 2px;
+  margin: 2em auto;
+  width: 60%;
+  text-align: center;
+}
 .l-container {
   margin: 0 auto;
-  max-width: 60em;
+  max-width: 64em;
   width: 90%;
 }
 .l-section {
@@ -1316,7 +1326,16 @@ h5 {
   float: right;
 }
 .l-wide-container {
-  overflow-x: scroll;
+  padding: 1em 0;
+}
+@media screen and (max-width: 64em) {
+  .l-wide-container {
+    overflow-x: scroll;
+  }
+}
+.wrapper--homepage {
+  text-align: center;
+  padding: 1em;
 }
 .media,
 .media__body {
@@ -1393,7 +1412,6 @@ embed {
   overflow-y: hidden;
 }
 .hero {
-  background-image: '/static/img2014/spacey-bg-small.jpg';
   background-image: url(/static/img2014/spacey-bg-small.jpg);
   background-color: #02040A;
   background-size: 744px auto;
@@ -1403,23 +1421,20 @@ embed {
   overflow: hidden;
   position: relative;
 }
-@media (-webkit-min-device-pixel-ratio: 2) {
+@media (-webkit-min-device-pixel-ratio: 2), (-moz-min-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2/1), (min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 2dppx) {
   .hero {
     background-image: url(/static/img2014/spacey-bg-small-2x.jpg);
-    background-size: 100%;
   }
 }
-@media screen and (min-width: 760px) {
+@media screen and (min-width: 768px) {
   .hero {
-    background-image: '/static/img2014/spacey-bg.jpg';
+    background-size: 100% auto;
     background-image: url(/static/img2014/spacey-bg.jpg);
-    backgroud-size: 100% auto;
   }
 }
-@media screen and (min-width: 760px) and (-webkit-min-device-pixel-ratio: 2) {
+@media screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), screen and (min-width: 768px) and (-moz-min-device-pixel-ratio: 2), screen and (min-width: 768px) and (-o-min-device-pixel-ratio: 2/1), screen and (min-width: 768px) and (min-device-pixel-ratio: 2), screen and (min-width: 768px) and (min-resolution: 192dpi), screen and (min-width: 768px) and (min-resolution: 2dppx) {
   .hero {
     background-image: url(/static/img2014/spacey-bg-2x.jpg);
-    background-size: 100%;
   }
 }
 .hero__actions {
@@ -1466,9 +1481,11 @@ embed {
   }
 }
 .hero__tagline {
+  max-width: 400px;
+  margin: 0 auto;
   background-image: radial-gradient(62% 50%, rgba(3, 1, 10, 0.29) 37%, rgba(0, 0, 0, 0) 71%);
 }
-@media screen and (min-width: 760px) {
+@media screen and (min-width: 768px) {
   .hero__tagline {
     margin-top: 2.5em;
   }
@@ -1507,6 +1524,7 @@ embed {
 .tagline {
   font-size: 1em;
   color: white;
+  text-align: center;
 }
 @media screen and (min-width: 390px) and (max-width: 768px) {
   .tagline {
@@ -1699,6 +1717,7 @@ lesshat-selector {
   .nav-bar--menu {
     position: static;
     height: 77px;
+    overflow-y: visible;
     -webkit-transform: inherit;
     -moz-transform: inherit;
     -o-transform: inherit;
@@ -1878,6 +1897,565 @@ lesshat-selector {
 }
 .nav-bar .main-logo:hover .main-logo__background-circle {
   fill: #ff5850;
+}
+/*
+LESS variables are information about icon's compiled state, stored under its original file name
+
+.icon-home {
+  width: @icon-home-width;
+}
+
+The large array-like variables contain all information about a single icon
+@icon-home: x y offset_x offset_y width height total_width total_height image_path;
+*/
+.showcase__arista--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -284px -171px;
+  width: 179px;
+  height: 29px;
+  top: 417px;
+  left: 578px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__arista--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__cumulus--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -130px -204px;
+  width: 167px;
+  height: 167px;
+  top: 327px;
+  left: 826px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__cumulus--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__django--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -297px -204px;
+  width: 178px;
+  height: 63px;
+  top: 496px;
+  left: 513px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__django--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__docker--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -284px 0px;
+  width: 204px;
+  height: 171px;
+  top: 436px;
+  left: 13px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__docker--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__elk-stack--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: 0px 0px;
+  width: 177px;
+  height: 204px;
+  top: 0px;
+  left: 269px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__elk-stack--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__hadoop--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -386px -371px;
+  width: 318px;
+  height: 76px;
+  top: 722px;
+  left: 382px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__hadoop--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__jenkins--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -177px 0px;
+  width: 107px;
+  height: 171px;
+  top: 114px;
+  left: 105px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__jenkins--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__jira--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -297px -267px;
+  width: 154px;
+  height: 61px;
+  top: 316px;
+  left: 510px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__jira--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__juniper--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -488px -299px;
+  width: 236px;
+  height: 66px;
+  top: 222px;
+  left: 756px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__juniper--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__mongodb--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -488px -230px;
+  width: 239px;
+  height: 69px;
+  top: 591px;
+  left: 382px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__mongodb--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__mysql--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -488px 0px;
+  width: 250px;
+  height: 130px;
+  top: 619px;
+  left: 91px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__mysql--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__new-relic--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -477px -460px;
+  width: 223px;
+  height: 41px;
+  top: 255px;
+  left: 269px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__new-relic--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__nodejs--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: 0px -460px;
+  width: 277px;
+  height: 76px;
+  top: 616px;
+  left: 668px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__nodejs--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__postgres--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -628px -130px;
+  width: 84px;
+  height: 87px;
+  top: 526px;
+  left: 855px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__postgres--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__rails--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: 0px -204px;
+  width: 130px;
+  height: 167px;
+  top: 378px;
+  left: 307px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__rails--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__redis--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -277px -460px;
+  width: 200px;
+  height: 64px;
+  top: 316px;
+  left: 0px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__redis--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__tomcat--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -488px -130px;
+  width: 140px;
+  height: 100px;
+  top: 186px;
+  left: 551px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__tomcat--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__wordpress--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: 0px -371px;
+  width: 386px;
+  height: 89px;
+  top: 73px;
+  left: 493px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__wordpress--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+/*
+The provided classes are intended to be used with the array-like variables
+
+.icon-home {
+  .sprite-width(@icon-home);
+}
+.icon-email {
+  .sprite(@icon-email);
+}
+*/
+/*
+LESS variables are information about icon's compiled state, stored under its original file name
+
+.icon-home {
+  width: @icon-home-width;
+}
+
+The large array-like variables contain all information about a single icon
+@icon-home: x y offset_x offset_y width height total_width total_height image_path;
+*/
+.showcase__arista--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -284px -171px;
+  width: 179px;
+  height: 29px;
+  top: 417px;
+  left: 578px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__arista--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__cumulus--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -130px -204px;
+  width: 167px;
+  height: 167px;
+  top: 327px;
+  left: 826px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__cumulus--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__django--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -297px -204px;
+  width: 178px;
+  height: 63px;
+  top: 496px;
+  left: 513px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__django--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__docker--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -284px 0px;
+  width: 204px;
+  height: 171px;
+  top: 436px;
+  left: 13px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__docker--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__elk-stack--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: 0px 0px;
+  width: 177px;
+  height: 204px;
+  top: 0px;
+  left: 269px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__elk-stack--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__hadoop--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -386px -371px;
+  width: 318px;
+  height: 76px;
+  top: 722px;
+  left: 382px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__hadoop--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__jenkins--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -177px 0px;
+  width: 107px;
+  height: 171px;
+  top: 114px;
+  left: 105px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__jenkins--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__jira--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -297px -267px;
+  width: 154px;
+  height: 61px;
+  top: 316px;
+  left: 510px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__jira--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__juniper--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -488px -299px;
+  width: 236px;
+  height: 66px;
+  top: 222px;
+  left: 756px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__juniper--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__mongodb--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -488px -230px;
+  width: 239px;
+  height: 69px;
+  top: 591px;
+  left: 382px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__mongodb--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__mysql--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -488px 0px;
+  width: 250px;
+  height: 130px;
+  top: 619px;
+  left: 91px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__mysql--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__new-relic--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -477px -460px;
+  width: 223px;
+  height: 41px;
+  top: 255px;
+  left: 269px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__new-relic--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__nodejs--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: 0px -460px;
+  width: 277px;
+  height: 76px;
+  top: 616px;
+  left: 668px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__nodejs--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__postgres--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -628px -130px;
+  width: 84px;
+  height: 87px;
+  top: 526px;
+  left: 855px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__postgres--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__rails--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: 0px -204px;
+  width: 130px;
+  height: 167px;
+  top: 378px;
+  left: 307px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__rails--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__redis--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -277px -460px;
+  width: 200px;
+  height: 64px;
+  top: 316px;
+  left: 0px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__redis--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__tomcat--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: -488px -130px;
+  width: 140px;
+  height: 100px;
+  top: 186px;
+  left: 551px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__tomcat--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+.showcase__wordpress--homepage {
+  background-image: url(/static/img2014/showcase/homepage.png);
+  background-position: 0px -371px;
+  width: 386px;
+  height: 89px;
+  top: 73px;
+  left: 493px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .showcase__wordpress--homepage {
+    background-image: url(/static/img2014/showcase/homepage@2x.png);
+    background-size: 738px 536px;
+  }
+}
+/*
+The provided classes are intended to be used with the array-like variables
+
+.icon-home {
+  .sprite-width(@icon-home);
+}
+.icon-email {
+  .sprite(@icon-email);
+}
+*/
+.showcase {
+  padding: 1em;
+  margin: 0 auto;
+  position: relative;
+  background-color: white;
+  border-radius: 5px;
+}
+.showcase--homepage {
+  width: 993px;
+  height: 833px;
+}
+.showcase__role {
+  display: block;
+  position: absolute;
 }
 .is-hidden {
   display: none !important;

@@ -1,0 +1,42 @@
+@import '../showcase-homepage';
+@import '../showcase-homepage-2x';
+
+.sprite-background-size(@sprite) {
+    @width: ~`"@{sprite}".split(', ')[6]`;
+    @height: ~`"@{sprite}".split(', ')[7]`;
+    background-size: @width @height;
+
+}
+
+.showcase-logo(@name, @homepageX, @homepageY) {
+    &__@{name} {
+        &--homepage {
+            @var_name: "@{name}-homepage-1x";
+            @var_name_2x: "@{name}-homepage-2x";
+            .sprite(@@var_name);
+            top: @homepageY;
+            left: @homepageX;
+            .retina({
+                .sprite-image(@@var_name_2x);
+                .sprite-background-size(@@var_name);
+            });
+        }
+    }
+}
+
+.showcase {
+    padding: 1em;
+    margin: 0 auto;
+    position: relative;
+    background-color: white;
+    border-radius: 5px;
+    &--homepage {
+        width: 993px;
+        height: 833px;
+    }
+
+    &__role {
+        display: block;
+        position: absolute;
+    }
+}

@@ -1,5 +1,9 @@
 {% extends 'refresh2014/master.html' %}
 
+{% block extra_js %}
+<script src="/static/js/main.js"></script>
+{% endblock %}
+
 {% block header %}
 <header class="hero grid--middle">
   <nav class="nav-bar nav-bar--mobile nav-bar--mobile--desktop">
@@ -19,16 +23,16 @@
       {% include "partials/nav-links.html" %}
     </div>
   </nav>
-  <div class="hero__tagline grid__item e-6--palm e-12 grid--center grid--center--palm">
+  <div class="hero__tagline">
     <h1 class="tagline">Find, reuse and share the best Ansible content</h1>
   </div>
-  <div class="hero__title grid__item e-8 e-4--palm">
+  <div class="hero__title">
     <img class="title" src="/static/img2014/galaxy-title.svg">
   </div>
 
   <div class="hero__search">
     <div class="search">
-      <input type="search" placeholder="nginx, postgresql, redis, etc...">
+      <input type="search" autofocus placeholder="nginx, postgresql, redis, etc...">
       <button class="button-pseudo search__button">
         <svg class="icon--search">
           <use xlink:href="#icon-search">
@@ -56,4 +60,21 @@
     </div>
   </div>
 </header>
+{% endblock %}
+
+{% block main_container %}
+<div class="wrapper--homepage">
+  <h3>About Ansible Galaxy</h3>
+  <p>Ansible Galaxy jump starts your automation projects with great content from the Ansible community. Drop pre-packaged units of automation, called roles, into any Ansible playbook and immediately apply them to your infrastructure.</p>
+  <hr>
+  <h3>Download Roles for these Popular Tools</h3>
+  <div class="l-wide-container">
+    <div class="showcase showcase--homepage">
+      <a href="/showcase">
+        <img src="/static/img2014/showcase-full.png">
+      </a>
+    </div>
+  </div>
+  <h4><a href="/showcase">See more roles in the Showcase</a></h4>
+</div>
 {% endblock %}

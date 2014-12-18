@@ -1,8 +1,28 @@
 // This file is a template processed by make. See Makefile for actual values.
 
+var displaycoords = require('./showcase.coords.json');
+
 module.exports = {
     src: '%SRC%',
     destImage: '%DEST_IMAGE%',
     destCSS: '%DEST_CSS%',
-    imgPath: '%IMG_PATH%'
+    imgPath: '%IMG_PATH%',
+    cssTemplate: 'galaxy/showcase.less.template',
+    cssVarMap: function(item) {
+        console.log('item: ', item.name);
+        var itemKey = item.name.replace(/-homepage-\dx/, '');
+        item.itemKey = itemKey;
+        if(displaycoords.homepage[itemKey]) {
+            var displayOpts = displaycoords.homepage[itemKey];
+            item.display_coords = {
+                x: displayOpts.x,
+                y: displayOpts.y,
+                px: {
+                    x: "" + displayOpts.x + "px",
+                    y: "" + displayOpts.y + "px"
+                }
+            };
+        }
+        return item;
+    }
 };
