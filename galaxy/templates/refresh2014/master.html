@@ -32,7 +32,11 @@
     </symbol>
   </svg>
 
-        {% block main_container %}{% endblock %}
+        {% block header %}{% endblock %}
+
+        <div class="l-container">
+          {% block main_container %}{% endblock %}
+        </div>
 
         <div class="footer-container">
             <footer class="wrapper">
