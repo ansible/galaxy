@@ -1315,6 +1315,9 @@ h5 {
 .l-right {
   float: right;
 }
+.l-wide-container {
+  overflow-x: scroll;
+}
 .media,
 .media__body {
   overflow: hidden;

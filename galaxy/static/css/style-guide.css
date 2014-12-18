@@ -13,6 +13,9 @@
   top: 15px;
   left: 15px;
 }
+.example__wide-text {
+  width: 560em;
+}
 .example-padded {
   padding: 1em;
 }
