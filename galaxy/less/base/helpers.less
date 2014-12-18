@@ -31,15 +31,14 @@
 // filename and extension; then puts it back together, but adds
 // @2x to the end for 2x pixel density devies.
 //
-.background-image(@image){
+.background-with-2x(@image){
   @filename:  ~`/(.*)\.(jpg|jpeg|png|gif)/.exec(@{image})[1]`;
   @extension: ~`/(.*)\.(jpg|jpeg|png|gif)/.exec(@{image})[2]`;
   background-image: ~`"url(@{filename}.@{extension})"`;
 
-  @media (-webkit-min-device-pixel-ratio: 2) {
+  .bigger-retina-screens({
     background-image: ~`"url(@{filename}-2x.@{extension})"`;
-    background-size: 100%;
-  }
+  });
 }
 
 .placeholder-custom(@rules) {
@@ -64,4 +63,28 @@
   @media screen and (min-width: @screen-lap) {
     @rules();
   }
+}
+
+.bigger-retina-screens(@rules) {
+    @media
+     (-webkit-min-device-pixel-ratio: 2),
+     (   -moz-min-device-pixel-ratio: 2),
+     (     -o-min-device-pixel-ratio: 2/1),
+     (        min-device-pixel-ratio: 2),
+     (                min-resolution: 192dpi),
+     (                min-resolution: 2dppx) { 
+        @rules();
+    }
+}
+
+.retina(@rules) {
+    @media
+    only screen and (-webkit-min-device-pixel-ratio: 2),
+    only screen and (   -moz-min-device-pixel-ratio: 2),
+    only screen and (     -o-min-device-pixel-ratio: 2/1),
+    only screen and (        min-device-pixel-ratio: 2),
+    only screen and (                min-resolution: 192dpi),
+    only screen and (                min-resolution: 2dppx) { 
+        @rules();
+    }
 }

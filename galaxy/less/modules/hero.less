@@ -1,5 +1,5 @@
 .hero {
-  .background-image('/static/img2014/spacey-bg-small.jpg');
+  .background-with-2x('/static/img2014/spacey-bg-small.jpg');
   background-color: #02040A;
   background-size: 744px auto;
   background-position: top center;
@@ -7,10 +7,11 @@
   text-align: center;
   overflow: hidden;
   position: relative;
-  @media screen and (min-width: 760px) {
-    .background-image('/static/img2014/spacey-bg.jpg');
-    backgroud-size: 100% auto;
-  }
+
+  .bigger-screens({
+    background-size: 100% auto;
+    .background-with-2x('/static/img2014/spacey-bg.jpg');
+  });
 
   &__actions {
     margin-top: 2.2em;
@@ -54,10 +55,12 @@
 
 
 .hero__tagline {
-  background-image: radial-gradient(62% 50%, rgba(3,1,10,0.29) 37%, rgba(0,0,0,0.00) 71%);
-  @media screen and (min-width: 760px) {
-    margin-top: 2.5em;
-  }
+    max-width: 400px;
+    margin: 0 auto;
+    background-image: radial-gradient(62% 50%, rgba(3,1,10,0.29) 37%, rgba(0,0,0,0.00) 71%);
+    .bigger-screens({
+        margin-top: 2.5em;
+    });
 }
 
 .hero__title {
@@ -94,6 +97,7 @@
 .tagline {
   font-size: 1em;
   color: white;
+  text-align: center;
   @media screen and (min-width: 390px) and (max-width: @screen-lap) {
     font-size: 1.4em;
   }
