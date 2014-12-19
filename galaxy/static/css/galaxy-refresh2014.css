@@ -1306,9 +1306,9 @@ h5 {
 hr {
   background-color: #ff5850;
   border: none;
-  height: 2px;
+  height: 1px;
   margin: 2em auto;
-  width: 60%;
+  width: 70%;
   text-align: center;
 }
 .l-container {
@@ -1412,7 +1412,7 @@ embed {
   overflow-y: hidden;
 }
 .hero {
-  background-image: url(/static/img2014/spacey-bg-small.jpg);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(/static/img2014/spacey-bg-small.jpg);
   background-color: #02040A;
   background-size: 744px auto;
   background-position: top center;
@@ -1423,18 +1423,18 @@ embed {
 }
 @media (-webkit-min-device-pixel-ratio: 2), (-moz-min-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2/1), (min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 2dppx) {
   .hero {
-    background-image: url(/static/img2014/spacey-bg-small-2x.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(/static/img2014/spacey-bg-small-2x.jpg);
   }
 }
 @media screen and (min-width: 768px) {
   .hero {
     background-size: 100% auto;
-    background-image: url(/static/img2014/spacey-bg.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(/static/img2014/spacey-bg.jpg);
   }
 }
 @media screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), screen and (min-width: 768px) and (-moz-min-device-pixel-ratio: 2), screen and (min-width: 768px) and (-o-min-device-pixel-ratio: 2/1), screen and (min-width: 768px) and (min-device-pixel-ratio: 2), screen and (min-width: 768px) and (min-resolution: 192dpi), screen and (min-width: 768px) and (min-resolution: 2dppx) {
   .hero {
-    background-image: url(/static/img2014/spacey-bg-2x.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(/static/img2014/spacey-bg-2x.jpg);
   }
 }
 .hero__actions {
@@ -1451,14 +1451,19 @@ embed {
     background: none;
   }
 }
+.about {
+  width: 70%;
+  margin: 0 auto;
+}
 .action p,
 .action--copy p {
   font-size: 1.5em;
+  line-height: 1.2;
 }
 @media screen and (min-width: 768px) {
   .action p,
   .action--copy p {
-    font-size: 1em;
+    font-size: 1.2em;
   }
 }
 @media screen and (min-width: 768px) {
@@ -1475,23 +1480,23 @@ embed {
 @media screen and (min-width: 768px) {
   .action--signup,
   .action--copy--signup {
-    border-right: solid thin white;
+    border-right: solid 2px white;
     margin-bottom: 0;
-    padding: 1em 0;
+    padding: 1.4em 0;
   }
 }
 .hero__tagline {
-  max-width: 400px;
+  max-width: 450px;
   margin: 0 auto;
   background-image: radial-gradient(62% 50%, rgba(3, 1, 10, 0.29) 37%, rgba(0, 0, 0, 0) 71%);
 }
 @media screen and (min-width: 768px) {
   .hero__tagline {
-    margin-top: 2.5em;
+    margin-top: 6em;
   }
 }
 .hero__title {
-  background: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.5);
   padding: 1.6em 0 0.9em;
   width: 100%;
   text-align: center;
@@ -1500,9 +1505,9 @@ embed {
   border-left: none;
   border-right: none;
 }
-@media screen and (min-width: 760px) {
+@media screen and (min-width: 768px) {
   .hero__title {
-    margin-top: 2em;
+    margin-top: 5em;
   }
 }
 .hero__search {
@@ -1525,6 +1530,7 @@ embed {
   font-size: 1em;
   color: white;
   text-align: center;
+  font-weight: normal;
 }
 @media screen and (min-width: 390px) and (max-width: 768px) {
   .tagline {
@@ -2456,6 +2462,102 @@ The provided classes are intended to be used with the array-like variables
 .showcase__role {
   display: block;
   position: absolute;
+}
+footer {
+  background-color: #ff5850;
+  padding: 3em 0;
+  padding-left: 0;
+  overflow: hidden;
+  position: relative;
+}
+@media screen and (min-width: 768px) {
+  footer {
+    background-image: url('/static/img2014/ansible-splash.svg');
+    background-size: 50% auto;
+    background-repeat: no-repeat;
+    background-position: left center;
+  }
+}
+@media screen and (min-width: 768px) and (max-width: 940px) {
+  footer {
+    background-size: 71% auto;
+  }
+}
+footer:before {
+  content: "";
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+footer .footer__tower-promo {
+  padding: 1em;
+  padding-top: 3em;
+}
+@media screen and (min-width: 768px) {
+  footer .footer__tower-promo {
+    display: inline-block;
+    vertical-align: top;
+    padding: 0;
+    padding-left: 18em;
+  }
+}
+footer .footer__copyright {
+  padding-top: 3em;
+  text-align: center;
+}
+.tower-promo {
+  text-align: center;
+}
+.tower-promo__heading {
+  color: white;
+}
+.copyright {
+  color: white;
+  font-size: 1.25em;
+}
+.copyright:hover {
+  color: white;
+}
+.footer-nav {
+  display: inline-block;
+  vertical-align: top;
+  padding-left: 1em;
+}
+@media screen and (min-width: 768px) {
+  .footer-nav {
+    margin-right: 5em;
+    padding-left: 3em;
+  }
+}
+@media screen and (min-width: 768px) {
+  .footer-nav:first-of-type {
+    padding-left: 16em;
+  }
+}
+.footer-nav__heading,
+.footer-nav__link {
+  padding: 10px;
+  font-size: 1.5em;
+}
+@media screen and (min-width: 768px) {
+  .footer-nav__heading,
+  .footer-nav__link {
+    padding: 0;
+    font-size: 1.1em;
+  }
+}
+.footer-nav__heading {
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0;
+}
+.footer-nav__link {
+  color: white;
+  display: list-item;
+  list-style: none;
+}
+.footer-nav__link:hover {
+  color: white;
 }
 .is-hidden {
   display: none !important;

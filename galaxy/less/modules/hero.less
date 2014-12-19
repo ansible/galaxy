@@ -1,5 +1,6 @@
+@background-overlay: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));
 .hero {
-  .background-with-2x('/static/img2014/spacey-bg-small.jpg');
+  .background-with-2x('/static/img2014/spacey-bg-small.jpg', @background-overlay);
   background-color: #02040A;
   background-size: 744px auto;
   background-position: top center;
@@ -10,7 +11,7 @@
 
   .bigger-screens({
     background-size: 100% auto;
-    .background-with-2x('/static/img2014/spacey-bg.jpg');
+    .background-with-2x('/static/img2014/spacey-bg.jpg', @background-overlay);
   });
 
   &__actions {
@@ -27,12 +28,18 @@
   }
 }
 
+.about {
+    width: 70%;
+    margin: 0 auto;
+}
+
 .action {
   // margin: 0 auto;
   p {
     font-size: 1.5em;
+    line-height: 1.2;
     .bigger-screens({
-      font-size: 1em;
+      font-size: 1.2em;
     });
   }
   .bigger-screens({
@@ -46,26 +53,26 @@
     margin-bottom: 3.5em;
     text-align: center;
     .bigger-screens({
-      border-right: solid thin white;
+      border-right: solid 2px white;
       margin-bottom: 0;
-      padding: 1em 0;
+      padding: 1.4em 0;
     });
   }
 }
 
 
 .hero__tagline {
-    max-width: 400px;
+    max-width: 450px;
     margin: 0 auto;
     background-image: radial-gradient(62% 50%, rgba(3,1,10,0.29) 37%, rgba(0,0,0,0.00) 71%);
     .bigger-screens({
-        margin-top: 2.5em;
+        margin-top: 6em;
     });
 }
 
 .hero__title {
   // background-image: radial-gradient(50% 41%,  rgba(255,255,255,0.67) 37%,  rgba(255,255,255,0.00) 92%);
-  background: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.5);
   padding: 1.6em 0 0.9em;
   width: 100%;
   text-align: center;
@@ -74,10 +81,10 @@
   border-left: none;
   border-right: none;
   // padding: 1.5em;
-  @media screen and (min-width: 760px) {
-    margin-top: 2em;
+  .bigger-screens({
+    margin-top: 5em;
     // padding: 2em;
-  }
+  });
 
 }
 
@@ -98,12 +105,13 @@
   font-size: 1em;
   color: white;
   text-align: center;
+  font-weight: normal;
   @media screen and (min-width: 390px) and (max-width: @screen-lap) {
     font-size: 1.4em;
   }
-  @media screen and (min-width: @screen-lap) {
+  .bigger-screens({
     font-size: 2em;
-  }
+  });
 }
 
 .title {

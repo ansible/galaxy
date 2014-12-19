@@ -38,11 +38,29 @@
           {% block main_container %}{% endblock %}
         </div>
 
-        <div class="footer-container">
-            <footer class="wrapper">
-                <h3>footer</h3>
-            </footer>
-        </div>
+        <footer>
+          <div class="footer__splash"></div>
+          <nav class="footer-nav">
+            <h4 class="footer-nav__heading">Galaxy</h4>
+            {% include "partials/nav-links.html" with class="footer-nav__link" %}
+          </nav>
+
+          <nav class="footer-nav">
+            <h4 class="footer-nav__heading">Ansible</h4>
+            <a href="#" class="footer-nav__link">About</a>
+            <a href="#" class="footer-nav__link">Docs</a>
+            <a href="#" class="footer-nav__link">Github</a>
+          </nav>
+
+          <aside class="footer__tower-promo tower-promo">
+            <h4 class="tower-promo__heading">Supercharge Ansible with <span class="is-hidden-visually">Ansible Tower</span></h4>
+            <img src="/static/img2014/tower-logo.svg" alt="Supercharge Ansible with Ansible Tower">
+          </aside>
+
+
+          <p class="footer__copyright"><a href="http://www.ansible.com" class="copyright">Copyright © 2014 Ansible, Inc. All rights reserved.</a></p>
+
+        </footer>
 
         <script src="/static/js/vendor.js"></script>
         {% block extra_js %}{% endblock %}

@@ -1,0 +1,92 @@
+footer {
+    background-color: @red-color;
+    padding: 3em 0;
+    padding-left: 0;
+    overflow: hidden;
+    position: relative;
+    .bigger-screens({
+        background-image: url('/static/img2014/ansible-splash.svg');
+        background-size: 50% auto;
+        background-repeat: no-repeat;
+        background-position: left center;
+    });
+
+    @media screen and (min-width: @screen-lap) and (max-width: 940px) {
+        background-size: 71% auto;
+    }
+    &:before {
+        content: "";
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+    }
+
+    .footer {
+        &__tower-promo {
+            padding: 1em;
+            padding-top: 3em;
+            .bigger-screens({
+                display: inline-block;
+                vertical-align: top;
+                padding: 0;
+                padding-left: 18em;
+            });
+        }
+
+        &__copyright {
+            padding-top: 3em;
+            text-align: center;
+        }
+    }
+}
+
+.tower-promo {
+    text-align: center;
+    &__heading {
+        color: white;
+    }
+}
+
+.copyright {
+    color: white;
+    font-size: 1.25em;
+    &:hover {
+        color: white;
+    }
+}
+
+.footer-nav {
+    display: inline-block;
+    vertical-align: top;
+    padding-left: 1em;
+    .bigger-screens({
+        margin-right: 5em;
+        padding-left: 3em;
+    });
+    &:first-of-type {
+        .bigger-screens({
+            padding-left: 16em;
+        });
+    }
+    &__heading, &__link {
+        padding: 10px;
+        font-size: 1.5em;
+        .bigger-screens({
+            padding: 0;
+            font-size: 1.1em;
+        });
+    }
+    &__heading {
+        font-weight: bold;
+        color: white;
+        margin-bottom: 0;
+    }
+    &__link {
+        color: white;
+        display: list-item;
+        list-style: none;
+        &:hover {
+            color: white;
+        }
+    }
+}

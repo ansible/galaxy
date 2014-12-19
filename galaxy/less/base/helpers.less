@@ -31,13 +31,13 @@
 // filename and extension; then puts it back together, but adds
 // @2x to the end for 2x pixel density devies.
 //
-.background-with-2x(@image){
+.background-with-2x(@image, @other-bg: none){
   @filename:  ~`/(.*)\.(jpg|jpeg|png|gif)/.exec(@{image})[1]`;
   @extension: ~`/(.*)\.(jpg|jpeg|png|gif)/.exec(@{image})[2]`;
-  background-image: ~`"url(@{filename}.@{extension})"`;
+  background-image: @other-bg, ~`"url(@{filename}.@{extension})"`;
 
   .bigger-retina-screens({
-    background-image: ~`"url(@{filename}-2x.@{extension})"`;
+    background-image: @other-bg, ~`"url(@{filename}-2x.@{extension})"`;
   });
 }
 
