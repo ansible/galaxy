@@ -152,6 +152,7 @@ def explore(request):
 
 def intro(request):
     context = build_standard_context(request)
+    context["page_title"] = "About"
     return render_to_response('intro.html', context)
 
 def accounts_landing(request):

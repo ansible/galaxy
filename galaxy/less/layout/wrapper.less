@@ -1,4 +1,11 @@
-.wrapper--homepage {
-    text-align: center;
-    padding: 1em;
+.wrapper {
+    &--homepage {
+        & * {
+            text-align: center;
+        }
+        padding: 1em;
+    }
+    &--about {
+        padding: 1em 0;
+    }
 }

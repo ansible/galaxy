@@ -32,9 +32,35 @@
     </symbol>
   </svg>
 
-        {% block header %}{% endblock %}
+        {% block header %}
+          <nav class="nav-bar nav-bar--dark nav-bar--mobile">
+            <a href="#" class="nav-bar__menu-button">
+              {% include "svg/icon-wimpy.svg" %}
+            </a>
+          </nav>
+          <nav class="nav-bar nav-bar--dark nav-bar--menu">
+            <div class="nav-bar__logo-wrapper">
+              <a href="/" class="nav-bar__main-logo main-logo--light">
+                {% include "svg/main-logo.svg" %}
+                {# For homepage variant: #}
+                {# include "svg/main-logo.svg" with view_box="0 0 113 115" #}
+              </a>
+            </div>
+            <div class="nav-bar__links">
+              <div class="nav-bar__search">
+                {% include "partials/search.html" %}
+              </div>
+              {% include "partials/nav-links.html" %}
+            </div>
+
+          </nav>
+
+        {% endblock %}
 
         <div class="l-container">
+          {% if page_title %}
+          <h1 class="page-title">{{page_title}}</h1>
+          {% endif %}
           {% block main_container %}{% endblock %}
         </div>
 
