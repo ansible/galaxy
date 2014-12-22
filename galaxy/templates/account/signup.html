@@ -1,26 +1,30 @@
-{% extends "account/base.html" %}
+{% extends "refresh2014/master.html" %}
 
 {% load url from future %}
-{% load bootstrap %}
 {% load i18n %}
 
-{% block head_title %}{% trans "Signup" %}{% endblock %}
+{% block title %}{% trans "Sign Up" %}{% endblock %}
 
-{% block account_content %}
-<h1>{% trans "Sign Up" %}</h1>
-    
-<p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
-        
-<form id="signup_form" method="post" action="{% url 'account_signup' %}">
-  {% csrf_token %}
-  {{ form|bootstrap }}
-  {% if redirect_field_value %}
-  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-  {% endif %}
-  <div class="form-actions">
-  <button class="btn btn-primary" type="submit">{% trans "Sign Up" %}</button>
-  </div>
-</form>
+{% block main_container %}
+<h1 class="page-title">{% trans "Sign Up" %}</h1>
+
+<p class="page__preview">
+Register to review roles, earn karma and publish your own reusable roles.</p>
+
+<div class="l-wrapper--narrow l-wrapper--page">
+  <p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
+
+  <form id="signup_form" method="post" action="{% url 'account_signup' %}">
+    {% csrf_token %}
+    {{form}}
+    {% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+    {% endif %}
+    <button class="button--primary" type="submit">
+      {% trans "Sign Up" %}
+    </button>
+  </form>
+</div>
 
 {% endblock %}
 

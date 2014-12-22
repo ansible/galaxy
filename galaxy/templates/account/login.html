@@ -15,9 +15,9 @@
 
 <p class="page__preview">Start discovering, using and sharing Ansible content.</p>
 
-<div class="wrapper--sign-in">
+<div class="l-wrapper--narrow l-wrapper--page">
 
-    <nav class="social-links wrapper--sign-in__container">
+    <nav class="social-links l-wrapper--narrow">
         <a href="/accounts/github/login/?process=">
             <i class="fa fa-github fa-2x"></i>
         </a>
@@ -35,7 +35,7 @@
           {% for error in form.non_field_errors %}<dd>{{error}}</dd>{% endfor %}
         </dl>
         {% endif %}
-        <form class="sign-in wrapper--sign-in__container" method="POST" action="{% url 'account_login' %}">
+        <form class="sign-in l-wrapper--narrow" method="POST" action="{% url 'account_login' %}">
             {% csrf_token %}
             {% if redirect_field_value %}
             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" >

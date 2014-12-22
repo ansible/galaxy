@@ -2716,6 +2716,9 @@ label:first-of-type {
 input[type=checkbox] + label {
   display: inline-block;
 }
+input + button {
+  margin-top: 1em;
+}
 form > button {
   display: block;
 }
@@ -2742,6 +2745,13 @@ form > button {
     overflow-x: scroll;
   }
 }
+.l-wrapper--narrow {
+  margin: 0 auto;
+  width: 50%;
+}
+.l-wrapper--page {
+  margin-bottom: 2em;
+}
 .wrapper--homepage {
   padding: 1em;
 }
@@ -2750,15 +2760,6 @@ form > button {
 }
 .wrapper--about {
   padding: 1em 0;
-}
-.wrapper--sign-in {
-  margin: 0 auto;
-  margin-bottom: 2em;
-  width: 50%;
-}
-.wrapper--sign-in__container {
-  margin: 0 auto;
-  width: 50%;
 }
 .media,
 .media__body {
