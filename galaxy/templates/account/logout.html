@@ -1,32 +1,31 @@
-{% extends "account/base.html" %}
+{% extends "refresh2014/master.html" %}
 
 {% load url from future %}
 {% load i18n %}
 
-{% block head_title %}{% trans "Sign Out" %}{% endblock %}
+{% block title %}{% trans "Sign Out" %}{% endblock %}
 
-{% block account_content %}
+{% block main_container %}
+<h1 class="page-title">Sign Out</h1>
 
-<!--
-<h1>{% trans "Sign Out" %}</h1>
-<p>{% trans 'Are you sure you want to sign out?' %}</p>
--->
-
-<form method="post" id="logout-form" action="{% url 'account_logout' %}">
+<p class="page__preview">We are signing you out. If you want, you can also sign out manually.</p>
+<div class="l-wrapper--page l-wrapper--narrow">
+<form method="post" id="logout-form" class="form--button-only" action="{% url 'account_logout' %}" style="margin: 0 auto">
   {% csrf_token %}
   {% if redirect_field_value %}
   <input type="hidden" name="{{redirect_field_name}}" value="{{redirect_field_value}}"/>
   {% endif %}
-  <!-- <button class="btn btn-primary" type="submit">{% trans 'Sign Out' %}</button> -->
+  <button class="button--primary" type="submit">{% trans 'Manually Sign Out' %}</button>
 </form>
+</div>
 
 {% endblock %}
 
-{% block document_ready %}
+{% block extra_js %}
 <script>
-    $(document).ready(function() {
-        $("#logout-form").submit();     
-    });
+  setTimeout(function() {
+    $("#logout-form").submit();
+  }, 5000);
 </script>
 {% endblock %}
 

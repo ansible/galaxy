@@ -1,4 +1,5 @@
-@primary-button-color: #FF5850;
+@primary-button-color: @red-color;
+@secondary-button-color: @blue-color;
 
 button,.button {
   .user-select(none);
@@ -46,14 +47,30 @@ button,.button {
   }
 }
 
+.button--secondary {
+  .headline();
+  text-transform: uppercase;
+  background-color: @secondary-button-color;
+  border: none;
+  color: white;
+  &:hover, &:focus {
+    background-color: darken(@secondary-button-color, 10%);
+    color: white;
+  }
+}
+
 .button-pseudo {
   display: inline-block;
   padding: 8px 0;
+  color: @link-color;
   line-height: normal;
   vertical-align: middle;
   background: transparent;
   border: 0;
   .button + & {
     margin-left: @default-whitespace;
+  }
+  &:hover {
+    background: transparent;
   }
 }

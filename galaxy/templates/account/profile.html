@@ -1,27 +1,51 @@
-{% extends 'account/base.html' %}
+{% extends "refresh2014/master.html" %}
 
 {% load galaxyhelpers %}
 
-{% block account_content %}
+{% block main_container %}
 
-<div class="row">
-    <div class="col-lg-12 page-title">
-        <div class="txt">My Roles</div>
-        <div class="rule"></div>
-    </div>
-</div>
+<h1 class="page-title">Profile</h1>
 
-<div class="row">
-    <div class="col-lg-12"> 
-        {% if transient %}
-        <div class="alert alert-transient alert-{{ transient.status }}">
-         <button type="button" class="close" data-dismiss="alert"><i class="icon-remove-sign"></i></button>
-         {{ transient.msg|safe }}
-        </div>
-        {% endif %}
-    </div>
-</div>
+<div class="l-wrapper--page">
+
+<h3 class="txt-center">Manage Your Account</h3>
+
+<nav class="nav-bar--vertical txt-center">
+  <a class="described-link" href="{% url 'account_email' %}">
+    <h4>Email Addresses</h4>
+    <span>Add, remove and other options for your account's email addresses</span>
+  </a>
+  <a class="described-link" href="{% url 'account_change_password' %}">
+    <h4>Password</h4>
+    <span>Change your password</span>
+  </a>
+  {% url 'socialaccount_connections' as connections_url %}
+  {% if connections_url %}
+  <a class="described-link" href="{{ connections_url }}">
+    <h4>Linked Accounts</h4>
+    <span>Link new social accounts (Twitter, Github, etc) or remove existing links</span>
+  </a>
+  {% endif %}
+  <a class="described-link" href="/list#/users/{{user.id}}">
+    <h4>Your User Page</h4>
+    <span>See your user page as others would see it</span>
+  </a>
+</nav>
+
+<hr>
+
+<h3>Your Roles</h3>
+{% if transient %}
+<dl class="alert alert--{{ transient.status }}">
+  <dd>{{ transient.msg|safe }}</dd>
+</dl>
+{% endif %}
 
 <div ng-view></div>
 
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/accounts.js"></script>
 {% endblock %}

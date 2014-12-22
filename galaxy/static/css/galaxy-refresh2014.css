@@ -2749,8 +2749,15 @@ form > button {
   margin: 0 auto;
   width: 50%;
 }
+.l-wrapper--narrow--left {
+  margin: 0;
+  width: 50%;
+}
 .l-wrapper--page {
   margin-bottom: 2em;
+}
+.page-title + .l-wrapper--page {
+  margin-top: 4.5em;
 }
 .wrapper--homepage {
   padding: 1em;
@@ -3034,9 +3041,29 @@ button--full,
   background-color: #ff271d;
   color: white;
 }
+.button--secondary {
+  font-family: Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+  background-color: #6ab1c8;
+  border: none;
+  color: white;
+}
+@media screen and (min-width: 768px) {
+  .button--secondary {
+    text-align: left;
+  }
+}
+.button--secondary:hover,
+.button--secondary:focus {
+  background-color: #459dba;
+  color: white;
+}
 .button-pseudo {
   display: inline-block;
   padding: 8px 0;
+  color: #6ab1c8;
   line-height: normal;
   vertical-align: middle;
   background: transparent;
@@ -3044,6 +3071,9 @@ button--full,
 }
 .button + .button-pseudo {
   margin-left: 20px;
+}
+.button-pseudo:hover {
+  background: transparent;
 }
 .search {
   position: relative;
@@ -3068,6 +3098,7 @@ button--full,
 .search .search__button {
   position: absolute;
   top: -8px;
+  margin-top: 0;
   right: 7px;
 }
 .search .search__button:hover,
@@ -3118,6 +3149,28 @@ lesshat-selector {
 @-o-keyframes flashyThingy{ 0%{ stroke: white; } 65%{ stroke: #ff5850; } 100%{ stroke: white; }}
 @keyframes flashyThingy{ 0%{ stroke: white; } 65%{ stroke: #ff5850; } 100%{ stroke: white; };
 }
+.described-link {
+  padding: 1em 0;
+}
+.described-link:first-of-type {
+  padding-top: 0;
+}
+.described-link h4 {
+  margin: 0;
+  display: inline-block;
+}
+.described-link:hover,
+.described-link:focus {
+  text-decoration: none !important;
+  color: #333333;
+}
+.described-link span {
+  display: block;
+  font-size: 0.8em;
+  font-style: italic;
+  line-height: 0.2;
+  color: #333333;
+}
 .nav-bar {
   background-color: #04020a;
 }
@@ -3130,6 +3183,12 @@ lesshat-selector {
   .nav-bar {
     padding: .5em;
   }
+}
+.nav-bar--centered {
+  text-align: center;
+}
+.nav-bar--vertical > * {
+  display: block;
 }
 .nav-bar--menu {
   position: absolute;
@@ -3293,7 +3352,7 @@ lesshat-selector {
 @media screen and (min-width: 768px) {
   .nav-bar__links {
     float: right;
-    padding-top: 0.8em;
+    padding-top: 0.2em;
   }
 }
 .nav-bar__link {
@@ -4062,6 +4121,9 @@ footer .footer__copyright {
 .social-links {
   text-align: center;
 }
+.social-links.social-links--large > a {
+  font-size: 2.5em;
+}
 .social-links > a {
   display: inline-block;
   padding: 0 1.2em;
@@ -4075,6 +4137,18 @@ footer .footer__copyright {
 }
 .sign-in__forgot {
   float: right;
+}
+.form--button-only {
+  text-align: center;
+}
+.form--button-only > button {
+  display: inline-block;
+}
+img[src*=gravatar] {
+  width: 48px;
+  height: 48px;
+  vertical-align: middle;
+  margin-bottom: 0.5em;
 }
 .is-hidden {
   display: none !important;

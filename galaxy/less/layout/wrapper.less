@@ -1,10 +1,17 @@
 .l-wrapper {
   &--narrow {
-        margin: 0 auto;
-        width: 50%;
+    &--left {
+      margin: 0;
+      width: 50%;
+    }
+    margin: 0 auto;
+    width: 50%;
   }
   &--page {
         margin-bottom: 2em;
+        .page-title+& {
+          margin-top: 4.5em;
+        }
   }
 }
 
