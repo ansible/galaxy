@@ -99,13 +99,14 @@
     $ vim meta/main.yml
     </code></pre>
 
-    <p class="alert alert-info"><strong>A note about variables:</strong><br />When writing roles that will be shared, it's always good to prefix the variable names with your role name (whether stored in <code>defaults/main.yml</code> or in <code>vars/main.yml</code>). This helps ensure that other roles will not accidentally step on your variable names when the variables are evaluated.<br />
+    <dl class="alert alert--info">
+        <dt>A note about variables</dt><dd>When writing roles that will be shared, it's always good to prefix the variable names with your role name (whether stored in <code>defaults/main.yml</code> or in <code>vars/main.yml</code>). This helps ensure that other roles will not accidentally step on your variable names when the variables are evaluated.<br />
     <br />
     <strong>For example:</strong><br />
     Bad: <code>port: 1234</code><br />
     Good: <code>myrole_port: 1234</code>
-    </p>
-
+        </dd>
+    </dl>
     <p>Once you are happy with your role, test it in a playbook, and make sure it’s really ready to go.</p>
     <pre><code>- hosts: example
       roles:

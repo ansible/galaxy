@@ -2613,6 +2613,70 @@ footer .footer__copyright {
   font-style: italic;
   margin-bottom: 4.5em;
 }
+.alert {
+  padding: 1em;
+  padding-bottom: 1.5em;
+  border: solid 1px black;
+  border-radius: 5px;
+}
+.alert > dt {
+  font-weight: bold;
+  font-size: 1.5em;
+}
+.alert > dd {
+  margin: 0;
+}
+.alert--error {
+  border-color: #b40a03;
+  background-color: #fd8b86;
+}
+.alert--error > dt {
+  color: #b40a03;
+}
+.alert--error > dd a {
+  text-decoration: underline;
+}
+.alert--error > dd a:hover,
+.alert--error > dd a:active,
+.alert--error > dd a:focus {
+  color: #b40a03;
+}
+.alert--error > dd {
+  color: white;
+}
+.alert--error > dd a {
+  color: white;
+}
+.alert--success {
+  border-color: #24945a;
+  background-color: #9de7c1;
+}
+.alert--success > dt {
+  color: #24945a;
+}
+.alert--success > dd a {
+  text-decoration: underline;
+}
+.alert--success > dd a:hover,
+.alert--success > dd a:active,
+.alert--success > dd a:focus {
+  color: #24945a;
+}
+.alert--info {
+  border-color: #046ab2;
+  background-color: #86cbfc;
+}
+.alert--info > dt {
+  color: #046ab2;
+}
+.alert--info > dd a {
+  text-decoration: underline;
+}
+.alert--info > dd a:hover,
+.alert--info > dd a:active,
+.alert--info > dd a:focus {
+  color: #046ab2;
+}
 .is-hidden {
   display: none !important;
   visibility: hidden !important;
