@@ -41,17 +41,17 @@
             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" >
             {% endif %}
             <label for="login">Username/Email</label>
-            <input type="text" id="login" name="login" placeholder="user@example.com" autofocus autocomplete="off">
+            <input type="text" id="login" name="login" placeholder="user@example.com" tabindex="1" autofocus autocomplete="off">
 
             <label for="password">
                 Password
-                <a class="sign-in__forgot" href="{% url 'account_reset_password' %}">I forgot</a>
+                <a class="sign-in__forgot" tabindex="3" href="{% url 'account_reset_password' %}">I forgot</a>
             </label>
-            <input type="password" id="password" name="password" autocomplete="off">
+            <input type="password" id="password" name="password" tabindex="2" autocomplete="off">
 
-            <input type="checkbox" id="remember" name="remember" /> <label for="remember">Stay logged in</label>
+            <input type="checkbox" id="remember" name="remember" tabindex="4" /> <label for="remember">Stay logged in</label>
 
-            <button class="button--primary">Sign In</button>
+            <button class="button--primary" tabindex="4">Sign In</button>
         </form>
 
 </div>
