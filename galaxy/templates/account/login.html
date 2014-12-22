@@ -1,4 +1,4 @@
-{% extends "account/base.html" %}
+{% extends "refresh2014/master.html" %}
 
 {% load url from future %}
 {% load i18n %}
@@ -7,61 +7,53 @@
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
-{% block account_content %}
+{% block page_title %}
+{% endblock %}
+{% block main_container %}
 
-<div class="row">
-    <div class="col-lg-6 col-lg-offset-3">
-        <div class="login-page text-center">
-            
-            <div class="signin-intro">
-                <h4>Sign In</h4>
-                <p>Start discovering, using and sharing Ansible content.</p>
-            </div>
-     
-            <div class="login-social">
-                <ul class="social-links">
-                    <li><a href="/accounts/twitter/login/?process="><i class="fa fa-twitter fa-2x"></i></a></li>
-                    <li><a href="/accounts/google/login/?process="><i class="fa fa-google-plus fa-2x"></i></a></li>
-                    <li><a href="/accounts/github/login/?process="><i class="fa fa-github fa-2x"></i></a></li>
-                </ul>
-                <h4>or</h4>
-            </div>
-            {% if form.non_field_errors %}
-            <div class="alert alert-danger alert-dismissable">
-              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-              <strong>Errors:</strong><br />
-              {% for error in form.non_field_errors %}{{error}}<br />{% endfor %}
-            </div>
+<h1 class="page-title">Sign In</h1>
+
+<p class="page__preview">Start discovering, using and sharing Ansible content.</p>
+
+<div class="wrapper--sign-in">
+
+    <nav class="social-links wrapper--sign-in__container">
+        <a href="/accounts/github/login/?process=">
+            <i class="fa fa-github fa-2x"></i>
+        </a>
+        <a href="/accounts/google/login/?process=">
+            <i class="fa fa-google-plus fa-2x"></i>
+        </a>
+        <a href="/accounts/twitter/login/?process=">
+            <i class="fa fa-twitter fa-2x"></i>
+        </a>
+    </nav>
+    <hr>
+        {% if form.non_field_errors %}
+        <dl class="alert alert--error">
+          <dt>Errors:</dt>
+          {% for error in form.non_field_errors %}<dd>{{error}}</dd>{% endfor %}
+        </dl>
+        {% endif %}
+        <form class="sign-in wrapper--sign-in__container" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" >
             {% endif %}
-            <form class="form form-horizontal login" method="POST" action="{% url 'account_login' %}">
-                {% csrf_token %}
-                {% if redirect_field_value %}
-                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" >
-                {% endif %}
-                <div class="form-fields">
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="login" name="login" placeholder="Username/Email" autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <input type="submit" class="btn btn-primary btn-block" value="Sign In" />
-                        <div>
-                            <div class="remember">
-                                <input type="checkbox" id="remember" name="remember" /> Remember me?
-                            </div>
-                            <div class="reset">
-                                <a href="{% url 'account_reset_password' %}">Forgot password</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-           
-        </div>
+            <label for="login">Username/Email</label>
+            <input type="text" id="login" name="login" placeholder="user@example.com" autofocus autocomplete="off">
 
-    </div>
+            <label for="password">
+                Password
+                <a class="sign-in__forgot" href="{% url 'account_reset_password' %}">I forgot</a>
+            </label>
+            <input type="password" id="password" name="password" autocomplete="off">
+
+            <input type="checkbox" id="remember" name="remember" /> <label for="remember">Stay logged in</label>
+
+            <button class="button--primary">Sign In</button>
+        </form>
+
 </div>
 
 {% endblock %}
