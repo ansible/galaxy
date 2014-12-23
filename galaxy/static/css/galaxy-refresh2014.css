@@ -3194,9 +3194,10 @@ lesshat-selector {
   position: absolute;
   top: 0;
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   z-index: 1000;
   overflow-y: scroll;
+  display: none;
   -webkit-transform: translateX(100%);
   -moz-transform: translateX(100%);
   -o-transform: translateX(100%);
@@ -3206,6 +3207,8 @@ lesshat-selector {
   -moz-transition: -moz-transform 250ms ease-in;
   -o-transition: -o-transform 250ms ease-in;
   transition: -webkit-transform 250ms ease-in,-moz-transform 250ms ease-in,-o-transform 250ms ease-in,transform 250ms ease-in;
+  -webkit-transition: transform 250ms ease-in;
+  transition: transform 250ms ease-in;
 }
 @media screen and (min-width: 768px) {
   .nav-bar--menu {
@@ -3217,9 +3220,9 @@ lesshat-selector {
     -o-transform: inherit;
     -ms-transform: inherit;
     transform: inherit;
-    -webkit-transition: inherit;
     -moz-transition: inherit;
     -o-transition: inherit;
+    -webkit-transition: inherit;
     transition: inherit;
   }
 }
@@ -3232,7 +3235,6 @@ lesshat-selector {
 }
 .nav-bar--mobile {
   position: relative;
-  z-index: 2000;
   height: 64px;
   padding: 1em;
   text-align: right;
@@ -3274,6 +3276,10 @@ lesshat-selector {
     text-align: left;
     vertical-align: middle;
   }
+}
+.nav-bar__menu-button {
+  position: relative;
+  z-index: 2000;
 }
 .nav-bar__menu-button .icon--wimpy path {
   stroke: white;

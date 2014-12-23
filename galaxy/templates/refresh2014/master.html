@@ -92,7 +92,18 @@
         <script>
           $(".nav-bar__menu-button").on("click", function(e) {
             e.preventDefault();
-            $('.nav-bar--menu').toggleClass('nav-bar--menu--active');
+            $('.nav-bar--menu').show();
+
+            setTimeout(function() {
+              $('.nav-bar--menu').toggleClass('nav-bar--menu--active').one('webkitTransitionEnd', function(e) {
+                var $elm = $(e.target);
+                console.log($elm);
+                if(!$elm.hasClass('nav-bar--menu--active')) {
+                  $elm.hide();
+                }
+              });
+
+            }, 300);
           });
         </script>
 

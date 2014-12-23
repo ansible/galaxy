@@ -52,10 +52,12 @@
     height: 100vh;
     z-index: 1000;
     overflow-y: scroll;
+    display: none;
     .transform(translateX(100%));
     .transition(transform 250ms ease-in);
     .bigger-screens({
       position: static;
+      display: block;
       height: 77px;
       overflow-y: visible;
       .transform(inherit);
@@ -69,7 +71,6 @@
 
   &--mobile {
     position: relative;
-    z-index: 2000;
     height: 64px;
     padding: 1em;
     text-align: right;
@@ -117,6 +118,8 @@
   // Specific sub-module styles
 
   &__menu-button {
+    position: relative;
+    z-index: 2000;
     .icon--wimpy path {
       stroke: white;
     }
