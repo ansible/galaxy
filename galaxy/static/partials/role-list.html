@@ -1,11 +1,11 @@
-<div class="container">
-    
-    <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
+<h1 class="page-title txt-left">{{ page_title }}</h1>
+
+<div class="container-fluid l-wrapper--page">
     <div class="row">
-        <div class="col-lg-2">
+        <div class="col-md-2 col-lg-2">
         <!--Sidebar content-->
-            
+
             <div class="well tag-cloud" style="border: 2px #ccc solid; padding: 5px;">
                <input type="text" name="categories-select" id="categories-select" ng-change="change_category()" ng-model="selectedCategories" class="form-control">
                <!-- <div class="title" style="font-weight: bold; text-decoration: overline; margin-bottom: 5px;">Categories</div> -->
@@ -13,15 +13,17 @@
                    <p ng-repeat="tag in tags"><a href class="tag" ng-click="pick_category(tag)">{{ tag }}</a></p>
                </div>
             </div>
-        
+
         </div><!-- col-lg-2 sidebar -->
 
-        <div class="col-lg-10">
+        <div class="col-md-10 col-lg-10">
         <!--Body content-->
-              
+
               <ng-include src="'/static/partials/filterWidget.html'"></ng-include>
 
-              <table class="table ga-table-striped table-hover role-list-table">
+              <p class="search-filter__blank-slate" ng-show="noSearchResults()">No roles found</p>
+
+              <table ng-show="hasSearchResults()" class="table">
                   <thead>
                   <tr>
                       <th>Role</th>
@@ -44,17 +46,17 @@
                                        <span ng-show="role.average_aw_score == '0.0'" class="score-value-na">NA</span>
                                        <span ng-show="role.average_aw_score != '0.0'" class="score-value">{{ role.average_aw_score|number:1 }}</span>
                                        <span class="fld-label">Ansible Score</span>
-                                   </div> 
+                                   </div>
                                </div>
                            </div>
                            <div ng-show="display_user_info" class="userinfo">
                                <span class="username"><span class="fld-label">Author:</label> <a href="#/users/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a></span><br />
                            </div>
                        </td>
-                       <td class="col-lg-2">
+                       <td>
                            <a href="#/roles/category/{{category}}" ng-repeat="category in role.summary_fields.categories" class="category">{{category}}</a>
                        </td>
-                       <td class="col-lg-7 description">
+                       <td>
                             {{role.description}}
                             <div class="dates">
                                 <div class="date">
@@ -67,9 +69,6 @@
                                 </div>
                             </div>
                         </td>
-                   </tr>
-                   <tr ng-show="roles.length == 0">
-                       <td>No roles found.</td>
                    </tr>
                    </tbody>
                </table>

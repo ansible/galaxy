@@ -70,7 +70,8 @@ button,.button {
   .button + & {
     margin-left: @default-whitespace;
   }
-  &:hover {
+  &:hover, &:active, &:focus {
     background: transparent;
+    outline: 0;
   }
 }

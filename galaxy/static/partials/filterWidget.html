@@ -1,17 +1,27 @@
 <!-- Filter Widget -->
 <div class="row search-filter">
-    <div class="col-lg-5">
-      <input type="text" name="filter-value" id="filter-value" class="form-control" placeholder="{{ searchPlaceHolder }}" 
-          ng-model="list_data.list_filter" ng-keypress="applyFilter($event)" >
-      <a class="search-reset-start" ng-click="toggleSearchIcon()" ng-hide="showSearchIcon"><i class="fa fa-times"></i></a>
-      <a class="search-reset-start" ng-click="toggleSearchIcon()" ng-show="showSearchIcon"><i class="fa fa-search"></i></a>
-    </div>
-    <div class="col-lg-3">
+        <div class="search search-filter__search">
+          <input type="search"
+                 name="filter-value"
+                 id="filter-value"
+                 placeholder="{{ searchPlaceHolder }}"
+                 ng-model="list_data.list_filter"
+                 ng-keypress="applyFilter($event)">
+
+            <button ng-click="toggleSearchIcon()" class="button-pseudo search__button">
+                <svg ng-hide="showSearchIcon" class="icon--cancel">
+                    <use xlink:href="#icon-cancel">
+                </svg>
+                <svg ng-show="showSearchIcon" class="icon--search">
+                    <use xlink:href="#icon-search">
+                </svg>
+            </button>
+        </div>
+
         <select class="form-control" ng-change="$parent.list_data.refresh()" ng-model="sort.obj" ng-options="opt.label for opt in sort_options" >
              <option value="">-- Sort order --</option>
         </select>
-    </div>
-    <div class="col-lg-2">
-        <label class="checkbox-inline" style="padding-top: 5px;"><input type="checkbox" ng-model="list_data.reverse" name="sort-reverse" ng-change="$parent.list_data.refresh()" > Reverse Order</label>
-    </div>
+        <label class="checkbox-inline">
+            <input type="checkbox" ng-model="list_data.reverse" name="sort-reverse" ng-change="$parent.list_data.refresh()" > Reverse Order
+        </label>
 </div>

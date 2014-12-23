@@ -1,7 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'refresh2014/master.html' %}
 
 {% load galaxyhelpers %}
 
-{% block general_content %}
+{% block extra_js %}
+<script src="/static/js/list.js"></script>
+{% endblock %}
+
+{% block main_container %}
  <div ng-view></div>
 {% endblock %}

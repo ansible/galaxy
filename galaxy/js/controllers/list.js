@@ -107,6 +107,7 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
                     $scope.status = "";
                     storageFactory.save_state('role_list', query_params($scope.list_data));
                     $scope.loading = 0;
+                    $scope.hasPerformedSearches = true;
     
                     // Force window back to the top
                     window.scrollTo(0, 0);
@@ -238,6 +239,14 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
                 break;          
         }
     }
+
+    $scope.noSearchResults = function() {
+        return $scope.roles.length == 0 && $scope.hasPerformedSearches;
+    };
+
+    $scope.hasSearchResults = function() {
+        return $scope.roles.length > 0 && $scope.hasPerformedSearches;
+    };
 
     SearchInit({ 
         scope: $scope,
@@ -572,6 +581,7 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
       
     $scope.page_title = 'Browse Users';
     $scope.my_info = my_info; 
+    $scope.hasPerformedSearches = false;
 
     $scope.list_data = {
         'list_filter'        : '',
@@ -619,6 +629,7 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
                     $scope.status = "";
                     storageFactory.save_state('user_list', query_params($scope.list_data));
                     $scope.loading = 0;
+                    $scope.hasPerformedSearches = true;
 
                     // Force window back to the top
                     window.scrollTo(0, 0);
@@ -645,6 +656,14 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
     $scope.viewing_users = 1;
 
     PaginateInit({ scope: $scope });
+
+    $scope.noSearchResults = function() {
+        return $scope.users.length == 0 && $scope.hasPerformedSearches;
+    };
+
+    $scope.hasSearchResults = function() {
+        return $scope.users.length > 0 && $scope.hasPerformedSearches;
+    };
 
     $scope.hover = function(idx, fld, val) {
         $scope[fld + '_hover_' + idx] = val;
@@ -707,6 +726,7 @@ function($scope, $routeParams, $location, userFactory, ratingFactory, my_info, R
     $scope.page_title = 'User Detail';
     $scope.showRoleName = true; 
     $scope.my_info = my_info; 
+    $scope.hasPerformedSearches = false;
 
     $scope.list_data = {
         'roles' : {
@@ -738,7 +758,7 @@ function($scope, $routeParams, $location, userFactory, ratingFactory, my_info, R
     $scope.user = {'num_roles':0, 'num_ratings':0};
     $scope.roles = [];
     $scope.ratings = [];
-   
+
     PaginateInit({ scope: $scope });
  
     // controls whether or not the role info
