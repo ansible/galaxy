@@ -28,6 +28,7 @@ var roleApp = angular.module('roleApp', [
   'ui.bootstrap',
   'ui.slider',
   'listControllers',
+  'listDirectives',
   'meServices',
   'categoryServices',
   'ratingServices',

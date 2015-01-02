@@ -1,0 +1,33 @@
+.rating-form {
+    padding: 1em 0.5em;
+    background-color: white;
+    border-radius: 5px;
+    border: solid 2px darken(@background-color, 5%);
+    width: 100%;
+    margin: 0 auto;
+    &__options {
+        margin: 0;
+        dt, &__label {
+            font-size: 1.2em;
+        }
+        dd, &__rating {
+            margin: 0;
+            margin-bottom: 1em;
+        }
+    }
+
+    &__comment {
+        label {
+            font-size: 1.2em;
+        }
+        textarea {
+            display: block;
+            width: 100%;
+            height: 20em;
+        }
+        &__submit {
+            margin-top: 0.5em;
+            text-align: right;
+        }
+    }
+}

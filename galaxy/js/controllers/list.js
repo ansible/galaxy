@@ -307,9 +307,6 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
             case "average_score":
                 label="Community Score";
                 break;
-            case "average_aw_score":
-                label="Ansible Score";
-                break;
         }
         return label;  
     }
@@ -330,7 +327,7 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         // Insert HTML for rating widget after the data is ready
         var html = '<table>\n<tbody>\n';
         var set = data[setName];
-        var score = (setName == 'average_composite') ? 'average_score' : 'average_aw_score';
+        var score = 'average_score';
         set[score] = data[score];  //push the score into the set, so it gets stars 
 
         var k=0;
@@ -395,12 +392,15 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         $scope[label + '_' + 'hover' + '_' + itm] = flag; 
         }
 
+    $scope.scrollToRatingForm = function() {
+        $location.hash('review-role');
+    };
+
     $scope.getRole = function() { 
         roleFactory.getRole($routeParams.role_id)
             .success( function(data) {
                 $scope.role = data;
                 $scope.$emit('insertRatings', data, 'average_composite');
-                $scope.$emit('insertRatings', data, 'average_aw_composite');
                 $scope.$emit('getRelated', 'ratings', data.related.ratings);
                 })
             .error( function(error) {
@@ -849,3 +849,10 @@ function($scope, $routeParams, $location, userFactory, ratingFactory, my_info, R
     }
     ]);
 
+listControllers.filter('avatarSize', function() {
+    return function(input, size) {
+        if(input) {
+            return input.replace('s=96', 's=' + size);
+        }
+    };
+});

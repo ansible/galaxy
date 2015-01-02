@@ -1,0 +1,37 @@
+.role {
+
+  &__user-info {
+    float: right;
+  }
+
+}
+
+.rating {
+  &__avatar {
+    width: 38%;
+  }
+
+  &__scores {
+    table {
+      max-width: 100%;
+
+      .primary-score td {
+        font-weight: bold;
+        color: black;
+      }
+
+      td {
+        color: darken(@background-color, 65%);
+      }
+
+      td:first-child {
+        padding-right: 3em;
+      }
+    }
+  }
+
+  &__comment {
+    padding: 1em 0;
+  }
+}
+
