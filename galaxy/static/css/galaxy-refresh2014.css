@@ -2552,6 +2552,99 @@ th {
 .fa-plus-square-o:before {
   content: "\f196";
 }
+/* BOOTSTRAP SPECIFIC CLASSES
+ * -------------------------- */
+/* Bootstrap 2.0 sprites.less reset */
+[class^="icon-"],
+[class*=" icon-"] {
+  display: inline;
+  width: auto;
+  height: auto;
+  line-height: normal;
+  vertical-align: baseline;
+  background-image: none;
+  background-position: 0% 0%;
+  background-repeat: repeat;
+  margin-top: 0;
+}
+/* more sprites.less reset */
+.icon-white,
+.nav-pills > .active > a > [class^="icon-"],
+.nav-pills > .active > a > [class*=" icon-"],
+.nav-list > .active > a > [class^="icon-"],
+.nav-list > .active > a > [class*=" icon-"],
+.navbar-inverse .nav > .active > a > [class^="icon-"],
+.navbar-inverse .nav > .active > a > [class*=" icon-"],
+.dropdown-menu > li > a:hover > [class^="icon-"],
+.dropdown-menu > li > a:hover > [class*=" icon-"],
+.dropdown-menu > .active > a > [class^="icon-"],
+.dropdown-menu > .active > a > [class*=" icon-"],
+.dropdown-submenu:hover > a > [class^="icon-"],
+.dropdown-submenu:hover > a > [class*=" icon-"] {
+  background-image: none;
+}
+/* keeps Bootstrap styles with and without icons the same */
+.btn [class^="icon-"].icon-large,
+.nav [class^="icon-"].icon-large,
+.btn [class*=" icon-"].icon-large,
+.nav [class*=" icon-"].icon-large {
+  line-height: .9em;
+}
+.btn [class^="icon-"].icon-spin,
+.nav [class^="icon-"].icon-spin,
+.btn [class*=" icon-"].icon-spin,
+.nav [class*=" icon-"].icon-spin {
+  display: inline-block;
+}
+.nav-tabs [class^="icon-"],
+.nav-pills [class^="icon-"],
+.nav-tabs [class*=" icon-"],
+.nav-pills [class*=" icon-"],
+.nav-tabs [class^="icon-"].icon-large,
+.nav-pills [class^="icon-"].icon-large,
+.nav-tabs [class*=" icon-"].icon-large,
+.nav-pills [class*=" icon-"].icon-large {
+  line-height: .9em;
+}
+.btn [class^="icon-"].pull-left.icon-2x,
+.btn [class*=" icon-"].pull-left.icon-2x,
+.btn [class^="icon-"].pull-right.icon-2x,
+.btn [class*=" icon-"].pull-right.icon-2x {
+  margin-top: .18em;
+}
+.btn [class^="icon-"].icon-spin.icon-large,
+.btn [class*=" icon-"].icon-spin.icon-large {
+  line-height: .8em;
+}
+.btn.btn-small [class^="icon-"].pull-left.icon-2x,
+.btn.btn-small [class*=" icon-"].pull-left.icon-2x,
+.btn.btn-small [class^="icon-"].pull-right.icon-2x,
+.btn.btn-small [class*=" icon-"].pull-right.icon-2x {
+  margin-top: .25em;
+}
+.btn.btn-large [class^="icon-"],
+.btn.btn-large [class*=" icon-"] {
+  margin-top: 0;
+}
+.btn.btn-large [class^="icon-"].pull-left.icon-2x,
+.btn.btn-large [class*=" icon-"].pull-left.icon-2x,
+.btn.btn-large [class^="icon-"].pull-right.icon-2x,
+.btn.btn-large [class*=" icon-"].pull-right.icon-2x {
+  margin-top: .05em;
+}
+.btn.btn-large [class^="icon-"].pull-left.icon-2x,
+.btn.btn-large [class*=" icon-"].pull-left.icon-2x {
+  margin-right: .2em;
+}
+.btn.btn-large [class^="icon-"].pull-right.icon-2x,
+.btn.btn-large [class*=" icon-"].pull-right.icon-2x {
+  margin-left: .2em;
+}
+/* Fixes alignment in nav lists */
+.nav-list [class^="icon-"],
+.nav-list [class*=" icon-"] {
+  line-height: inherit;
+}
 *,
 *:before,
 *:after {
@@ -4512,6 +4605,9 @@ pre {
 .txt-middle {
   vertical-align: middle;
 }
+.block {
+  display: block;
+}
 hr {
   background-color: #ff5850;
   border: none;
@@ -5921,6 +6017,9 @@ footer .footer__copyright {
   width: 100%;
   font-style: normal;
 }
+.page__preview > * {
+  margin-top: 1em;
+}
 .alert {
   padding: 1em;
   padding-bottom: 1.5em;
@@ -6030,9 +6129,16 @@ img[src*=gravatar][src$="s=192"] {
 .avatar {
   text-align: center;
 }
+.avatar dt > .page-title,
+.avatar__caption > .page-title {
+  margin: 0;
+}
 .avatar dd,
 .avatar__image {
   margin: 0;
+}
+.page__preview .avatar {
+  margin-top: 2em;
 }
 .search-filter__search {
   width: 65%;
@@ -6108,6 +6214,48 @@ img[src*=gravatar][src$="s=192"] {
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 6px;
   padding: 15px;
+}
+.list-plain {
+  margin-top: 0;
+  padding-left: 0;
+  list-style: none;
+}
+.list-horizontal {
+  padding-left: 0;
+}
+.list-horizontal > li {
+  display: inline-block;
+  margin-left: 20px;
+}
+.list-horizontal > li:first-child {
+  margin-left: 0;
+}
+.list-horizontal--divided > li {
+  margin-left: 0;
+}
+.list-horizontal--divided > li:before {
+  display: inline-block;
+  content: "\2013";
+  padding: 0 0.65em 0 0.75em;
+}
+.list-horizontal--divided > li:first-child:before,
+.list-horizontal--divided > li.ng-hide + :not([class~=ng-hide]):before {
+  display: none;
+}
+.user-rating {
+  position: relative;
+  max-width: 65px;
+  margin: 1em auto;
+  margin-bottom: 0;
+}
+.user-rating__badge {
+  display: none;
+  position: absolute;
+  top: 1px;
+  left: 102%;
+}
+.user-rating:hover .user-rating__badge {
+  display: inline-block;
 }
 .is-hidden {
   display: none !important;

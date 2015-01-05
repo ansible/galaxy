@@ -14,9 +14,14 @@ img[src*=gravatar] {
 .avatar {
   text-align: center;
   dt, &__caption {
-    
+    > .page-title {
+      margin: 0;
+    }
   }
   dd, &__image {
     margin: 0;
+  }
+  .page__preview & {
+    margin-top: 2em;
   }
 }

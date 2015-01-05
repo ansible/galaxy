@@ -109,12 +109,13 @@
             </td>
         </tr>
         <tr ng-hide="ratings">
-            <td colspan="2">There are no ratings for ths role.</td>
+            <td colspan="2" ng-show="user">This user has not rated any roles</td>
+            <td colspan="2" ng-show="role">There are no ratings for ths role.</td>
         </tr>
     </tbody>
 
 </table>
-<div id="review-role" rating-form role="role"></div>
+<div id="review-role" ng-show="role" rating-form role="role"></div>
 <div ng-show="ratings" ng-init="target='ratings'; list_data=list_data.ratings">
     <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
 </div>

@@ -1,0 +1,17 @@
+.user-rating {
+    position: relative;
+    max-width: 65px;
+    margin: 1em auto;
+    margin-bottom: 0;
+    &__badge {
+        display: none;
+        position: absolute;
+        top: 1px;
+        left: 102%;
+    }
+    &:hover {
+        .user-rating__badge {
+            display: inline-block;
+        }
+    }
+}

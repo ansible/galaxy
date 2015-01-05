@@ -11,7 +11,7 @@ VENDOR = bootstrap/less select2 components-font-awesome/less jquery-ui/themes no
 
 space = $(eval) $(eval)
 LESS_LOAD_PATH = $(addprefix $(BOWER_COMPONENTS)/,$(VENDOR))
-LESSCFLAGS = --include-path=$(subst $(space),:,$(LESS_LOAD_PATH))
+LESSCFLAGS = --include-path=$(subst $(space),:,$(LESS_LOAD_PATH)):$(BOWER_COMPONENTS)
 
 $(OUTPUT_PATH)/%.css: $(INPUT_PATH)/*.less $(INPUT_PATH)/**/*.less
 	$(LESSC) $(LESSCFLAGS) $(INPUT_PATH)/$*.less $@

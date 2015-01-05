@@ -24,7 +24,6 @@
 var listDirectives = angular.module('listDirectives', []);
 
 listDirectives.directive('ratingForm', function() {
-    console.log('loaded');
     return {
         restrict: 'EA',
         templateUrl: '/static/partials/rating-form.html',
@@ -33,6 +32,10 @@ listDirectives.directive('ratingForm', function() {
             role: '='
         },
         controller: ['$scope', '$q', 'ratingFactory', 'meFactory', function($scope, $q, ratingFactory, meFactory) {
+            if (angular.isUndefined($scope.role)) {
+                return;
+            }
+
             var loadMyRating = function(values) {
                 return ratingFactory.
                     getMyRatingForRole(values[0].id, values[1].id);
@@ -52,7 +55,6 @@ listDirectives.directive('ratingForm', function() {
                     return null;
                 }
 
-                console.log(data);
                 // it should never be > 1, but we only
                 // care the first result anyway
                 var res = angular.copy(data['results'][0]);
@@ -110,9 +112,8 @@ listDirectives.directive('ratingForm', function() {
                     $scope.role.related.ratings,
                     post_data
                     )
-                    .catch(function(data, status) {
+                    .error(function(data, status) {
                         var msg = '';
-                        console.log(status);
                         if (status == 403) {
                             msg = 'You do not have permission to add a rating to this role.';
                         } else if(status == 409) {
@@ -129,9 +130,25 @@ listDirectives.directive('ratingForm', function() {
                 };
         }],
         link: function() {
-            console.log('linked');
         }
     };
     //     };
 
+});
+
+listDirectives.directive('ratingStars', function() {
+    return {
+    // 4.5 -> [1,1,1,.5,0]
+        restrict: 'E',
+        scope: {
+            rating: '@'
+        },
+        link: function(element, attrs, scope) {
+            console.log('ratingStars: ', scope);
+            console.log('rating: ', scope.rating);
+            var roundedRating = Math.floor(scope.rating);
+            var starsPlaceholder = new Array(roundedRating);
+            console.log(starsPlaceholder.length);
+        }
+    };
 });
