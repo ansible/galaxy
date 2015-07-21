@@ -4,6 +4,7 @@
   yum: name={{item}}
   with_items:
   - gcc
+  - git
   - httpd
   - libjpeg
   - libselinux-python
