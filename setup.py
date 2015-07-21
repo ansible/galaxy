@@ -21,6 +21,9 @@ if os.path.exists("/etc/debian_version"):
 else:
     webconfig  = "/etc/httpd/conf.d"
 
+if os.environ.get('USER','') == 'vagrant':
+    del os.link
+
 #####################################################################
 # Helper Functions
 

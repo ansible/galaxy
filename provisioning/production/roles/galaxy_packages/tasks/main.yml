@@ -6,6 +6,8 @@
   - gcc
   - httpd
   - libjpeg
+  - libselinux-python
+  - libsemanage-python
   - make
   - memcached
   - mod_wsgi

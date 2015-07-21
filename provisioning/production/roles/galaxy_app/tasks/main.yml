@@ -5,8 +5,10 @@
 
 # Install galaxy tarball
 - name: make the sdist tar
-  shell: make clean &>/dev/null && OFFICIAL=yes make sdist &>/dev/null && ls -1 $(pwd)/dist/*.tar.gz chdir="../"
+  shell: make clean 
   register: app_tar
+
+# &>/dev/null && OFFICIAL=yes make sdist &>dev/null && ls -1 $(pwd)/dist/*.tar.gz chdir="../" 
 
 - name: install the galaxy app
   pip: name={{ app_tar.stdout }}
