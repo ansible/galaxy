@@ -293,7 +293,7 @@ LOGGING = {
          'allauth_logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': "/var/log/galaxy/allauth.log",
+            'filename': "{{ galaxy_log_dir }}/allauth.log",
             'maxBytes': 500000,
             'backupCount': 4,
             'formatter': 'verbose',
@@ -301,7 +301,7 @@ LOGGING = {
          'django_logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': "/var/log/galaxy/django.log",
+            'filename': "{{ galaxy_log_dir }}/django.log",
             'maxBytes': 500000,
             'backupCount': 4,
             'formatter': 'verbose',
@@ -309,7 +309,7 @@ LOGGING = {
         'galaxy_logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': "/var/log/galaxy/galaxy.log",
+            'filename': "{{ galaxy_log_dir }}/galaxy.log",
             'maxBytes': 500000,
             'backupCount': 4,
             'formatter': 'verbose',

@@ -1,11 +1,15 @@
 ---
 
+- name: install epel
+  yum: name=epel-release
+
 - name: install RPM packages required for galaxy
   yum: name={{item}}
   with_items:
   - gcc
   - git
   - httpd
+  - iptables-services
   - libjpeg
   - libselinux-python
   - libsemanage-python
@@ -21,6 +25,7 @@
   - python-memcached
   - rabbitmq-server
   - supervisor
+  - tmux
   - zlib
 
 - name: install pip packages required for galaxy

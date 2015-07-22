@@ -111,9 +111,12 @@ server_noattach:
 server: server_noattach
 	tmux -2 attach-session -t galaxy
 
+servercc: server_noattach
+	tmux -2 -CC attach-session -t galaxy
+
 # Run the built-in development webserver (by default on http://localhost:8013).
 runserver:
-	$(PYTHON) manage.py runserver
+	$(PYTHON) manage.py runserver 0.0.0.0:8080
 
 # Run to start the background celery worker for development.
 celeryd:

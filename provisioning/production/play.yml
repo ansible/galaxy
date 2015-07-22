@@ -1,5 +1,4 @@
-- hosts: localhost
-  connection: local
+- hosts: all 
   sudo: yes
   roles:
   - { role: galaxy_app }

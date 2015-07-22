@@ -4,5 +4,5 @@ dependencies:
 - { role: ntp }
 - { role: postgresql }
 - { role: rabbitmq }
-- { role: supervisorctl, sup_init_name: "supervisord", sup_conf_location: "/etc/supervisord.conf" }
+- { role: supervisorctl, when: galaxy_env == "PROD", sup_init_name: "supervisord", sup_conf_location: "/etc/supervisord.conf" }
 - { role: iptables }
