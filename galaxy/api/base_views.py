@@ -392,7 +392,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
 
         return Response(data, status=status.HTTP_201_CREATED)
 
-    @transaction.commit_manually
+    @transaction.atomic
     def attach(self, request, *args, **kwargs):
         attached = False
         created = False
@@ -422,7 +422,6 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
                     location = None
                 created = True
             except:
-                transaction.rollback()
                 raise PermissionDenied()
 
         # Retrive the sub object (whether created or by ID).
@@ -435,7 +434,6 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
             # verify we have permission to edit before trying to update
             
             if not check_user_access(request.user, self.model, 'change', sub, data):
-                transaction.rollback()
                 raise PermissionDenied()
             else:
                 sub.__dict__.update(data)
@@ -448,7 +446,6 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
                                  'attach', parent, sub,
                                  self.relationship, data,
                                  skip_sub_obj_read_check=created):
-            transaction.rollback()
             raise PermissionDenied()
 
         # Attach the object to the collection.
@@ -478,14 +475,10 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
             headers = {}
             if location:
                 headers['Location'] = location
-            transaction.commit()
             return Response(data, status=status.HTTP_201_CREATED, headers=headers)
         elif modified or attached:
-            transaction.commit()
             return Response(data, status=status.HTTP_200_OK)
         else:
-            # nothing changed, so no need to commit
-            transaction.rollback()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
     def unattach(self, request, *args, **kwargs):

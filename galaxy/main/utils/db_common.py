@@ -19,10 +19,13 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Avg, Count
+from django.contrib.auth import get_user_model
 
-from galaxy.main.models import User, Role, RoleRating
+from galaxy.main.models import Role, RoleRating
 
-@transaction.commit_on_success()
+User = get_user_model()
+
+@transaction.atomic
 def calculate_top_roles(max_roles=5):
     """
     """
@@ -48,7 +51,7 @@ def calculate_top_roles(max_roles=5):
 
     return True
 
-@transaction.commit_on_success()
+@transaction.atomic
 def calculate_top_users():
     users = User.objects.all()
     for user in users:
@@ -64,7 +67,7 @@ def calculate_top_users():
         user.save()
     return True
 
-@transaction.commit_on_success()
+@transaction.atomic
 def calculate_top_reviewers():
     users = User.objects.all()
     for user in users:
