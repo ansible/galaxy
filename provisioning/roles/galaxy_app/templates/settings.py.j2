@@ -27,11 +27,15 @@ LOGIN_URL='/accounts/login/'
 LOGIN_REDIRECT_URL='/explore'
 LOGOUT_URL='/'
 
-EMAIL_HOST="{{ galaxy_email_hostname }}"
-EMAIL_PORT={{ galaxy_email_port }}
-EMAIL_HOST_USER="{{ galaxy_email_username }}"
-EMAIL_HOST_PASSWORD="{{ galaxy_email_password }}"
-EMAIL_USE_TLS=True
+if SITE_ENV == "DEV":
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = '{{ galaxy_log_dir }}/email' 
+else:
+    EMAIL_HOST="{{ galaxy_email_hostname }}"
+    EMAIL_PORT={{ galaxy_email_port }}
+    EMAIL_HOST_USER="{{ galaxy_email_username }}"
+    EMAIL_HOST_PASSWORD="{{ galaxy_email_password }}"
+    EMAIL_USE_TLS=True
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 

@@ -88,7 +88,8 @@ adduser:
 
 # Create initial database tables (excluding migrations).
 syncdb:
-	$(PYTHON) manage.py syncdb --noinput
+	$(PYTHON) manage.py makemigration --noinput
+	$(PYTHON) manage.py migrate --noinput
 
 # Create database tables and apply any new migrations.
 migrate: syncdb
@@ -116,7 +117,7 @@ servercc: server_noattach
 
 # Run the built-in development webserver (by default on http://localhost:8013).
 runserver:
-	$(PYTHON) manage.py runserver 0.0.0.0:8080
+	$(PYTHON) manage.py runserver 0.0.0.0:8000
 
 # Run to start the background celery worker for development.
 celeryd:

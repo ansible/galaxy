@@ -30,8 +30,8 @@
   notify: restart iptables
   tags: iptables
 
-- name: insert iptables rule for httpd (port 8080)
-  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="^.*INPUT.*tcp.*8080.*ACCEPT" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport 8080 -j ACCEPT"
+- name: insert iptables rule for httpd (port 8000)
+  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="^.*INPUT.*tcp.*8000.*ACCEPT" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport 8000 -j ACCEPT"
   when: iptables_installed.rc == 0 and iptables_exists.state != 'absent'
   notify: restart iptables
   tags: iptables
