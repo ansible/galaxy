@@ -1,7 +1,12 @@
 - name: create package.json
   command: make package.json chdir="{{ galaxy_project_dir }}"
 
+- name: install bower globally 
+  sudo: yes
+  npm: name=bower global=yes path={{ galaxy_project_dir }} 
+
 - name: install npm packages
+  sudo: yes
   command: make node_modules chdir="{{ galaxy_project_dir }}"
 
 - name: create bower.json
