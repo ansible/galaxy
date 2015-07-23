@@ -8,3 +8,4 @@ rpm-build/
 nohup.out
 .vagrant
 /Vagrantfile
+/logs
