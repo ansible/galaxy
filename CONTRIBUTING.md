@@ -65,7 +65,7 @@ vagrant box add chef/centos-7.0
 vagrant up
 ```
 
-To start the server ssh into the VM and start the server. NOTE: If you're not using iTerm2 on a MacBook, replace servercc with server. 
+To start the server ssh into the VM and run the following: 
 
 ```
 cd ~/projets/galaxy/provisioning
@@ -73,10 +73,11 @@ vagrant ssh
 cd /galaxy_devel
 make servercc 
 ```
+> *NOTE*: If you're not using iTerm2 on a MacBook, replace `servercc` with `server`. 
+
+> *NOTE*: If you're using the `vagrant-kvm` driver and have trouble accessing `http://localhost:8000` then you can run `python manage.py runserver 0.0.0.0:8000` in the guest VM, and on the host use `vagrant ssh-config` to see the IP address of the VM. Browse to that IP on port 8000 to access the site.
 
 On your local computer browse to <http://localhost:8000>, and you will see a running Galaxy.
-
-NOTE: If you're using the `vagrant-kvm` driver and have trouble accessing `http://localhost:8000` then you can run `python manage.py runserver 0.0.0.0:8000` in the guest VM, and on the host use `vagrant ssh-config` to see the IP address of the VM. Browse to that IP on port 8000 to access the site.
 
 The Vagrantfile mounts the root of the galaxy directory as a share in the VM accessible as /galaxy_devel. This means that you can continue to edit code on your local machine like you normally would and changes will reflect in the VM.
 
