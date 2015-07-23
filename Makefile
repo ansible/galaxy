@@ -152,7 +152,8 @@ adduser:
 
 # Create initial database tables (excluding migrations).
 syncdb:
-	$(PYTHON) manage.py syncdb --noinput
+	$(PYTHON) manage.py makemigration --noinput
+	$(PYTHON) manage.py migrate --noinput
 
 # Create database tables and apply any new migrations.
 migrate: syncdb
@@ -174,6 +175,9 @@ server_noattach:
 
 server: server_noattach
 	tmux -2 attach-session -t galaxy
+
+servercc: server_noattach
+	tmux -2 -CC attach-session -t galaxy
 
 # Run the built-in development webserver (by default on http://localhost:8013).
 runserver:

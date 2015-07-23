@@ -22,8 +22,6 @@ import random
 # django libs
 
 from django.conf import settings
-from django.contrib import admin
-from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Avg
@@ -43,14 +41,14 @@ from galaxy.main.fields import *
 from galaxy.main.mixins import *
 
 __all__ = [
-    'PrimordialModel', 'User', 'Platform', 'Category', 'Role', 'RoleRating', 'RoleImport', 'RoleVersion',
+    'PrimordialModel', 'Platform', 'Category', 'Role', 'RoleRating', 'RoleImport', 'RoleVersion', 'UserAlias',
 ]
 
 ###################################################################################
 # Our custom user class, brought in here so it can be used commonly throughout
 # the rest of the codebase
 
-User = get_user_model()
+#User = get_user_model()
 
 ###################################################################################
 # Abstract models that form a base for all real models
@@ -67,7 +65,7 @@ class PrimordialModel(models.Model, DirtyMixin):
 
     description   = TruncatingCharField(max_length=255, blank=True, default='')
     created       = models.DateTimeField(auto_now_add=True)
-    modified      = models.DateTimeField(auto_now=True, default=now)
+    modified      = models.DateTimeField(auto_now=True)
     active        = models.BooleanField(default=True, db_index=True)
 
     #tags = TaggableManager(blank=True)
@@ -181,7 +179,7 @@ class UserAlias(models.Model):
         verbose_name_plural = "UserAliases"
 
     alias_of = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name = 'aliases',
     )
     alias_name = models.CharField(
@@ -203,12 +201,12 @@ class Role(CommonModelNameNotUnique):
     # foreign keys
 
     owner = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name = 'roles',
         editable     = False,
     )
     authors = models.ManyToManyField(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name = 'author_on',
         editable     = False,
     )
@@ -308,7 +306,7 @@ class Role(CommonModelNameNotUnique):
         return self.ratings.filter(active=True).count()
 
     def get_average_score(self):
-        return self.ratings.filter(active=True).aggregate(avg=AvgWithZeroForNull('score'))['avg']
+        return self.ratings.filter(active=True).aggregate(avg=AvgWithZeroForNull('score'))['avg'] or 0
 
     def get_average_composite(self):
         return self.ratings.filter(active=True).aggregate(
@@ -322,7 +320,7 @@ class Role(CommonModelNameNotUnique):
         return self.ratings.filter(owner__is_staff=True, active=True).count()
         
     def get_average_aw_score(self):
-        return self.ratings.filter(owner__is_staff=True, active=True).aggregate(avg=AvgWithZeroForNull('score'))['avg']
+        return self.ratings.filter(owner__is_staff=True, active=True).aggregate(avg=AvgWithZeroForNull('score'))['avg'] or 0
 
     def get_average_aw_composite(self):
         return self.ratings.filter(owner__is_staff=True, active=True).aggregate(
@@ -430,7 +428,7 @@ class RoleRating(PrimordialModel):
     # foreign keys
 
     owner = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name = 'ratings',
     )
     role = models.ForeignKey(
@@ -438,15 +436,13 @@ class RoleRating(PrimordialModel):
         related_name = 'ratings',
     )
     up_votes = models.ManyToManyField(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name = 'user_up_votes',
-        null         = True,
         default      = None,
     )
     down_votes = models.ManyToManyField(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name = 'user_down_votes',
-        null         = True,
         default      = None,
     )
 
@@ -514,148 +510,3 @@ class RoleRating(PrimordialModel):
             return reverse('api:rating_detail', args=(self.pk,))
         else:
             return ""
-
-###################################################################################
-# Admin Models
-
-class PlatformAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(Platform, PlatformAdmin)
-
-class RoleAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(Role, RoleAdmin)
-
-class RoleVersionAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(RoleVersion, RoleVersionAdmin)
-
-class RoleImportAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(RoleImport, RoleImportAdmin)
-
-class RoleRatingAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(RoleRating, RoleRatingAdmin)
-
-class CategoryAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(Category, CategoryAdmin)
-
-class UserAliasAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(UserAlias, UserAliasAdmin)
-
-###################################################################################
-# Autofixture Classes for generating test data
-
-if settings.SITE_ENV == 'DEV':
-    from autofixture import generators, register, AutoFixture
-
-    class WeightedRandomBoolGenerator(generators.Generator):
-        """ Generates a true X% of the time """
-        def __init__(self, percent_chance=100):
-            if percent_chance > 100:
-                percent_chance = 100
-            elif percent_chance < 0:
-                percent_chance = 0
-            self.percent_chance = percent_chance
-
-        def generate(self):
-            return random.randrange(100) > (100 - self.percent_chance)
-            
-
-    class UserNameGenerator(generators.FirstNameGenerator, generators.LastNameGenerator):
-        """ Generates a username of the form f_lname """
-
-        def __init__(self, gender=None):
-            self.gender = gender
-            self.all = self.male + self.female
-
-        def generate(self):
-            if self.gender == 'm':
-                first_initial = random.choice(self.male)[0].lower()
-            elif self.gender == 'f':
-                first_initial = random.choice(self.female)[0].lower()
-            else:
-                first_initial = random.choice(self.all)[0].lower()
-            last_name = random.choice(self.surname).lower()
-            return "%s_%s" % (first_initial, last_name)
-
-    class FullNameGenerator(generators.FirstNameGenerator, generators.LastNameGenerator):
-        """ Generates a full_name of the form 'fname lname' """
-
-        def __init__(self, gender=None):
-            self.gender = gender
-            self.all = self.male + self.female
-
-        def generate(self):
-            if self.gender == 'm':
-                first_name = random.choice(self.male)
-            elif self.gender == 'f':
-                first_name = random.choice(self.female)
-            else:
-                first_name = random.choice(self.all)
-            last_name = random.choice(self.surname)
-            return "%s %s" % (first_name, last_name)
-
-    class RoleNameGenerator(generators.Generator):
-        """ Generates a role name """
-
-        software_packages = [
-            'nginx', 'httpd', 'php', 'python', 'perl', 'ruby',
-            'memcache', 'mysql', 'oracle', 'couchbase', 'hadoop',
-            'cobbler', 'haproxy', 'keepalived', 
-        ]
-
-        def generate(self):
-            return "testrole_%s" % random.choice(self.software_packages)
-
-    class UserAutoFixture(AutoFixture):
-        field_values = {
-            'full_name': FullNameGenerator(),
-            'username': UserNameGenerator(),
-            'email': generators.EmailGenerator(),
-            'password': generators.StaticGenerator('password'),
-            'is_superuser': False,
-            'is_staff': WeightedRandomBoolGenerator(percent_chance=3),
-            'is_active': True,
-        }
-        follow_fk = False
-        follow_m2m = False
-    register(User, UserAutoFixture)
-
-    class RoleAutoFixture(AutoFixture):
-        field_values = {
-            'name': RoleNameGenerator(),
-            'github_user': generators.FirstNameGenerator(),
-            'github_repo': generators.StringGenerator(min_length=6, max_length=10),
-            'description': generators.LoremGenerator(max_length=250),
-            'readme': generators.LoremHTMLGenerator(),
-            'min_ansible_version': generators.StaticGenerator('1.3'),
-            'issue_tracker_url': generators.URLGenerator(),
-            'license': generators.StaticGenerator(''),
-            'company': generators.StaticGenerator(''),
-            'is_valid': generators.StaticGenerator(True),
-        }
-    register(Role, RoleAutoFixture)
-
-    class RoleVersionAutoFixture(AutoFixture):
-        choices = []
-        for major in range(0,3):
-            for minor in range(0,9):
-                choices.append("v%d.%d" % (major,minor))
-        field_values = {
-            'name': generators.ChoicesGenerator(values=choices),
-            'loose_version': generators.StaticGenerator("0.0"),
-        }
-    register(RoleVersion, RoleVersionAutoFixture)
-
-    class RoleRatingAutoFixture(AutoFixture):
-        field_values = {
-            'reliability': generators.IntegerGenerator(min_value=1, max_value=5),
-            'documentation': generators.IntegerGenerator(min_value=1, max_value=5),
-            'code_quality': generators.IntegerGenerator(min_value=1, max_value=5),
-            'wow_factor': generators.IntegerGenerator(min_value=1, max_value=5),
-        }
-    register(RoleRating, RoleRatingAutoFixture)

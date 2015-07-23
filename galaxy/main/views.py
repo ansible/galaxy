@@ -56,6 +56,7 @@ from forms import *
 from utils import db_common
 from celerytasks.tasks import import_role
 
+User = get_user_model()
 
 #------------------------------------------------------------------------------
 # Helpers
@@ -266,65 +267,61 @@ def accounts_profile(request):
     return render_to_response('account/profile.html',context)
 
 @login_required
-@transaction.commit_manually
+@transaction.non_atomic_requests
 def accounts_role_save(request):
     regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
     if request.method == 'POST':
         try:
-            form = RoleForm(request.POST)
-            if form.is_valid():
-                # create the role, committing manually so that 
-                # we ensure the database is updated before we
-                # kick off the celery task to do the import
-                cd = form.cleaned_data
-                role = Role()
-                role.owner             = request.user
-                role.github_user       = cd['github_user']
-                role.github_repo       = cd['github_repo']
-                role.name              = cd.get('name',None) or cd['github_repo']
-                role.is_valid          = False
+            with transaction.atomic():
+                form = RoleForm(request.POST)
+                if form.is_valid():
+                    # create the role, committing manually so that 
+                    # we ensure the database is updated before we
+                    # kick off the celery task to do the import
+                    cd = form.cleaned_data
+                    role = Role()
+                    role.owner             = request.user
+                    role.github_user       = cd['github_user']
+                    role.github_repo       = cd['github_repo']
+                    role.name              = cd.get('name',None) or cd['github_repo']
+                    role.is_valid          = False
 
-                # strip out unwanted sub-strings from the name
-                role.name = regex.sub('', role.name)
+                    # strip out unwanted sub-strings from the name
+                    role.name = regex.sub('', role.name)
 
-                role.save()
-                # commit the data to the database, to make sure
-                # it's available for the celery task when it runs
-                transaction.commit()
-            else:
-                context = build_standard_context(request)
-                context["form"] = form
-                return render_to_response('account/role_add.html', context)
+                    role.save()
+                    # commit the data to the database upon exiting the
+                    # transaction.atomic() block, to make sure it's available
+                    # for the celery task when it runs
+                else:
+                    context = build_standard_context(request)
+                    context["form"] = form
+                    return render_to_response('account/role_add.html', context)
         except IntegrityError, e:
-            transaction.rollback()
             request.session["transient"] = {"status":"info","msg":"You have already created a role with that name."}
         except Exception, e:
-            transaction.rollback()
             request.session["transient"] = {"status":"info","msg":"Failed: %s" % e}
         else:
-            # start the celery task to run the import and save
-            # its info back to the database for later reference
-            task = import_role.delay(role.id)
-            role_import = RoleImport()
-            role_import.celery_task_id = task.id
-            role_import.role = role
-            role_import.save()
-            # commit the data to the database
-            transaction.commit()
+            with transaction.atomic():
+                # start the celery task to run the import and save
+                # its info back to the database for later reference
+                task = import_role.delay(role.id)
+                role_import = RoleImport()
+                role_import.celery_task_id = task.id
+                role_import.role = role
+                role_import.save()
             request.session["transient"] = {"status":"info","msg":"Role created successfully, import task started."}
     else:
-        transaction.rollback()
         request.session["transient"] = {"status":"info","msg":"Invalid method."}
     # redirect back home no matter what
     return HttpResponseRedirect(reverse('main:accounts-profile'))
 
 @login_required
-#@transaction.commit_manually
+@transaction.non_atomic_requests
 def accounts_role_refresh(request, id=None):
     try:
         role = Role(pk=id)
     except Exception, e:
-        #transaction.rollback()
         request.session["transient"] = {"status":"info","msg":"Failed: %s" % e}
     else:
         # check to see if there's already a running task for this
@@ -332,7 +329,6 @@ def accounts_role_refresh(request, id=None):
         try:
             role_import = role.imports.latest()
             if role_import.state in ("", "RUNNING"):
-                #transaction.rollback()
                 request.session["transient"] = {"status":"info","msg":"An import task for this role has already been started."}
                 return HttpResponseRedirect(reverse('main:accounts-profile'))
         except Exception, e:
@@ -340,64 +336,60 @@ def accounts_role_refresh(request, id=None):
             #request.session["transient"] = {"status":"danger","msg":"An error occurred looking up the task info for this role: %s." % e}
             #return HttpResponseRedirect(reverse('main:accounts-profile'))
             pass
-        # start the celery task to run the import and save
-        # its info back to the database for later reference
-        task = import_role.delay(role.id)
-        role_import = RoleImport()
-        role_import.name = "%s-%s" % (role.name, task.id)
-        role_import.celery_task_id = task.id
-        role_import.role = role
-        role_import.save()
-        # commit the data to the database
-        #transaction.commit()
+        with transaction.atomic():
+            # start the celery task to run the import and save
+            # its info back to the database for later reference
+            task = import_role.delay(role.id)
+            role_import = RoleImport()
+            role_import.name = "%s-%s" % (role.name, task.id)
+            role_import.celery_task_id = task.id
+            role_import.role = role
+            role_import.save()
         request.session["transient"] = {"status":"info","msg":"Role refresh scheduled successfully."}
     # redirect back home no matter what
     return HttpResponseRedirect(reverse('main:accounts-profile'))
 
 @login_required
-@transaction.commit_manually
+@transaction.non_atomic_requests
 def accounts_role_delete(request, id=None):
     try:
-        role = Role.objects.get(pk=id, owner__id=request.user.id)
-        if role.is_valid and role.active:
-            request.session["transient"] = {"status":"danger","msg":"That role is still active, you must deactivate it before deleting it."}
-        else:
-            role.delete()
-            request.session["transient"] = {"status":"info","msg":"The role was deleted successfully."}
-        transaction.commit()
+        with transaction.atomic():
+            role = Role.objects.get(pk=id, owner__id=request.user.id)
+            if role.is_valid and role.active:
+                request.session["transient"] = {"status":"danger","msg":"That role is still active, you must deactivate it before deleting it."}
+            else:
+                role.delete()
+                request.session["transient"] = {"status":"info","msg":"The role was deleted successfully."}
     except:
         request.session["transient"] = {"status":"danger","msg":"An error was encountered while deleting the role you requested."}
-        transaction.rollback()
     # redirect back home
     return HttpResponseRedirect(reverse('main:accounts-profile'))
 
 @login_required
-@transaction.commit_manually
+@transaction.non_atomic_requests
 def accounts_role_deactivate(request, id=None):
     try:
-        role = Role.objects.get(pk=id, owner__id=request.user.id)
-        if role.is_valid and role.active:
-            role.mark_inactive()
-            request.session["transient"] = {"status":"info","msg":"The role was deleted successfully."}
-        transaction.commit()
+        with transaction.atomic():
+            role = Role.objects.get(pk=id, owner__id=request.user.id)
+            if role.is_valid and role.active:
+                role.mark_inactive()
+                request.session["transient"] = {"status":"info","msg":"The role was deleted successfully."}
     except:
         request.session["transient"] = {"status":"danger","msg":"An error was encountered while deleting the role you requested."}
-        transaction.rollback()
     # redirect back home
     return HttpResponseRedirect(reverse('main:accounts-profile'))
 
 @login_required
-@transaction.commit_manually
+@transaction.non_atomic_requests
 def accounts_role_reactivate(request, id=None):
     try:
-        role = Role.objects.get(pk=id, owner__id=request.user.id)
-        if role.is_valid and not role.active:
-            role.mark_active()
-        request.session["transient"] = {"status":"info","msg":"The role was re-activated successfully."}
-        transaction.commit()
+        with transaction.atomic():
+            role = Role.objects.get(pk=id, owner__id=request.user.id)
+            if role.is_valid and not role.active:
+                role.mark_active()
+            request.session["transient"] = {"status":"info","msg":"The role was re-activated successfully."}
     except:
         request.session["transient"] = {"status":"danger","msg":"An error was encountered while re-activating the role you requested."}
-        transaction.rollback()
     # redirect back home
     return HttpResponseRedirect(reverse('main:accounts-profile'))
 

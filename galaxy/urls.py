@@ -17,8 +17,10 @@
 
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+import autofixture
 
 admin.autodiscover()
+autofixture.autodiscover()
 
 urlpatterns = patterns('',
   url(r'', include('galaxy.main.urls', namespace='main', app_name='main')),

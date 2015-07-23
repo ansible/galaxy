@@ -94,6 +94,7 @@ class CustomUserChangeForm(forms.ModelForm):
     class Meta:
         # Point to our CustomUser here instead of default `User`
         model = CustomUser
+        exclude = ()
 
     def __init__(self, *args, **kwargs):
         # Make sure we pass back in our CustomUserChangeForm and not the

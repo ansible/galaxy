@@ -2,6 +2,7 @@
 *.swp
 build/
 dist/
+logs/
 galaxy.egg-info/
 galaxy/celerybeat-schedule
 rpm-build/

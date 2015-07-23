@@ -1,4 +1,0 @@
-- hosts: localhost
-  connection: local
-  roles:
-  - { role: galaxy_app }

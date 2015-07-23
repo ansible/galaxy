@@ -22,6 +22,7 @@ import logging
 
 # django stuff
 
+from django.contrib.auth import get_user_model
 from django.db.models import Count
 
 # rest framework stuff
@@ -35,6 +36,8 @@ from galaxy.main.models import *
 
 
 __all__ = ['check_user_access']
+
+User = get_user_model()
 
 access_registry = {
     # <model_class>: [<access_class>, ...],

@@ -29,6 +29,7 @@ from rest_framework import serializers
 from rest_framework.compat import get_concrete_model
 
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Avg
@@ -42,6 +43,8 @@ from avatar.models import Avatar
 from galaxy.api.aggregators import *
 from galaxy.api.utils import html_decode
 from galaxy.main.models import *
+
+User = get_user_model()
 
 BASE_FIELDS = ('id', 'url', 'related', 'summary_fields', 'created', 'modified', 'name')
 

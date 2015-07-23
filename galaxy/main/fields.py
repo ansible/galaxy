@@ -18,9 +18,15 @@
 # Copyright (c) 2013 AnsibleWorks, Inc.
 # All Rights Reserved.
 
+import django
 from django.db import models
-from south.modelsinspector import add_introspection_rules
 from distutils.version import LooseVersion
+
+if django.VERSION < (1, 7):
+    from south.modelsinspector import add_introspection_rules
+else:
+    def add_introspection_rules(*args, **kwargs):
+        pass
 
 __all__ = ['LooseVersionField', 'TruncatingCharField']
 

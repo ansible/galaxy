@@ -3,9 +3,13 @@
 - name: create the /etc/galaxy directory
   file: path=/etc/galaxy owner=root group=apache mode=0750 state=directory
 
+- name: set /etc/galaxy permissions - development
+  file: path=/etc/galaxy owner=root group=root mode=0755
+  when: galaxy_env == "DEV"
+
 # Install galaxy tarball
 - name: make the sdist tar
-  shell: make clean &>/dev/null && OFFICIAL=yes make sdist &>/dev/null && ls -1 $(pwd)/dist/*.tar.gz chdir="../"
+  shell: make clean &>/dev/null && OFFICIAL=yes make sdist &>/dev/null && ls -1 $(pwd)/dist/*.tar.gz chdir="{{ galaxy_project_dir }}"
   register: app_tar
 
 - name: install the galaxy app
@@ -27,35 +31,57 @@
 
 - name: configure galaxy public/static directory
   file: path=/var/lib/galaxy/public/static state=directory mode=0755
+  when: galaxy_env == "PROD"
 
 - name: deploy settings file
   template: src=settings.py.j2 dest=/etc/galaxy/settings.py owner=root group=apache mode=0640
+
+- name: set settings.py file permissions - development 
+  file: path=/etc/galaxy/settings.py owner=root mode=0644 group=root
+  when: galaxy_env == "DEV"
 
 - name: create the SECRET_KEY file
   command: >
     /usr/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)" creates=/etc/galaxy/SECRET_KEY
 
-- name: adjust SECRET_KEY permissions
+- name: adjust SECRET_KEY permissions - production
   file: path=/etc/galaxy/SECRET_KEY state=file owner=root group=apache mode=0640
+  when: galaxy_env == "PROD"
+
+- name: adjust SECRET_KEY permissions - development
+  file: path=/etc/galaxy/SECRET_KEY state=file owner=root group=root mode=0644
+  when: galaxy_env == "DEV"
 
 - name: deploy apache configuration file
   template: src=galaxy.conf.j2 dest=/etc/httpd/conf.d/galaxy.conf
+  when: galaxy_env == "PROD"
   notify: restart apache
 
-- name: start services and make sure they're enabled at boot
-  service: name={{ item }} state=running enabled=true
-  with_items:
-  - memcached
-  - httpd
+- name: start apache and make sure it is enabled at boot
+  service: name=httpd state=running enabled=true
+  when: galaxy_env == "PROD"
 
-- name: create galaxy database schema
-  command: galaxy-manage syncdb --noinput
+- name: start memcached and make sure it is enabled at boot
+  service: name=memcached state=running enabled=true
 
-- name: migrate galaxy database schema
+# - name: create galaxy database schema
+#  command: galaxy-manage syncdb --noinput
+
+- name: migrate sites   
+  command: galaxy-manage migrate sites --noinput
+  ignore_errors: yes
+
+- name: migrate account 
+  command: galaxy-manage migrate account --noinput
+  ignore_errors: yes
+
+- name: migrate the full application
   command: galaxy-manage migrate --noinput
 
 - name: collect galaxy static files
   command: galaxy-manage collectstatic --clear --noinput
+  when: galaxy_env == "PROD"
 
 - name: fix galaxy log permissions
   file: path=/var/log/galaxy state=directory owner=apache group=apache recurse=yes
+  when: galaxy_env == "PROD"

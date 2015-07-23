@@ -23,17 +23,20 @@ import re
 
 # Django
 from django.core.exceptions import FieldError, ValidationError, ObjectDoesNotExist
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q
-from django.db.models.related import RelatedObject
 from django.db.models.fields import FieldDoesNotExist
+from django.db.models.fields.related import ForeignObjectRel
 
 # Django REST Framework
 from rest_framework.exceptions import ParseError
 from rest_framework.filters import BaseFilterBackend
 
 # Galaxy
-from galaxy.main.models import UserAlias, User as GalaxyUser
+from galaxy.main.models import UserAlias
+
+GalaxyUser = get_user_model()
 
 class ActiveOnlyBackend(BaseFilterBackend):
     '''
@@ -104,7 +107,7 @@ class FieldLookupBackend(BaseFilterBackend):
             return self.to_python_boolean(value, allow_none=True)
         elif isinstance(field, models.BooleanField):
             return self.to_python_boolean(value)
-        elif isinstance(field, RelatedObject):
+        elif isinstance(field, ForeignObjectRel):
             return self.to_python_related(value)
         else:
             return field.to_python(value)

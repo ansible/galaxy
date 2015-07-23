@@ -60,7 +60,7 @@ def strip_input(input):
         return input
 
 @task(throws=(Exception,))
-@transaction.commit_manually
+#@transaction.commit_manually
 def import_role(role_id, target="all"):
     # regex used to strip unwanted substrings from the 
     # role name or from any deps

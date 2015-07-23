@@ -27,11 +27,15 @@ LOGIN_URL='/accounts/login/'
 LOGIN_REDIRECT_URL='/explore'
 LOGOUT_URL='/'
 
-EMAIL_HOST="{{ galaxy_email_hostname }}"
-EMAIL_PORT={{ galaxy_email_port }}
-EMAIL_HOST_USER="{{ galaxy_email_username }}"
-EMAIL_HOST_PASSWORD="{{ galaxy_email_password }}"
-EMAIL_USE_TLS=True
+if SITE_ENV == "DEV":
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = '{{ galaxy_log_dir }}/email' 
+else:
+    EMAIL_HOST="{{ galaxy_email_hostname }}"
+    EMAIL_PORT={{ galaxy_email_port }}
+    EMAIL_HOST_USER="{{ galaxy_email_username }}"
+    EMAIL_HOST_PASSWORD="{{ galaxy_email_password }}"
+    EMAIL_USE_TLS=True
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -227,7 +231,6 @@ INSTALLED_APPS = (
     'djcelery',
     'maintenance',
     'rest_framework',
-    'south',
     # our apps
     'galaxy.accounts',
     'galaxy.main',
@@ -294,7 +297,7 @@ LOGGING = {
          'allauth_logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': "/var/log/galaxy/allauth.log",
+            'filename': "{{ galaxy_log_dir }}/allauth.log",
             'maxBytes': 500000,
             'backupCount': 4,
             'formatter': 'verbose',
@@ -302,7 +305,7 @@ LOGGING = {
          'django_logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': "/var/log/galaxy/django.log",
+            'filename': "{{ galaxy_log_dir }}/django.log",
             'maxBytes': 500000,
             'backupCount': 4,
             'formatter': 'verbose',
@@ -310,7 +313,7 @@ LOGGING = {
         'galaxy_logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': "/var/log/galaxy/galaxy.log",
+            'filename': "{{ galaxy_log_dir }}/galaxy.log",
             'maxBytes': 500000,
             'backupCount': 4,
             'formatter': 'verbose',

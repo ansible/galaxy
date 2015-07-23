@@ -204,7 +204,6 @@ INSTALLED_APPS = (
     'bootstrapform',
     'djcelery',
     'rest_framework',
-    'south',
     # our apps
     'galaxy.accounts',
     'galaxy.main',
