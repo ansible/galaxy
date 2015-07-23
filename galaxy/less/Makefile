@@ -7,7 +7,7 @@ INPUT_PATH = ./galaxy/less
 OUTPUT_PATH = ./galaxy/static/css
 LESSC = $(NODE_MODULES)/.bin/lessc
 
-VENDOR = bootstrap/less select2 components-font-awesome/less jquery-ui/themes normalize.css emerald/less lesshat/build
+VENDOR = bootstrap/less select2 fontawesome/less components-font-awesome/less jquery-ui/themes normalize.css emerald/less lesshat/build
 
 space = $(eval) $(eval)
 LESS_LOAD_PATH = $(addprefix $(BOWER_COMPONENTS)/,$(VENDOR))
@@ -17,4 +17,3 @@ $(OUTPUT_PATH)/%.css: $(INPUT_PATH)/*.less $(INPUT_PATH)/**/*.less
 	$(LESSC) $(LESSCFLAGS) $(INPUT_PATH)/$*.less $@
 
 css: $(addprefix $(OUTPUT_PATH)/,$(OUTPUT))
-

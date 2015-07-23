@@ -1,0 +1,11 @@
+- name: create package.json
+  command: make package.json chdir="{{ galaxy_project_dir }}"
+
+- name: install npm packages
+  command: make node_modules chdir="{{ galaxy_project_dir }}"
+
+- name: create bower.json
+  command: make bower.json chdir="{{ galaxy_project_dir }}"
+
+- name: install bower packages
+  bower: path={{ galaxy_project_dir }}

@@ -17,6 +17,7 @@
   - memcached
   - mod_wsgi
   - mod_ssl
+  - npm
   - python-devel
   - python-pip
   - python-psycopg2

@@ -77,10 +77,11 @@ include ./galaxy/less/Makefile
 include ./galaxy/js/Makefile
 
 static: js css
+
 # Remove temporary build files, compiled Python files.
 clean:
-	rm $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)
-	rm $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT)
+	rm -f $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT_RETINA)
+	rm -f $(SHOWCASE_HOMEPAGE_SPRITE_OUTPUT)
 	rm -rf dist/*
 	rm -rf build rpm-build *.egg-info
 	rm -rf debian deb-build
