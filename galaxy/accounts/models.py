@@ -97,22 +97,25 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
         return self.ratings.filter(active=True, role__active=True, role__is_valid=True).count()
 
     def get_rating_average(self):
-        return self.ratings.filter(active=True, role__active=True, role__is_valid=True).aggregate(
+        avg = self.ratings.filter(active=True, role__active=True, role__is_valid=True).aggregate(
                    avg_rating = AvgWithZeroForNull('score'),
                )['avg_rating']
+        return avg if avg is not None else 0
 
     def get_num_roles(self):
         return self.roles.filter(active=True, is_valid=True).count()
 
     def get_role_average(self):
-        return self.roles.filter(active=True, is_valid=True).aggregate(
+        avg = self.roles.filter(active=True, is_valid=True).aggregate(
                    avg_score = AvgWithZeroForNull('ratings__score'),
                )['avg_score']
+        return avg if avg is not None else 0
 
     def get_role_aw_average(self):
-        return self.roles.filter(ratings__owner__is_staff=True, active=True, is_valid=True).aggregate(
+        avg = self.roles.filter(ratings__owner__is_staff=True, active=True, is_valid=True).aggregate(
                    avg_score = AvgWithZeroForNull('ratings__score'),
                )['avg_score']
+        return avg if avg is not None else 0
 
     def email_user(self, subject, message, from_email=None):
         """
