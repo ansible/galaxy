@@ -1,0 +1,26 @@
+@size_ratio: 318 / 108;
+
+.main-logo {
+  &--homepage {
+    .words {
+      display: none;
+    }
+  }
+
+  &--light {
+    .main-logo__words {
+      fill: white;
+    }
+  }
+
+  // Spacing between graphic & words should be proportional
+  .main-logo__words {
+    .transform(translateX(-5%));
+  }
+
+  // Be able to animate the fill of graphic as needed
+  &__background-circle {
+    .transition(fill 250ms);
+  }
+
+}

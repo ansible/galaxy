@@ -1,4 +1,40 @@
-{% include 'header.html' %}
+{% load url from future %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us"{% if ng_app %} ng-app="{{ ng_app }}"{% endif %}{% if ng_controller %} ng-controller="{{ ng_controller }}"{% endif %}>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Ansible, Inc" />
+  <link rel="shortcut icon" href="/static/img/favicon.ico" />
+
+  <title>Ansible Galaxy | Find, reuse, and share the best Ansible content</title>
+
+  {% block extra_head %}{% endblock %}
+
+  <!-- CSS -->
+  <link rel="stylesheet" type="text/css" href="/static/css/galaxy.css" />
+
+  {% for extra in extra_css %}<link href='{{extra}}' rel='stylesheet' type='text/css' />
+  {% endfor %}
+
+  <!--[if lt IE 9]>
+    <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- Google Tag Manager Data Layer -->
+  <script>
+   dataLayer = [];
+  </script>
+  <!-- End Google Tag Manager Data Layer -->
+
+</head>
+<body>
+
+  <!-- Google Tag Manager -->
+  <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-PSB293" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-PSB293');</script>
+  <!-- End Google Tag Manager -->
 
 <div class="wrap">
 {% block body %}
@@ -42,4 +78,54 @@
   <div class="push"></div>
 </div> <!-- end wrap -->
 
-{% include 'footer.html' %}
+{% block extra_body %}{% endblock %}
+
+<div class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="social"> 
+                    <a href="https://ansibleworks.zendesk.com/anonymous_requests/new" target="_blank">
+                        <i class="fa fa-question-circle fa-lg"></i> Contact Support</a>
+                    <a href="http://twitter.com/ansible" target="_blank"><i class="fa fa-twitter fa-lg"></i></a>
+                    <a href="http://github.com/ansible/ansible" target="_blank"><i class="fa fa-github fa-lg"></i></a>
+                    <a href="http://www.linkedin.com/groups/Ansible-Users-4648083" target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="copyright">
+                    <a href="http://www.ansible.com" target="_blank">Copyright &copy; 2014 Ansible, Inc. All rights reserved.</a>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="logo">
+                    <a href="http://www.ansible.com" target="_blank"><img src="/static/img/ansible_logo_transparent.png" class="img-responsive"></a>
+                </div>
+            </div>
+        </div>
+        <div><!-- container -->
+        </div><!-- footer -->
+    </div>
+</div>
+
+<!-- begin hubspot analytics-->
+<script type="text/javascript">
+var _hsq = _hsq || [];
+_hsq.push(["setContentType", "standard-page"]);
+	(function(d,s,i,r) {
+	if (d.getElementById(i)){return;}
+	var n = d.createElement(s),e = document.getElementsByTagName(s)[0];
+	n.id=i;n.src = '//js.hs-analytics.net/analytics/'+(Math.ceil(new Date()/r)*r)+'/330046.js';
+	e.parentNode.insertBefore(n, e);
+	})(document, "script", "hs-analytics",300000);
+</script>
+<!-- end hubspot analytics-->
+
+<script type="text/javascript" src="/static/js/vendor.js"></script>
+{% for extra in extra_js %}
+<script type="text/javascript" src="{{ extra }}"></script>
+{% endfor %}
+{% block document_ready %}default{% endblock %}
+
+</body>
+</html>

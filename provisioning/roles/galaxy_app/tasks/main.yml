@@ -64,9 +64,6 @@
 - name: start memcached and make sure it is enabled at boot
   service: name=memcached state=running enabled=true
 
-# - name: create galaxy database schema
-#  command: galaxy-manage syncdb --noinput
-
 - name: migrate sites   
   command: galaxy-manage migrate sites --noinput
   ignore_errors: yes

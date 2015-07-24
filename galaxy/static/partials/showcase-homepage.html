@@ -1,0 +1,42 @@
+<div class="showcase showcase--homepage" ng-init="roles = [{
+        name: 'arista',
+        href: '/list#/roles?f=arista'
+    }, {
+        name: 'cumulus'
+    }, {
+        name: 'django'
+    }, {
+        name: 'docker'
+    }, {
+        name: 'elk-stack'
+    }, {
+        name: 'hadoop'
+    }, {
+        name: 'jenkins'
+    }, {
+        name: 'jira'
+    }, {
+        name: 'juniper'
+    }, {
+        name: 'mongodb'
+    }, {
+        name: 'mysql'
+    }, {
+        name: 'new-relic'
+    }, {
+        name: 'nodejs'
+    }, {
+        name: 'postgres'
+    }, {
+        name: 'rails'
+    }, {
+        name: 'redis'
+    }, {
+        name: 'tomcat'
+    }, {
+        name: 'wordpress'
+    }
+]">
+<a href="{{role.href}}" ng-repeat="role in roles" class="showcase__role showcase__{{role.name}}--homepage">
+</a>
+</div>

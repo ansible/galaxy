@@ -1,0 +1,111 @@
+// HELPERS
+// ----------------------------------
+// Extends, Functions, Mixins go here
+// Elipsis and break text
+.txt-truncate() {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+.txt-break() {
+  word-break: break-all;
+  word-break: break-word;
+  word-wrap: break-word;
+}
+// Clearfix
+// -----------------------------------
+// Based on micro clearfix by @necolas
+.clearfix() {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+// Retina Backgrounds
+// ----------------------------------
+// Uses a regular expression to replace split up the image
+// filename and extension; then puts it back together, but adds
+// @2x to the end for 2x pixel density devies.
+//
+.background-with-2x(@image, @other-bg: none){
+  @filename:  ~`/(.*)\.(jpg|jpeg|png|gif)/.exec(@{image})[1]`;
+  @extension: ~`/(.*)\.(jpg|jpeg|png|gif)/.exec(@{image})[2]`;
+  background-image: @other-bg, ~`"url(@{filename}.@{extension})"`;
+
+  .bigger-retina-screens({
+    background-image: @other-bg, ~`"url(@{filename}-2x.@{extension})"`;
+  });
+}
+
+.placeholder-custom(@rules) {
+  ::-webkit-input-placeholder {
+    @rules();
+  }
+
+  :-moz-placeholder { /* Firefox 18- */
+    @rules();
+  }
+
+  ::-moz-placeholder {  /* Firefox 19+ */
+    @rules();
+  }
+
+  :-ms-input-placeholder {
+    @rules();
+  }
+}
+
+.bigger-screens(@rules) {
+  @media screen and (min-width: @screen-lap) {
+    @rules();
+  }
+}
+
+.bigger-retina-screens(@rules) {
+    @media
+     (-webkit-min-device-pixel-ratio: 2),
+     (   -moz-min-device-pixel-ratio: 2),
+     (     -o-min-device-pixel-ratio: 2/1),
+     (        min-device-pixel-ratio: 2),
+     (                min-resolution: 192dpi),
+     (                min-resolution: 2dppx) { 
+        @rules();
+    }
+}
+
+.retina(@rules) {
+    @media
+    only screen and (-webkit-min-device-pixel-ratio: 2),
+    only screen and (   -moz-min-device-pixel-ratio: 2),
+    only screen and (     -o-min-device-pixel-ratio: 2/1),
+    only screen and (        min-device-pixel-ratio: 2),
+    only screen and (                min-resolution: 192dpi),
+    only screen and (                min-resolution: 2dppx) { 
+        @rules();
+    }
+}
+
+.text-inputs(@rules) {
+    input[type="email"],
+        input[type="number"],
+        input[type="password"],
+        input[type="search"],
+        input[type="tel"],
+        input[type="text"],
+        input[type="url"],
+        // Webkit & Gecko may change the display of these in the future
+        input[type="color"],
+        input[type="date"],
+        input[type="datetime"],
+        input[type="datetime-local"],
+        input[type="month"],
+        input[type="time"],
+        input[type="week"] {
+            @rules();
+        }
+
+}

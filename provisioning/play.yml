@@ -1,4 +1,10 @@
-- hosts: all 
+- name: install main components 
+  hosts: all 
   sudo: yes
   roles:
   - { role: galaxy_app }
+
+- name: install ui_tools
+  hosts: all
+  roles:
+  - { role: ui_tools, when: galaxy_env == "DEV" }

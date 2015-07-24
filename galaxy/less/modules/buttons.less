@@ -1,0 +1,79 @@
+@primary-button-color: @red-color;
+@secondary-button-color: @blue-color;
+
+button,.button {
+  .user-select(none);
+  display: inline-block;
+  position: relative;
+  margin: 0;
+  padding: 8px 12px;
+  cursor: pointer;
+  line-height: normal;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  color: @button-text-color;
+  background: @button-default;
+  border: 1px solid @default-border-color;
+  border-radius: 3px;
+  -webkit-appearance: none;
+  &:hover,
+  &:focus {
+    text-decoration: none;
+    color: @button-text-color;
+    background-color: darken(@button-default, 10%);
+  }
+  &:disabled,
+  &.is-disabled {
+    cursor: default;
+  }
+  // Button modifiers
+  &--full {
+    display: block;
+    width: 100%;
+  }
+}
+
+.button--primary {
+  .headline();
+  text-transform: uppercase;
+  background-color: @primary-button-color;
+  border: none;
+  color: white;
+  &:hover, &:focus {
+    background-color: darken(@primary-button-color, 10%);
+    color: white;
+  }
+}
+
+.button--secondary {
+  .headline();
+  text-transform: uppercase;
+  background-color: @secondary-button-color;
+  border: none;
+  color: white;
+  &:hover, &:focus {
+    background-color: darken(@secondary-button-color, 10%);
+    color: white;
+  }
+}
+
+.button-pseudo {
+  display: inline-block;
+  padding: 8px 0;
+  color: @link-color;
+  line-height: normal;
+  vertical-align: middle;
+  background: transparent;
+  border: 0;
+  .button + & {
+    margin-left: @default-whitespace;
+  }
+  &:hover, &:active, &:focus {
+    background: transparent;
+    color: @link-color;
+    outline: 0;
+    text-decoration: underline;
+  }
+}

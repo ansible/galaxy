@@ -1,0 +1,29 @@
+.text-inputs({
+    display: block;
+    background-color: white;
+    border: solid 2px darken(@background-color, 5%);
+    border-radius: 5px;
+    width: 100%;
+    padding: 0.2em;
+});
+
+label {
+    display: block;
+    padding: 0.5em 0;
+    &:first-of-type {
+        padding-top: 0;
+    }
+
+    input[type=checkbox]+& {
+        display: inline-block;
+    }
+}
+
+input+button {
+  margin-top: 1em;
+}
+
+form > button {
+    display: block;
+}
+

@@ -1,11 +1,15 @@
 *.pyc
 *.swp
+bower_components/
 build/
 dist/
 galaxy.egg-info/
 galaxy/celerybeat-schedule
+logs/
+node_modules/
 rpm-build/
+tmp/
+bower.json
 nohup.out
+package.json
 .vagrant
-/Vagrantfile
-/logs

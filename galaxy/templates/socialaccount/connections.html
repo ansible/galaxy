@@ -1,11 +1,16 @@
-{% extends "socialaccount/base.html" %}
+{% extends "refresh2014/master.html" %}
 
 {% load i18n %}
 
-{% block head_title %}{% trans "Connected Accounts" %}{% endblock %}
-{% block account_nav_socialaccount_connections  %}active{% endblock %}
+{% block title %}{% trans "Connected Accounts" %}{% endblock %}
 
-{% block account_content %}
+{% block main_container %}
+
+<h1 class="page-title">Social Accounts</h1>
+
+<p class="page__preview">Manage 3rd party accounts linked to your account. This will allow you to sign in with any of those accounts in the future.</p>
+
+<div class="l-wrapper--narrow l-wrapper--page">
 
 {% if form.accounts %}
 <p>{% blocktrans %}You can sign in to your account using any of the following third party accounts:{% endblocktrans %}</p>
@@ -15,12 +20,13 @@
 {% csrf_token %}
 
 {% if form.non_field_errors %}
-    <div class="alert alert-error">
-        <a class="close" data-dismiss="alert">&times;</a></a>
-        {% for non_field_error in form.non_field_errors %}
-             {{ non_field_error }}
-        {% endfor %}
-    </div>
+<dl class="alert alert--error">
+    <dd>
+    {% for non_field_error in form.non_field_errors %}
+         {{ non_field_error }}
+    {% endfor %}
+    </dd>
+</dl>
 {% endif %}
 
 
@@ -28,10 +34,10 @@
   <thead>
     <tr>
       <th>
-	{% trans 'Provider' %}
+  {% trans 'Provider' %}
       </th>
       <th>
-	{% trans 'Account' %}
+  {% trans 'Account' %}
       </th>
     </tr>
   </thead>
@@ -46,7 +52,7 @@
 </label>
       </td>
       <td>
-	{{account}}
+  {{account}}
       </td>
     </tr>
 {% endwith %}
@@ -54,26 +60,24 @@
   </tbody>
 </table>
 
-<div class="form-actions">
-<button class="btn btn-danger" type="submit">{% trans 'Remove' %}</button>
-</div>
-
-</fieldset>
+<button class="button--primary">{% trans 'Remove' %}</button>
 
 </form>
 
 {% else %}
-<div class="alert">
-<strong>{% trans 'None!' %}</strong> {% trans 'You currently have no social network accounts connected to this account.' %}
-</div>
+<dl class="alert alert--info">
+    <dd>{% trans 'You currently have no social network accounts connected to this account.' %}</dd>
+</dl>
 {% endif %}
 
-<h2>{% trans 'Add a 3rd Party Account' %}</h2>
+<h3>{% trans 'Add a 3rd Party Account' %}</h3>
 
-<ul class="socialaccount_providers">
-{% include "socialaccount/snippets/provider_list.html" with process="connect" %}
-</ul>
+<nav class="social-links social-links--large">
+    {% include "socialaccount/snippets/provider_list.html" with process="connect" %}
+</nav>
 
 {% include "socialaccount/snippets/login_extra.html" %}
+
+</div>
 
 {% endblock %}

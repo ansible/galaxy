@@ -1,0 +1,36 @@
+// LIST STYLES
+// -------------
+
+.list-plain {
+  margin-top: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.list-horizontal {
+  padding-left: 0;
+
+  > li {
+    display: inline-block;
+    margin-left: @default-whitespace;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+  &--divided {
+    > li {
+        margin-left: 0;
+        &:before {
+            display: inline-block;
+            content: "\2013";
+            padding: 0 0.65em 0 0.75em;
+        }
+        &:first-child,&.ng-hide+:not([class~=ng-hide]) {
+            &:before, {
+                display: none;
+            }
+        }
+    }
+  }
+}

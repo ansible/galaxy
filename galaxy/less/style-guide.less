@@ -1,0 +1,50 @@
+@import 'base/settings';
+
+.example {
+
+  border: solid thin #aaa;
+  position: relative;
+  padding: 45px 45px 15px;
+
+  &:after {
+    display: block;
+    position: absolute;
+    content: "Example";
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #959595;
+    top: 15px;
+    left: 15px;
+  }
+
+  &__wide-text {
+    width: @l-max-width + 500px;
+  }
+}
+
+.example-padded {
+  padding: 1em;
+  &--dark {
+    background-color: black;
+  }
+}
+
+.example__logo {
+  &--small {
+    width: 179px;
+    height: 61px;
+  }
+}
+
+.example + h2 {
+  margin-top: 2em;
+}
+
+.example + h3 {
+  margin-top: 2em;
+}
+
+.example+h4 {
+  margin-top: 1em;
+}
+

@@ -65,7 +65,7 @@ def get_user_avatar_url(obj):
         hashlib.md5(force_bytes(obj.email)).hexdigest(),
         urlencode(params),
     )
-    return urljoin('//www.gravatar.com/avatar/', path) # 
+    return urljoin('//www.gravatar.com/avatar/', path) #
 
 class BaseSerializer(serializers.ModelSerializer):
 
@@ -83,7 +83,7 @@ class BaseSerializer(serializers.ModelSerializer):
         opts = get_concrete_model(self.opts.model)._meta
         ret = super(BaseSerializer, self).get_fields()
         for key, field in ret.items():
-            
+
             if key == 'id' and not getattr(field, 'help_text', None):
                 field.help_text = 'Database ID for this %s.' % unicode(opts.verbose_name)
             elif key == 'url':
@@ -133,7 +133,7 @@ class BaseSerializer(serializers.ModelSerializer):
             # Can be raised by the reverse accessor for a OneToOneField.
             except ObjectDoesNotExist:
                 pass
-        return summary_fields 
+        return summary_fields
 
     def get_created(self, obj):
         if obj is None:
@@ -251,7 +251,7 @@ class UserSerializer(BaseSerializer):
         if not obj.password:
             obj.set_unusable_password()
         return super(UserSerializer, self).save_object(obj, **kwargs)
-    
+
     def get_related(self, obj):
         if obj is None or isinstance(obj, AnonymousUser):
             return {}
@@ -274,10 +274,10 @@ class UserSerializer(BaseSerializer):
             } for g in obj.roles.filter(active=True, is_valid=True).order_by('pk')
         ]
         d['ratings'] = [
-            {'id':g.id, 
-             'score':"%0.1f" % g.score, 
-             'comment':g.comment, 
-             'created':g.created, 
+            {'id':g.id,
+             'score':"%0.1f" % g.score,
+             'comment':g.comment,
+             'created':g.created,
              'modified':g.modified,
              'role_id':g.role.id,
              'role_name':g.role.name,
@@ -294,7 +294,7 @@ class UserSerializer(BaseSerializer):
         return obj.get_num_ratings()
 
     def get_rating_average(self, obj):
-        return "%0.1f" % obj.get_rating_average()
+        return "%0.1f" % obj.get_rating_average();
 
     def get_num_roles(self, obj):
         return obj.get_num_roles()
@@ -483,4 +483,3 @@ class RoleSerializer(BaseSerializer):
         if obj is None:
             return ''
         return markdown.markdown(html_decode(obj.readme), extensions=['extra'])
-

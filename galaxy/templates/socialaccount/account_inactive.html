@@ -1,11 +1,11 @@
-{% extends "socialaccount/base.html" %}
+{% extends "refresh2014/master.html" %}
 
 {% load i18n %}
 
-{% block head_title %}{% trans "Account Inactive" %}{% endblock %}
+{% block title %}{% trans "Account Inactive" %}{% endblock %}
 
-{% block content %}
-<h1>{% trans "Account Inactive" %}</h1>
+{% block main_container %}
+<h1 class="page-title">{% trans "Account Inactive" %}</h1>
 
 <p>{% trans "This account is inactive." %}</p>
 {% endblock %}

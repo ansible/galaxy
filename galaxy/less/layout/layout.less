@@ -1,0 +1,27 @@
+// LAYOUT STYLES
+// ------------------------------
+// Prefix layout styles with `l-`
+// to make the context clear
+// Main container styles
+.l-container {
+  position: relative;
+  margin: 0 auto;
+  max-width: @l-max-width;
+  width: 90%;
+}
+.l-section {
+  margin-bottom: @default-whitespace;
+}
+// Layout helpers
+.l-left {
+  float: left;
+}
+.l-right {
+  float: right;
+}
+.l-wide-container {
+  padding: 1em 0;
+  @media screen and (max-width: @l-max-width) {
+    overflow-x: scroll;
+  }
+}

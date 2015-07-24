@@ -1,0 +1,49 @@
+@error-state: #FD8B86;
+@info-state: #86CBFC;
+@good-state: #9DE7C1;
+
+.alert-state(@color; @text-color: none) {
+    @dark-color: darken(@color, 40%);
+    border-color: @dark-color;
+    background-color: @color;
+    > dt {
+        color: @dark-color;
+    }
+    > dd {
+        a {
+            text-decoration: underline;
+            &:hover, &:active, &:focus {
+                color: @dark-color;
+            }
+        }
+    }
+    > dd when (iscolor(@text-color)) {
+        color: @text-color;
+        a {
+            color: @text-color;
+        }
+    }
+}
+
+.alert {
+    padding: 1em;
+    padding-bottom: 1.5em;
+    border: solid 1px black;
+    border-radius: 5px;
+    > dt {
+        font-weight: bold;
+        font-size: 1.5em;
+    }
+    > dd {
+        margin: 0;
+    }
+    &--error {
+        .alert-state(@error-state, white);
+    }
+    &--success {
+        .alert-state(@good-state);
+    }
+    &--info {
+        .alert-state(@info-state);
+    }
+}

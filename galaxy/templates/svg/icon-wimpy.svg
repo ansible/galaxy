@@ -1,0 +1,7 @@
+<svg viewBox="0 0 35 24" class="icon--wimpy" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g id="icon-wimpy" sketch:type="MSLayerGroup" transform="translate(2.000000, 0.000000)" stroke="#FFFFFF" stroke-width="4" stroke-linecap="square">
+    <path d="M0.404328608,2 L30.3355719,2" id="icon--wimpy__line3"></path>
+    <path d="M0.404328608,12 L30.3355719,12" id="icon--wimpy__line2"></path>
+    <path d="M0.404328608,22 L30.3355719,22" class="icon--wimpy__line3"></path>
+  </g>
+</svg>

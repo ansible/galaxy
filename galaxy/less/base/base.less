@@ -1,0 +1,40 @@
+// BASE STYLES
+// -----------------------------
+// For styling elements directly
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+body {
+  font-family: @sans-serif-font;
+  line-height: @default-leading;
+  color: @default-text-color;
+  background-color: @off-white-color;
+}
+a {
+  color: @link-color;
+  text-decoration: none;
+  &:hover,
+  &:focus {
+    color: darken(@link-color, 10%);
+    text-decoration: underline;
+  }
+}
+// Base table styles
+table {
+  max-width: 100%;
+  background-color: transparent;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+// Responsive media
+img,
+object,
+embed {
+  max-width: 100%;
+}
+
+.placeholder-custom({
+  font-style: italic;
+});

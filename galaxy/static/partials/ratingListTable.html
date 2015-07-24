@@ -6,13 +6,13 @@
  *
  *  Display ratings in a TB formatted table.
  *
- * 
+ *
 -->
 
-<table class="table table-condensed table-hover ga-table-striped rating-table">
+<table class="role__ratings-list">
     <tbody>
-        <tr ng-repeat="rating in ratings"> 
-            <td class="col-lg-3 text-center">
+        <tr ng-repeat="rating in ratings">
+            <td class="rating__avatar txt-top">
                 <div ng-show="showRoleName">
                     <a class="rolename" href="#/roles/{{rating.summary_fields.role.id}}">{{rating.summary_fields.role.name}}</a>
                     <!-- <div class="username">
@@ -20,20 +20,28 @@
                         <a class="username" href="#/users/{{rating.summary_fields.role.owner_id}}">{{rating.summary_fields.role.owner_username}}</a>
                     </div> -->
                 </div>
-                <div ng-hide="showRoleName" class="username">
-                    <img ng-src="{{ rating.summary_fields.owner.avatar_url }}" >
-                    <p><a class="username" href="#/users/{{rating.summary_fields.owner.id}}">{{rating.summary_fields.owner.username}}</a><br />
+                <dl ng-hide="showRoleName" class="avatar">
+                    <dd>
+                        <img ng-src="{{ rating.summary_fields.owner.avatar_url }}" >
+                    </dd>
+                    <dt>
+                        <a class="username" href="#/users/{{rating.summary_fields.owner.id}}">
+                            {{rating.summary_fields.owner.username}}
+                        </a>
+                    </dt>
+                    <p><br />
                     <span ng-show="rating.staff_rating" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span></p>
-                </div>
+                </dl>
                 <div class="staff" ng-show="my_info.staff">
                     <p><a class="btn btn-danger btn-xs" href ng-click="staffDeleteRating(rating.id)"><i class="fa fa-trash-o"></i> Delete</a></p>
                 </div>
             </td>
             <td>
-                <table class="scores">
+                <div class="rating__scores">
+                <table>
                     <tbody>
-                        <tr ng-mouseenter="ratingHover($index,'score',true)" ng-mouseleave="ratingHover($index,'score',false)">
-                            <td>Score</td>
+                        <tr class="primary-score" ng-mouseenter="ratingHover($index,'score',true)" ng-mouseleave="ratingHover($index,'score',false)">
+                            <td>Overall Score</td>
                             <td><i ng-repeat="itm in rating.score_range" class="{{ itm.value }}"></i>
                                 <span class="badge" ng-show="score_hover_{{ $index }}">{{ rating.score | number:1 }}</span>
                             </td>
@@ -63,9 +71,10 @@
                             </td>
                         </tr>
                     </tbody>
-                </table>              
-                
-                <div class="comment">{{ rating.comment }}</div>
+                </table>
+                </div>
+
+                <div class="rating__comment">{{ rating.comment }}</div>
                 <div class="dates">
                     <div class="date">
                         <span class="fld-label">Created on:</span>
@@ -78,11 +87,11 @@
                 </div>
                 <div class="votes" ng-show="my_info.authenticated && my_info.id != rating.summary_fields.owner.id">
                     <h5>Was this rating helpful?</h5>
-                    <div class="vote"> 
+                    <div class="vote">
                         <span class="fld-label"><a href ng-click="addVote(rating.id,'up')"><i class="fa fa-thumbs-up"></i></a> Up Votes</span>
                         <span class="value">{{ rating.num_up_votes | number:0 }}</span>
                     </div>
-                    <div class="vote"> 
+                    <div class="vote">
                         <span class="fld-label"><a href ng-click="addVote(rating.id,'down')"><i class="fa fa-thumbs-down"></i></a> Down Votes</span>
                         <span class="value">{{ rating.num_down_votes | number:0 }}</span>
                     </div>
@@ -100,10 +109,13 @@
             </td>
         </tr>
         <tr ng-hide="ratings">
-            <td span="2">There are no ratings for ths role.</td>
+            <td colspan="2" ng-show="user">This user has not rated any roles</td>
+            <td colspan="2" ng-show="role">There are no ratings for ths role.</td>
         </tr>
     </tbody>
+
 </table>
+<div id="review-role" ng-show="role" rating-form role="role"></div>
 <div ng-show="ratings" ng-init="target='ratings'; list_data=list_data.ratings">
     <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
 </div>

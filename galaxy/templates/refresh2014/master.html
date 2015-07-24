@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Ansible Galaxy | {% block title %}Find, reuse and share the best Ansible content{% endblock %}</title>
+        <meta name="description" content="Ansible Galaxy: Find, reuse and share the best Ansible content.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,700|Ubuntu:400,700" type="text/css">
+        <link rel="stylesheet" href="/static/css/galaxy-refresh2014.css">
+        {% block extra_css %}{% endblock %}
+        {% block extra_head %}{% endblock %}
+
+        <!--[if lt IE 9]>
+            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+            <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+        <![endif]-->
+    </head>
+    <body ng-app="{{ng_app}}" ontouchstart="">
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+  <!-- SVG Templates -->
+  <svg class="is-hidden">
+    <symbol id="icon-search" viewBox="0 0 30 29">
+        <path d="M1.27632075,11.8092183 C1.27632075,6.27037298 6.0552451,1.76437402 11.9309718,1.76437402 C17.805445,1.76437402 22.5856228,6.27037298 22.5856228,11.8092183 C22.5856228,17.3480636 17.805445,21.8540625 11.9309718,21.8540625 C6.0552451,21.8540625 1.27632075,17.3480636 1.27632075,11.8092183 L1.27632075,11.8092183 Z M29.6283471,27.0324752 L21.0902112,18.9818279 C22.8062368,17.0360825 23.8391112,14.5372798 23.8391112,11.8092183 C23.8391112,5.608595 18.5080252,0.58262764 11.9309718,0.58262764 C5.35517186,0.58262764 0.0228323888,5.608595 0.0228323888,11.8092183 C0.0228323888,18.0092507 5.35517186,23.0358089 11.9309718,23.0358089 C14.8246496,23.0358089 17.4751508,22.0620499 19.5390194,20.4442391 L28.0771553,28.4942954 L29.6283471,27.0324752 L29.6283471,27.0324752 Z" id="icon-search" fill="#3D4D54"></path>
+    </symbol>
+
+    <symbol id="icon-cancel" viewBox="0 0 31 29" fill="#3D4E54">
+      <rect id="Rectangle-113" sketch:type="MSShapeGroup" transform="translate(15.621885, 14.500000) rotate(43.000000) translate(-15.621885, -14.500000) " x="-3.84398175" y="13.5" width="38.9317344" height="2"></rect>
+      <rect id="Rectangle-114" sketch:type="MSShapeGroup" transform="translate(15.621885, 14.500000) rotate(-225.000000) translate(-15.621885, -14.500000) " x="-3.84398175" y="13.5" width="38.9317344" height="2"></rect>
+    </symbol>
+
+    <symbol id="icon-arrow-r" viewBox="0 0 29 25">
+        <path d="M16.84,25.014 L29,12.852 L16.84,0.691 L15.426,2.105 L25.172,11.852 L0.908,11.852 L0.908,13.852 L25.172,13.852 L15.426,23.6 L16.84,25.014 Z" fill="#F9FFFC"></path>
+    </symbol>
+  </svg>
+
+        {% block header %}
+          <nav class="nav-bar nav-bar--dark nav-bar--mobile">
+            <a href="#" class="nav-bar__menu-button">
+              {% include "svg/icon-wimpy.svg" %}
+            </a>
+          </nav>
+          <nav class="nav-bar nav-bar--dark nav-bar--menu">
+            <div class="nav-bar__logo-wrapper">
+              <a href="/" class="nav-bar__main-logo main-logo--light">
+                {% include "svg/main-logo.svg" %}
+              </a>
+            </div>
+            <div class="nav-bar__links">
+              <div class="nav-bar__search">
+                {% include "partials/search.html" %}
+              </div>
+              {% include "partials/nav-links.html" with show_user=True%}
+            </div>
+
+          </nav>
+
+        {% endblock %}
+
+        <div class="l-container">
+          {% block main_container %}{% endblock %}
+        </div>
+
+        <footer>
+          <div class="footer__splash"></div>
+          <nav class="footer-nav">
+            <h4 class="footer-nav__heading">Galaxy</h4>
+            {% include "partials/nav-links.html" with class="footer-nav__link" %}
+          </nav>
+
+          <nav class="footer-nav">
+            <h4 class="footer-nav__heading">Ansible</h4>
+            <a href="#" class="footer-nav__link">About</a>
+            <a href="#" class="footer-nav__link">Docs</a>
+            <a href="#" class="footer-nav__link">Github</a>
+          </nav>
+
+          <aside class="footer__tower-promo tower-promo">
+            <h4 class="tower-promo__heading">Supercharge Ansible with <span class="is-hidden-visually">Ansible Tower</span></h4>
+            <img src="/static/img2014/tower-logo.svg" alt="Supercharge Ansible with Ansible Tower">
+          </aside>
+
+
+          <p class="footer__copyright"><a href="http://www.ansible.com" class="copyright">Copyright © 2014 Ansible, Inc. All rights reserved.</a></p>
+
+        </footer>
+
+        <script src="/static/js/vendor.js"></script>
+        {% block extra_js %}{% endblock %}
+
+        <script>
+          $(".nav-bar__menu-button").on("click", function(e) {
+            e.preventDefault();
+            $('.nav-bar--menu').show();
+
+            setTimeout(function() {
+              $('.nav-bar--menu').toggleClass('nav-bar--menu--active').one('webkitTransitionEnd', function(e) {
+                var $elm = $(e.target);
+                console.log($elm);
+                if(!$elm.hasClass('nav-bar--menu--active')) {
+                  $elm.hide();
+                }
+              });
+
+            }, 300);
+          });
+        </script>
+
+        <script>
+          var _hsq = _hsq || [];
+          _hsq.push(["setContentType", "standard-page"]);
+            (function(d,s,i,r) {
+            if (d.getElementById(i)){return;}
+            var n = d.createElement(s),e = document.getElementsByTagName(s)[0];
+            n.id=i;n.src = '//js.hs-analytics.net/analytics/'+(Math.ceil(new Date()/r)*r)+'/330046.js';
+            e.parentNode.insertBefore(n, e);
+            })(document, "script", "hs-analytics",300000);
+        </script>
+    </body>
+</html>

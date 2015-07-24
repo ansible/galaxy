@@ -1,25 +1,24 @@
 {% extends "socialaccount/base.html" %}
 
 {% load i18n %}
-{% load bootstrap %}
 
-{% block head_title %}{% trans "Signup" %}{% endblock %}
+{% block title %}{% trans "Sign Up" %}{% endblock %}
 
-{% block content %}
-<h1>{% trans "Sign Up" %}</h1>
+{% block main_container %}
+<h1 class="page-title">{% trans "Sign Up" %}</h1>
 
-<p>{% blocktrans with provider_name=account.get_provider.name site_name=site.name %}You are about to use your {{provider_name}} account to login to 
+<p class="page__preview">{% blocktrans with provider_name=account.get_provider.name site_name=site.name %}You are about to use your {{provider_name}} account to login to
 {{site_name}}. As a final step, please complete the following form:{% endblocktrans %}</p>
-    
+
+<div class="l-wrapper--page l-wrapper--narrow">
 <form class="signup" id="signup_form" method="post" action="">
   {% csrf_token %}
-  {{ form|bootstrap }}
+  {{ form }}
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
-  <div class="form-actions">
-  <button class="btn btn-primary"  type="submit">{% trans "Sign Up" %}</button>
-  </div>
+  <button class="button--primary">{% trans "Sign Up" %}</button>
 </form>
+</div>
 
 {% endblock %}

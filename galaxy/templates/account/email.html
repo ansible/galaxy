@@ -1,18 +1,20 @@
-{% extends "account/base.html" %}
+{% extends "refresh2014/master.html" %}
 
 {% load url from future %}
 {% load i18n %}
-{% load bootstrap %}
 
-{% block head_title %}{% trans "Account" %}{% endblock %}
+{% block title %}{% trans "Email Addresses" %}{% endblock %}
 
-{% block account_nav_email %}active{% endblock %}
+{% block main_container %}
 
-{% block account_content %}
+<h1 class="page-title">Email Addresses</h1>
 
+<p class="page__preview">Add, remove and prioritize email addresses associated with your account.</p>
+
+<div class="l-wrapper--page">
 {% if user.emailaddress_set.all %}
 <p>{% trans 'The following e-mail addresses are associated to your account:' %}</p>
-    
+
 <form action="{% url 'account_email' %}" class="email_list uniForm" method="post">
 {% csrf_token %}
 
@@ -20,10 +22,10 @@
   <thead>
     <tr>
       <th>
-	{% trans 'E-mail' %}
+  {% trans 'E-mail' %}
       </th>
       <th>
-	{% trans 'Status' %}
+  {% trans 'Status' %}
       </th>
     </tr>
   </thead>
@@ -32,8 +34,8 @@
     <tr>
       <td>
         <label class="radio" for="email_radio_{{forloop.counter}}" class="{% if emailaddress.primary %}primary_email{%endif%}">
-  	<input id="email_radio_{{forloop.counter}}" type="radio" name="email" {% if emailaddress.primary %}checked="checked"{%endif %} value="{{emailaddress.email}}"/>
-  	{{ emailaddress.email }}
+    <input id="email_radio_{{forloop.counter}}" type="radio" name="email" {% if emailaddress.primary %}checked="checked"{%endif %} value="{{emailaddress.email}}"/>
+    {{ emailaddress.email }}
         </label>
       </td>
       <td>
@@ -50,34 +52,35 @@
 </table>
 
 <div class="form-actions">
-      <button class="btn btn-success" type="submit" name="action_primary" >{% trans 'Make Primary' %}</button>
-      <button class="btn" type="submit" name="action_send" >{% trans 'Re-send Verification' %}</button>
-      <button class="btn btn-danger" type="submit" name="action_remove" >{% trans 'Remove' %}</button>
+      <button class="button--primary" type="submit" name="action_primary" >{% trans 'Make Primary' %}</button>
+      <button class="button--secondary" type="submit" name="action_send" >{% trans 'Re-send Verification' %}</button>
+      <button class="button-pseudo" type="submit" name="action_remove" >{% trans 'Remove' %}</button>
 </div>
 
 </fieldset>
 </form>
 
-{% else %} 
+{% else %}
 <p><strong>{% trans 'Warning:'%}</strong> {% trans "You currently do not have any e-mail address set up. You should really add an e-mail address so you can receive notifications, reset your password, etc." %}</p>
 
 {% endif %}
 
 
-    <h2>{% trans "Add E-mail Address" %}</h2>
-    
-    <form method="post" action="{% url 'account_email' %}">
-        {% csrf_token %}
-        {{ add_email_form|bootstrap }}
-        <div class="form-actions">
-          <button class="btn btn-primary" name="action_add" type="submit">{% trans "Add E-mail" %}</button>
-        </div>
-    </form>
-    
+<div class="l-wrapper--narrow--left">
+<h2>{% trans "Add E-mail Address" %}</h2>
+
+<form method="post" action="{% url 'account_email' %}">
+    {% csrf_token %}
+    {{ add_email_form }}
+    <button class="button--primary" name="action_add" type="submit">{% trans "Add E-mail" %}</button>
+</form>
+</div>
+
+</div>
 {% endblock %}
 
 
-{% block extra_body %}
+{% block extra_js %}
 <script type="text/javascript">
 $(function(){
 $("button[name='action_remove']").click(function(){

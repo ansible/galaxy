@@ -1,0 +1,122 @@
+@background-overlay: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));
+.hero {
+  .background-with-2x('/static/img2014/spacey-bg-small.jpg', @background-overlay);
+  background-color: #02040A;
+  background-size: 744px auto;
+  background-position: top center;
+  background-repeat: no-repeat;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+
+  .bigger-screens({
+    background-size: 100% auto;
+    .background-with-2x('/static/img2014/spacey-bg.jpg', @background-overlay);
+  });
+
+  &__actions {
+    margin-top: 2.2em;
+    color: white;
+    background: rgba(0,0,0,0.45);
+    border: solid 1px #333;
+    border-left: none;
+    border-right: none;
+    .bigger-screens({
+      border: none;
+      background: none;
+    });
+  }
+}
+
+.about {
+    width: 70%;
+    margin: 0 auto;
+}
+
+.action {
+  // margin: 0 auto;
+  p {
+    font-size: 1.5em;
+    line-height: 1.2;
+    .bigger-screens({
+      font-size: 1.2em;
+    });
+  }
+  .bigger-screens({
+    padding: 1em 0;
+  });
+
+  &--copy:extend(.action all) {
+  }
+
+  &--signup {
+    margin-bottom: 3.5em;
+    text-align: center;
+    .bigger-screens({
+      border-right: solid 2px white;
+      margin-bottom: 0;
+      padding: 1.4em 0;
+    });
+  }
+}
+
+
+.hero__tagline {
+    max-width: 450px;
+    margin: 0 auto;
+    background-image: radial-gradient(62% 50%, rgba(3,1,10,0.29) 37%, rgba(0,0,0,0.00) 71%);
+    .bigger-screens({
+        margin-top: 6em;
+    });
+}
+
+.hero__title {
+  // background-image: radial-gradient(50% 41%,  rgba(255,255,255,0.67) 37%,  rgba(255,255,255,0.00) 92%);
+  background: rgba(255,255,255,0.5);
+  padding: 1.6em 0 0.9em;
+  width: 100%;
+  text-align: center;
+  margin-top: 1.5em;
+  border: solid thin white;
+  border-left: none;
+  border-right: none;
+  // padding: 1.5em;
+  .bigger-screens({
+    margin-top: 5em;
+    // padding: 2em;
+  });
+
+}
+
+.hero__search {
+  margin: 0 auto;
+  margin-top: 3em;
+  text-align: center;
+  width: 90%;
+  .bigger-screens({
+    width: 60%;
+  });
+
+  @media screen and (min-width: @screen-lap) {
+    margin-top: 4.5em;
+  }
+}
+
+.tagline {
+  font-size: 1em;
+  color: white;
+  text-align: center;
+  font-weight: normal;
+  @media screen and (min-width: 390px) and (max-width: @screen-lap) {
+    font-size: 1.4em;
+  }
+  .bigger-screens({
+    font-size: 2em;
+  });
+}
+
+.title {
+  .e-4--palm();
+  max-width: 328px;
+  height: auto;
+}

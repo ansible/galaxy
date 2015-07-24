@@ -1,0 +1,69 @@
+<table style="width:100%">
+<tr ng-hide="role.ratings">
+    <td colspan="2"><h4>Add the first rating</h4></td>
+</tr>
+<tr ng-show="role.ratings">
+    <td colspan="2"><h4>Rate this role</h4></td>
+</tr>
+<tr>
+    <td colspan="2">
+        <div class="row rating-form">
+          <div class="col-sm-3">
+            <dl class="rating-form__options">
+                <dt>Wow! Factor:</dt>
+                <dd>
+                    <rating value="rating.wow_factor"
+                            max="5"
+                            state-on="'fa fa-star fa-lg'"
+                            state-off="'fa fa-star-o fa-lg'"
+                            ng-class="{'text-danger':highlight.wow_factor}"
+                            ng-click="highlight.wow_factor=true">
+                    </rating>
+                </dd>
+                <dt>Documentation:</dt>
+                <dd>
+                  <rating value="rating.documentation"
+                          max="5"
+                          state-on="'fa fa-star fa-lg'"
+                          state-off="'fa fa-star-o fa-lg'"
+                          ng-class="{'text-danger':highlight.documentation}"
+                          ng-click="highlight.documentation=true">
+                  </rating>
+                </dd>
+                <dt>Reliability:</dt>
+                <dd>
+                    <rating value="rating.reliability"
+                            max="5"
+                            state-on="'fa fa-star fa-lg'"
+                            state-off="'fa fa-star-o fa-lg'"
+                            ng-class="{'text-danger':highlight.reliability}"
+                            ng-click="highlight.reliability=true">
+                    </rating>
+                </dd>
+                <dt>Code Quality:</dt>
+                <dd>
+                    <rating value="rating.code_quality"
+                            max="5"
+                            state-on="'fa fa-star fa-lg'"
+                            state-off="'fa fa-star-o fa-lg'"
+                            ng-class="{'text-danger':highlight.code_quality}"
+                            ng-click="highlight.code_quality=true">
+                    </rating>
+                </dd>
+            </dl>
+          </div>
+          <div class="col-sm-9 rating-form__comment">
+              <label for="comment">
+                  Comment (5000 characters max, <span ng-class="(rating.comment.length>5000) ? 'text-danger':''">{{5000 - rating.comment.length}} left</span>):
+              </label>
+              <textarea name="comment" id="comment" ng-model="rating.comment" ng-trim="false" class="form-control"></textarea>
+              <div class="rating-form__comment__submit">
+                  <button class="button--primary" ng-click="ok()">
+                      Rate this Role
+                  </button>
+              </div>
+        </div>
+      </div>
+    </td>
+</tr>
+</table>

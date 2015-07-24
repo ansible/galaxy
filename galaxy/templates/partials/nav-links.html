@@ -1,0 +1,36 @@
+{% load avatar_tags %}
+
+{% with navClass=class|default:'nav-bar__link' %}
+
+<a href="/showcase" class="{{navClass}}">
+  Showcase
+</a>
+<a href="/intro" class="{{navClass}}">
+  About
+</a>
+<a href="{% url 'main:list-category' %}#/roles" class="{{navClass}}">
+  Roles
+</a>
+<a href="{% url 'main:list-category' %}#/users" class="{{navClass}}">
+  Users
+</a>
+{% if show_user and user.is_authenticated %}
+<a href="{% url 'account_logout' %}" class="{{navClass}}">
+  Sign Out
+</a>
+
+<a href="{% url 'main:accounts-role-add' %}" class="{{navClass}}">Add Role</a>
+
+<a href="{% url 'main:accounts-profile' %}" class="{{navClass}}">
+  {% avatar user 96 class="avatar" %}
+</a>
+{% elif not user.is_authenticated %}
+<a href="{% url 'account_login' %}" class="{{navClass}}">
+  Sign In
+</a>
+<a href="{% url 'account_signup' %}" class="{{navClass}}">
+  Sign Up
+</a>
+{% endif %}
+
+{% endwith %}

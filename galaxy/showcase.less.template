@@ -1,0 +1,73 @@
+{
+  // Default options
+  'functions': true
+}
+
+/*
+LESS variables are information about icon's compiled state, stored under its original file name
+
+.icon-home {
+  width: @icon-home-width;
+}
+
+The large array-like variables contain all information about a single icon
+@icon-home: x y offset_x offset_y width height total_width total_height image_path;
+*/
+{{#items}}
+@{{name}}-x: {{px.x}};
+@{{name}}-y: {{px.y}};
+@{{name}}-offset-x: {{px.offset_x}};
+@{{name}}-offset-y: {{px.offset_y}};
+@{{name}}-width: {{px.width}};
+@{{name}}-height: {{px.height}};
+@{{name}}-total-width: {{px.total_width}};
+@{{name}}-total-height: {{px.total_height}};
+@{{name}}-image: '{{{escaped_image}}}';
+@{{name}}: {{px.x}} {{px.y}} {{px.offset_x}} {{px.offset_y}} {{px.width}} {{px.height}} {{px.total_width}} {{px.total_height}} '{{{escaped_image}}}';
+{{/items}}
+
+.showcase {
+{{#items}}
+    .showcase-logo({{itemKey}}, {{display_coords.px.x}}, {{display_coords.px.y}});
+{{/items}}
+}
+
+{{#options.functions}}
+/*
+The provided classes are intended to be used with the array-like variables
+
+.icon-home {
+  .sprite-width(@icon-home);
+}
+.icon-email {
+  .sprite(@icon-email);
+}
+*/
+.sprite-width(@sprite) {
+  width: ~`"@{sprite}".split(', ')[4]`;
+}
+
+.sprite-height(@sprite) {
+  height: ~`"@{sprite}".split(', ')[5]`;
+}
+
+.sprite-position(@sprite) {
+  @sprite-offset-x: ~`"@{sprite}".split(', ')[2]`;
+  @sprite-offset-y: ~`"@{sprite}".split(', ')[3]`;
+  background-position: @sprite-offset-x  @sprite-offset-y;
+}
+
+.sprite-image(@sprite) {
+  {{! DEV: We perform a slice due to a trailing brace from string coercion of arrays }}
+  @sprite-image: ~`"@{sprite}".split(', ')[8].slice(1, -2)`;
+  background-image: url(@sprite-image);
+}
+
+.sprite(@sprite) {
+  .sprite-image(@sprite);
+  .sprite-position(@sprite);
+  .sprite-width(@sprite);
+  .sprite-height(@sprite);
+}
+
+{{/options.functions}}
