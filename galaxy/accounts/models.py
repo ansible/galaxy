@@ -99,7 +99,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     def get_rating_average(self):
         return self.ratings.filter(active=True, role__active=True, role__is_valid=True).aggregate(
                    avg_rating = AvgWithZeroForNull('score'),
-               )['avg_rating']
+               )['avg_rating'] or 0
 
     def get_num_roles(self):
         return self.roles.filter(active=True, is_valid=True).count()
@@ -107,12 +107,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     def get_role_average(self):
         return self.roles.filter(active=True, is_valid=True).aggregate(
                    avg_score = AvgWithZeroForNull('ratings__score'),
-               )['avg_score']
+               )['avg_score'] or 0
 
     def get_role_aw_average(self):
         return self.roles.filter(ratings__owner__is_staff=True, active=True, is_valid=True).aggregate(
                    avg_score = AvgWithZeroForNull('ratings__score'),
-               )['avg_score']
+               )['avg_score'] or 0
 
     def email_user(self, subject, message, from_email=None):
         """
