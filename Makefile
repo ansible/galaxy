@@ -47,12 +47,7 @@ push:
 # Install third-party requirements needed for development environment (using
 # locally downloaded packages).
 requirements:
-	@if [ "$(VIRTUAL_ENV)" ]; then \
-	    (cd requirements && pip install --no-index -r dev_local.txt); \
-	    $(PYTHON) fix_virtualenv_setuptools.py; \
-	else \
-	    (cd requirements && sudo pip install --no-index -r dev_local.txt); \
-	fi
+	cd requirements && pip install --no-index -r dev.txt
 
 # Install third-party requirements needed for development environment
 # (downloading from PyPI if necessary).

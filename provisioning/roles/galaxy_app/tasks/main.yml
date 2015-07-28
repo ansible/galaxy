@@ -10,24 +10,12 @@
 # Install galaxy tarball
 - name: make the sdist tar
   shell: make clean &>/dev/null && OFFICIAL=yes make sdist &>/dev/null && ls -1 $(pwd)/dist/*.tar.gz chdir="{{ galaxy_project_dir }}"
+  when: galaxy_env == "PROD"
   register: app_tar
 
 - name: install the galaxy app
   pip: name={{ app_tar.stdout }}
-
-# TODO: Install galaxy rpm
-## - name: install EL6 galaxy yum repository
-##   template: src=yum_repo.j2 dest=/etc/yum.repos.d/galaxy.repo
-##   register: yum_repo
-##   when: aw_repo_url is defined
-##
-## - name: yum clean cached galaxy repository information
-##   command: yum clean all --disablerepo=* --enablerepo=ansibleworks-galaxy
-##   when: aw_repo_url is defined and yum_repo.changed
-##
-## - name: install galaxy RPM for EL6
-##   yum: name={{ galaxy_package_name }} enablerepo=ansibleworks-galaxy disable_gpg_check=yes state=latest
-##   when: aw_repo_url is defined
+  when: galaxy_env == "PROD"
 
 - name: configure galaxy public/static directory
   file: path=/var/lib/galaxy/public/static state=directory mode=0755
@@ -63,9 +51,6 @@
 
 - name: start memcached and make sure it is enabled at boot
   service: name=memcached state=running enabled=true
-
-# - name: create galaxy database schema
-#  command: galaxy-manage syncdb --noinput
 
 - name: migrate sites   
   command: galaxy-manage migrate sites --noinput
