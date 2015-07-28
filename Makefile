@@ -47,7 +47,7 @@ push:
 # Install third-party requirements needed for development environment (using
 # locally downloaded packages).
 requirements:
-	cd requirements && pip install --no-index -r dev.txt
+	cd requirements && pip install -r dev.txt
 
 # Install third-party requirements needed for development environment
 # (downloading from PyPI if necessary).

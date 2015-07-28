@@ -1,7 +1,7 @@
 # PIP requirements for Galaxy development/build environment (downloaded from
 # PyPI). Install using "pip install -r dev.txt".
 
-django==1.8.3
+Django==1.8.3
 decorator
 django-allauth
 django-autofixture
