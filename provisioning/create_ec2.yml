@@ -1,0 +1,7 @@
+- name: 'create ec2 instance'
+  hosts: local
+  vars:
+    ec2_name_prefix: "{{ lookup('env','EC2_NAME_PREFIX') }}"
+    ansible_install_method: "{{ lookup('env','ANSIBLE_INSTALL_METHOD') }}"
+  roles:
+    - { role: create_ec2 }
