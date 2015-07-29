@@ -15,6 +15,8 @@
     - { role: create_ec2 }
 
 - name: 'add authorized keys'
-  hosts: ec2 
+  hosts: ec2
+  vars:
+     authorized_keys: True
   roles:
     - { role: auth_keys }
