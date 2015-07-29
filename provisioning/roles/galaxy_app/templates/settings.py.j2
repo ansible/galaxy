@@ -13,6 +13,7 @@ ADMINS = (
 SITE_ENV="{{ galaxy_site_env }}"
 SITE_NAME="{{ galaxy_site_name }}"
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SEND_EMAIL={{ galaxy_send_email }}
 
 if SITE_ENV == "DEV":
     DEBUG = True
@@ -25,15 +26,15 @@ LOGIN_URL='/accounts/login/'
 LOGIN_REDIRECT_URL='/explore'
 LOGOUT_URL='/'
 
-if SITE_ENV == "DEV":
-    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = '{{ galaxy_log_dir }}/email'
-else:
+if SEND_EMAIL:
     EMAIL_HOST="{{ galaxy_email_hostname }}"
     EMAIL_PORT={{ galaxy_email_port }}
     EMAIL_HOST_USER="{{ galaxy_email_username }}"
     EMAIL_HOST_PASSWORD="{{ galaxy_email_password }}"
     EMAIL_USE_TLS=True
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = '{{ galaxy_log_dir }}/email'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 

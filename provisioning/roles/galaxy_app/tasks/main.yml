@@ -10,12 +10,11 @@
 # Install galaxy tarball
 - name: make the sdist tar
   shell: make clean &>/dev/null && OFFICIAL=yes make sdist &>/dev/null && ls -1 $(pwd)/dist/*.tar.gz chdir="{{ galaxy_project_dir }}"
-  when: galaxy_env == "PROD"
+  when: galaxy_make_sdist
   register: app_tar
 
 - name: install the galaxy app
   pip: name={{ app_tar.stdout }}
-  when: galaxy_env == "PROD"
 
 - name: configure galaxy public/static directory
   file: path=/var/lib/galaxy/public/static state=directory mode=0755
@@ -68,5 +67,5 @@
   when: galaxy_env == "PROD"
 
 - name: fix galaxy log permissions
-  file: path=/var/log/galaxy state=directory owner=apache group=apache recurse=yes
+  file: path={{ galaxy_log_dir }} state=directory owner=apache group=apache recurse=yes
   when: galaxy_env == "PROD"

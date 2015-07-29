@@ -3,6 +3,8 @@
 galaxy_site_env: "DEV"
 galaxy_site_name: "galaxy.local"
 galaxy_site_aliases: []
+galaxy_make_sdist: True
+galaxy_send_email: False
 
 # Outbound SMTP settings
 
