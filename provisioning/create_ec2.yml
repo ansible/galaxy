@@ -1,7 +1,20 @@
+- name: 'create ec2_inventory file'
+  hosts: local
+  tasks:
+    - shell: echo "[ec2]">ec2_inventory
+
 - name: 'create ec2 instance'
   hosts: local
   vars:
-    ec2_name_prefix: "{{ lookup('env','EC2_NAME_PREFIX') }}"
     ansible_install_method: "{{ lookup('env','ANSIBLE_INSTALL_METHOD') }}"
+    ec2_name_prefix: "{{ lookup('env', 'INSTANCE_NAME_PREFIX') }}"
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_KEY') }}"
+    delete_on_start: "{{ lookup('env', 'DELETE_ON_START') }}"
   roles:
     - { role: create_ec2 }
+
+- name: 'add authorized keys'
+  hosts: ec2 
+  roles:
+    - { role: auth_keys }

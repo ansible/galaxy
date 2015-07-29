@@ -20,7 +20,7 @@
     region: '{{ ec2_region }}'
     name: '{{ ec2_key_name }}'
     key_material: "{{ item }}"
-  with_file: {{ ec2_public_key }}
+  with_file: '{{ ec2_public_key }}'
   register: keypair
 
 - name: create/locate ec2 instance(s)
@@ -30,17 +30,19 @@
     region: '{{ ec2_region }}'
     instance_type: '{{ ec2_instance_type }}'
     instance_tags:
-        Name: '{{ ec2_name_prefix }}-centos-7.0-x86_64'
+        Name: '{{ ec2_name_prefix }}-{{ item.description }}'
         ANSIBLE_INSTALL_METHOD: '{{ansible_install_method|default("nightly")}}'
-    group: '{{ item.security_group|default(ec2_security_group) }}'
+    group: '{{ ec2_security_group }}'
     key_name: '{{ ec2_key_name }}'
-    image: 'ami-96a818fe' 
+    image: '{{ item.name }}'
     exact_count: 1
     count_tag:
-        Name: '{{ ec2_name_prefix }}-centos-7.0-x86_64'
+        Name: '{{ ec2_name_prefix }}-{{ item.description }}'
         ANSIBLE_INSTALL_METHOD: '{{ansible_install_method|default("nightly")}}'
     wait: yes
+    wait_timeout: 600
   register: ec2
+  with_items: '{{ ec2_images }}'
 
 # Despite using `wait` on the ec2 module, instances aren't accepting ssh
 # connections immediately.  The following will ensure systems are ready for use
@@ -53,13 +55,22 @@
   with_items: ec2.results
   when: ec2 is defined
 
-- name: add_host
+- name: debug ec2
+  debug: var=ec2
+  when: ec2 is defined
+
+- name: 'add new host to in memory inventory'
   # add_host: name={{ ec2_name_prefix }}-{{ item.item.name }}
   add_host: name={{ item.tagged_instances[0].public_dns_name }}
      groups=cloud,ec2,{{ item.item.name }},{{item.item.groups|default('')}}
-     ansible_ssh_user={{ item.item.user }}
+     ansible_ssh_user=centos
      ansible_ssh_host={{ item.tagged_instances[0].public_dns_name }}
      # ansible_ssh_private_key_file={{ ec2_keypair_private }}
+  with_items: ec2.results
+  when: ec2 is defined
+
+- name: 'add the new host to ec2_inventory file'
+  shell: echo "{{ item.tagged_instances[0].public_dns_name }} ansible_ssh_user=centos">>ec2_inventory
   with_items: ec2.results
   when: ec2 is defined
 
