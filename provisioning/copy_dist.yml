@@ -12,7 +12,6 @@
   tasks:
     - copy: src={{ hostvars[local]['app_tar.stdout'] }} dest=/tmp/{{ hostvars[local][app_tar.stdout] | basename }}
       register: copy_result
-      when: app_tar is defined
 
 - name: add galaxy_dist_file variable
   hosts: local
