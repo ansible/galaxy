@@ -14,7 +14,7 @@
   register: app_tar
 
 - name: check for existing tar file
-  shell: $(pwd)/dist/*.tar.gz chdir="{{ galaxy_project_dir }}"
+  shell: ls -1 {{ galaxy_dist_file }}
   when: not galaxy_make_sdist
   register: app_tar
 

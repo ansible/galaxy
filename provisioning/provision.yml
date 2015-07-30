@@ -1,4 +1,5 @@
-- hosts: all 
+- name: provision hosts
+  hosts: all 
   sudo: yes
   roles:
   - { role: galaxy_app }

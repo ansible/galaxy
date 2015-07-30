@@ -1,0 +1,18 @@
+---
+# copy the distribution tar file to the remote hosts
+
+- name: get the name of the dist file
+  hosts: local
+  tasks:
+    - shell: ls -1 $(pwd)/dist/*.tar.gz chdir="{{ playbook_dir }}/.."
+      register: app_tar
+
+- name: copy the dist file
+  hosts: cloud
+  tasks:
+    - copy: src={{ playbook_dir }}/../dist/{{ app_tar.stdout }} dest=/tmp/{{ app_tar.stdout }}
+
+- name: add galaxy_dist_file variable
+  hosts: local
+  tasks:
+    - shell: echo "galaxy_dist_file: '/tmp/{{ app_tar.stdout }}'">>{{ playbook_dir }}/vars.yml
