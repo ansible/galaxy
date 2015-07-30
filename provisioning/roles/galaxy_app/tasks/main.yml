@@ -71,6 +71,9 @@
   command: galaxy-manage collectstatic --clear --noinput
   when: galaxy_env == "PROD"
 
+# semanage fcontext -a -t httpd_log_t "/var/log/galaxy(/.*)?"
+# restorecon -R -v /var/log/galaxy
+
 - name: fix galaxy log permissions
-  file: path={{ galaxy_log_dir }} state=directory owner=apache group=apache recurse=yes
+  file: path={{ galaxy_log_dir }} state=directory owner=apache group=apache recurse=yes seuser=system_u serole=object_r setype=httpd_log_t
   when: galaxy_env == "PROD"
