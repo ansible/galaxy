@@ -60,7 +60,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "ansible" do |ansible|
      # ansible.verbose = "vvv"
-     ansible.playbook = "play.yml"
+     ansible.playbook = "provision.yml"
   end
   # Enable provisioning with CFEngine. CFEngine Community packages are
   # automatically installed. For example, configure the host as a
