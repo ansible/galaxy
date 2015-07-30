@@ -9,7 +9,7 @@
       register: app_tar
 
 - name: copy the dist file
-  hosts: cloud 
+  hosts: ec2 
   tasks:
     - name: copy
       copy: src={{ app_tar.stdout }} dest=/tmp/{{ app_tar.stdout | basename }}
