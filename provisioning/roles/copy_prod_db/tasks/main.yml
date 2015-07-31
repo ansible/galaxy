@@ -48,10 +48,10 @@
   shell: pg_restore -Fc -U galaxy -d galaxy /tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}
 
 - name: "Remove backup archive"
-  file: path="/tmp/{{ data_list.s3_keys[-1] }}" state=absent
+  file: path="/tmp/{{ data_list.s3_keys[-1] | basename }}" state=absent
 
 - name: "Remove uncompressed backup archive"
-  file: path="tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}" state=absent 
+  file: path="/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}" state=absent 
 
 - name: "Make sure postgresql is running"
   service: name=postgresql state=running
