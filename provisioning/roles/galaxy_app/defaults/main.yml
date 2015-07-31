@@ -7,6 +7,7 @@ galaxy_site_name: "galaxy.local"
 galaxy_site_aliases: []
 galaxy_make_sdist: True
 galaxy_send_email: False
+galaxy_configure_supervisor: False
 
 # Outbound SMTP settings
 
@@ -25,4 +26,3 @@ galaxy_ssl_cachain: null
 # Github API settings
 
 galaxy_github_api_token: ""
-

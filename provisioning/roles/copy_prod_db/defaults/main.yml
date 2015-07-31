@@ -1,0 +1,10 @@
+# s3 settings
+galaxy_bucket: galaxy.ansibleworks.com
+galaxy_encryption_password: ""
+
+# Postgresql DB settings
+galaxy_postgresql_dbname: "galaxy"
+galaxy_postgresql_username: "galaxy"
+galaxy_postgresql_password: "galaxy"
+galaxy_postgresql_hostname: "127.0.0.1"
+galaxy_postgresql_port: "5432"

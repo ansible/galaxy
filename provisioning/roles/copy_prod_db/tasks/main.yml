@@ -1,0 +1,57 @@
+#
+# Get most recent backup of prod database from s3, decrypt and import it into an empty database on a dev or qa node
+#
+
+- name: get the list of database backups
+  s3:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    bucket: "{{ galaxy_bucket }}"
+    prefix: data
+    mode: list
+  register: data_list
+
+- name: "show the name fo the file"
+  debug: msg="{{ data_list.s3_keys[-1] }}"
+
+- name: get the most recent backup
+  s3:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    bucket: "{{ galaxy_bucket }}"
+    object: "{{ data_list.s3_keys[-1] }}"
+    mode: get
+    dest: "/tmp/{{ data_list.s3_keys[-1] | basename }}"
+    overwrite: True
+
+- name: unarchive the backup file
+  shell: gunzip -c "/tmp/{{ data_list.s3_keys[-1] | basename }}" | openssl enc -aes-256-cbc -d -a -pass pass:{{ galaxy_encryption_passwword }} >>/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}
+
+# The following tasks assume the postgresql role was already applied
+- name: drop the galaxy database
+  postgresql_db: name=galaxy owner=galaxy state=absent
+
+- name: create the galaxy database
+  postgresql_db: name=galaxy owner=galaxy state=present
+
+# Prevent pg_restore from prompting for a password
+- name: add galaxy user to pgpass file
+  lineinfile:
+      dest: "~/.pgpass"
+      state: present
+      create: yes
+      line: "{{ galaxy_postgresql_hostname }}:{{ galaxy_postgresql_port }}:{{ galaxy_postgresql_dbname }}:{{ galaxy_postgresql_username }}:{{ galaxy_postgresql_password }}"
+
+- name: set pgpass permisssions
+  file: path=~/.pgpass mode=0600
+
+# Assume we're importing the schema and data into an empty database
+- name: import the backup
+  shell: pg_restore -Fc -U galaxy -d galaxy /tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}
+
+- name: Make sure postgres is running
+  service: name=postgresql state=running
+
+# Perform migrations
+- name: Perform migrations
+  command: galaxy-manage migrate --noinput
