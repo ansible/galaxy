@@ -46,15 +46,13 @@
 # Assume we're importing the schema and data into an empty database
 - name: "Import the backup"
   shell: pg_restore -Fc -U galaxy -d galaxy /tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}
+  notify: restart postgres
 
 - name: "Remove backup archive"
   file: path="/tmp/{{ data_list.s3_keys[-1] | basename }}" state=absent
 
 - name: "Remove uncompressed backup archive"
-  file: path="/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}" state=absent 
-
-- name: "Make sure postgresql is running"
-  service: name=postgresql state=running
+  file: path="/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}" state=absent
 
 # Perform migrations
 - name: "Make Migrations"
