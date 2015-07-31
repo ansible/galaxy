@@ -1,7 +1,7 @@
 #
 # Get most recent backup of prod database from s3, decrypt and import it into an empty database on a dev or qa node
 #
-
+---
 - name: "Get the list of database backups"
   s3:
     aws_access_key: "{{ aws_access_key }}"
