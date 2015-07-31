@@ -6,6 +6,6 @@
     aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY') }}"
     aws_secret_key: "{{ lookup('env','AWS_SECRET_KEY') }}"
     galaxy_encryption_passwword: "{{ lookup('env', 'GALAXY_ENCRYPTION_PASSWORD') }}"
-    galaxy_postgresql_password: "{{ lookup('env', 'GALAXY_POSTGRESQL_PASSWORD') | replace("","galaxy") }}"
+    galaxy_postgresql_password: "{{ lookup('env', 'GALAXY_POSTGRESQL_PASSWORD') | replace('','galaxy') }}"
   roles:
     - { role: copy_prod_db }
