@@ -2,6 +2,6 @@
   hosts: all
   sudo: yes
   vars:
-      galaxy_postgresql_password: "{{ lookup('env', 'GALAXY_POSTGRESQL_PASSWORD') | replace("","galaxy") }}"
+      galaxy_postgresql_password: "{{ lookup('env', 'GALAXY_POSTGRESQL_PASSWORD') | default('galaxy',true) }}"
   roles:
   - { role: galaxy_app }
