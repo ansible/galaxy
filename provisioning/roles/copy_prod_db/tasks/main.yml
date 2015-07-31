@@ -2,11 +2,11 @@
 
 - name: "Get the list of database backups"
   s3:
-    aws_access_key: "{{ aws_access_key }}"
+    aws_access_key "{{ aws_access_key }}"
     aws_secret_key: "{{ aws_secret_key }}"
     bucket: "{{ galaxy_bucket }}"
-    prefix: data
-    mode: list
+    prefix: "data"
+    mode: "list"
   register: data_list
 
 - name: "Show the name fo the file"
