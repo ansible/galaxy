@@ -1,26 +1,14 @@
 ---
 
 - name: "Get the list of database backups"
-  s3:
-    aws_access_key: "{{ aws_access_key }}"
-    aws_secret_key: "{{ aws_secret_key }}"
-    bucket: "{{ galaxy_bucket }}"
-    prefix: data
-    mode: list
+  s3: aws_access_key="{{ aws_access_key }}" aws_secret_key="{{ aws_secret_key }}" bucket="{{ galaxy_bucket }} prefix=data mode=list
   register: data_list
 
 - name: "Show the name fo the file"
   debug: msg="{{ data_list.s3_keys[-1] }}"
 
 - name: "Get the most recent backup"
-  s3:
-    aws_access_key: "{{ aws_access_key }}"
-    aws_secret_key: "{{ aws_secret_key }}"
-    bucket: "{{ galaxy_bucket }}"
-    object: "{{ data_list.s3_keys[-1] }}"
-    mode: get
-    dest: "/tmp/{{ data_list.s3_keys[-1] | basename }}"
-    overwrite: True
+  s3: aws_access_key="{{ aws_access_key }}" aws_secret_key="{{ aws_secret_key }}" bucket="{{ galaxy_bucket }}" object="{{ data_list.s3_keys[-1] }}" mode=get dest="/tmp/{{ data_list.s3_keys[-1] | basename }}" overwrite=True
 
 - name: "Unarchive the backup file"
   shell: gunzip -c "/tmp/{{ data_list.s3_keys[-1] | basename }}" | openssl enc -aes-256-cbc -d -a -pass pass:{{ galaxy_encryption_passwword }} >>/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}
@@ -34,11 +22,7 @@
 
 # Prevent pg_restore from prompting for a password
 - name: "Add galaxy user to pgpass file"
-  lineinfile:
-      dest: "~/.pgpass"
-      state: present
-      create: yes
-      line: "{{ galaxy_postgresql_hostname }}:{{ galaxy_postgresql_port }}:{{ galaxy_postgresql_dbname }}:{{ galaxy_postgresql_username }}:{{ galaxy_postgresql_password }}"
+  lineinfile: dest="~/.pgpass" state=present create=yes line="{{ galaxy_postgresql_hostname }}:{{ galaxy_postgresql_port }}:{{ galaxy_postgresql_dbname }}:{{ galaxy_postgresql_username }}:{{ galaxy_postgresql_password }}"
 
 - name: "Set pgpass permisssions"
   file: path=~/.pgpass mode=0600
