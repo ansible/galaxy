@@ -8,6 +8,7 @@ galaxy_site_aliases: []
 galaxy_make_sdist: True
 galaxy_send_email: False
 galaxy_configure_supervisor: False
+galaxy_official_build: no
 
 # Outbound SMTP settings
 

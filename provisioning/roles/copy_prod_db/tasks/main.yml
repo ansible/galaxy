@@ -10,7 +10,8 @@
   register: data_list
 
 - name: "Show the name fo the file"
-  debug: msg="{{ data_list.s3_keys[-1] }}"
+  debug:
+    msg: "{{ data_list.s3_keys[-1] }}"
 
 - name: "Get the most recent backup"
   s3:
@@ -27,10 +28,16 @@
 
 # The following tasks assume the postgresql role was already applied
 - name: "Drop the galaxy database"
-  postgresql_db: name=galaxy owner=galaxy state=absent
+  postgresql_db:
+    name: galaxy
+    owner: galaxy
+    state: absent
 
 - name: "Create an empty galaxy database"
-  postgresql_db: name=galaxy owner=galaxy state=present
+  postgresql_db:
+    name: galaxy
+    owner: galaxy
+    state: present
 
 # Prevent pg_restore from prompting for a password
 - name: "Add galaxy user to pgpass file"
@@ -41,7 +48,9 @@
     line: "{{ galaxy_postgresql_hostname }}:{{ galaxy_postgresql_port }}:{{ galaxy_postgresql_dbname }}:{{ galaxy_postgresql_username }}:{{ galaxy_postgresql_password }}"
 
 - name: "Set pgpass permisssions"
-  file: path=~/.pgpass mode=0600
+  file:
+    path: ~/.pgpass
+    mode: 0600
 
 # Assume we're importing the schema and data into an empty database
 - name: "Import the backup"
@@ -49,10 +58,14 @@
   notify: restart postgres
 
 - name: "Remove backup archive"
-  file: path="/tmp/{{ data_list.s3_keys[-1] | basename }}" state=absent
+  file:
+    path: "/tmp/{{ data_list.s3_keys[-1] | basename }}"
+    state: absent
 
 - name: "Remove uncompressed backup archive"
-  file: path="/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}" state=absent
+  file:
+    path: "/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}"
+    state: absent
 
 # Perform migrations
 - name: "Make Migrations"

@@ -9,7 +9,7 @@
 
 # Install galaxy tarball
 - name: make the sdist tar
-  shell: make clean &>/dev/null && OFFICIAL=yes make sdist &>/dev/null && ls -1 $(pwd)/dist/*.tar.gz chdir="{{ galaxy_project_dir }}"
+  shell: make clean &>/dev/null && OFFICIAL={{ galaxy_official_build }} make sdist &>/dev/null && ls -1 $(pwd)/dist/*.tar.gz chdir="{{ galaxy_project_dir }}"
   when: galaxy_make_sdist
   register: app_tar
 
@@ -28,7 +28,7 @@
 - name: deploy settings file
   template: src=settings.py.j2 dest=/etc/galaxy/settings.py owner=root group=apache mode=0640
 
-- name: set settings.py file permissions - development 
+- name: set settings.py file permissions - development
   file: path=/etc/galaxy/settings.py owner=root mode=0644 group=root
   when: galaxy_env == "DEV"
 
@@ -56,11 +56,11 @@
 - name: start memcached and make sure it is enabled at boot
   service: name=memcached state=running enabled=true
 
-- name: migrate sites   
+- name: migrate sites
   command: galaxy-manage migrate sites --noinput
   ignore_errors: yes
 
-- name: migrate account 
+- name: migrate account
   command: galaxy-manage migrate account --noinput
   ignore_errors: yes
 
