@@ -121,10 +121,8 @@ REST_FRAMEWORK = {
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, 'galaxy', 'templates'),
-            os.path.join(BASE_DIR, 'bootstrapform', 'templates'),
-         ],
+        'DIRS': [os.path.join(BASE_DIR, 'galaxy', 'templates')],
+        'APP_DIRS': True,
          'OPTIONS': {
             'debug': True,
             'context_processors': [
