@@ -1,7 +1,7 @@
 <div class="container explore">
-        
+
     <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
-        
+
     <div class="row table-row">
         <div class="col-lg-4">
             <!-- Top Categories -->
@@ -72,7 +72,7 @@
             </div>
         </div>
     </div> <!-- row -->
-    
+
     <div class="row table-row">
         <div class="col-lg-4">
             <table class="table table-condensed table-hover">
@@ -113,18 +113,20 @@
                        <i class="fa fa-sort" ng-show="top_reviewers.sort_col !== 'num_ratings'"></i>
                        </a>
                     </th>
+                    <!--
                     <th class="text-right nowrap"><a href ng-click="toggle_item(top_reviewers, 'karma')">Karma
                        <i class="fa fa-caret-down" ng-show="top_reviewers.sort_col == 'karma'"></i>
                        <i class="fa fa-sort" ng-show="top_reviewers.sort_col !== 'karma'"></i>
                        </a>
                     </th>
+                -->
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="user in top_reviewers.data | orderBy:top_reviewers.sort_col:top_reviewers.reverse">
                     <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
                     <td class="text-right">{{ user.num_ratings | number:0 }}</td>
-                    <td class="text-right">{{ user.karma | number:0 }}</td>
+                    <!-- <td class="text-right">{{ user.karma | number:0 }}</td> -->
                 </tr>
                 <tr><td colspan="3" style="padding-top: 15px;"><a ng-href="{{ top_reviewers.more_link }}">View more...</a></td></tr>
                 </tbody>
@@ -152,10 +154,10 @@
             </div>
         </div>
     </div>
-    
+
     <!--
     <div class="well users-table">
-        <h4>User Rankings</h4> 
+        <h4>User Rankings</h4>
         <div class="row">
            <div class="col-lg-4 blurb blurb-first" ng-include="'/static/partials/main-top-users.html'"></div>
            <div class="col-lg-4 blurb" ng-include="'/static/partials/main-top-reviewers.html'"></div>

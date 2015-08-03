@@ -1,6 +1,6 @@
 
 <div class="container user-detail">
-    
+
     <div class="row staff" ng-show="my_info.staff">
         <div class="col-lg-12">
             <div class="pull-right">
@@ -10,7 +10,7 @@
     </div>
 
     <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
-    
+
     <div class="well">
         <div class="row">
             <div class="col-lg-12">
@@ -25,24 +25,25 @@
                     <div class="user-role-stats">
                         <strong>Roles contributed: {{ user.num_roles | number:0 }}</strong>
                         <div class="score" ng-show="user.avg_role_score == '0.0'">
-                            <span class="score-value-na">NA</span>  
+                            <span class="score-value-na">NA</span>
                             <span class="fld-label">Average Community Score</span>
                         </div>
                         <div class="score" ng-show="user.avg_role_score != '0.0'">
-                           <span class="score-value">{{user.avg_role_score|number:1}}</span> 
+                           <span class="score-value">{{user.avg_role_score|number:1}}</span>
                            <span class="fld-label">Average Community Score</span>
                         </div>
                         <div class="score" ng-show="user.avg_role_aw_score === null || user.avg_role_aw_score === undefined || user.avg_role_aw_score == '0.0'">
-                           <span class="score-value-na">NA</span>  
+                           <span class="score-value-na">NA</span>
                            <span class="fld-label">Average Ansible Score</span>
                         </div>
                         <div class="score" ng-hide="user.avg_role_aw_score === null || user.avg_role_aw_score === undefined || user.avg_role_aw_score == '0.0'">
-                           <span class="score-value">{{ user.avg_role_aw_score | number:1 }}</span>  
+                           <span class="score-value">{{ user.avg_role_aw_score | number:1 }}</span>
                            <span class="fld-label">Average Ansible Score</span>
                         </div>
                     </div>
                     <div class="user-review-stats">
                         <strong>Ratings contributed: {{ user.num_ratings | number:0 }}</strong>
+                        <!--
                         <div class="karma" ng-show="user.karma <= 0">
                           <span class="score-value-na">NA</span>
                           <span class="fld-label"> Karma</span>
@@ -51,14 +52,15 @@
                           <span class="score-value">{{ user.karma|number:0 }}</span>
                           <span class="fld-label"> Karma</span>
                         </div>
-                    </div>   
+                        -->
+                    </div>
                 </div><!-- statistics -->
             </div><!-- col-lg-12 -->
         </div><!-- row -->
     </div>
-    
+
     <div class="row">
-        <div class="col-lg-12">  
+        <div class="col-lg-12">
             <tabset>
                 <tab heading="Roles ({{user.num_roles}})">
                     <ng-include src="'/static/partials/roleListTable.html'"></ng-include>
@@ -69,5 +71,5 @@
             </tabset>
         </div>
     </div>
-    
+
 </div> <!-- end container -->

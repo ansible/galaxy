@@ -1,10 +1,10 @@
 <div class="container">
-    
+
     <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
     <div class="row">
         <div class="col-lg-12">
-                    
+
             <ng-include src="'/static/partials/filterWidget.html'"></ng-include>
 
             <table class="table ga-table-striped table-hover user-list-table">
@@ -20,15 +20,17 @@
                     <td class="user">
                         <a href="#/users/{{user.id}}"><img ng-src="{{user.avatar_url}}" /></a>
                         <div class="info">
-                            <div><a class="username" href="#/users/{{user.id}}">{{ user.username }}</a> 
+                            <div><a class="username" href="#/users/{{user.id}}">{{ user.username }}</a>
                                 <span class="name" ng-show="user.full_name">{{ user.full_name }}</span><br \>
                                 <span ng-show="user.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span>
                             </div>
+                            <!--
                             <div class="score">
                                 <span class="fld-label">Karma</span>
                                 <span class="score-value-na" ng-show="user.karma <= 0">NA</span>
                                 <span class="score-value" ng-show="user.karma > 0">{{user.karma}}</span>
                             </div>
+                            -->
                             <div class="date">
                                 <span class="fld-label">Date Joined</span>
                                 <span class="value">{{ user.date_joined | date:"short" }}</span>
@@ -68,7 +70,7 @@
                         <div>
                             <div class="text">{{ rating.comment }}</div>
                             <table class="inner-table" ng-show="user.summary_fields.ratings.length">
-                                <tr ng-mouseenter="hover($index,'rating',true)" ng-mouseleave="hover($index,'rating',false)" 
+                                <tr ng-mouseenter="hover($index,'rating',true)" ng-mouseleave="hover($index,'rating',false)"
                                     ng-show="user.summary_fields.ratings.length">
                                     <td>Score</td>
                                     <td><i ng-repeat="itm in user.rating_range" class="{{ itm.value }}"></i>

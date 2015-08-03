@@ -25,11 +25,11 @@ var mainControllers = angular.module('mainControllers', []);
 
 mainControllers.controller('MainCtrl', ['$scope', 'roleFactory', 'userFactory', 'categoryFactory',
 function($scope, roleFactory, userFactory, categoryFactory) {
-    
+
     $scope.page_title = 'Explore';
     $scope.results_per_page = 10;
     $scope.loading = 0;
-    
+
     $scope.data_names = ["categories","top_roles","new_roles","top_users","top_reviewers","new_users"];
 
     $scope.restore_state = function () {
@@ -42,12 +42,12 @@ function($scope, roleFactory, userFactory, categoryFactory) {
                 default_sort_col = 'num_roles';
                 more_link = '/list#/roles/';
                 data_function = $scope.getCategories;
-            } 
+            }
             else if (entry == 'top_roles') {
                 default_sort_col = 'average_score';
                 more_link = '/list#/roles/sort/sort-by-community-score';
                 data_function = $scope.getTopRoles;
-            } 
+            }
             else if (entry == 'new_roles') {
                 default_sort_col = 'created';
                 more_link = '/list#/roles/sort/sort-by-created-on-date';
@@ -57,9 +57,9 @@ function($scope, roleFactory, userFactory, categoryFactory) {
                 default_sort_col = 'avg_role_score';
                 more_link = '/list#/users/sort/sort-by-community-score';
                 data_function = $scope.getTopUsers;
-            } 
+            }
             else if (entry == 'top_reviewers') {
-                default_sort_col = 'karma';
+                default_sort_col = 'num_ratings';
                 more_link = '/list#/users/sort/sort-by-top-reviewers';
                 data_function = $scope.getTopReviewers;
             }
@@ -69,7 +69,7 @@ function($scope, roleFactory, userFactory, categoryFactory) {
                 data_function = $scope.getNewUsers;
             }
             /*
-            if (typeof(Storage) !== "undefined" && localStorage[entry]) { 
+            if (typeof(Storage) !== "undefined" && localStorage[entry]) {
                 //if local storage is available, and we previously stored a value
                 $scope[entry] = JSON.parse(localStorage[entry]);
             }
@@ -92,10 +92,10 @@ function($scope, roleFactory, userFactory, categoryFactory) {
     }
     $scope.removeSaveState = $scope.$on('saveState', function(e, entry) {
         if (typeof(Storage) !== "undefined") {
-            //localStorage.setItem(entry, JSON.stringify($scope[entry])); 
+            //localStorage.setItem(entry, JSON.stringify($scope[entry]));
         }
         });
-    
+
     $scope.toggle_item = function (item, sort_col) {
         if (item.sort_col != sort_col) {
             item.sort_col = sort_col;
@@ -200,4 +200,3 @@ function($scope, roleFactory, userFactory, categoryFactory) {
     $scope.getNewUsers();
   }
 ]);
-
