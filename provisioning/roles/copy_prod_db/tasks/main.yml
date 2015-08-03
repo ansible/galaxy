@@ -64,7 +64,7 @@
 
 - name: "Remove uncompressed backup archive"
   file:
-    path: "/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}"
+    path: "/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\\.gz$','') }}"
     state: absent
 
 # Perform migrations
