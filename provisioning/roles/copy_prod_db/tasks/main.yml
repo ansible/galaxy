@@ -45,6 +45,7 @@
     dest: "~/.pgpass"
     state: present
     create: yes
+    regexp: "^\\*:\\*:galaxy:galaxy"
     line: "{{ galaxy_postgresql_hostname }}:{{ galaxy_postgresql_port }}:{{ galaxy_postgresql_dbname }}:{{ galaxy_postgresql_username }}:{{ galaxy_postgresql_password }}"
 
 - name: "Set pgpass permisssions"
