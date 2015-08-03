@@ -9,13 +9,11 @@
 
 # Install galaxy tarball
 - name: make the sdist tar
-  shell: make clean &>/dev/null && OFFICIAL={{ galaxy_official_build }} make sdist &>/dev/null && ls -1 $(pwd)/dist/*.tar.gz chdir="{{ galaxy_project_dir }}"
+  shell: make clean &>/dev/null && OFFICIAL={{ galaxy_official_build }} make sdist &>/dev/null  chdir="{{ galaxy_project_dir }}"
   when: galaxy_make_sdist
-  register: app_tar
 
 - name: check for existing tar file
-  shell: ls -1 {{ galaxy_dist_file }}
-  when: not galaxy_make_sdist
+  shell: ls -1 {{ galaxy_project_dir }}/dist/*.tar.gz 
   register: app_tar
 
 - name: install the galaxy app
