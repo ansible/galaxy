@@ -13,7 +13,7 @@
   when: galaxy_make_sdist
 
 - name: check for existing tar file
-  shell: ls -1 {{ galaxy_project_dir }}/dist/*.tar.gz 
+  shell: ls -1 {{ galaxy_dist_dir }}/*.tar.gz 
   register: app_tar
 
 - name: install the galaxy app
