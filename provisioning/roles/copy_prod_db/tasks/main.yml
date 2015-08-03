@@ -24,7 +24,7 @@
     overwrite: True
 
 - name: "Unarchive the backup file"
-  shell: gunzip -c "/tmp/{{ data_list.s3_keys[-1] | basename }}" | openssl enc -aes-256-cbc -d -a -pass pass:{{ galaxy_encryption_passwword }} >>/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}
+  shell: gunzip -c "/tmp/{{ data_list.s3_keys[-1] | basename }}" | openssl enc -aes-256-cbc -d -a -pass pass:{{ galaxy_encryption_password }} >>/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}
 
 # The following tasks assume the postgresql role was already applied
 - name: "Drop the galaxy database"
