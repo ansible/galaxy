@@ -5,6 +5,7 @@ dist/
 galaxy.egg-info/
 galaxy/celerybeat-schedule
 known_hosts
+provisioning/library/
 rpm-build/
 nohup.out
 provisioning/ec2_inventory
