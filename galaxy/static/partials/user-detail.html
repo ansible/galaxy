@@ -26,12 +26,13 @@
                         <strong>Roles contributed: {{ user.num_roles | number:0 }}</strong>
                         <div class="score" ng-show="user.avg_role_score == '0.0'">
                             <span class="score-value-na">NA</span>
-                            <span class="fld-label">Average Community Score</span>
+                            <span class="fld-label">Average Score</span>
                         </div>
                         <div class="score" ng-show="user.avg_role_score != '0.0'">
                            <span class="score-value">{{user.avg_role_score|number:1}}</span>
-                           <span class="fld-label">Average Community Score</span>
+                           <span class="fld-label">Average Score</span>
                         </div>
+                        <!--
                         <div class="score" ng-show="user.avg_role_aw_score === null || user.avg_role_aw_score === undefined || user.avg_role_aw_score == '0.0'">
                            <span class="score-value-na">NA</span>
                            <span class="fld-label">Average Ansible Score</span>
@@ -40,6 +41,7 @@
                            <span class="score-value">{{ user.avg_role_aw_score | number:1 }}</span>
                            <span class="fld-label">Average Ansible Score</span>
                         </div>
+                        -->
                     </div>
                     <div class="user-review-stats">
                         <strong>Ratings contributed: {{ user.num_ratings | number:0 }}</strong>

@@ -50,12 +50,13 @@
                                 <td>{{ user.num_roles | number:0 }}</td>
                             </tr>
                             <tr ng-mouseenter="hover($index,'avg_role_score',true)" ng-mouseleave="hover($index,'avg_role_score',false)">
-                                <td>Avg. Community Score</td>
+                                <td>Avg. Score</td>
                                 <td><span class="score-value-na" ng-show="user.avg_role_score == '0.0'">NA</span>
                                     <span class="score-value" ng-show="user.avg_role_score > 0"><i ng-repeat="itm in user.avg_role_score_range" class="{{ itm.value }}"></i></span>
                                     <span class="badge" ng-show="user.avg_role_score > 0 && avg_role_score_hover_{{ $index }}">{{ user.avg_role_score | number:1 }}</span>
                                 </td>
                             </tr>
+                            <!--
                             <tr ng-mouseenter="hover($index,'avg_role_aw_score',true)" ng-mouseleave="hover($index,'avg_role_aw_score',false)">
                                 <td>Avg. Ansible Score</td>
                                 <td><span class="score-value-na" ng-show="user.avg_role_aw_score == '0.0'">NA</span>
@@ -63,6 +64,7 @@
                                     <span class="badge" ng-show="user.avg_role_aw_score > 0 && avg_role_aw_score_hover_{{ $index }}">{{ user.avg_role_score | number:1 }}</span>
                                 </td>
                             </tr>
+                            -->
                             </tbody>
                         </table>
                     </td>

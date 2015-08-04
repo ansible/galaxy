@@ -1,11 +1,11 @@
 <div class="container">
-    
+
     <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
     <div class="row">
         <div class="col-lg-2">
         <!--Sidebar content-->
-            
+
             <div class="well tag-cloud" style="border: 2px #ccc solid; padding: 5px;">
                <input type="text" name="categories-select" id="categories-select" ng-change="change_category()" ng-model="selectedCategories" class="form-control">
                <!-- <div class="title" style="font-weight: bold; text-decoration: overline; margin-bottom: 5px;">Categories</div> -->
@@ -13,12 +13,12 @@
                    <p ng-repeat="tag in tags"><a href class="tag" ng-click="pick_category(tag)">{{ tag }}</a></p>
                </div>
             </div>
-        
+
         </div><!-- col-lg-2 sidebar -->
 
         <div class="col-lg-10">
         <!--Body content-->
-              
+
               <ng-include src="'/static/partials/filterWidget.html'"></ng-include>
 
               <table class="table ga-table-striped table-hover role-list-table">
@@ -38,13 +38,15 @@
                                    <div class="score">
                                        <span ng-show="role.average_score == '0.0'" class="score-value-na">NA</span>
                                        <span ng-show="role.average_score != '0.0'" class="score-value">{{ role.average_score|number:1 }}</span>
-                                       <span class="fld-label">Community Score</span>
+                                       <span class="fld-label">Score</span>
                                    </div>
+                                   <!--
                                    <div class="score">
                                        <span ng-show="role.average_aw_score == '0.0'" class="score-value-na">NA</span>
                                        <span ng-show="role.average_aw_score != '0.0'" class="score-value">{{ role.average_aw_score|number:1 }}</span>
                                        <span class="fld-label">Ansible Score</span>
-                                   </div> 
+                                   </div>
+                                   -->
                                </div>
                            </div>
                            <div ng-show="display_user_info" class="userinfo">

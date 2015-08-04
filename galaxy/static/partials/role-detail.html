@@ -8,14 +8,14 @@
         </div>
     </div>
 
-    <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>   
+    <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
-    <div class="row"> 
+    <div class="row">
         <div class="col-lg-9">
             <h1 class="rolename">{{role.name}}</h1>
-           
+
             <div class="description">{{role.description}}</div>
-            
+
             <div class="rating-section">
                 <div class="role-ratings">
                     <div class="score">
@@ -24,15 +24,17 @@
                         </table>
                         <div class="breakdown" id="average_composite_breakdown" ng-show="role.num_ratings"></div>
                     </div>
+                    <!--
                     <div class="score">
                         <table ng-hide="role.num_aw_ratings">
                             <tr><td>Ansible Score</td><td>NA</td>
                         </table>
                         <div class="breakdown" id="average_aw_composite_breakdown" ng-show="role.num_aw_ratings"></div>
                     </div>
+                    -->
                 </div>
             </div>
-            
+
             <div class="actions">
                 <a class="btn btn-success" ng-href="https://github.com/{{role.github_user}}/{{role.github_repo}}"><i class="fa fa-github"></i> Github Repo</a>
                 <a class="btn btn-default" ng-href="{{ role.issue_tracker_url }}"
@@ -73,7 +75,7 @@
                 <h3>Installation</h3>
                 <code>$ ansible-galaxy install {{role.summary_fields.owner.username}}.{{role.name}}</code>
             </div>
-       
+
             <div class="documentation">
                 <tabset>
                     <tab heading="README">
@@ -96,9 +98,8 @@
         </div>
 
     </div>
-   
-    
+
+
 
 
 </div> <!-- end container -->
-
