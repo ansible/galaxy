@@ -34,7 +34,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Avg
 from django.utils import text, html
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict
 
 from avatar.conf import settings
 from avatar.util import get_primary_avatar, get_default_avatar_url, force_bytes
@@ -65,7 +65,7 @@ def get_user_avatar_url(obj):
         hashlib.md5(force_bytes(obj.email)).hexdigest(),
         urlencode(params),
     )
-    return urljoin('//www.gravatar.com/avatar/', path) # 
+    return urljoin('//www.gravatar.com/avatar/', path) #
 
 class BaseSerializer(serializers.ModelSerializer):
 
@@ -83,7 +83,7 @@ class BaseSerializer(serializers.ModelSerializer):
         opts = get_concrete_model(self.opts.model)._meta
         ret = super(BaseSerializer, self).get_fields()
         for key, field in ret.items():
-            
+
             if key == 'id' and not getattr(field, 'help_text', None):
                 field.help_text = 'Database ID for this %s.' % unicode(opts.verbose_name)
             elif key == 'url':
@@ -112,7 +112,7 @@ class BaseSerializer(serializers.ModelSerializer):
             return obj.get_absolute_url()
 
     def get_related(self, obj):
-        res = SortedDict()
+        res = OrderedDict()
         if getattr(obj, 'owner', None):
             res['owner'] = reverse('api:user_detail', args=(obj.owner.pk,))
         return res
@@ -120,12 +120,12 @@ class BaseSerializer(serializers.ModelSerializer):
     def get_summary_fields(self, obj):
         # Return values for certain fields on related objects, to simplify
         # displaying lists of items without additional API requests.
-        summary_fields = SortedDict()
+        summary_fields = dict()
         for fk, related_fields in SUMMARIZABLE_FK_FIELDS.items():
             try:
                 fkval = getattr(obj, fk, None)
                 if fkval is not None:
-                    summary_fields[fk] = SortedDict()
+                    summary_fields[fk] = dict()
                     for field in related_fields:
                         fval = getattr(fkval, field, None)
                         if fval is not None:
@@ -133,7 +133,7 @@ class BaseSerializer(serializers.ModelSerializer):
             # Can be raised by the reverse accessor for a OneToOneField.
             except ObjectDoesNotExist:
                 pass
-        return summary_fields 
+        return summary_fields
 
     def get_created(self, obj):
         if obj is None:
@@ -176,7 +176,7 @@ class MeSerializer(BaseSerializer):
             return {}
         d = super(MeSerializer, self).get_summary_fields(obj)
         d['roles'] = [
-            SortedDict([
+            OrderedDict([
              ('id',g.id),
              ('name',g.name),
              ('original_name',g.original_name),
@@ -251,7 +251,7 @@ class UserSerializer(BaseSerializer):
         if not obj.password:
             obj.set_unusable_password()
         return super(UserSerializer, self).save_object(obj, **kwargs)
-    
+
     def get_related(self, obj):
         if obj is None or isinstance(obj, AnonymousUser):
             return {}
@@ -267,23 +267,25 @@ class UserSerializer(BaseSerializer):
             return {}
         d = super(UserSerializer, self).get_summary_fields(obj)
         d['roles'] = [
-            {'id':g.id,
-             'name':g.name,
-             'average_score':"%0.1f" % g.get_average_score(),
-             'average_aw_score':"%0.1f" % g.get_average_aw_score(),
-            } for g in obj.roles.filter(active=True, is_valid=True).order_by('pk')
+            OrderedDict([
+                ('id', g.id),
+                ('name', g.name),
+                ('average_score', "%0.1f" % g.get_average_score()),
+                ('average_aw_score', "%0.1f" % g.get_average_aw_score()),
+            ]) for g in obj.roles.filter(active=True, is_valid=True).order_by('pk')
         ]
         d['ratings'] = [
-            {'id':g.id, 
-             'score':"%0.1f" % g.score, 
-             'comment':g.comment, 
-             'created':g.created, 
-             'modified':g.modified,
-             'role_id':g.role.id,
-             'role_name':g.role.name,
-             'role_owner_id':g.role.owner.id,
-             'role_owner_username':g.role.owner.username,
-            } for g in obj.ratings.filter(active=True, role__active=True, role__is_valid=True).order_by('-created')
+            OrderedDict([
+                ('id', g.id),
+                ('score', "%0.1f" % g.score),
+                ('comment', g.comment),
+                ('created', g.created),
+                ('modified', g.modified),
+                ('role_id', g.role.id),
+                ('role_name', g.role.name),
+                ('role_owner_id', g.role.owner.id),
+                ('role_owner_username', g.role.owner.username),
+            ]) for g in obj.ratings.filter(active=True, role__active=True, role__is_valid=True).order_by('-created')
         ]
         return d
 
@@ -291,7 +293,7 @@ class UserSerializer(BaseSerializer):
         return get_user_avatar_url(obj)
 
     def get_num_ratings(self, obj):
-        return obj.get_num_ratings()
+        return "%0.1f" % obj.get_num_ratings()
 
     def get_rating_average(self, obj):
         return "%0.1f" % obj.get_rating_average()
@@ -483,4 +485,3 @@ class RoleSerializer(BaseSerializer):
         if obj is None:
             return ''
         return markdown.markdown(html_decode(obj.readme), extensions=['extra'])
-

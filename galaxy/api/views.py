@@ -59,9 +59,9 @@ def filter_role_queryset(qs):
 
 def filter_rating_queryset(qs):
     return qs.filter(
-               active=True, 
-               role__active=True, 
-               role__is_valid=True, 
+               active=True,
+               role__active=True,
+               role__is_valid=True,
                owner__is_active=True,
            )
 
@@ -126,7 +126,7 @@ class PlatformList(ListAPIView):
     model = Platform
     serializer_class = PlatformSerializer
     paginate_by = None
-    
+
 class PlatformDetail(RetrieveAPIView):
     model = Platform
     serializer_class = PlatformSerializer
@@ -190,6 +190,8 @@ class RoleList(ListCreateAPIView):
 
     def get_queryset(self):
         qs = super(RoleList, self).get_queryset()
+        qs = qs.select_related('owner')
+        qs = qs.prefetch_related('ratings', 'platforms', 'versions', 'categories')
         return annotate_role_queryset(filter_role_queryset(qs))
 
 class RoleDetail(RetrieveUpdateDestroyAPIView):
