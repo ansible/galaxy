@@ -17,10 +17,14 @@ SEND_EMAIL={{ galaxy_send_email }}
 
 if SITE_ENV == "DEV":
     DEBUG = True
+    DEBUG_TOOLBAR_PATCH_SETTINGS = False
 else:
     DEBUG = False
 
 MAINTENANCE_MODE = False
+
+# Add IPs that should see django-debug-toolbar
+INTERNAL_IPS = ['10.0.2.15', '10.0.2.2']
 
 LOGIN_URL='/accounts/login/'
 LOGIN_REDIRECT_URL='/explore'
@@ -204,6 +208,7 @@ STATICFILES_FINDERS = (
 SECRET_KEY = file('/etc/galaxy/SECRET_KEY', 'rb').read().strip()
 
 MIDDLEWARE_CLASSES = (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -226,6 +231,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'debug_toolbar',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',

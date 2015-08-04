@@ -43,12 +43,13 @@
   - django-filter
   - django-site-maintenance
   - djangorestframework==2.4.6
+  - django-debug-toolbar
   - markdown==2.4.1 # 2.5 currently has a python 2.6.x incompatibility
   - PyGithub
   - requests
   - requests-oauthlib
 
-# the avatars directory needs to be there, otherwise the library 
+# the avatars directory needs to be there, otherwise the library
 # will complain. It isn't used, as all the avatar info is stored
 # in the database
 
@@ -58,4 +59,3 @@
 # the galaxy log directory will be handled by packaging in the future
 - name: configure galaxy log directory
   file: path=/var/log/galaxy state=directory mode=0750 owner=apache group=apache
-
