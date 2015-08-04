@@ -1,10 +1,15 @@
 <!-- Filter Widget -->
 <div class="row search-filter">
-    <div class="col-lg-5">
-      <input type="text" name="filter-value" id="filter-value" class="form-control" placeholder="{{ searchPlaceHolder }}" 
+    <div class="col-lg-4">
+      <input type="text" name="filter-value" id="filter-value" class="form-control" placeholder="{{ searchPlaceHolder }}"
           ng-model="list_data.list_filter" ng-keypress="applyFilter($event)" >
       <a class="search-reset-start" ng-click="toggleSearchIcon()" ng-hide="showSearchIcon"><i class="fa fa-times"></i></a>
       <a class="search-reset-start" ng-click="toggleSearchIcon()" ng-show="showSearchIcon"><i class="fa fa-search"></i></a>
+    </div>
+    <div class="col-lg-3">
+        <select class="form-control" ng-change="$parent.list_data.refresh()">
+            <option value="">Search Platform</option>
+        </select>
     </div>
     <div class="col-lg-3">
         <select class="form-control" ng-change="$parent.list_data.refresh()" ng-model="sort.obj" ng-options="opt.label for opt in sort_options" >
