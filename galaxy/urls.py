@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 import autofixture
@@ -31,3 +32,8 @@ urlpatterns = patterns('',
   url(r'^galaxy__admin/', include(admin.site.urls)),
 )
 
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += patterns('',
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    )
