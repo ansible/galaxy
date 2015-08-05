@@ -169,7 +169,7 @@
                 .success(function (data) {
                     data['results'].forEach(function(row) {
                         row.num_roles = parseInt(row.num_roles);
-                        row.avg_role_score = parseInt(row.avg_role_score);
+                        row.avg_role_score = parseFloat(row.avg_role_score, );
                     });
                     $scope.top_users.data = data['results'];
                     $scope.loading.topUsers = 0;
