@@ -83,7 +83,7 @@ a:link, a:visited, a:hover, a:active {
     width: 100px;
     height: 100px;
     background-color: @white;
-    border: 1px solid #CCC;
+    border: 1px solid @white;
     border-radius: 2px;
     opacity: 0.85;
     z-index: +1;
@@ -922,22 +922,38 @@ hr.home {
         margin-bottom: 10px;
     }
 
-    /*tbody>tr>td { padding-bottom: 5px; }*/
+    .table {
+        margin-bottom: 0;
+    }
 
     .table-row {
-        background-color: @well;
-        border-radius: 6px;
-        padding-top: 15px;
-        padding-bottom: 15px;
         margin-left: 0;
         margin-right: 0;
+        min-height: 400px;
     }
 
     .table-hover > tbody > tr:hover > td,
     .table-hover > tbody > tr:hover > th {
         background-color: @white;
     }
+    .button-row {
+        margin-bottom: 30px;
+    }
 
+    .load-container {
+        position: relative;
+    }
+    .loader {
+        position: absolute;
+        top: 150px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        .line-scale > div {
+            height: 20px;
+            background-color: #CCC;
+        }
+    }
 }
 
 /* Misc classes for overriding things */
