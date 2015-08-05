@@ -71,7 +71,9 @@
                             </div>
                         </td>
                         <td class="col-lg-2">
-                            <div ng-repeat="platform in role.platforms">{{ platform }}</div>
+                            <div ng-repeat="platform in role.platforms">
+                                <span class="description">{{ platform }}</span>
+                            </div>
                         </td>
                    </tr>
                    <tr ng-show="roles.length == 0">

@@ -32,6 +32,7 @@ function from_query_params(data) {
     result.sort_order = data.sort_order;
     result.reverse = data.reverse;
     result.selected_categories = data.cats;
+    result.platform = data.platform;
 
     return result;
 }
@@ -39,21 +40,18 @@ function from_query_params(data) {
 function query_params(data) {
     var result = {};
 
-    if (data.list_filter) {
-        result.f = data.list_filter;
-    }
-
     result.page = data.page;
     result.per_page = data.results_per_page;
     result.sort_order = data.sort_order;
 
-    if (data.reverse) {
+    if (data.list_filter)
+        result.f = data.list_filter;
+    if (data.platform)
+        result.platform = data.platform;
+    if (data.reverse)
         result.reverse = data.reverse;
-    }
-
-    if (data.selected_categories) {
+    if (data.selected_categories)
         result.cats = data.selected_categories;
-    }
 
     return result;
 }
