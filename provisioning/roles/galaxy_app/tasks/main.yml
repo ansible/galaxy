@@ -13,7 +13,7 @@
   when: galaxy_make_sdist
 
 - name: check for existing tar file
-  shell: ls -1 {{ galaxy_dist_dir }}/*.tar.gz 
+  shell: ls -1 {{ galaxy_dist_dir }}/*.tar.gz
   register: app_tar
 
 - name: install the galaxy app
@@ -68,6 +68,18 @@
 - name: collect galaxy static files
   command: galaxy-manage collectstatic --clear --noinput
   when: galaxy_env == "PROD"
+
+- name: install development tools
+  npm: path={{ galaxy_project_dir }}
+  when: galaxy_install_dev_tools
+
+- name: install gulp globally
+  npm: name=gulp global=yes
+  when: galaxy_install_dev_tools
+  
+- name: install less globally
+  npm: name=less global=yes
+  when: galaxy_install_dev_tools
 
 # semanage fcontext -a -t httpd_log_t "/var/log/galaxy(/.*)?"
 # restorecon -R -v /var/log/galaxy
