@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container list-container">
 
     <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
@@ -31,6 +31,9 @@
                   </tr>
                   </thead>
                   <tbody>
+                  <tr ng-show="roles.length === 0 && !loading">
+                      <td>No roles found.</td>
+                  </tr>
                   <tr ng-repeat="role in roles">
                        <td class="role">
                            <div class="rolename"><a href="#/roles/{{role.id}}">{{role.name}}</a></div>
@@ -76,9 +79,6 @@
                             </div>
                         </td>
                    </tr>
-                   <tr ng-show="roles.length == 0">
-                       <td>No roles found.</td>
-                   </tr>
                    </tbody>
                </table>
               <table>
@@ -87,4 +87,7 @@
 
         </div><!-- col-lg-10 body -->
     </div><!-- row -->
+
+    <ng-include src="'/static/partials/loader.html'"></ng-include>
+
 </div><!-- container -->

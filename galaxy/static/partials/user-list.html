@@ -16,6 +16,9 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr ng-show="users.length === 0 && !loading">
+                    <td>No users found.</td>
+                </tr>
                 <tr ng-repeat="user in users">
                     <td class="user">
                         <a href="#/users/{{user.id}}"><img ng-src="{{user.avatar_url}}" /></a>
@@ -97,9 +100,6 @@
                         <div ng-hide="user.summary_fields.ratings.length">No ratings found.</div>
                     </td>
                 </tr>
-                <tr ng-show="users.length == 0">
-                    <td>No users found.</td>
-                </tr>
                 </tbody>
             </table>
 
@@ -107,4 +107,7 @@
 
         </div>
     </div>
+
+    <ng-include src="'/static/partials/loader.html'"></ng-include>
+
 </div>

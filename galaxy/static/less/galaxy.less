@@ -74,6 +74,29 @@ a:link, a:visited, a:hover, a:active {
 
 .ansible { font-family: 'Josefin Sans', sans-serif; font-weight: 400; }   // if needed, this is the best matching font to logo
 
+/* Loading indicator */
+#loader {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    margin-left: -50px;
+    width: 100px;
+    height: 100px;
+    background-color: @white;
+    border: 1px solid #CCC;
+    border-radius: 2px;
+    opacity: 0.85;
+    z-index: +1;
+    text-align: center;
+    .line-scale {
+        margin-top: 30px;
+    }
+    .line-scale > div {
+        height: 40px;
+        background-color: #CCC;
+    }
+}
+
 .user-menu {
     /* Using user-menu class so that we can adjust things on smaller
        viewports. See media queries below. */
@@ -119,14 +142,8 @@ a:link, a:visited, a:hover, a:active {
 }
 
 .wrap {
-    min-height: 100%;
-    height: 100%;
+    min-height: 800px;
     height: auto !important;
-    margin: 0 auto -(@push-height + @push-margin);
-
-    .push {
-        height: (@push-height); /* push height = footer height + footer padding */
-    }
 }
 
 .footer {
@@ -163,7 +180,7 @@ a:link, a:visited, a:hover, a:active {
 .banner-row {
     /* the hero */
     min-height: 400px;
-    background-color: @black; 
+    background-color: @black;
     .logo {
         padding-top: 30px;
         opacity: .8;
@@ -176,7 +193,7 @@ a:link, a:visited, a:hover, a:active {
         */
     }
 
-    color: @white; 
+    color: @white;
     .title {
         width: 85%;
         margin-top: 60px;
@@ -196,7 +213,7 @@ a:link, a:visited, a:hover, a:active {
         .beta-icon {
             display: inline-block;
             border: 2px solid @blue;
-            font-size: 28px; 
+            font-size: 28px;
             font-weight: bold;
             letter-spacing: 5px;
             padding-left: 10px;
@@ -214,7 +231,7 @@ a:link, a:visited, a:hover, a:active {
             color: @grey;
         }
     }
-    
+
     /* Home page login pages and forms*/
     .signin-intro {
         margin-top: 30px;
@@ -222,13 +239,13 @@ a:link, a:visited, a:hover, a:active {
         h4 { margin-bottom: 5px; }
         p { color: @grey; }
         p.pad-top { padding-top: 10px; }
-        a:hover { color: @grey; } 
+        a:hover { color: @grey; }
     }
     .back-btn {
         margin-top: 10px;
         text-align:right;
         font-size: 12px;
-        a:hover { color: @grey; } 
+        a:hover { color: @grey; }
     }
     .form-group {
         margin-bottom: 10px;
@@ -237,7 +254,7 @@ a:link, a:visited, a:hover, a:active {
         margin-top: 120px;
         .buttons {
             margin-top: 30px;
-            text-align: center; 
+            text-align: center;
             .btn { margin-right: 15px; }
         }
     }
@@ -248,7 +265,7 @@ a:link, a:visited, a:hover, a:active {
     }
     #create-account-form {
         margin-top: 50px;
-        margin-bottom: 0;  
+        margin-bottom: 0;
     }
     #login-page {
         margin-top: 0;
@@ -307,7 +324,7 @@ a:link, a:visited, a:hover, a:active {
 
 hr.home {
     /* horizontal divider btwn sections */
-    margin-top: 60px; 
+    margin-top: 60px;
     margin-bottom: 80px;
     border-bottom: 2px;
     border-color: @grey;
@@ -346,10 +363,10 @@ hr.home {
 }
 
 
-/* General form styling */ 
+/* General form styling */
 
 .field-help {
-    font-size: 12px; 
+    font-size: 12px;
     padding-left: 3px;
 }
 .form-actions {
@@ -359,7 +376,7 @@ hr.home {
     margin-bottom: 20px;
 }
 .form-intro {
-    margin-bottom: 40px;   
+    margin-bottom: 40px;
 }
 
 /* Social links found on home page sing-in/up forms and login page */
@@ -367,13 +384,13 @@ hr.home {
     text-align: center;
     .social-links {
         list-style: none;
-        padding: 15px 0 15px 0; 
+        padding: 15px 0 15px 0;
         li {
             display: inline-block;
             margin-right: 15px;
             i {
                padding: 5px 8px 5px 8px;
-               background-color: @blue; 
+               background-color: @blue;
                border-radius: 20px;
                border: 1px solid @blue;
             }
@@ -389,9 +406,9 @@ hr.home {
 
 /* Login page */
 .login-page {
-    margin-top: 40px; 
+    margin-top: 40px;
     border: 1px solid @charcoal;
-    padding: 15px; 
+    padding: 15px;
     border-radius: 6px;
     form {
         margin-top: 25px;
@@ -420,9 +437,9 @@ hr.home {
 }
 
 .staff-marker {
-    font-size: 11px; 
+    font-size: 11px;
     padding-top: 3px;
-    color: @red;   
+    color: @red;
 }
 
 .search-filter {
@@ -446,8 +463,8 @@ hr.home {
     text-align: right;
 }
 
-.tag-cloud { 
-    padding: 5px; 
+.tag-cloud {
+    padding: 5px;
     border: 2px #ccc solid;
 
     .cloud {
@@ -457,7 +474,7 @@ hr.home {
         a { color: @grey; }
         a:hover { color: #ddd; }
         a:link, a:visited, a:active { color: @grey; }
-    } 
+    }
 }
 
 .page-title {
@@ -467,7 +484,7 @@ hr.home {
         float: left;
         z-index: 1;
         background-color: @white;
-        padding-right: 5px; 
+        padding-right: 5px;
         font-size: 16px;
         font-weight: bold;
         color: @charcoal;
@@ -478,12 +495,12 @@ hr.home {
     }
 }
 
-/* Galaxy table striping and padding. Use in place of TB table-striped 
+/* Galaxy table striping and padding. Use in place of TB table-striped
    to fix FF disappearing border issue. */
 .ga-table-striped {
     tbody>tr:nth-child(odd) {
             background-color: #f9f9f9;
-    } 
+    }
     tbody>tr>td {
         padding-bottom: 20px;
     }
@@ -495,7 +512,7 @@ hr.home {
     border-left: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
     border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px; 
+    border-bottom-left-radius: 6px;
     padding: 15px;
 }
 
@@ -516,11 +533,11 @@ hr.home {
 /* In star ratigs, make the half star feel like it's not squished */
 .fa-star-half { padding-right: 3px; }
 
-/* Browse Roles */ 
+/* Browse Roles */
 .role-list-table {
     .role {
         .rolename {
-            font-size: 16px; 
+            font-size: 16px;
             font-weight: bold;
         }
         .fld-label {
@@ -540,7 +557,7 @@ hr.home {
         .score-value, .score-value-na {
             font-weight: bold;
             font-size: 14px;
-            padding: 2px; 
+            padding: 2px;
             color: @black;
         }
         .score-value-na {
@@ -553,7 +570,7 @@ hr.home {
     }
     .category {
         display: block;
-        /* color: @charcoal; */ 
+        /* color: @charcoal; */
     }
     .category:hover {
         /* color: @black;
@@ -588,12 +605,12 @@ hr.home {
             color: @charcoal;
             table {
                 tr {
-                    td:first-child { 
+                    td:first-child {
                         padding-right: 10px;
                         padding-left: 15px;
                     }
                 }
-                tr:first-child { 
+                tr:first-child {
                     color: @black;
                     font-weight: bold;
                     td:first-child { padding-left: 5px; }
@@ -661,8 +678,8 @@ hr.home {
         color: @charcoal;
         font-size: 12px;
         margin-top: 15px;
-        tr > td { 
-            padding: 3px; 
+        tr > td {
+            padding: 3px;
             background-color: transparent;
         }
         tbody > tr:hover > td {
@@ -702,14 +719,14 @@ hr.home {
         .date {
             font-size: 12px;
             display: block;
-            color: @charcoal; 
+            color: @charcoal;
             margin-left: 15px;
             margin-top: 3px;
         }
         img {
             display: inline-block;
             vertical-align: top;
-            width: 48px; 
+            width: 48px;
             height: 48px;
             margin-right: 8px;
             margin-top: 5px;
@@ -722,7 +739,7 @@ hr.home {
     .rating {
         color: @charcoal;
         .text {
-            margin-top: 10px; 
+            margin-top: 10px;
             margin-bottom: 10px;
             overflow-x: hidden;
         }
@@ -730,9 +747,9 @@ hr.home {
 }
 
 
-/* User Detail Page */ 
+/* User Detail Page */
 .user-detail {
-    img { 
+    img {
         margin: 0 auto;
         display: inline-block;
         vertical-align: top;
@@ -803,7 +820,7 @@ hr.home {
             background-color: @white;
             padding: 20px 30px;
             textarea {
-                resize: vertical; 
+                resize: vertical;
                 height: 20.0em;
             }
         }
@@ -827,7 +844,7 @@ hr.home {
 .rating-table {
     tbody>tr>td { padding-top: 20px; }
     .rolename {
-        font-weight: bold; 
+        font-weight: bold;
         font-size: 16px;
         margin-bottom: 15px;
     }
@@ -852,8 +869,8 @@ hr.home {
     }
     .scores {
         color: @charcoal;
-        tr > td { 
-            padding: 3px; 
+        tr > td {
+            padding: 3px;
             background-color: transparent;
         }
         tbody > tr:hover > td {
@@ -863,19 +880,19 @@ hr.home {
             background-color: transparent;
         }
         tr {
-            td:first-child { 
+            td:first-child {
                 padding-right: 10px;
                 padding-left: 15px;
             }
         }
-        tr:first-child { 
+        tr:first-child {
             color: @black;
             font-weight: bold;
             td:first-child { padding-left: 5px; }
         }
     }
-    .comment { 
-        margin: 20px 0 0 0; 
+    .comment {
+        margin: 20px 0 0 0;
         color: @charcoal;
         white-space: pre-line;
     }
@@ -901,25 +918,25 @@ hr.home {
 
 .explore {
     table caption {
-        font-weight: bold; 
+        font-weight: bold;
         margin-bottom: 10px;
     }
-    
+
     /*tbody>tr>td { padding-bottom: 5px; }*/
-    
-    .table-row { 
+
+    .table-row {
         background-color: @well;
         border-radius: 6px;
         padding-top: 15px;
         padding-bottom: 15px;
         margin-left: 0;
-        margin-right: 0;   
+        margin-right: 0;
     }
 
     .table-hover > tbody > tr:hover > td,
     .table-hover > tbody > tr:hover > th {
-        background-color: @white;  
-    }  
+        background-color: @white;
+    }
 
 }
 
@@ -951,7 +968,7 @@ hr.home {
         .navbar-brand img {  width: 100%; }
         .non-intro-menu { margin-bottom: 15px; }
     }
-    
+
     .banner-row {
         .title { text-align: center; }
         img { margin: 0 auto; }
@@ -964,7 +981,7 @@ hr.home {
         }
 
         #signup-instructions, #login-page, #create-account-form {
-            margin-top: 20px; 
+            margin-top: 20px;
             margin-bottom: 30px;
         }
     }
@@ -983,7 +1000,7 @@ hr.home {
 
     .role-detail {
         .user-info {
-            text-align: left; 
+            text-align: left;
             margin-top: 35px;
         }
         .installation { margin-top: 20px; }
@@ -996,8 +1013,3 @@ hr.home {
     }
 
 }
-
-
-
-
-

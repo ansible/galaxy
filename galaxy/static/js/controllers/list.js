@@ -140,7 +140,7 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
     $scope.num_roles = 0;
     $scope.status = '';
 
-    $scope.loading = 0;
+    $scope.loading = 1;
     $scope.viewing_roles = 1;
     $scope.display_user_info = 1;
 
@@ -659,7 +659,7 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
     $scope.num_users = 0;
     $scope.status = '';
 
-    $scope.loading = 0;
+    $scope.loading = 1;
     $scope.viewing_users = 1;
 
     PaginateInit({ scope: $scope });
