@@ -7,6 +7,7 @@ galaxy/celerybeat-schedule
 known_hosts
 provisioning/library/
 rpm-build/
+node_modules/
 nohup.out
 provisioning/ec2_inventory
 .vagrant
