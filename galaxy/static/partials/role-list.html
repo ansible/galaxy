@@ -27,6 +27,7 @@
                       <th>Role</th>
                       <th>Categories</th>
                       <th>Description</th>
+                      <th>Platforms</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -68,6 +69,9 @@
                                     <span class="value">{{role.modified|date:"short"}}</span>
                                 </div>
                             </div>
+                        </td>
+                        <td class="col-lg-2">
+                            <div ng-repeat="platform in role.platforms">{{ platform }}</div>
                         </td>
                    </tr>
                    <tr ng-show="roles.length == 0">

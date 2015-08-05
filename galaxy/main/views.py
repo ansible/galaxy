@@ -45,7 +45,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.utils import timezone
 from django.utils.timezone import utc
-from django.views.decorators.csrf import csrf_exempt                                                        
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 # local stuff
@@ -179,6 +179,7 @@ def list_category(request, category=None, page=1):
       '/static/js/services/roles.js',
       '/static/js/services/storage.js',
       '/static/js/services/users.js',
+      '/static/js/services/platforms.js',
       '/static/js/lib/utilities.js',
       '/static/js/lib/search.js',
       '/static/js/services/related.js',
@@ -292,7 +293,7 @@ def accounts_role_save(request):
             with transaction.atomic():
                 form = RoleForm(request.POST)
                 if form.is_valid():
-                    # create the role, committing manually so that 
+                    # create the role, committing manually so that
                     # we ensure the database is updated before we
                     # kick off the celery task to do the import
                     cd = form.cleaned_data
@@ -428,4 +429,3 @@ def accounts_role_view(request, role=None):
     context = build_standard_context(request)
     context["role"] = role_obj
     return render_to_response('account/role_view.html', context)
-

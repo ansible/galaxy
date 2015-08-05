@@ -20,22 +20,25 @@
 'use strict';
 
 var roleServices = angular.module('roleServices', ['ngResource']);
- 
+
 roleServices.factory('roleFactory', ['$http','$cookies',
     function($http, $cookies){
     var dataFactory = {};
     $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
 
-    dataFactory.getRoles = function(page, selected_categories, results_per_page, sort_order, filter, reverse) { 
+    dataFactory.getRoles = function(page, selected_categories, results_per_page, sort_order, filter, reverse, platform) {
         var url = '/api/v1/roles/?page=' + page + '&page_size=' + results_per_page;
         if (selected_categories.length > 0) {
             for (var i in selected_categories) {
                 url += '&chain__categories__name=' + selected_categories[i];
             }
         }
-        if (filter && filter != '') {
+        if (filter && filter != '')
             url += '&name__icontains=' + filter;
-        }
+
+        if (platform)
+            url += '&platforms__name=' + platform;
+
         if (reverse) {
             var parts = sort_order.split(',')
             for (var part in parts) {
@@ -50,7 +53,7 @@ roleServices.factory('roleFactory', ['$http','$cookies',
     dataFactory.getRole = function(id) {
         return $http.get('/api/v1/roles/' + id + '/');
         };
-    
+
     dataFactory.getLatest = function(page, results_per_page, sort_order, reverse) {
         if (reverse) {
             sort_order = '-' + sort_order
@@ -64,6 +67,6 @@ roleServices.factory('roleFactory', ['$http','$cookies',
         }
 
     return dataFactory;
-    
+
     }
     ]);

@@ -35,7 +35,8 @@ var roleApp = angular.module('roleApp', [
   'storageServices',
   'userServices',
   'relatedService',
-  'Paginate'
+  'Paginate',
+  'platformService'
 ]);
 
 // FIXME: this should probably go in a utilities library
@@ -92,7 +93,7 @@ roleApp.config(['$routeProvider',
           templateUrl: '/static/partials/role-list.html',
           controller: 'RoleListCtrl',
           resolve: {
-              my_info: ['$q', 'meFactory', getMyInfo], 
+              my_info: ['$q', 'meFactory', getMyInfo],
               }
           }).
       when('/roles/:role_id', {
@@ -100,7 +101,7 @@ roleApp.config(['$routeProvider',
           controller: 'RoleDetailCtrl',
           resolve: {
               my_info: ['$q', 'meFactory', getMyInfo]
-              } 
+              }
           }).
       when('/users', {
           templateUrl: '/static/partials/user-list.html',

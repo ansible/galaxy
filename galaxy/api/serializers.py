@@ -421,7 +421,7 @@ class RoleSerializer(BaseSerializer):
         res = super(RoleSerializer, self).get_related(obj)
         res.update(dict(
             owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	    authors  = reverse('api:role_authors_list', args=(obj.pk,)),
+	        authors  = reverse('api:role_authors_list', args=(obj.pk,)),
             dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
             imports  = reverse('api:role_imports_list', args=(obj.pk,)),
             ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),

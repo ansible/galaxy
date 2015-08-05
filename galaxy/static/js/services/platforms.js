@@ -42,7 +42,7 @@
         }
 
         function _loadPlatforms() {
-            return res.get().$promise.then(function(data){
+            return res.query().$promise.then(function(data){
                 var obj = {};
                 platforms = [];
                 angular.forEach(data, function(platform) {

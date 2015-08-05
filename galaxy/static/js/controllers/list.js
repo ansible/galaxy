@@ -59,8 +59,8 @@ function query_params(data) {
 }
 
 listControllers.controller('RoleListCtrl', ['$scope','$routeParams','$location','$timeout','roleFactory','categoryFactory',
-'queryStorageFactory','my_info', 'Empty', 'SearchInit', 'PaginateInit',
-function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory, storageFactory, my_info, Empty, SearchInit, PaginateInit) {
+'queryStorageFactory','my_info', 'Empty', 'SearchInit', 'PaginateInit', 'platformService',
+function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory, storageFactory, my_info, Empty, SearchInit, PaginateInit, platformService) {
 
     //$scope.orderby={ sort_order: 'owner__username,name' };
     $scope.page_title = 'Browse Roles';
@@ -72,6 +72,7 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
         'page'               : 1,
         'results_per_page'   : 10,
         'reverse'            : false,
+        'platform'           : '',
         'selected_categories': [],
         'sort_order'         : 'owner__username,name',
         'refresh'            : function () {
@@ -84,11 +85,12 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
                 $scope.list_data.results_per_page,
                 $scope.list_data.sort_order,
                 $scope.list_data.list_filter,
-                $scope.list_data.reverse
+                $scope.list_data.reverse,
+                $scope.list_data.platform
                 )
                 .success(function (data) {
+                    _uniquePlatforms(data.results);
                     $scope.roles = data['results'];
-
                     $scope.list_data.page = parseInt(data['cur_page']);
                     $scope.list_data.num_pages = parseInt(data['num_pages']);
 
@@ -122,7 +124,17 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
                     });
             }
 
-        };
+    };
+
+    function _uniquePlatforms(roles) {
+        angular.forEach(roles, function(role) {
+            var dict = {};
+            angular.forEach(role.summary_fields.platforms, function(platform) {
+                dict[platform.name] = 0;
+            });
+            role.platforms = Object.keys(dict);
+        });
+    }
 
     $scope.page_range = [1];
     $scope.categories = [];
@@ -161,20 +173,20 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
                   // ERROR HANDLING!!!
 
                 });
-            };
+    };
 
     $scope.is_selected = function(item) {
         if ($scope.list_data.selected_categories.indexOf(item) != -1)
             return true;
         else
             return false;
-        }
+    };
 
     // Category field tag change
     $scope.change_category = function() {
         $scope.list_data.selected_categories = $('#categories-select').select2('val');
         $scope.list_data.refresh();
-        }
+    };
 
     // User clicked on a tag link.
     $scope.pick_category = function(val) {
@@ -190,12 +202,12 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
            $scope.list_data.selected_categories.push(val);
            $('#categories-select').val($scope.list_data.selected_categories).trigger("change");
         }
-        }
+    };
 
     $scope.toggle_reverse = function() {
         $scope.list_data.reverse = !$scope.list_data.reverse;
         $scope.list_data.refresh();
-        }
+    };
 
     $scope.toggle_category = function(item) {
         var pos = $scope.list_data.selected_categories.indexOf(item);
@@ -206,14 +218,19 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
         }
         $location.path('roles');
         $scope.list_data.refresh();
-        }
+    };
 
     $scope.clear_categories = function() {
         $location.path('roles');
         $scope.list_data.selected_categories = [];
         $scope.list_data.page = 1;
         $scope.list_data.refresh();
-        }
+    };
+
+    $scope.selectPlatform = function() {
+        $scope.list_data.platform = ($scope.sort.platform && $scope.sort.platform.value) ? $scope.sort.platform.value : null;
+        $scope.list_data.refresh();
+    };
 
     var restored_query = storageFactory
         .restore_state('role_list', query_params($scope.list_data));
@@ -249,6 +266,9 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
             { value: 'average_score,name', label: 'Average Score' },
             { value: 'created', label: 'Create On Date' }
             ],
+        platforms: platformService.get().then(function(platforms) {
+            $scope.platforms = platforms;
+        }),
         sortOrder: $scope.list_data.sort_order
         });
 
@@ -691,7 +711,7 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
             { value: 'date_joined,username', label: 'Date Joined' }
             ],
         sortOrder: $scope.list_data.sort_order
-        });
+    });
 
     $scope.list_data.refresh();
 
