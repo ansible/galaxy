@@ -10,6 +10,7 @@ galaxy_make_sdist: True
 galaxy_send_email: False
 galaxy_configure_supervisor: False
 galaxy_official_build: no
+galaxy_install_dev_tools: True
 
 # Outbound SMTP settings
 

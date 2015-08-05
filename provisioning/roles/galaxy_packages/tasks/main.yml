@@ -28,6 +28,12 @@
   - tmux
   - zlib
 
+- name: install development tool packages
+  yum: name={{item}}
+  with_items:
+  - npm
+  when: galaxy_install_dev_tools
+
 - name: install pip packages required for galaxy
   pip: name=django version=1.8.3
 
