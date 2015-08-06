@@ -47,15 +47,17 @@
 
         $timeout(function() {
             // give the partial templates a chance to load before we do this...
-            _restoreState();
+            _restoreState()
             _getCategories();
-            _getTopRoles();
-            _getNewRoles();
-            _getTopUsers();
-            _getTopReviewers();
-            _getNewUsers();
-        }, 300);
-
+            _getTopRoles().then(function() {
+                _getNewRoles();
+            });
+            _getTopUsers().then(function() {
+                _getTopReviewers().then(function() {
+                    _getNewUsers();
+                });
+            });
+        }, 100);
         return;
 
 
@@ -108,103 +110,73 @@
         }
 
         function _getCategories() {
-            categoryFactory.getCategories(
+            return categoryFactory.getCategories(
                 $scope.categories.sort_col,
                 $scope.categories.reverse
-                )
-                .success(function (data) {
-                    $scope.categories.data = data.slice(0, $scope.results_per_page);
-                    $scope.loading.categories = 0;
-                })
-                .error(function (error) {
-                    $scope.loading.categories = 0;
-                    $scope.categories.data = [];
-                });
+            ).then(function(data) {
+                $scope.categories.data = data.data.slice(0, $scope.results_per_page);
+                $scope.loading.categories = 0;
+            });
         }
 
         function _getTopRoles() {
-            roleFactory.getRolesTop(
+            return roleFactory.getRolesTop(
                 $scope.top_roles.page,
                 $scope.results_per_page,
                 $scope.top_roles.sort_col,
                 $scope.top_roles.reverse
-                )
-                .success(function (data) {
-                    $scope.top_roles.data = data['results'];
-                    $scope.loading.topRoles = 0;
-                })
-                .error(function (error) {
-                    $scope.loading.topRoles = 0;
-                    $scope.top_roles.data = 0;
-                });
+            ).then(function (data) {
+                $scope.top_roles.data = data.data['results'];
+                $scope.loading.topRoles = 0;
+            });
         }
 
         function _getNewRoles() {
-            roleFactory.getRolesTop(
+            return roleFactory.getRolesTop(
                 $scope.new_roles.page,
                 $scope.results_per_page,
                 $scope.new_roles.sort_col,
                 $scope.new_roles.reverse
-                )
-                .success(function (data) {
-                    $scope.new_roles.data = data['results'];
-                    $scope.loading.newRoles = 0;
-                })
-                .error(function (error) {
-                    $scope.new_roles.data = [];
-                    $scope.loading.newRoles = 0;
-                });
+            ).then(function (data) {
+                $scope.new_roles.data = data.data['results'];
+                $scope.loading.newRoles = 0;
+            });
         }
 
         function _getTopUsers() {
-            userFactory.getUsersTop(
+            return userFactory.getUsersTop(
                 $scope.top_users.page,
                 $scope.results_per_page,
                 $scope.top_users.sort_col,
                 $scope.top_users.reverse
-                )
-                .success(function (data) {
-                    $scope.top_users.data = data['results'];
-                    $scope.loading.topUsers = 0;
-                })
-                .error(function (error) {
-                    $scope.top_users.data = [];
-                    $scope.loading.topUsers = 0;
-                });
+            ).then(function (data) {
+                $scope.top_users.data = data.data['results'];
+                $scope.loading.topUsers = 0;
+            });
         }
 
         function _getTopReviewers() {
-            userFactory.getUsersTop(
+            return userFactory.getUsersTop(
                 $scope.top_reviewers.page,
                 $scope.results_per_page,
                 $scope.top_reviewers.sort_col,
                 $scope.top_reviewers.reverse
-                )
-                .success(function (data) {
-                    $scope.top_reviewers.data = data['results'];
-                    $scope.loading.topReviewers = 0;
-                })
-                .error(function (error) {
-                    $scope.top_reviewers.data = [];
-                    $scope.loading.topReviewers = 0;
-                });
+            ).then(function (data) {
+                $scope.top_reviewers.data = data.data['results'];
+                $scope.loading.topReviewers = 0;
+            });
         }
 
         function _getNewUsers() {
-            userFactory.getUsersTop(
+            return userFactory.getUsersTop(
                 $scope.new_users.page,
                 $scope.results_per_page,
                 $scope.new_users.sort_col,
                 $scope.new_users.reverse
-                )
-                .success(function (data) {
-                    $scope.new_users.data = data['results'];
-                    $scope.loading.newUsers = 0;
-                })
-                .error(function (error) {
-                    $scope.new_users.data = [];
-                    $scope.loading.newUsers = 0;
-                });
+            ).then(function (data) {
+                $scope.new_users.data = data.data['results'];
+                $scope.loading.newUsers = 0;
+            });
         }
     }
 
