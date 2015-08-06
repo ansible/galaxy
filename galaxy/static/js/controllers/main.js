@@ -66,32 +66,32 @@
                 var more_link = '';
                 var data_function = null;
                 if (entry === 'categories') {
-                    default_sort_col = 'num_roles';
+                    default_sort_col = '-num_roles';
                     more_link = '/list#/roles/';
                     data_function = _getCategories;
                 }
                 else if (entry === 'top_roles') {
-                    default_sort_col = 'average_score';
+                    default_sort_col = '-average_score';
                     more_link = '/list#/roles/sort/sort-by-community-score';
                     data_function = _getTopRoles;
                 }
                 else if (entry === 'new_roles') {
-                    default_sort_col = 'created';
+                    default_sort_col = '-created';
                     more_link = '/list#/roles/sort/sort-by-created-on-date';
                     data_function = _getNewRoles;
                 }
                 else if (entry === 'top_users') {
-                    default_sort_col = 'avg_role_score';
+                    default_sort_col = '-num_roles,username';
                     more_link = '/list#/users/sort/sort-by-community-score';
                     data_function = _getTopUsers;
                 }
                 else if (entry === 'top_reviewers') {
-                    default_sort_col = 'num_ratings';
+                    default_sort_col = '-num_ratings,username';
                     more_link = '/list#/users/sort/sort-by-top-reviewers';
                     data_function = _getTopReviewers;
                 }
                 else if (entry === 'new_users') {
-                    default_sort_col = 'date_joined';
+                    default_sort_col = '-date_joined';
                     more_link = '/list#/users/sort/sort-by-joined-on-date';
                     data_function = _getNewUsers;
                 }
@@ -99,8 +99,8 @@
                 $scope[entry] = {
                     'page': 1,
                     'data': [],
+                    'reverse': false,
                     'sort_col': default_sort_col,
-                    'reverse': true,
                     'more_link' : more_link,
                     'data_function': data_function
                 };
@@ -123,16 +123,13 @@
         }
 
         function _getTopRoles() {
-            roleFactory.getLatest(
+            roleFactory.getRolesTop(
                 $scope.top_roles.page,
                 $scope.results_per_page,
                 $scope.top_roles.sort_col,
                 $scope.top_roles.reverse
                 )
                 .success(function (data) {
-                    data['results'].forEach(function(row) {
-                        row.average_score = parseFloat(row.average_score);
-                    });
                     $scope.top_roles.data = data['results'];
                     $scope.loading.topRoles = 0;
                 })
@@ -143,7 +140,7 @@
         }
 
         function _getNewRoles() {
-            roleFactory.getLatest(
+            roleFactory.getRolesTop(
                 $scope.new_roles.page,
                 $scope.results_per_page,
                 $scope.new_roles.sort_col,
@@ -160,17 +157,13 @@
         }
 
         function _getTopUsers() {
-            userFactory.getUsers(
+            userFactory.getUsersTop(
                 $scope.top_users.page,
                 $scope.results_per_page,
                 $scope.top_users.sort_col,
                 $scope.top_users.reverse
                 )
                 .success(function (data) {
-                    data['results'].forEach(function(row) {
-                        row.num_roles = parseInt(row.num_roles);
-                        row.avg_role_score = parseFloat(row.avg_role_score, );
-                    });
                     $scope.top_users.data = data['results'];
                     $scope.loading.topUsers = 0;
                 })
@@ -181,16 +174,13 @@
         }
 
         function _getTopReviewers() {
-            userFactory.getUsers(
+            userFactory.getUsersTop(
                 $scope.top_reviewers.page,
                 $scope.results_per_page,
                 $scope.top_reviewers.sort_col,
                 $scope.top_reviewers.reverse
                 )
                 .success(function (data) {
-                    data['results'].forEach(function(row) {
-                        row.num_ratings = parseInt(row.num_ratings);
-                    });
                     $scope.top_reviewers.data = data['results'];
                     $scope.loading.topReviewers = 0;
                 })
@@ -201,7 +191,7 @@
         }
 
         function _getNewUsers() {
-            userFactory.getUsers(
+            userFactory.getUsersTop(
                 $scope.new_users.page,
                 $scope.results_per_page,
                 $scope.new_users.sort_col,

@@ -194,6 +194,16 @@ class RoleList(ListCreateAPIView):
         qs = qs.prefetch_related('ratings', 'platforms', 'versions', 'categories')
         return annotate_role_queryset(filter_role_queryset(qs))
 
+class RoleTopList(ListCreateAPIView):
+    model = Role
+    serializer_class = RoleTopSerializer
+
+    def get_queryset(self):
+        qs = super(RoleTopList, self).get_queryset()
+        qs = qs.select_related('owner')
+        qs = qs.prefetch_related('ratings')
+        return annotate_role_queryset(filter_role_queryset(qs))
+
 class RoleDetail(RetrieveUpdateDestroyAPIView):
     model = Role
     serializer_class = RoleSerializer
@@ -252,6 +262,14 @@ class UserList(ListAPIView):
 
     def get_queryset(self):
         qs = super(UserList, self).get_queryset()
+        return annotate_user_queryset(filter_user_queryset(qs))
+
+class UserTopList(ListAPIView):
+    model = User
+    serializer_class = UserTopSerializer
+
+    def get_queryset(self):
+        qs = super(UserTopList, self).get_queryset()
         return annotate_user_queryset(filter_user_queryset(qs))
 
 class RatingList(ListAPIView):

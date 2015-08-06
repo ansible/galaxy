@@ -19,14 +19,25 @@
 
 'use strict';
 
-var userServices = angular.module('userServices', ['ngResource']);
- 
-userServices.factory('userFactory', ['$http','$cookies',
-    function($http, $cookies){
-        var dataFactory = {};
+(function(angular) {
+
+    angular.module('userServices', ['ngResource'])
+        .factory('userFactory', ['$http','$cookies', _factory]);
+
+    function _factory($http, $cookies){
+
         $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
 
-        dataFactory.getUsers = function(page, results_per_page, sort_order, reverse, filter) {
+        return {
+            getUsers: _getUsers,
+            getUser: _getUser,
+            getUsersTop: _getUsersTop,
+            getUserRelated: _getUserRelated,
+            deleteUser: _deleteUser
+        };
+
+
+        function _getUsers(page, results_per_page, sort_order, reverse, filter) {
             var url = '/api/v1/users/?page=' + page + '&page_size=' + results_per_page;
             if (reverse) {
                 sort_order = '-' + sort_order
@@ -36,23 +47,34 @@ userServices.factory('userFactory', ['$http','$cookies',
                 url += '&or__username__icontains=' + filter + '&or__full_name__icontains=' + filter;
             }
             return $http.get(url);
-            };
-        dataFactory.getUser = function(id) {
+        }
+
+        function _getUsersTop(page, results_per_page, sort_order, reverse) {
+            var url = '/api/v1/users/top/?page=' + page + '&page_size=' + results_per_page;
+            if (reverse) {
+                sort_order = '-' + sort_order
+            }
+            url += '&order_by=' + sort_order;
+            return $http.get(url);
+        }
+
+        function _getUser(id) {
             return $http.get('/api/v1/users/' + id);
-            };
-        dataFactory.getUserRelated = function(url, page, results_per_page, sort_order, reverse) {
+        }
+
+        function _getUserRelated(url, page, results_per_page, sort_order, reverse) {
             var target_url = url + '?page=' + page + '&page_size=' + results_per_page;
             if (reverse) {
                 sort_order = '-' + sort_order
             }
             target_url += '&order_by=' + sort_order;
             return $http.get(target_url);
-            };
-        dataFactory.deleteUser = function(id) {
+        }
+
+        function _deleteUser(id) {
             var url = '/api/v1/users/'+id+'/'
             return $http.delete(url);
-            }
-        return dataFactory;
-        
         }
-        ]);
+    }
+
+})(angular);
