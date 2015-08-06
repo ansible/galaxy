@@ -15,7 +15,7 @@
                </thead>
                <tbody>
                <tr ng-repeat="category in categories.data">
-                   <td>{{ category.name }}</td>
+                   <td><a href="/list#/roles/category/{{category.name}}">{{ category.name }}</a></td>
                    <td class="text-right">{{category.num_roles}}</td>
                </tr>
                <tr ng-show="!loading.categories"><td colspan="2" style="padding-top: 15px;"><a ng-href="{{ categories.more_link }}">View more...</a></td></tr>
@@ -158,7 +158,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="user in new_users.data | orderBy:new_users.sort_col:new_users.reverse">
+                <tr ng-repeat="user in new_users.data">
                     <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
                     <td class="text-right">{{ user.date_joined | date:'dd MMM, yyyy' }}</td>
                 </tr>

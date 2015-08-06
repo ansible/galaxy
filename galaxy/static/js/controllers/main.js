@@ -71,12 +71,12 @@
                     data_function = _getCategories;
                 }
                 else if (entry === 'top_roles') {
-                    default_sort_col = '-average_score';
+                    default_sort_col = '-average_score,-num_ratings';
                     more_link = '/list#/roles/sort/sort-by-community-score';
                     data_function = _getTopRoles;
                 }
                 else if (entry === 'new_roles') {
-                    default_sort_col = '-created';
+                    default_sort_col = '-created,owner__username,name';
                     more_link = '/list#/roles/sort/sort-by-created-on-date';
                     data_function = _getNewRoles;
                 }
@@ -91,7 +91,7 @@
                     data_function = _getTopReviewers;
                 }
                 else if (entry === 'new_users') {
-                    default_sort_col = '-date_joined';
+                    default_sort_col = '-date_joined,username';
                     more_link = '/list#/users/sort/sort-by-joined-on-date';
                     data_function = _getNewUsers;
                 }
