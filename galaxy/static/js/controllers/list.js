@@ -60,6 +60,8 @@ listControllers.controller('RoleListCtrl', ['$scope','$routeParams','$location',
 'queryStorageFactory','my_info', 'Empty', 'SearchInit', 'PaginateInit', 'platformService',
 function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory, storageFactory, my_info, Empty, SearchInit, PaginateInit, platformService) {
 
+    var AVG_SCORE_SORT = 'average_score,name';
+
     //$scope.orderby={ sort_order: 'owner__username,name' };
     $scope.page_title = 'Browse Roles';
     $scope.my_info = my_info;
@@ -73,10 +75,16 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
         'platform'           : '',
         'selected_categories': [],
         'sort_order'         : 'owner__username,name',
-        'refresh'            : function () {
+        'refresh'            : function (_change) {
             storageFactory.save_state('role_list', query_params($scope.list_data));
             $scope.list_data.sort_order = $scope.getSortOrder();  //Check if user changed sort order
             $scope.loading = 1;
+
+            if (_change === 'SortOrderSelect' && $scope.list_data.sort_order === AVG_SCORE_SORT) {
+                // Sorting by Average Score should default to reverse (or descending) order
+                $scope.list_data.reverse = true;
+            }
+
             roleFactory.getRoles(
                 $scope.list_data.page,
                 $scope.list_data.selected_categories,
@@ -261,7 +269,7 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
         sortOptions: [
             { value: 'name', label: 'Role Name' },
             { value: 'owner__username,name', label: 'Owner Name' },
-            { value: 'average_score,name', label: 'Average Score' },
+            { value: AVG_SCORE_SORT, label: 'Average Score' },
             { value: 'created', label: 'Create On Date' }
             ],
         platforms: platformService.get().then(function(platforms) {

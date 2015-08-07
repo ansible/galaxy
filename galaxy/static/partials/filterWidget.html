@@ -13,7 +13,7 @@
         </select>
     </div>
     <div class="col-lg-3">
-        <select class="form-control" ng-change="$parent.list_data.refresh()" ng-model="sort.obj" ng-options="opt.label for opt in sort_options" >
+        <select class="form-control" ng-change="$parent.list_data.refresh('SortOrderSelect')" ng-model="sort.obj" ng-options="opt.label for opt in sort_options" >
              <option value="">-- Sort order --</option>
         </select>
     </div>
