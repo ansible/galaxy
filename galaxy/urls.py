@@ -18,6 +18,7 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+from django.views.generic import TemplateView
 import autofixture
 
 admin.autodiscover()
@@ -30,6 +31,7 @@ urlpatterns = patterns('',
   url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
   url(r'^avatar/', include('avatar.urls')),
   url(r'^galaxy__admin/', include(admin.site.urls)),
+  url(r'^robots\.txt$', TemplateView.as_view(template_name="robots.txt", content_type='text/plain')),
 )
 
 if settings.DEBUG:
