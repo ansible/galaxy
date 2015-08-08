@@ -1,0 +1,12 @@
+---
+#
+# Create the robots.txt file for development / QA sites that may be publicly accessible
+# It gets served up by Django, so we're creating it locally on the jenkins box where it will
+# be picked up by sdist and treated like a template.
+#
+- name: Create robots.txt
+  hosts: local
+  vars:
+    searchbots_path: "{{ galaxy_project_dir }}/galaxy/main/templates"
+  roles:
+    - { role: searchbots }
