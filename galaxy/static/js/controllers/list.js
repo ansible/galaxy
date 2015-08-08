@@ -57,8 +57,10 @@ function query_params(data) {
 }
 
 listControllers.controller('RoleListCtrl', ['$scope','$routeParams','$location','$timeout','roleFactory','categoryFactory',
-'queryStorageFactory','my_info', 'Empty', 'SearchInit', 'PaginateInit', 'platformService',
-function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory, storageFactory, my_info, Empty, SearchInit, PaginateInit, platformService) {
+    'queryStorageFactory','my_info', 'Empty', 'SearchInit', 'PaginateInit', 'platformService', _RoleListCtrl]);
+
+function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory, storageFactory,
+    my_info, Empty, SearchInit, PaginateInit, platformService) {
 
     var AVG_SCORE_SORT = 'average_score,name';
 
@@ -75,61 +77,7 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
         'platform'           : '',
         'selected_categories': [],
         'sort_order'         : 'owner__username,name',
-        'refresh'            : function (_change) {
-            storageFactory.save_state('role_list', query_params($scope.list_data));
-            $scope.list_data.sort_order = $scope.getSortOrder();  //Check if user changed sort order
-            $scope.loading = 1;
-
-            if (_change === 'SortOrderSelect' && $scope.list_data.sort_order === AVG_SCORE_SORT) {
-                // Sorting by Average Score should default to reverse (or descending) order
-                $scope.list_data.reverse = true;
-            }
-
-            roleFactory.getRoles(
-                $scope.list_data.page,
-                $scope.list_data.selected_categories,
-                $scope.list_data.results_per_page,
-                $scope.list_data.sort_order,
-                $scope.list_data.list_filter,
-                $scope.list_data.reverse,
-                $scope.list_data.platform
-                )
-                .success(function (data) {
-                    _uniquePlatforms(data.results);
-                    $scope.roles = data['results'];
-                    $scope.list_data.page = parseInt(data['cur_page']);
-                    $scope.list_data.num_pages = parseInt(data['num_pages']);
-
-                    // Bug in API causes it to not return `cur_page` or `num_pages` when less than a single page of data in database
-                    // This causes the query to be cached with null values, which means subsequent requests return no data
-                    // Defaulting these values to 1 ensures we never cache the query with null values
-                    $scope.list_data.page = $scope.list_data.page || 1;
-                    $scope.list_data.num_pages = $scope.list_data.num_pages || 1;
-
-
-                    $scope.num_roles = parseInt(data['count']);
-                    $scope.list_data.page_range = [];
-
-                    $scope.setPageRange();
-
-                    $scope.status = "";
-                    storageFactory.save_state('role_list', query_params($scope.list_data));
-                    $scope.loading = 0;
-
-                    // Force window back to the top
-                    window.scrollTo(0, 0);
-                    })
-                .error(function (error) {
-                    $scope.roles = [];
-                    $scope.list_data.page = 1;
-                    $scope.list_data.num_pages = 1;
-                    $scope.list_data.page_range = [1];
-                    $scope.num_roles = 0;
-                    $scope.status = 'Unable to load roles list: ' + error.message;
-                    $scope.loading = 0;
-                    });
-            }
-
+        'refresh'            : _refresh
     };
 
     function _uniquePlatforms(roles) {
@@ -276,12 +224,72 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
             $scope.platforms = platforms;
         }),
         sortOrder: $scope.list_data.sort_order
-        });
+    });
 
     $scope.getCategories();
     $scope.list_data.refresh();
+
+    function _refresh(_change) {
+
+        $scope.list_data.sort_order = $scope.getSortOrder();  //Check if user changed sort order
+        $scope.loading = 1;
+
+        if (_change === 'SortOrderSelect' && $scope.list_data.sort_order === AVG_SCORE_SORT) {
+            // Sorting by Average Score should default to reverse (or descending) order
+            $scope.list_data.reverse = true;
+        }
+        else if (_change === 'SortOrderSelect') {
+            $scope.list_data.reverse = false;
+        }
+
+        roleFactory.getRoles(
+            $scope.list_data.page,
+            $scope.list_data.selected_categories,
+            $scope.list_data.results_per_page,
+            $scope.list_data.sort_order,
+            $scope.list_data.list_filter,
+            $scope.list_data.reverse,
+            $scope.list_data.platform
+        ).success(_refreshSuccess).error(_refreshError);
+
+        function _refreshSuccess(data) {
+            _uniquePlatforms(data.results);
+            $scope.roles = data['results'];
+            $scope.list_data.page = parseInt(data['cur_page']);
+            $scope.list_data.num_pages = parseInt(data['num_pages']);
+
+            // Bug in API causes it to not return `cur_page` or `num_pages` when less than a single page of data in database
+            // This causes the query to be cached with null values, which means subsequent requests return no data
+            // Defaulting these values to 1 ensures we never cache the query with null values
+            $scope.list_data.page = $scope.list_data.page || 1;
+            $scope.list_data.num_pages = $scope.list_data.num_pages || 1;
+
+
+            $scope.num_roles = parseInt(data['count']);
+            $scope.list_data.page_range = [];
+
+            $scope.setPageRange();
+
+            $scope.status = "";
+            storageFactory.save_state('role_list', query_params($scope.list_data));
+            $scope.loading = 0;
+
+            // Force window back to the top
+            window.scrollTo(0, 0);
+        }
+        
+        function _refreshError(error) {
+            $scope.roles = [];
+            $scope.list_data.page = 1;
+            $scope.list_data.num_pages = 1;
+            $scope.list_data.page_range = [1];
+            $scope.num_roles = 0;
+            $scope.status = 'Unable to load roles list: ' + error.message;
+            $scope.loading = 0;
+        }
+
     }
-    ]);
+}
 
 listControllers.controller('RoleDetailCtrl', ['$q', '$scope','$routeParams','$location','$modal', '$compile', 'roleFactory','userFactory','ratingFactory',
 'meFactory', 'relatedFactory', 'my_info', 'Stars', 'PaginateInit',
