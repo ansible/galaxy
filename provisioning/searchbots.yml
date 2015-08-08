@@ -7,6 +7,6 @@
 - name: Create robots.txt
   hosts: local
   vars:
-    searchbots_path: "{{ galaxy_project_dir }}/galaxy/main/templates"
+    searchbots_path: "{{ galaxy_project_dir }}/galaxy/templates"
   roles:
     - { role: searchbots }
