@@ -592,9 +592,15 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
     ]);
 
 
-listControllers.controller('UserListCtrl', ['$scope','$timeout','$location','$routeParams', 'userFactory','queryStorageFactory','my_info', 'SearchInit',
-'PaginateInit', 'Stars',
-function($scope, $timeout, $location, $routeParams, userFactory, storageFactory, my_info, SearchInit, PaginateInit, Stars) {
+listControllers.controller('UserListCtrl', [
+    '$scope','$timeout','$location','$routeParams', 'userFactory','queryStorageFactory','my_info', 'SearchInit',
+    'PaginateInit', 'Stars', _UserListCtrl]);
+
+function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
+    my_info, SearchInit, PaginateInit, Stars) {
+
+    var AVG_SCORE_SORT = 'avg_role_score,username',
+        NUM_ROLES_SORT = 'num_roles,username';
 
     $scope.page_title = 'Browse Users';
     $scope.my_info = my_info;
@@ -607,59 +613,8 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
         'reverse'            : false,
         'selected_categories': [],
         'sort_order'         : 'username',
-        'refresh'            : function() {
-            storageFactory.save_state('user_list', query_params($scope.list_data));
-            $scope.list_data.sort_order = $scope.getSortOrder();
-            console.log("sort order is " + $scope.list_data.sort_order);
-            $scope.loading = 1;
-            userFactory.getUsers(
-                $scope.list_data.page,
-                $scope.list_data.results_per_page,
-                $scope.list_data.sort_order,
-                $scope.list_data.reverse,
-                $scope.list_data.list_filter
-                )
-                .success( function (data) {
-                    for (var i=0; i < data['results'].length; i++) {
-                        data['results'][i].karma_range = Stars(data['results'][i].karma);
-                        data['results'][i].avg_rating_range = Stars(data['results'][i].avg_rating);
-                        data['results'][i].avg_role_score_range = Stars(data['results'][i].avg_role_score);
-                        data['results'][i].avg_role_aw_score_range = Stars(data['results'][i].avg_role_score);
-                        if (data['results'][i].summary_fields.ratings.length > 0) {
-                            data['results'][i].rating_range = Stars(data['results'][i].summary_fields.ratings[0].score);
-                        }
-                        else {
-                            data['results'][i].rating_range = Stars(0);
-                        }
-                    }
-                    if (data['results'].length) {
-                        $scope.users = angular.copy(data['results']);
-                    }
-                    $scope.list_data.page = parseInt(data['cur_page']);
-                    $scope.list_data.num_pages = parseInt(data['num_pages']);
-                    $scope.num_users = parseInt(data['count']);
-                    $scope.list_data.page_range = [];
-
-                    $scope.setPageRange();
-
-                    $scope.status = "";
-                    storageFactory.save_state('user_list', query_params($scope.list_data));
-                    $scope.loading = 0;
-
-                    // Force window back to the top
-                    window.scrollTo(0, 0);
-                    })
-                .error(function (error) {
-                    $scope.users = [];
-                    $scope.num_users = 0;
-                    $scope.list_data.page = 1;
-                    $scope.list_data.num_pages = 1;
-                    $scope.list_data.page_range = [1];
-                    $scope.status = 'Unable to load users list: ' + error.message;
-                    $scope.loading = 0;
-                    });
-            }
-        };
+        'refresh'            : _refresh
+    };
 
     $scope.page_range = [1];
     $scope.categories = [];
@@ -712,8 +667,8 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
         sortOptions: [
             { value: 'username', label: 'Username' },
             //{ value: 'karma,username', label: 'Karma Score' },
-            { value: 'avg_role_score,username', label: 'Average Role Score' },
-            { value: 'num_roles,username', label: 'Number of Roles' },
+            { value: AVG_SCORE_SORT, label: 'Average Role Score' },
+            { value: NUM_ROLES_SORT, label: 'Number of Roles' },
             { value: 'date_joined,username', label: 'Date Joined' }
             ],
         sortOrder: $scope.list_data.sort_order
@@ -721,8 +676,68 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
 
     $scope.list_data.refresh();
 
+    function _refresh(_change) {
+        $scope.list_data.sort_order = $scope.getSortOrder();
+        $scope.loading = 1;
+
+        if (_change === 'SortOrderSelect' &&
+            ($scope.list_data.sort_order === AVG_SCORE_SORT || $scope.list_data.sort_order === NUM_ROLES_SORT)) {
+            // Sorting by Average Score ||s Number of Roles should default to reverse (or descending) order
+            $scope.list_data.reverse = true;
+        }
+        else if (_change === 'SortOrderSelect') {
+            $scope.list_data.reverse = false;
+        }
+
+        userFactory.getUsers(
+            $scope.list_data.page,
+            $scope.list_data.results_per_page,
+            $scope.list_data.sort_order,
+            $scope.list_data.reverse,
+            $scope.list_data.list_filter
+        ).success(_refreshSuccess).error(_refreshError);
+
+        function _refreshSuccess(data) {
+            for (var i=0; i < data['results'].length; i++) {
+                data['results'][i].karma_range = Stars(data['results'][i].karma);
+                data['results'][i].avg_rating_range = Stars(data['results'][i].avg_rating);
+                data['results'][i].avg_role_score_range = Stars(data['results'][i].avg_role_score);
+                data['results'][i].avg_role_aw_score_range = Stars(data['results'][i].avg_role_score);
+                if (data['results'][i].summary_fields.ratings.length > 0) {
+                    data['results'][i].rating_range = Stars(data['results'][i].summary_fields.ratings[0].score);
+                }
+                else {
+                    data['results'][i].rating_range = Stars(0);
+                }
+            }
+            $scope.users = data['results'];
+
+            $scope.list_data.page = parseInt(data['cur_page']);
+            $scope.list_data.num_pages = parseInt(data['num_pages']);
+            $scope.num_users = parseInt(data['count']);
+            $scope.list_data.page_range = [];
+
+            $scope.setPageRange();
+
+            $scope.status = "";
+            storageFactory.save_state('user_list', query_params($scope.list_data));
+            $scope.loading = 0;
+
+            // Force window back to the top
+            window.scrollTo(0, 0);
+        }
+
+        function _refreshError(error) {
+            $scope.users = [];
+            $scope.num_users = 0;
+            $scope.list_data.page = 1;
+            $scope.list_data.num_pages = 1;
+            $scope.list_data.page_range = [1];
+            $scope.status = 'Unable to load users list: ' + error.message;
+            $scope.loading = 0;
+        }
     }
-    ]);
+}
 
 
 listControllers.controller('UserDetailCtrl', ['$scope','$routeParams','$location','userFactory','ratingFactory','my_info', 'Range', 'relatedFactory', 'Empty',

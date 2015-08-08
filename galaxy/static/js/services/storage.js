@@ -19,60 +19,64 @@
 
 'use strict';
 
-var storageServices = angular.module('storageServices', ['ngResource']);
+(function(angular) {
 
-function defineStorageService(adapter) {
-    var dataFactory = {};
+    var mod = angular.module('storageServices', []);
 
-    dataFactory.save_state = function(target, fields) { 
-        var data = {};
-        for (var fname in fields) {
-            data[fname] = fields[fname];
-        }
-        adapter.save(target, data);
-    };
+    function defineStorageService(adapter) {
+        return {
+            save_state: _saveState,
+            restore_state: _restoreState
+        };
 
-    dataFactory.restore_state = function(target, default_fields) {
-        try {
-            var data = adapter.restore(target);
-            for (var fname in default_fields) {
-                if (typeof(data[fname]) == 'undefined') {
-                    data[fname] = default_fields[fname];
-                }
+        function _saveState(target, fields) {
+            var data = {};
+            for (var fname in fields) {
+                data[fname] = fields[fname];
             }
-            return data;
-        } catch(err) {
-            return default_fields;
+            adapter.save(target, data);
         }
-    };
 
-    return dataFactory;
-}
-
-storageServices.factory('queryStorageFactory', ['$location',
-        function($location) {
-            return defineStorageService({
-                save: function(key, data) {
-                    return $location
-                        .search(JSON.parse(JSON.stringify(data)));
-                },
-                restore: function() {
-                    return $location.search();
+        function _restoreState(target, default_fields) {
+            try {
+                var data = adapter.restore(target);
+                for (var fname in default_fields) {
+                    if (typeof(data[fname]) == 'undefined') {
+                        data[fname] = default_fields[fname];
+                    }
                 }
-            })
+                return data;
+            } catch(err) {
+                return default_fields;
+            }
         }
-]);
+    }
 
-storageServices.factory('storageFactory', [
-        function () {
-            return defineStorageService({
-                save: function(target, data) {
-                    localStorage[target] = JSON.stringify(data);
-                    return localStorage[target];
-                },
-                restore: function(target) {
-                    return JSON.parse(localStorage[target]);
-                }
-            });
-        }
-]);
+    mod.factory('queryStorageFactory', ['$location', _queryStorageFactory]);
+
+    function _queryStorageFactory($location) {
+        return defineStorageService({
+            save: function(key, data) {
+                return $location.search(JSON.parse(JSON.stringify(data)));
+            },
+            restore: function() {
+                return $location.search();
+            }
+        });
+    }
+
+    mod.factory('storageFactory', [ _queryStorageFactory]);
+
+    function _queryStorageFactory() {
+        return defineStorageService({
+            save: function(target, data) {
+                localStorage[target] = JSON.stringify(data);
+                return localStorage[target];
+            },
+            restore: function(target) {
+                return JSON.parse(localStorage[target]);
+            }
+        });
+    }
+
+})(angular);
