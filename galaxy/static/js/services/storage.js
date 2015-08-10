@@ -65,9 +65,9 @@
         });
     }
 
-    mod.factory('storageFactory', [ _queryStorageFactory]);
+    mod.factory('storageFactory', [ _storageFactory]);
 
-    function _queryStorageFactory() {
+    function _storageFactory() {
         return defineStorageService({
             save: function(target, data) {
                 localStorage[target] = JSON.stringify(data);
