@@ -49,15 +49,13 @@
             // give the partial templates a chance to load before we do this...
             _restoreState()
             _getCategories();
-            _getTopRoles().then(function() {
-                _getNewRoles();
-            });
-            _getTopUsers().then(function() {
-                _getTopReviewers().then(function() {
-                    _getNewUsers();
-                });
-            });
+            _getTopRoles();
+            _getNewRoles();
+            _getTopUsers()
+            _getTopReviewers();
+            _getNewUsers();
         }, 100);
+        
         return;
 
 
