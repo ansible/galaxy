@@ -5,14 +5,29 @@
 {% load galaxyhelpers %}
 
 {% block general_content %}
+
+
+
+<div id="galaxy-banner">
+    <div class="galaxy-banner-inner"></div>
+    <div class="title-text">
+        <h1><span class="ansible-color">Ansible Galaxy</span> is your hub for finding, reusing and sharing the best Ansible content.</h1>
+    </div>
+    <div class="login-text">
+        <h2>Contribute to <span class="ansible-color">Galaxy</span>:</h2>
+        <div class="github-icon text-center"><a href="/accounts/github/login/"><i class="fa fa-github fa-4x"></i></a></div>
+    </div>
+</div>
+
+
+<!--
 <div class="banner-row">
-    <!--  -->
     <div class="container">
         <div class="row main-banner-row">
             {% if not user.is_authenticated %}
             <div class="col-lg-7">
             {% else %}
-            <div class="col-lg-8 col-lg-offset-2">    
+            <div class="col-lg-8 col-lg-offset-2">
             {% endif %}
                 <img src="/static/img/galaxy_logo_main.png" class="logo img-responsive" >
                 <div class="title"><p>Ansible Galaxy is your hub for finding, reusing, and sharing the best Ansible content.</p></div>
@@ -49,7 +64,7 @@
                     </div>
                     <div class="back-btn"><a href class="back-btn-link" data-target="signin-home"><i class="fa fa-arrow-circle-o-left"></i> back</a></div>
                 </div>
-                
+
                 <div id="create-account-form" style="display: none;">
                     <div class="signin-intro">
                         <h4>Create a free Galaxy account</h4>
@@ -112,17 +127,18 @@
 
             </div>
             {% endif %}
-        </div><!-- row -->
-    </div><!-- container -->
-</div><!-- banner -->
+        </div>
+    </div>
+</div>
+-->
 
 <script>
     $(document).ready(function() {
         // user clicks back button
         $('.back-btn-link').click(function(e) {
             var target = $(this).attr('data-target');
-            var parent = $(this).parent().parent(); 
-            parent.hide(); 
+            var parent = $(this).parent().parent();
+            parent.hide();
             $('#' + target).show('slide', {direction: 'up'}, 500);
             e.preventDefault();
             });
@@ -149,27 +165,27 @@
         });
 </script>
 
-<div class="info-row">
-    <div class="container">
-        <div class="row body">
-            <div class="col-lg-4">
-               <div class="round-border"><i class="fa fa-cloud-download fa-4x"></i></div>
+<div id="galaxy-info">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-4">
+               <div class="download-icon"><i class="fa fa-cloud-download fa-3x"></i></div>
                <h4>Download</h4>
                <div class="content-txt">
                    <p>Ansible Galaxy jump-starts your automation projects with great content from the Ansible community.</p>
                    <p>Ansible calls these pre-packaged units of automation <a href="http://docs.ansible.com/playbooks_roles.html#roles" target="_blank">roles</a>. Once downloaded, roles can be dropped into Ansible PlayBooks and immediately applied to your infrastructure.</p>
                </div>
             </div>
-            <div class="col-lg-4">
-               <div class="round-border share"><i class="fa"><span class="glyphicon glyphicon-share"></span></i></div>
+            <div class="col-lg-4 col-md-4 col-sm-4">
+               <div class="share-icon"><i class="fa fa-share-alt fa-3x"></i></div>
                <h4>Share</h4>
                <div class="content-txt">
                    <p>Help other Ansible users by sharing great Ansible roles that you have created.</p>
                    <p>Top content authors will be featured, achieving worldwide fame. Or at least, fame on the internet among developers and sysadmins just like yourself!</p>
                </div>
             </div>
-            <div class="col-lg-4">
-               <div class="round-border"><i class="fa fa-thumbs-o-up fa-4x"></i></div>
+            <div class="col-lg-4 col-md-4 col-sm-4">
+               <div class="thumbs-up-icon"><i class="fa fa-thumbs-up fa-3x"></i></div>
                <h4>Review</h4>
                <div class="content-txt">
                    <p>Help others find great automation content by reviewing roles that you have used.</p>
@@ -180,18 +196,28 @@
     </div>
 </div>
 
-<hr class="home"/>
-
-<div class="sponsorship-ad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6">
-                <h4>Brought to you by</h4>
-                <div class="ansible-logo"><a href="http://www.ansible.com" target="_blank"><img src="/static/img/ansible_logo_transparent.png"></a></div>
+<div id="galaxy-sponsorship" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="ansible">
+                <h4>Brought to you by<h4>
+                <a href="http://www.ansible.com" target="_blank"><img src="/static/img/ansible-logo.png"></a>
             </div>
-            <div class="col-lg-6">
-                <h4>Supercharge Ansible with</h4>
-                <div class="awx-logo"><a href="http://www.ansible.com/ansible-tower" target="_blank"><img src="/static/img/tower_for_galaxy.png"></a></div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="tower">
+                <div class="tower-text">Supercharge<br/>Ansible<br/>with</div>
+                <div class="tower-logo">
+                    <a href="http://www.ansible.com/ansible-tower" target="_blank"><img src="/static/img/tower-logo.png"></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="support">
+                <div class="support-logo">
+                    <a href="https://ansibleworks.zendesk.com/anonymous_requests/new" target="_blank"><i class="fa fa-bullhorn fa-3x"></i></a>
+                </div>
+                <h4>Contact Support</h4>
             </div>
         </div>
     </div>
@@ -200,4 +226,3 @@
 <div ng-view></div>
 
 {% endblock %}
-

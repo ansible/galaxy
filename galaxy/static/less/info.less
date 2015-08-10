@@ -1,0 +1,63 @@
+/*
+ * Info section of home page.
+ */
+
+#galaxy-info {
+    margin-top: 60px;
+    text-align: center;
+    h3, h4 {
+        color: @grey;
+        text-transform: uppercase;
+    }
+    i {
+        color: @white;
+    }
+
+    .download-icon,
+    .share-icon,
+    .thumbs-up-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        margin: 0 auto;
+        i {
+            padding-top: 6px;
+        }
+    }
+
+    .download-icon {
+        background-color: @ansible-color;
+        border: 1px solid @ansible-color;
+    }
+    .share-icon {
+        background-color: @blue;
+        border: 1px solid @blue;
+        i {
+            padding-top: 8px;
+            padding-right: 4px;
+        }
+    }
+    .thumbs-up-icon {
+        background-color: @red;
+        border: 1px solid @red;
+    }
+    .intro {
+        margin-bottom: 75px;
+    }
+    .body h4 {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .content-txt {
+        text-align: left;
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    #galaxy-info {
+        .content-txt {
+            margin-bottom: 50px;
+        }
+    }
+}

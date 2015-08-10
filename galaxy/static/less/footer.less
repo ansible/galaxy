@@ -1,0 +1,37 @@
+/*
+ * Site footer
+ */
+
+ #galaxy-footer {
+     min-height: 90px;
+     background-color: @black;
+     a {
+         color: @grey;
+     }
+     a:active, a:hover, a:visited {
+         color: @grey;
+     }
+     .github-logo {
+         text-align: right;
+         padding-top: 20px;
+         padding-right: 30px;
+     }
+     .copyright {
+         padding-top: 30px;
+         padding-left: 30px;
+     }
+ }
+
+ @media (max-width: 768px) {
+     #galaxy-footer {
+         .copyright {
+             text-align: center;
+         }
+         .github-logo {
+             text-align: center;
+             padding-top: 20px;
+             padding-right: 0;
+             padding-bottom: 20px;
+         }
+     }
+ }
