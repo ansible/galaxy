@@ -100,6 +100,7 @@ def build_standard_context(request):
                     except: pass
             url_items.append([part,breadcrumb_url])
     context["url_items"] = url_items
+    context["url_items_length"] = len(url_items)
     context["site_name"] = settings.SITE_NAME
     # database operations for data that is available on every page
     # categories
@@ -185,6 +186,7 @@ def list_category(request, category=None, page=1):
       '/static/js/services/related.js',
       '/static/js/lib/paginate.js',
     ]
+    print(context["url_items"])
     return render_to_response('list_category.html', context)
 
 def role_view(request, user, role):

@@ -5,26 +5,28 @@
 #galaxy-info {
     margin-top: 60px;
     text-align: center;
-    h3, h4 {
+    .info-label {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 30px;
         color: @grey;
         text-transform: uppercase;
+        margin-left: 10px;
     }
-    i {
-        color: @white;
-    }
-
     .download-icon,
     .share-icon,
     .thumbs-up-icon {
+        display: inline-block;
+        vertical-align: middle;
         width: 60px;
         height: 60px;
         border-radius: 30px;
         margin: 0 auto;
         i {
+            color: @white;
             padding-top: 6px;
         }
     }
-
     .download-icon {
         background-color: @ansible-color;
         border: 1px solid @ansible-color;
@@ -41,16 +43,9 @@
         background-color: @red;
         border: 1px solid @red;
     }
-    .intro {
-        margin-bottom: 75px;
-    }
-    .body h4 {
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
     .content-txt {
         text-align: left;
-        padding: 0 15px;
+        padding: 15px 15px 0 15px;
     }
 }
 
