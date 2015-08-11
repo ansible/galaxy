@@ -1,9 +1,10 @@
 {% block extra_body %}{% endblock %}
 
+{% if url_items_length > 1 %}
+<div id="galaxy-footer-blue-line" class="container-fluid"></div>
+{% endif %}
+
 <div id="galaxy-footer" class="container-fluid">
-    {% if url_items_length > 1 %}
-        <div class="blue-line"></div>
-    {% endif %}
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-6 copyright">
             <a href="http://www.ansible.com" target="_blank">&copy; 2015 <span class="ansible-color">Ansible, Inc.</span> All rights reserved.</a>
