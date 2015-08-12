@@ -49,28 +49,17 @@
 @push-height: (@footer-height + @footer-margin);
 @push-margin: 0px;
 
-@font-face {
-    font-family: 'Open Sans';
-    src: url("../fonts/OpenSans-Regular.eot?v=1.1.0");
-    src: url("../fonts/OpenSans-Regular.eot?#iefix&v=1.1.0") format("embedded-opentype"), url("../fonts/OpenSans-Regular.woff2?v=1.1.0") format("woff2"), url("../fonts/OpenSans-Regular.woff?v=1.1.0") format("woff"), url("../fonts/OpenSans-Regular.ttf?v=1.1.0") format("truetype"), url("../fonts/OpenSans-Regular.svg?v=1.1.0#Regular") format("svg");
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-  font-family: 'Open Sans Light';
-  src: url("../fonts/OpenSans-Light.eot?v=1.1.0");
-  src: url("../fonts/OpenSans-Light.eot?#iefix&v=1.1.0") format("embedded-opentype"), url("../fonts/OpenSans-Light.woff2?v=1.1.0") format("woff2"), url("../fonts/OpenSans-Light.woff?v=1.1.0") format("woff"), url("../fonts/OpenSans-Light.ttf?v=1.1.0") format("truetype"), url("../fonts/OpenSans-Light.svg?v=1.1.0#Light") format("svg");
-  font-weight: 300;
-  font-style: normal;
-}
-
+@import "fonts";
 @import "navbar";
 @import "banner";
 @import "info";
 @import "sponsorship";
 @import "footer";
 @import "page_title";
+@import "login_page";
+@import "github_connection";
+@import "page_not_found";
+@import "social_signup";
 
 html, body {
     font-family: 'Open Sans';
@@ -127,6 +116,23 @@ a:link, a:visited, a:hover, a:active {
     }
 }
 
+/* Generic messages. Media query below handles small viewport sizing */
+.galaxy-message {
+    width: 80%;
+    margin: 0 auto;
+    .message-text {
+        padding: 20px 0 20px 0;
+    }
+}
+.github-logo-signup {
+    text-align: center;
+    a {
+        color: @black;
+    }
+    a:active, a:hover, a:visited {
+        color: @black;
+    }
+}
 
 
 .user-menu {
@@ -141,8 +147,8 @@ a:link, a:visited, a:hover, a:active {
 }
 
 .wrap {
-    min-height: 800px;
-    height: auto !important;
+    min-height: 100%;
+    height: auto!;
 }
 
 /* General form styling */
@@ -183,38 +189,6 @@ a:link, a:visited, a:hover, a:active {
             a { color: @white; }
             a:hover { color: @blue; }
         }
-    }
-}
-
-/* Login page */
-.login-page {
-    margin-top: 40px;
-    border: 1px solid @charcoal;
-    padding: 15px;
-    border-radius: 6px;
-    form {
-        margin-top: 25px;
-    }
-    .form-fields {
-        width: 95%;
-        margin: 0 auto;
-        text-align: left;
-    }
-    .remember, .reset {
-        margin-top: 5px;
-        font-size: 12px;
-        display: inline-block;
-        vertical-align: middle;
-    }
-    .remember {
-        margin-right: 20px;
-    }
-    .reset {
-        padding-top: 3px;
-    }
-    .alert {
-        margin-bottom: 0;
-        margin-top: 20px;
     }
 }
 
@@ -787,5 +761,7 @@ a:link, a:visited, a:hover, a:active {
     .user-menu {
         text-align: center;
     }
-
+    .galaxy-message {
+        width: 100%;
+    }
 }

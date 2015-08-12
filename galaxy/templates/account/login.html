@@ -9,23 +9,42 @@
 
 {% block account_content %}
 
-<div class="row">
-    <div class="col-lg-6 col-lg-offset-3">
-        <div class="login-page text-center">
-            
-            <div class="signin-intro">
-                <h4>Sign In</h4>
-                <p>Start discovering, using and sharing Ansible content.</p>
+    <div id="galaxy-login-page">
+
+        <div class="galaxy-message">
+            <h2>Starting October 1, 2015 Galaxy will only support Github authentication.</h2>
+            <div class="message-text">
+                <p>If you created a Galaxy account in the past but never associated it with your Github account, now is your chance. After October 1
+                    you will not be able to access your account.</p>
+                <p>Log in using one of the options below. Once you log in you will be asked to associate your Galaxy account with your
+                    Github account. Going forward just click the Github logo to log into Galaxy.</p>
             </div>
-     
+        </div>
+
+        <div class="login-dialog">
+
+            <h2 class="text-center">Sign In</h2>
+
             <div class="login-social">
                 <ul class="social-links">
+                    {% get_providers as socialaccount_providers %}
+                    {% for provider in socialaccount_providers %}
+                        <li><a title="{{provider.name}}" class="socialaccount_provider {{provider.id}}"
+                            href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params next="/explore#/" %}"><i class="fa fa-{{provider.name|lower}} fa-2x"></i></a>
+                        </li>
+                    {% endfor %}
+                    <!--
                     <li><a href="/accounts/twitter/login/?process="><i class="fa fa-twitter fa-2x"></i></a></li>
                     <li><a href="/accounts/google/login/?process="><i class="fa fa-google-plus fa-2x"></i></a></li>
                     <li><a href="/accounts/github/login/?process="><i class="fa fa-github fa-2x"></i></a></li>
+                    -->
                 </ul>
                 <h4>or</h4>
             </div>
+
+
+
+
             {% if form.non_field_errors %}
             <div class="alert alert-danger alert-dismissable">
               <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -58,11 +77,7 @@
                     </div>
                 </div>
             </form>
-           
         </div>
-
     </div>
-</div>
 
 {% endblock %}
-

@@ -1,6 +1,6 @@
 {% block extra_body %}{% endblock %}
 
-{% if url_items_length > 1 %}
+{% if not url_items_length or url_items_length > 1 %}
 <div id="galaxy-footer-blue-line" class="container-fluid"></div>
 {% endif %}
 

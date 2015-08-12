@@ -31,26 +31,38 @@
      }
 
      .login-text {
-         position: absolute;
-         top: 25%;
-         left: 50%;
-         width: 50%;
-         text-align: center;
-
-         a {
-             color: @white;
-         }
-         a:active, a:hover, a:visited {
-             color: @white;
-         }
+        position: absolute;
+        top: 25%;
+        left: 50%;
+        width: 50%;
+        text-align: center;
+        .github-icon {
+            text-align: center;
+            a {
+                color: @white;
+            }
+            a:active, a:hover, a:visited {
+                color: @white;
+            }
+        }
+        .alternate-signin {
+            display: inline-block;
+            text-align: center;
+            font-size: 12px;
+            margin-top: 40px;
+            background-color: @black;
+            a:hover {
+                color: @grey;
+            }
+        }
      }
+
      h2 {
-         font-family: 'Open Sans Light';
-         font-weight: normal;
+         font-weight: 300;
          font-size: 24px;
      }
      h1 {
-         font-family: 'Open Sans Light';
+         font-weight: 300;
          font-size: 28px;
          line-height: 46px;
      }
@@ -70,7 +82,7 @@
 
          .login-text {
              position: absolute;
-             top: 220px;
+             top: 175px;
              left: 0;
              width: 100%;
              text-align: center;

@@ -7,73 +7,24 @@
 
 {% block account_content %}
 
-{% if form.accounts %}
-<p>{% blocktrans %}You can sign in to your account using any of the following third party accounts:{% endblocktrans %}</p>
+<div id="galaxy-github-connection">
+    <h3>Starting October 1, 2015 Galaxy will only support Github authentication.</h3>
+    <p >If you created a Galaxy account in the past but never associated it with your Github account, now is your chance. After October 1 you will not be able to access your account.</p>
 
-
-<form method="post">
-{% csrf_token %}
-
-{% if form.non_field_errors %}
-    <div class="alert alert-error">
-        <a class="close" data-dismiss="alert">&times;</a></a>
-        {% for non_field_error in form.non_field_errors %}
-             {{ non_field_error }}
-        {% endfor %}
-    </div>
-{% endif %}
-
-
-<table class="table">
-  <thead>
-    <tr>
-      <th>
-	{% trans 'Provider' %}
-      </th>
-      <th>
-	{% trans 'Account' %}
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-{% for base_account in form.accounts %}
-{% with base_account.get_provider_account as account %}
-    <tr>
-      <td>
-<label class="radio" for="id_account_{{base_account.id}}">
-<input id="id_account_{{base_account.id}}" type="radio" name="account" value="{{base_account.id}}"/>
-<span class="socialaccount_provider {{base_account.provider}} {{account.get_brand.id}}">{{account.get_brand.name}}</span>
-</label>
-      </td>
-      <td>
-	{{account}}
-      </td>
-    </tr>
-{% endwith %}
-{% endfor %}
-  </tbody>
-</table>
-
-<div class="form-actions">
-<button class="btn btn-danger" type="submit">{% trans 'Remove' %}</button>
+    {% if connected_to_github %}
+        <div class="result">
+            <h4>Good News!</h4>
+            <p>Your account is connected to Github. Next time you log into Galaxy just click <i class="fa fa-github fa-lg"></i> - the Github logo.<p>
+        </div>
+    {% else %}
+        <div class="result">
+            <h4>Connect to Github</h4>
+            <div class="github-logo">
+                {% include "socialaccount/snippets/provider_list.html" with process="connect" %}
+            </div>
+            <p>Click the GitHub logo to associate your account with GitHub</p>
+        </div>
+    {% endif %}
 </div>
-
-</fieldset>
-
-</form>
-
-{% else %}
-<div class="alert">
-<strong>{% trans 'None!' %}</strong> {% trans 'You currently have no social network accounts connected to this account.' %}
-</div>
-{% endif %}
-
-<h2>{% trans 'Add a 3rd Party Account' %}</h2>
-
-<ul class="socialaccount_providers">
-{% include "socialaccount/snippets/provider_list.html" with process="connect" %}
-</ul>
-
-{% include "socialaccount/snippets/login_extra.html" %}
 
 {% endblock %}

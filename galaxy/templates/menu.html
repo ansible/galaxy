@@ -15,11 +15,7 @@
             <li><a href="{% url 'main:accounts-profile' %}">My Roles</a></li>
             <li><a href="/list#/users/{{ user.id }}">My User Page</a></li>
             <li><a href="{% url 'account_email' %}">Manage E-mail</a></li>
-            <li><a href="{% url 'account_change_password' %}">Change Password</a></li>
             {% url 'socialaccount_connections' as connections_url %}
-            {% if connections_url %}
-            <li><a href="{{ connections_url }}">Manage Linked Accounts</a></li>
-            {% endif %}
             <li><a href="{% url 'account_logout' %}">Sign out</a></li>
         </ul>
     </li>
