@@ -1,8 +1,5 @@
 ---
-- name: Sending email 
-  hosts: local 
-  vars:
-    sendmail_username: "{{ lookup('env','SENDMAIL_USERNAME') }}"
-    sendmail_password: "{{ lookup('env','SENDMAIL_PASSWORD') }}"
+- name: Sending email
+  hosts: local
   roles:
-    - { role: copy_prod_db } 
+    - { role: sendmail }

@@ -60,6 +60,8 @@
 @import "github_connection";
 @import "page_not_found";
 @import "social_signup";
+@import "user_detail";
+@import "intro_page";
 
 html, body {
     font-family: 'Open Sans';
@@ -499,63 +501,6 @@ a:link, a:visited, a:hover, a:active {
             margin-bottom: 10px;
             overflow-x: hidden;
         }
-    }
-}
-
-
-/* User Detail Page */
-.user-detail {
-    img {
-        margin: 0 auto;
-        display: inline-block;
-        vertical-align: top;
-        border-radius: 6px;
-    }
-    .statistics {
-        display: inline-block;
-        margin-left: 30px;
-        vertical-align: top;
-    }
-    .user-info {
-        margin-bottom: 15px;
-        .username {
-            font-size: 22px;
-            font-weight: bold;
-            padding-right: 5px;
-        }
-        .name {
-            font-size: 16px;
-            color: @charcoal;
-            font-weight: bold;
-        }
-    }
-    .user-role-stats {
-        margin-top: 20px;
-        margin-bottom: 15px;
-        border-top: 1px solid @grey;
-        padding-top: 10px;
-    }
-    .user-review-stats {
-        margin-bottom: 20px;
-        border-bottom: 1px solid @grey;
-        padding-bottom: 10px;
-    }
-    .score, .karma {
-        margin-top: 5px;
-        margin-left: 10px;
-        .fld-label {
-           padding-left: 5px;
-        }
-    }
-    .score-value {
-        font-weight: bold;
-        color: @black;
-        padding: 2px;
-    }
-    .score-value-na {
-        font-weight: bold;
-        padding: 2px;
-        color: @grey;
     }
 }
 
