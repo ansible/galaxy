@@ -83,6 +83,8 @@ def check_title(value):
         return 'Success!'
     elif value == 'Accounts Logout':
         return 'Logout'
+    elif value == 'Accounts Profile':
+        return 'My Roles'
     elif 'Confirm-Email' in value:
         return 'Confirm Email'
     else:
