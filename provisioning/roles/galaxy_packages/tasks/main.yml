@@ -85,7 +85,7 @@
   file:
       path: "{{ galaxy_log_dir }}"
       state: directory
-      mode: 0750
+      mode: 0770
       owner: root
       group: galaxy_manage
   when: galaxy_env == "PROD"
@@ -94,7 +94,9 @@
   file:
       path: "{{ galaxy_log_dir }}"
       state: directory
-      mode: 0750
+      mode: 0775
+      owner: vagrant
+      group: vagrant
   when: galaxy_env == "DEV"
 
 - name: set galaxy log directory selinux permissions
