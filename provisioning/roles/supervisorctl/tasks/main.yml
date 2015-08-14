@@ -4,7 +4,7 @@
   group: name=galaxy system=yes
 
 - name: create the galaxy user for celery
-  user: name=galaxy group=galaxy groups=apache system=yes createhome=no shell=/sbin/nologin
+  user: name=galaxy group=galaxy groups=apache,galaxy_manage system=yes createhome=no shell=/sbin/nologin
 
 - name: update supervisor config
   ini_file: dest={{sup_conf_location}} section="program:galaxy-celeryd" option="{{item.option}}" value="{{item.value}}"
@@ -26,7 +26,7 @@
     - option: log_stderr
       value: "true"
     - option: logfile
-      value: "/var/log/supervisor/galaxy-celeryd.log"
+      value: "/var/log/galaxy/galaxy-celeryd.log"
     - option: logfile_maxbytes
       value: 50MB
     - option: logfile_backups

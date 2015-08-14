@@ -16,4 +16,5 @@
   - httpd_can_network_memcache
   - httpd_can_network_connect_db
   - httpd_can_sendmail
+  - httpd_can_network_connect
   - nis_enabled
