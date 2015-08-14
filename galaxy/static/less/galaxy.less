@@ -62,6 +62,7 @@
 @import "social_signup";
 @import "user_detail";
 @import "intro_page";
+@import "role_detail";
 
 html, body {
     font-family: 'Open Sans';
@@ -340,91 +341,6 @@ a:link, a:visited, a:hover, a:active {
 }
 
 
-/* Role Detail */
-.role-detail {
-    .rolename { margin-top: 0; }
-    .user-info {
-        text-align: center;
-        img { border-radius: 6px; }
-        .username {
-            font-size: 16px;
-            padding: 5px 0 5px 0;
-        }
-    }
-    .description {
-        margin-top: 20px;
-        margin-bottom: 30px;
-        color: @charcoal;
-    }
-    .rating-section {
-        margin-bottom: 30px;
-        .score { margin-top: 30px; }
-        .role-ratings {
-            color: @charcoal;
-            table {
-                tr {
-                    td:first-child {
-                        padding-right: 10px;
-                        padding-left: 15px;
-                    }
-                }
-                tr:first-child {
-                    color: @black;
-                    font-weight: bold;
-                    td:first-child { padding-left: 5px; }
-                }
-            }
-        }
-    }
-    .actions {
-        margin-bottom: 30px;
-    }
-    .installation { margin-bottom: 40px; }
-    .platforms, .versions {
-        margin-bottom: 30px;
-        table {
-            color: @charcoal;
-            tr>td { padding: 5px;}
-        }
-    }
-    .ansible-version {
-        margin-bottom: 30px;
-        .title {
-            font-size: 24px;
-            font-weight: 500;
-            margin-bottom: 30px;
-        }
-        .version {
-            font-size: 16px;
-            font-weight: bold;
-            padding-left: 5px;
-            color: @charcoal;
-        }
-    }
-    .readme {
-        table {
-            width: 100%;
-            margin-bottom: 20px;
-            th {
-                padding: 0.4em 0.8em;
-                border: 1px solid black;
-            }
-            td {
-                padding: 0.8em;
-                border: 1px solid black;
-            }
-        }
-        pre {
-            overflow: auto;
-            word-break: inherit;
-            word-wrap: inherit;
-            code {
-                white-space: pre;
-                overflow: initial;
-            }
-        }
-    }
-}
 
 
 /* Browse Users */
