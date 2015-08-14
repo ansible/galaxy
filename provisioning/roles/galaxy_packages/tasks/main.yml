@@ -59,11 +59,11 @@
 # will complain. It isn't used, as all the avatar info is stored
 # in the database
 
-- name: configure django-avatars directory
-  file: path=/var/www/avatars state=directory mode=0755 owner=apache group=galaxy_manage
-
 - name: create galaxy_manage group
   group: name=galaxy_manage state=present
+
+- name: configure django-avatars directory
+  file: path=/var/www/avatars state=directory mode=0755 owner=apache group=galaxy_manage
 
 - name: add vagrant to galaxy_manage group
   user: name=vagrant append=yes groups=galaxy_manage
