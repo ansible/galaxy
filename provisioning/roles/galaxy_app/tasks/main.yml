@@ -24,7 +24,7 @@
 - name: create the SECRET_KEY file
   command: /usr/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)" creates=/etc/galaxy/SECRET_KEY
 
-- name: adjust SECRET_KEY permissions - production
+- name: adjust SECRET_KEY permissions
   file: path=/etc/galaxy/SECRET_KEY state=file owner=root group=galaxy_manage mode=0660
 
 - name: deploy apache configuration file

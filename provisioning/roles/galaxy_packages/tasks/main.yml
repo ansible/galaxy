@@ -60,7 +60,7 @@
 # in the database
 
 - name: configure django-avatars directory
-  file: path=/var/www/avatars state=directory mode=0755 owner=apache group=apache
+  file: path=/var/www/avatars state=directory mode=0755 owner=apache group=galaxy_manage
 
 - name: create galaxy_manage group
   group: name=galaxy_manage state=present
@@ -86,9 +86,13 @@
       state: directory
       owner: root
       group: galaxy_manage
-      mode: 2770
+      mode: 770
       recurse: yes
       seuser: system_u
       serole: object_r
       setype: httpd_log_t
+  when: galaxy_env == "PROD"
+
+- name: set galaxy log directory acl
+  acl: name="{{ galaxy_log_dir }}" defult=yes etype=group entity=galaxy_manage permissions=rw state=present
   when: galaxy_env == "PROD"
