@@ -94,5 +94,11 @@
   when: galaxy_env == "PROD"
 
 - name: set galaxy log directory acl
-  acl: name="{{ galaxy_log_dir }}" defult=yes etype=group entity=galaxy_manage permissions=rw state=present
+  acl:
+      name: "{{ galaxy_log_dir }}"
+      default: yes
+      etype: group
+      entity: galaxy_manage
+      permissions: rw
+      state: present
   when: galaxy_env == "PROD"
