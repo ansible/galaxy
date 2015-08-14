@@ -63,7 +63,7 @@
   file: path=/var/www/avatars state=directory mode=0755 owner=apache group=apache
 
 - name: create galaxy_manage group
-  groupadd: name=galaxy_manage state=present
+  group: name=galaxy_manage state=present
 
 - name: add vagrant to galaxy_manage group
   user: name=vagrant append=yes groups=galaxy_manage
