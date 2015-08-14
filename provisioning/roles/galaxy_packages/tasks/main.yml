@@ -80,20 +80,36 @@
 # semanage fcontext -a -t httpd_log_t "/var/log/galaxy(/.*)?"
 # restorecon -R -v /var/log/galaxy
 
-- name: configure galaxy log directory
+# the galaxy log directory will be handled by packaging in the future
+- name: create galaxy log directory - production
+  file:
+      path: "{{ galaxy_log_dir }}"
+      state: directory
+      mode: 0750
+      owner: root
+      group: galaxy_manage
+  when: galaxy_env == "PROD"
+
+- name: create galaxy log directory - development
+  file:
+      path: "{{ galaxy_log_dir }}"
+      state: directory
+      mode: 0750
+  when: galaxy_env == "DEV"
+
+- name: set galaxy log directory selinux permissions
   file:
       path: "{{ galaxy_log_dir }}"
       state: directory
       owner: root
       group: galaxy_manage
-      mode: 770
       recurse: yes
       seuser: system_u
       serole: object_r
       setype: httpd_log_t
   when: galaxy_env == "PROD"
 
-- name: set galaxy log directory acl
+- name: set galaxy log directory default acl
   acl:
       name: "{{ galaxy_log_dir }}"
       default: yes
