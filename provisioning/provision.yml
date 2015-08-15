@@ -7,4 +7,4 @@
       galaxy_admin_password: "{{ lookup('env', 'GALAXY_ADMIN_PASSWORD') | default('galaxy',true) }}"
   roles:
   - { role: galaxy_app }
-  - { role: admin_user, when: galaxy_env == "PROD" }
+  - { role: admin_user }
