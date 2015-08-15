@@ -2,7 +2,7 @@
   expect:
       command: "galaxy-manage createsuperuser"
       responses:
-          Username: "{{ galaxy_admin_username }}" 
-          "Email address": "admin@galaxy.com" 
+          Username: "{{ galaxy_admin_username }}"
+          "Email address": "admin@galaxy.com"
           Password: "{{ galaxy_admin_password }}"
           "Password (again)": "{{ galaxy_admin_password }}"
