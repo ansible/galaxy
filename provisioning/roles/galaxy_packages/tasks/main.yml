@@ -40,6 +40,7 @@
 - name: install pip packages required for galaxy
   pip: name={{item}}
   with_items:
+  - pexpect
   - decorator
   - django-allauth
   - django-autofixture
