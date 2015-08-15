@@ -3,6 +3,7 @@
   sudo: yes
   vars:
       galaxy_postgresql_password: "{{ lookup('env', 'GALAXY_POSTGRESQL_PASSWORD') | default('galaxy',true) }}"
-      galaxy_github_api_token: "{{ lookup('env', 'GALAXY_GITHUB_API_KEY')  | default('', true) }}"
+      galaxy_github_api_token: "{{ lookup('env', 'GALAXY_GITHUB_API_KEY') }}"
+      galaxy_admin_password: "{{ lookup('env', 'GALAXY_ADMIN_PASSWORD') }}"
   roles:
   - { role: galaxy_app }
