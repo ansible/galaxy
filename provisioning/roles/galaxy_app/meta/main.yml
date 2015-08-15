@@ -6,4 +6,3 @@ dependencies:
 - { role: rabbitmq }
 - { role: supervisorctl, when: galaxy_configure_supervisor, sup_init_name: "supervisord", sup_conf_location: "/etc/supervisord.conf" }
 - { role: iptables }
-- { role: admin_user, when: galaxy_env == "PROD" }

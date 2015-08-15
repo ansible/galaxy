@@ -1,6 +1,6 @@
 - name: Create galaxy admin user
   expect:
-      command: "{{ galaxy_project_dir }}/manage.py createsuperuser"
+      command: "galaxy-manage createsuperuser"
       responses:
           Username: "{{ galaxy_admin_username }}" 
           "Email address": "admin@galaxy.com" 
