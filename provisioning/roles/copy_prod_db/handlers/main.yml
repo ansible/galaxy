@@ -2,3 +2,6 @@
 
 - name: restart postgres
   service: name=postgresql state=restarted
+
+- name: restart apache
+  service: name=httpd state=started
