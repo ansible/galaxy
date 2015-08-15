@@ -5,3 +5,9 @@
 
 - name: restart apache
   service: name=httpd state=started
+
+- name: restart celeryd
+  supervisorctl:
+    config: "/etc/supervisorctl"
+    name: "galaxy-celeryd"
+    state: started

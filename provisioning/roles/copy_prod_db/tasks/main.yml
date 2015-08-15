@@ -29,6 +29,12 @@
 - name: "Stop apache"
   service: name=httpd state=stopped
 
+- name: "Stop celeryd"
+  supervisorctl:
+    config: "/etc/supervisorctl"
+    name: "galaxy-celeryd"
+    state: stopped
+
 # The following tasks assume the postgresql role was already applied
 - name: "Drop the galaxy database"
   postgresql_db:
@@ -62,7 +68,8 @@
   notify:
       - restart postgres
       - restart apache
-      
+      - restart celeryd
+
 - name: "Remove backup archive"
   file:
     path: "/tmp/{{ data_list.s3_keys[-1] | basename }}"
