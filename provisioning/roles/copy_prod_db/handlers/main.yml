@@ -8,6 +8,6 @@
 
 - name: restart celeryd
   supervisorctl:
-    config: "/etc/supervisorctl"
+    config: "/etc/supervisord.conf"
     name: "galaxy-celeryd"
     state: started
