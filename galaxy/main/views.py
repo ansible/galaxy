@@ -252,6 +252,9 @@ def user_view(request, user):
 def handle_404_view(request):
     return render_to_response('custom404.html')
 
+def handle_400_view(request):
+    return render_to_response('custom400.html')
+
 #------------------------------------------------------------------------------
 # Non-secured Action URLs requiring a POST
 #------------------------------------------------------------------------------

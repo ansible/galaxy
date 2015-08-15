@@ -23,6 +23,7 @@ import autofixture
 from django.conf.urls import handler404
 
 handler404 = 'galaxy.main.views.handle_404_view'
+handler400 = 'galaxy.main.views.handle_400_view'
 
 admin.autodiscover()
 autofixture.autodiscover()
