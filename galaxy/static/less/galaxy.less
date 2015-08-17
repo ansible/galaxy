@@ -83,6 +83,16 @@ a:link, a:visited, a:hover, a:active {
     text-decoration: none;
 }
 
+h2 {
+    color: @blue;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+pre {
+    border-radius: 2px;
+}
+
 /* Helper Classes */
 .pad-right-sm { padding-right: 10px; }
 .pad-left-md { padding-left: 30px; }
@@ -168,31 +178,6 @@ a:link, a:visited, a:hover, a:active {
 }
 .form-intro {
     margin-bottom: 40px;
-}
-
-/* Social links found on home page sing-in/up forms and login page */
-.login-social {
-    text-align: center;
-    .social-links {
-        list-style: none;
-        padding: 15px 0 15px 0;
-        li {
-            display: inline-block;
-            margin-right: 15px;
-            i {
-               padding: 5px 8px 5px 8px;
-               background-color: @blue;
-               border-radius: 20px;
-               border: 1px solid @blue;
-            }
-            i:hover {
-               background-color: @grey;
-               border: 1px solid @grey;
-            }
-            a { color: @white; }
-            a:hover { color: @blue; }
-        }
-    }
 }
 
 .staff-marker {

@@ -3,20 +3,28 @@
  */
 
 #galaxy-github-connection {
+    h2 {
+        margin-top: 0;
+        margin-bottom: 15px;
+    }
     width: 80%;
     margin:0 auto;
 
     .result {
         margin-top: 40px;
-
         .github-logo {
             margin: 15px 0 15px 20px;
-            a {
-                color: @black;
+            a, a:active, a:visited {
+                color: @blue;
             }
-            a:active, a:hover, a:visited {
-                color: @black;
+            a:hover {
+                color: @ansible-color;
             }
+        }
+    }
+    .result.success {
+        .fa-github-square {
+            color: @grey;
         }
     }
 }
