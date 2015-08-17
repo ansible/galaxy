@@ -1,0 +1,51 @@
+/*
+ * login_page.less
+ *
+ * Style /accounts/login
+ *
+ */
+
+ #galaxy-login-page {
+     margin-top: 40px;
+     .login-intro {
+         width: 80%;
+         margin: 0 auto;
+     }
+     .login-dialog {
+         width: 50%;
+         margin: 0 auto;
+     }
+     form {
+         margin-top: 25px;
+     }
+     .form-fields {
+         width: 95%;
+         margin: 0 auto;
+         text-align: left;
+     }
+     .remember, .reset {
+         margin-top: 5px;
+         font-size: 12px;
+         display: inline-block;
+         vertical-align: middle;
+     }
+     .remember {
+         margin-right: 20px;
+     }
+     .reset {
+         padding-top: 3px;
+     }
+     .alert {
+         margin-bottom: 0;
+         margin-top: 20px;
+     }
+ }
+
+ @media(max-width: 768px) {
+     #galaxy-login-page {
+         .login-intro,
+         .login-dialog {
+             width: 100%;
+         }
+     }
+ }

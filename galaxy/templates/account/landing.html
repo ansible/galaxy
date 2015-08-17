@@ -1,11 +1,33 @@
 {% extends 'account/base.html' %}
+
+{% load socialaccount %}
+
 {% block account_content %}
 {% if transient %}
+<!--
 <div class="alert alert-transient alert-{{ transient.status }}">
  <button type="button" class="close" data-dismiss="alert"><i class="icon-remove-sign"></i></button>
  {{ transient.msg|safe }}
 </div>
+-->
 {% endif %}
-<h2>Congratulations!</h2>
-Your registration is complete. You can now proceed to the <a href="{% url 'account_login' %}">login</a> page to access your account.
+
+<div id="galaxy-account-landing">
+    <div class="galaxy-message">
+        <h2>Congratulations!</h2>
+        <div class="message-text">
+            <p>Your registration is complete. Click the Github logo to login and access your account.</p>
+        </div>
+        <div class="github-logo-signup">
+            {% get_providers as socialaccount_providers %}
+            {% for provider in socialaccount_providers %}
+                {% if provider.name == 'GitHub' %}
+                    <a title="{{provider.name}}" class="socialaccount_provider {{provider.id}}"
+                        href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params next="/explore#/" %}"><i class="fa fa-{{provider.name|lower}} fa-3x"></i></a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
 {% endblock %}

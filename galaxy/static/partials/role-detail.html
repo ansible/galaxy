@@ -1,14 +1,14 @@
-<div class="container role-detail">
+<ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
-    <div class="row staff" ng-show="my_info.staff">
+<div class="container" id="galaxy-role-detail">
+
+    <div class="row" style="margin-bottom: 20px;" ng-show="my_info.staff">
         <div class="col-lg-12">
             <div class="text-right">
                 <a class="btn btn-danger btn-sm" href ng-click="staffDeleteRole(role.id)"><i class="fa fa-trash-o"></i> Delete Role</a>
             </div>
         </div>
     </div>
-
-    <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
     <div class="row">
         <div class="col-lg-9">

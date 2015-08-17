@@ -1,0 +1,74 @@
+/*
+ * Site navbar
+ */
+
+.navbar {
+    margin-bottom: 0;
+    height: 80px;
+    background-color: @navbar-background;
+    border: 0;
+}
+
+.navbar-header {
+    padding-left: 15px;
+    height: @navbar-height;
+}
+
+.navbar-brand {
+    height: @navbar-height;
+    padding: 0 15px;
+}
+
+.navbar-default {
+    border: 0;
+    .navbar-toggle .icon-bar {
+        background-color: @white;
+    }
+    .navbar-toggle:hover .icon-bar {
+        background-color: #bbb;
+    }
+    .navbar-nav>li>a {
+        text-transform: uppercase;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-default {
+        .navbar-nav>li>a {
+            text-align: right;
+        }
+        .navbar-nav>li>a:hover {
+            background-color: @navbar-item-hover-background;
+            color: #161b1f;
+        }
+    }
+}
+
+@media (min-width: 768px) {
+    .navbar {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    .navbar-nav {
+        margin-top: 18px;
+    }
+    .navbar-default {
+        .navbar-nav>li:last-of-type {
+            margin-right: 20px;
+        }
+        .navbar-nav>li>a {
+            text-align: center;
+            padding: 10px 0 0 0;
+            width: 150px;
+            height: 40px;
+            color: @white;
+            border-radius: 2px;
+        }
+        .navbar-nav>li>a:hover {
+            background-color: @navbar-item-hover-background;
+            color: #161b1f;
+        }
+    }
+}

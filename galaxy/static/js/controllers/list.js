@@ -230,7 +230,7 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
     $scope.list_data.refresh();
 
     function _refresh(_change) {
-
+        storageFactory.save_state('role_list', query_params($scope.list_data));
         $scope.list_data.sort_order = $scope.getSortOrder();  //Check if user changed sort order
         $scope.loading = 1;
 
@@ -271,13 +271,12 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
             $scope.setPageRange();
 
             $scope.status = "";
-            storageFactory.save_state('role_list', query_params($scope.list_data));
             $scope.loading = 0;
 
             // Force window back to the top
             window.scrollTo(0, 0);
         }
-        
+
         function _refreshError(error) {
             $scope.roles = [];
             $scope.list_data.page = 1;
@@ -637,12 +636,12 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
 
     $scope.hover = function(idx, fld, val) {
         $scope[fld + '_hover_' + idx] = val;
-        }
+    };
 
     $scope.toggle_reverse = function() {
         $scope.list_data.reverse = !$scope.list_data.reverse;
         $scope.list_data.refresh();
-        };
+    };
 
     var restored_query = storageFactory
         .restore_state('user_list', query_params($scope.list_data));
@@ -684,7 +683,11 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
 
     $scope.list_data.refresh();
 
+    return;
+
+
     function _refresh(_change) {
+        storageFactory.save_state('user_list', query_params($scope.list_data));
         $scope.list_data.sort_order = $scope.getSortOrder();
         $scope.loading = 1;
 
@@ -728,7 +731,6 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
             $scope.setPageRange();
 
             $scope.status = "";
-            storageFactory.save_state('user_list', query_params($scope.list_data));
             $scope.loading = 0;
 
             // Force window back to the top

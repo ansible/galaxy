@@ -11,7 +11,7 @@ ADMINS = (
 )
 
 SITE_ENV="{{ galaxy_site_env }}"
-SITE_NAME="{{ galaxy_site_name }}"
+SITE_NAME="{{ ansible_nodename }}"
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SEND_EMAIL={{ galaxy_send_email }}
 

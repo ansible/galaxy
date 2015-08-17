@@ -1,11 +1,7 @@
 ---
 
 - name: create the /etc/galaxy directory
-  file: path=/etc/galaxy owner=root group=apache mode=0750 state=directory
-
-- name: set /etc/galaxy permissions - development
-  file: path=/etc/galaxy owner=root group=root mode=0755
-  when: galaxy_env == "DEV"
+  file: path=/etc/galaxy owner=root group=galaxy_manage mode=2770 state=directory
 
 # Install galaxy tarball
 - name: make the sdist tar
@@ -21,26 +17,15 @@
 
 - name: configure galaxy public/static directory
   file: path=/var/lib/galaxy/public/static state=directory mode=0755
-  when: galaxy_env == "PROD"
 
 - name: deploy settings file
-  template: src=settings.py.j2 dest=/etc/galaxy/settings.py owner=root group=apache mode=0640
-
-- name: set settings.py file permissions - development
-  file: path=/etc/galaxy/settings.py owner=root mode=0644 group=root
-  when: galaxy_env == "DEV"
+  template: src=settings.py.j2 dest=/etc/galaxy/settings.py owner=root group=galaxy_manage mode=0660
 
 - name: create the SECRET_KEY file
-  command: >
-    /usr/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)" creates=/etc/galaxy/SECRET_KEY
+  command: /usr/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)" creates=/etc/galaxy/SECRET_KEY
 
-- name: adjust SECRET_KEY permissions - production
-  file: path=/etc/galaxy/SECRET_KEY state=file owner=root group=apache mode=0640
-  when: galaxy_env == "PROD"
-
-- name: adjust SECRET_KEY permissions - development
-  file: path=/etc/galaxy/SECRET_KEY state=file owner=root group=root mode=0644
-  when: galaxy_env == "DEV"
+- name: adjust SECRET_KEY permissions
+  file: path=/etc/galaxy/SECRET_KEY state=file owner=root group=galaxy_manage mode=0660
 
 - name: deploy apache configuration file
   template: src=galaxy.conf.j2 dest=/etc/httpd/conf.d/galaxy.conf
@@ -76,14 +61,7 @@
 - name: install gulp globally
   npm: name=gulp global=yes
   when: galaxy_install_dev_tools
-  
+
 - name: install less globally
   npm: name=less global=yes
   when: galaxy_install_dev_tools
-
-# semanage fcontext -a -t httpd_log_t "/var/log/galaxy(/.*)?"
-# restorecon -R -v /var/log/galaxy
-
-- name: fix galaxy log permissions
-  file: path={{ galaxy_log_dir }} state=directory owner=apache group=apache recurse=yes seuser=system_u serole=object_r setype=httpd_log_t
-  when: galaxy_env == "PROD"

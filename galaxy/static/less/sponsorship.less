@@ -1,0 +1,63 @@
+/*
+ * Home page sponsorship score-section
+ */
+
+ #galaxy-sponsorship {
+     height: 200px;
+     background-color: @blue;
+     margin-top: 50px;
+
+     .ansible {
+         color: #e1e1e1;
+         text-align: center;
+         margin-top: 60px;
+     }
+     .tower {
+         margin-top: 55px;
+         .tower-text {
+             width: 47%;
+             margin-right: 2%;
+             text-align: right;
+             color: #e1e1e1;
+             display: inline-block;
+             padding-top: 10px;
+         }
+         .tower-logo {
+             width: 49%;
+             display: inline-block;
+             vertical-align: top;
+             img {
+                 vertical-align: top;
+             }
+         }
+     }
+     .support {
+         margin-top: 60px;
+         color: #e1e1e1;
+         text-align: center;
+         .support-logo {
+             margin: 0 auto;
+             background-color: @white;
+             border-radius: 50%;
+             border: 1px solid @white;
+             width: 60px;
+             height: 56px;
+         }
+         i {
+             padding: 3px 0 0 2px;
+             color: @blue;
+         }
+     }
+     .tower-text,
+     h4 {
+         font-weight: normal;
+         font-size: 18px;
+     }
+ }
+
+ @media (max-width: 768px) {
+
+     #galaxy-sponsorship {
+         height: 475px;
+     }
+ }

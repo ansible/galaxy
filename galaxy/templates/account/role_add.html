@@ -7,18 +7,12 @@
 {% block account_content %}
 
 <div class="row">
-    <div class="col-lg-12 page-title">
-        <div class="txt">Add a Role</div>
-        <div class="rule"></div>
-    </div>
-</div>
-
-<div class="row">
     <div class="col-lg-9">
         <div class="form-intro">
-            <p>Use this form to create a new role. The role data will be pulled in from GitHub</p>
-            <p>Each role to be uploaded should be available as its own Github repository. For example, if the role is located at <code>http://github.com/myusername/myrolename</code>, put 'myusername' in the first box and 'myrolename' in the second.<p>
-            <p>For more information about how to create and upload a role, please refer to the <a href="{% url 'main:intro' %}">getting started</a> documentation for more information.</p>
+            <p>Use this form to a add a new role. The role should exist in its own Github repository. Galaxy will pull in
+                information from the repository.</p>
+            <p>For example, if the role is located at <code>http://github.com/myusername/myrolename</code>, put 'myusername' in the first field and 'myrolename' in the second.<p>
+            <p>For more information about how to create a role, see our <a href="{% url 'main:intro' %}">getting started</a> documentation.</p>
         </div>
     </div>
 </div>
@@ -91,4 +85,3 @@
 </div>
 
 {% endblock %}
-

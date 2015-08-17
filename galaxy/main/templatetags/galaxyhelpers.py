@@ -20,6 +20,7 @@ import markdown as md
 
 from django import template
 from django.utils import timezone
+from django.template.defaultfilters import stringfilter
 
 register = template.Library()
 
@@ -30,7 +31,6 @@ def querysort(value, arg):
    """
    value = value.order_by(arg)
    return value
-from django import template
 
 @register.filter
 def markdown(value):
@@ -54,3 +54,38 @@ def timesince(value):
       if diff.days != 1:
          plural = "s"
       return "%d day%s ago" % (diff.days, plural)
+
+@register.filter
+@stringfilter
+def urlname(value):
+    parts = value.split('/')
+    paths = []
+    for part in parts:
+        if not part == '':
+           paths.append(part)
+    if len(paths) > 1:
+        return check_title("%s %s" % (paths[-2].title(), paths[-1].title()))
+    elif len(paths) > 0:
+        return check_title(paths[-1].title())
+    else:
+        return ''
+
+def check_title(value):
+    if value == 'Password Change':
+        return 'Change Password'
+    elif value == 'Accounts Connect':
+        return 'Connect to Github'
+    elif value == 'Role Add':
+        return 'Add a Role'
+    elif value == 'Accounts Login':
+        return 'Login'
+    elif value == 'Accounts Landing':
+        return 'Success!'
+    elif value == 'Accounts Logout':
+        return 'Logout'
+    elif value == 'Accounts Profile':
+        return 'My Roles'
+    elif 'Confirm-Email' in value:
+        return 'Confirm Email'
+    else:
+        return value

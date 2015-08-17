@@ -31,8 +31,18 @@ def password_set_callback(sender, request, user, **kwargs):
     messages.success(request, 'You have successfully set your password.')
 
 class AccountAdapter(DefaultAccountAdapter):
-  def get_login_redirect_url(self, request):
-      if hasattr(settings, 'LOGIN_REDIRECT_URL'):
-          return settings.LOGIN_REDIRECT_URL
-      else:
-          return '/'
+    def default_login_redirect_url(self):
+        if hasattr(settings, 'LOGIN_REDIRECT_URL'):
+            return settings.LOGIN_REDIRECT_URL
+        else:
+            return '/'
+
+    def get_login_redirect_url(self, request):
+        if request.user.is_authenticated():
+            githubAccount = False
+            for account in request.user.socialaccount_set.all():
+                if account.provider == 'github':
+                    return self.default_login_redirect_url()
+            return '/accounts/connect'
+        else:
+            return self.default_login_redirect_url()

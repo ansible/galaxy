@@ -24,6 +24,8 @@
     "less": "~2.5.1",
     "gulp": "~3.9.0",
     "gulp-less": "~3.0.3",
-    "gulp-dest": "~0.2.2"
+    "gulp-dest": "~0.2.2",
+    "gulp-watch": "~4.3.4",
+    "gulp-batch": "~1.0.5"
   }
 }

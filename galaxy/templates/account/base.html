@@ -1,19 +1,30 @@
 {% extends "master.html" %}
 
+{% load galaxyhelpers %}
 {% load url from future %}
 {% load i18n %}
 
 {% block content %}
 
+<div id="galaxy-page-title">
+    <div class="container-fluid">
+        <div class="page-title">
+            {{ request.path | urlname }}
+        </div>
+    </div>
+</div>
+
+
 <div class="container">
 
+<!--
 {% if messages %}
 <div class="alert alert-info alert-dismissable">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
     {% for message in messages %}{{message|escape}}<br />{% endfor %}
 </div>
 {% endif %}
-
+-->
 {% block account_content %}
 {% endblock %}
 </div>
