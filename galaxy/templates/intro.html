@@ -17,8 +17,8 @@
                     <li><a href="#share">Share</a></li>
                     <li class="pad"><a href="#create-role">Create a Role</a></li>
                     <li class="pad"><a href="#role-test">Test</a></li>
-                    <li class="pad"><a href="#role-github">Add to Github</a></li>
-                    <li class="pad"><a href="#role-galaxy">Add to Galaxy</a></li>
+                    <li class="pad"><a href="#role-github">Upload to Github</a></li>
+                    <li class="pad"><a href="#role-galaxy">Upload to Galaxy</a></li>
                     <li><a href="#questions">Questions</a></li>
                 </ul>
             </nav>
@@ -156,10 +156,10 @@ $ ansible-galaxy -r install_roles.yml
                 <p>Let's suppose we want to create a role called acme that will install the Acme web server. Start by <a href="https://help.github.com/articles/create-a-repo">creating a new repository on github</a>.  Once created, clone the repository locally:</p>
 
 <pre>
-$ git clone https://username@github.com/username/acme acme
+$ git clone https://username@github.com/username/ansible-role-acme.git acme
 </pre>
 
-                <p>Next, use <code>ansible-galaxy</code> to create the scaffolding of a role:</p>
+                <p>Next, use <code>ansible-galaxy</code> to create the role scaffolding:</p>
 
 <pre>
 $ ansible-galaxy init acme --force
@@ -180,19 +180,22 @@ acme/
                  <a href="http://docs.ansible.com/ansible/playbooks_roles.html#roles" target="_blank">Roles on the Ansible Docs site</a>.
                 </p>
                 <h5>Good Practices</h5>
-                <p>When developing a role there a few practices you should always follow:</p>
+                <p>When developing a role there are a few practices you should always follow to help potential users discover your role and
+                    make it easy for them to get started:</p>
                 <ul>
-                    <li>Provide clear documentation in the README.md file</li>
-                    <li>Provide proper handling of dependencies in meta/main.yml</li>
-                    <li>Include the name of the role in variable names</li>
+                    <li>Provide clear documentation in the README.md.</li>
+                    <li>Give accurate information in meta/main.yml.</li>
+                    <li>Include dependencies in meta/main.yml.</li>
+                    <li>Prefix variable names with the role name.</li>
                     <li>Test, test, test!</li>
                 </ul>
                 <p>Sticking to these practices will help you create great roles. The community will love you, and you'll be hero!</p>
 
-                <h5>Documentation</h5>
-                <p>Provide documentation in README.md. Use <a href="https://help.github.com/articles/markdown-basics/" target="_blank">Github
-                markdown</a> to provide the details users will need to know when getting started with the role. The README.md will be displayed
-                on Gaalxy.</p>
+                <h5>README.md</h5>
+                <p>The init command provides a template README.md file. Taylor it to fit your role. This is your chance to
+                  provide potential users what they need to get started using the role.</p>
+                <p>The file is composed in <a href="https://help.github.com/articles/markdown-basics/" target="_blank">Github markdown</a>.
+                    Make modifications to the file using markdown to ensure the document looks good on Galaxy and on Github.</p>
                 <p>For example:</p>
 
 <pre>
@@ -227,25 +230,41 @@ Available variables are listed below, along with default values:
 
 MIT
 </pre>
-                <h5>Dependencies</h5>
-                <p>If your role depends on other roles, make sure to add dependencies in meta/main.yml.</p>
-                <p>It's up to you to make sure your role works out-of-the-box. If the role depends on other roles, the dependencies will either need
-                 to be included in the source repository, or you need to provide sufficient informtion for ansible to download the dependencies from Github.</p>
-                <p>If a dependent role will be downloaded from Github, provide the path, an optional version and an optional friendly name. The path will be the
-                url to a github repo. The version can be a tag, commit or branch.</p>
-                <p>
+                <h5>Meta Data - meta/main.yml</h5>
+
+                <p>In meta/main.yml is where you fill in details about supported platforms, minimum required Ansible version, Galaxy categories
+                    that describe the role, dependencies, and information about you the author. All this information will appear on Galaxy. If it's
+                    not accurate, users will not be able to find your role.</p>
+                <p>A template is also provided for you to modify. It's written in <a href="http://www.yaml.org" target="_blank">yaml</a>, so
+                    make sure to follow the yaml standard as you make changes.</p>
+                <p>It's up to you to make sure your role works out-of-the-box. If the role depends on other roles, the dependencies will either
+                    need to be included in the source repository, or you need to provide sufficient information for ansible to download the
+                    dependencies from Github.</p>
+                <p>If a dependent role will be downloaded from Github, provide the path, an optional version and an optional friendly name. The path
+                    will be the url to a github repo. The version can be a tag, commit or branch.</p>
 <pre>
-# meta/main.yml
 ---
+galaxy_info:
+  author: John Doe
+  description: Quick and easy acme web installer.
+  company: Acme
+  license: MIT
+  min_ansible_version: 1.9
+  platforms:
+  - name: EL
+    versions:
+    - all
+  categories:
+  - web
 dependencies:
   - { role: username.common, some_parameter: 3 }
-  - { role: path="https://github.com/username/some-cool-role.git", version="v1.0.0", name="cool_role" }
+  - { role: path="https://github.com/username/ansible-role-iptables.git", version="v1.0.0", name="iptables" }
 </pre>
 
                 <h5>Variable Names</h5>
                 <p>A special note on naming variables within your role. This applies to variables defined in <code>defaults/main.yml</code> and <code>vars/main.yml</code>.
                 <div class="alert alert-info"><p><strong>Note:</strong> Prefix variable names with the role name. Adding the role name
-                    prevents variable name collision between roles.</p>
+                    prevents variable name collision between roles. For example, use <code>rolname_foo</code> rather than <code>foo</code>.</p>
                 </div>
 
                 <h4 id="role-test">Test</h4>
@@ -261,30 +280,29 @@ dependencies:
 $ ansible-playbook test.yml
 </pre>
 
-                <h4 id="role-github">Add to Github</h4>
+                <h4 id="role-github">Upload to Github</h4>
                 <p>Before you can share the role on Galaxy it needs to exist on Github. Once you finish development and testing
-                push your latest changes up to Github.</p>
-                <p>To push your changes to Github run the following commands from inside the acme project directory:</p>
+                push your latest changes up to Github by running the following from within the project directory:</p>
 <pre>
 $ git commit -a
 $ git push
 </pre>
-                <h4 id="role-galaxy">Add to Galaxy</h4>
+                <h4 id="role-galaxy">Upload to Galaxy</h4>
 
-                <p>In Galaxy click <code>Add a Role</code>. Provide your GitHub username and the name of the role, and galaxy will import your role and make it available to everyone.</p>
+                <p>Log into Galaxy and click the <code>Add a Role</code> menu option. Provide your GitHub username and the name of the Github repository, and Galaxy will import your role, making it available to the Galaxy community.</p>
 
-                <p>If you have applied any tags in your repo, Galaxy will automatically make a “version” object for each tag.  This means users will be able to choose which version (tag) to download.</p>
+                <p>If you applied any tags to your repository, Galaxy will automatically display a “version” for each tag.  This means users users can choose the version (tag) to download.</p>
 
-                <p>The default behavior, if you have no tags provided, is to just make the “HEAD” version available.  This means that users downloading the role will always get the latest in your github repository.</p>
+                <p>The default behavior, if there are no tags, is to make the “HEAD” version available.  This means users downloading the role will always get the latest from the github repository.</p>
 
-                <p>To import new tags that you might have added, you can trigger a re-import from the “Your Roles” page.</p>
+                <p>To import new tags, you can trigger a re-import from the “Your Roles” page anytime.</p>
 
                 <h3 id="questions">Questions?</h3>
 
-                <p>If you have questions not answered above about Galaxy, feel free to ask them on the <a href="https://groups.google.com/forum/#!forum/ansible-project">Ansible mailing list</a>.</p>
+                <p>If you have unanswered Galaxy questions, feel free to ask on the <a href="https://groups.google.com/forum/#!forum/ansible-project" target="_blank">Ansible mailing list</a>.</p>
                 <div class="alert alert-info">
-                    <p><strong>Please Note:</strong></p>
-                    <p>Contents of specific roles, how to use a role, and bugs encountered with specific roles are not supported on the mailing list. Provide a review on Galaxy to comment on the role, and contact the role author via GitHub.</p>
+                    <p><strong>Note:</strong> Contents, usage and bugs related to specific roles will not be supported on the mailing list. Provide a review on Galaxy to comment on the
+                        role, and contact the role author via GitHub.</p>
                 </div>
             </div><!-- intro-content -->
         </div><!-- col-lg-9 -->
