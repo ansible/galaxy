@@ -15,6 +15,7 @@
 @navbar-item-hover-background:  #e1e1e1;
 @navbar-height:                 80px;
 @ansible-color:                 #5bbdbf;
+@ansible-dark-grey:             #848992;
 
 @white:       #FFF;
 @warning:     #FF9900;
@@ -64,6 +65,7 @@
 @import "intro_page";
 @import "role_detail";
 @import "account_landing";
+@import "explore";
 
 html, body {
     font-family: 'Open Sans';
@@ -92,6 +94,50 @@ h2 {
 
 pre {
     border-radius: 2px;
+}
+
+/*
+ * Override bootstrap .table styles
+ */
+.table {
+    margin-bottom: 0;
+
+    thead {
+        background-color: @ansible-dark-grey;
+        border-bottom: none;
+        tr {
+            broder-bottom: none;
+            th {
+                border-bottom-width: 0;
+            }
+        }
+    }
+    th {
+        color: @white;
+        font-weight: normal;
+        border-bottom-width: 0;
+    }
+    th:first-of-type {
+        border-top-left-radius: 2px;
+    }
+    th:last-of-type {
+        border-top-right-radius: 2px;
+    }
+    tbody {
+        border-top: none;
+    }
+    tbody>tr:first-of-type {
+        border-top: none;
+    }
+    tbody>tr:first-of-type>td {
+        border-top: none;
+    }
+}
+
+table caption {
+    font-weight: normal;
+    font-size: 16px;
+    margin-bottom: 10px;
 }
 
 /* Helper Classes */
@@ -246,9 +292,12 @@ pre {
     tbody>tr:nth-child(odd) {
             background-color: #f9f9f9;
     }
-    tbody>tr>td {
-        padding-bottom: 20px;
+    tbody>tr:nth-child(even) {
+            background-color: @white;
     }
+    //tbody>tr>td {
+    //    padding-bottom: 20px;
+    //}
 }
 
 /* Galaxy tab overrides. Used on User detail page */
@@ -280,7 +329,12 @@ pre {
 
 /* Browse Roles */
 .role-list-table {
+    tbody>tr>td {
+        padding-bottom: 15px;
+        padding-top: 15px;
+    }
     .role {
+        min-width: 200px;
         .rolename {
             font-size: 16px;
             font-weight: bold;
@@ -311,6 +365,10 @@ pre {
         .userinfo {
             margin-top: 15px;
             margin-left: 15px;
+        }
+
+        @media (max-width: 1024px) {
+            min-width: 125px;
         }
     }
     .category {
@@ -514,47 +572,6 @@ pre {
         }
         h5 {
             color: @charcoal;
-        }
-    }
-}
-
-
-.explore {
-    table caption {
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-
-    .table {
-        margin-bottom: 0;
-    }
-
-    .table-row {
-        margin-left: 0;
-        margin-right: 0;
-        min-height: 400px;
-    }
-
-    .table-hover > tbody > tr:hover > td,
-    .table-hover > tbody > tr:hover > th {
-        background-color: @white;
-    }
-    .button-row {
-        margin-bottom: 30px;
-    }
-
-    .load-container {
-        position: relative;
-    }
-    .loader {
-        position: absolute;
-        top: 150px;
-        left: 0;
-        width: 100%;
-        text-align: center;
-        .line-scale > div {
-            height: 20px;
-            background-color: #ccc;
         }
     }
 }

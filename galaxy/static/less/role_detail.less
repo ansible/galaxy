@@ -9,6 +9,7 @@
 
     .rolename { margin-top: 0; }
     .user-info {
+        display: inline-block;
         text-align: center;
         img { border-radius: 6px; }
         .username {
@@ -21,9 +22,11 @@
         margin-bottom: 30px;
         color: @charcoal;
     }
+
     .rating-section {
+        margin-top: 10px;
         margin-bottom: 30px;
-        .score { margin-top: 30px; }
+
         .role-ratings {
             color: @charcoal;
             table {
@@ -40,18 +43,30 @@
                 }
             }
         }
+        .ratings-count {
+            .count-grey {
+                color: #ccc;
+            }
+            .count-blue {
+                color: @ansible-color;
+            }
+        }
     }
     .actions {
         margin-bottom: 30px;
     }
-    .installation { margin-bottom: 40px; }
+
     .platforms, .versions {
-        margin-bottom: 30px;
-        table {
-            color: @charcoal;
-            tr>td { padding: 5px;}
+        td, th {
+            width: 50%;
         }
     }
+
+    .table-scroller {
+        height: 300px;
+        overflow-y: scroll;
+    }
+
     .ansible-version {
         margin-bottom: 30px;
         .title {
