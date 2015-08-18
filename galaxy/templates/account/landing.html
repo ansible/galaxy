@@ -23,7 +23,7 @@
             {% for provider in socialaccount_providers %}
                 {% if provider.name == 'GitHub' %}
                     <a title="{{provider.name}}" class="socialaccount_provider {{provider.id}}"
-                        href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params next="/explore#/" %}"><i class="fa fa-{{provider.name|lower}} fa-3x"></i></a>
+                        href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params next="/explore#/" %}"><i class="fa fa-{{provider.name|lower}}-square fa-4x"></i></a>
                 {% endif %}
             {% endfor %}
         </div>

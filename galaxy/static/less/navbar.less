@@ -28,6 +28,12 @@
     }
     .navbar-nav>li>a {
         text-transform: uppercase;
+        max-width: 225px;
+        //.username {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        //}
     }
 }
 
@@ -36,6 +42,7 @@
         .navbar-nav>li>a {
             text-align: right;
             color: @white;
+            max-width: 1023px;
         }
         .navbar-nav>li>a:hover {
             background-color: @navbar-item-hover-background;
