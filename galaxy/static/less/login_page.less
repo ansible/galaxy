@@ -6,7 +6,9 @@
  */
 
  #galaxy-login-page {
-     margin-top: 40px;
+     h2 {
+         margin-top: 0;
+     }
      .login-intro {
          width: 80%;
          margin: 0 auto;
@@ -15,6 +17,25 @@
          width: 50%;
          margin: 0 auto;
      }
+
+    .login-social {
+        text-align: center;
+    }
+
+    .social-links {
+        list-style: none;
+        padding: 15px 0 15px 0;
+        li {
+            display: inline-block;
+            margin-right: 15px;
+            a { color: @blue; }
+            a:hover { color: @ansible-color; }
+        }
+        .fa-google-square:before {
+            content: "\f0d4";
+        }
+    }
+
      form {
          margin-top: 25px;
      }

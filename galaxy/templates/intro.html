@@ -4,10 +4,22 @@
 
 {% block general_content %}
 
-<div class="container" id="galaxy-intro-page">
+<div id="galaxy-page-title">
+    <div class="container-fluid">
+        <div class="page-title">
+            {{ request.path | urlname }}
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid" id="galaxy-intro-page">
     <div class="row">
         <div class="col-lg-3 col-md-3 scrollspy">
             <nav class="galaxy-intro-links hidden-sm hidden-xs affix">
+                <div class="galaxy-nav-title">
+                    <i class="fa fa-bars"></i> Menu
+                    <hr />
+                </div>
                 <ul class="nav" role="tablist">
                     <li><a href="#welcome">Welcome</a></li>
                     <li><a href="#download">Download Roles</a></li>
@@ -20,11 +32,12 @@
                     <li class="pad"><a href="#role-github">Upload to Github</a></li>
                     <li class="pad"><a href="#role-galaxy">Upload to Galaxy</a></li>
                     <li><a href="#questions">Questions</a></li>
+                    <li class="back-to-top-link"><a href="#"><i class="fa fa-chevron-circle-up"></i> Back to Top</a></li>
                 </ul>
             </nav>
         </div>
         <div class="col-lg-9 col-md-9">
-            <div id="intro-content">
+            <div class="intro-content">
                 <h2 id="welcome">Welcome to Ansible Galaxy</h2>
 
                 <p>Ansible Galaxy is Ansible’s official community hub for sharing Ansible roles. A role is the Ansible way of bundling automation content and making it reusable.</p>
@@ -108,11 +121,11 @@ $ ansible-galaxy -r install_roles.yml
 
                 <p>We recommend the following ratings scale in each category:</p>
                 <ol>
-                    <li>NEEDS WORK</li>
-                    <li>OK, BUT COULD BE IMPROVED SOME</li>
-                    <li>NICE</li>
-                    <li>AWESOME</li>
-                    <li>I OWE THIS PERSON A BEVERAGE</li>
+                    <li>Needs work.</li>
+                    <li>OK, but could be improved some.</li>
+                    <li>Nice.</li>
+                    <li>Awesome!</li>
+                    <li>Dude, I owe you a beer!</li>
                 </ol>
 
                 <h5>Reliability</h5>

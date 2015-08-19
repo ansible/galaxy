@@ -15,6 +15,9 @@
 @navbar-item-hover-background:  #e1e1e1;
 @navbar-height:                 80px;
 @ansible-color:                 #5bbdbf;
+@ansible-color-hover:           #599d9e;
+@ansible-dark-grey:             #848992;
+@ansible-gold:                  #ffd700;
 
 @white:       #FFF;
 @warning:     #FF9900;
@@ -63,6 +66,26 @@
 @import "user_detail";
 @import "intro_page";
 @import "role_detail";
+@import "account_landing";
+@import "explore";
+@import "score_breakdown";
+@import "ratings_list.less";
+@import "add_rating.less";
+
+
+/* Helper Classes */
+.pad-right-sm { padding-right: 10px; }
+.pad-left-md { padding-left: 30px; }
+.pad-left-sm { padding-left: 10px; }
+.pad-left-lg { padding-left: 50px; }
+.normal-weight { font-weight: normal; }
+.no-bullets { list-style: none; }
+.capitalize { text-transform: capitalize; }
+.grey-txt { color: @grey; }
+.text-center { text-align: center !important; }
+.color-blue { color: @blue; }
+.inline-block { display: inline-block; }
+.ansible-color { color: @ansible-color; }
 
 html, body {
     font-family: 'Open Sans';
@@ -83,19 +106,111 @@ a:link, a:visited, a:hover, a:active {
     text-decoration: none;
 }
 
-/* Helper Classes */
-.pad-right-sm { padding-right: 10px; }
-.pad-left-md { padding-left: 30px; }
-.pad-left-sm { padding-left: 10px; }
-.pad-left-lg { padding-left: 50px; }
-.normal-weight { font-weight: normal; }
-.no-bullets { list-style: none; }
-.capitalize { text-transform: capitalize; }
-.grey-txt { color: @grey; }
-.text-center { text-align: center !important; }
-.color-blue { color: @blue; }
-.inline-block { display: inline-block; }
-.ansible-color { color: @ansible-color; }
+h2 {
+    color: @blue;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+h5 {
+    font-weight: bold;
+}
+
+pre {
+    border-radius: 2px;
+}
+
+/*
+ * Override bootstrap .table styles
+ */
+.table {
+    margin-bottom: 0;
+
+    thead {
+        background-color: @ansible-dark-grey;
+        border-bottom: none;
+        tr {
+            broder-bottom: none;
+            th {
+                border-bottom-width: 0;
+            }
+        }
+    }
+    th {
+        color: @white;
+        font-weight: normal;
+        border-bottom-width: 0;
+    }
+    th:first-of-type {
+        border-top-left-radius: 2px;
+    }
+    th:last-of-type {
+        border-top-right-radius: 2px;
+    }
+    tbody {
+        border-top: none;
+    }
+    tbody>tr:first-of-type {
+        border-top: none;
+    }
+    tbody>tr:first-of-type>td {
+        border-top: none;
+    }
+}
+
+table caption {
+    font-weight: normal;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.modal {
+    h3 {
+        color: @blue;
+    }
+}
+
+/*
+ * bootstrap button overrides
+ */
+.btn-success {
+    background-color: @ansible-color;
+    border: none;
+    border-radius: 2px;
+}
+.btn-success:hover {
+    background-color: @ansible-color-hover;
+    border-radius: 2px;
+}
+.btn-primary {
+    background-color: @blue;
+    border-radius: 2px;
+    border: none;
+}
+.btn-primary:hover {
+    border-radius: 2px;
+    border: none;
+}
+.btn-default {
+    background-color: #f2f2f2;
+    border: none;
+    border-radius: 2px;
+}
+.btn-default:hover {
+    background: #e1e1e1;
+    border: none;
+    border-radius: 2px;
+}
+.btn-danger {
+    background-color: #ff5850;
+    border: none;
+    border-radius: 2px;
+}
+.btn-danger:hover {
+    background-color: #d05852;
+    border:none;
+    border-radius: 2px;
+}
 
 /* Loading indicator */
 #loader {
@@ -170,31 +285,6 @@ a:link, a:visited, a:hover, a:active {
     margin-bottom: 40px;
 }
 
-/* Social links found on home page sing-in/up forms and login page */
-.login-social {
-    text-align: center;
-    .social-links {
-        list-style: none;
-        padding: 15px 0 15px 0;
-        li {
-            display: inline-block;
-            margin-right: 15px;
-            i {
-               padding: 5px 8px 5px 8px;
-               background-color: @blue;
-               border-radius: 20px;
-               border: 1px solid @blue;
-            }
-            i:hover {
-               background-color: @grey;
-               border: 1px solid @grey;
-            }
-            a { color: @white; }
-            a:hover { color: @blue; }
-        }
-    }
-}
-
 .staff-marker {
     font-size: 11px;
     padding-top: 3px;
@@ -260,9 +350,12 @@ a:link, a:visited, a:hover, a:active {
     tbody>tr:nth-child(odd) {
             background-color: #f9f9f9;
     }
-    tbody>tr>td {
-        padding-bottom: 20px;
+    tbody>tr:nth-child(even) {
+            background-color: @white;
     }
+    //tbody>tr>td {
+    //    padding-bottom: 20px;
+    //}
 }
 
 /* Galaxy tab overrides. Used on User detail page */
@@ -294,7 +387,12 @@ a:link, a:visited, a:hover, a:active {
 
 /* Browse Roles */
 .role-list-table {
+    tbody>tr>td {
+        padding-bottom: 15px;
+        padding-top: 15px;
+    }
     .role {
+        min-width: 200px;
         .rolename {
             font-size: 16px;
             font-weight: bold;
@@ -325,6 +423,10 @@ a:link, a:visited, a:hover, a:active {
         .userinfo {
             margin-top: 15px;
             margin-left: 15px;
+        }
+
+        @media (max-width: 1024px) {
+            min-width: 125px;
         }
     }
     .category {
@@ -420,158 +522,6 @@ a:link, a:visited, a:hover, a:active {
     }
 }
 
-/* Modal dialog fixes for bootstrap3 + bootstrap.ui */
-.modal {
-    display: block;
-    .modal-dialog {
-        border: 1px solid black;
-        border-radius: 10px 10px;
-        width: 800px;
-
-        .modal-header {
-            background-color: @black;
-            color: @white;
-            border-radius: 10px 10px 0px 0px;
-        }
-        .modal-body {
-            background-color: @white;
-            padding: 20px 30px;
-            textarea {
-                resize: vertical;
-                height: 20.0em;
-            }
-        }
-        .modal-footer {
-            margin-top: 0px;
-            background-color: @grey;
-            border-radius: 0px 0px 10px 10px;
-        }
-        .modal-body:before, .modal-body:after {
-            display: table;
-            content: " ";
-        }
-        .modal-header:before, .modal-header:after {
-            display: table;
-            content: " ";
-        }
-    }
-}
-
-/* Rating Table */
-.rating-table {
-    tbody>tr>td { padding-top: 20px; }
-    .rolename {
-        font-weight: bold;
-        font-size: 16px;
-        margin-bottom: 15px;
-    }
-    .username {
-        a {
-            font-weight: bold;
-            font-size: 14px;
-        }
-        img {
-            width: 48px;
-            border-radius: 6px;
-        }
-        p {
-            margin-top: 8px;
-        }
-    }
-    .fld-label {
-        color: @charcoal;
-    }
-    .staff {
-        margin-top: 15px;
-    }
-    .scores {
-        color: @charcoal;
-        tr > td {
-            padding: 3px;
-            background-color: transparent;
-        }
-        tbody > tr:hover > td {
-            background-color: transparent;
-        }
-        tbody > tr:nth-child(odd) {
-            background-color: transparent;
-        }
-        tr {
-            td:first-child {
-                padding-right: 10px;
-                padding-left: 15px;
-            }
-        }
-        tr:first-child {
-            color: @black;
-            font-weight: bold;
-            td:first-child { padding-left: 5px; }
-        }
-    }
-    .comment {
-        margin: 20px 0 0 0;
-        color: @charcoal;
-        white-space: pre-line;
-    }
-    .votes {
-        margin-top: 20px;
-        .vote {
-            display: inline-block;
-            vertical-align: top;
-        }
-        .vote:last-child {
-            margin-left: 15px;
-        }
-        .value {
-            font-weight: bold;
-            padding-left: 5px;
-        }
-        h5 {
-            color: @charcoal;
-        }
-    }
-}
-
-
-.explore {
-    table caption {
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-
-    .table {
-        margin-bottom: 0;
-    }
-
-    .table-row {
-        margin-left: 0;
-        margin-right: 0;
-        min-height: 400px;
-    }
-
-    .table-hover > tbody > tr:hover > td,
-    .table-hover > tbody > tr:hover > th {
-        background-color: @white;
-    }
-    .button-row {
-        margin-bottom: 30px;
-    }
-
-    .load-container {
-        position: relative;
-    }
-    .loader {
-        position: absolute;
-        top: 150px;
-        left: 0;
-        width: 100%;
-        text-align: center;
-        .line-scale > div {
-            height: 20px;
-            background-color: #ccc;
-        }
-    }
-}
 
 /* Misc classes for overriding things */
 

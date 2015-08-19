@@ -11,73 +11,114 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-9">
-            <h1 class="rolename">{{role.name}}</h1>
-
+        <div class="col-xs-6">
+            <h2 class="rolename">{{role.name}}</h2>
             <div class="description">{{role.description}}</div>
-
-            <div class="rating-section">
-                <div class="role-ratings">
-                    <div class="score">
-                        <table ng-hide="role.num_ratings">
-                            <tr><td>Community Score</td><td>NA</td>
-                        </table>
-                        <div class="breakdown" id="average_composite_breakdown" ng-show="role.num_ratings"></div>
-                    </div>
-                    <!--
-                    <div class="score">
-                        <table ng-hide="role.num_aw_ratings">
-                            <tr><td>Ansible Score</td><td>NA</td>
-                        </table>
-                        <div class="breakdown" id="average_aw_composite_breakdown" ng-show="role.num_aw_ratings"></div>
-                    </div>
-                    -->
-                </div>
+        </div>
+        <div class="col-xs-6 text-right">
+            <div class="user-info">
+                <a href="#/users/{{role.summary_fields.owner.id}}"><img ng-src="{{ role.summary_fields.owner.avatar_url }}" /></a>
+                <p class="username"><a href="#/users/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a><br \>
+                    <span ng-show="role.summary_fields.owner.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span></p>
             </div>
+        </div>
+    </div>
 
-            <div class="actions">
-                <a class="btn btn-success" ng-href="https://github.com/{{role.github_user}}/{{role.github_repo}}"><i class="fa fa-github"></i> Github Repo</a>
-                <a class="btn btn-default" ng-href="{{ role.issue_tracker_url }}"
-                   ng-show="role.issue_tracker_url"><i class="fa fa-bug"></i> Issue Tracker</a>
-                <div class="inline-block" ng-show="!role.issue_tracker_url" tooltip="This role does not have an issue tracker. Members can write a review to notify the author about issues." tooltip-placement="top"><a class="btn btn-default" ng-href="{{ role.issue_tracker_url }}" ng-disabled="true"><i class="fa fa-bug"></i> Issue Tracker</a></div>
-                <a ng-show="my_info.authenticated" class="btn btn-default" ng-click="showRatingDialog()"><i class="fa fa-star-half-empty"></i> Add Review/Rating</a>
-            </div>
-
-            <div class="versions" ng-show="role.summary_fields.versions.length > 0">
-                <h3>Version History</h3>
-                <table class="version-table">
-                    <tbody>
-                    <tr ng-repeat="version in role.summary_fields.versions">
-                        <td>{{ version.name }}</td>
-                        <td>{{ version.release_date | date:"short" }}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="platforms" ng-show="role.summary_fields.platforms && role.summary_fields.platforms.length > 0">
-                <h3>Supported Platforms</h3>
-                <table class="platform-table">
-                    <tbody>
-                    <tr ng-repeat="platform in role.summary_fields.platforms">
-                        <td>{{ platform.name }}</td>
-                        <td>{{ platform.release }}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="ansible-version">
-                <span class="title">Minimum Ansible Version:</span> <span class="version">{{ role.min_ansible_version }}</span>
-            </div>
-
-            <div class="installation">
-                <h3>Installation</h3>
-                <code>$ ansible-galaxy install {{role.summary_fields.owner.username}}.{{role.name}}</code>
-            </div>
-
+    <div class="row">
+        <div class="col-lg-12">
             <div class="documentation">
-                <tabset>
+                <tabset type="pills">
+                    <tab heading="Details">
+                        <div class="row rating-section">
+                            <div class="col-lg-3 col-md-6 col-sm-6">
+                                <div class="role-ratings">
+                                    <div class="score-breakdown" id="average_composite_breakdown"></div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="ratings-count">
+                                    <h3>Ratings: <span ng-class="{ 'count-grey': role.num_ratings == 0, 'count-blue': role.num_ratings }">{{ role.num_ratings }}</span></h3>
+                                    <p><a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings == 0">Be the first to rate this role.</a>
+                                    <a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings">Rate this role.</a></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <a ng-show="my_info.authenticated" class="btn btn-success" ng-click="showRatingDialog()"><i class="fa fa-star-half-empty"></i> Rate This Role</a>
+                                <a class="btn btn-default" ng-href="{{ role.issue_tracker_url }}"
+                                   ng-show="role.issue_tracker_url" target="_blank"><i class="fa fa-bug"></i> Issue Tracker</a>
+                                <div class="inline-block" ng-show="!role.issue_tracker_url" tooltip="This role does not have an issue tracker. Members can write a review to notify the author about issues." tooltip-placement="top"><a class="btn btn-default" ng-href="{{ role.issue_tracker_url }}" ng-disabled="true"><i class="fa fa-bug"></i> Issue Tracker</a></div>
+                                <a class="btn btn-default" ng-href="https://github.com/{{role.github_user}}/{{role.github_repo}}" target="_blank"><i class="fa fa-github"></i> Github Repo</a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="ansible-version">
+                                    <h3>Minimum Ansible Version</h3>
+                                    {{ role.min_ansible_version }}
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="installation">
+                                    <h3>Installation</h3>
+                                    <code>$ ansible-galaxy install {{role.summary_fields.owner.username}}.{{role.name}}</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6" ng-if="role.summary_fields.versions">
+                                <div class="versions" ng-show="role.summary_fields.versions.length > 0">
+                                    <table class="table ga-table-striped">
+                                        <caption>Version History</caption>
+                                        <thead>
+                                            <tr>
+                                                <th>Version</th>
+                                                <th>Release Date</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="table-scroller">
+                                        <table class="table ga-table-striped">
+                                            <tbody>
+                                            <tr ng-repeat="version in role.summary_fields.versions">
+                                                <td>{{ version.name }}</td>
+                                                <td>{{ version.release_date | date:"short" }}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="platforms" ng-show="role.summary_fields.platforms && role.summary_fields.platforms.length > 0">
+                                    <table class="table ga-table-striped">
+                                        <caption>Supported Platforms</caption>
+                                        <thead>
+                                            <tr>
+                                                <th>Platform</th>
+                                                <th>Version</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="table-scroller">
+                                        <table class="table ga-table-striped">
+                                            <tbody>
+                                            <tr ng-repeat="platform in role.summary_fields.platforms">
+                                                <td>{{ platform.name }}</td>
+                                                <td>{{ platform.release }}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </tab>
+
                     <tab heading="README">
                         <div ng-bind-html="role.readme_html" class="readme"></div>
                     </tab>
@@ -87,19 +128,5 @@
                 </tabset>
             </div>
         </div>
-
-        <div class="col-lg-3 col-sm-12">
-            <div class="user-info">
-                <a href="#/users/{{role.summary_fields.owner.id}}"><img ng-src="{{ role.summary_fields.owner.avatar_url }}" /></a>
-                <p class="username"><a href="#/users/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a><br \>
-                    <span ng-show="role.summary_fields.owner.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span></p>
-
-            </div>
-        </div>
-
     </div>
-
-
-
-
 </div> <!-- end container -->

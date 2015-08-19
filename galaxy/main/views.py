@@ -180,7 +180,7 @@ def list_category(request, category=None, page=1):
     context["extra_css"] = [
     ]
     context["extra_js"] = [
-      '/static/js/angular-slider.min.js',
+      # '/static/js/angular-slider.min.js',
       '/static/js/apps/list_app.js',
       '/static/js/controllers/list.js',
       '/static/js/services/categories.js',

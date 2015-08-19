@@ -1,11 +1,11 @@
 <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
-<div class="container explore">
+<div class="container" id="galaxy-explore-page">
 
     <div class="row table-row">
         <div class="col-lg-4 load-container">
             <!-- Top Categories -->
-            <table class="table table-condensed table-hover">
+            <table class="table ga-table-striped">
                <caption>Top Categories</caption>
                <thead>
                <tr>
@@ -18,9 +18,11 @@
                    <td><a href="/list#/roles/category/{{category.name}}">{{ category.name }}</a></td>
                    <td class="text-right">{{category.num_roles}}</td>
                </tr>
-               <tr ng-show="!loading.categories"><td colspan="2" style="padding-top: 15px;"><a ng-href="{{ categories.more_link }}">View more...</a></td></tr>
                </tbody>
             </table>
+            <div ng-show="!loading.categories" class="view-more-container">
+                <a ng-href="{{ categories.more_link }}" class="btn btn-default btn-xs">View More</a>
+            </div>
             <div ng-show="loading.categories" class="loader">
                 <div class="loader-inner line-scale">
                     <div></div>
@@ -32,7 +34,7 @@
             </div>
         </div>
         <div class="col-lg-4 load-container">
-            <table class="table table-condensed table-hover">
+            <table class="table ga-table-striped">
                <caption>Top Roles</caption>
                <thead>
                <tr>
@@ -47,9 +49,11 @@
                    <td class="text-right">{{role.num_ratings | number:0}}</td>
                    <td class="text-right">{{role.average_score | number:2}}</td>
                </tr>
-               <tr ng-show="!loading.topRoles"><td colspan="3" style="padding-top: 15px;"><a ng-href="{{top_roles.more_link}}">View more...</a></td></tr>
                </tbody>
             </table>
+            <div ng-show="!loading.topRoles" class="view-more-container">
+                <a ng-href="{{top_roles.more_link}}" class="btn btn-default btn-xs">View More</a>
+            </div>
             <div ng-show="loading.topRoles" class="loader">
                 <div class="loader-inner line-scale">
                     <div></div>
@@ -61,7 +65,7 @@
             </div>
         </div>
         <div class="col-lg-4 load-container">
-            <table class="table table-condensed table-hover">
+            <table class="table ga-table-striped">
                <caption>New Roles</caption>
                <thead>
                <tr>
@@ -74,9 +78,11 @@
                    <td><span class="clip"><a href="/list#/roles/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
                    <td class="text-right">{{role.created|date:'dd MMM, yyyy'}}</td>
                </tr>
-               <tr ng-show="!loading.newRoles"><td colspan="2" style="padding-top: 15px;"><a ng-href="{{new_roles.more_link}}">View more...</a></td></tr>
                </tbody>
             </table>
+            <div ng-show="!loading.newRoles" class="view-more-container">
+                <a ng-href="{{new_roles.more_link}}" class="btn btn-default btn-xs">View More</a>
+            </div>
             <div ng-show="loading.newRoles" class="loader">
                 <div class="loader-inner line-scale">
                     <div></div>
@@ -95,7 +101,7 @@
 
     <div class="row table-row">
         <div class="col-lg-4 load-container">
-            <table class="table table-condensed table-hover">
+            <table class="table ga-table-striped">
                 <caption>Top Users</caption>
                 <thead>
                 <tr>
@@ -108,9 +114,11 @@
                      <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
                      <td class="text-right">{{ user.num_roles | number:0 }}</td>
                  </tr>
-                 <tr ng-show="!loading.topUsers"><td colspan="3" style="padding-top: 15px;"><a ng-href="{{ top_users.more_link }}">View more...</a></td></tr>
                  </tbody>
             </table>
+            <div ng-show="!loading.topUsers" class="view-more-container">
+                <a ng-href="{{top_users.more_link}}" class="btn btn-default btn-xs">View More</a>
+            </div>
             <div ng-show="loading.topUsers" class="loader">
                 <div class="loader-inner line-scale">
                     <div></div>
@@ -122,7 +130,7 @@
             </div>
         </div>
         <div class="col-lg-4 load-container">
-            <table class="table table-condensed table-hover">
+            <table class="table ga-table-striped">
                 <caption>Top Reviewers</caption>
                 <thead>
                 <tr>
@@ -135,9 +143,11 @@
                     <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
                     <td class="text-right">{{ user.num_ratings | number:0 }}</td>
                 </tr>
-                <tr ng-show="!loading.topReviewers"><td colspan="3" style="padding-top: 15px;"><a ng-href="{{ top_reviewers.more_link }}">View more...</a></td></tr>
                 </tbody>
             </table>
+            <div ng-show="!loading.topReviewers" class="view-more-container">
+                <a ng-href="{{top_reviewers.more_link}}" class="btn btn-default btn-xs">View More</a>
+            </div>
             <div ng-show="loading.topReviewers" class="loader">
                 <div class="loader-inner line-scale">
                     <div></div>
@@ -149,7 +159,7 @@
             </div>
         </div>
         <div class="col-lg-4 load-container">
-            <table class="table table-condensed table-hover">
+            <table class="table ga-table-striped">
                 <caption>New Users</caption>
                 <thead>
                 <tr>
@@ -162,9 +172,11 @@
                     <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
                     <td class="text-right">{{ user.date_joined | date:'dd MMM, yyyy' }}</td>
                 </tr>
-                <tr ng-show="!loading.newUsers"><td colspan="2" style="padding-top: 15px;"><a ng-href="{{ new_users.more_link }}">View more...</a></td></tr>
                 </tbody>
             </table>
+            <div ng-show="!loading.newUsers" class="view-more-container">
+                <a ng-href="{{new_users.more_link}}" class="btn btn-default btn-xs">View More</a>
+            </div>
             <div ng-show="loading.newUsers" class="loader">
                 <div class="loader-inner line-scale">
                     <div></div>
