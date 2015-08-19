@@ -158,11 +158,6 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
         }
     };
 
-    $scope.toggle_reverse = function() {
-        $scope.list_data.reverse = !$scope.list_data.reverse;
-        $scope.list_data.refresh();
-    };
-
     $scope.toggle_category = function(item) {
         var pos = $scope.list_data.selected_categories.indexOf(item);
         if (pos != -1) {
@@ -230,9 +225,9 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
     $scope.list_data.refresh();
 
     function _refresh(_change) {
-        storageFactory.save_state('role_list', query_params($scope.list_data));
-        $scope.list_data.sort_order = $scope.getSortOrder();  //Check if user changed sort order
         $scope.loading = 1;
+
+        $scope.list_data.sort_order = $scope.getSortOrder();  //Check if user changed sort order
 
         if (_change === 'SortOrderSelect' && $scope.list_data.sort_order === AVG_SCORE_SORT) {
             // Sorting by Average Score should default to reverse (or descending) order
@@ -241,6 +236,8 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
         else if (_change === 'SortOrderSelect') {
             $scope.list_data.reverse = false;
         }
+
+        storageFactory.save_state('role_list', query_params($scope.list_data));
 
         roleFactory.getRoles(
             $scope.list_data.page,
@@ -263,7 +260,6 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
             // Defaulting these values to 1 ensures we never cache the query with null values
             $scope.list_data.page = $scope.list_data.page || 1;
             $scope.list_data.num_pages = $scope.list_data.num_pages || 1;
-
 
             $scope.num_roles = parseInt(data['count']);
             $scope.list_data.page_range = [];
@@ -534,7 +530,7 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
                 })
                 .error(function(data, status) {
                     var msg = '';
-                    console.log(status);
+                    console.error(status);
                     if (status == 403) {
                         msg = 'You do not have permission to add a rating to this role.';
                     } else if(status == 409) {
@@ -566,7 +562,6 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         var modalInstance = $modal.open ({
             templateUrl: "/static/partials/add-rating.html",
             controller: ModalInstanceCtrl,
-            size: 'lg',
             resolve: {
                 role: function() { return $scope.role; },
                 ratingFactory: function() { return ratingFactory; },
@@ -671,11 +666,6 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
         $scope[fld + '_hover_' + idx] = val;
     };
 
-    $scope.toggle_reverse = function() {
-        $scope.list_data.reverse = !$scope.list_data.reverse;
-        $scope.list_data.refresh();
-    };
-
     var restored_query = storageFactory
         .restore_state('user_list', query_params($scope.list_data));
 
@@ -706,7 +696,6 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
         showSearchIcon: ($scope.list_data.list_filter) ? false : true,
         sortOptions: [
             { value: 'username', label: 'Username' },
-            //{ value: 'karma,username', label: 'Karma Score' },
             { value: AVG_SCORE_SORT, label: 'Average Role Score' },
             { value: NUM_ROLES_SORT, label: 'Number of Roles' },
             { value: 'date_joined,username', label: 'Date Joined' }
@@ -720,7 +709,6 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
 
 
     function _refresh(_change) {
-        storageFactory.save_state('user_list', query_params($scope.list_data));
         $scope.list_data.sort_order = $scope.getSortOrder();
         $scope.loading = 1;
 
@@ -732,6 +720,8 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
         else if (_change === 'SortOrderSelect') {
             $scope.list_data.reverse = false;
         }
+
+        storageFactory.save_state('user_list', query_params($scope.list_data));
 
         userFactory.getUsers(
             $scope.list_data.page,
@@ -760,7 +750,6 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
             $scope.list_data.num_pages = parseInt(data['num_pages']);
             $scope.num_users = parseInt(data['count']);
             $scope.list_data.page_range = [];
-
             $scope.setPageRange();
 
             $scope.status = "";

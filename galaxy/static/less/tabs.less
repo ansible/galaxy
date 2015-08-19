@@ -1,0 +1,34 @@
+/*
+ * tabs.less
+ */
+
+ .tab-pane {
+     padding: 15px;
+     border-right: 1px solid #ddd;
+     border-left: 1px solid #ddd;
+     border-bottom: 1px solid #ddd;
+     border-top: 1px solid rgb(221,221,221);
+     border-top-left-radius: 2px;
+     border-top-right-radius: 2px;
+     border-bottom-left-radius: 2px;
+     border-bottom-right-radius: 2px;
+ }
+ .nav-pills {
+     margin-bottom: 5px;
+ }
+ .nav-pills>li>a {
+     border-radius: 2px;
+     background-color: #f2f2f2;
+     .badge {
+         background-color: #ccc;
+     }
+ }
+ .nav-pills>li>a:hover {
+     background-color: #e1e1e1;
+ }
+ .nav-pills>li.active>a {
+     background-color: @blue;
+     .badge {
+         background-color: #959595;
+     }
+ }

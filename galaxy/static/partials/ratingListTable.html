@@ -55,7 +55,7 @@
             </div>
             <div class="col-lg-3 col-md-3">
                 <div class="user-container">
-                    <div ng-show="showRoleName">
+                    <div ng-show="showRoleName" class="rolename">
                         <a class="rolename" href="#/roles/{{rating.summary_fields.role.id}}">{{rating.summary_fields.role.name}}</a>
                     </div>
                     <div ng-hide="showRoleName" class="username">
@@ -111,7 +111,7 @@
         -->
     </div><!-- rating -->
 
-    <div ng-show="ratings > 10" ng-init="target='ratings'; list_data=list_data.ratings">
+    <div ng-show="ratings" ng-init="target='ratings'; list_data=list_data.ratings">
         <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
     </div>
 

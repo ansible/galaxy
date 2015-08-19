@@ -49,6 +49,6 @@
        </tr>
        </tbody>
    </table>
-   <div ng-show="roles" ng-init="target='roles'; list_data=list_data.roles">
+   <div ng-show="roles.length" ng-init="target='roles'; list_data=list_data.roles">
        <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
    </div>

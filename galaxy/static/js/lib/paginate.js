@@ -16,21 +16,20 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 */
-                
+
 angular.module('Paginate', [])
-    
+
     //Set boundaries of current page range
     //Call from inside scope.refresh()
     .factory('PaginateInit', [ function() {
     return function(params) {
-        
-        var scope = params.scope; 
-        
+
+        var scope = params.scope;
+
         scope.getPage = function(n,target) {
-            console.log("target is " + target);
             if (target) {
                data = scope.list_data[target];
-            } 
+            }
             else {
                data = scope.list_data
             }
@@ -41,7 +40,7 @@ angular.module('Paginate', [])
         scope.setPageRange = function(target) {
             if (target) {
                data = scope.list_data[target];
-            } 
+            }
             else {
                data = scope.list_data
             }
@@ -60,8 +59,8 @@ angular.module('Paginate', [])
                 data.page_range.push(i);
             }
             // These might be out of range, but we'll handle in the view
-            data.next_page = last + 1;   
+            data.next_page = last + 1;
             data.previous_page = first - 1;
             }
         }
-        }]);  
+        }]);

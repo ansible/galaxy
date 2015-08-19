@@ -122,7 +122,8 @@
                     <tab heading="README">
                         <div ng-bind-html="role.readme_html" class="readme"></div>
                     </tab>
-                    <tab heading="Ratings ({{ role.num_ratings }})">
+                    <tab>
+                        <tab-heading>Ratings <span class="badge">{{ role.num_ratings }}</span></tab-heading>
                         <ng-include src="'/static/partials/ratingListTable.html'"></ng-include>
                     </tab>
                 </tabset>

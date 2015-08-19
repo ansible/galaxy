@@ -1,7 +1,7 @@
     <div class="modal-header">
         <button type="button" class="close" ng-click="cancel()"><span aria-hidden="true">&times;</span></button>
-        <h3 ng-hide="rating.id">Rate This Role</h3>
-        <h3 ng-show="rating.id">Edit Your Rating</h3>
+        <div class="title" ng-hide="rating.id"><i class="fa fa-star"></i> Rate This Role</div>
+        <div class="title" ng-show="rating.id"><i class="fa fa-star"></i> Edit Your Rating</div>
     </div>
     <div class="modal-body galaxy-add-rating">
         <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">{{alert.msg}}</alert>
@@ -47,6 +47,6 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-lg btn-primary" ng-click="ok()">OK</button>
-        <button class="btn btn-lg btn-default" ng-click="cancel()">Cancel</button>
+        <button class="btn btn-primary" ng-click="ok()">OK</button>
+        <button class="btn btn-default" ng-click="cancel()">Cancel</button>
     </div>

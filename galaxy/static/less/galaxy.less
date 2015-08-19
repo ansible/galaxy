@@ -71,7 +71,9 @@
 @import "score_breakdown";
 @import "ratings_list.less";
 @import "add_rating.less";
-
+@import "my_roles.less";
+@import "tabs.less";
+@import "user_list.less";
 
 /* Helper Classes */
 .pad-right-sm { padding-right: 10px; }
@@ -133,6 +135,11 @@ pre {
             broder-bottom: none;
             th {
                 border-bottom-width: 0;
+
+                .fa-question-circle {
+                    color: #e1e1e1;
+                    margin-left: 5px;
+                }
             }
         }
     }
@@ -165,8 +172,26 @@ table caption {
 }
 
 .modal {
-    h3 {
-        color: @blue;
+    .modal-header {
+        background-color: @blue;
+    }
+    .title {
+        color: @white;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    button.close {
+        opacity: 1;
+        color: #ccc;
+    }
+    button.close:hover {
+        opacity: 1;
+        color: @white;
+    }
+    .modal-content {
+        textarea {
+            resize: none;
+        }
     }
 }
 
@@ -358,16 +383,6 @@ table caption {
     //}
 }
 
-/* Galaxy tab overrides. Used on User detail page */
-.tab-pane {
-    border-right: 1px solid #ddd;
-    border-left: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px;
-    padding: 15px;
-}
-
 /* Display dates on roles and ratings lists the same way */
 .dates {
     font-size: 12px;
@@ -439,86 +454,6 @@ table caption {
     }
     .description {
         color: @charcoal;
-    }
-}
-
-
-
-
-/* Browse Users */
-.user-list-table {
-    tbody>tr>td {
-        padding-bottom: 20px;
-    }
-    .inner-table {
-        color: @charcoal;
-        font-size: 12px;
-        margin-top: 15px;
-        tr > td {
-            padding: 3px;
-            background-color: transparent;
-        }
-        tbody > tr:hover > td {
-            background-color: transparent;
-        }
-        tbody > tr:nth-child(odd) {
-            background-color: transparent;
-        }
-    }
-    .user {
-        .info {
-            display: inline-block;
-            vertical-algin: top;
-        }
-        .username {
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .name {
-            font-size: 14px;
-            font-weight: bold;
-            padding-left: 5px;
-            color: @charcoal;
-        }
-        .score {
-            .fld-value-na {
-                padding: 2px;
-            }
-            .fld-value {
-                padding: 2px;
-                font-weight: bold;
-            }
-            color: @charcoal;
-            margin-top: 25px;
-            margin-left: 15px;
-        }
-        .date {
-            font-size: 12px;
-            display: block;
-            color: @charcoal;
-            margin-left: 15px;
-            margin-top: 3px;
-        }
-        img {
-            display: inline-block;
-            vertical-align: top;
-            width: 48px;
-            height: 48px;
-            margin-right: 8px;
-            margin-top: 5px;
-            border-radius: 4px;
-        }
-    }
-    .roles {
-        .role { display: block; }
-    }
-    .rating {
-        color: @charcoal;
-        .text {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            overflow-x: hidden;
-        }
     }
 }
 
