@@ -1,0 +1,63 @@
+/*
+ * ratings_list.less
+ */
+
+#galaxy-ratings-list {
+    .galaxy-rating {
+        hr {
+            margin: 20px 0;
+        }
+    }
+    .user-container {
+        position: relative;
+        max-width: 205px;
+        .dates {
+            margin-top: 0;
+        }
+        .username {
+            margin-top: 8px;
+            max-width: 205px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            img {
+                width: 56px;
+                height: 56px;
+                border-radius: 2px;
+            }
+        }
+        .staff-button {
+            position: absolute;
+            top: 0;
+            right: -1px;
+        }
+        .staff-button.role-name {
+            position:relative;
+            top: 15px;
+            right: 0;
+            left: 0;
+        }
+        .rolename {
+            max-width: 205px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 20px;
+        }
+    }
+
+    .comment {
+        h5 {
+            font-weight: normal;
+            color: #ccc;
+        }
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    @media (max-width: 992px) {
+        .comment {
+            margin: 20px 0;
+        }
+    }
+}

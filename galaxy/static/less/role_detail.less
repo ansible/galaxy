@@ -5,17 +5,35 @@
 
  #galaxy-role-detail {
 
-     margin-bottom: 30px;
+    margin-bottom: 30px;
 
     .rolename { margin-top: 0; }
+
     .user-info {
         display: inline-block;
         text-align: center;
-        img { border-radius: 6px; }
+        img { border-radius: 2px; }
         .username {
             font-size: 16px;
             padding: 5px 0 5px 0;
         }
+    }
+    .tab-pane {
+        border-top: 1px solid rgb(221,221,221);
+        border-radius: 2px;
+    }
+    .nav-pills {
+        margin-bottom: 5px;
+    }
+    .nav-pills>li>a {
+        border-radius: 2px;
+        background-color: #f2f2f2;
+    }
+    .nav-pills>li>a:hover {
+        background-color: #e1e1e1;
+    }
+    .nav-pills>li.active>a {
+        background-color: @blue;
     }
     .description {
         margin-top: 20px;
@@ -23,34 +41,17 @@
         color: @charcoal;
     }
 
+    .documentation .row {
+        margin-top: 20px;
+    }
+
+    .documentation .row:first-of-type {
+        margin-top: 0;
+    }
+
     .rating-section {
         margin-top: 10px;
         margin-bottom: 30px;
-
-        .role-ratings {
-            color: @charcoal;
-            table {
-                tr {
-                    td:first-child {
-                        padding-right: 10px;
-                        padding-left: 15px;
-                    }
-                }
-                tr:first-child {
-                    color: @black;
-                    font-weight: bold;
-                    td:first-child { padding-left: 5px; }
-                }
-            }
-        }
-        .ratings-count {
-            .count-grey {
-                color: #ccc;
-            }
-            .count-blue {
-                color: @ansible-color;
-            }
-        }
     }
     .actions {
         margin-bottom: 30px;
@@ -64,24 +65,20 @@
 
     .table-scroller {
         height: 300px;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
 
-    .ansible-version {
-        margin-bottom: 30px;
-        .title {
-            font-size: 24px;
-            font-weight: 500;
-            margin-bottom: 30px;
-        }
-        .version {
-            font-size: 16px;
-            font-weight: bold;
-            padding-left: 5px;
-            color: @charcoal;
-        }
-    }
     .readme {
+        h1 {
+            color: @blue;
+        }
+        h2 {
+            color: @black;
+            margin-top: 15px;
+        }
+        h3 {
+            color: @ansible-dark-grey;
+        }
         table {
             width: 100%;
             margin-bottom: 20px;

@@ -356,6 +356,7 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         var set = data[setName];
         var score = (setName == 'average_composite') ? 'average_score' : 'average_aw_score';
         set[score] = data[score];  //push the score into the set, so it gets stars
+        $scope[setName + '_model'] = 5;
 
         var k=0;
         for (var itm in set) {
@@ -368,6 +369,7 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
 
             $scope[setName + '_' + itm + '_ceil'] = Math.ceil(itm_value);
             $scope[setName + '_' + itm + '_states'] = [];
+            $scope[setName + '_' + itm + '_model'] = 5;
             for (var i=0; i < Math.floor(itm_value); i++) {
                 $scope[setName + '_' + itm + '_states'].push({ stateOn: 'fa fa-star', stateOff: 'fa fa-star-o' });
             }
@@ -383,9 +385,9 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         var label = getLabel(score);
         html += "<tr class=\"primary-score\"><td ng-mouseenter=\"startHover('" + setName + "', '" + score + "')\" " +
                 "ng-mouseleave=\"stopHover('" + setName + "', '" + score + "')\">" + label + "</td>\n";
-        html += "<td><rating value=\"5\" readonly=\"true\" rating-states=\"" + setName + "_" + score + "_states" + "\" " +
+        html += "<td><rating ng-model=\"" + setName + "_model\" readonly=\"true\" rating-states=\"" + setName + "_" + score + "_states" + "\" " +
             "on-hover=\"startHover('" + setName + "', '" + score + "')\" on-leave=\"stopHover('" + setName + "', '" + score + "')\"></rating>\n";
-        html += "<span class=\"badge\" ng-show=\"" + setName + '_' + score + '_over' + "\">{{ role" + '.' + score + " | number:1 }}</span>\n";
+        html += "<span class=\"badge\">{{ role" + '.' + score + " | number:1 }}</span>\n";
         html += "</td></tr>\n";
         delete set[score];
 
@@ -394,10 +396,10 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
             html += "<tr><td ng-mouseenter=\"startHover('" + setName + "', '" + itm + "')\" " +
                 "ng-mouseleave=\"stopHover('" + setName + "', '" + itm + "')\">" + label + "</td>\n";
 
-            html += "<td><rating value=\"5\" readonly=\"true\" rating-states=\"" + setName + "_" + itm + "_states" + "\" " +
+            html += "<td><rating ng-model=\"" + setName + "_" + itm + "_model\" readonly=\"true\" rating-states=\"" + setName + "_" + itm + "_states" + "\" " +
                 "on-hover=\"startHover('" + setName + "', '" + itm + "')\" on-leave=\"stopHover('" + setName + "', '" + itm + "')\"></rating>\n";
 
-            html += "<span class=\"badge\" ng-show=\"" + setName + '_' + itm + '_over' + "\">{{ role." + setName + '.' + itm + " | number:1 }}</span>\n";
+            html += "<span class=\"badge\">{{ role." + setName + '.' + itm + " | number:1 }}</span>\n";
             html += "</td></tr>\n";
         }
         html += "</tbody>\n</table>\n";
@@ -483,12 +485,33 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
                 'code_quality': 0,
                 'wow_factor': 0,
                 'comment': '',
-                }
+            }
         }
+        _calcScore();
+
+        $scope.$watch('rating.reliability', function(newVal, oldVal){
+            if (newVal !== oldVal)
+                _calcScore();
+        });
+
+        $scope.$watch('rating.documentation', function(newVal, oldVal){
+            if (newVal !== oldVal)
+                _calcScore();
+        });
+
+        $scope.$watch('rating.code_quality', function(newVal, oldVal){
+            if (newVal !== oldVal)
+                _calcScore();
+        });
+
+        $scope.$watch('rating.wow_factor', function(newVal, oldVal){
+            if (newVal !== oldVal)
+                _calcScore();
+        });
 
         $scope.closeAlert = function(index) {
             $scope.alerts.splice(index, 1);
-            };
+        };
 
         $scope.ok = function () {
             if ($scope.rating.reliability == 0 ||
@@ -508,7 +531,7 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
                 )
                 .success(function(data) {
                     $modalInstance.close(true);
-                    })
+                })
                 .error(function(data, status) {
                     var msg = '';
                     console.log(status);
@@ -520,13 +543,22 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
                         msg = 'An unknown error occurred while trying to add your rating. Please wait a while and try again.';
                     }
                     $scope.alerts = [{type: 'danger','msg':msg}]
-                    });
-            };
+                });
+        };
 
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
+        };
+
+        function _calcScore() {
+            var avg = ($scope.rating.reliability + $scope.rating.documentation + $scope.rating.code_quality + $scope.rating.wow_factor) / 4;
+            $scope.score = {
+                value: Math.ceil(avg * 10) / 10,
+                score_range: Stars(avg)
             };
         }
+
+    }
 
     $scope.showRatingDialog = function() {
         if (!my_info.authenticated) return;
@@ -534,6 +566,7 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         var modalInstance = $modal.open ({
             templateUrl: "/static/partials/add-rating.html",
             controller: ModalInstanceCtrl,
+            size: 'lg',
             resolve: {
                 role: function() { return $scope.role; },
                 ratingFactory: function() { return ratingFactory; },

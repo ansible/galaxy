@@ -25,19 +25,16 @@
   {% endfor %}
 
   <!-- JS -->
-  <script type="text/javascript" src="/static/js/jquery-1.9.1.js"></script>
-  <script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="/static/js/vendor/jquery.min.js"></script>
+  <!-- script type="text/javascript" src="/static/js/vendor/jquery-ui.min.js"></script -->
   <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/static/js/angular.min.js"></script>
-  <script type="text/javascript" src="/static/js/angular-resource.min.js"></script>
-  <script type="text/javascript" src="/static/js/angular-route.min.js"></script>
-  <script type="text/javascript" src="/static/js/angular-sanitize.min.js"></script>
-  <script type="text/javascript" src="/static/js/angular-cookies.min.js"></script>
-  <script type="text/javascript" src="/static/js/ui-bootstrap-custom-0.7.0.js"></script>
-  <!-- <script type="text/javascript" src="/static/js/ui-bootstrap-custom-0.7.0.min.js"></script> -->
-  <!-- <script type="text/javascript" src="/static/js/ui-bootstrap-custom-tpls-0.7.0.min.js"></script> -->
-  <script type="text/javascript" src="/static/js/ui-bootstrap-custom-tpls-0.7.0.js"></script>
-  <script type="text/javascript" src="/static/js/select2.js"></script>
+  <script type="text/javascript" src="/static/js/vendor/angular.min.js"></script>
+  <script type="text/javascript" src="/static/js/vendor/angular-resource.min.js"></script>
+  <script type="text/javascript" src="/static/js/vendor/angular-route.min.js"></script>
+  <script type="text/javascript" src="/static/js/vendor/angular-sanitize.min.js"></script>
+  <script type="text/javascript" src="/static/js/vendor/angular-cookies.min.js"></script>
+  <script type="text/javascript" src="/static/js/vendor/ui-bootstrap-tpls-0.12.0.js"></script>
+  <script type="text/javascript" src="/static/js/vendor/select2.js"></script>
 
   {% for extra in extra_js %}<script type="text/javascript" src="{{ extra }}"></script>
   {% endfor %}

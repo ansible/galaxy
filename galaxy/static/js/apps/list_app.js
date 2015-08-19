@@ -26,7 +26,6 @@ var roleApp = angular.module('roleApp', [
   'ngSanitize',
   'ngCookies',
   'ui.bootstrap',
-  'ui.slider',
   'listControllers',
   'meServices',
   'categoryServices',
