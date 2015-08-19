@@ -16,7 +16,8 @@
             <li><a href="/list#/users/{{ user.id }}">My User Page</a></li>
             <li><a href="{% url 'account_email' %}">Manage E-mail</a></li>
             {% url 'socialaccount_connections' as connections_url %}
-            <li><a href="{% url 'account_logout' %}">Sign out</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="{% url 'account_logout' %}"><i class="fa fa-sign-out"></i> Sign out</a></li>
         </ul>
     </li>
     {% endif %}
