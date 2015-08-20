@@ -103,7 +103,7 @@
 - name: set galaxy log directory selinux permissions
   file:
       path: "{{ galaxy_log_dir }}"
-     state: directory
+      state: directory
       owner: root
       group: galaxy_manage
       recurse: yes
