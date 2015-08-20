@@ -2,7 +2,7 @@ dependencies:
 - { role: galaxy_packages }
 - { role: selinux }
 - { role: ntp }
-- { role: postgresql }
+- { role: postgresql, when: galaxy_install_postgresql }
 - { role: rabbitmq }
 - { role: supervisorctl, when: galaxy_configure_supervisor, sup_init_name: "supervisord", sup_conf_location: "/etc/supervisord.conf" }
 - { role: iptables }

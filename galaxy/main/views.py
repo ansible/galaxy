@@ -192,6 +192,7 @@ def list_category(request, category=None, page=1):
       '/static/js/services/platforms.js',
       '/static/js/lib/utilities.js',
       '/static/js/lib/search.js',
+      '/static/js/lib/directives.js',
       '/static/js/services/related.js',
       '/static/js/lib/paginate.js',
     ]

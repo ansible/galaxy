@@ -60,7 +60,8 @@
                     </td>
                     <td class="rating col-lg-5" ng-init="rating = user.summary_fields.ratings[0]">
                         <div ng-show="user.summary_fields.ratings.length">
-                            <div class="text" ng-show="rating.comment">{{ rating.comment }}</div>
+                            <div class="role-name" ng-class="{ 'pad-bottom': !rating.comment }"><a href="/list#/roles/{{ rating.role_id }}">{{ rating.role_name }}</a></div>
+                            <div class="text" ng-show="rating.comment" text-collapse text-collapse-limit="125" text-collapse-height="40" text-collapse-text="rating.comment"></div>
                             <div class="date">
                                 <span class="fld-label">Created On</span>
                                 <span class="value">{{ rating.created|date:"short" }}</span>

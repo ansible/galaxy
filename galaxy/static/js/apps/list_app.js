@@ -35,7 +35,8 @@ var roleApp = angular.module('roleApp', [
   'userServices',
   'relatedService',
   'Paginate',
-  'platformService'
+  'platformService',
+  'galaxyDirectives'
 ]);
 
 // FIXME: this should probably go in a utilities library

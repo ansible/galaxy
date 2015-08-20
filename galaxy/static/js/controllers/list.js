@@ -698,7 +698,7 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
         sortOptions: [
             { value: AVG_SCORE_SORT, label: 'Average Role Score' },
             { value: 'date_joined,username', label: 'Date Joined' },
-            { value: NUM_RATINGS_SORT, label: 'Numbr of Ratings' },
+            { value: NUM_RATINGS_SORT, label: 'Number of Ratings' },
             { value: NUM_ROLES_SORT, label: 'Number of Roles' },
             { value: 'username', label: 'Username' }
             ],

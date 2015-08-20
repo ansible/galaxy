@@ -10,7 +10,7 @@
       shell: echo "galaxy_dist_file\0072 /tmp/{{ app_tar.stdout | basename }}" >>{{ playbook_dir }}/vars.yml
 
 - name: copy the dist file
-  hosts: ec2 
+  hosts: target
   tasks:
     - copy: src={{ hostvars['127.0.0.1']['app_tar'].stdout }} dest=/tmp/{{ hostvars['127.0.0.1']['app_tar'].stdout | basename }}
       register: copy_result
