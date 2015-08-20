@@ -43,7 +43,7 @@
                 <p>Ansible Galaxy is Ansible’s official community hub for sharing Ansible roles. A role is the Ansible way of bundling automation content and making it reusable.</p>
                 <p>If you're not familiar with the Ansible role concept, think of include files used in a programming language. An include file allows the programmer to organize code into reusable modules.
                   Code can be organized into smaller files and grouped by subject matter or function. These discrete pieces of code can then be included as needed into larger programs like building blocks.</p>
-                <p>A role is similar. Instead of creating giant playbooks with hundreds of tasks we can use roles to organize tasks, breaking them apart into smaller more discreet units of work. But a role is more than
+                <p>A role is similar. Instead of creating giant playbooks with hundreds of tasks we can use roles to organize tasks, breaking them apart into smaller more discrete units of work. But a role is more than
                     just an include file. A role is all the tasks, variables and handlers needed to complete the unit of work. This allows a role to be completely self contained or encapsulated and completely reusable.</p>
                 <p>Using roles also allows us to think about node configuration in terms of modeling. For example, given a set of nodes that should be web servers we can simply apply a web server role to them. We don't have
                     to think about or write all the tasks needed to configure web servers. All the details are already encapsulated in a web server role - a role you downloaded from Galaxy.</p>
@@ -205,7 +205,7 @@ acme/
                 <p>Sticking to these practices will help you create great roles. The community will love you, and you'll be hero!</p>
 
                 <h5>README.md</h5>
-                <p>The init command provides a template README.md file. Taylor it to fit your role. This is your chance to
+                <p>The init command provides a template README.md file. Tailor it to fit your role. This is your chance to
                   provide potential users what they need to get started using the role.</p>
                 <p>The file is composed in <a href="https://help.github.com/articles/markdown-basics/" target="_blank">Github markdown</a>.
                     Make modifications to the file using markdown to ensure the document looks good on Galaxy and on Github.</p>
@@ -250,11 +250,12 @@ MIT
                     not accurate, users will not be able to find your role.</p>
                 <p>A template is also provided for you to modify. It's written in <a href="http://www.yaml.org" target="_blank">yaml</a>, so
                     make sure to follow the yaml standard as you make changes.</p>
-                <p>It's up to you to make sure your role works out-of-the-box. If the role depends on other roles, the dependencies will either
-                    need to be included in the source repository, or you need to provide sufficient information for ansible to download the
-                    dependencies from Github.</p>
-                <p>If a dependent role will be downloaded from Github, provide the path, an optional version and an optional friendly name. The path
-                    will be the url to a github repo. The version can be a tag, commit or branch.</p>
+                <p>Ansible uses the dependencies sections to pull in and apply any dependent roles. Add a list of roles and parameters that Ansible
+                    will execute before running the role. For more on how Ansible handles role dependencies, see
+                    <a href="http://docs.ansible.com/ansible/playbooks_roles.html#role-dependencies" target="_blank">Role Dependencies</a> at the
+                    Ansible docs site.</a>.<p>
+                <p>It's up to you to make sure your role works out of the box when users download it from Galaxy. List dependent roles in README.md.
+                    Don't use the path option when including roles. And finally, give careful concideration to variable names and values.</p>
 <pre>
 ---
 galaxy_info:
@@ -271,7 +272,7 @@ galaxy_info:
   - web
 dependencies:
   - { role: username.common, some_parameter: 3 }
-  - { role: path="https://github.com/username/ansible-role-iptables.git", version="v1.0.0", name="iptables" }
+  - { role: username.iptables, open_port: 80 }
 </pre>
 
                 <h5>Variable Names</h5>

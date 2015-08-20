@@ -59,6 +59,9 @@
 @import "sponsorship";
 @import "footer";
 @import "page_title";
+@import "tabs.less";
+@import "table.less";
+@import "buttons.less";
 @import "login_page";
 @import "github_connection";
 @import "page_not_found";
@@ -72,8 +75,10 @@
 @import "ratings_list.less";
 @import "add_rating.less";
 @import "my_roles.less";
-@import "tabs.less";
 @import "user_list.less";
+@import "modal.less";
+@import "role_list.less";
+@import "search_filter.less";
 
 /* Helper Classes */
 .pad-right-sm { padding-right: 10px; }
@@ -122,121 +127,6 @@ pre {
     border-radius: 2px;
 }
 
-/*
- * Override bootstrap .table styles
- */
-.table {
-    margin-bottom: 0;
-
-    thead {
-        background-color: @ansible-dark-grey;
-        border-bottom: none;
-        tr {
-            broder-bottom: none;
-            th {
-                border-bottom-width: 0;
-
-                .fa-question-circle {
-                    color: #e1e1e1;
-                    margin-left: 5px;
-                }
-            }
-        }
-    }
-    th {
-        color: @white;
-        font-weight: normal;
-        border-bottom-width: 0;
-    }
-    th:first-of-type {
-        border-top-left-radius: 2px;
-    }
-    th:last-of-type {
-        border-top-right-radius: 2px;
-    }
-    tbody {
-        border-top: none;
-    }
-    tbody>tr:first-of-type {
-        border-top: none;
-    }
-    tbody>tr:first-of-type>td {
-        border-top: none;
-    }
-}
-
-table caption {
-    font-weight: normal;
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-.modal {
-    .modal-header {
-        background-color: @blue;
-    }
-    .title {
-        color: @white;
-        font-weight: bold;
-        font-size: 16px;
-    }
-    button.close {
-        opacity: 1;
-        color: #ccc;
-    }
-    button.close:hover {
-        opacity: 1;
-        color: @white;
-    }
-    .modal-content {
-        textarea {
-            resize: none;
-        }
-    }
-}
-
-/*
- * bootstrap button overrides
- */
-.btn-success {
-    background-color: @ansible-color;
-    border: none;
-    border-radius: 2px;
-}
-.btn-success:hover {
-    background-color: @ansible-color-hover;
-    border-radius: 2px;
-}
-.btn-primary {
-    background-color: @blue;
-    border-radius: 2px;
-    border: none;
-}
-.btn-primary:hover {
-    border-radius: 2px;
-    border: none;
-}
-.btn-default {
-    background-color: #f2f2f2;
-    border: none;
-    border-radius: 2px;
-}
-.btn-default:hover {
-    background: #e1e1e1;
-    border: none;
-    border-radius: 2px;
-}
-.btn-danger {
-    background-color: #ff5850;
-    border: none;
-    border-radius: 2px;
-}
-.btn-danger:hover {
-    background-color: #d05852;
-    border:none;
-    border-radius: 2px;
-}
-
 /* Loading indicator */
 #loader {
     position: fixed;
@@ -277,7 +167,6 @@ table caption {
     }
 }
 
-
 .user-menu {
     /* Using user-menu class so that we can adjust things on smaller
        viewports. See media queries below. */
@@ -314,22 +203,6 @@ table caption {
     font-size: 11px;
     padding-top: 3px;
     color: @red;
-}
-
-.search-filter {
-    margin-bottom: 5px;
-    .search-reset-start {
-        color: @grey;
-        float: right;
-        position: relative;
-        top: -25px;
-        left: -10px;
-        z-index: 10;
-    }
-    .search-reset-start:hover {
-        cursor: pointer;
-        color: @black;
-    }
 }
 
 .page-row .page-label {
@@ -369,19 +242,6 @@ table caption {
     }
 }
 
-/* Galaxy table striping and padding. Use in place of TB table-striped
-   to fix FF disappearing border issue. */
-.ga-table-striped {
-    tbody>tr:nth-child(odd) {
-            background-color: #f9f9f9;
-    }
-    tbody>tr:nth-child(even) {
-            background-color: @white;
-    }
-    //tbody>tr>td {
-    //    padding-bottom: 20px;
-    //}
-}
 
 /* Display dates on roles and ratings lists the same way */
 .dates {
@@ -399,63 +259,6 @@ table caption {
 
 /* In star ratigs, make the half star feel like it's not squished */
 .fa-star-half { padding-right: 3px; }
-
-/* Browse Roles */
-.role-list-table {
-    tbody>tr>td {
-        padding-bottom: 15px;
-        padding-top: 15px;
-    }
-    .role {
-        min-width: 200px;
-        .rolename {
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .fld-label {
-            color: @charcoal;
-        }
-        .score-section {
-            font-size: 12px;
-            margin-top: 15px;
-            margin-left: 15px;
-            .fld-label {
-                padding-left: 5px;
-            }
-        }
-        .score {
-            margin-bottom: 5px;
-        }
-        .score-value, .score-value-na {
-            font-weight: bold;
-            font-size: 14px;
-            padding: 2px;
-            color: @black;
-        }
-        .score-value-na {
-            color: @grey;
-        }
-        .userinfo {
-            margin-top: 15px;
-            margin-left: 15px;
-        }
-
-        @media (max-width: 1024px) {
-            min-width: 125px;
-        }
-    }
-    .category {
-        display: block;
-        /* color: @charcoal; */
-    }
-    .category:hover {
-        /* color: @black;
-        text-decoration: underline; */
-    }
-    .description {
-        color: @charcoal;
-    }
-}
 
 
 /* Misc classes for overriding things */
@@ -479,29 +282,6 @@ table caption {
 }
 
 /* Media Querries to handle small screen sizes */
-
-@media (max-width: 1200px) {
-
-    .search-filter .col-lg-3 { margin-top: 20px; }
-
-    .info-row .col-lg-4 { margin-top: 25px; }
-
-    .footer {
-         height: 195px;
-         .logo { margin-top: 5px; }
-         .logo img { margin: 0 auto; }
-         .social { text-align: center; }
-         .social, .copyright { margin-top: 20px; }
-    }
-
-    .role-detail {
-        .user-info {
-            text-align: left;
-            margin-top: 35px;
-        }
-        .installation { margin-top: 20px; }
-    }
-}
 
 @media (max-width: 768px) {
     .user-menu {
