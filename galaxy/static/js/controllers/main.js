@@ -55,7 +55,7 @@
             _getTopReviewers();
             _getNewUsers();
         }, 100);
-        
+
         return;
 
 
@@ -72,27 +72,32 @@
                 }
                 else if (entry === 'top_roles') {
                     default_sort_col = '-average_score,-num_ratings';
-                    more_link = '/list#/roles/sort/sort-by-community-score';
+                    more_link = '/list#/roles?page=1&per_page=10&sort_order=average_score,name&reverse';
+                    //more_link = '/list#/roles/sort/sort-by-community-score';
                     data_function = _getTopRoles;
                 }
                 else if (entry === 'new_roles') {
                     default_sort_col = '-created,owner__username,name';
-                    more_link = '/list#/roles/sort/sort-by-created-on-date';
+                    more_link = '/list#/roles?page=1&per_page=10&sort_order=created&reverse';
+                    //more_link = '/list#/roles/sort/sort-by-created-on-date';
                     data_function = _getNewRoles;
                 }
                 else if (entry === 'top_users') {
                     default_sort_col = '-num_roles,username';
-                    more_link = '/list#/users/sort/sort-by-community-score';
+                    //more_link = '/list#/users/sort/sort-by-community-score';
+                    more_link = '/list#/users?page=1&per_page=10&sort_order=num_roles,username&reverse';
                     data_function = _getTopUsers;
                 }
                 else if (entry === 'top_reviewers') {
                     default_sort_col = '-num_ratings,username';
-                    more_link = '/list#/users/sort/sort-by-top-reviewers';
+                    //more_link = '/list#/users';
+                    more_link = '/list#/users?page=1&per_page=10&sort_order=num_ratings,username&reverse';
                     data_function = _getTopReviewers;
                 }
                 else if (entry === 'new_users') {
                     default_sort_col = '-date_joined,username';
-                    more_link = '/list#/users/sort/sort-by-joined-on-date';
+                    //more_link = '/list#/users/sort/sort-by-joined-on-date';
+                    more_link = '/list#/users?page=1&per_page=10&sort_order=date_joined,username&reverse';
                     data_function = _getNewUsers;
                 }
 

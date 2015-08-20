@@ -4,6 +4,8 @@
  */
 
  #galaxy-user-detail {
+     margin-bottom: 20px;
+
      img {
          margin: 0 auto;
          display: inline-block;
@@ -15,8 +17,24 @@
      }
      .statistics {
          display: inline-block;
-         margin-left: 30px;
-         vertical-align: top;
+         margin-bottom: 20px;
+         margin-left: 20px;
+
+         .score {
+             margin-bottom: 5px;
+             .fld-label {
+                 color: @charcoal;
+             }
+             .score-value, .score-value-na {
+                 font-weight: bold;
+                 font-size: 14px;
+                 padding: 2px;
+                 color: @black;
+             }
+             .score-value-na {
+                 color: @charcoal;
+             }
+         }
      }
      .user-info {
          margin-bottom: 15px;
@@ -31,32 +49,8 @@
              font-weight: bold;
          }
      }
-     .user-role-stats {
-         margin-top: 20px;
-         margin-bottom: 15px;
-         border-top: 1px solid @grey;
-         padding-top: 10px;
-     }
-     .user-review-stats {
-         margin-bottom: 20px;
-         border-bottom: 1px solid @grey;
-         padding-bottom: 10px;
-     }
-     .score, .karma {
-         margin-top: 5px;
-         margin-left: 10px;
-         .fld-label {
-            padding-left: 5px;
-         }
-     }
-     .score-value {
-         font-weight: bold;
-         color: @black;
-         padding: 2px;
-     }
-     .score-value-na {
-         font-weight: bold;
-         padding: 2px;
-         color: @grey;
+
+     .user-tabs {
+         margin-top: 30px;
      }
  }

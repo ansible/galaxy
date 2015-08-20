@@ -37,6 +37,11 @@
     }
 }
 
+.dropdown-menu {
+    min-width: 200px;
+    margin-right: 5px;
+}
+
 @media (max-width: 1023px) {
     .navbar-default {
         .navbar-nav>li>a {
@@ -53,6 +58,9 @@
         }
     }
     .navbar-default .navbar-nav .open {
+        .dropdown-menu {
+            margin-right: 0;
+        }
         .dropdown-menu>li>a {
             color: @white;
         }

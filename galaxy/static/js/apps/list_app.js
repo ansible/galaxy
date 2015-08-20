@@ -105,6 +105,7 @@ roleApp.config(['$routeProvider',
       when('/users', {
           templateUrl: '/static/partials/user-list.html',
           controller: 'UserListCtrl',
+          reloadOnSearch: false,
           resolve: {
               my_info: ['$q', 'meFactory', getMyInfo]
               }

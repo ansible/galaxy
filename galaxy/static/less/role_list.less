@@ -1,0 +1,60 @@
+/*
+ * role_list.less
+ */
+ 
+ /* Browse Roles */
+ .role-list-table {
+     tbody>tr>td {
+         padding-bottom: 15px;
+         padding-top: 15px;
+     }
+     .role {
+         min-width: 200px;
+         .rolename {
+             font-size: 16px;
+             font-weight: bold;
+         }
+         .fld-label {
+             color: @charcoal;
+         }
+         .score-section {
+             font-size: 12px;
+             margin-top: 15px;
+             margin-left: 15px;
+             .fld-label {
+                 padding-left: 5px;
+             }
+         }
+         .score {
+             margin-bottom: 5px;
+         }
+         .score-value, .score-value-na {
+             font-weight: bold;
+             font-size: 14px;
+             padding: 2px;
+             color: @black;
+         }
+         .score-value-na {
+             color: @grey;
+         }
+         .userinfo {
+             margin-top: 15px;
+             margin-left: 15px;
+         }
+
+         @media (max-width: 1024px) {
+             min-width: 125px;
+         }
+     }
+     .category {
+         display: block;
+         /* color: @charcoal; */
+     }
+     .category:hover {
+         /* color: @black;
+         text-decoration: underline; */
+     }
+     .description {
+         color: @charcoal;
+     }
+ }
