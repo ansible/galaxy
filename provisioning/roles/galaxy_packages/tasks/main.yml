@@ -100,17 +100,17 @@
       group: vagrant
   when: galaxy_env == "DEV"
 
-- name: set galaxy log directory selinux permissions
-  file:
-      path: "{{ galaxy_log_dir }}"
-      state: directory
-      owner: root
-      group: galaxy_manage
-      recurse: yes
-      seuser: system_u
-      serole: object_r
-      setype: httpd_log_t
-  when: galaxy_env == "PROD"
+#- name: set galaxy log directory selinux permissions
+#  file:
+#      path: "{{ galaxy_log_dir }}"
+#      state: directory
+#      owner: root
+#      group: galaxy_manage
+#      recurse: yes
+#      seuser: system_u
+#      serole: object_r
+#      setype: httpd_log_t
+#  when: galaxy_env == "PROD"
 
 - name: set galaxy log directory default acl
   acl:
