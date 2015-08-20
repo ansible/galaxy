@@ -9,6 +9,11 @@
     - name: update the local vars.yml file
       shell: echo "galaxy_dist_file\0072 /tmp/{{ app_tar.stdout | basename }}" >>{{ playbook_dir }}/vars.yml
 
+- name: remove old dist files
+  hosts: target
+  tasks:
+    - file: path=/tmp/*.tar.gz state=absent 
+
 - name: copy the dist file
   hosts: target
   tasks:
