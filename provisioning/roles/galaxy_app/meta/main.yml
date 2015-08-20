@@ -1,6 +1,6 @@
 dependencies:
 - { role: galaxy_packages }
-- { role: selinux }
+- { role: selinux, when: galaxy_install_selinux }
 - { role: ntp }
 - { role: postgresql, when: galaxy_install_postgresql }
 - { role: rabbitmq }
