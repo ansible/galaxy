@@ -1,5 +1,8 @@
 ---
 
+- name: "Install boto"
+  pip: name=boto
+
 - name: "Get the list of database backups"
   s3:
     aws_access_key: "{{ aws_access_key }}"
