@@ -210,11 +210,11 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
         placeHolder: 'Search role name',
         showSearchIcon: ($scope.list_data.list_filter) ? false : true,
         sortOptions: [
-            { value: 'name', label: 'Role Name' },
-            { value: 'owner__username,name', label: 'Owner Name' },
             { value: AVG_SCORE_SORT, label: 'Average Score' },
-            { value: 'created', label: 'Create On Date' }
-            ],
+            { value: 'created', label: 'Created On Date' },
+            { value: 'owner__username,name', label: 'Owner Name' },
+            { value: 'name', label: 'Role Name' }
+        ],
         platforms: platformService.get().then(function(platforms) {
             $scope.platforms = platforms;
         }),
@@ -635,7 +635,8 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
     my_info, SearchInit, PaginateInit, Stars) {
 
     var AVG_SCORE_SORT = 'avg_role_score,username',
-        NUM_ROLES_SORT = 'num_roles,username';
+        NUM_ROLES_SORT = 'num_roles,username',
+        NUM_RATINGS_SORT = 'num_ratings,username';
 
     $scope.page_title = 'Browse Users';
     $scope.my_info = my_info;
@@ -695,10 +696,11 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
         placeHolder: 'Search user',
         showSearchIcon: ($scope.list_data.list_filter) ? false : true,
         sortOptions: [
-            { value: 'username', label: 'Username' },
             { value: AVG_SCORE_SORT, label: 'Average Role Score' },
+            { value: 'date_joined,username', label: 'Date Joined' },
+            { value: NUM_RATINGS_SORT, label: 'Numbr of Ratings' },
             { value: NUM_ROLES_SORT, label: 'Number of Roles' },
-            { value: 'date_joined,username', label: 'Date Joined' }
+            { value: 'username', label: 'Username' }
             ],
         sortOrder: $scope.list_data.sort_order
     });
@@ -713,7 +715,8 @@ function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, s
         $scope.loading = 1;
 
         if (_change === 'SortOrderSelect' &&
-            ($scope.list_data.sort_order === AVG_SCORE_SORT || $scope.list_data.sort_order === NUM_ROLES_SORT)) {
+            ($scope.list_data.sort_order === AVG_SCORE_SORT || $scope.list_data.sort_order === NUM_ROLES_SORT ||
+                $scope.list_data.sort_order === NUM_RATINGS_SORT)) {
             // Sorting by Average Score ||s Number of Roles should default to reverse (or descending) order
             $scope.list_data.reverse = true;
         }

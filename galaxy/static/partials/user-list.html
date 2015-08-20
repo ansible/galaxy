@@ -61,13 +61,17 @@
                     <td class="rating col-lg-5" ng-init="rating = user.summary_fields.ratings[0]">
                         <div ng-show="user.summary_fields.ratings.length">
                             <div class="text" ng-show="rating.comment">{{ rating.comment }}</div>
+                            <div class="date">
+                                <span class="fld-label">Created On</span>
+                                <span class="value">{{ rating.created|date:"short" }}</span>
+                            </div>
                             <div class="score">
                                 <span class="score-value">{{ rating.score | number:1 }}</span>
                                 <span class="fld-label">Score</span>
                             </div>
-                            <div class="date">
-                                <span class="fld-label">Created On</span>
-                                <span class="value">{{ rating.created|date:"short" }}</span>
+                            <div class="score roles-contributed">
+                                <span class="score-value">{{ user.num_ratings | number:0 }}</span>
+                                <span class="fld-label">Ratings Contributed</span>
                             </div>
                         </div>
                         <div ng-hide="user.summary_fields.ratings.length">No ratings found.</div>

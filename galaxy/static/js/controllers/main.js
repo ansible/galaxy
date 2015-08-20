@@ -90,7 +90,8 @@
                 }
                 else if (entry === 'top_reviewers') {
                     default_sort_col = '-num_ratings,username';
-                    more_link = '/list#/users';
+                    //more_link = '/list#/users';
+                    more_link = '/list#/users?page=1&per_page=10&sort_order=num_ratings,username&reverse';
                     data_function = _getTopReviewers;
                 }
                 else if (entry === 'new_users') {
