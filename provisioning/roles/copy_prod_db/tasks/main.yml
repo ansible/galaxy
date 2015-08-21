@@ -1,7 +1,7 @@
 ---
 
-- name: "Install boto"
-  pip: name=boto
+# - name: "Install boto"
+#  pip: name=boto
 
 # - name: "Get the list of database backups"
 #  s3:
@@ -27,7 +27,7 @@
 #    overwrite: True
 
 - name: "Unarchive the backup file"
-  shell: gunzip -c "/tmp/galaxy-sql-2015-08-21-21-34-08.gz" | openssl enc -aes-256-cbc -d -a -pass pass:{{ galaxy_encryption_password }} >>/tmp//tmp/galaxy-sql-2015-08-21-21-34-08
+  shell: gunzip -c "/tmp/galaxy-sql-2015-08-21-21-34-08.gz" | openssl enc -aes-256-cbc -d -a -pass pass:{{ galaxy_encryption_password }} >>/tmp/galaxy-sql-2015-08-21-21-34-08
 
 - name: "Stop apache"
   service: name=httpd state=stopped
