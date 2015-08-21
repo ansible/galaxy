@@ -1,0 +1,5 @@
+- name: Deploy Galaxy
+  hosts: all
+  sudo: yes
+  roles:
+  - { role: galaxy_deploy }
