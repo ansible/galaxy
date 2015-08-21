@@ -73,10 +73,10 @@
       - restart apache
       - restart celeryd
 
-- name: "Remove backup archive"
-  file:
-    path: "/tmp/{{ data_list.s3_keys[-1] | basename }}"
-    state: absent
+#- name: "Remove backup archive"
+#  file:
+#    path: "/tmp/{{ data_list.s3_keys[-1] | basename }}"
+#    state: absent
 
 #- name: "Remove uncompressed backup archive"
 #  file:
