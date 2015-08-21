@@ -1,7 +1,7 @@
 Contributing
 ============
 
-Start here if you're contributing to the development of Galaxy. 
+Start here if you're contributing to the development of Galaxy.
 
 Galaxy relies on the following core technologies and frameworks, along with numerous other smaller libraries and utilities. Consult the documentation for each of these projects to better understand how it all works:
 
@@ -39,12 +39,12 @@ git config user.name "Joe Developer"
 git config user.email "joe@ansibleworks.com"
 ```
 
-All development is done in the 'develop' branch. To checkout the 'develop' branch: 
+All development is done in the 'develop' branch. To checkout the 'develop' branch:
 
 ```
 cd ~/projects/galaxy
 git checkout develop
-``` 
+```
 
 Environment Setup
 =================
@@ -57,7 +57,7 @@ Vagrant
 
 To get up and running quickly the `provisioning` folder provides a Vagrant configuration to quickly spin up a VM.
 
-Make sure you have [Virtualbox](https://www.virtualbox.org/wiki/Downloads), [Vagrant](http://www.vagrantup.com), and [Ansible](http://docs.ansible.com) installed. Then provision the VM from within the project 'provisioning' folder. The following assumes galaxy was cloned to ~/projects/galaxy: 
+Make sure you have [Virtualbox](https://www.virtualbox.org/wiki/Downloads), [Vagrant](http://www.vagrantup.com), and [Ansible](http://docs.ansible.com) installed. Then provision the VM from within the project 'provisioning' folder. The following assumes galaxy was cloned to ~/projects/galaxy:
 
 ```
 cd ~/projects/galaxy/provisioning
@@ -65,15 +65,15 @@ vagrant box add chef/centos-7.0
 vagrant up
 ```
 
-To start the server ssh into the VM and run the following: 
+To start the server ssh into the VM and run the following:
 
 ```
 cd ~/projets/galaxy/provisioning
 vagrant ssh
 cd /galaxy_devel
-make servercc 
+make servercc
 ```
-> *NOTE*: If you're not using iTerm2 on a MacBook, replace `servercc` with `server`. 
+> *NOTE*: If you're not using iTerm2 on a MacBook, replace `servercc` with `server`.
 
 > *NOTE*: If you're using the `vagrant-kvm` driver and have trouble accessing `http://localhost:8000` then you can run `python manage.py runserver 0.0.0.0:8000` in the guest VM, and on the host use `vagrant ssh-config` to see the IP address of the VM. Browse to that IP on port 8000 to access the site.
 
@@ -130,7 +130,7 @@ Restart the servers in the background
     cd ~/projects/galaxy/provisioning
     vagrant ssh
     cd /galaxy_devel
-    make servercc 
+    make servercc
 
 Make your code changes and test them locally, using the API/UI as needed and ensure all unit tests pass:
 
@@ -149,3 +149,25 @@ Resolve any conflicts and run tests again if upstream changes may have broken
 anything.  Finally, push your changes back to the repository.
 
     make push
+
+
+Github Authentication
+=====================
+You can turn on Github authentication for your local environment. Start by creating a superuser account:
+
+    cd ~/projects/galaxy
+    python ./manage.py createsuperuser
+
+Log into the administration site at http://localhost:8000/galaxy__admin using the superuser account.
+
+Before changing anything on the administration site, first login into you Github account. Under account settings, choose Applications and click
+on the Developer Applications tab.  Provide an application name, set the Homepage URL to `http:\\localhost:8000`, and the Authentication Callback URL to `http://127.0.0.1:8000/accounts/github/login/callback/`. Save your changes.
+
+In your local Galaxy admin site under Social Applications choose Github. Provide the Client Id and Secret Key displayed on your Github account for the
+application you created in the step above.
+
+Also, in your local Galaxy admin site click on Sites. There should only be 1 site listed. Click on it and set the Domain Name to `localhost:8000`.
+
+Finally, in /etc/galaxy/settings.py set `ACCOUNT_DEFAULT_HTTP_PROTOCOL="http"`.
+
+Restart the local Galaxy server. 

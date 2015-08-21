@@ -4,7 +4,7 @@
   yum: name=postgresql-server
 
 - name: init the postgresql database
-  command: service postgresql initdb creates=/var/lib/pgsql/data/PG_VERSION
+  command: postgresql-setup initdb
   
 - name: update postgresql authentication settings
   template: src=pg_hba.conf.j2 dest=/var/lib/pgsql/data/pg_hba.conf owner=postgres

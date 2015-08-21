@@ -248,14 +248,14 @@ class OrderByBackend(BaseFilterBackend):
                         order_by = value.split(',')
                     else:
                         order_by = (value,)
-            if order_by:
-                queryset = queryset.order_by(*order_by)
+            #if order_by:
+            #    queryset = queryset.order_by(*order_by)
                 # Fetch the first result to run the query, otherwise we don't
                 # always catch the FieldError for invalid field names.
-                try:
-                    queryset[0]
-                except IndexError:
-                    pass
+            #    try:
+            #        queryset[0]
+            #    except IndexError:
+            #        pass
             return queryset
         except FieldError, e:
             # Return a 400 for invalid field names.

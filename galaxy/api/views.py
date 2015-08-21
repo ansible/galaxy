@@ -33,7 +33,7 @@ from rest_framework.reverse import reverse
 # django stuff
 
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import Count, Avg
+from django.db.models import F, Count, Avg, Prefetch
 from django.http import Http404
 from django.utils.datastructures import SortedDict
 
@@ -59,9 +59,9 @@ def filter_role_queryset(qs):
 
 def filter_rating_queryset(qs):
     return qs.filter(
-               active=True, 
-               role__active=True, 
-               role__is_valid=True, 
+               active=True,
+               role__active=True,
+               role__is_valid=True,
                owner__is_active=True,
            )
 
@@ -77,6 +77,10 @@ def annotate_role_queryset(qs):
     return qs.annotate(
                num_ratings = Count('ratings', distinct=True),
                average_score = AvgWithZeroForNull('ratings__score'),
+               avg_reliability   = AvgWithZeroForNull('ratings__reliability'),
+               avg_documentation = AvgWithZeroForNull('ratings__documentation'),
+               avg_code_quality  = AvgWithZeroForNull('ratings__code_quality'),
+               avg_wow_factor    = AvgWithZeroForNull('ratings__wow_factor'),
            )
 
 #--------------------------------------------------------------------------------
@@ -126,7 +130,7 @@ class PlatformList(ListAPIView):
     model = Platform
     serializer_class = PlatformSerializer
     paginate_by = None
-    
+
 class PlatformDetail(RetrieveAPIView):
     model = Platform
     serializer_class = PlatformSerializer
@@ -150,7 +154,7 @@ class RoleRatingsList(SubListCreateAPIView):
 
 class RoleAuthorsList(SubListCreateAPIView):
     model = User
-    serializer_class = UserSerializer
+    serializer_class = UserDetailSerializer
     parent_model = Role
     relationship = 'authors'
 
@@ -160,7 +164,7 @@ class RoleAuthorsList(SubListCreateAPIView):
 
 class RoleDependenciesList(SubListCreateAPIView):
     model = Role
-    serializer_class = RoleSerializer
+    serializer_class = RoleDetailSerializer
     parent_model = Role
     relationship = 'dependencies'
 
@@ -170,7 +174,7 @@ class RoleDependenciesList(SubListCreateAPIView):
 
 class RoleUsersList(SubListAPIView):
     model = User
-    serializer_class = UserSerializer
+    serializer_class = UserDetailSerializer
     parent_model = Role
     relationship = 'created_by'
 
@@ -186,15 +190,31 @@ class RoleVersionsList(SubListCreateAPIView):
 
 class RoleList(ListCreateAPIView):
     model = Role
-    serializer_class = RoleSerializer
+    serializer_class = RoleListSerializer
 
     def get_queryset(self):
         qs = super(RoleList, self).get_queryset()
+        qs = qs.select_related('owner')
+        qs = qs.prefetch_related('platforms', 'versions', 'categories', 'dependencies',
+            Prefetch('ratings',
+                queryset=RoleRating.objects.select_related('owner')
+                    .filter(owner__is_staff=True,owner__is_active=True),
+                to_attr='aw_ratings'))
+        return annotate_role_queryset(filter_role_queryset(qs))
+
+class RoleTopList(ListCreateAPIView):
+    model = Role
+    serializer_class = RoleTopSerializer
+
+    def get_queryset(self):
+        qs = super(RoleTopList, self).get_queryset()
+        qs = qs.select_related('owner')
+        qs = qs.prefetch_related('ratings')
         return annotate_role_queryset(filter_role_queryset(qs))
 
 class RoleDetail(RetrieveUpdateDestroyAPIView):
     model = Role
-    serializer_class = RoleSerializer
+    serializer_class = RoleDetailSerializer
 
     def get_object(self, qs=None):
         obj = super(RoleDetail, self).get_object(qs)
@@ -210,7 +230,7 @@ class UserRatingsList(SubListAPIView):
 
 class UserRolesList(SubListAPIView):
     model = Role
-    serializer_class = RoleSerializer
+    serializer_class = RoleDetailSerializer
     parent_model = User
     relationship = 'roles'
 
@@ -220,7 +240,7 @@ class UserRolesList(SubListAPIView):
 
 class UserDetail(RetrieveUpdateDestroyAPIView):
     model = User
-    serializer_class = UserSerializer
+    serializer_class = UserDetailSerializer
 
     def update_filter(self, request, *args, **kwargs):
         ''' make sure non-read-only fields that can only be edited by admins, are only edited by admins '''
@@ -246,10 +266,46 @@ class UserDetail(RetrieveUpdateDestroyAPIView):
 
 class UserList(ListAPIView):
     model = User
-    serializer_class = UserSerializer
+    serializer_class = UserListSerializer
 
     def get_queryset(self):
         qs = super(UserList, self).get_queryset()
+        qs = qs.prefetch_related(
+            Prefetch(
+                'roles',
+                queryset=Role.objects.filter(active=True, is_valid=True)
+                    .annotate(
+                        num_ratings = Count('ratings__score'),
+                        avg_role_score = AvgWithZeroForNull('ratings__score')
+                    ).order_by('pk'),
+                to_attr='user_roles'
+            ),
+            Prefetch(
+                'ratings',
+                queryset=RoleRating.objects.select_related('role').filter(active=True, role__active=True, role__is_valid=True)
+                    .annotate(
+                        role_id = F('role__id'),
+                        role_name = F('role__name'),
+                        role_owner_id = F('role__owner__id'),
+                        role_onwer_username = F('role__owner__username')
+                    ).order_by('-created'),
+                to_attr='user_ratings'
+            ),
+            Prefetch(
+                'roles',
+                queryset=Role.objects.filter(ratings__owner__is_staff=True, active=True, is_valid=True)
+                    .annotate( score = F('ratings__score')),
+                to_attr='aw_ratings'
+            ),
+        )
+        return annotate_user_queryset(filter_user_queryset(qs))
+
+class UserTopList(ListAPIView):
+    model = User
+    serializer_class = UserTopSerializer
+
+    def get_queryset(self):
+        qs = super(UserTopList, self).get_queryset()
         return annotate_user_queryset(filter_user_queryset(qs))
 
 class RatingList(ListAPIView):
@@ -258,6 +314,8 @@ class RatingList(ListAPIView):
 
     def get_queryset(self):
         qs = super(RatingList, self).get_queryset()
+        qs.select_related('owner', 'role')
+        qs.prefetch_related('up_votes', 'down_votes')
         return filter_rating_queryset(qs)
 
 class RatingDetail(RetrieveUpdateDestroyAPIView):

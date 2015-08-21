@@ -24,13 +24,15 @@
                        <div class="score">
                            <span ng-show="role.average_score == '0.0'" class="score-value-na">NA</span>
                            <span ng-show="role.average_score != '0.0'" class="score-value">{{ role.average_score|number:1 }}</span>
-                           <span class="fld-label">Community Score</span>
+                           <span class="fld-label">Score</span>
                        </div>
+                       <!--
                        <div class="score">
                            <span ng-show="role.average_aw_score == '0.0'" class="score-value-na">NA</span>
                            <span ng-show="role.average_aw_score != '0.0'" class="score-value">{{ role.average_aw_score|number:1 }}</span>
                            <span class="fld-label">Ansible Score</span>
-                       </div> 
+                       </div>
+                       -->
                    </div>
                </div>
                <div ng-show="display_user_info" class="userinfo">
@@ -47,6 +49,6 @@
        </tr>
        </tbody>
    </table>
-   <div ng-show="roles" ng-init="target='roles'; list_data=list_data.roles">
+   <div ng-show="roles.length" ng-init="target='roles'; list_data=list_data.roles">
        <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
    </div>

@@ -1,0 +1,35 @@
+/*
+ * search_filter.less
+ */
+
+
+ .search-filter {
+     margin-bottom: 5px;
+     .search-reset-start {
+         color: @grey;
+         float: right;
+         position: relative;
+         top: -25px;
+         left: -10px;
+         z-index: 10;
+     }
+     .search-reset-start:hover {
+         cursor: pointer;
+         color: @black;
+     }
+     .platform-search-container {
+         .form-control {
+             display: inline-block;
+         }
+         .platform {
+             width: 60%;
+         }
+         .release {
+             width: 38%;
+         }
+     }
+ }
+
+ @media (max-width: 1200px) {
+     .search-filter .col-lg-3 { margin-top: 20px; }
+ }

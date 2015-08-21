@@ -1,0 +1,72 @@
+/*
+ * login_page.less
+ *
+ * Style /accounts/login
+ *
+ */
+
+ #galaxy-login-page {
+     h2 {
+         margin-top: 0;
+     }
+     .login-intro {
+         width: 80%;
+         margin: 0 auto;
+     }
+     .login-dialog {
+         width: 50%;
+         margin: 0 auto;
+     }
+
+    .login-social {
+        text-align: center;
+    }
+
+    .social-links {
+        list-style: none;
+        padding: 15px 0 15px 0;
+        li {
+            display: inline-block;
+            margin-right: 15px;
+            a { color: @blue; }
+            a:hover { color: @ansible-color; }
+        }
+        .fa-google-square:before {
+            content: "\f0d4";
+        }
+    }
+
+     form {
+         margin-top: 25px;
+     }
+     .form-fields {
+         width: 95%;
+         margin: 0 auto;
+         text-align: left;
+     }
+     .remember, .reset {
+         margin-top: 5px;
+         font-size: 12px;
+         display: inline-block;
+         vertical-align: middle;
+     }
+     .remember {
+         margin-right: 20px;
+     }
+     .reset {
+         padding-top: 3px;
+     }
+     .alert {
+         margin-bottom: 0;
+         margin-top: 20px;
+     }
+ }
+
+ @media(max-width: 768px) {
+     #galaxy-login-page {
+         .login-intro,
+         .login-dialog {
+             width: 100%;
+         }
+     }
+ }

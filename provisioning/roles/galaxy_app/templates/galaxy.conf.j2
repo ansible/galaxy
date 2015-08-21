@@ -28,14 +28,12 @@ WSGISocketPrefix /var/run/wsgi
 
   <Directory /var/lib/galaxy/>
     <Files wsgi.py>
-      Order deny,allow
-      Allow from all
+      Require all granted
     </Files>
   </Directory>
 
   <Directory /var/lib/galaxy/public/>
-    Order deny,allow
-    Allow from all
+    Require all granted
   </Directory>
 </VirtualHost>
 
@@ -67,14 +65,11 @@ WSGISocketPrefix /var/run/wsgi
 
  <Directory /var/lib/galaxy/>
    <Files wsgi.py>
-     Order deny,allow
-     Allow from all
+     Require all granted
    </Files>
  </Directory>
 
  <Directory /var/lib/galaxy/public/>
-   Order deny,allow
-   Allow from all
+   Require all granted
  </Directory>
 </VirtualHost>
-

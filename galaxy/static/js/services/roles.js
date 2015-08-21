@@ -19,51 +19,74 @@
 
 'use strict';
 
-var roleServices = angular.module('roleServices', ['ngResource']);
- 
-roleServices.factory('roleFactory', ['$http','$cookies',
-    function($http, $cookies){
-    var dataFactory = {};
-    $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
+(function(angular) {
+    angular.module('roleServices', ['ngResource'])
+        .factory('roleFactory', ['$http','$cookies', _factory]);
 
-    dataFactory.getRoles = function(page, selected_categories, results_per_page, sort_order, filter, reverse) { 
-        var url = '/api/v1/roles/?page=' + page + '&page_size=' + results_per_page;
-        if (selected_categories.length > 0) {
-            for (var i in selected_categories) {
-                url += '&chain__categories__name=' + selected_categories[i];
+    function _factory($http, $cookies) {
+
+        $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
+
+        return {
+            getRoles: _getRoles,
+            getRolesTop: _getRolesTop,
+            getRole: _getRole,
+            getLatest: _getLatest,
+            deleteRole: _deleteRole,
+        };
+
+        function _getRoles(page, selected_categories, results_per_page, sort_order, filter, reverse, platform, release) {
+            var url = '/api/v1/roles/?page=' + page + '&page_size=' + results_per_page;
+            if (selected_categories.length > 0) {
+                for (var i in selected_categories) {
+                    url += '&chain__categories__name=' + selected_categories[i];
+                }
             }
-        }
-        if (filter && filter != '') {
-            url += '&name__icontains=' + filter;
-        }
-        if (reverse) {
-            var parts = sort_order.split(',')
-            for (var part in parts) {
-                parts[part] = '-' + parts[part];
+            if (filter && filter != '')
+                url += '&name__icontains=' + filter;
+
+            if (platform && release)
+                url += '&platforms__name=' + platform + '&platforms__release=' + release;
+            
+            if (reverse) {
+                var parts = sort_order.split(',')
+                for (var part in parts) {
+                    parts[part] = '-' + parts[part];
+                }
+                sort_order = parts.join(',');
             }
-            sort_order = parts.join(',');
-        }
-        url += '&order_by=' + sort_order
-        return $http.get(url);
-        };
-
-    dataFactory.getRole = function(id) {
-        return $http.get('/api/v1/roles/' + id + '/');
-        };
-    
-    dataFactory.getLatest = function(page, results_per_page, sort_order, reverse) {
-        if (reverse) {
-            sort_order = '-' + sort_order
-        }
-        return dataFactory.getRoles(page, [], results_per_page, sort_order);
-        };
-
-    dataFactory.deleteRole = function(id) {
-        var url = '/api/v1/roles/'+id+'/'
-        return $http.delete(url);
+            url += '&order_by=' + sort_order
+            return $http.get(url);
         }
 
-    return dataFactory;
-    
+        function _getRolesTop(page, results_per_page, sort_order, reverse) {
+            var url = '/api/v1/roles/top/?page=' + page + '&page_size=' + results_per_page;
+            if (reverse) {
+                var parts = sort_order.split(',')
+                for (var part in parts) {
+                    parts[part] = '-' + parts[part];
+                }
+                sort_order = parts.join(',');
+            }
+            url += '&order_by=' + sort_order
+            return $http.get(url);
+        }
+
+        function _getRole(id) {
+            return $http.get('/api/v1/roles/' + id + '/');
+        }
+
+        function _getLatest(page, results_per_page, sort_order, reverse) {
+            if (reverse) {
+                sort_order = '-' + sort_order
+            }
+            return dataFactory.getRoles(page, [], results_per_page, sort_order);
+        }
+
+        function _deleteRole(id) {
+            var url = '/api/v1/roles/'+id+'/'
+            return $http.delete(url);
+        }
     }
-    ]);
+
+})(angular);

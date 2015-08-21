@@ -7,11 +7,11 @@ Name: galaxy
 Summary: Galaxy: API, UI and Task Engine for ansible-galaxy
 Version: %(%{__python} -c "from galaxy import __version__; print(__version__.split('-')[0])")
 Release: %{?_pkgrelease}%{dist}
-Source0: https://github.com/downloads/ansible/ansible-commander/%{name}-%{version}.tar.gz
+Source0: https://github.com/downloads/ansible/galaxy/%{name}-%{version}.tar.gz
 
 Group: Development/Libraries
 License: GPLv3
-Url: http://github.com/ansible/ansible-commander
+Url: http://github.com/ansible/galaxy
 
 BuildArch: noarch
 %if 0%{?rhel} && 0%{?rhel} <= 5
@@ -31,8 +31,7 @@ Requires: supervisor
 
 %description
 
-Galaxy provides a web-based user interface, REST API and task engine built on
-top of Ansible.
+Galaxy - your hub for finding, reusing and sharing the best Ansible content. 
 
 
 %prep

@@ -25,115 +25,74 @@ var listControllers = angular.module('listControllers', ['Utilities', 'Search'])
 
 function from_query_params(data) {
     var result = {};
-
     result.list_filter = data.f;
     result.page = data.page;
     result.results_per_page = data.per_page;
     result.sort_order = data.sort_order;
     result.reverse = data.reverse;
     result.selected_categories = data.cats;
-
+    result.platform = data.platform;
+    result.release = data.release;
     return result;
 }
 
 function query_params(data) {
     var result = {};
 
-    if (data.list_filter) {
-        result.f = data.list_filter;
-    }
-
     result.page = data.page;
     result.per_page = data.results_per_page;
     result.sort_order = data.sort_order;
 
-    if (data.reverse) {
+    if (data.list_filter)
+        result.f = data.list_filter;
+    if (data.platform)
+        result.platform = data.platform;
+    if (data.release)
+        result.release = data.release;
+    if (data.reverse)
         result.reverse = data.reverse;
-    }
-
-    if (data.selected_categories) {
+    if (data.selected_categories)
         result.cats = data.selected_categories;
-    }
 
     return result;
 }
 
 listControllers.controller('RoleListCtrl', ['$scope','$routeParams','$location','$timeout','roleFactory','categoryFactory',
-'queryStorageFactory','my_info', 'Empty', 'SearchInit', 'PaginateInit',
-function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory, storageFactory, my_info, Empty, SearchInit, PaginateInit) {
-    
+    'queryStorageFactory','my_info', 'Empty', 'SearchInit', 'PaginateInit', 'platformService', _RoleListCtrl]);
+
+function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory, storageFactory,
+    my_info, Empty, SearchInit, PaginateInit, platformService) {
+
+    var AVG_SCORE_SORT = 'average_score,name';
+
     //$scope.orderby={ sort_order: 'owner__username,name' };
     $scope.page_title = 'Browse Roles';
     $scope.my_info = my_info;
-     
+
     $scope.list_data = {
         'list_filter'        : '',
         'num_pages'          : 1,
         'page'               : 1,
         'results_per_page'   : 10,
         'reverse'            : false,
+        'platform'           : '',
+        'release'            : '',
         'selected_categories': [],
         'sort_order'         : 'owner__username,name',
-        'refresh'            : function () {
-            storageFactory.save_state('role_list', query_params($scope.list_data));
-            $scope.list_data.sort_order = $scope.getSortOrder();  //Check if user changed sort order
-            $scope.loading = 1;
-            roleFactory.getRoles(
-                $scope.list_data.page,
-                $scope.list_data.selected_categories,
-                $scope.list_data.results_per_page,
-                $scope.list_data.sort_order,
-                $scope.list_data.list_filter,
-                $scope.list_data.reverse
-                )
-                .success(function (data) {
-                    $scope.roles = data['results'];
+        'refresh'            : _refresh
+    };
 
-                    $scope.list_data.page = parseInt(data['cur_page']);
-                    $scope.list_data.num_pages = parseInt(data['num_pages']);
-
-                    // Bug in API causes it to not return `cur_page` or `num_pages` when less than a single page of data in database
-                    // This causes the query to be cached with null values, which means subsequent requests return no data
-                    // Defaulting these values to 1 ensures we never cache the query with null values
-                    $scope.list_data.page = $scope.list_data.page || 1;
-                    $scope.list_data.num_pages = $scope.list_data.num_pages || 1;
-
-
-                    $scope.num_roles = parseInt(data['count']);
-                    $scope.list_data.page_range = [];
-    
-                    $scope.setPageRange();
-    
-                    $scope.status = "";
-                    storageFactory.save_state('role_list', query_params($scope.list_data));
-                    $scope.loading = 0;
-    
-                    // Force window back to the top
-                    window.scrollTo(0, 0);
-                    })
-                .error(function (error) {
-                    $scope.roles = [];
-                    $scope.list_data.page = 1;
-                    $scope.list_data.num_pages = 1;
-                    $scope.list_data.page_range = [1];
-                    $scope.num_roles = 0;
-                    $scope.status = 'Unable to load roles list: ' + error.message;
-                    $scope.loading = 0;
-                    });
-            }
-
-        };
- 
     $scope.page_range = [1];
     $scope.categories = [];
     $scope.roles = [];
     $scope.num_roles = 0;
     $scope.status = '';
 
-    $scope.loading = 0;
+    $scope.loading = 1;
     $scope.viewing_roles = 1;
     $scope.display_user_info = 1;
-    
+    $scope.disableReleases = true;
+
     PaginateInit({ scope: $scope });
 
     $scope.getCategories = function () {
@@ -157,29 +116,29 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
                 }
                 })
             .error( function (error) {
-                  
-                  // ERROR HANDLING!!! 
+
+                  // ERROR HANDLING!!!
 
                 });
-            };
+    };
 
     $scope.is_selected = function(item) {
         if ($scope.list_data.selected_categories.indexOf(item) != -1)
             return true;
-        else 
+        else
             return false;
-        }
-    
+    };
+
     // Category field tag change
     $scope.change_category = function() {
         $scope.list_data.selected_categories = $('#categories-select').select2('val');
         $scope.list_data.refresh();
-        }
+    };
 
     // User clicked on a tag link.
     $scope.pick_category = function(val) {
         var tags = '';
-        var found = false; 
+        var found = false;
         for (var i=0; i < $scope.list_data.selected_categories.length; i++) {
             if ($scope.list_data.selected_categories[i] == val) {
                found = true;
@@ -190,12 +149,7 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
            $scope.list_data.selected_categories.push(val);
            $('#categories-select').val($scope.list_data.selected_categories).trigger("change");
         }
-        }
-
-    $scope.toggle_reverse = function() {
-        $scope.list_data.reverse = !$scope.list_data.reverse;
-        $scope.list_data.refresh();
-        }
+    };
 
     $scope.toggle_category = function(item) {
         var pos = $scope.list_data.selected_categories.indexOf(item);
@@ -206,15 +160,40 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
         }
         $location.path('roles');
         $scope.list_data.refresh();
-        }
+    };
 
     $scope.clear_categories = function() {
         $location.path('roles');
         $scope.list_data.selected_categories = [];
         $scope.list_data.page = 1;
         $scope.list_data.refresh();
+    };
+
+    $scope.selectPlatform = function() {
+        $scope.list_data.platform = ($scope.sort.platform && $scope.sort.platform.value) ? $scope.sort.platform.value : null;
+        if ($scope.list_data.platform) {
+            $scope.disableReleases = false;
+            platformService.getReleases($scope.list_data.platform).then(function(data) {
+                $scope.releases = data;
+                $scope.sort.release = _pickRelease($scope.list_data.platform, $scope.releases);
+                $scope.list_data.release = $scope.sort.release.value;
+                $scope.list_data.refresh();
+            });
+        } else {
+            $scope.disableReleases = true;
+            $scope.releases = [];
+            $scope.list_data.release = '';
+            $scope.list_data.refresh();
         }
-    
+    };
+
+    $scope.selectRelease = function () {
+        if ($scope.sort.platform && $scope.sort.release) {
+            $scope.list_data.release = $scope.sort.release.value;
+            $scope.list_data.refresh();
+        }
+    }
+
     var restored_query = storageFactory
         .restore_state('role_list', query_params($scope.list_data));
 
@@ -235,34 +214,158 @@ function($scope, $routeParams, $location, $timeout, roleFactory, categoryFactory
             case 'sort-by-created-on-date':
                 $scope.list_data.sort_order = 'created';
                 $scope.list_data.reverse = true;
-                break;          
+                break;
         }
     }
 
-    SearchInit({ 
+    SearchInit({
         scope: $scope,
         placeHolder: 'Search role name',
         showSearchIcon: ($scope.list_data.list_filter) ? false : true,
         sortOptions: [
-            { value: 'name', label: 'Role Name' },
+            { value: AVG_SCORE_SORT, label: 'Average Score' },
+            { value: 'created', label: 'Created On Date' },
             { value: 'owner__username,name', label: 'Owner Name' },
-            { value: 'average_score,name', label: 'Average Score' },
-            { value: 'created', label: 'Create On Date' }
-            ],
+            { value: 'name', label: 'Role Name' }
+        ],
+        platforms: platformService.getPlatforms().then(function(data) {
+            $scope.platforms = data;
+        }),
+        releases: [],
         sortOrder: $scope.list_data.sort_order
-        });
+    });
 
     $scope.getCategories();
     $scope.list_data.refresh();
+
+    function _refresh(_change) {
+        $scope.loading = 1;
+
+        $scope.list_data.sort_order = $scope.getSortOrder();  //Check if user changed sort order
+
+        if (_change === 'SortOrderSelect' && $scope.list_data.sort_order === AVG_SCORE_SORT) {
+            // Sorting by Average Score should default to reverse (or descending) order
+            $scope.list_data.reverse = true;
+        }
+        else if (_change === 'SortOrderSelect') {
+            $scope.list_data.reverse = false;
+        }
+
+        storageFactory.save_state('role_list', query_params($scope.list_data));
+
+        roleFactory.getRoles(
+            $scope.list_data.page,
+            $scope.list_data.selected_categories,
+            $scope.list_data.results_per_page,
+            $scope.list_data.sort_order,
+            $scope.list_data.list_filter,
+            $scope.list_data.reverse,
+            $scope.list_data.platform,
+            $scope.list_data.release
+        ).success(_refreshSuccess).error(_refreshError);
+
+        function _refreshSuccess(data) {
+            _uniquePlatforms(data.results);
+            $scope.roles = data['results'];
+            $scope.list_data.page = parseInt(data['cur_page']);
+            $scope.list_data.num_pages = parseInt(data['num_pages']);
+
+            // Bug in API causes it to not return `cur_page` or `num_pages` when less than a single page of data in database
+            // This causes the query to be cached with null values, which means subsequent requests return no data
+            // Defaulting these values to 1 ensures we never cache the query with null values
+            $scope.list_data.page = $scope.list_data.page || 1;
+            $scope.list_data.num_pages = $scope.list_data.num_pages || 1;
+
+            $scope.num_roles = parseInt(data['count']);
+            $scope.list_data.page_range = [];
+
+            $scope.setPageRange();
+
+            $scope.status = "";
+            $scope.loading = 0;
+
+            // Force window back to the top
+            window.scrollTo(0, 0);
+        }
+
+        function _refreshError(error) {
+            $scope.roles = [];
+            $scope.list_data.page = 1;
+            $scope.list_data.num_pages = 1;
+            $scope.list_data.page_range = [1];
+            $scope.num_roles = 0;
+            $scope.status = 'Unable to load roles list: ' + error.message;
+            $scope.loading = 0;
+        }
     }
-    ]);
+
+    function _uniquePlatforms(roles) {
+        angular.forEach(roles, function(role) {
+            var dict = {};
+            angular.forEach(role.summary_fields.platforms, function(platform) {
+                dict[platform.name] = 0;
+            });
+            role.platforms = Object.keys(dict);
+        });
+    }
+
+    function _pickRelease(_platform, _releases) {
+        var suggested = '';
+        switch (_platform) {
+            case 'Ubuntu':
+                suggested = 'vivid';
+                break;
+            case 'Debian':
+                suggested = 'jessie';
+                break;
+            case 'EL':
+                suggested = '7';
+                break;
+            case 'Fedora':
+                suggested = '22';
+                break;
+            case 'Windows':
+                suggested = '2021R2';
+                break;
+            case 'SmartOS':
+                suggested = 'any';
+                break;
+            case 'opensuse':
+                suggested = '13.2';
+                break;
+            case 'Amazon':
+                suggested = '2013.09';
+                break;
+            case 'GenericBSD':
+                suggested = 'any';
+                break;
+            case 'FreeBSD':
+                suggested = '9.2';
+                break;
+            case 'SLES':
+                suggested = '11SP3';
+                break;
+            case 'GenericLinux':
+                suggested = 'any';
+                break;
+        }
+        var result = _releases[0];
+        angular.forEach(_releases, function(release) {
+            if (release.value === suggested) {
+                result = release;
+            }
+        });
+        return result;
+    }
+
+}
 
 listControllers.controller('RoleDetailCtrl', ['$q', '$scope','$routeParams','$location','$modal', '$compile', 'roleFactory','userFactory','ratingFactory',
 'meFactory', 'relatedFactory', 'my_info', 'Stars', 'PaginateInit',
 function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, userFactory, ratingFactory, meFactory, relatedFactory, my_info, Stars, PaginateInit) {
-    
+
     $scope.page_title = 'Role Detail';
-    $scope.showRoleName = false; 
+    $scope.showRoleName = false;
     $scope.my_info = my_info;
 
     $scope.list_data = {
@@ -285,11 +388,11 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         switch(itm) {
             case "avg_wow_factor":
                 label="Wow! Factor";
-                break; 
+                break;
             case "avg_documentation":
                 label="Documentation";
-                break; 
-            case "avg_reliability": 
+                break;
+            case "avg_reliability":
                 label="Reliability";
                 break;
             case "avg_code_quality":
@@ -302,7 +405,7 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
                 label="Ansible Score";
                 break;
         }
-        return label;  
+        return label;
     }
 
     $scope.role = {num_ratings: 0};
@@ -322,24 +425,26 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         var html = '<table>\n<tbody>\n';
         var set = data[setName];
         var score = (setName == 'average_composite') ? 'average_score' : 'average_aw_score';
-        set[score] = data[score];  //push the score into the set, so it gets stars 
+        set[score] = data[score];  //push the score into the set, so it gets stars
+        $scope[setName + '_model'] = 5;
 
         var k=0;
         for (var itm in set) {
             k++;
             var itm_value = parseFloat(set[itm]);
 
-            // Use the following to test actual floating points and create 1/2 stars 
+            // Use the following to test actual floating points and create 1/2 stars
             //itm_value += (k*2) / 10;
             //data[setName][itm] = itm_value;
-            
+
             $scope[setName + '_' + itm + '_ceil'] = Math.ceil(itm_value);
             $scope[setName + '_' + itm + '_states'] = [];
+            $scope[setName + '_' + itm + '_model'] = 5;
             for (var i=0; i < Math.floor(itm_value); i++) {
                 $scope[setName + '_' + itm + '_states'].push({ stateOn: 'fa fa-star', stateOff: 'fa fa-star-o' });
             }
             if (itm_value % 1 > 0) {
-                $scope[setName + '_' + itm + '_states'].push({stateOn: 'fa fa-star-half-o', stateOff: 'fa fa-star-half-o' });   
+                $scope[setName + '_' + itm + '_states'].push({stateOn: 'fa fa-star-half-o', stateOff: 'fa fa-star-half-o' });
             }
             // Fill in missing stars with empties
             for (var i=$scope[setName + '_' + itm + '_states'].length; i < 5; i++) {
@@ -350,9 +455,9 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         var label = getLabel(score);
         html += "<tr class=\"primary-score\"><td ng-mouseenter=\"startHover('" + setName + "', '" + score + "')\" " +
                 "ng-mouseleave=\"stopHover('" + setName + "', '" + score + "')\">" + label + "</td>\n";
-        html += "<td><rating value=\"5\" readonly=\"true\" rating-states=\"" + setName + "_" + score + "_states" + "\" " +
+        html += "<td><rating ng-model=\"" + setName + "_model\" readonly=\"true\" rating-states=\"" + setName + "_" + score + "_states" + "\" " +
             "on-hover=\"startHover('" + setName + "', '" + score + "')\" on-leave=\"stopHover('" + setName + "', '" + score + "')\"></rating>\n";
-        html += "<span class=\"badge\" ng-show=\"" + setName + '_' + score + '_over' + "\">{{ role" + '.' + score + " | number:1 }}</span>\n";
+        html += "<span class=\"badge\">{{ role" + '.' + score + " | number:1 }}</span>\n";
         html += "</td></tr>\n";
         delete set[score];
 
@@ -360,12 +465,12 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
             label = getLabel(itm);
             html += "<tr><td ng-mouseenter=\"startHover('" + setName + "', '" + itm + "')\" " +
                 "ng-mouseleave=\"stopHover('" + setName + "', '" + itm + "')\">" + label + "</td>\n";
-            
-            html += "<td><rating value=\"5\" readonly=\"true\" rating-states=\"" + setName + "_" + itm + "_states" + "\" " +
+
+            html += "<td><rating ng-model=\"" + setName + "_" + itm + "_model\" readonly=\"true\" rating-states=\"" + setName + "_" + itm + "_states" + "\" " +
                 "on-hover=\"startHover('" + setName + "', '" + itm + "')\" on-leave=\"stopHover('" + setName + "', '" + itm + "')\"></rating>\n";
-            
-            html += "<span class=\"badge\" ng-show=\"" + setName + '_' + itm + '_over' + "\">{{ role." + setName + '.' + itm + " | number:1 }}</span>\n";
-            html += "</td></tr>\n";       
+
+            html += "<span class=\"badge\">{{ role." + setName + '.' + itm + " | number:1 }}</span>\n";
+            html += "</td></tr>\n";
         }
         html += "</tbody>\n</table>\n";
         set[score]
@@ -375,18 +480,18 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         });
 
     $scope.startHover = function(set, itm) {
-        $scope[set + '_' + itm + '_' + 'over'] = true; 
+        $scope[set + '_' + itm + '_' + 'over'] = true;
         }
 
     $scope.stopHover = function(set, itm) {
-        $scope[set + '_' + itm + '_' + 'over'] = false; 
+        $scope[set + '_' + itm + '_' + 'over'] = false;
         }
 
     $scope.ratingHover = function(itm, label, flag) {
-        $scope[label + '_' + 'hover' + '_' + itm] = flag; 
+        $scope[label + '_' + 'hover' + '_' + itm] = flag;
         }
 
-    $scope.getRole = function() { 
+    $scope.getRole = function() {
         roleFactory.getRole($routeParams.role_id)
             .success( function(data) {
                 $scope.role = data;
@@ -413,7 +518,7 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         $scope.removeRelated();
     }
     $scope.removeRelated = $scope.$on('getRelated', function(e, target, url) {
-        $scope.list_data[target].url = url;  
+        $scope.list_data[target].url = url;
         relatedFactory.getRelated($scope.list_data[target])
             .success( function(data) {
                 $scope.list_data[target].page = parseInt(data['cur_page']);
@@ -428,7 +533,7 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
                     data['results'][i].documentation_range = Stars(data['results'][i].documentation);
                     data['results'][i].code_quality_range = Stars(data['results'][i].code_quality);
                     data['results'][i].wow_factor_range = Stars(data['results'][i].wow_factor);
-                    data['results'][i].score_range = Stars(data['results'][i].score);    
+                    data['results'][i].score_range = Stars(data['results'][i].score);
                 }
                 $scope[target] = data['results'];
                 })
@@ -442,20 +547,41 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
         $scope.role = role;
         if (rating) {
             $scope.rating = rating;
-        } 
+        }
         else {
             $scope.rating = {
-                'reliability': 0, 
-                'documentation': 0, 
-                'code_quality': 0, 
-                'wow_factor': 0, 
-                'comment': '', 
-                }
+                'reliability': 0,
+                'documentation': 0,
+                'code_quality': 0,
+                'wow_factor': 0,
+                'comment': '',
+            }
         }
+        _calcScore();
+
+        $scope.$watch('rating.reliability', function(newVal, oldVal){
+            if (newVal !== oldVal)
+                _calcScore();
+        });
+
+        $scope.$watch('rating.documentation', function(newVal, oldVal){
+            if (newVal !== oldVal)
+                _calcScore();
+        });
+
+        $scope.$watch('rating.code_quality', function(newVal, oldVal){
+            if (newVal !== oldVal)
+                _calcScore();
+        });
+
+        $scope.$watch('rating.wow_factor', function(newVal, oldVal){
+            if (newVal !== oldVal)
+                _calcScore();
+        });
 
         $scope.closeAlert = function(index) {
             $scope.alerts.splice(index, 1);
-            };
+        };
 
         $scope.ok = function () {
             if ($scope.rating.reliability == 0 ||
@@ -470,15 +596,15 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
                 }
             angular.extend(post_data, $scope.rating);
             ratingFactory.addRating(
-                role.related.ratings, 
+                role.related.ratings,
                 post_data
                 )
                 .success(function(data) {
                     $modalInstance.close(true);
-                    })
+                })
                 .error(function(data, status) {
                     var msg = '';
-                    console.log(status);
+                    console.error(status);
                     if (status == 403) {
                         msg = 'You do not have permission to add a rating to this role.';
                     } else if(status == 409) {
@@ -487,17 +613,26 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
                         msg = 'An unknown error occurred while trying to add your rating. Please wait a while and try again.';
                     }
                     $scope.alerts = [{type: 'danger','msg':msg}]
-                    });
-            };
+                });
+        };
 
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
+        };
+
+        function _calcScore() {
+            var avg = ($scope.rating.reliability + $scope.rating.documentation + $scope.rating.code_quality + $scope.rating.wow_factor) / 4;
+            $scope.score = {
+                value: Math.ceil(avg * 10) / 10,
+                score_range: Stars(avg)
             };
         }
 
+    }
+
     $scope.showRatingDialog = function() {
         if (!my_info.authenticated) return;
-        
+
         var modalInstance = $modal.open ({
             templateUrl: "/static/partials/add-rating.html",
             controller: ModalInstanceCtrl,
@@ -521,7 +656,7 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
                                     'comment': res.comment
                                     }
                                 d.resolve(rating);
-                            } 
+                            }
                             else {
                                 d.resolve(null);
                             }
@@ -566,12 +701,19 @@ function($q, $scope, $routeParams, $location, $modal, $compile, roleFactory, use
     ]);
 
 
-listControllers.controller('UserListCtrl', ['$scope','$timeout','$location','$routeParams', 'userFactory','queryStorageFactory','my_info', 'SearchInit',
-'PaginateInit', 'Stars',
-function($scope, $timeout, $location, $routeParams, userFactory, storageFactory, my_info, SearchInit, PaginateInit, Stars) {
-      
+listControllers.controller('UserListCtrl', [
+    '$scope','$timeout','$location','$routeParams', 'userFactory','queryStorageFactory','my_info', 'SearchInit',
+    'PaginateInit', 'Stars', _UserListCtrl]);
+
+function _UserListCtrl($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
+    my_info, SearchInit, PaginateInit, Stars) {
+
+    var AVG_SCORE_SORT = 'avg_role_score,username',
+        NUM_ROLES_SORT = 'num_roles,username',
+        NUM_RATINGS_SORT = 'num_ratings,username';
+
     $scope.page_title = 'Browse Users';
-    $scope.my_info = my_info; 
+    $scope.my_info = my_info;
 
     $scope.list_data = {
         'list_filter'        : '',
@@ -581,79 +723,23 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
         'reverse'            : false,
         'selected_categories': [],
         'sort_order'         : 'username',
-        'refresh'            : function() {
-            storageFactory.save_state('user_list', query_params($scope.list_data));
-            $scope.list_data.sort_order = $scope.getSortOrder();
-            console.log("sort order is " + $scope.list_data.sort_order);
-            $scope.loading = 1;
-            userFactory.getUsers(
-                $scope.list_data.page,
-                $scope.list_data.results_per_page,
-                $scope.list_data.sort_order,
-                $scope.list_data.reverse,
-                $scope.list_data.list_filter
-                )
-                .success( function (data) {
-                    for (var i=0; i < data['results'].length; i++) {
-                        data['results'][i].karma_range = Stars(data['results'][i].karma);
-                        data['results'][i].avg_rating_range = Stars(data['results'][i].avg_rating);
-                        data['results'][i].avg_role_score_range = Stars(data['results'][i].avg_role_score);
-                        data['results'][i].avg_role_aw_score_range = Stars(data['results'][i].avg_role_score);
-                        if (data['results'][i].summary_fields.ratings.length > 0) {
-                            data['results'][i].rating_range = Stars(data['results'][i].summary_fields.ratings[0].score);
-                        }
-                        else {
-                            data['results'][i].rating_range = Stars(0);
-                        }
-                    }
-                    if (data['results'].length) {
-                        $scope.users = angular.copy(data['results']);
-                    }
-                    $scope.list_data.page = parseInt(data['cur_page']);
-                    $scope.list_data.num_pages = parseInt(data['num_pages']);
-                    $scope.num_users = parseInt(data['count']);
-                    $scope.list_data.page_range = [];
-                    
-                    $scope.setPageRange();
-                    
-                    $scope.status = "";
-                    storageFactory.save_state('user_list', query_params($scope.list_data));
-                    $scope.loading = 0;
+        'refresh'            : _refresh
+    };
 
-                    // Force window back to the top
-                    window.scrollTo(0, 0);
-                    })
-                .error(function (error) {
-                    $scope.users = [];
-                    $scope.num_users = 0;
-                    $scope.list_data.page = 1;
-                    $scope.list_data.num_pages = 1;
-                    $scope.list_data.page_range = [1];
-                    $scope.status = 'Unable to load users list: ' + error.message;
-                    $scope.loading = 0;
-                    });
-            }
-        };
-  
     $scope.page_range = [1];
     $scope.categories = [];
     $scope.users = [];
     $scope.num_users = 0;
     $scope.status = '';
-    
-    $scope.loading = 0;
+
+    $scope.loading = 1;
     $scope.viewing_users = 1;
 
     PaginateInit({ scope: $scope });
 
     $scope.hover = function(idx, fld, val) {
         $scope[fld + '_hover_' + idx] = val;
-        }
-
-    $scope.toggle_reverse = function() {
-        $scope.list_data.reverse = !$scope.list_data.reverse;
-        $scope.list_data.refresh();
-        };
+    };
 
     var restored_query = storageFactory
         .restore_state('user_list', query_params($scope.list_data));
@@ -661,7 +747,7 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
     $scope.list_data = angular.extend({},
             $scope.list_data,
             from_query_params(restored_query));
-    
+
     if ($routeParams.sort_order) {
         switch ($routeParams.sort_order) {
             case 'sort-by-community-score':
@@ -672,31 +758,95 @@ function($scope, $timeout, $location, $routeParams, userFactory, storageFactory,
                 $scope.list_data.sort_order = 'date_joined,username';
                 $scope.list_data.reverse = true;
                 break;
-            case 'sort-by-top-reviewers': 
+            case 'sort-by-top-reviewers':
                 $scope.list_data.sort_order = 'karma,username';
                 $scope.list_data.reverse = true;
-                break;      
+                break;
         }
     }
-    
-    SearchInit({ 
+
+    SearchInit({
         scope: $scope,
         placeHolder: 'Search user',
         showSearchIcon: ($scope.list_data.list_filter) ? false : true,
         sortOptions: [
-            { value: 'username', label: 'Username' },
-            { value: 'karma,username', label: 'Karma Score' },
-            { value: 'avg_role_score,username', label: 'Average Role Score' },
-            { value: 'num_roles,username', label: 'Number of Roles' },
-            { value: 'date_joined,username', label: 'Date Joined' }
+            { value: AVG_SCORE_SORT, label: 'Average Role Score' },
+            { value: 'date_joined,username', label: 'Date Joined' },
+            { value: NUM_RATINGS_SORT, label: 'Number of Ratings' },
+            { value: NUM_ROLES_SORT, label: 'Number of Roles' },
+            { value: 'username', label: 'Username' }
             ],
         sortOrder: $scope.list_data.sort_order
-        });
+    });
 
     $scope.list_data.refresh();
 
+    return;
+
+
+    function _refresh(_change) {
+        $scope.list_data.sort_order = $scope.getSortOrder();
+        $scope.loading = 1;
+
+        if (_change === 'SortOrderSelect' &&
+            ($scope.list_data.sort_order === AVG_SCORE_SORT || $scope.list_data.sort_order === NUM_ROLES_SORT ||
+                $scope.list_data.sort_order === NUM_RATINGS_SORT)) {
+            // Sorting by Average Score ||s Number of Roles should default to reverse (or descending) order
+            $scope.list_data.reverse = true;
+        }
+        else if (_change === 'SortOrderSelect') {
+            $scope.list_data.reverse = false;
+        }
+
+        storageFactory.save_state('user_list', query_params($scope.list_data));
+
+        userFactory.getUsers(
+            $scope.list_data.page,
+            $scope.list_data.results_per_page,
+            $scope.list_data.sort_order,
+            $scope.list_data.reverse,
+            $scope.list_data.list_filter
+        ).success(_refreshSuccess).error(_refreshError);
+
+        function _refreshSuccess(data) {
+            for (var i=0; i < data['results'].length; i++) {
+                data['results'][i].karma_range = Stars(data['results'][i].karma);
+                data['results'][i].avg_rating_range = Stars(data['results'][i].avg_rating);
+                data['results'][i].avg_role_score_range = Stars(data['results'][i].avg_role_score);
+                data['results'][i].avg_role_aw_score_range = Stars(data['results'][i].avg_role_score);
+                if (data['results'][i].summary_fields.ratings.length > 0) {
+                    data['results'][i].rating_range = Stars(data['results'][i].summary_fields.ratings[0].score);
+                }
+                else {
+                    data['results'][i].rating_range = Stars(0);
+                }
+            }
+            $scope.users = data['results'];
+
+            $scope.list_data.page = parseInt(data['cur_page']);
+            $scope.list_data.num_pages = parseInt(data['num_pages']);
+            $scope.num_users = parseInt(data['count']);
+            $scope.list_data.page_range = [];
+            $scope.setPageRange();
+
+            $scope.status = "";
+            $scope.loading = 0;
+
+            // Force window back to the top
+            window.scrollTo(0, 0);
+        }
+
+        function _refreshError(error) {
+            $scope.users = [];
+            $scope.num_users = 0;
+            $scope.list_data.page = 1;
+            $scope.list_data.num_pages = 1;
+            $scope.list_data.page_range = [1];
+            $scope.status = 'Unable to load users list: ' + error.message;
+            $scope.loading = 0;
+        }
     }
-    ]);
+}
 
 
 listControllers.controller('UserDetailCtrl', ['$scope','$routeParams','$location','userFactory','ratingFactory','my_info', 'Range', 'relatedFactory', 'Empty',
@@ -705,8 +855,8 @@ function($scope, $routeParams, $location, userFactory, ratingFactory, my_info, R
 
     $scope.my_info = my_info;
     $scope.page_title = 'User Detail';
-    $scope.showRoleName = true; 
-    $scope.my_info = my_info; 
+    $scope.showRoleName = true;
+    $scope.my_info = my_info;
 
     $scope.list_data = {
         'roles' : {
@@ -738,9 +888,9 @@ function($scope, $routeParams, $location, userFactory, ratingFactory, my_info, R
     $scope.user = {'num_roles':0, 'num_ratings':0};
     $scope.roles = [];
     $scope.ratings = [];
-   
+
     PaginateInit({ scope: $scope });
- 
+
     // controls whether or not the role info
     // is displayed in the -display partials
     $scope.display_role_info = 1;
@@ -761,7 +911,7 @@ function($scope, $routeParams, $location, userFactory, ratingFactory, my_info, R
         };
 
     $scope.ratingHover = function(itm, label, flag) {
-        $scope[label + '_' + 'hover' + '_' + itm] = flag; 
+        $scope[label + '_' + 'hover' + '_' + itm] = flag;
         }
 
     $scope.addVote = function(id, direction) {
@@ -773,12 +923,12 @@ function($scope, $routeParams, $location, userFactory, ratingFactory, my_info, R
                 console.error("failed to add a "+direction+" vote on rating id=" + id);
                 });
     }
- 
+
     if ($scope.removeRelated) {
         $scope.removeRelated();
     }
     $scope.removeRelated = $scope.$on('refreshRelated', function(e, target, url) {
-        $scope.list_data[target].url = url;  
+        $scope.list_data[target].url = url;
         relatedFactory.getRelated($scope.list_data[target])
             .success( function(data) {
                 $scope.list_data[target].page = parseInt(data['cur_page']);
@@ -793,8 +943,8 @@ function($scope, $routeParams, $location, userFactory, ratingFactory, my_info, R
                         data['results'][i].reliability_range = Stars(data['results'][i].reliability);
                         data['results'][i].documentation_range = Stars(data['results'][i].documentation);
                         data['results'][i].code_quality_range = Stars(data['results'][i].code_quality);
-                        data['results'][i].wow_factor_range = Stars(data['results'][i].wow_factor);  
-                        data['results'][i].score_range = Stars(data['results'][i].score); 
+                        data['results'][i].wow_factor_range = Stars(data['results'][i].wow_factor);
+                        data['results'][i].score_range = Stars(data['results'][i].score);
                     }
                 }
                 $scope[target] = data['results'];
@@ -825,7 +975,6 @@ function($scope, $routeParams, $location, userFactory, ratingFactory, my_info, R
         };
 
     $scope.getUser();
-    
+
     }
     ]);
-

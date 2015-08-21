@@ -1,0 +1,94 @@
+/*
+ * intro_page.less
+ */
+
+ #galaxy-intro-page {
+     margin-top: 30px;
+     margin-bottom: 30px;
+
+     h2 {
+         margin-top: 0;
+     }
+     h3, h4 {
+         margin-top:30px;
+     }
+     h5 {
+         margin-top: 20px;
+         font-weight: bold;
+     }
+     pre {
+         margin: 15px 0 20px 0;
+     }
+
+     .galaxy-intro-links {
+         z-index: +1;
+         width: 264px;
+         background-color: #f2f2f2;
+         padding: 20px 15px;
+         border-radius: 2px;
+         border: 1px solid #ccc;
+         .nav > li > a:hover {
+             background-color: @white;
+             border-radius: 2px;
+         }
+         .pad {
+             padding-left: 15px;
+         }
+
+         .back-to-top-link > a,
+         .back-to-top-link > a:hover,
+         .back-to-top-link > a:active,
+         .back-to-top-link > a:visited {
+             color: #848992;
+         }
+     }
+
+     .galaxy-nav-title {
+         padding-left: 15px;
+         font-size: 15px;
+         color: #848992;
+         hr {
+             border-color: #ccc;
+             padding: 0;
+             margin-top: 10px;
+             margin-bottom: 10px;
+         }
+     }
+
+     .intro-content {
+         overflow-y: hidden;
+     }
+ }
+
+ @media (max-width: 1120px) {
+    #galaxy-intro-page {
+        .galaxy-intro-links {
+            width: 240px;
+        }
+    }
+ }
+
+ @media (min-width: 1250px) {
+    #galaxy-intro-page {
+        .galaxy-intro-links {
+            width: 240px;
+        }
+        .col-lg-3 {
+            width: 20%;
+        }
+        .col-lg-9 {
+            width: 80%;
+        }
+    }
+ }
+
+ @media (min-width: 1650px) {
+    #galaxy-intro-page {
+        .col-lg-3 {
+            width: 15%;
+        }
+        .col-lg-9 {
+            width: 85%;
+        }
+    }
+ }

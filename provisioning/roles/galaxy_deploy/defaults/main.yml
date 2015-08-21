@@ -1,0 +1,36 @@
+galaxy_dist_dir: "/tmp"
+galaxy_site_name: "galaxy.local"
+galaxy_site_env: "PROD"
+galaxy_send_email: True
+galaxy_log_dir: "/var/log/galaxy"
+galaxy_site_aliases: []
+
+# Apache configuration settings
+galaxy_ssl_cert: "/etc/pki/tls/certs/localhost.crt"
+galaxy_ssl_key: "/etc/pki/tls/private/localhost.key"
+galaxy_ssl_cachain: ""
+
+# email
+galaxy_email_hostname: "email-smtp.us-east-1.amazonaws.com"
+galaxy_email_port: 587
+galaxy_email_username: ""
+galaxy_email_password: ""
+
+# rabbitmq
+galaxy_rabbit_hostname: "localhost"
+galaxy_rabbit_port: 5672
+galaxy_rabbit_vhost: "/galaxy"
+galaxy_rabbit_username: "galaxy"
+galaxy_rabbit_password: ""
+
+# Github
+galaxy_github_api_username: ""
+galaxy_github_api_password: ""
+galaxy_github_api_token: ""
+
+# Postgresql
+galaxy_postgresql_dbname: "galaxy"
+galaxy_postgresql_username: "galaxy"
+galaxy_postgresql_password: ""
+galaxy_postgresql_hostname: "127.0.0.1"
+galaxy_postgresql_port: ""

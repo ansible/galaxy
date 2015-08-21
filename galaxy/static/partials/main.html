@@ -1,57 +1,71 @@
-<div class="container explore">
-        
-    <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
-        
+<ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
+
+<div class="container" id="galaxy-explore-page">
+
     <div class="row table-row">
-        <div class="col-lg-4">
+        <div class="col-lg-4 load-container">
             <!-- Top Categories -->
-            <table class="table table-condensed table-hover">
+            <table class="table ga-table-striped">
                <caption>Top Categories</caption>
                <thead>
                <tr>
                    <th>Category</th>
-                   <th class="text-right">Total Roles</th>
+                   <th class="text-right"># Roles</th>
                </tr>
                </thead>
                <tbody>
                <tr ng-repeat="category in categories.data">
-                   <td><a href="/list#/roles/category/{{category.name}}">{{ category.name }}</a></td>
+                   <td><a href="list#/roles?page=1&per_page=10&sort_order=owner__username,name&cats={{category.name}}">{{ category.name }}</a></td>
                    <td class="text-right">{{category.num_roles}}</td>
                </tr>
-               <tr><td colspan="2" style="padding-top: 15px;"><a ng-href="{{ categories.more_link }}">View more...</a></td></tr>
                </tbody>
             </table>
+            <div ng-show="!loading.categories" class="view-more-container">
+                <a ng-href="{{ categories.more_link }}" class="btn btn-default btn-xs">View More</a>
+            </div>
+            <div ng-show="loading.categories" class="loader">
+                <div class="loader-inner line-scale">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-4">
-            <table class="table table-condensed table-hover">
+        <div class="col-lg-4 load-container">
+            <table class="table ga-table-striped">
                <caption>Top Roles</caption>
                <thead>
                <tr>
                    <th>Role</th>
-                   <th class="text-right nowrap"><a href="" ng-click="toggle_item(top_roles, 'num_ratings')"># Ratings
-                       <i class="fa fa-caret-down" ng-show="top_roles.sort_col == 'num_ratings'"></i>
-                       <i class="fa fa-sort" ng-show="top_roles.sort_col !== 'num_ratings'"></i>
-                       </a>
-                   </th>
-                   <th class="text-right nowrap"><a href="" ng-click="toggle_item(top_roles, 'average_score')">Score
-		       <i class="fa fa-caret-down" ng-show="top_roles.sort_col == 'average_score'"></i>
-                       <i class="fa fa-sort" ng-show="top_roles.sort_col !== 'average_score'"></i>
-                       </a>
-                   </th>
+                   <th class="text-right nowrap"># Ratings</th>
+                   <th class="text-right nowrap">Score</th>
                </tr>
                </thead>
                <tbody>
-               <tr ng-repeat="role in top_roles.data | orderBy:top_roles.sort_col:top_roles.reverse">
+               <tr ng-repeat="role in top_roles.data">
                    <td><span class="clip"><a href="/list#/roles/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
-                   <td class="text-right">{{role.summary_fields.ratings.length}}</td>
-                   <td class="text-right">{{role.average_score|number:2}}</td>
+                   <td class="text-right">{{role.num_ratings | number:0}}</td>
+                   <td class="text-right">{{role.average_score | number:2}}</td>
                </tr>
-               <tr><td colspan="3" style="padding-top: 15px;"><a ng-href="{{top_roles.more_link}}">View more...</a></td></tr>
                </tbody>
             </table>
+            <div ng-show="!loading.topRoles" class="view-more-container">
+                <a ng-href="{{top_roles.more_link}}" class="btn btn-default btn-xs">View More</a>
+            </div>
+            <div ng-show="loading.topRoles" class="loader">
+                <div class="loader-inner line-scale">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-4">
-            <table class="table table-condensed table-hover">
+        <div class="col-lg-4 load-container">
+            <table class="table ga-table-striped">
                <caption>New Roles</caption>
                <thead>
                <tr>
@@ -60,78 +74,92 @@
                </tr>
                </thead>
                <tbody>
-               <tr ng-repeat="role in new_roles.data | orderBy:new_roles.sort_col:new_roles.reverse">
+               <tr ng-repeat="role in new_roles.data">
                    <td><span class="clip"><a href="/list#/roles/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
                    <td class="text-right">{{role.created|date:'dd MMM, yyyy'}}</td>
                </tr>
-               <tr><td colspan="2" style="padding-top: 15px;"><a ng-href="{{new_roles.more_link}}">View more...</a></td></tr>
                </tbody>
             </table>
-            <div class="button-row text-right">
-               <a class="btn btn-sm btn-primary" href="/list#/roles">View All Roles</a>
+            <div ng-show="!loading.newRoles" class="view-more-container">
+                <a ng-href="{{new_roles.more_link}}" class="btn btn-default btn-xs">View More</a>
+            </div>
+            <div ng-show="loading.newRoles" class="loader">
+                <div class="loader-inner line-scale">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
             </div>
         </div>
     </div> <!-- row -->
-    
+
+    <div class="button-row text-right">
+       <a class="btn btn-sm btn-primary" href="/list#/roles">View All Roles</a>
+    </div>
+
     <div class="row table-row">
-        <div class="col-lg-4">
-            <table class="table table-condensed table-hover">
+        <div class="col-lg-4 load-container">
+            <table class="table ga-table-striped">
                 <caption>Top Users</caption>
                 <thead>
                 <tr>
                     <th>Username</th>
-                    <th class="text-right nowrap"><a href ng-click="toggle_item(top_users, 'num_roles')"># Roles
-		       <i class="fa fa-caret-down" ng-show="top_users.sort_col == 'num_roles'"></i>
-                       <i class="fa fa-sort" ng-show="top_users.sort_col !== 'num_roles'"></i>
-                       </a>
-                    </th>
-                    <th class="text-right nowrap"><a href ng-click="toggle_item(top_users, 'avg_role_score')">Score
-                       <i class="fa fa-caret-down" ng-show="top_users.sort_col == 'avg_role_score'"></i>
-                       <i class="fa fa-sort" ng-show="top_users.sort_col !== 'avg_role_score'"></i>
-                       </a>
-                    </th>
+                    <th class="text-right nowrap"># Roles</th>
                  </tr>
                  </thead>
                  <tbody>
-                 <tr ng-repeat="user in top_users.data | orderBy:top_users.sort_col:top_users.reverse">
+                 <tr ng-repeat="user in top_users.data">
                      <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
-                     <td class="text-right">{{ user.num_roles }}</td>
-                     <td class="text-right">{{user.avg_role_score|number:2}}</td>
+                     <td class="text-right">{{ user.num_roles | number:0 }}</td>
                  </tr>
-                 <tr><td colspan="3" style="padding-top: 15px;"><a ng-href="{{ top_users.more_link }}">View more...</a></td></tr>
                  </tbody>
             </table>
+            <div ng-show="!loading.topUsers" class="view-more-container">
+                <a ng-href="{{top_users.more_link}}" class="btn btn-default btn-xs">View More</a>
+            </div>
+            <div ng-show="loading.topUsers" class="loader">
+                <div class="loader-inner line-scale">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-4">
-            <table class="table table-condensed table-hover">
+        <div class="col-lg-4 load-container">
+            <table class="table ga-table-striped">
                 <caption>Top Reviewers</caption>
                 <thead>
                 <tr>
                     <th>Username</th>
-                    <th class="text-right nowrap"><a href ng-click="toggle_item(top_reviewers, 'num_ratings')"># Reviews
-                       <i class="fa fa-caret-down" ng-show="top_reviewers.sort_col == 'num_ratings'"></i>
-                       <i class="fa fa-sort" ng-show="top_reviewers.sort_col !== 'num_ratings'"></i>
-                       </a>
-                    </th>
-                    <th class="text-right nowrap"><a href ng-click="toggle_item(top_reviewers, 'karma')">Karma
-                       <i class="fa fa-caret-down" ng-show="top_reviewers.sort_col == 'karma'"></i>
-                       <i class="fa fa-sort" ng-show="top_reviewers.sort_col !== 'karma'"></i>
-                       </a>
-                    </th>
+                    <th class="text-right nowrap"># Reviews</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="user in top_reviewers.data | orderBy:top_reviewers.sort_col:top_reviewers.reverse">
+                <tr ng-repeat="user in top_reviewers.data">
                     <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
                     <td class="text-right">{{ user.num_ratings | number:0 }}</td>
-                    <td class="text-right">{{ user.karma | number:0 }}</td>
                 </tr>
-                <tr><td colspan="3" style="padding-top: 15px;"><a ng-href="{{ top_reviewers.more_link }}">View more...</a></td></tr>
                 </tbody>
             </table>
+            <div ng-show="!loading.topReviewers" class="view-more-container">
+                <a ng-href="{{top_reviewers.more_link}}" class="btn btn-default btn-xs">View More</a>
+            </div>
+            <div ng-show="loading.topReviewers" class="loader">
+                <div class="loader-inner line-scale">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-4">
-            <table class="table table-condensed table-hover">
+        <div class="col-lg-4 load-container">
+            <table class="table ga-table-striped">
                 <caption>New Users</caption>
                 <thead>
                 <tr>
@@ -140,32 +168,29 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="user in new_users.data | orderBy:new_users.sort_col:new_users.reverse">
+                <tr ng-repeat="user in new_users.data">
                     <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
                     <td class="text-right">{{ user.date_joined | date:'dd MMM, yyyy' }}</td>
                 </tr>
-                <tr><td colspan="2" style="padding-top: 15px;"><a ng-href="{{ new_users.more_link }}">View more...</a></td></tr>
                 </tbody>
             </table>
-            <div class="button-row text-right">
-               <a class="btn btn-sm btn-primary" href="/list#/users">View All Users</a>
+            <div ng-show="!loading.newUsers" class="view-more-container">
+                <a ng-href="{{new_users.more_link}}" class="btn btn-default btn-xs">View More</a>
+            </div>
+            <div ng-show="loading.newUsers" class="loader">
+                <div class="loader-inner line-scale">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
             </div>
         </div>
     </div>
-    
-    <!--
-    <div class="well users-table">
-        <h4>User Rankings</h4> 
-        <div class="row">
-           <div class="col-lg-4 blurb blurb-first" ng-include="'/static/partials/main-top-users.html'"></div>
-           <div class="col-lg-4 blurb" ng-include="'/static/partials/main-top-reviewers.html'"></div>
-           <div class="col-lg-4 blurb blurb-last" ng-include="'/static/partials/main-new-users.html'"></div>
-       </div>
-       <div class="row button-row">
-           <div class="col-lg-12">
-               <a class="btn btn-sm btn-success pull-right" href="/list#/users">View All Users</a>
-           </div>
-       </div>
+
+    <div class="button-row text-right">
+       <a class="btn btn-sm btn-primary" href="/list#/users">View All Users</a>
     </div>
-  -->
+
 </div> <!-- container -->

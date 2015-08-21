@@ -1,0 +1,31 @@
+{
+  "name": "galaxy",
+  "version": "0.0.0",
+  "description": "Find, reuse and share the best Ansible content",
+  "main": "\\",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ansible/galaxy.git"
+  },
+  "keywords": [
+    "Galaxy",
+    "Ansible",
+    "Ansibleworks"
+  ],
+  "author": "Chris Houseknecht",
+  "license": "Commercial",
+  "bugs": {
+    "url": "https://github.com/ansible/galaxy/issues"
+  },
+  "devDependencies": {
+    "less": "~2.5.1",
+    "gulp": "~3.9.0",
+    "gulp-less": "~3.0.3",
+    "gulp-dest": "~0.2.2",
+    "gulp-watch": "~4.3.4",
+    "gulp-batch": "~1.0.5"
+  }
+}

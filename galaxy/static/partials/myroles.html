@@ -1,14 +1,14 @@
-<div class="row">
+<div class="row" id="galaxy-my-roles">
     <div class="col-lg-12">
-        <table class="table table-condensed ga-table-striped table-hover user-list-table">
+        <table class="table table-condensed">
         <thead>
         <tr>
             <th>Role</th>
             <th>Versions</th>
             <th>Categories</th>
-            <th class="col-lg-3">Description</th>
-            <th class="col-lg-2">Import Status <a><span tooltip-trigger="mouseenter" tooltip-placement="bottom" tooltip-append-to-body=true tooltip="Import tasks run in the background. This column shows the status of the background tasks related to your role."><i class="fa fa-question-circle"></i></span></a></th>
-            <th>Actions</th>
+            <th>Description</th>
+            <th>Import Status <span tooltip-trigger="mouseenter" tooltip-placement="bottom" tooltip-append-to-body=true tooltip="Import tasks run in the background. This column shows the status of the background tasks related to your role."><i class="fa fa-question-circle"></i></span></th>
+            <th class="text-right">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -25,18 +25,18 @@
                     <span ng-switch-when="FAILED">FAILED:<br />{{role.import.status_message}}</span>
                     <span ng-switch-when="">Import task pending.</span>
                 </td>
-                <td>
+                <td class="role-actions text-right">
                     <div>
-                        <a style="width: 80px; margin-bottom: 5px;" class="btn btn-default btn-xs" href="/accounts/role/refresh/{{ role.id }}"><i class="fa fa-refresh"></i> Re-import</a><br />
+                        <a class="btn btn-default btn-xs" href="/accounts/role/refresh/{{ role.id }}"><i class="fa fa-refresh"></i> Re-import</a><br />
                     </div>
-                    <div ng-show="role.active && role.is_valid" style="width: 80px; margin-bottom: 5px;">
-                        <a class="btn btn-warning btn-block btn-xs" href="/accounts/role/deactivate/{{ role.id }}"><i class="fa fa-minus-circle"></i> Deactivate</a>
+                    <div ng-show="role.active && role.is_valid">
+                        <a class="btn btn-warning btn-xs" href="/accounts/role/deactivate/{{ role.id }}"><i class="fa fa-minus-circle"></i> Deactivate</a>
                     </div>
-                    <div ng-show="!role.active && role.is_valid" style="width: 80px; margin-bottom: 5px;">
-                        <a class="btn btn-success btn-block btn-xs" href="/accounts/role/reactivate/{{ role.id }}"><i class="fa fa-wrench"></i> Reactivate</a>
+                    <div ng-show="!role.active && role.is_valid">
+                        <a class="btn btn-success btn-xs" href="/accounts/role/reactivate/{{ role.id }}"><i class="fa fa-wrench"></i> Reactivate</a>
                     </div>
-                    <div ng-show="!role.active || !role.is_valid" style="width: 80px; margin-bottom: 5px;">
-                        <a class="btn btn-danger btn-block btn-xs" href="/accounts/role/delete/{{ role.id }}"><i class="fa fa-trash-o"></i> Delete</a>
+                    <div ng-show="!role.active || !role.is_valid">
+                        <a class="btn btn-danger btn-xs" href="/accounts/role/delete/{{ role.id }}"><i class="fa fa-trash-o"></i> Delete</a>
                     </div>
                 </td>
             </tr>

@@ -1,0 +1,8 @@
+- name: install authorized_keys
+  authorized_key:
+    state: 'present'
+    user: '{{ ansible_ssh_user }}'
+    key: "{{ lookup('file', item) }}"
+  with_fileglob:
+    - '*.keys'
+  when: authorized_keys is defined

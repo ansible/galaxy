@@ -1,0 +1,63 @@
+/*
+ * table.less
+ */
+
+ /*
+  * Override bootstrap table styles
+  */
+ .table {
+     margin-bottom: 0;
+
+     thead {
+         background-color: @ansible-dark-grey;
+         border-bottom: none;
+         tr {
+             broder-bottom: none;
+             th {
+                 border-bottom-width: 0;
+
+                 .fa-question-circle {
+                     color: #e1e1e1;
+                     margin-left: 5px;
+                 }
+             }
+         }
+     }
+     th {
+         color: @white;
+         font-weight: normal;
+         border-bottom-width: 0;
+     }
+     th:first-of-type {
+         border-top-left-radius: 2px;
+     }
+     th:last-of-type {
+         border-top-right-radius: 2px;
+     }
+     tbody {
+         border-top: none;
+     }
+     tbody>tr:first-of-type {
+         border-top: none;
+     }
+     tbody>tr:first-of-type>td {
+         border-top: none;
+     }
+ }
+
+ table caption {
+     font-weight: normal;
+     font-size: 16px;
+     margin-bottom: 10px;
+ }
+
+ /* Galaxy table striping and padding. Use in place of TB table-striped
+    to fix FF disappearing border issue. */
+ .ga-table-striped {
+     tbody>tr:nth-child(odd) {
+             background-color: #f9f9f9;
+     }
+     tbody>tr:nth-child(even) {
+             background-color: @white;
+     }
+ }

@@ -100,7 +100,7 @@ class PrimordialModel(models.Model, DirtyMixin):
 
     def mark_active(self, save=True):
         '''
-        If previously marked inactive, this function reverses the 
+        If previously marked inactive, this function reverses the
         renaming and sets the active flag to true
         '''
 
@@ -138,7 +138,7 @@ class CommonModelNameNotUnique(PrimordialModel):
 
 class Category(CommonModel):
     '''
-    a class represnting the valid categories (formerly tags) that can be 
+    a class represnting the valid categories (formerly tags) that can be
     assigned to a role
     '''
     class Meta:
@@ -184,7 +184,7 @@ class UserAlias(models.Model):
     )
     alias_name = models.CharField(
         # must be in-sync with galaxy/accounts/models.py:CustomUser
-        max_length   = 30, 
+        max_length   = 30,
         unique       = True,
     )
 
@@ -193,7 +193,7 @@ class UserAlias(models.Model):
 
 class Role(CommonModelNameNotUnique):
     ''' a class representing a user role '''
-    
+
     class Meta:
         unique_together = ('owner','name')
 
@@ -245,7 +245,7 @@ class Role(CommonModelNameNotUnique):
         verbose_name = "Github Repository",
     )
     readme = models.TextField(
-        blank=True, 
+        blank=True,
         default='',
     )
     min_ansible_version = models.CharField(
@@ -255,9 +255,9 @@ class Role(CommonModelNameNotUnique):
         verbose_name = "Minimum Ansible Version Required",
     )
     issue_tracker_url = models.CharField(
-        max_length   = 256, 
+        max_length   = 256,
         blank        = True,
-        null         = True, 
+        null         = True,
         verbose_name = "Issue Tracker URL",
     )
     license = models.CharField(
@@ -266,9 +266,9 @@ class Role(CommonModelNameNotUnique):
         verbose_name = "License (optional)",
     )
     company = models.CharField(
-        max_length   = 50, 
+        max_length   = 50,
         blank        = True,
-        null         = True, 
+        null         = True,
         verbose_name = "Company Name (optional)",
     )
     is_valid = models.BooleanField(
@@ -309,26 +309,32 @@ class Role(CommonModelNameNotUnique):
         return self.ratings.filter(active=True).aggregate(avg=AvgWithZeroForNull('score'))['avg'] or 0
 
     def get_average_composite(self):
-        return self.ratings.filter(active=True).aggregate(
-                   avg_reliability   = AvgWithZeroForNull('reliability'),
-                   avg_documentation = AvgWithZeroForNull('documentation'),
-                   avg_code_quality  = AvgWithZeroForNull('code_quality'),
-                   avg_wow_factor    = AvgWithZeroForNull('wow_factor'),
-               )
+        avg = self.ratings.filter(active=True).aggregate(
+            avg_reliability   = AvgWithZeroForNull('reliability'),
+            avg_documentation = AvgWithZeroForNull('documentation'),
+            avg_code_quality  = AvgWithZeroForNull('code_quality'),
+            avg_wow_factor    = AvgWithZeroForNull('wow_factor'),
+        )
+        for k in avg:
+            avg[k] = avg[k] if avg[k] is not None else 0
+        return avg;
 
     def get_num_aw_ratings(self):
         return self.ratings.filter(owner__is_staff=True, active=True).count()
-        
+
     def get_average_aw_score(self):
         return self.ratings.filter(owner__is_staff=True, active=True).aggregate(avg=AvgWithZeroForNull('score'))['avg'] or 0
 
     def get_average_aw_composite(self):
-        return self.ratings.filter(owner__is_staff=True, active=True).aggregate(
+        avg = self.ratings.filter(owner__is_staff=True, active=True).aggregate(
                    avg_reliability   = AvgWithZeroForNull('reliability'),
                    avg_documentation = AvgWithZeroForNull('documentation'),
                    avg_code_quality  = AvgWithZeroForNull('code_quality'),
                    avg_wow_factor    = AvgWithZeroForNull('wow_factor'),
                )
+        for k in avg:
+            avg[k] = avg[k] if avg[k] is not None else 0
+        return avg
 
 class RoleVersion(CommonModelNameNotUnique):
     class Meta:
@@ -495,7 +501,7 @@ class RoleRating(PrimordialModel):
         if len(self.comment) > 5000:
             self.comment = self.comment[:5000]
 
-        # the value of score is based on the 
+        # the value of score is based on the
         # values in the other rating fields
         self.score = (
             self.reliability + \

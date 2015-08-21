@@ -1,0 +1,88 @@
+/*
+ * role_detail.less
+ *
+ */
+
+ #galaxy-role-detail {
+
+    margin-bottom: 30px;
+
+    .rolename { margin-top: 0; }
+
+    .user-info {
+        display: inline-block;
+        text-align: center;
+        img { border-radius: 2px; }
+        .username {
+            font-size: 16px;
+            padding: 5px 0 5px 0;
+        }
+    }
+
+    .description {
+        margin-top: 20px;
+        margin-bottom: 30px;
+        color: @charcoal;
+    }
+
+    .documentation .row {
+        margin-top: 20px;
+    }
+
+    .documentation .row:first-of-type {
+        margin-top: 0;
+    }
+
+    .rating-section {
+        margin-top: 10px;
+        margin-bottom: 30px;
+    }
+    .actions {
+        margin-bottom: 30px;
+    }
+
+    .platforms, .versions {
+        td, th {
+            width: 50%;
+        }
+    }
+
+    .table-scroller {
+        height: 300px;
+        overflow-y: auto;
+    }
+
+    .readme {
+        h1 {
+            color: @blue;
+        }
+        h2 {
+            color: @black;
+            margin-top: 15px;
+        }
+        h3 {
+            color: @ansible-dark-grey;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            th {
+                padding: 0.4em 0.8em;
+                border: 1px solid black;
+            }
+            td {
+                padding: 0.8em;
+                border: 1px solid black;
+            }
+        }
+        pre {
+            overflow: auto;
+            word-break: inherit;
+            word-wrap: inherit;
+            code {
+                white-space: pre;
+                overflow: initial;
+            }
+        }
+    }
+}

@@ -1,0 +1,32 @@
+---
+- name: Check for the tar file
+  shell: ls -1 {{ galaxy_dist_dir }}/galaxy-*.tar.gz
+  register: app_tar
+
+- name: Install the Galaxy app
+  pip: name={{ app_tar.stdout }}
+
+- name: configure galaxy public/static directory
+  file: path=/var/lib/galaxy/public/static state=directory mode=0755
+
+- name: deploy settings file
+  template: src=settings.py.j2 dest=/etc/galaxy/settings.py owner=root group=galaxy_manage mode=0660
+
+- name: create the SECRET_KEY file
+  command: /usr/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)" creates=/etc/galaxy/SECRET_KEY
+
+- name: adjust SECRET_KEY permissions
+  file: path=/etc/galaxy/SECRET_KEY state=file owner=root group=galaxy_manage mode=0660
+
+- name: deploy apache configuration file
+  template: src=galaxy.conf.j2 dest=/etc/httpd/conf.d/galaxy.conf
+
+- name: Make migrations
+  command: galaxy-manage makemigrations --noinput
+
+- name: Apply migrations
+  command: galaxy-manage migrate --noinput
+
+- name: Collect galaxy static files
+  command: galaxy-manage collectstatic --clear --noinput
+  notify: restart apache

@@ -44,15 +44,15 @@ rebase:
 push:
 	git push origin master
 
-# Install third-party requirements needed for development environment (using
-# locally downloaded packages).
+# Install third-party requirements needed for development environment 
 requirements:
 	@if [ "$(VIRTUAL_ENV)" ]; then \
-	    (cd requirements && pip install --no-index -r dev_local.txt); \
+	    pip install distribute==0.7.3; \
+	    pip install -r requirements/dev.txt; \
 	    $(PYTHON) fix_virtualenv_setuptools.py; \
-	else \
-	    (cd requirements && sudo pip install --no-index -r dev_local.txt); \
-	fi
+        else \
+	    sudo pip install -r requirements/dev.txt; \
+        fi
 
 # Install third-party requirements needed for development environment
 # (downloading from PyPI if necessary).

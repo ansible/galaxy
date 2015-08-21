@@ -1,0 +1,129 @@
+/*
+ * Home page banner
+ */
+
+ #galaxy-banner {
+     position: relative;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 370px;
+     overflow: hidden;
+     background-image: url(../img/galaxy-bg.jpg);
+     background-color: @black;
+     background-repeat: no-repeat;
+     color: @white;
+
+     .galaxy-banner-inner {
+         width:100%;
+         height: 370px;
+         background-color: @black;
+         opacity: .5;
+     }
+
+     .title-text {
+         position: absolute;
+         left: 30px;
+         top: 20%;
+         dispaly: inline-block;
+         width: 40%;
+         margin-top: auto;
+     }
+
+     .login-text {
+        position: absolute;
+        top: 25%;
+        left: 50%;
+        width: 50%;
+        text-align: center;
+        color: @white;
+        .login-title {
+            a {
+                color: @white;
+            }
+            a:active, a:visited {
+                color: @white;
+            }
+        }
+        .github-icon {
+            text-align: center;
+            a {
+                color: @white;
+            }
+            a:active, a:hover, a:visited {
+                color: @white;
+            }
+        }
+        .alternate-signin {
+            display: inline-block;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 20px;
+            color: @ansible-color;
+            a, a:active, a:visited {
+                color: @ansible-color;
+            }
+            a:hover {
+                color: @white;
+            }
+        }
+     }
+
+     h2 {
+         font-weight: 300;
+         font-size: 24px;
+     }
+     h1 {
+         font-weight: 300;
+         font-size: 28px;
+         line-height: 46px;
+     }
+ }
+
+ @media (max-width: 768px) {
+     #galaxy-banner {
+         .title-text {
+             position: absolute;
+             top: 15px;
+             left: 0;
+             padding-left: 0;
+             text-align: center;
+             width: 100%;
+             padding: 0 15px;
+         }
+
+         .login-text {
+             position: absolute;
+             top: 175px;
+             left: 0;
+             width: 100%;
+             text-align: center;
+             margin-right: 0;
+             padding: 0;
+         }
+
+     }
+ }
+
+ @media (min-width: 1400px) {
+    #galaxy-banner {
+        .galaxy-banner-inner {
+            opacity: .3;
+        }
+        .title-text {
+            left: 60px;
+        }
+        .login-text {
+            width: 40%;
+            left: 65%;
+        }
+    }
+ }
+
+ @media (min-width: 1200px) {
+     #galaxy-banner {
+         .title-text {
+             width: 40%;
+         }
+     }
+ }

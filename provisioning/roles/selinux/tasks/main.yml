@@ -12,7 +12,10 @@
 
 - name: set selinux booleans for Galaxy
   seboolean: name={{item}} state=yes persistent=yes
+  when: selinux_installed.stdout != ""
   with_items:
   - httpd_can_network_memcache
   - httpd_can_network_connect_db
   - httpd_can_sendmail
+  - httpd_can_network_connect
+  - nis_enabled

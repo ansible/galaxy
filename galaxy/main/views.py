@@ -45,7 +45,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.utils import timezone
 from django.utils.timezone import utc
-from django.views.decorators.csrf import csrf_exempt                                                        
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 # local stuff
@@ -74,7 +74,9 @@ def build_standard_context(request):
 
     # everything gets the request user and a csrf token,
     # just in case it might need them
+    context["request"] = request
     context["user"] = request.user
+
     context.update(csrf(request))
 
     # the default redirect url is the current path
@@ -100,23 +102,31 @@ def build_standard_context(request):
                     except: pass
             url_items.append([part,breadcrumb_url])
     context["url_items"] = url_items
+    context["url_items_length"] = len(url_items)
     context["site_name"] = settings.SITE_NAME
+
+    if request.user.is_authenticated():
+        context["connected_to_github"] = False
+        for account in request.user.socialaccount_set.all():
+            if account.provider == 'github':
+                context["connected_to_github"] = True
+
     # database operations for data that is available on every page
     # categories
-    categories = Category.objects.all()
-    context["categories"] = categories
+    # categories = Category.objects.all()
+    # context["categories"] = categories
     # number of roles per category
-    context["roles_per_category"] = Category.objects.values('name').annotate(num_roles=Count('roles')).order_by('-num_roles','name')[0:10]
+    # context["roles_per_category"] = Category.objects.values('name').annotate(num_roles=Count('roles')).order_by('-num_roles','name')[0:10]
     # top X roles
-    context["top_roles"] = Role.objects.all().order_by('-bayesian_score')[0:10]
+    # context["top_roles"] = Role.objects.all().order_by('-bayesian_score')[0:10]
     # top X users
-    #context["top_users"] = User.objects.all().order_by('-average_score')[0:10]
+    # context["top_users"] = User.objects.all().order_by('-average_score')[0:10]
     # top X reviewers
-    context["top_reviewers"] = User.objects.all().order_by('-karma')[0:10]
+    # context["top_reviewers"] = User.objects.all().order_by('-karma')[0:10]
     # last X new roles
-    context["new_roles"] = Role.objects.all().order_by('-date_added')[0:10]
+    # context["new_roles"] = Role.objects.all().order_by('-date_added')[0:10]
     # last X new users
-    context["new_users"] = User.objects.all().order_by('-date_joined')[0:10]
+    # context["new_users"] = User.objects.all().order_by('-date_joined')[0:10]
     # and we're done
     return context
 
@@ -170,7 +180,7 @@ def list_category(request, category=None, page=1):
     context["extra_css"] = [
     ]
     context["extra_js"] = [
-      '/static/js/angular-slider.min.js',
+      # '/static/js/angular-slider.min.js',
       '/static/js/apps/list_app.js',
       '/static/js/controllers/list.js',
       '/static/js/services/categories.js',
@@ -179,11 +189,14 @@ def list_category(request, category=None, page=1):
       '/static/js/services/roles.js',
       '/static/js/services/storage.js',
       '/static/js/services/users.js',
+      '/static/js/services/platforms.js',
       '/static/js/lib/utilities.js',
       '/static/js/lib/search.js',
+      '/static/js/lib/directives.js',
       '/static/js/services/related.js',
       '/static/js/lib/paginate.js',
     ]
+    print(context["url_items"])
     return render_to_response('list_category.html', context)
 
 def role_view(request, user, role):
@@ -237,6 +250,12 @@ def user_view(request, user):
         context["awx_avg_score"] = awx_avg_score[0]
     return render_to_response('user_view.html', context)
 
+def handle_404_view(request):
+    return render_to_response('custom404.html')
+
+def handle_400_view(request):
+    return render_to_response('custom400.html')
+
 #------------------------------------------------------------------------------
 # Non-secured Action URLs requiring a POST
 #------------------------------------------------------------------------------
@@ -284,6 +303,11 @@ def accounts_profile(request):
     return render_to_response('account/profile.html',context)
 
 @login_required
+def accounts_connect(request):
+    context = build_standard_context(request)
+    return render_to_response('socialaccount/connections.html',context)
+
+@login_required
 @transaction.non_atomic_requests
 def accounts_role_save(request):
     regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
@@ -292,7 +316,7 @@ def accounts_role_save(request):
             with transaction.atomic():
                 form = RoleForm(request.POST)
                 if form.is_valid():
-                    # create the role, committing manually so that 
+                    # create the role, committing manually so that
                     # we ensure the database is updated before we
                     # kick off the celery task to do the import
                     cd = form.cleaned_data
@@ -428,4 +452,3 @@ def accounts_role_view(request, role=None):
     context = build_standard_context(request)
     context["role"] = role_obj
     return render_to_response('account/role_view.html', context)
-

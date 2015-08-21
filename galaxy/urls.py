@@ -15,9 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+from django.views.generic import TemplateView
 import autofixture
+from django.conf.urls import handler404
+
+handler404 = 'galaxy.main.views.handle_404_view'
+handler400 = 'galaxy.main.views.handle_400_view'
 
 admin.autodiscover()
 autofixture.autodiscover()
@@ -29,5 +35,11 @@ urlpatterns = patterns('',
   url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
   url(r'^avatar/', include('avatar.urls')),
   url(r'^galaxy__admin/', include(admin.site.urls)),
+  url(r'^robots\.txt$', TemplateView.as_view(template_name="robots.txt", content_type='text/plain')),
 )
 
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += patterns('',
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    )
