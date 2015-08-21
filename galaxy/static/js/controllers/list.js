@@ -25,7 +25,6 @@ var listControllers = angular.module('listControllers', ['Utilities', 'Search'])
 
 function from_query_params(data) {
     var result = {};
-
     result.list_filter = data.f;
     result.page = data.page;
     result.results_per_page = data.per_page;
@@ -33,7 +32,7 @@ function from_query_params(data) {
     result.reverse = data.reverse;
     result.selected_categories = data.cats;
     result.platform = data.platform;
-
+    result.release = data.release;
     return result;
 }
 
@@ -48,6 +47,8 @@ function query_params(data) {
         result.f = data.list_filter;
     if (data.platform)
         result.platform = data.platform;
+    if (data.release)
+        result.release = data.release;
     if (data.reverse)
         result.reverse = data.reverse;
     if (data.selected_categories)
@@ -75,20 +76,11 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
         'results_per_page'   : 10,
         'reverse'            : false,
         'platform'           : '',
+        'release'            : '',
         'selected_categories': [],
         'sort_order'         : 'owner__username,name',
         'refresh'            : _refresh
     };
-
-    function _uniquePlatforms(roles) {
-        angular.forEach(roles, function(role) {
-            var dict = {};
-            angular.forEach(role.summary_fields.platforms, function(platform) {
-                dict[platform.name] = 0;
-            });
-            role.platforms = Object.keys(dict);
-        });
-    }
 
     $scope.page_range = [1];
     $scope.categories = [];
@@ -99,6 +91,7 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
     $scope.loading = 1;
     $scope.viewing_roles = 1;
     $scope.display_user_info = 1;
+    $scope.disableReleases = true;
 
     PaginateInit({ scope: $scope });
 
@@ -178,8 +171,28 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
 
     $scope.selectPlatform = function() {
         $scope.list_data.platform = ($scope.sort.platform && $scope.sort.platform.value) ? $scope.sort.platform.value : null;
-        $scope.list_data.refresh();
+        if ($scope.list_data.platform) {
+            $scope.disableReleases = false;
+            platformService.getReleases($scope.list_data.platform).then(function(data) {
+                $scope.releases = data;
+                $scope.sort.release = _pickRelease($scope.list_data.platform, $scope.releases);
+                $scope.list_data.release = $scope.sort.release.value;
+                $scope.list_data.refresh();
+            });
+        } else {
+            $scope.disableReleases = true;
+            $scope.releases = [];
+            $scope.list_data.release = '';
+            $scope.list_data.refresh();
+        }
     };
+
+    $scope.selectRelease = function () {
+        if ($scope.sort.platform && $scope.sort.release) {
+            $scope.list_data.release = $scope.sort.release.value;
+            $scope.list_data.refresh();
+        }
+    }
 
     var restored_query = storageFactory
         .restore_state('role_list', query_params($scope.list_data));
@@ -215,9 +228,10 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
             { value: 'owner__username,name', label: 'Owner Name' },
             { value: 'name', label: 'Role Name' }
         ],
-        platforms: platformService.get().then(function(platforms) {
-            $scope.platforms = platforms;
+        platforms: platformService.getPlatforms().then(function(data) {
+            $scope.platforms = data;
         }),
+        releases: [],
         sortOrder: $scope.list_data.sort_order
     });
 
@@ -246,7 +260,8 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
             $scope.list_data.sort_order,
             $scope.list_data.list_filter,
             $scope.list_data.reverse,
-            $scope.list_data.platform
+            $scope.list_data.platform,
+            $scope.list_data.release
         ).success(_refreshSuccess).error(_refreshError);
 
         function _refreshSuccess(data) {
@@ -282,8 +297,67 @@ function _RoleListCtrl($scope, $routeParams, $location, $timeout, roleFactory, c
             $scope.status = 'Unable to load roles list: ' + error.message;
             $scope.loading = 0;
         }
-
     }
+
+    function _uniquePlatforms(roles) {
+        angular.forEach(roles, function(role) {
+            var dict = {};
+            angular.forEach(role.summary_fields.platforms, function(platform) {
+                dict[platform.name] = 0;
+            });
+            role.platforms = Object.keys(dict);
+        });
+    }
+
+    function _pickRelease(_platform, _releases) {
+        var suggested = '';
+        switch (_platform) {
+            case 'Ubuntu':
+                suggested = 'vivid';
+                break;
+            case 'Debian':
+                suggested = 'jessie';
+                break;
+            case 'EL':
+                suggested = '7';
+                break;
+            case 'Fedora':
+                suggested = '22';
+                break;
+            case 'Windows':
+                suggested = '2021R2';
+                break;
+            case 'SmartOS':
+                suggested = 'any';
+                break;
+            case 'opensuse':
+                suggested = '13.2';
+                break;
+            case 'Amazon':
+                suggested = '2013.09';
+                break;
+            case 'GenericBSD':
+                suggested = 'any';
+                break;
+            case 'FreeBSD':
+                suggested = '9.2';
+                break;
+            case 'SLES':
+                suggested = '11SP3';
+                break;
+            case 'GenericLinux':
+                suggested = 'any';
+                break;
+        }
+        var result = _releases[0];
+        angular.forEach(_releases, function(release) {
+            if (release.value === suggested) {
+                result = release;
+            }
+        });
+        return result;
+    }
+
 }
 
 listControllers.controller('RoleDetailCtrl', ['$q', '$scope','$routeParams','$location','$modal', '$compile', 'roleFactory','userFactory','ratingFactory',

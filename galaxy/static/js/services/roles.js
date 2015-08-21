@@ -35,7 +35,7 @@
             deleteRole: _deleteRole,
         };
 
-        function _getRoles(page, selected_categories, results_per_page, sort_order, filter, reverse, platform) {
+        function _getRoles(page, selected_categories, results_per_page, sort_order, filter, reverse, platform, release) {
             var url = '/api/v1/roles/?page=' + page + '&page_size=' + results_per_page;
             if (selected_categories.length > 0) {
                 for (var i in selected_categories) {
@@ -45,9 +45,9 @@
             if (filter && filter != '')
                 url += '&name__icontains=' + filter;
 
-            if (platform)
-                url += '&platforms__name=' + platform;
-
+            if (platform && release)
+                url += '&platforms__name=' + platform + '&platforms__release=' + release;
+            
             if (reverse) {
                 var parts = sort_order.split(',')
                 for (var part in parts) {

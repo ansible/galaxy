@@ -25,8 +25,10 @@
         .factory('SearchInit', ['Empty', _factory]);
 
     // Init search related functions into the scope object
+    var Empty;
 
-    function _factory(Empty) {
+    function _factory(_Empty) {
+        Empty = _Empty;
         return _searchInit;
     }
 

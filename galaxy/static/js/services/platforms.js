@@ -27,11 +27,13 @@
     function _factory($resource, $q) {
         var res = $resource('/api/v1/platforms');
         var platforms = [];
+        var releases = {};
         return {
-            get: _get
+            getPlatforms: _getPlatforms,
+            getReleases: _getReleases
         };
 
-        function _get() {
+        function _getPlatforms() {
             var deferred = $q.defer();
             if (platforms.length == 0) {
                // load for the first time
@@ -55,6 +57,29 @@
                     });
                 });
                 return platforms;
+            });
+        }
+
+        function _getReleases(_platform) {
+            var deferred = $q.defer();
+            if (!releases[_platform]) {
+               // load for the first time
+               return _loadReleases(_platform);
+            }
+            deferred.resolve(releases[_platform]);
+            return deferred.promise;
+        }
+
+        function _loadReleases(_platform) {
+            return res.query({ name: _platform }).$promise.then(function(data) {
+                releases[_platform] = [];
+                angular.forEach(data, function(release) {
+                    releases[_platform].push({
+                        name: release.release,
+                        value: release.release
+                    });
+                });
+                return releases[_platform];
             });
         }
     }

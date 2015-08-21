@@ -14,7 +14,7 @@
     </div>
     {% if not user.is_authenticated %}
     <div class="login-text">
-        <h2>Contribute to <span class="ansible-color">Galaxy</span></h2>
+        <h2 class="login-title"><a href="/accounts/github/login/">Log Into <span class="ansible-color">Galaxy</span> with Github</a></h2>
         <div class="github-icon"><a href="/accounts/github/login/"><i class="fa fa-github fa-4x"></i></a></div>
         <div class="alternate-signin"><a href="{% url 'account_login' %}">Use an existing account<br />not associated with Github</a></div>
     </div>
