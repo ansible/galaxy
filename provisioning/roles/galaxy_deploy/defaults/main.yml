@@ -8,8 +8,7 @@ galaxy_site_aliases: []
 # Apache configuration settings
 galaxy_ssl_cert: "/etc/pki/tls/certs/localhost.crt"
 galaxy_ssl_key: "/etc/pki/tls/private/localhost.key"
-#galaxy_ssl_cachain: "/etc/pki/tls/certs/ca-bundle.crt"
-galaxy_ssl_cachain: null
+galaxy_ssl_cachain: ""
 
 # email
 galaxy_email_hostname: "email-smtp.us-east-1.amazonaws.com"

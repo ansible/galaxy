@@ -52,6 +52,7 @@ WSGISocketPrefix /var/run/wsgi
  {% if galaxy_ssl_cachain %}SSLCertificateChainFile {{ galaxy_ssl_cachain }}
  {% endif %}
  SSLVerifyClient none
+ SSLProtocol all -SSLv2 -SSLv3
 
  WSGIScriptAlias / /var/lib/galaxy/wsgi.py
  WSGIPassAuthorization On
