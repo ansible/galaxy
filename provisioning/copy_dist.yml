@@ -1,18 +1,16 @@
 ---
 # copy the distribution tar file to the remote hosts
 
-- name: copy the distribution tar file to the remote hosts 
+- name: copy the distribution tar file to the remote hosts
   hosts: local
   tasks:
-    - shell: ls -1 $(pwd)/dist/*.tar.gz chdir="{{ playbook_dir }}/.."
+    - shell: ls -1 $(pwd)/dist/galaxy-*.tar.gz chdir="{{ playbook_dir }}/.."
       register: app_tar
-    - name: update the local vars.yml file
-      shell: echo "galaxy_dist_file\0072 /tmp/{{ app_tar.stdout | basename }}" >>{{ playbook_dir }}/vars.yml
 
 - name: remove old dist files
   hosts: target
   tasks:
-    - shell: rm -f /tmp/*.tar.gz
+    - shell: rm -f /tmp/galaxy-*.tar.gz
 
 - name: copy the dist file
   hosts: target

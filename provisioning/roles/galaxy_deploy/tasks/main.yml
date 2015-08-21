@@ -1,6 +1,6 @@
 ---
 - name: Check for the tar file
-  shell: ls -1 {{ galaxy_dist_dir }}/*.tar.gz
+  shell: ls -1 {{ galaxy_dist_dir }}/galaxy-*.tar.gz
   register: app_tar
 
 - name: Install the Galaxy app
