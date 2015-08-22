@@ -5,10 +5,10 @@
 
 - name: Remove the existing app
   pip: name=galaxy state=absent
-
+  ignore_errors: yes
+  
 - name: Install the Galaxy app
   pip: name={{ app_tar.stdout }}
-  ignore_errors: yes
 
 - name: configure galaxy public/static directory
   file: path=/var/lib/galaxy/public/static state=directory mode=0755
