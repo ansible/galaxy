@@ -113,7 +113,7 @@ setup(
     author='Ansible, Inc.',
     author_email='support@ansible.com',
     description='Galaxy: Find, reuse and share the best Ansible content.',
-    long_description='Galaxy is a web site and command line tool for creating and sharing Ansible roles.'
+    long_description='Galaxy is a web site and command line tool for creating and sharing Ansible roles.',
     license='Proprietary',
     keywords='ansible galaxy',
     url='http://github.com/ansible/galaxy',
