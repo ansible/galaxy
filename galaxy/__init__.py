@@ -19,7 +19,7 @@ import os.path
 import sys
 import warnings
 
-__version__ = '0.1.0-0'
+__version__ = '1.0.0'
 __all__ = ['__version__']
 
 def find_commands(management_dir):
@@ -56,4 +56,3 @@ def manage():
         sys.stdout.write('galaxy-%s\n' % __version__)
     else:
         execute_from_command_line(sys.argv)
-
