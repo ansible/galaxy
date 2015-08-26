@@ -70,7 +70,7 @@ def annotate_user_queryset(qs):
                num_ratings = Count('ratings', distinct=True),
                num_roles = Count('roles', distinct=True),
                avg_rating = AvgWithZeroForNull('ratings__score'),
-               avg_role_score = AvgWithZeroForNull('roles__ratings__score'),
+               avg_role_score = AvgWithZeroForNull('roles__average_score'),
            )
 
 def annotate_role_queryset(qs):
@@ -170,7 +170,7 @@ class RoleDependenciesList(SubListCreateAPIView):
 
     def get_queryset(self):
         qs = super(RoleDependenciesList, self).get_queryset()
-        return annotate_role_queryset(filter_role_queryset(qs))
+        return filter_role_queryset(qs)
 
 class RoleUsersList(SubListAPIView):
     model = User
@@ -195,12 +195,8 @@ class RoleList(ListCreateAPIView):
     def get_queryset(self):
         qs = super(RoleList, self).get_queryset()
         qs = qs.select_related('owner')
-        qs = qs.prefetch_related('platforms', 'versions', 'categories', 'dependencies',
-            Prefetch('ratings',
-                queryset=RoleRating.objects.select_related('owner')
-                    .filter(owner__is_staff=True,owner__is_active=True),
-                to_attr='aw_ratings'))
-        return annotate_role_queryset(filter_role_queryset(qs))
+        qs = qs.prefetch_related('platforms', 'versions', 'categories', 'dependencies')
+        return filter_role_queryset(qs)
 
 class RoleTopList(ListCreateAPIView):
     model = Role
@@ -209,8 +205,7 @@ class RoleTopList(ListCreateAPIView):
     def get_queryset(self):
         qs = super(RoleTopList, self).get_queryset()
         qs = qs.select_related('owner')
-        qs = qs.prefetch_related('ratings')
-        return annotate_role_queryset(filter_role_queryset(qs))
+        return filter_role_queryset(qs)
 
 class RoleDetail(RetrieveUpdateDestroyAPIView):
     model = Role
@@ -236,7 +231,7 @@ class UserRolesList(SubListAPIView):
 
     def get_queryset(self):
         qs = super(UserRolesList, self).get_queryset()
-        return annotate_role_queryset(filter_role_queryset(qs))
+        return filter_role_queryset(qs)
 
 class UserDetail(RetrieveUpdateDestroyAPIView):
     model = User
@@ -273,39 +268,47 @@ class UserList(ListAPIView):
         qs = qs.prefetch_related(
             Prefetch(
                 'roles',
-                queryset=Role.objects.filter(active=True, is_valid=True)
-                    .annotate(
-                        num_ratings = Count('ratings__score'),
-                        avg_role_score = AvgWithZeroForNull('ratings__score')
-                    ).order_by('pk'),
+                queryset=Role.objects.filter(active=True, is_valid=True).order_by('pk'),
                 to_attr='user_roles'
             ),
             Prefetch(
                 'ratings',
-                queryset=RoleRating.objects.select_related('role').filter(active=True, role__active=True, role__is_valid=True)
-                    .annotate(
-                        role_id = F('role__id'),
-                        role_name = F('role__name'),
-                        role_owner_id = F('role__owner__id'),
-                        role_onwer_username = F('role__owner__username')
-                    ).order_by('-created'),
+                queryset=RoleRating.objects.select_related('role').filter(active=True, role__active=True, role__is_valid=True).order_by('-created'),
                 to_attr='user_ratings'
-            ),
-            Prefetch(
-                'roles',
-                queryset=Role.objects.filter(ratings__owner__is_staff=True, active=True, is_valid=True)
-                    .annotate( score = F('ratings__score')),
-                to_attr='aw_ratings'
             ),
         )
         return annotate_user_queryset(filter_user_queryset(qs))
 
-class UserTopList(ListAPIView):
+class UserRoleContributorsList(ListAPIView):
     model = User
-    serializer_class = UserTopSerializer
-
+    serializer_class = UserRoleContributorsSerializer
+    
     def get_queryset(self):
-        qs = super(UserTopList, self).get_queryset()
+        qs = super(UserRoleContributorsList, self).get_queryset()
+        qs = qs.filter(roles__active=True, roles__is_valid=True)
+        qs = qs.annotate(
+            num_roles = Count('roles', distinct=True),
+        )
+        qs = qs.prefetch_related(
+            Prefetch(
+                'roles',
+                queryset=Role.objects.filter(active=True, is_valid=True, average_score__gt=0).order_by('pk'),
+                to_attr='scored_roles'
+            )
+        )
+        return filter_user_queryset(qs)
+
+class UserRatingContributorsList(ListAPIView):
+    model = User
+    serializer_class = UserRatingContributorsSerializer
+    
+    def get_queryset(self):
+        qs = super(UserRatingContributorsList, self).get_queryset()
+        qs = qs.filter(ratings__active=True)
+        qs = qs.annotate(
+            num_ratings = Count('ratings', distinct=True),
+            avg_rating = AvgWithZeroForNull('ratings__score'),
+        )
         return annotate_user_queryset(filter_user_queryset(qs))
 
 class RatingList(ListAPIView):
@@ -315,7 +318,7 @@ class RatingList(ListAPIView):
     def get_queryset(self):
         qs = super(RatingList, self).get_queryset()
         qs.select_related('owner', 'role')
-        qs.prefetch_related('up_votes', 'down_votes')
+        #qs.prefetch_related('up_votes', 'down_votes')
         return filter_rating_queryset(qs)
 
 class RatingDetail(RetrieveUpdateDestroyAPIView):

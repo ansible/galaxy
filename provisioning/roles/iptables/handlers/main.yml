@@ -2,4 +2,4 @@
 # Handlers for iptables
 
 - name: restart iptables
-  service: name=iptables state=restarted
+  service: name=iptables state=restarted enabled=yes

@@ -282,12 +282,20 @@ class Role(CommonModelNameNotUnique):
     )
 
     #------------------------------------------------------------------------------
-    # fields calculated by a celery task, not set
+    # fields calculated by a celery task or signal, not set
 
     bayesian_score = models.FloatField(
         default    = 0.0,
         db_index   = True,
         editable   = False,
+    )
+    num_ratings = models.IntegerField(
+        default    = 0,
+        db_index   = False,
+    )
+    average_score = models.FloatField(
+        default    = 0.0,
+        db_index   = False,
     )
 
     #------------------------------------------------------------------------------
@@ -301,40 +309,6 @@ class Role(CommonModelNameNotUnique):
             return model_to_dict(self.imports.latest(), fields=('released','state','status_message'))
         except Exception, e:
             return {}
-
-    def get_num_ratings(self):
-        return self.ratings.filter(active=True).count()
-
-    def get_average_score(self):
-        return self.ratings.filter(active=True).aggregate(avg=AvgWithZeroForNull('score'))['avg'] or 0
-
-    def get_average_composite(self):
-        avg = self.ratings.filter(active=True).aggregate(
-            avg_reliability   = AvgWithZeroForNull('reliability'),
-            avg_documentation = AvgWithZeroForNull('documentation'),
-            avg_code_quality  = AvgWithZeroForNull('code_quality'),
-            avg_wow_factor    = AvgWithZeroForNull('wow_factor'),
-        )
-        for k in avg:
-            avg[k] = avg[k] if avg[k] is not None else 0
-        return avg;
-
-    def get_num_aw_ratings(self):
-        return self.ratings.filter(owner__is_staff=True, active=True).count()
-
-    def get_average_aw_score(self):
-        return self.ratings.filter(owner__is_staff=True, active=True).aggregate(avg=AvgWithZeroForNull('score'))['avg'] or 0
-
-    def get_average_aw_composite(self):
-        avg = self.ratings.filter(owner__is_staff=True, active=True).aggregate(
-                   avg_reliability   = AvgWithZeroForNull('reliability'),
-                   avg_documentation = AvgWithZeroForNull('documentation'),
-                   avg_code_quality  = AvgWithZeroForNull('code_quality'),
-                   avg_wow_factor    = AvgWithZeroForNull('wow_factor'),
-               )
-        for k in avg:
-            avg[k] = avg[k] if avg[k] is not None else 0
-        return avg
 
 class RoleVersion(CommonModelNameNotUnique):
     class Meta:
@@ -441,39 +415,16 @@ class RoleRating(PrimordialModel):
         Role,
         related_name = 'ratings',
     )
-    up_votes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name = 'user_up_votes',
-        default      = None,
-    )
-    down_votes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name = 'user_down_votes',
-        default      = None,
-    )
-
+    
     #------------------------------------------------------------------------------
     # regular fields
 
-    reliability = models.IntegerField(
-        default = 5,
-    )
-    documentation = models.IntegerField(
-        default = 5,
-    )
-    code_quality = models.IntegerField(
-        default = 5,
-    )
-    wow_factor = models.IntegerField(
-        default = 5,
-    )
     comment = models.TextField(
         blank      = True,
         null       = True,
     )
-    score = models.FloatField(
-        default      = 0.0,
-        editable     = False,
+    score = models.IntegerField(
+        default      = 0,
         db_index     = True,
     )
 
@@ -492,23 +443,12 @@ class RoleRating(PrimordialModel):
                 return 1
             else:
                 return value
-
-        self.reliability   = clamp_range(self.reliability)
-        self.documentation = clamp_range(self.documentation)
-        self.code_quality  = clamp_range(self.code_quality)
-        self.wow_factor    = clamp_range(self.wow_factor)
-
+        
+        self.score = clamp_range(self.score)
+        
         if len(self.comment) > 5000:
             self.comment = self.comment[:5000]
 
-        # the value of score is based on the
-        # values in the other rating fields
-        self.score = (
-            self.reliability + \
-            self.documentation + \
-            self.code_quality + \
-            self.wow_factor
-        ) / 4.0
         super(RoleRating, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

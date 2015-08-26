@@ -46,13 +46,35 @@
         }
     }
 
-    .comment {
-        h5 {
-            font-weight: normal;
-            color: #ccc;
+    .score {
+        text-align: center;
+        margin-top: 25px;
+        .fld-label {
+            font-size: 12px;
+            padding-left: 5px;
+            color: @charcoal;
         }
+        .score-value, .score-value-na {
+            font-weight: bold;
+            font-size: 14px;
+            padding: 2px;
+            color: @black;
+        }
+        .score-value-na {
+            color: @grey;
+        }
+    }
+
+    .comment {
+        border: 1px solid #e8e8e8;
+        border-radius: 2px;
+        min-height: 75px;
         max-height: 250px;
         overflow-y: auto;
+        padding: 5px;
+        .no-comment {
+            color: #ccc;
+        }
     }
 
     @media (max-width: 992px) {

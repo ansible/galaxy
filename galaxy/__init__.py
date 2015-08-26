@@ -22,6 +22,7 @@ import warnings
 __version__ = '1.0.0'
 __all__ = ['__version__']
 
+
 def find_commands(management_dir):
     # Modified version of function from django/core/management/__init__.py.
     command_dir = os.path.join(management_dir, 'commands')
@@ -56,3 +57,6 @@ def manage():
         sys.stdout.write('galaxy-%s\n' % __version__)
     else:
         execute_from_command_line(sys.argv)
+
+
+

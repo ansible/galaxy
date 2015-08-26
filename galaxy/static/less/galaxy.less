@@ -71,7 +71,6 @@
 @import "role_detail";
 @import "account_landing";
 @import "explore";
-@import "score_breakdown";
 @import "ratings_list.less";
 @import "add_rating.less";
 @import "my_roles.less";
@@ -257,9 +256,12 @@ pre {
     .date {
         display: inline-block;
         vertical-align: top;
-    }
-    .date:last-child {
-        margin-left: 10px;
+        .fld-label, .value {
+            display: inline-block;
+        }
+        .fld-label {
+            width: 85px;
+        }
     }
 }
 

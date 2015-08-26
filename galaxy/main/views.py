@@ -139,9 +139,9 @@ def build_standard_context(request):
 #     context["extra_js"] = [
 #       '/static/js/apps/main_app.js',
 #       '/static/js/controllers/main.js',
-#       '/static/js/services/roles.js',
-#       '/static/js/services/categories.js',
-#       '/static/js/services/users.js',
+#       '/static/js/commonServices/roles.js',
+#       '/static/js/commonServices/categories.js',
+#       '/static/js/commonServices/users.js',
 #     ]
 #     return render_to_response('home.html', context)
 
@@ -151,14 +151,14 @@ def home(request):
 
 def explore(request):
     context = build_standard_context(request)
-    context["ng_app"] = "mainApp"
+    context["ng_app"] = "exploreApp"
     context["extra_js"] = [
-      '/static/js/apps/main_app.js',
-      '/static/js/controllers/main.js',
-      '/static/js/services/roles.js',
-      '/static/js/services/categories.js',
-      '/static/js/services/users.js',
-      '/static/js/lib/utilities.js',
+      '/static/js/exploreApp/exploreApp.js',
+      '/static/js/exploreApp/exploreController.js',
+      '/static/js/commonServices/roleService.js',
+      '/static/js/commonServices/categoryService.js',
+      '/static/js/commonServices/userService.js',
+      '/static/js/commonServices/galaxyUtilities.js',
     ]
     return render_to_response('explore.html', context)
 
@@ -176,60 +176,62 @@ def accounts_landing(request):
 
 def list_category(request, category=None, page=1):
     context = build_standard_context(request)
-    context["ng_app"] = "roleApp"
+    context["ng_app"] = "listApp"
     context["extra_css"] = [
     ]
     context["extra_js"] = [
       # '/static/js/angular-slider.min.js',
-      '/static/js/apps/list_app.js',
-      '/static/js/controllers/list.js',
-      '/static/js/services/categories.js',
-      '/static/js/services/me.js',
-      '/static/js/services/ratings.js',
-      '/static/js/services/roles.js',
-      '/static/js/services/storage.js',
-      '/static/js/services/users.js',
-      '/static/js/services/platforms.js',
-      '/static/js/lib/utilities.js',
-      '/static/js/lib/search.js',
-      '/static/js/lib/directives.js',
-      '/static/js/services/related.js',
-      '/static/js/lib/paginate.js',
+      '/static/js/listApp/listApp.js',
+      '/static/js/listApp/roleDetailController.js',
+      '/static/js/listApp/roleListController.js',
+      '/static/js/listApp/userDetailController.js',
+      '/static/js/listApp/userListController.js',
+      '/static/js/commonServices/categoryService.js',
+      '/static/js/commonServices/meService.js',
+      '/static/js/commonServices/ratingService.js',
+      '/static/js/commonServices/roleService.js',
+      '/static/js/commonServices/storageService.js',
+      '/static/js/commonServices/userService.js',
+      '/static/js/commonServices/platformService.js',
+      '/static/js/commonServices/galaxyUtilities.js',
+      '/static/js/commonServices/searchService.js',
+      '/static/js/commonServices/galaxyDirectives.js',
+      '/static/js/commonServices/relatedService.js',
+      '/static/js/commonServices/paginateService.js',
     ]
-    print(context["url_items"])
     return render_to_response('list_category.html', context)
 
 def role_view(request, user, role):
     role = Role.objects.get(name=role, owner__username=user)
-    awx_avg_scores = role.ratings.filter(voter__is_staff=True).values('role__name').annotate(
-        ease_of_use      = Avg('ease_of_use'),
-        documentation    = Avg('documentation'),
-        best_practices   = Avg('best_practices'),
-        repeatability    = Avg('repeatability'),
-        platform_support = Avg('platform_support'),
-        overall          = Avg('overall'),
-        avg_score        = Avg('score'),
-    )
-    other_avg_scores = role.ratings.values('role__name').annotate(
-        ease_of_use      = Avg('ease_of_use'),
-        documentation    = Avg('documentation'),
-        best_practices   = Avg('best_practices'),
-        repeatability    = Avg('repeatability'),
-        platform_support = Avg('platform_support'),
-        overall          = Avg('overall'),
-        avg_score        = Avg('score'),
-    )
-    awx_ratings = role.ratings.filter(voter__is_staff=True).order_by('-score')
-    other_ratings = role.ratings.filter(voter__is_staff=False).order_by('-score')
+    # awx_avg_scores = role.ratings.filter(voter__is_staff=True).values('role__name').annotate(
+    #     ease_of_use      = Avg('ease_of_use'),
+    #     documentation    = Avg('documentation'),
+    #     best_practices   = Avg('best_practices'),
+    #     repeatability    = Avg('repeatability'),
+    #     platform_support = Avg('platform_support'),
+    #     overall          = Avg('overall'),
+    #     avg_score        = Avg('score'),
+    # )
+    # other_avg_scores = role.ratings.values('role__name').annotate(
+    #     ease_of_use      = Avg('ease_of_use'),
+    #     documentation    = Avg('documentation'),
+    #     best_practices   = Avg('best_practices'),
+    #     repeatability    = Avg('repeatability'),
+    #     platform_support = Avg('platform_support'),
+    #     overall          = Avg('overall'),
+    #     avg_score        = Avg('score'),
+    # )
+    # awx_ratings = role.ratings.filter(voter__is_staff=True).order_by('-score')
+    # other_ratings = role.ratings.filter(voter__is_staff=False).order_by('-score')
 
     context = build_standard_context(request)
     context["role"]             = role
-    context["awx_ratings"]      = awx_ratings
-    context["other_ratings"]    = other_ratings
-    if len(awx_avg_scores) > 0:
-        context["awx_avg_scores"] = awx_avg_scores[0]
-    if len(other_avg_scores) > 0:
-        context["other_avg_scores"] = other_avg_scores[0]
+    # context["awx_ratings"]      = awx_ratings
+    # context["other_ratings"]    = other_ratings
+    # if len(awx_avg_scores) > 0:
+    #    context["awx_avg_scores"] = awx_avg_scores[0]
+    # if len(other_avg_scores) > 0:
+    #    context["other_avg_scores"] = other_avg_scores[0]
 
     return render_to_response('role_view.html', context)
 
@@ -238,16 +240,16 @@ def role_search(request):
 
 def user_view(request, user):
     this_user = User.objects.get(username=user)
-    all_avg_score = this_user.roles.values('owner').annotate(avg_score=Avg('ratings__score'))
-    awx_avg_score = this_user.roles.filter(ratings__voter__is_staff=True).values('owner').annotate(avg_score=Avg('ratings__score'))
+    #all_avg_score = this_user.roles.values('owner').annotate(avg_score=Avg('ratings__score'))
+    #awx_avg_score = this_user.roles.filter(ratings__voter__is_staff=True).values('owner').annotate(avg_score=Avg('ratings__score'))
 
     context = build_standard_context(request)
     context["this_user"] = this_user
     context["user_roles"] = this_user.roles.all() #.order_by('-toprole__bayesian_score')
-    if len(all_avg_score) > 0:
-        context["all_avg_score"] = all_avg_score[0]
-    if len(awx_avg_score) > 0:
-        context["awx_avg_score"] = awx_avg_score[0]
+    # if len(all_avg_score) > 0:
+    #    context["all_avg_score"] = all_avg_score[0]
+    # if len(awx_avg_score) > 0:
+    #    context["awx_avg_score"] = awx_avg_score[0]
     return render_to_response('user_view.html', context)
 
 def handle_404_view(request):
@@ -288,12 +290,12 @@ def accounts_profile(request):
     context["extra_css"] = [
     ]
     context["extra_js"] = [
-      '/static/js/services/me.js',
-      '/static/js/services/storage.js',
-      '/static/js/services/related.js',
-      '/static/js/lib/utilities.js',
-      '/static/js/controllers/accounts.js',
-      '/static/js/apps/accounts_app.js',
+      '/static/js/commonServices/meService.js',
+      '/static/js/commonServices/storageService.js',
+      '/static/js/commonServices/relatedService.js',
+      '/static/js/commonServices/galaxyUtilities.js',
+      '/static/js/accountApp/myRolesController.js',
+      '/static/js/accountApp/accountApp.js',
     ]
 
     if request.session.has_key("transient"):

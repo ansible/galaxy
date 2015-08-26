@@ -1,7 +1,7 @@
 ---
 
 - name: start and enable the rabbitmq service
-  service: name=rabbitmq-server state=restarted enabled=true
+  service: name=rabbitmq-server state=restarted enabled=yes
 
 - name: wait for rabbitmq service to be running
   wait_for: port={{galaxy_rabbit_port}} delay=10

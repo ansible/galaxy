@@ -44,13 +44,6 @@
                                        <span ng-show="role.average_score != '0.0'" class="score-value">{{ role.average_score|number:1 }}</span>
                                        <span class="fld-label">Score</span>
                                    </div>
-                                   <!--
-                                   <div class="score">
-                                       <span ng-show="role.average_aw_score == '0.0'" class="score-value-na">NA</span>
-                                       <span ng-show="role.average_aw_score != '0.0'" class="score-value">{{ role.average_aw_score|number:1 }}</span>
-                                       <span class="fld-label">Ansible Score</span>
-                                   </div>
-                                   -->
                                </div>
                            </div>
                            <div ng-show="display_user_info" class="userinfo">
@@ -64,12 +57,12 @@
                             {{role.description}}
                             <div class="dates">
                                 <div class="date">
-                                    <span class="fld-label">Created on:</span>
-                                    <span class="value">{{role.created|date:"short"}}</span>
+                                    <div class="fld-label">Created On:</div>
+                                    <div class="value">{{role.created|date:"short"}}</div>
                                 </div>
                                 <div class="date" ng-show="role.created != role.modified">
-                                    <span class="fld-label">Modified:</span>
-                                    <span class="value">{{role.modified|date:"short"}}</span>
+                                    <div class="fld-label">Modified:</div>
+                                    <div class="value">{{role.modified|date:"short"}}</div>
                                 </div>
                             </div>
                         </td>

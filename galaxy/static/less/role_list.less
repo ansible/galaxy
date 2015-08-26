@@ -8,6 +8,17 @@
          padding-bottom: 15px;
          padding-top: 15px;
      }
+     .dates {
+        .date {
+            .fld-label {
+                width: auto;
+                padding-right: 3px;
+            }
+        }
+        .date:last-of-type {
+            margin-left: 10px;
+        }
+     }
      .role {
          min-width: 200px;
          .rolename {
@@ -56,5 +67,19 @@
      }
      .description {
          color: @charcoal;
+     }
+
+     @media (max-width: 740px) {
+        .dates {
+            .date {
+                .fld-label {
+                    width: 85px;
+                    padding-right: 0;
+                }
+            }
+            .date:last-of-type {
+                margin-left: 0;
+            }
+        }
      }
  }

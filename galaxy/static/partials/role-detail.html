@@ -31,8 +31,10 @@
                     <tab heading="Details">
                         <div class="row rating-section">
                             <div class="col-lg-3 col-md-6 col-sm-6">
-                                <div class="role-ratings">
-                                    <div class="score-breakdown" id="average_composite_breakdown"></div>
+                                <div class="score">
+                                   <span ng-show="role.average_score == '0.0'" class="score-value-na">NA</span>
+                                   <span ng-show="role.average_score != '0.0'" class="score-value">{{ role.average_score }}</span>
+                                   <span class="fld-label">Score</span>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6">
