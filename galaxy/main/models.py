@@ -29,6 +29,9 @@ from django.dispatch import receiver
 from django.forms.models import model_to_dict
 from django.utils.timezone import now, make_aware, get_default_timezone
 
+# postgresql specific
+from django.contrib.postgres.fields import ArrayField
+
 # celery/djcelery
 
 from djcelery.models import TaskMeta
@@ -280,6 +283,8 @@ class Role(CommonModelNameNotUnique):
         default      = False,
         editable     = False,
     )
+    
+    tags = ArrayField(models.CharField(max_length=256), blank=True)
 
     #------------------------------------------------------------------------------
     # fields calculated by a celery task or signal, not set
@@ -297,7 +302,7 @@ class Role(CommonModelNameNotUnique):
         default    = 0.0,
         db_index   = False,
     )
-
+    
     #------------------------------------------------------------------------------
     # other functions and properties
 
