@@ -16,29 +16,34 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 # standard python libraries
-
 import sys
+import math
 
 # rest framework stuff
-
 from rest_framework import filters
 from rest_framework import mixins
 from rest_framework import renderers
 from rest_framework import viewsets
+from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
 
 # django stuff
-
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import F, Count, Avg, Prefetch
 from django.http import Http404
 from django.utils.datastructures import SortedDict
+from django.apps import apps
+
+# haystack
+from drf_haystack.viewsets import HaystackViewSet
+from galaxy.api.filters import HaystackFilter
+from haystack.query import SearchQuerySet
+
+# elasticsearch dsl
+from elasticsearch_dsl import Search, Q
 
 # local stuff
-
 from galaxy.api.aggregators import *
 from galaxy.api.access import *
 from galaxy.api.base_views import *
@@ -107,24 +112,20 @@ class ApiV1RootView(APIView):
         ''' list top level resources '''
         data = SortedDict()
         data['me']         = reverse('api:user_me_list')
-        data['categories'] = reverse('api:category_list')
         data['platforms']  = reverse('api:platform_list')
         data['ratings']    = reverse('api:rating_list')
         data['users']      = reverse('api:user_list')
         data['roles']      = reverse('api:role_list')
+        #data['search']     = reverse('api:')
         return Response(data)
 
-class CategoryList(ListAPIView):
-    model = Category
-    serializer_class = CategorySerializer
-    paginate_by = None
-
-    def get_queryset(self):
-        return self.model.objects.filter(active=True).annotate(num_roles=Count('roles'))
-
-class CategoryDetail(RetrieveAPIView):
-    model = Category
-    serializer_class = CategorySerializer
+class ApiV1SearchView(APIView):
+    permission_classes = (AllowAny,)
+    view_name = 'Search'
+    def get(self, request, *args, **kwargs):
+        data = OrderedDict()
+        data['roles'] = reverse('api:search_roles')
+        return Response(data)
 
 class PlatformList(ListAPIView):
     model = Platform
@@ -195,7 +196,7 @@ class RoleList(ListCreateAPIView):
     def get_queryset(self):
         qs = super(RoleList, self).get_queryset()
         qs = qs.select_related('owner')
-        qs = qs.prefetch_related('platforms', 'versions', 'categories', 'dependencies')
+        qs = qs.prefetch_related('platforms', 'versions', 'dependencies')
         return filter_role_queryset(qs)
 
 class RoleTopList(ListCreateAPIView):
@@ -212,7 +213,7 @@ class RoleDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = RoleDetailSerializer
 
     def get_object(self, qs=None):
-        obj = super(RoleDetail, self).get_object(qs)
+        obj = super(RoleDetail, self).get_object()
         if not obj.is_valid or not obj.active:
             raise Http404()
         return obj
@@ -254,7 +255,7 @@ class UserDetail(RetrieveUpdateDestroyAPIView):
                 raise PermissionDenied('Cannot change %s' % ', '.join(changed.keys()))
 
     def get_object(self, qs=None):
-        obj = super(UserDetail, self).get_object(qs)
+        obj = super(UserDetail, self).get_object()
         if not obj.is_active:
             raise Http404()
         return obj
@@ -318,7 +319,6 @@ class RatingList(ListAPIView):
     def get_queryset(self):
         qs = super(RatingList, self).get_queryset()
         qs.select_related('owner', 'role')
-        #qs.prefetch_related('up_votes', 'down_votes')
         return filter_rating_queryset(qs)
 
 class RatingDetail(RetrieveUpdateDestroyAPIView):
@@ -326,7 +326,7 @@ class RatingDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = RoleRatingSerializer
 
     def get_object(self, qs=None):
-        obj = super(RatingDetail, self).get_object(qs)
+        obj = super(RatingDetail, self).get_object()
         if not obj.active or not obj.role.active:
             raise Http404()
         return obj
@@ -356,12 +356,134 @@ class UserMeList(RetrieveAPIView):
     serializer_class = MeSerializer
     view_name = 'Me'
 
-    def get_object(self, qs=None):
+    def get_object(self):
         try:
             obj = self.model.objects.get(pk=self.request.user.pk)
         except:
             obj = AnonymousUser()
         return obj
+
+class RoleSearchView(HaystackViewSet):
+    index_models = [Role]
+    serializer_class = RoleSearchSerializer
+    url_path = ''
+    filter_backends = [HaystackFilter]
+
+class FacetedView(APIView):
+    def get(self, request, *agrs, **kwargs):
+        facet_key = kwargs.get('facet_key')
+        fkwargs = {}
+        models = [apps.get_model(app_label='main', model_name=kwargs.get('model'))]
+        qs = SearchQuerySet().models(*models)
+        order = 'count'
+        size = 20
+        for key, value in request.GET.items():
+            if key  == 'order':
+                order = value
+            if key == 'size':
+                size = value
+        if size:
+            fkwargs['size'] = size
+        if order:
+            fkwargs['order'] = order
+        qs = qs.facet(facet_key, **fkwargs)
+        return Response(qs.facet_counts())
+
+
+class PlatformsSearchView(APIView):
+    def get(self, request, *args, **kwargs):
+        q = None
+        page = 0
+        page_size = 10
+        order_fields = None
+        for key,value in request.GET.items():
+            if key == 'name':
+                q = Q('match', name=value)
+            if key == 'releases':
+                q = Q('match', releases=value)
+            if key == 'content':
+                q = Q('match', name=value) | Q('match', releases=value)
+            if key == 'page':
+                page = int(value) - 1 if int(value) >= 0 else 0
+            if key == 'page_size':
+                page_size = value
+            if key in ('order','order_by'):
+                order_fields = tuple(value.split(','))
+        s = Search(index='galaxy_platforms')
+        s = s.query(q) if q else s
+        s = s.sort(order_fields) if order_fields else s
+        s = s[page * page_size:page * page_size + page_size]
+        result = s.execute()
+        serializer = ElasticSearchDSLSerializer(result.hits, many=True)
+        response = get_response(parms=request.GET.items(), result=result, view='api:platforms_search_view')
+        response['result'] = serializer.data
+        return Response(response)
+
+class TagsSearchView(APIView):
+    def get(self, request, *args, **kwargs):
+        q = None
+        page = 0
+        page_size = 10
+        order_fields = 'tag'
+        for key,value in request.GET.items():
+            if key in ('tag','content'):
+                q = Q('match', tag=value)
+            if key == 'page':
+                page = int(value) - 1 if int(value) >= 0 else 0
+            if key == 'page_size':
+                page_size = value
+            if key in ('order','order_by'):
+                order_fields = tuple(value.split(','))
+        s = Search(index='galaxy_tags')
+        s = s.query(q) if q else s
+        s = s.sort(order_fields) if order_fields else s
+        s = s[page * page_size:page * page_size + page_size]
+        result = s.execute()
+        serializer = ElasticSearchDSLSerializer(result.hits, many=True)
+        response = get_response(request=request, result=result, view='api:tags_search_view')
+        response['result'] = serializer.data
+        return Response(response)
+        
+
+def get_response(*args, **kwargs):
+    """ 
+    Create a response object with paging, count and timing attributes for search result views.
+    """
+    page = 0
+    page_size = 10
+    num_pages = 1
+    cur_page = 1
+    response = OrderedDict()
+
+    request = kwargs.pop('request', None)
+    result = kwargs.pop('result', None)
+    view = kwargs.pop('view', None)
+    
+    for key, value in request.GET.items():
+        if key == 'page':
+            page = int(value) - 1 if int(value) >= 0 else 0
+        if key == 'page_size':
+            page_size = value
+    
+    if result:
+        num_pages = int(math.ceil(result.hits.total / float(page_size)))
+        cur_page = page + 1
+        print "cur_page: %d" % cur_page
+        response['cur_page'] = cur_page
+        response['num_pages'] = num_pages
+        response['page_size'] = page_size
+    
+        if view:
+            if num_pages > 1 and cur_page < num_pages:
+                response['next_page'] = "%s?&page=%s" % (reverse(view), page + 2)
+            if num_pages > 1 and cur_page > 1:
+                response['prev_page'] = "%s?&page=%s" % (reverse(view), cur_page - 1)   
+            
+        response['count'] = result.hits.total
+        response['respose_time'] = result.took
+        response['success'] = result.success()
+    
+    return response
 
 #------------------------------------------------------------------------
 

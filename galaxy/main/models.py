@@ -219,14 +219,6 @@ class Role(CommonModelNameNotUnique):
         blank        = True,
         editable     = False,
     )
-    categories = models.ManyToManyField(
-        Category,
-        related_name = 'roles',
-        verbose_name = "Categories",
-        blank        = True,
-        editable     = False,
-    )
-    categories.help_text = ""
     platforms = models.ManyToManyField(
         'Platform',
         related_name = 'roles',
@@ -284,7 +276,7 @@ class Role(CommonModelNameNotUnique):
         editable     = False,
     )
     
-    tags = ArrayField(models.CharField(max_length=256), blank=True)
+    tags = ArrayField(models.CharField(max_length=256), null=True, editable=True, size=100)
 
     #------------------------------------------------------------------------------
     # fields calculated by a celery task or signal, not set
@@ -314,6 +306,9 @@ class Role(CommonModelNameNotUnique):
             return model_to_dict(self.imports.latest(), fields=('released','state','status_message'))
         except Exception, e:
             return {}
+
+    def get_unique_platforms(self):
+        return [platform.name for platform in self.platforms.filter(active=True).distinct('name')]
 
 class RoleVersion(CommonModelNameNotUnique):
     class Meta:

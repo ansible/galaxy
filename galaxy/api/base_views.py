@@ -133,12 +133,12 @@ class GenericAPIView(generics.GenericAPIView, APIView):
     #   serializer_class = SerializerClass
 
     def get_queryset(self):
-        qs = super(GenericAPIView, self).get_queryset()
+        qs = self.model.objects.all().distinct()
         if hasattr(self.model, "is_active"):
             return qs.filter(is_active=True)
         else:
             return qs.filter(active=True)
-
+    
     def get_description_context(self):
         # Set instance attributes needed to get serializer metadata.
         if not hasattr(self, 'request'):
@@ -218,16 +218,16 @@ class GenericAPIView(generics.GenericAPIView, APIView):
             page_size = self.get_paginate_by()
             if not page_size:
                 return None
-        if not self.allow_empty:
-            warnings.warn(
-                'The `allow_empty` parameter is due to be deprecated. '
-                'To use `allow_empty=False` style behavior, You should override '
-                '`get_queryset()` and explicitly raise a 404 on empty querysets.',
-                PendingDeprecationWarning, stacklevel=2
-            )
+        # if not self.allow_empty:
+        #      warnings.warn(
+        #          'The `allow_empty` parameter is due to be deprecated. '
+        #          'To use `allow_empty=False` style behavior, You should override '
+        #          '`get_queryset()` and explicitly raise a 404 on empty querysets.',
+        #          PendingDeprecationWarning, stacklevel=2
+        #      )
 
         paginator = self.paginator_class(queryset, page_size,
-                                         allow_empty_first_page=self.allow_empty)
+                                         allow_empty_first_page=True)
         page_kwarg = self.kwargs.get(self.page_kwarg)
         page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
         page = page_kwarg or page_query_param or 1

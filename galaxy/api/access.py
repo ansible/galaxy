@@ -189,6 +189,10 @@ class RoleRatingAccess(BaseAccess):
         return self.user.is_authenticated
 
     def can_change(self, obj, data):
+        if not self.user.is_authenticated:
+            return False
+        if not hasattr(obj, "owner"):
+            return False
         return bool(obj.owner.id == self.user.id or self.user.is_staff)
 
     def can_attach(self, obj, sub_obj, relationship, data,
@@ -222,16 +226,8 @@ class RoleImportAccess(BaseAccess):
     def get_queryset(self):
         qs = self.model.objects.filter(active=True, role__active=True, role__owner__is_active=True).distinct()
 
-class CategoryAccess(BaseAccess):
-    model = Category
-
-    def get_queryset(self):
-        qs = self.model.objects.filter(active=True, roles__active=True).annotate(num_roles=Count(roles)).distinct()
-        return qs
-
 register_access(User, UserAccess)
 register_access(Role, RoleAccess)
 register_access(RoleRating, RoleRatingAccess)
 register_access(RoleVersion, RoleVersionAccess)
 register_access(RoleImport, RoleImportAccess)
-register_access(Category, CategoryAccess)

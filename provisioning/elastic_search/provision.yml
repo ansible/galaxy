@@ -1,0 +1,8 @@
+---
+- name: Install Elasticsearch
+  hosts: all
+  sudo: yes
+  roles:
+    - { role: packages }
+    - { role: geerlingguy.elasticsearch }
+    - { role: ntp }

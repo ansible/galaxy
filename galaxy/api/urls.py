@@ -19,6 +19,11 @@
 # All Rights Reserved.
 
 from django.conf.urls import include, patterns, url as original_url
+from rest_framework import routers
+from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView
+
+router = routers.DefaultRouter()
+router.register('v1/search/roles', RoleSearchView, base_name="search_roles")
 
 def url(regex, view, kwargs=None, name=None, prefix=''):
     # Set default name from view name (if a string).
@@ -47,21 +52,25 @@ role_urls = patterns('galaxy.api.views',
     url(r'^(?P<pk>[0-9]+)/versions/$', 'role_versions_list'),
 )
 
-category_urls = patterns('galaxy.api.views',
-    url(r'^$',                         'category_list'),
-    url(r'^(?P<pk>[0-9]+)/$',          'category_detail'),
-)
-
 platform_urls = patterns('galaxy.api.views',
     url(r'^$',                         'platform_list'),
     url(r'^(?P<pk>[0-9]+)/$',          'platform_detail'),
 )
 
 rating_urls = patterns('galaxy.api.views',
-    url(r'^$',                         'rating_list'),
+    url(r'^$',                          'rating_list'),
     url(r'^(?P<pk>[0-9]+)/$',           'rating_detail'),
     url(r'^(?P<pk>[0-9]+)/up_votes/$',  'rating_up_votes_list'),
     url(r'^(?P<pk>[0-9]+)/down_votes/$','rating_down_votes_list'),
+)
+
+
+search_urls = patterns('galaxy.api.views',
+    url(r'^$',                           'api_v1_search_view'),
+    url(r'facetedplatforms/$',           FacetedView.as_view(), kwargs={ 'facet_key': 'platforms', 'model': 'Role' }),
+    url(r'facetedtags/$',                FacetedView.as_view(), kwargs={ 'facet_key':'tags', 'model': 'Role' }),
+    url(r'platforms/$',                  PlatformsSearchView.as_view(), name='platforms_search_view'),
+    url(r'tags/$',                       TagsSearchView.as_view(), name='tags_search_view'),
 )
 
 v1_urls = patterns('galaxy.api.views',
@@ -69,12 +78,14 @@ v1_urls = patterns('galaxy.api.views',
     url(r'^me/$',                      'user_me_list'),
     url(r'^users/',                    include(user_urls)),
     url(r'^roles/',                    include(role_urls)),
-    url(r'^categories/',               include(category_urls)),
     url(r'^platforms/',                include(platform_urls)),
     url(r'^ratings/',                  include(rating_urls)),
+    url(r'^search/',                   include(search_urls)),
 )
 
 urlpatterns = patterns('galaxy.api.views',
     url(r'^$',                         'api_root_view'),
     url(r'^v1/',                       include(v1_urls)),
 )
+
+urlpatterns += router.urls

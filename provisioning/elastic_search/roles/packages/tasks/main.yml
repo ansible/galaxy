@@ -1,0 +1,14 @@
+---
+
+- name: Install epel
+  yum: name=epel-release
+
+- name: Install RPM packages we might want/need 
+  yum: name={{item}}
+  with_items:
+  - gcc
+  - git
+  - iptables-services
+  - python-pip
+  - make
+  - ntp

@@ -8,7 +8,7 @@ from galaxy.api.aggregators import *
 class Migration(migrations.Migration):
 
     def update_roles(apps, schema_editor):
-        # Going forward each rating will contain a single score from 1 to 5.
+        # Going forward num_ratings and average_score will be stored on the role
         Roles = apps.get_model("main", "Role")
         for role in Roles.objects.all():
             role.num_ratings = role.ratings.filter(active=True).count()

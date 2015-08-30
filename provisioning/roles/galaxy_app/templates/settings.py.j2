@@ -97,6 +97,14 @@ CACHES = {
     }
 }
 
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': '{{ galaxy_haystck_connection }}',
+        'INDEX_NAME': 'haystack',
+    },
+}
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_SAVE_EVERY_REQUEST = True
 
@@ -243,6 +251,7 @@ INSTALLED_APPS = (
     'djcelery',
     'maintenance',
     'rest_framework',
+    'haystack',
     # our apps
     'galaxy.accounts',
     'galaxy.main',

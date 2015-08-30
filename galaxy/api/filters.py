@@ -33,6 +33,9 @@ from django.db.models.fields.related import ForeignObjectRel
 from rest_framework.exceptions import ParseError
 from rest_framework.filters import BaseFilterBackend
 
+# drf-haystack
+from drf_haystack.filters import HaystackFilter
+
 # Galaxy
 from galaxy.main.models import UserAlias
 
@@ -257,6 +260,26 @@ class OrderByBackend(BaseFilterBackend):
                 except IndexError:
                     pass
             return queryset
+        except FieldError, e:
+            # Return a 400 for invalid field names.
+            raise ParseError(*e.args)
+
+class HaystackFilter(HaystackFilter):
+    def filter_queryset(self, request, queryset, view):
+        qs = super(HaystackFilter, self).filter_queryset(request, queryset, view)
+        try:
+            order_by = None
+            for key, value in request.GET.items():
+                if key in ('order', 'order_by'):
+                    order_by = value
+                    if ',' in value:
+                        order_by = tuple(value.split(','))
+                    else:
+                        order_by = (value,)
+            if order_by:
+                qs = qs.order_by(*order_by)
+                #print 'order_by: %s' % order_by
+            return qs
         except FieldError, e:
             # Return a 400 for invalid field names.
             raise ParseError(*e.args)

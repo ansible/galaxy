@@ -1,0 +1,3 @@
+[linode]
+45.79.217.103 ansible_ssh_user=chouseknecht
+

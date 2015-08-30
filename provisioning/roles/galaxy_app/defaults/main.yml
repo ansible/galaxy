@@ -31,3 +31,6 @@ galaxy_ssl_cachain: null
 # Github API settings
 
 galaxy_github_api_token: ""
+
+# Haystack / elasticsearch
+galaxy_haystack_connection: "http://127.0.0.1:9200/"
