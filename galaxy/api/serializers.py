@@ -27,7 +27,7 @@ except ImportError:
 
 from rest_framework import fields
 from rest_framework import serializers
-from rest_framework.compat import get_concrete_model
+#from rest_framework.compat import get_concrete_model
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
@@ -92,7 +92,8 @@ class BaseSerializer(serializers.ModelSerializer):
     #    super(BaseSerializer, self).to_representation(obj)
 
     def get_fields(self):
-        opts = get_concrete_model(self.Meta.model)._meta
+        # opts = get_concrete_model(self.Meta.model)._meta
+        opts = self.Meta.model._meta.concrete_model._meta
         ret = super(BaseSerializer, self).get_fields()
         for key, field in ret.items():
             if key == 'id' and not getattr(field, 'help_text', None):
@@ -220,15 +221,6 @@ class MeSerializer(BaseSerializer):
             ]) for g in obj.roles.filter().order_by('pk')
         ]
         return d
-
-class VoteSerializer(BaseSerializer):
-    """
-    A limited serialization of the user model for use
-    with the up/down vote lists on ratings
-    """
-    class Meta:
-        model = User
-        fields = ('id', 'username')
 
 class UserRoleContributorsSerializer(BaseSerializer):
     avatar_url     = serializers.SerializerMethodField()
@@ -529,10 +521,6 @@ class RoleRatingSerializer(BaseSerializer):
         if obj is None:
             return {}
         res = super(RoleRatingSerializer, self).get_related(obj)
-        res.update(dict(
-            up_votes = reverse('api:rating_up_votes_list', args=(obj.pk,)),
-            down_votes = reverse('api:rating_down_votes_list', args=(obj.pk,)),
-        ))
         return res
 
     def get_summary_fields(self, obj):
@@ -718,6 +706,8 @@ class RoleDetailSerializer(BaseSerializer):
 class RoleSearchSerializer(HaystackSerializer):
     score = serializers.SerializerMethodField()
     id = serializers.SerializerMethodField()
+    platforms = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
 
     class Meta:
         # The `index_classes` attribute is a list of which search indexes
@@ -729,7 +719,7 @@ class RoleSearchSerializer(HaystackSerializer):
         # fields belong to the search index!
         fields = [
             "name", "description", "tags", "platforms", "username", "average_score", "num_ratings",
-            "created", "modified", "readme", "text"
+            "created", "modified", "text", "autocomplete", "owner_id"
         ]
 
     def get_score(self, instance):
@@ -737,6 +727,12 @@ class RoleSearchSerializer(HaystackSerializer):
 
     def get_id(self, instance):
         return int(instance.pk)
+
+    def get_platforms(self, instance):
+        return [p for p in instance.platforms]
+
+    def get_tags(self, instance):
+        return [t for t in instance.tags]
 
 class ElasticSearchDSLSerializer(serializers.BaseSerializer):
     def to_representation(self, obj):

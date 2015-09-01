@@ -278,7 +278,6 @@ class HaystackFilter(HaystackFilter):
                         order_by = (value,)
             if order_by:
                 qs = qs.order_by(*order_by)
-                #print 'order_by: %s' % order_by
             return qs
         except FieldError, e:
             # Return a 400 for invalid field names.

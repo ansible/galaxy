@@ -3,80 +3,67 @@
 <div class="container list-container">
 
     <div class="row">
-        <div class="col-lg-2">
-        <!--Sidebar content-->
+        <div class="col-lg-12">
+            
+            <autocomplete search-placeholder="Search roles" search-suggestions="suggestions" search-onkeyup="onKeyUp"
+                search-function="search" search-suggestion-function="suggestionSearch"></autocomplete>
+              
+            <table class="table ga-table-striped role-list-table">
+                <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Tags</th>
+                    <th>Description</th>
+                    <th>Platforms</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-show="roles.length === 0 && !loading">
+                    <td>No roles found.</td>
+                </tr>
+                <tr ng-repeat="role in roles">
+                     <td class="role">
+                         <div class="rolename"><a href="#/roles/{{role.id}}">{{role.name}}</a></div>
+                         <div class="score-section">
+                             <div class="scores">
+                                 <div class="score">
+                                     <span ng-show="role.average_score == '0.0'" class="score-value-na">NA</span>
+                                     <span ng-show="role.average_score != '0.0'" class="score-value">{{ role.average_score|number:1 }}</span>
+                                     <span class="fld-label">Score</span>
+                                 </div>
+                             </div>
+                         </div>
+                         <div ng-show="display_user_info" class="userinfo">
+                             <span class="username"><span class="fld-label">Author:</label> <a href="#/users/{{role.summary_fields.owner.id}}">{{role.username}}</a></span><br />
+                         </div>
+                     </td>
+                     <td class="col-lg-2">
+                         <div ng-repeat="tag in role.tags" class="category">{{ tag }}</a>
+                     </td>
+                     <td class="col-lg-7 description">
+                          {{role.description}}
+                          <div class="dates">
+                              <div class="date">
+                                  <div class="fld-label">Created On:</div>
+                                  <div class="value">{{role.created|date:"short"}}</div>
+                              </div>
+                              <div class="date" ng-show="role.created != role.modified">
+                                  <div class="fld-label">Modified:</div>
+                                  <div class="value">{{role.modified|date:"short"}}</div>
+                              </div>
+                          </div>
+                      </td>
+                      <td class="col-lg-2">
+                          <div ng-repeat="platform in role.platforms">
+                              <span class="description">{{ platform }}</span>
+                          </div>
+                      </td>
+                 </tr>
+                 </tbody>
+             </table>
+            <table>
 
-            <div class="well tag-cloud" style="border: 1px #ccc solid; padding: 5px;">
-               <input type="text" name="categories-select" id="categories-select" ng-change="change_category()" ng-model="selectedCategories" class="form-control">
-               <!-- <div class="title" style="font-weight: bold; text-decoration: overline; margin-bottom: 5px;">Categories</div> -->
-               <div class="cloud">
-                   <p ng-repeat="tag in tags"><a href class="tag" ng-click="pick_category(tag)">{{ tag }}</a></p>
-               </div>
-            </div>
-
-        </div><!-- col-lg-2 sidebar -->
-
-        <div class="col-lg-10">
-        <!--Body content-->
-
-              <ng-include src="'/static/partials/filterWidget.html'"></ng-include>
-
-              <table class="table ga-table-striped role-list-table">
-                  <thead>
-                  <tr>
-                      <th>Role</th>
-                      <th>Categories</th>
-                      <th>Description</th>
-                      <th>Platforms</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr ng-show="roles.length === 0 && !loading">
-                      <td>No roles found.</td>
-                  </tr>
-                  <tr ng-repeat="role in roles">
-                       <td class="role">
-                           <div class="rolename"><a href="#/roles/{{role.id}}">{{role.name}}</a></div>
-                           <div class="score-section">
-                               <div class="scores">
-                                   <div class="score">
-                                       <span ng-show="role.average_score == '0.0'" class="score-value-na">NA</span>
-                                       <span ng-show="role.average_score != '0.0'" class="score-value">{{ role.average_score|number:1 }}</span>
-                                       <span class="fld-label">Score</span>
-                                   </div>
-                               </div>
-                           </div>
-                           <div ng-show="display_user_info" class="userinfo">
-                               <span class="username"><span class="fld-label">Author:</label> <a href="#/users/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a></span><br />
-                           </div>
-                       </td>
-                       <td class="col-lg-2">
-                           <a href="#/roles/category/{{category}}" ng-repeat="category in role.summary_fields.categories" class="category">{{category}}</a>
-                       </td>
-                       <td class="col-lg-7 description">
-                            {{role.description}}
-                            <div class="dates">
-                                <div class="date">
-                                    <div class="fld-label">Created On:</div>
-                                    <div class="value">{{role.created|date:"short"}}</div>
-                                </div>
-                                <div class="date" ng-show="role.created != role.modified">
-                                    <div class="fld-label">Modified:</div>
-                                    <div class="value">{{role.modified|date:"short"}}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="col-lg-2">
-                            <div ng-repeat="platform in role.platforms">
-                                <span class="description">{{ platform }}</span>
-                            </div>
-                        </td>
-                   </tr>
-                   </tbody>
-               </table>
-              <table>
-
-              <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
+            <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
 
         </div><!-- col-lg-10 body -->
     </div><!-- row -->

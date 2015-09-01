@@ -60,8 +60,6 @@ platform_urls = patterns('galaxy.api.views',
 rating_urls = patterns('galaxy.api.views',
     url(r'^$',                          'rating_list'),
     url(r'^(?P<pk>[0-9]+)/$',           'rating_detail'),
-    url(r'^(?P<pk>[0-9]+)/up_votes/$',  'rating_up_votes_list'),
-    url(r'^(?P<pk>[0-9]+)/down_votes/$','rating_down_votes_list'),
 )
 
 

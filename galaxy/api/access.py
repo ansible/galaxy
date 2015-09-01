@@ -34,6 +34,7 @@ from rest_framework.exceptions import ParseError, PermissionDenied
 from galaxy.accounts.models import CustomUser
 from galaxy.main.models import *
 
+logger = logging.getLogger('galaxy.api.access')
 
 __all__ = ['check_user_access']
 
@@ -59,10 +60,11 @@ def check_user_access(user, model_class, action, *args, **kwargs):
         if not access_method:
             continue
         result = access_method(*args, **kwargs)
-        #logger.debug('%s.%s %r returned %r', access_instance.__class__.__name__,
-        #             access_method.__name__, args, result)
+        logger.debug('%s.%s %r returned %r', access_instance.__class__.__name__,
+                     access_method.__name__, args, result)
         if result:
             return result
+    logger.debug('check_user_access: %s %s %s returned %s', user, model_class, action, False)
     return False
 
 def get_pk_from_dict(_dict, key):
@@ -176,7 +178,6 @@ class RoleAccess(BaseAccess):
             else:
                 # but everyone else can
                 return True
-
         return False
 
     def get_queryset(self):
@@ -194,22 +195,6 @@ class RoleRatingAccess(BaseAccess):
         if not hasattr(obj, "owner"):
             return False
         return bool(obj.owner.id == self.user.id or self.user.is_staff)
-
-    def can_attach(self, obj, sub_obj, relationship, data,
-                   skip_sub_obj_read_check=False):
-        """
-        Used for adding up/down votes to ratings. Users can add 
-        a vote if the rating is not owned by themselves and only
-        if the specified ID in the data hash is their own.
-        """
-        if not self.user.is_authenticated:
-            return False
-        elif sub_obj.id != self.user.id:
-            return False
-        elif obj.owner.id == self.user.id:
-            return False
-        else:
-            return True
 
     def get_queryset(self):
         qs = self.model.objects.filter(active=True, role__active=True, role__owner__is_active=True).distinct()

@@ -24,10 +24,10 @@
             scope.getPage = function(n,target) {
                 var data;
                 if (target) {
-                   data = scope.list_data[target];
+                    data = scope.list_data[target];
                 }
                 else {
-                   data = scope.list_data
+                    data = scope.list_data
                 }
                 data.page = n;
                 data.refresh();
@@ -36,17 +36,17 @@
             scope.setPageRange = function(target) {
                 var data;
                 if (target) {
-                   data = scope.list_data[target];
+                    data = scope.list_data[target];
                 }
                 else {
-                   data = scope.list_data
+                    data = scope.list_data
                 }
 
                 if (data.page % 10 == 0) {
-                   var first = Math.floor((data.page - 1)/10) * 10 + 1;
+                    var first = Math.floor((data.page - 1)/10) * 10 + 1;
                 }
                 else {
-                   var first = Math.floor(data.page/10) * 10 + 1;
+                    var first = Math.floor(data.page/10) * 10 + 1;
                 }
                 first = (first <= 0) ? 1 : first;
                 var last = Math.ceil(data.page/10) * 10;

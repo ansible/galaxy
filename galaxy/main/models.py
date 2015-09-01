@@ -310,6 +310,9 @@ class Role(CommonModelNameNotUnique):
     def get_unique_platforms(self):
         return [platform.name for platform in self.platforms.filter(active=True).distinct('name')]
 
+    def get_username(self):
+        return self.owner.username
+
 class RoleVersion(CommonModelNameNotUnique):
     class Meta:
         ordering = ('-loose_version',)
@@ -448,7 +451,7 @@ class RoleRating(PrimordialModel):
         
         if len(self.comment) > 5000:
             self.comment = self.comment[:5000]
-
+        print 'saving!' 
         super(RoleRating, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

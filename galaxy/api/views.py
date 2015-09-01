@@ -37,6 +37,7 @@ from django.apps import apps
 
 # haystack
 from drf_haystack.viewsets import HaystackViewSet
+from drf_haystack.filters import HaystackAutocompleteFilter
 from galaxy.api.filters import HaystackFilter
 from haystack.query import SearchQuerySet
 
@@ -331,26 +332,6 @@ class RatingDetail(RetrieveUpdateDestroyAPIView):
             raise Http404()
         return obj
 
-class RatingUpVotesList(SubListCreateAPIView):
-    model = User
-    serializer_class = VoteSerializer
-    parent_model = RoleRating
-    relationship = 'up_votes'
-
-    def get_queryset(self):
-        qs = super(RatingUpVotesList, self).get_queryset()
-        return annotate_user_queryset(qs)
-
-class RatingDownVotesList(SubListCreateAPIView):
-    model = User
-    serializer_class = VoteSerializer
-    parent_model = RoleRating
-    relationship = 'down_votes'
-
-    def get_queryset(self):
-        qs = super(RatingDownVotesList, self).get_queryset()
-        return annotate_user_queryset(qs)
-
 class UserMeList(RetrieveAPIView):
     model = User
     serializer_class = MeSerializer
@@ -368,6 +349,7 @@ class RoleSearchView(HaystackViewSet):
     serializer_class = RoleSearchSerializer
     url_path = ''
     filter_backends = [HaystackFilter]
+    #filter_backends = [HaystackAutocompleteFilter]
 
 class FacetedView(APIView):
     def get(self, request, *agrs, **kwargs):
@@ -401,7 +383,7 @@ class PlatformsSearchView(APIView):
                 q = Q('match', name=value)
             if key == 'releases':
                 q = Q('match', releases=value)
-            if key == 'content':
+            if key in ('content','autocomplete'):
                 q = Q('match', name=value) | Q('match', releases=value)
             if key == 'page':
                 page = int(value) - 1 if int(value) >= 0 else 0
@@ -415,8 +397,8 @@ class PlatformsSearchView(APIView):
         s = s[page * page_size:page * page_size + page_size]
         result = s.execute()
         serializer = ElasticSearchDSLSerializer(result.hits, many=True)
-        response = get_response(parms=request.GET.items(), result=result, view='api:platforms_search_view')
-        response['result'] = serializer.data
+        response = get_response(request=request, result=result, view='api:platforms_search_view')
+        response['results'] = serializer.data
         return Response(response)
 
 class TagsSearchView(APIView):
@@ -426,7 +408,7 @@ class TagsSearchView(APIView):
         page_size = 10
         order_fields = 'tag'
         for key,value in request.GET.items():
-            if key in ('tag','content'):
+            if key in ('tag','content','autocomplete'):
                 q = Q('match', tag=value)
             if key == 'page':
                 page = int(value) - 1 if int(value) >= 0 else 0
@@ -441,7 +423,7 @@ class TagsSearchView(APIView):
         result = s.execute()
         serializer = ElasticSearchDSLSerializer(result.hits, many=True)
         response = get_response(request=request, result=result, view='api:tags_search_view')
-        response['result'] = serializer.data
+        response['results'] = serializer.data
         return Response(response)
         
 

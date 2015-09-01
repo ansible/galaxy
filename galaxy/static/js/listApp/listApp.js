@@ -19,6 +19,7 @@
         'categoryService',
         'ratingService',
         'roleService',
+        'roleSearchService',
         'storageService',
         'userService',
         'relatedService',
@@ -29,7 +30,7 @@
         'paginateService',
         'searchService',
         'platformService',
-        'galaxyDirectives',
+        'commonDirectives',
         'galaxyUtilities'
     ]);
 

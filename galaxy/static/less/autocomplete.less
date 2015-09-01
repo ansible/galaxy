@@ -1,0 +1,36 @@
+
+#galaxy-search {
+    position: relative;
+    margin-bottom: 30px;
+
+    .form-control {
+        display: inline-block;
+        width: 400px;
+    }
+
+    .results {
+        position: absolute;
+        top: 37px;
+        left: 0;
+        z-index: +1;
+        border: 1px solid #ccc;
+        background-color: @white;
+        min-width: 400px;
+        padding: 5px;
+        .title { 
+            color: @charcoal;
+        }
+        .detail {
+            color: @blue;
+            font-weight: bold;
+            padding-left: 10px;
+        }
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+}

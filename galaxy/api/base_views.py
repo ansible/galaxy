@@ -22,6 +22,7 @@
 import inspect
 import json
 import warnings
+import logging
 
 # Django
 from django.http import HttpResponse, Http404
@@ -54,6 +55,8 @@ __all__ = [
     'SubListAPIView', 'SubListCreateAPIView', 'RetrieveAPIView',
     'RetrieveUpdateAPIView', 'RetrieveUpdateDestroyAPIView', 
 ]
+
+logger = logging.getLogger('galaxy.api.base_views')
 
 def get_view_name(cls, suffix=None):
     '''
@@ -287,9 +290,8 @@ class ListCreateAPIView(ListAPIView, generics.ListCreateAPIView):
     # Base class for a list view that allows creating new objects.
 
     def pre_save(self, obj):
-        super(ListCreateAPIView, self).pre_save(obj)
-        if hasattr(obj, 'owner_id'):
-            obj.owner = self.request.user
+        if hasattr(self.model, 'owner'):
+            obj['owner_id'] = self.request.user.id
 
 class SubListAPIView(ListAPIView):
     # Base class for a read-only sublist view.
@@ -325,6 +327,7 @@ class SubListAPIView(ListAPIView):
         else:
             args = (parent_access, parent, None)
         if not check_user_access(self.request.user, self.parent_model, *args):
+            logger.debug('check_parent_access: parent_access=%s parent=%s', parent_access, parent.__class__.__name__)
             raise PermissionDenied()
 
     def get_queryset(self):
@@ -357,6 +360,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
 
         # Make a copy of the data provided (since it's readonly) in order to
         # inject additional data.
+
         if hasattr(request.DATA, 'dict'):
             data = request.DATA.dict()
         else:
@@ -364,31 +368,39 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         
         # add the parent key to the post data using the pk from the URL
         parent_key = getattr(self, 'parent_key', None)
+        logger.debug('SubListCreateAPIView.create: parent_key=%s', parent_key)
         if parent_key:
             data[parent_key] = self.kwargs['pk']
-
+        logger.debug('SubListCreateAPIView.create: data.parent_key=%s', data[parent_key])
+        
         # attempt to deserialize the object
         try:
             serializer = self.serializer_class(data=data)
             if not serializer.is_valid():
+                logger.debug('SubListCreateAPIView.create: serializer failed validation')
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception, e:
+            logger.debug('SubListCreateAPIView.create: serializer threw an error')
             return Response("serializer errors", status=status.HTTP_400_BAD_REQUEST)
 
         # Verify we have permission to add the object as given.
-        if not check_user_access(request.user, self.model, 'add', serializer.init_data):
+        if not check_user_access(request.user, self.model, 'add', serializer.validated_data):
+            logger.debug('SubListCreateAPIView.create: permission denied user=%s model=%s action=add',
+                request.user, self.model._meta.verbose_name)
             raise PermissionDenied()
 
-        # save the object through the serializer, reload and returned the saved
+
+        # save the object through the serializer, reload and return the saved
         # object deserialized
+        
         try:
-            self.pre_save(serializer.object)
+            self.pre_save(serializer.validated_data)
             obj = serializer.save()
             data = self.serializer_class(obj).data
         except IntegrityError, e:
             return Response("database integrity conflict", status=status.HTTP_409_CONFLICT)
         except Exception, e:
-            return Response("unknown error: %s" % str(e), status=status.HTTP_400_BADREQUEST)
+            return Response("unknown error: %s" % str(e), status=status.HTTP_400_BAD_REQUEST)
 
         return Response(data, status=status.HTTP_201_CREATED)
 
@@ -401,11 +413,12 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         relationship = getattr(parent, self.relationship)
         sub_id = request.DATA.get('id', None)
         data = request.DATA
-
+        
         # FIXME: We have special case handling for RoleRatings
         #        which would probably be better moved into 
         #        a new class and overridden completely
         is_role_rating = isinstance(parent, RoleRating)
+        logger.debug('SubListCreateAPIView.attach: parent=%s', parent.__class__.__name__)
 
         # Create the sub object if an ID is not provided.
         # We never create objects when attaching to a RoleRating
@@ -422,6 +435,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
                     location = None
                 created = True
             except:
+                logger.debug('SubListCreateAPIView.attach: not sub_id and not is_role_rating threw Permission Denied')
                 raise PermissionDenied()
 
         # Retrive the sub object (whether created or by ID).
@@ -432,7 +446,6 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         if not created and not is_role_rating:
             # Update the object to make sure the data is correct, but
             # verify we have permission to edit before trying to update
-            
             if not check_user_access(request.user, self.model, 'change', sub, data):
                 raise PermissionDenied()
             else:
@@ -457,19 +470,19 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         # FIXME: the base view for objects with mutually exclusive
         #        relationship should probably be split off into a 
         #        new view, which codifies the mutually exclusive things
-        if attached and is_role_rating:
+        #if attached and is_role_rating:
             """
             Up/down votes are mutually exclusive. If we've attached
             the user to one of the lists, we need to make sure we 
             remove them from the other (if they're in it).
             """
-            mux_relationship = None
-            if self.relationship == 'up_votes':
-                mux_relationship = getattr(parent, 'down_votes')
-            elif self.relationship == 'down_votes':
-                mux_relationship = getattr(parent, 'up_votes')
-            if mux_relationship and sub in mux_relationship.all():
-                mux_relationship.remove(sub)
+            # mux_relationship = None
+            # if self.relationship == 'up_votes':
+            #    mux_relationship = getattr(parent, 'down_votes')
+            # elif self.relationship == 'down_votes':
+            #    mux_relationship = getattr(parent, 'up_votes')
+            # if mux_relationship and sub in mux_relationship.all():
+            #    mux_relationship.remove(sub)
 
         if created:
             headers = {}
