@@ -133,23 +133,20 @@ def import_role(role_id, target="all"):
     except Exception, e:
         fail_import_task(role, logger, "Failed to update the specified role's fields. Please retry the import in a few minutes. If you continue to receive a failure, please contact support. Error was: %s" % str(e))
 
-    # Add in the categories 
-    meta_categories = galaxy_info.get("categories", [])
-    if len(meta_categories) == 0:
-        fail_import_task(role, logger, "You must specify categories for your role. Make sure the #categories: line is not commented out in your meta/main.yml file.")
-    for category in meta_categories:
-        try:
-            logger.info("getting category: %s" % category)
-            category_obj = Category.objects.get(name=category)
-            role.categories.add(category_obj)
-        except:
-            logger.warning("Invalid category: %s (skipping)" % category)
+    # Add tags / categories 
+    meta_tags = []
+    if galaxy_info.get("categories", None):
+        for cat in galaxy_info.get("categories"):
+            meta_tags.append(cat)
 
-    # Remove categories that are no longer specified in the metadata
-    for category in role.categories.all():
-        if category.name not in meta_categories:
-            logger.info(" category %s is no longer in the metadata, removing it" % category.name)
-            role.categories.remove(category)
+    if galaxy_info.get("tags", None):
+        for tag in galaxy_info.get("tags"):
+            meta_tags.append(tag)
+    
+    role.tags = meta_tags
+
+    if len(role.tags) == 0:
+        logger.warning("No tags found for %s.%s" % role.owner__username,role.name)
 
     # Add in the platforms and versions
     meta_platforms = galaxy_info.get("platforms", [])

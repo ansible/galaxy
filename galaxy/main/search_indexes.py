@@ -16,10 +16,10 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     created = indexes.DateTimeField(model_attr='created', default='')
     modified = indexes.DateTimeField(model_attr='modified', default='')
     
+    # autocomplete 
+    autocomplete = indexes.EdgeNgramField(use_template=True)
 
-    # We add this for autocomplete.
-    content_auto = indexes.EdgeNgramField()
-    
+
     def get_model(self):
         return Role
 
