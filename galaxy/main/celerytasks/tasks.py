@@ -19,6 +19,7 @@ import re
 import os.path
 import time
 import yaml
+import bleach
 
 from celery import current_task, task
 from github import Github
@@ -27,6 +28,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils import text, html
+from django.utils.html import mark_safe
 
 from galaxy.main.utils import db_common
 from galaxy.main.models import *
@@ -43,7 +45,7 @@ def fail_import_task(role, logger, msg):
                 transaction.commit()
     except Exception, e:
         transaction.rollback()
-        logger.error("error while trying to update import task state for role %s: %s" % (role,e))
+        logger.error("Error updating import task state for role %s: %s" % (role,e))
     logger.error(msg)
     raise Exception(msg)
 
@@ -58,6 +60,30 @@ def strip_input(input):
         return input.strip()
     else:
         return input
+
+def get_readme(repo):
+    """
+    Retrieve README.md from the repo and sanitize by removing all markup. Should preserve unicode characters.
+    """
+    # load README.md
+    try: 
+        readme = repo.get_file_contents("README.md")
+    except:
+        fail_import_task(role, logger, "Failed to find a README.md. All role repositories must include a README.md. Please refer to the 'Getting Started' documentation regarding role requirements. Once the issue has been corrected in the repsotitory, you can retry the import.")
+    
+    # decode base64
+    try: 
+        readme = readme.content.decode('base64')
+    except:
+        fail_import_task(role, logger, "Failed to base64 decode README.md file.")
+
+    # Remove all HTML tags while preserving any unicde chars
+    try:
+        readme = bleach.clean(readme, strip=True, tags=[])
+    except Exception, e:
+        fail_import_task(role, logger, "Failed to strip HTML tags in README.md: %s" % e)
+    
+    return readme
 
 @task(throws=(Exception,))
 #@transaction.commit_manually
@@ -78,7 +104,7 @@ def import_role(role_id, target="all"):
         role_import.save()
         transaction.commit()
     except:
-        fail_import_task(None, logger, "Failed to get the role id: %d. No role was found." % role_id)
+        fail_import_task(None, logger, "Failed to get role id: %d. No role was found." % int(role_id))
 
     # create an API object and get the repo
     try:
@@ -90,7 +116,7 @@ def import_role(role_id, target="all"):
             gh_api = Github(settings.GITHUB_USERNAME, settings.GITHUB_PASSWORD)
         gh_api.get_api_status()
     except:
-        fail_import_task(role, logger, "Failed to connect to the Github API. This is most likely a temporary error, please re-try your import in a few minutes.")
+        fail_import_task(role, logger, "Failed to connect to Github API. This is most likely a temporary error, please re-try your import in a few minutes.")
     try:
         user = gh_api.get_user(role.github_user)
         repo = user.get_repo("%s" % role.github_repo)
@@ -110,11 +136,8 @@ def import_role(role_id, target="all"):
     except Exception, e:
         fail_import_task(role, logger, "Failed to parse 'meta/main.yml'. Please refer to the 'Getting Started' documentation regarding the proper format of the 'meta/main.yml' file. Once the issue has been corrected in the repository, you can retry the import. Real Error: %s" % e)
 
-    # validate README.md
-    try:
-        readme_file = html.escape(html.strip_tags(repo.get_file_contents("README.md").content.decode('base64')))
-    except:
-        fail_import_task(role, logger, "Failed to find a README.md. All role repositories must include a README.md. Please refer to the 'Getting Started' documentation regarding role requirements. Once the issue has been corrected in the repsotitory, you can retry the import.")
+    readme_file = get_readme(repo)
+
     # add the new fields 
     try:
         role.readme              = readme_file
@@ -248,7 +271,8 @@ def import_role(role_id, target="all"):
                 add_role_version(git_tag)
                 break
     except Exception, e:
-        fail_import_task(role, logger, "An error occurred while importing versions/categories. Please verify the formatting of your 'meta/main.yml' and ensure that these fields conform to the style specified in the 'Getting Started' documentation. Once the issue has been corrected, you can retry your import")
+        fail_import_task(role, logger, "An error occurred while importing versions/tags. Please verify the formatting of your 'meta/main.yml' and ensure that these fields conform to the style specified in the 'Getting Started' documentation. Once the issue has been corrected, you can retry your import")
+    
     # mark the role valid and save it
     try:
         role_import.state = "SUCCESS"
@@ -267,39 +291,39 @@ def import_role(role_id, target="all"):
 # Periodic Tasks
 #----------------------------------------------------------------------
 
-@task()
-def calculate_top_roles():
-    """
-    Used to periodically generate the top X tasks 
-    in each category. This information is written
-    to the django cache (memcache) so that it is 
-    accessible quickly and cheaply.
-    """
+# @task()
+# def calculate_top_roles():
+#     """
+#     Used to periodically generate the top X tasks 
+#     in each category. This information is written
+#     to the django cache (memcache) so that it is 
+#     accessible quickly and cheaply.
+#     """
     
-    db_common.calculate_top_roles()
-    return True
+#     db_common.calculate_top_roles()
+#     return True
 
-@task()
-def calculate_top_users():
-    """
-    Used to periodically rank users based on the ratings on 
-    roles they have submitted. These rankings are stored in
-    a separate table since we're using the default auth.User
-    model.
-    """
+# @task()
+# def calculate_top_users():
+#     """
+#     Used to periodically rank users based on the ratings on 
+#     roles they have submitted. These rankings are stored in
+#     a separate table since we're using the default auth.User
+#     model.
+#     """
 
-    db_common.calculate_top_users()
-    return True
+#     db_common.calculate_top_users()
+#     return True
 
-@task()
-def calculate_top_reviewers():
-    """
-    Used to periodically rank users based on the number of 
-    reviews they have submitted, plus the spread on the number 
-    of up/down votes their reviews have received. These rankings 
-    are stored in a separate table since we're using the default 
-    auth.User model.
-    """
+# @task()
+# def calculate_top_reviewers():
+#     """
+#     Used to periodically rank users based on the number of 
+#     reviews they have submitted, plus the spread on the number 
+#     of up/down votes their reviews have received. These rankings 
+#     are stored in a separate table since we're using the default 
+#     auth.User model.
+#     """
 
-    db_common.calculate_top_reviewers()
-    return True
+#     db_common.calculate_top_reviewers()
+#     return True
