@@ -29,6 +29,7 @@
         'PaginateInit',
         'queryParams',
         'fromQueryParams',
+        'role',
         _roleDetailCtrl
     ]);
 
@@ -48,7 +49,8 @@
         Stars,
         PaginateInit,
         queryParams,
-        fromQueryParams) {
+        fromQueryParams,
+        role) {
 
         $scope.page_title = 'Role Detail';
         $scope.showRoleName = false;
@@ -69,56 +71,22 @@
             }
         };
 
-        $scope.role = {num_ratings: 0};
+        $scope.role = role;
         $scope.ratings = [];
         $scope.display_user_info = 1;
-
+        $scope.getRole = _getRole;
+        $scope.$on('getRelated', _getRelated);
+        $scope.showRatingDialog = _showRatingDialog;
+        $scope.staffDeleteRating = _deleteRating;
+        $scope.staffDeleteRole = _deleteRole;
+        console.log(role);
+        _getRelated(null, 'ratings', role.related.ratings);
         PaginateInit({'scope': $scope});
 
-        
-        $scope.startHover = function(set, itm) {
-            $scope[set + '_' + itm + '_' + 'over'] = true;
-            }
+        return; 
 
-        $scope.stopHover = function(set, itm) {
-            $scope[set + '_' + itm + '_' + 'over'] = false;
-            }
 
-        $scope.ratingHover = function(itm, label, flag) {
-            $scope[label + '_' + 'hover' + '_' + itm] = flag;
-            }
-
-        $scope.getRole = function() {
-            roleFactory.getRole($routeParams.role_id)
-                .success( function(data) {
-                    $scope.role = data;
-                    $scope.$emit('getRelated', 'ratings', data.related.ratings);
-                })
-                .error( function(error) {
-                    $scope.status = 'Unable to load role: ' + error.message;
-                });
-        }
-
-        
-        if ($scope.removeRelated) {
-            $scope.removeRelated();
-        }
-        $scope.removeRelated = $scope.$on('getRelated', function(e, target, url) {
-            $scope.list_data[target].url = url;
-            relatedFactory.getRelated($scope.list_data[target])
-                .success( function(data) {
-                    $scope.list_data[target].page = parseInt(data['cur_page']);
-                    $scope.list_data[target].num_pages = parseInt(data['num_pages']);
-                    $scope.list_data[target].page_range = [];
-                    $scope.setPageRange(target);
-                    $scope[target] = data['results'];
-                })
-                .error(function (error) {
-                    $scope.status = 'Unable to load related '+target+': ' + error.message;
-                });
-        });
-
-        var ModalInstanceCtrl = function ($scope, $modalInstance, role, ratingFactory, rating) {
+        function _modalController ($scope, $modalInstance, role, ratingFactory, rating) {
             $scope.alerts = [];
             $scope.role = role;
 
@@ -168,12 +136,33 @@
             };
         }
 
-        $scope.showRatingDialog = function() {
-            if (!my_info.authenticated) return;
+        function _deleteRating(id) {
+            ratingFactory.deleteRating(id)
+            .success(function (data) {
+                $scope.getRole();
+            })
+            .error(function (error) {
+                alert("Failed to remove rating "+id+", reason: "+error);
+            });
+        }
+
+        function _deleteRole(id) {
+            roleFactory.deleteRole(id)
+            .success(function (data) {
+                $location.path('/roles');
+            })
+            .error(function (error) {
+                alert("Failed to remove role "+id+", reason: "+error);
+            });
+        }
+
+        function _showRatingDialog() {
+            if (!my_info.authenticated) 
+                return;
 
             var modalInstance = $modal.open ({
                 templateUrl: "/static/partials/add-rating.html",
-                controller: ModalInstanceCtrl,
+                controller: _modalController,
                 resolve: {
                     role: function() { return $scope.role; },
                     ratingFactory: function() { return ratingFactory; },
@@ -206,28 +195,33 @@
                     $scope.getRole();
                     }
                 });
-            };
+        }
 
-        $scope.staffDeleteRating = function(id) {
-                ratingFactory.deleteRating(id)
-                .success(function (data) {
-                    $scope.getRole();
+        function _getRole() {
+            roleFactory.getRole($routeParams.role_id)
+                .success( function(data) {
+                    $scope.role = data;
+                    $scope.$emit('getRelated', 'ratings', data.related.ratings);
+                })
+                .error( function(error) {
+                    $scope.status = 'Unable to load role: ' + error.message;
+                });
+        }
+
+        function _getRelated(e, target, url) {
+            $scope.list_data[target].url = url;
+            relatedFactory.getRelated($scope.list_data[target])
+                .success( function(data) {
+                    $scope.list_data[target].page = parseInt(data['cur_page']);
+                    $scope.list_data[target].num_pages = parseInt(data['num_pages']);
+                    $scope.list_data[target].page_range = [];
+                    $scope.setPageRange(target);
+                    $scope[target] = data['results'];
                 })
                 .error(function (error) {
-                    alert("Failed to remove rating "+id+", reason: "+error);
+                    $scope.status = 'Unable to load related '+target+': ' + error.message;
                 });
-            };
+        }
 
-        $scope.staffDeleteRole = function(id) {
-                roleFactory.deleteRole(id)
-                .success(function (data) {
-                    $location.path('/roles');
-                })
-                .error(function (error) {
-                    alert("Failed to remove role "+id+", reason: "+error);
-                });
-            };
-
-        $scope.getRole();
     }
 })(angular);

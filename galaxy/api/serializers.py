@@ -210,8 +210,8 @@ class MeSerializer(BaseSerializer):
              ('description',g.description),
              ('github_user',g.github_user),
              ('github_repo',g.github_repo),
-             ('platforms',g.platforms.all()),
-             ('dependencies',g.dependencies.all()),
+             ('platforms', [p.name for p in g.platforms.all()]),
+             #('dependencies',g.dependencies.all()),
              ('versions', [version.name for version in g.versions.all()]),
              ('min_ansible_version',g.min_ansible_version),
              ('license',g.license),
@@ -643,12 +643,13 @@ class RoleTopSerializer(BaseSerializer):
 class RoleDetailSerializer(BaseSerializer):
     average_score        = serializers.SerializerMethodField()
     readme_html          = serializers.SerializerMethodField()
+    tags                 = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
         fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings',
                                 'github_user','github_repo','min_ansible_version','issue_tracker_url',
-                                'license','company','description','readme_html')
+                                'license','company','description','readme_html', 'tags')
 
     def to_native(self, obj):
         ret = super(RoleDetailSerializer, self).to_native(obj)
@@ -676,12 +677,15 @@ class RoleDetailSerializer(BaseSerializer):
         else:
             return obj.get_absolute_url()
 
+    def get_tags(self, obj):
+        return [t for t in obj.tags]
+
     def get_summary_fields(self, obj):
         if obj is None:
             return {}
         d = super(RoleDetailSerializer, self).get_summary_fields(obj)
 
-        d['dependencies'] = [str(g) for g in obj.dependencies.all()]
+        d['dependencies'] = [{ 'id': g.id, 'name': str(g) } for g in obj.dependencies.all()]
         d['ratings'] = [{'id':g.id, 'score':g.score} for g in obj.ratings.filter(owner__is_active=True)]
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
         d['versions'] = [{'name':g.name,'release_date':g.release_date} for g in obj.versions.all()]

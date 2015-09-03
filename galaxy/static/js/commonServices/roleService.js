@@ -9,7 +9,7 @@
 
 (function(angular) {
 
-    angular.module('roleService', ['ngResource'])
+    angular.module('roleService', [])
         .factory('roleFactory', ['$http','$cookies', _factory]);
 
     function _factory($http, $cookies) {

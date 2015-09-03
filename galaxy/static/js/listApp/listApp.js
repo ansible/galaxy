@@ -50,6 +50,7 @@
               templateUrl: '/static/partials/role-detail.html',
               controller: 'RoleDetailCtrl',
               resolve: {
+                  role: ['roleFactory', '$route', _getRole],
                   my_info: ['$q', 'meFactory', _getMyInfo]
               }
           }).
@@ -84,6 +85,10 @@
                 d.reject(err);
                 });
         return d.promise;
+    }
+
+    function _getRole(roleFactory, $route) {
+        return roleFactory.getRole($route.current.params.role_id).then(function(data) { return data.data; });
     }
 
 })(angular);

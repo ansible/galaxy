@@ -70,6 +70,15 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <div class="row" ng-show="role.tags && role.tags.length">
+                            <div class="col-lg-12">
+                                <div class="tags-container">
+                                    <div class="title">Tags</div>
+                                    <div ng-repeat="tag in role.tags" class="galaxy-tag">{{ tag }}</div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="row">
                             <div class="col-lg-6 col-md-6" ng-if="role.summary_fields.versions">
@@ -119,6 +128,31 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="dependencies" ng-show="role.summary_fields.dependencies.length > 0">
+                                    <table class="table ga-table-striped">
+                                        <caption>Dependencies</caption>
+                                        <thead>
+                                            <tr>
+                                                <th>Role</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="table-scroller">
+                                        <table class="table ga-table-striped">
+                                            <tbody>
+                                            <tr ng-repeat="dependency in role.summary_fields.dependencies">
+                                                <td><a href="/list#/roles/{{ dependency.id }}">{{ dependency.name }}</a></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+
                     </tab>
 
                     <tab heading="README">

@@ -4,8 +4,6 @@
         <thead>
         <tr>
             <th>Role</th>
-            <th>Versions</th>
-            <th>Categories</th>
             <th>Description</th>
             <th>Import Status <span tooltip-trigger="mouseenter" tooltip-placement="bottom" tooltip-append-to-body=true tooltip="Import tasks run in the background. This column shows the status of the background tasks related to your role."><i class="fa fa-question-circle"></i></span></th>
             <th class="text-right">Actions</th>
@@ -16,13 +14,11 @@
                 <td>
                  <a href="/list#/roles/{{role.id}}"><span ng-show="role.active">{{role.name}}</span><span ng-hide="role.active">{{role.original_name}}</span></a>
                 </td>
-                <td><div ng-repeat="version in role.versions" ng-show="$index < 4">{{version}}</div></td>
-                <td><div ng-repeat="category in role.categories"><a href="/list#/roles/category/{{category}}">{{category}}</a></div></td>
                 <td>{{ role.description }}</td>
                 <td ng-switch="role.import.state">
                     <span ng-switch-when="RUNNING" class="text-info"><i class="fa fa-spinner fa-spin fa-lg"></i> running</span>
                     <span ng-switch-when="SUCCESS" class="text-success"><i class="fa fa-ok-sign fa-lg"></i> OK</span>
-                    <span ng-switch-when="FAILED">FAILED:<br />{{role.import.status_message}}</span>
+                    <span ng-switch-when="FAILED"><strong>FAILED:</strong> {{role.import.status_message}}</span>
                     <span ng-switch-when="">Import task pending.</span>
                 </td>
                 <td class="role-actions text-right">
@@ -44,3 +40,11 @@
         </table>
     </div><!-- col-lg-12 -->
 </div><!-- row -->
+
+
+<!-- 
+<th>Versions</th>
+<th>Categories</th>            
+<td><div ng-repeat="version in role.versions" ng-show="$index < 4">{{version}}</div></td>
+<td><div ng-repeat="category in role.categories"><a href="/list#/roles/category/{{category}}">{{category}}</a></div></td>
+-->
