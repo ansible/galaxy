@@ -37,22 +37,22 @@
             scope.suggestionClicked = _suggestionClicked;
 
             if (scope.searchFunction)
-                var lazySearch = _.debounce(function() { scope.searchFunction(scope.searchValue); }, 500);
+                var lazySearch = _.debounce(function() { scope.searchFunction(scope.searchValue); }, 300);
 
             if (scope.searchOnkeyup)
                 var lazyKeyup = _.throttle(function() { scope.searchOnkeyup(scope.searchValue); }, 100);
 
             function _keyup(e) {
                 scope.showResults = true;
-                if (e.keyCode == 13) {
+                if (e.keyCode == 13 || e.keyCode == 9 || e.keyCode == 27) {
                     scope.showResults = false;
                     return;
                 }
                 if (scope.searchValue.length >= 3 && scope.searchOnkeyup)
                     scope.searchOnkeyup(scope.searchValue);
 
-                if ((scope.searchValue.length === 0 || scope.searchValue.length > 3) && lazySearch)
-                    lazySearch(scope.searchValue);
+                if ((scope.searchValue.length === 0 || scope.searchValue.length >= 3) && scope.searchFunction)
+                    scope.searchFunction(scope.searchValue);
             }
 
             function _focus() {

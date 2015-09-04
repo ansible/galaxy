@@ -661,7 +661,7 @@ class RoleDetailSerializer(BaseSerializer):
         res = super(RoleDetailSerializer, self).get_related(obj)
         res.update(dict(
             owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	    authors  = reverse('api:role_authors_list', args=(obj.pk,)),
+	        authors  = reverse('api:role_authors_list', args=(obj.pk,)),
             dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
             imports  = reverse('api:role_imports_list', args=(obj.pk,)),
             ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
@@ -708,7 +708,7 @@ class RoleDetailSerializer(BaseSerializer):
         return markdown.markdown(html_decode(obj.readme), extensions=['extra'])
 
 class RoleSearchSerializer(HaystackSerializer):
-    score = serializers.SerializerMethodField()
+    average_score = serializers.SerializerMethodField()
     id = serializers.SerializerMethodField()
     platforms = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
@@ -726,8 +726,8 @@ class RoleSearchSerializer(HaystackSerializer):
             "created", "modified", "text", "autocomplete", "owner_id"
         ]
 
-    def get_score(self, instance):
-        return instance.score
+    def get_average_score(self, instance):
+        return round(instance.average_score,1)
 
     def get_id(self, instance):
         return int(instance.pk)

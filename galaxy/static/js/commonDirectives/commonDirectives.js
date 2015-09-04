@@ -11,7 +11,8 @@
 
     angular.module('commonDirectives', [
         'textCollapseDirective',
-        'autocompleteDirective'
+        'autocompleteDirective',
+        'dotDotDotDirective'
     ]);
 
 })(angular);

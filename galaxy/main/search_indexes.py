@@ -9,12 +9,12 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     description = indexes.CharField(model_attr='description')
     tags = indexes.MultiValueField(model_attr='tags', default='', faceted=True)
     platforms = indexes.MultiValueField(default='', faceted=True)
-    # readme = indexes.CharField(model_attr='readme', default='')
     username = indexes.CharField(model_attr='owner__username')
     average_score = indexes.FloatField(model_attr='average_score')
     num_ratings = indexes.IntegerField(model_attr='num_ratings')
     created = indexes.DateTimeField(model_attr='created', default='')
     modified = indexes.DateTimeField(model_attr='modified', default='')
+    owner_id = indexes.IntegerField(model_attr='owner__id')
     
     # autocomplete 
     autocomplete = indexes.EdgeNgramField(use_template=True)

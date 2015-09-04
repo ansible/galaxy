@@ -1,73 +1,57 @@
 <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
-<div class="container list-container">
+<div class="container-fluid" id="galaxy-role-list">
 
     <div class="row">
-        <div class="col-lg-12">
-            
-            <autocomplete search-placeholder="Search roles" search-suggestions="suggestions" search-onkeyup="onKeyUp"
-                search-function="search" search-suggestion-function="suggestionSearch"></autocomplete>
-              
-            <table class="table ga-table-striped role-list-table">
-                <thead>
-                <tr>
-                    <th>Role</th>
-                    <th>Tags</th>
-                    <th>Description</th>
-                    <th>Platforms</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-show="roles.length === 0 && !loading">
-                    <td>No roles found.</td>
-                </tr>
-                <tr ng-repeat="role in roles">
-                     <td class="role">
-                         <div class="rolename"><a href="#/roles/{{role.id}}">{{role.name}}</a></div>
-                         <div class="score-section">
-                             <div class="scores">
-                                 <div class="score">
-                                     <span ng-show="role.average_score == '0.0'" class="score-value-na">NA</span>
-                                     <span ng-show="role.average_score != '0.0'" class="score-value">{{ role.average_score|number:1 }}</span>
-                                     <span class="fld-label">Score</span>
-                                 </div>
-                             </div>
-                         </div>
-                         <div ng-show="display_user_info" class="userinfo">
-                             <span class="username"><span class="fld-label">Author:</label> <a href="#/users/{{role.summary_fields.owner.id}}">{{role.username}}</a></span><br />
-                         </div>
-                     </td>
-                     <td class="col-lg-2">
-                         <div ng-repeat="tag in role.tags" class="category">{{ tag }}</a>
-                     </td>
-                     <td class="col-lg-7 description">
-                          {{role.description}}
-                          <div class="dates">
-                              <div class="date">
-                                  <div class="fld-label">Created On:</div>
-                                  <div class="value">{{role.created|date:"short"}}</div>
-                              </div>
-                              <div class="date" ng-show="role.created != role.modified">
-                                  <div class="fld-label">Modified:</div>
-                                  <div class="value">{{role.modified|date:"short"}}</div>
-                              </div>
-                          </div>
-                      </td>
-                      <td class="col-lg-2">
-                          <div ng-repeat="platform in role.platforms">
-                              <span class="description">{{ platform }}</span>
-                          </div>
-                      </td>
-                 </tr>
-                 </tbody>
-             </table>
-            <table>
+        <div class="col-lg-10 col-md-9 col-sm-9">
+            <div class="search-controls" id="role-list-search">
+                <autocomplete search-placeholder="Search roles" search-suggestions="suggestions" search-onkeyup="onKeyUp"
+                    search-function="search" search-suggestion-function="suggestionSearch"></autocomplete>
+                <div id="role-order-by">
+                    <select name="orderyb" ng-model="orderby" class="form-control" ng-options="option.title for option in orderby_options">
+                        <option value="">Relevance</option>
+                    </select>
+                </div>
+            </div>
 
-            <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
+            <div class="results" id="role-list-results">
+                <div class="result" ng-repeat="role in roles">
+                    <div class="header">
+                        <a ng-href="/list#/roles/{{ role.id }}/" class="title">{{ role.name }}</a>
+                        <div class="score-container">
+                            <label>Score</label>
+                            <span class="badge" ng-if="role.average_score > 0">{{ role.average_score | number:1 }}</span>
+                            <span class="badge" ng-if="role.average_score === 0">NA</span>
+                        </div>
+                        <hr />
+                    </div>
+                    <div class="body">
+                        <div class="description" dot-dot-dot>{{ role.description }}</div>
+                        <div class="result-group authors" dot-dot-dot>
+                            <span class="result-label">Author</span>
+                            <span class="value"><a href="/list#/users/{{ role.owner_id }}">{{ role.username }}</a></span>
+                        </div>
+                        <div class="result-group" dot-dot-dot>
+                            <span class="result-label">Platforms</span>
+                            <span class="platforms" ng-bind="role.platforms.join(' ')"></span>
+                        </div>
+                        <div class="result-group" dot-dot-dot>
+                            <span class="result-label">Tags</span>
+                            <span class="tags" ng-bind="role.tags.join(' ')"></span>
+                        </div>
+                    </div>
+                </div><!-- result -->
+            </div><!-- results -->
+        </div>
 
-        </div><!-- col-lg-10 body -->
-    </div><!-- row -->
+        <div class="col-lg-2 col-md-3 col-sm-3">
+            <div class="tags-container">
+                <div class="tag" ng-repeat="tag in tags"><span class="tag-name">{{ tag.tag }}</span><span class="tag-roles">{{ tag.roles }}</span></div>
+            </div>
+        </div>
+    </div>
 
+    <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>  
     <ng-include src="'/static/partials/loader.html'"></ng-include>
 
 </div><!-- container -->

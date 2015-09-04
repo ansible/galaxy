@@ -18,6 +18,7 @@
         '$location',
         '$timeout',
         '$resource',
+        '$window',
         'roleFactory',
         'roleSearchService',
         'queryStorageFactory',
@@ -37,6 +38,7 @@
         $location,
         $timeout,
         $resource,
+        $window,
         roleFactory,
         roleSearchService,
         storageFactory,
@@ -58,13 +60,19 @@
             'list_filter'        : '',
             'num_pages'          : 1,
             'page'               : 1,
-            'results_per_page'   : 10,
+            'results_per_page'   : 8,
             'reverse'            : false,
             'platform'           : '',
             'selected_categories': [],
-            'sort_order'         : 'username,name',
+            'sort_order'         : '',
             'refresh'            : _refresh
         };
+
+        $scope.orderby_options = [
+            { value:"name", title:"Name" },
+            { value:"username", title:"Author" },
+            { value:"score", title:"Score" }
+        ];
 
         $scope.page_range = [1];
         $scope.categories = [];
@@ -97,8 +105,10 @@
             var params = {
                 page: $scope.list_data.page,
                 page_size: $scope.list_data.results_per_page,
-                order: $scope.list_data.sort_order
             };
+            if ($scope.list_data.sort_order) {
+                params.order = $scope.list_data.sort_order;
+            }
             if (_params) {
                 angular.extend(params, _params);
             }
@@ -125,7 +135,7 @@
 
         _refresh();
 
-        var suggestions = $resource('/api/v1/search/:object', { 'object': '@object' }, {
+        var suggestions = $resource('/api/v1/search/:object/', { 'object': '@object' }, {
             'tags': { method: 'GET', params:{ object: 'tags' }, isArray: false},
             'platforms': { method: 'GET', params:{ object: 'platforms' }, isArray: false}
         });
@@ -133,7 +143,7 @@
         function _onKeyUp(searchValue) {
             var resp = {}
             // search for tag matches
-            suggestions.tags({content: searchValue }).$promise.then(function(data) {
+            suggestions.tags({autocomplete: searchValue }).$promise.then(function(data) {
                 resp.tags = [];
                 if (data.results.length) {
                     resp.tags.push({ type: 'tag', 'class': 'title', name: 'Tags'});
@@ -143,7 +153,7 @@
                 }
             }).then(function() {
                 // search for platform matches
-                suggestions.platforms({content:  searchValue }).$promise.then(function(data) {
+                suggestions.platforms({autocomplete:  searchValue }).$promise.then(function(data) {
                     resp.platforms = [];
                     if (data.results.length) {
                         resp.platforms.push({ type: 'platform', 'class': 'title', name: 'Platforms' });
@@ -163,17 +173,37 @@
         }
 
         function _search(searchValue) {
-            _refresh({ text: searchValue });
+            $scope.list_data.page = 1;
+            _refresh({ autocomplete: searchValue });
         }
 
         function _suggestionSearch(suggestion) {
-            console.log(suggestion);
             if (suggestion.type ===  'tag') {
                 _refresh({ tags: suggestion.name });
             } else if (suggestion.type == 'platform') {
-                _refresh({ platforms__contains: suggestion.name });
+                _refresh({ platforms: suggestion.name });
             }
         }
 
+        function _windowResize() {
+            $timeout(function() {
+                var wh = $($window).height();
+                var gpt = $('#galaxy-page-title').outerHeight();
+                var gn = $('#galaxy-navbar').outerHeight();
+                var ph = $('#galaxy-page-row').outerHeight();
+                var bl = $('#galaxy-blue-line').outerHeight();
+                var f = $('#galaxy-footer').outerHeight();
+                var rl = $('#role-list-search').outerHeight();
+                console.log('window height: ' + wh);
+                console.log('page title: ' + gpt);
+                console.log('galaxy navbar: ' + gn);
+                console.log('page row: ' + ph);
+                var height = wh - gpt - gn - ph - bl - f - rl + 45;
+                console.log('height: ' + height);
+                $('#role-list-results').height(height);
+            }, 1000);
+        }
+        $($window).resize(_windowResize);
+        _windowResize();
     }
 })(angular);

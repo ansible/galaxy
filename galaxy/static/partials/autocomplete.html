@@ -1,8 +1,8 @@
-<div class="form-inline" id="galaxy-search">
+<div id="galaxy-search">
     <div class="form-group">
         <input name="autocomplete" class="form-control" ng-model="searchValue" ng-keyup="searchKeyup($event)" placeholder="{{ searchPlaceholder }}"  ng-focus="focus()" ng-blur="blur()">
     </div>
-    <div class="results" ng-show="showResults && searchSuggestions.length">
+    <div class="autocomplete-results" ng-show="showResults && searchSuggestions.length">
         <ul>
             <li ng-repeat="suggestion in searchSuggestions" class="{{ suggestion.class }}">
                 <span ng-if="suggestion.class=='title'">{{ suggestion.name }}</span>

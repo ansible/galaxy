@@ -199,6 +199,7 @@ def list_category(request, category=None, page=1):
       '/static/js/commonDirectives/commonDirectives.js',
       '/static/js/commonDirectives/autocompleteDirective.js',
       '/static/js/commonDirectives/textCollapseDirective.js',
+      '/static/js/commonDirectives/dotDotDotDirective.js',
       '/static/js/commonServices/relatedService.js',
       '/static/js/commonServices/paginateService.js',
     ]
