@@ -6,45 +6,106 @@
     margin-top: -10px;
         
     .search-controls {
-        height: 70px;
         border-radius: 2px;
-        background-color: #ccc;
-        padding-top: 18px;
-        padding-left: 10px;
+        background-color: #e1e1e1;
         position: relative;
+        padding-top: 5px;
+        
         #role-order-by {
             display: inline-block;
-            width: 200px;
+            margin-left: 15px;
+            #orderby {
+                width: 150px;
+            }
+            label {
+                font-weight: normal;
+                color: @ansible-dark-grey;
+            }
         }
     }
 
     .tags-container {
-        background-color: #ccc;
+        background-color: #e1e1e1;
         border-radius: 2px;
         min-height: 300px;
+        .header {
+            height: 70px;
+            padding-top: 25px;
+            border-bottom: 1px solid @white;
+            .title {
+                color: @ansible-dark-grey;
+                font-size: 14px;
+                text-align: center;
+            }
+        }
+        .body {
+            padding: 10px;
+            text-align: center;
+            .tag {
+                width: 100%;
+                font-size: 12px;
+                font-weight: normal;
+                margin-bottom: 5px;
+                .tag-name {
+                    display: inline-block;
+                    vertical-align: top;
+                    width: 65%;
+                    border-radius: 2px;
+                    background-color: #b7b7b7;
+                    color: @white;
+                    padding: 3px 6px;
+                    text-align: left;
+                    margin-right: 5px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .tag-name:hover {
+                    background-color: @blue;
+                    cursor: pointer;                
+                }
+                .tag-name.active {
+                    background-color: @blue;
+                }
+                .tag-roles {
+                    display: inline-block;
+                    vertical-align: top;
+                    border-radius: 2px;
+                    background-color: @ansible-dark-grey;
+                    color: @white;
+                    padding: 3px 6px;
+                    width: 25%;
+                    text-align: center;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+        }
     }
 
     .results {
-        padding-top: 20px;
-        padding-bottom: 15px; 
-        height: 595px;
-        overflow: hidden;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        align-content: space-between;
+        justify-content: space-around;
+        margin: 10px;
 
         .result {
+            flex-grow: 0;
+            flex-shrink: 0;
+            width: 225px;
+            height: 200px;
             padding: 10px;
-            display: inline-block;
-            vertical-align: top;
-            margin-bottom: 15px;
-            margin-right: 15px;
-            width: 275px;
-            height: 225px;
             border: 1px solid #ccc; 
             border-radius: 2px;
             font-size: 12px;
 
-            -webkit-box-shadow: 3px 3px 3px 3px #ccc;
-            -moz-box-shadow:    3px 3px 3px 3px #ccc;
-            box-shadow:         2px 2px 5px 0 #ccc;
+            -webkit-box-shadow: 2px 2px 2px 0 #ccc;
+            -moz-box-shadow:    2px 2px 2px 0 #ccc;
+            box-shadow:         1px 1px 1px 0 #ccc;
         
             .header {
                 position: relative;
@@ -80,11 +141,17 @@
                     overflow-y: hidden;
                 }
                 .description, .result-group {
-                    height: 40px;
+                    height: auto;
+                    max-height: 40px;
+                    margin-bottom: 10px;
+                }
+                .authors {
+                    height: 20px;
                 }
                 .result-label {
                     color: @ansible-color;
                     padding-right: 6px;
+                    font-weight: bold;
                 }
                 .platforms, .tags {
                     color: #848992;

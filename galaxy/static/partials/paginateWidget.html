@@ -1,6 +1,6 @@
 <!-- Paginate Widget -->
 <div class="row page-row" id="galaxy-page-row" ng-show="!loading">
-    <div class="col-lg-8">
+    <div class="col-lg-8 col-md-8 col-sm-6">
         <ul class="pagination">
            <li ng-hide="list_data.page == 1"><a href ng-click="getPage(1,target)"><i class="fa fa-angle-double-left"></i></a></li>
            <li ng-hide="list_data.page == 1"><a href ng-click="getPage(list_data.page - 1,target)"><i class="fa fa-angle-left"></i></a></li>
@@ -9,7 +9,7 @@
            <li ng-hide="list_data.page >= list_data.num_pages"><a href ng-click="getPage(list_data.num_pages,target)"><i class="fa fa-angle-double-right"></i></a></li>
         </ul>
     </div>
-    <div class="col-lg-4">
+    <div class="col-lg-4 col-md-4 col-sm-6">
         <div class="page-label" ng-show="num_roles">
         Page {{list_data.page}} of {{list_data.num_pages}}. &nbsp;{{num_roles}} total roles.
         </div>

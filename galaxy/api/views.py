@@ -348,8 +348,8 @@ class RoleSearchView(HaystackViewSet):
     index_models = [Role]
     serializer_class = RoleSearchSerializer
     url_path = ''
+    lookup_sep = ','
     filter_backends = [HaystackFilter]
-    #filter_backends = [HaystackAutocompleteFilter]
 
 class FacetedView(APIView):
     def get(self, request, *agrs, **kwargs):
@@ -377,7 +377,7 @@ class PlatformsSearchView(APIView):
         q = None
         page = 0
         page_size = 10
-        order_fields = None
+        order_fields = []
         for key,value in request.GET.items():
             if key == 'name':
                 q = Q('match', name=value)
@@ -390,10 +390,10 @@ class PlatformsSearchView(APIView):
             if key == 'page_size':
                 page_size = value
             if key in ('order','order_by'):
-                order_fields = tuple(value.split(','))
+                order_fields = value.split(',')
         s = Search(index='galaxy_platforms')
         s = s.query(q) if q else s
-        s = s.sort(order_fields) if order_fields else s
+        s = s.sort(*order_fields) if len(order_fields) > 0 else s
         s = s[page * page_size:page * page_size + page_size]
         result = s.execute()
         serializer = ElasticSearchDSLSerializer(result.hits, many=True)
@@ -406,19 +406,19 @@ class TagsSearchView(APIView):
         q = None
         page = 0
         page_size = 10
-        order_fields = 'tag'
+        order_fields = []
         for key,value in request.GET.items():
             if key in ('tag','content','autocomplete'):
                 q = Q('match', tag=value)
             if key == 'page':
                 page = int(value) - 1 if int(value) >= 0 else 0
             if key == 'page_size':
-                page_size = value
-            if key in ('order','order_by'):
-                order_fields = tuple(value.split(','))
+                page_size = int(value)
+            if key in ('order', 'orderby'):
+                order_fields = value.split(',')
         s = Search(index='galaxy_tags')
         s = s.query(q) if q else s
-        s = s.sort(order_fields) if order_fields else s
+        s = s.sort(*order_fields) if len(order_fields) > 0 else s
         s = s[page * page_size:page * page_size + page_size]
         result = s.execute()
         serializer = ElasticSearchDSLSerializer(result.hits, many=True)

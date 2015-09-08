@@ -2,16 +2,16 @@
 
 <div class="container-fluid" id="galaxy-role-list">
 
-    <div class="row">
+    <div class="row" id="search-control-container">
         <div class="col-lg-10 col-md-9 col-sm-9">
             <div class="search-controls" id="role-list-search">
-                <autocomplete search-placeholder="Search roles" search-suggestions="suggestions" search-onkeyup="onKeyUp"
-                    search-function="search" search-suggestion-function="suggestionSearch"></autocomplete>
-                <div id="role-order-by">
-                    <select name="orderyb" ng-model="orderby" class="form-control" ng-options="option.title for option in orderby_options">
-                        <option value="">Relevance</option>
-                    </select>
-                </div>
+                <autocomplete 
+                    search-suggestion-function="searchSuggestion"
+                    search-placeholder="Search roles" 
+                    search-function="search" 
+                    search-order-options="orderOptions" 
+                    search-type-options="searchTypeOptions" 
+                    search-suggestions="searchSuggestions"></autocomplete>
             </div>
 
             <div class="results" id="role-list-results">
@@ -33,25 +33,34 @@
                         </div>
                         <div class="result-group" dot-dot-dot>
                             <span class="result-label">Platforms</span>
-                            <span class="platforms" ng-bind="role.platforms.join(' ')"></span>
+                            <span class="platforms" ng-bind="role.platforms.join(', ')"></span>
                         </div>
                         <div class="result-group" dot-dot-dot>
                             <span class="result-label">Tags</span>
-                            <span class="tags" ng-bind="role.tags.join(' ')"></span>
+                            <span class="tags" ng-bind="role.tags.join(', ')"></span>
                         </div>
                     </div>
                 </div><!-- result -->
             </div><!-- results -->
+             <ng-include src="'/static/partials/paginateWidget.html'"></ng-include> 
         </div>
 
-        <div class="col-lg-2 col-md-3 col-sm-3">
+        <div class="col-lg-2 col-md-3 col-sm-3 hidden-xs">
             <div class="tags-container">
-                <div class="tag" ng-repeat="tag in tags"><span class="tag-name">{{ tag.tag }}</span><span class="tag-roles">{{ tag.roles }}</span></div>
+                <div class="header">
+                    <div class="title">Popular Tags</div>
+                </div>
+                <div class="body">
+                    <div class="tag" ng-repeat="tag in topTags">
+                        <div class="tag-name" ng-click="activateTag(tag)" ng-class="{ active: tag.active }">{{ tag.tag }}</div>
+                        <div class="tag-roles">{{ tag.roles }}</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>  
+     
     <ng-include src="'/static/partials/loader.html'"></ng-include>
 
 </div><!-- container -->

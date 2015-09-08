@@ -1,13 +1,36 @@
 <div id="galaxy-search">
-    <div class="form-group">
-        <input name="autocomplete" class="form-control" ng-model="searchValue" ng-keyup="searchKeyup($event)" placeholder="{{ searchPlaceholder }}"  ng-focus="focus()" ng-blur="blur()">
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
+        <div class="input-group input-group-sm autocomplete-search-group">
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default btn-sm dropdown-toggle" id="search-type-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ searchType }} <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="type in searchTypeOptions" ng-show="searchType !== type"><a href="" ng-click="setSearchType(type)">{{ type }}</a></li>
+                </ul>
+            </div><!-- /btn-group -->
+            <input type="text" class="form-control" name="autocomplete" ng-model="searchValue" ng-keyup="searchKeyup($event)" 
+                placeholder="{{ searchPlaceholder }}"  ng-focus="focus()" ng-blur="blur()">
+            <div class="search-icon" ng-show="showSearchIcon" ng-click="searchAddKey()"><i class="fa fa-search"></i></div>
+            <div class="search-icon" ng-show="!showSearchIcon" ng-click="searchValue = null"><i class="fa fa-times-circle"></i></div>
+            <div class="autocomplete-results" ng-show="searchSuggestions.length">
+                <ul>
+                    <li ng-repeat="suggestion in searchSuggestions"><a href="" ng-click="applySuggestion(suggestion)">{{ suggestion.name }}</a></li>
+                </ul>
+            </div>
+        </div><!-- /input-group -->
     </div>
-    <div class="autocomplete-results" ng-show="showResults && searchSuggestions.length">
-        <ul>
-            <li ng-repeat="suggestion in searchSuggestions" class="{{ suggestion.class }}">
-                <span ng-if="suggestion.class=='title'">{{ suggestion.name }}</span>
-                <a ng-if="suggestion.class=='detail'" href="" ng-click="suggestionClicked(suggestion)">{{ suggestion.name }}</a>
-            </li>
-        </ul>
+
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6"> <!-- order by -->
+        <div id="autocomplete-order-by" class="form-inline">
+            <div class="form-group">
+                <label>Sort</label>
+                <select name="orderby" id="orderby" ng-model="searchOrder" class="form-control input-sm" ng-options="option.title for option in searchOrderOptions" ng-change="changeOrder()">
+                    <option value="">Relevance</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12"> <!-- search keys -->
+        <div class="search-key" ng-repeat="key in searchKeys">{{ key.type + ': ' + key.value }}<div class="cancel-search-key" ng-click="removeSearchKey(key)"><i class="fa fa-times-circle"></i></div></div>
     </div>
 </div> 

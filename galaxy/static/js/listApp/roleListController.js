@@ -60,7 +60,7 @@
             'list_filter'        : '',
             'num_pages'          : 1,
             'page'               : 1,
-            'results_per_page'   : 8,
+            'results_per_page'   : 10,
             'reverse'            : false,
             'platform'           : '',
             'selected_categories': [],
@@ -68,10 +68,16 @@
             'refresh'            : _refresh
         };
 
-        $scope.orderby_options = [
+        $scope.orderOptions = [
             { value:"name", title:"Name" },
             { value:"username", title:"Author" },
-            { value:"score", title:"Score" }
+            { value:"-average_score", title:"Score" }
+        ];
+
+        $scope.searchTypeOptions = [
+            'Keyword',
+            'Platform',
+            'Tag'
         ];
 
         $scope.page_range = [1];
@@ -84,11 +90,15 @@
         $scope.viewing_roles = 1;
         $scope.display_user_info = 1;
         $scope.searchSuggestions = [];
+        $scope.topTags = [];
         
         // autocomplete functions
-        $scope.onKeyUp = _onKeyUp;
         $scope.search = _search;
-        $scope.suggestionSearch = _suggestionSearch;
+        $scope.searchSuggestion = _searchSuggestion;
+        $scope.searchSuggesions = [];
+
+        $scope.activateTag = _activateTag;
+        $scope.changeOrderby = _changeOrderby;
         
         PaginateInit({ scope: $scope });
 
@@ -99,19 +109,53 @@
             $scope.list_data,
             fromQueryParams(restored_query));
 
+        var suggestions = $resource('/api/v1/search/:object/', { 'object': '@object' }, {
+            'tags': { method: 'GET', params:{ object: 'tags' }, isArray: false },
+            'platforms': { method: 'GET', params:{ object: 'platforms' }, isArray: false}
+        });
         
-        function _refresh(_params) {
+        var lazy_resize = _.debounce(_windowResize, 300);
+        $($window).resize(lazy_resize);
+
+        $timeout(function() {
+            _windowResize();
+            _topTags();
+        }, 300);
+
+        return; 
+
+        function _activateTag(tag) {
+            tag.active = !tag.active;
+            _refresh();
+        }
+
+        function _topTags() {
+            suggestions.tags({ order: '-roles', page: 1, page_size: 15 }).$promise.then(function(data) {
+                $scope.topTags = data.results;
+            });
+        }
+
+        function _changeOrderby() {
+            _refresh();
+        }
+
+        function _refresh(_params, _callback) {
             $scope.loading = 1;
+            $scope.roles = [];
+            
             var params = {
                 page: $scope.list_data.page,
                 page_size: $scope.list_data.results_per_page,
             };
+            
             if ($scope.list_data.sort_order) {
                 params.order = $scope.list_data.sort_order;
             }
+            
             if (_params) {
                 angular.extend(params, _params);
             }
+            console.log('search!');
             roleSearchService.get(params)
                 .$promise.then(function(data) {
                     $scope.roles = data.results;
@@ -130,80 +174,106 @@
                     $scope.num_roles = parseInt(data['count']);
                     $scope.list_data.page_range = [];
                     $scope.setPageRange();
+
+                    if (_callback) {
+                        _callback();
+                    }
                 });
         }
 
-        _refresh();
+        function _getActiveTags() {
+            var result = '';
+            var tags = $scope.topTags.filter(function(tag) {
+                return tag.active;
+            });
+            tags.forEach(function(tag) {
+                result += tag.tag + ',';
+            });
+            return result.replace(/,$/, '');
+        }
 
-        var suggestions = $resource('/api/v1/search/:object/', { 'object': '@object' }, {
-            'tags': { method: 'GET', params:{ object: 'tags' }, isArray: false},
-            'platforms': { method: 'GET', params:{ object: 'platforms' }, isArray: false}
-        });
-
-        function _onKeyUp(searchValue) {
-            var resp = {}
-            // search for tag matches
-            suggestions.tags({autocomplete: searchValue }).$promise.then(function(data) {
-                resp.tags = [];
-                if (data.results.length) {
-                    resp.tags.push({ type: 'tag', 'class': 'title', name: 'Tags'});
-                    angular.forEach(data.results, function(result) {
-                        resp.tags.push({ type: 'tag', 'class':'detail', name: result.tag });
-                    });
-                }
-            }).then(function() {
-                // search for platform matches
-                suggestions.platforms({autocomplete:  searchValue }).$promise.then(function(data) {
-                    resp.platforms = [];
-                    if (data.results.length) {
-                        resp.platforms.push({ type: 'platform', 'class': 'title', name: 'Platforms' });
-                        angular.forEach(data.results, function(result) {
-                            resp.platforms.push({ type: 'platform', 'class': 'detail', name: result.name });
-                        });
-                    }
-                }).then(function() {
-                    // Stich together the results
-                    $scope.suggestions = [];
-                    if (resp.tags.length)
-                        angular.copy(resp.tags, $scope.suggestions);
-                    if (resp.platforms.length)
-                        angular.copy(resp.platforms, $scope.suggestions);
-                });
+        function _deactivateTags() {
+            $scope.topTags.forEach(function(tag) {
+                tag.active = false;
             });
         }
 
-        function _search(searchValue) {
+        function _search(_keywords, _orderby) {
             $scope.list_data.page = 1;
-            _refresh({ autocomplete: searchValue });
+            var tags = [], platforms = [], keywords = [], params = {};
+            angular.forEach(_keywords, function(keyword) {
+                if (keyword.type === 'Tag') {
+                    tags.push(keyword.value);
+                } else if (keyword.type === 'Platform') {
+                    platforms.push(keyword.value);
+                } else {
+                    keywords.push(keyword.value);
+                }
+            });
+            if (tags.length) {
+                params.tags = tags.join(' ');
+            }
+            if (platforms.length) {
+                params.platforms = platforms.join(' ');
+            }
+            if (keywords.length) {
+                params.autocomplete = keywords.join(' ');
+            }
+            if (_orderby) {
+                params.order = _orderby.value;
+            }
+            console.log(params);
+            _refresh(params);
         }
 
-        function _suggestionSearch(suggestion) {
-            if (suggestion.type ===  'tag') {
-                _refresh({ tags: suggestion.name });
-            } else if (suggestion.type == 'platform') {
-                _refresh({ platforms: suggestion.name });
+        function _searchSuggestion(type, value) {
+            $scope.searchSuggestions = [];
+            if (type ===  'Tag' && value) {
+                suggestions.tags({ autocomplete: value}).$promise.then(function(data) {
+                    angular.forEach(data.results, function(result) {
+                        $scope.searchSuggestions.push({
+                            type: 'Tag',
+                            name: result.tag
+                        });
+                    });
+                });
+                console.log($scope.searchSuggestions);
+            } else if (type === 'Platform' && value) {
+                suggestions.platforms({ autocomplete: value }).$promise.then(function(data) {
+                    angular.forEach(data.results, function(result) {
+                        $scope.searchSuggestions.push({
+                            type: 'Platform',
+                            name: result.name
+                        });
+                    });
+                });
             }
         }
 
-        function _windowResize() {
-            $timeout(function() {
-                var wh = $($window).height();
-                var gpt = $('#galaxy-page-title').outerHeight();
-                var gn = $('#galaxy-navbar').outerHeight();
-                var ph = $('#galaxy-page-row').outerHeight();
-                var bl = $('#galaxy-blue-line').outerHeight();
-                var f = $('#galaxy-footer').outerHeight();
-                var rl = $('#role-list-search').outerHeight();
-                console.log('window height: ' + wh);
-                console.log('page title: ' + gpt);
-                console.log('galaxy navbar: ' + gn);
-                console.log('page row: ' + ph);
-                var height = wh - gpt - gn - ph - bl - f - rl + 45;
-                console.log('height: ' + height);
-                $('#role-list-results').height(height);
-            }, 1000);
+        function _windowResize(skipSearch) {
+            var calc = {
+                window_height: $($window).height(),
+                element_heights: [
+                    $('#galaxy-page-title').outerHeight(),
+                    $('#galaxy-navbar').outerHeight(),
+                    100,
+                    //$('#galaxy-blue-line').outerHeight() || 10,
+                    //$('#galaxy-footer').outerHeight(),
+                    $('#role-list-search').outerHeight()
+                ],
+                results_width: $('#role-list-search').width()
+            };
+            var height = calc.window_height - calc.element_heights.reduce(function(prev, cur) {  return prev + cur; }, 0);
+            console.log(calc.element_heights);
+            console.log('height: ' + height + ' width: ' + calc.results_width);
+            var rows = Math.floor(height / 200); 
+            var cols = Math.floor(calc.results_width / 225);
+            $scope.list_data.results_per_page = rows * cols;
+            //$('#role-list-results').height(rows * 200 + ((rows - 1) * 10));
+            //console.log('height: ' + (rows * 200 + ((rows - 1) * 10)));
+            console.log('cols: ' + cols);
+            console.log('rows: ' + rows);
+            _refresh(null);
         }
-        $($window).resize(_windowResize);
-        _windowResize();
     }
 })(angular);
