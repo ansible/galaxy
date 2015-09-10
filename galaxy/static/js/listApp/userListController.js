@@ -52,7 +52,7 @@
             'list_filter'        : '',
             'num_pages'          : 1,
             'page'               : 1,
-            'results_per_page'   : 10,
+            'page_size'          : 10,
             'reverse'            : false,
             'selected_categories': [],
             'sort_order'         : 'username',
@@ -75,7 +75,7 @@
         };
 
         var restored_query = storageFactory
-            .restore_state('user_list', queryParams($scope.list_data));
+            .restore_state(queryParams($scope.list_data));
 
         $scope.list_data = angular.extend({},
                 $scope.list_data,
@@ -131,11 +131,11 @@
                 $scope.list_data.reverse = false;
             }
 
-            storageFactory.save_state('user_list', queryParams($scope.list_data));
+            storageFactory.save_state(queryParams($scope.list_data));
 
             userFactory.getUsers(
                 $scope.list_data.page,
-                $scope.list_data.results_per_page,
+                $scope.list_data.page_size,
                 $scope.list_data.sort_order,
                 $scope.list_data.reverse,
                 $scope.list_data.list_filter

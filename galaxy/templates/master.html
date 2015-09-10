@@ -3,7 +3,7 @@
 <div class="wrap">
 {% block body %}
 
-<nav id="galaxy-navbar" class="navbar navbar-default">
+<nav id="galaxy-navbar" class="navbar navbar-default {% if ng_app == 'listApp' %} navbar-fixed-top {% endif %}">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">

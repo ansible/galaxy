@@ -1,91 +1,95 @@
-<ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
-<div class="container">
+<div id="galaxy-user-list">
 
-    <div class="row">
-        <div class="col-lg-12">
+    <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
-            <ng-include src="'/static/partials/filterWidget.html'"></ng-include>
+    <div class="container">
 
-            <table class="table ga-table-striped table-hover user-list-table">
-                <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Roles</th>
-                    <th>Latest Rating</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-show="users.length === 0 && !loading">
-                    <td>No users found.</td>
-                </tr>
-                <tr ng-repeat="user in users">
-                    <td class="user">
-                        <a href="#/users/{{user.id}}"><img ng-src="{{user.avatar_url}}" /></a>
-                        <div class="info">
-                            <div><a class="username" href="#/users/{{user.id}}">{{ user.username }}</a>
-                                <span class="name" ng-show="user.full_name">{{ user.full_name }}</span><br \>
-                                <span ng-show="user.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span>
+        <div class="row">
+            <div class="col-lg-12">
+
+                <ng-include src="'/static/partials/filterWidget.html'"></ng-include>
+
+                <table class="table ga-table-striped table-hover user-list-table">
+                    <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Roles</th>
+                        <th>Latest Rating</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-show="users.length === 0 && !loading">
+                        <td>No users found.</td>
+                    </tr>
+                    <tr ng-repeat="user in users">
+                        <td class="user">
+                            <a href="#/users/{{user.id}}"><img ng-src="{{user.avatar_url}}" /></a>
+                            <div class="info">
+                                <div><a class="username" href="/detail#/user/{{user.id}}">{{ user.username }}</a>
+                                    <span class="name" ng-show="user.full_name">{{ user.full_name }}</span><br \>
+                                    <span ng-show="user.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span>
+                                </div>
+                                <!--
+                                <div class="score">
+                                    <span class="fld-label">Karma</span>
+                                    <span class="score-value-na" ng-show="user.karma <= 0">NA</span>
+                                    <span class="score-value" ng-show="user.karma > 0">{{user.karma}}</span>
+                                </div>
+                                -->
+                                <div class="date">
+                                    <span class="fld-label">Date Joined</span>
+                                    <span class="value">{{ user.date_joined | date:"short" }}</span>
+                                </div>
                             </div>
-                            <!--
-                            <div class="score">
-                                <span class="fld-label">Karma</span>
-                                <span class="score-value-na" ng-show="user.karma <= 0">NA</span>
-                                <span class="score-value" ng-show="user.karma > 0">{{user.karma}}</span>
+                        </td>
+                        <td class="roles col-lg-3">
+                            <div class="role-list">
+                                <div ng-repeat="role in user.summary_fields.roles | limitTo:5">
+                                  <a class="role" href="#/roles/{{role.id}}">{{role.name}}</a>
+                                </div>
+                                <div ng-show="user.num_roles > 5"><a class="role" href="#/users/{{user.id}}">more...</a></div>
+                                <div ng-show="user.num_roles == 0">This user has no roles</div>
                             </div>
-                            -->
-                            <div class="date">
-                                <span class="fld-label">Date Joined</span>
-                                <span class="value">{{ user.date_joined | date:"short" }}</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="roles col-lg-3">
-                        <div class="role-list">
-                            <div ng-repeat="role in user.summary_fields.roles | limitTo:5">
-                              <a class="role" href="#/roles/{{role.id}}">{{role.name}}</a>
-                            </div>
-                            <div ng-show="user.num_roles > 5"><a class="role" href="#/users/{{user.id}}">more...</a></div>
-                            <div ng-show="user.num_roles == 0">This user has no roles</div>
-                        </div>
-                        <div class="score" ng-show="user.num_roles > 0">
-                            <span class="score-value">{{ user.num_roles | number:0 }}</span>
-                            <span class="fld-label">Roles Contributed</span>
-                        </div>
-                        <div class="score">
-                            <span class="score-value-na" ng-show="user.avg_role_score == '0.0'">NA</span>
-                            <span class="score-value" ng-show="user.avg_role_score > 0">{{ user.avg_role_score | number:1 }}</span>
-                            <span class="fld-label">Average Score</span>
-                        </div>
-                    </td>
-                    <td class="rating col-lg-5" ng-init="rating = user.summary_fields.ratings[0]">
-                        <div ng-show="user.summary_fields.ratings.length">
-                            <div class="role-name" ng-class="{ 'pad-bottom': !rating.comment }"><a href="/list#/roles/{{ rating.role_id }}">{{ rating.role_name }}</a></div>
-                            <div class="text" ng-show="rating.comment" text-collapse text-collapse-limit="125" text-collapse-height="40" text-collapse-text="rating.comment"></div>
-                            <div class="date">
-                                <span class="fld-label">Created On</span>
-                                <span class="value">{{ rating.created|date:"short" }}</span>
+                            <div class="score" ng-show="user.num_roles > 0">
+                                <span class="score-value">{{ user.num_roles | number:0 }}</span>
+                                <span class="fld-label">Roles Contributed</span>
                             </div>
                             <div class="score">
-                                <span class="score-value">{{ rating.score | number:1 }}</span>
-                                <span class="fld-label">Score</span>
+                                <span class="score-value-na" ng-show="user.avg_role_score == '0.0'">NA</span>
+                                <span class="score-value" ng-show="user.avg_role_score > 0">{{ user.avg_role_score | number:1 }}</span>
+                                <span class="fld-label">Average Score</span>
                             </div>
-                            <div class="score roles-contributed">
-                                <span class="score-value">{{ user.num_ratings | number:0 }}</span>
-                                <span class="fld-label">Ratings Contributed</span>
+                        </td>
+                        <td class="rating col-lg-5" ng-init="rating = user.summary_fields.ratings[0]">
+                            <div ng-show="user.summary_fields.ratings.length">
+                                <div class="role-name" ng-class="{ 'pad-bottom': !rating.comment }"><a href="/detail#/role/{{ rating.role_id }}">{{ rating.role_name }}</a></div>
+                                <div class="text" ng-show="rating.comment" text-collapse text-collapse-limit="125" text-collapse-height="40" text-collapse-text="rating.comment"></div>
+                                <div class="date">
+                                    <span class="fld-label">Created On</span>
+                                    <span class="value">{{ rating.created|date:"short" }}</span>
+                                </div>
+                                <div class="score">
+                                    <span class="score-value">{{ rating.score | number:1 }}</span>
+                                    <span class="fld-label">Score</span>
+                                </div>
+                                <div class="score roles-contributed">
+                                    <span class="score-value">{{ user.num_ratings | number:0 }}</span>
+                                    <span class="fld-label">Ratings Contributed</span>
+                                </div>
                             </div>
-                        </div>
-                        <div ng-hide="user.summary_fields.ratings.length">No ratings found.</div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
-            <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
-
+                            <div ng-hide="user.summary_fields.ratings.length">No ratings found.</div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+
+        <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
+
+        <ng-include src="'/static/partials/loader.html'"></ng-include>
+
     </div>
 
-    <ng-include src="'/static/partials/loader.html'"></ng-include>
-
-</div>
+</div><!-- galaxy-user-list -->

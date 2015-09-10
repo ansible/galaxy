@@ -10,7 +10,7 @@
 
 (function(angular) {
   
-    var roleApp = angular.module('listApp', [
+    var roleApp = angular.module('detailApp', [
         'ngRoute',
         'ngSanitize',
         'ngCookies',
@@ -23,8 +23,8 @@
         'storageService',
         'userService',
         'relatedService',
-        'roleListController',
-        'userListController',
+        'roleDetailController',
+        'userDetailController',
         'paginateService',
         'searchService',
         'platformService',
@@ -37,19 +37,19 @@
 
     function _routes($routeProvider) {
       $routeProvider.
-          when('/roles', {
-              templateUrl: '/static/partials/role-list.html',
-              controller: 'RoleListCtrl',
-              reloadOnSearch: false,
+          when('/role/:role_id', {
+              templateUrl: '/static/partials/role-detail.html',
+              controller: 'RoleDetailCtrl',
               resolve: {
+                  role: ['roleFactory', '$route', _getRole],
                   my_info: ['$q', 'meFactory', _getMyInfo]
               }
           }).
-          when('/users', {
-              templateUrl: '/static/partials/user-list.html',
-              controller: 'UserListCtrl',
-              reloadOnSearch: false,
+          when('/user/:user_id', {
+              templateUrl: '/static/partials/user-detail.html',
+              controller: 'UserDetailCtrl',
               resolve: {
+                  user: ['userFactory', '$route', _getUser],
                   my_info: ['$q', 'meFactory', _getMyInfo]
               }
           }).
@@ -73,6 +73,10 @@
 
     function _getRole(roleFactory, $route) {
         return roleFactory.getRole($route.current.params.role_id).then(function(data) { return data.data; });
+    }
+
+    function _getUser(userFactory, $route) {
+        return userFactory.getUser($route.current.params.user_id).then(function(data) { return data.data; });
     }
 
 })(angular);

@@ -26,8 +26,35 @@
 
     .page-label {
         font-size: 12px;
-        text-align: right;
         color: @ansible-dark-grey;
-        margin-top: 10px;
+        text-align: right;
+    }
+
+    #page-size-select {
+        font-size: 10px;
+        margin-left: 10px;
+        label {
+            display: inline-block;
+            font-weight: normal;
+        }
+        select {
+            display: inline-block;
+            width: auto;
+        }
+        .form-control {
+            height: 26px;
+            line-height: 26px;
+            font-size: 10px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .page-label {
+            text-align: center;
+            margin: 5px 0;
+        }
+        #page-size-select {
+            text-align: right;
+        }
     }
 }

@@ -3,54 +3,63 @@
  *
  */
 
- #galaxy-user-detail {
-     margin-bottom: 20px;
+#galaxy-user-detail {
+    
+    #galaxy-page-row {
+        margin: 20px -15px;
+    }
 
-     img {
-         margin: 0 auto;
-         display: inline-block;
-         vertical-align: top;
-         border-radius: 2px;
-     }
-     .user-is-staff {
-         margin: 15px 0;
-     }
-     .statistics {
-         display: inline-block;
-         margin-bottom: 20px;
-         margin-left: 20px;
+    margin-bottom: 20px;
 
-         .score {
-             margin-bottom: 5px;
-             .fld-label {
-                 color: @charcoal;
-             }
-             .score-value, .score-value-na {
-                 font-weight: bold;
-                 font-size: 14px;
-                 padding: 2px;
-                 color: @black;
-             }
-             .score-value-na {
-                 color: @charcoal;
-             }
-         }
-     }
-     .user-info {
-         margin-bottom: 15px;
-         .username {
-             font-size: 22px;
-             font-weight: bold;
-             padding-right: 5px;
-         }
-         .name {
-             font-size: 16px;
-             color: @charcoal;
-             font-weight: bold;
-         }
+    img {
+        margin: 0 auto;
+        display: inline-block;
+        vertical-align: top;
+        border-radius: 2px;
+    }
+    
+    .user-is-staff {
+        margin: 15px 0;
+    }
+     
+     .rolename {
+        font-weight: bold;
+        font-size: 16px;
      }
 
-     .user-tabs {
-         margin-top: 30px;
-     }
- }
+    .score {
+        margin-top: 15px;
+        margin-bottom: 5px;
+        padding-left: 15px;
+        .fld-label {
+            color: @charcoal;
+        }
+        .score-value, .score-value-na {
+            font-weight: bold;
+            font-size: 14px;
+            padding: 2px;
+            color: @black;
+        }
+        .score-value-na {
+            color: @charcoal;
+        }
+    }
+    
+    .user-info {
+        margin-bottom: 15px;
+        .username {
+            font-size: 22px;
+            font-weight: bold;
+            padding-right: 5px;
+        }
+        .name {
+            font-size: 16px;
+            color: @charcoal;
+            font-weight: bold;
+        }
+    }
+
+    .user-tabs {
+        margin-top: 30px;
+    }
+}

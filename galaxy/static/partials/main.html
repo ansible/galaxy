@@ -45,7 +45,7 @@
                </thead>
                <tbody>
                <tr ng-repeat="role in top_roles.data">
-                   <td><span class="clip"><a href="/list#/roles/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
+                   <td><span class="clip"><a href="/detail#/role/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
                    <td class="text-right">{{role.num_ratings | number:0}}</td>
                    <td class="text-right">{{role.average_score | number:2}}</td>
                </tr>
@@ -75,7 +75,7 @@
                </thead>
                <tbody>
                <tr ng-repeat="role in new_roles.data">
-                   <td><span class="clip"><a href="/list#/roles/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
+                   <td><span class="clip"><a href="/detail#/role/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
                    <td class="text-right">{{role.created|date:'dd MMM, yyyy'}}</td>
                </tr>
                </tbody>
@@ -140,7 +140,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="user in top_reviewers.data">
-                    <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
+                    <td><a href="/detail#/user/{{user.id}}">{{ user.username }}</a></td>
                     <td class="text-right">{{ user.num_ratings | number:0 }}</td>
                 </tr>
                 </tbody>
@@ -169,7 +169,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="user in new_users.data">
-                    <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
+                    <td><a href="/detail#/user/{{user.id}}">{{ user.username }}</a></td>
                     <td class="text-right">{{ user.date_joined | date:'dd MMM, yyyy' }}</td>
                 </tr>
                 </tbody>

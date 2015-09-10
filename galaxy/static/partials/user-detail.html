@@ -29,7 +29,7 @@
         </div><!-- col-lg-12 -->
     </div><!-- row -->
 
-    <div class="row user-tabs">
+    <div class="row user-tabs" ng-hide="loading">
         <div class="col-lg-12">
             <tabset type="pills">
                 <tab>
@@ -45,3 +45,5 @@
     </div>
 
 </div> <!-- end container -->
+
+<ng-include src="'/static/partials/loader.html'"></ng-include>

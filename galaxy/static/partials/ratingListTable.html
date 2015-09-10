@@ -26,11 +26,11 @@
             <div class="col-lg-3 col-md-3">
                 <div class="user-container">
                     <div ng-show="showRoleName" class="rolename">
-                        <a class="rolename" href="#/roles/{{rating.summary_fields.role.id}}">{{rating.summary_fields.role.name}}</a>
+                        <a class="rolename" href="/detail#/role/{{rating.summary_fields.role.id}}">{{rating.summary_fields.role.name}}</a>
                     </div>
                     <div ng-hide="showRoleName" class="username">
                         <img ng-src="{{ rating.summary_fields.owner.avatar_url }}" >
-                        <p class="username"><a class="username" href="#/users/{{rating.summary_fields.owner.id}}">{{rating.summary_fields.owner.username}}</a><br />
+                        <p class="username"><a class="username" href="/detail#/user/{{rating.summary_fields.owner.id}}">{{rating.summary_fields.owner.username}}</a><br />
                         <span ng-show="rating.staff_rating" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span></p>
                     </div>
                     <div class="dates">
@@ -58,6 +58,6 @@
     </div>
 
     <div ng-hide="ratings">
-        <p>No ratings were found.</p>
+        <p>No ratings found.</p>
     </div>
 </div>

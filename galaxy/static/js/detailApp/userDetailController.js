@@ -26,6 +26,7 @@
         'PaginateInit',
         'queryParams',
         'fromQueryParams',
+        'user',    
         _userDetailCtrl
     ]);
 
@@ -42,8 +43,10 @@
         Stars,
         PaginateInit,
         queryParams,
-        fromQueryParams) {
+        fromQueryParams,
+        user) {
 
+        console.log(user);
         $scope.my_info = my_info;
         $scope.page_title = 'User Detail';
         $scope.showRoleName = true;
@@ -59,7 +62,7 @@
                 'selected_categories': [],
                 'sort_order'         : 'name',
                 'refresh'            : function() {
-                    $scope.$emit('refreshRelated', 'roles', $scope.user.related.roles);
+                    $scope.$emit('refreshRelated', 'roles', user.related.roles);
                     }
                 },
             'ratings' : {
@@ -71,39 +74,24 @@
                 'selected_categories': [],
                 'sort_order'         : 'created',
                 'refresh'            : function() {
-                    $scope.$emit('refreshRelated', 'ratings', $scope.user.related.ratings);
+                    $scope.$emit('refreshRelated', 'ratings', user.related.ratings);
                     }
                 }
             };
 
-        $scope.user = {'num_roles':0, 'num_ratings':0};
         $scope.roles = [];
         $scope.ratings = [];
 
         PaginateInit({ scope: $scope });
 
-        // controls whether or not the role info
-        // is displayed in the -display partials
+        // controls if role info is displayed in the -display partials
         $scope.display_role_info = 1;
         $scope.display_user_info = 0;
-
-        $scope.getUser = function() {
-            userFactory.getUser(
-                $routeParams.user_id
-                )
-                .success(function (data) {
-                    $scope.user = data;
-                    $scope.list_data.roles.refresh();
-                    $scope.list_data.ratings.refresh();
-                    })
-                .error(function (error) {
-                    $scope.status = 'Unable to load user: ' + error.message;
-                    });
-            };
-
+        $scope.user = user;
+        
         $scope.ratingHover = function(itm, label, flag) {
             $scope[label + '_' + 'hover' + '_' + itm] = flag;
-            }
+        };
 
         $scope.addVote = function(id, direction) {
             ratingFactory.addVote(id, {'id':my_info.id}, direction)
@@ -113,12 +101,9 @@
                 .error( function(error) {
                     console.error("failed to add a "+direction+" vote on rating id=" + id);
                     });
-        }
+        };
 
-        if ($scope.removeRelated) {
-            $scope.removeRelated();
-        }
-        $scope.removeRelated = $scope.$on('refreshRelated', function(e, target, url) {
+        $scope.$on('refreshRelated', function(e, target, url) {
             $scope.list_data[target].url = url;
             relatedFactory.getRelated($scope.list_data[target])
                 .success( function(data) {
@@ -139,33 +124,37 @@
                         }
                     }
                     $scope[target] = data['results'];
-                    })
+                    $scope.loading--;
+                })
                 .error(function (error) {
                     $scope.status = 'Unable to load related ' + target + ': ' + error.message;
-                    });
-            });
+                });
+        });
 
         $scope.staffDeleteRating = function(id) {
-                ratingFactory.deleteRating(id)
+            ratingFactory.deleteRating(id)
                 .success(function (data) {
                     $scope.getUser();
                 })
                 .error(function (error) {
                     alert("Failed to remove rating "+id+", reason: "+error);
                 });
-            };
+        };
 
         $scope.staffDeleteUser = function(id) {
-                userFactory.deleteUser(id)
+            userFactory.deleteUser(id)
                 .success(function (data) {
                     $location.path('/users');
                 })
                 .error(function (error) {
                     alert("Failed to remove user "+id+", reason: "+error);
                 });
-            };
+        };
 
-        $scope.getUser();
+        $scope.loading = 2;
+        $scope.list_data.roles.refresh();
+        $scope.list_data.ratings.refresh();
+
     }
 
 })(angular);

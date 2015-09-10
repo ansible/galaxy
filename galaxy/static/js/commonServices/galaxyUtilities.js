@@ -60,7 +60,7 @@
             var result = {};
             result.list_filter = data.f;
             result.page = data.page;
-            result.results_per_page = data.per_page;
+            result.page_size = data.per_page;
             result.sort_order = data.sort_order;
             result.reverse = data.reverse;
             result.selected_categories = data.cats;
@@ -75,7 +75,7 @@
         return function(data) {
             var result = {};
             result.page = data.page;
-            result.per_page = data.results_per_page;
+            result.per_page = data.page_size;
             result.sort_order = data.sort_order;
             if (data.list_filter)
                 result.f = data.list_filter;

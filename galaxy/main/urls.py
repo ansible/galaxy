@@ -26,6 +26,8 @@ urlpatterns = patterns('galaxy.main.views',
     url(r'^intro$', 'intro', name='intro'),
     url(r'^accounts/landing[/]?$', 'accounts_landing', name='accounts-landing'),
     url(r'^list$', 'list_category', name='list-category'),
+    url(r'^detail$', 'detail_category', name='detail-category'),
+    
     # Logged in/secured URLs
     url(r'^accounts/connect/$', 'accounts_connect'),
     url(r'^accounts/connect/success/$', 'accounts_connect'),

@@ -182,10 +182,37 @@ def list_category(request, category=None, page=1):
     context["extra_js"] = [
       # '/static/js/angular-slider.min.js',
       '/static/js/listApp/listApp.js',
-      '/static/js/listApp/roleDetailController.js',
       '/static/js/listApp/roleListController.js',
-      '/static/js/listApp/userDetailController.js',
       '/static/js/listApp/userListController.js',
+      '/static/js/commonServices/categoryService.js',
+      '/static/js/commonServices/meService.js',
+      '/static/js/commonServices/ratingService.js',
+      '/static/js/commonServices/roleService.js',
+      '/static/js/commonServices/roleSearchService.js',
+      '/static/js/commonServices/storageService.js',
+      '/static/js/commonServices/userService.js',
+      '/static/js/commonServices/platformService.js',
+      '/static/js/commonServices/galaxyUtilities.js',
+      '/static/js/commonServices/searchService.js',
+      '/static/js/commonDirectives/commonDirectives.js',
+      '/static/js/commonDirectives/autocompleteDirective.js',
+      '/static/js/commonDirectives/textCollapseDirective.js',
+      '/static/js/commonDirectives/dotDotDotDirective.js',
+      '/static/js/commonServices/relatedService.js',
+      '/static/js/commonServices/paginateService.js',
+    ]
+    return render_to_response('list_category.html', context)
+
+def detail_category(request, category=None, page=1):
+    context = build_standard_context(request)
+    context["ng_app"] = "detailApp"
+    context["extra_css"] = [
+    ]
+    context["extra_js"] = [
+      # '/static/js/angular-slider.min.js',
+      '/static/js/detailApp/detailApp.js',
+      '/static/js/detailApp/roleDetailController.js',
+      '/static/js/detailApp/userDetailController.js',
       '/static/js/commonServices/categoryService.js',
       '/static/js/commonServices/meService.js',
       '/static/js/commonServices/ratingService.js',

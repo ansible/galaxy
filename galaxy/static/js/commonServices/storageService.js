@@ -17,18 +17,15 @@
             restore_state: _restoreState
         };
 
-        function _saveState(target, fields) {
-            var data = {};
-            for (var fname in fields) {
-                data[fname] = fields[fname];
-            }
-            adapter.save(target, data);
+        function _saveState(data) {
+            adapter.save(data);
         }
 
-        function _restoreState(target, default_fields) {
+        function _restoreState(default_fields) {
             try {
-                var data = adapter.restore(target);
+                var data = adapter.restore();
                 for (var fname in default_fields) {
+                    console.log('fname: ' + fname);
                     if (typeof(data[fname]) == 'undefined') {
                         data[fname] = default_fields[fname];
                     }
@@ -44,7 +41,7 @@
 
     function _queryStorageFactory($location) {
         return defineStorageService({
-            save: function(key, data) {
+            save: function(data) {
                 return $location.search(JSON.parse(JSON.stringify(data)));
             },
             restore: function() {

@@ -1,5 +1,5 @@
 <div id="galaxy-search">
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
+    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-6">
         <div class="input-group input-group-sm autocomplete-search-group">
             <div class="input-group-btn">
                 <button type="button" class="btn btn-default btn-sm dropdown-toggle" id="search-type-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ searchType }} <span class="caret"></span></button>
@@ -10,7 +10,6 @@
             <input type="text" class="form-control" name="autocomplete" ng-model="searchValue" ng-keyup="searchKeyup($event)" 
                 placeholder="{{ searchPlaceholder }}"  ng-focus="focus()" ng-blur="blur()">
             <div class="search-icon" ng-show="showSearchIcon" ng-click="searchAddKey()"><i class="fa fa-search"></i></div>
-            <div class="search-icon" ng-show="!showSearchIcon" ng-click="searchValue = null"><i class="fa fa-times-circle"></i></div>
             <div class="autocomplete-results" ng-show="searchSuggestions.length">
                 <ul>
                     <li ng-repeat="suggestion in searchSuggestions"><a href="" ng-click="applySuggestion(suggestion)">{{ suggestion.name }}</a></li>
@@ -19,7 +18,7 @@
         </div><!-- /input-group -->
     </div>
 
-    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6"> <!-- order by -->
+    <div class="col-lg-8 col-md-6 col-sm-6 col-xs-6"> <!-- order by -->
         <div id="autocomplete-order-by" class="form-inline">
             <div class="form-group">
                 <label>Sort</label>
@@ -28,9 +27,14 @@
                 </select>
             </div>
         </div>
+        <div class="search-keys hidden-md hidden-sm hidden-xs">
+            <div class="search-key" ng-repeat="key in searchKeys">{{ key.type + ': ' + key.value }}<div class="cancel-search-key" ng-click="removeSearchKey(key)"><i class="fa fa-times-circle"></i></div>
+            </div>
+        </div>
     </div>
-    
-    <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12"> <!-- search keys -->
-        <div class="search-key" ng-repeat="key in searchKeys">{{ key.type + ': ' + key.value }}<div class="cancel-search-key" ng-click="removeSearchKey(key)"><i class="fa fa-times-circle"></i></div></div>
+
+    <div class="hidden-lg col-md-12 col-sm-12 col-xs-12">
+        <div class="search-key" ng-repeat="key in searchKeys">{{ key.type + ': ' + key.value }}<div class="cancel-search-key" ng-click="removeSearchKey(key)"><i class="fa fa-times-circle"></i></div>
+            </div>
     </div>
 </div> 

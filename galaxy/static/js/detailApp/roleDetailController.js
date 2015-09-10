@@ -79,7 +79,6 @@
         $scope.showRatingDialog = _showRatingDialog;
         $scope.staffDeleteRating = _deleteRating;
         $scope.staffDeleteRole = _deleteRole;
-        console.log(role);
         _getRelated(null, 'ratings', role.related.ratings);
         PaginateInit({'scope': $scope});
 

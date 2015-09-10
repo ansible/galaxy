@@ -11,9 +11,11 @@
 
     var mod = angular.module('autocompleteDirective', ['ngResource']);
 
-    mod.directive('autocomplete',['$resource', '$timeout', _directive]);
+    mod.service('autocompleteService', [_service]);
 
-    function _directive($resource, $timeout) {
+    mod.directive('autocomplete',['$resource', '$timeout', 'autocompleteService', _directive]);
+
+    function _directive($resource, $timeout, autocompleteService) {
         return {
             restrict: 'E',
             templateUrl: '/static/partials/autocomplete.html',
@@ -29,30 +31,45 @@
         };
 
         function _link(scope, element, attr) {
-            scope.searchKeyup = _keyup;
             scope.searchValue = null;
             scope.autocompletePlatforms = [];
             scope.autocompleteTags = [];
-            scope.focus = _focus;
-            scope.blur = _blur;
-            scope.applySuggestion = _suggestionClicked;
             scope.showSearchIcon = true;
             scope.searchType = 'Keyword';
-            scope.setSearchType = _setSearchType;
-            scope.searchKeys = [];
-            scope.searchAddKey = _addKey;
-            scope.removeSearchKey = _removeKey;
             scope.searchOrder = "";
+            scope.searchKeys = [];
+            
+            scope.searchKeyup = _keyup;
+            scope.applySuggestion = _suggestionClicked;
+            scope.setSearchType = _setSearchType;
+            scope.searchAddKey = _searchAddKey;
+            scope.addKey = _addKey;
+            scope.removeSearchKey = _removeKey;
             scope.changeOrder = _changeOrder;
+            scope.getKeywords = _getKeywords;
+            scope.setKeywords = _setKeywords;
 
+            autocompleteService.setScope(scope);
+            
             var _lazySuggestions = (scope.searchSuggestionFunction) ? _.debounce(function() { 
                 scope.searchSuggestionFunction(scope.searchType, scope.searchValue);
             }, 300, true) : null;
-                
+            
+            return; 
+
+
+            function _getKeywords() {
+                return scope.searchKeys;
+            }
+
+            function _setKeywords(keys) {
+                scope.searchKeys = keys;
+            }
+
             function _keyup(e) {
                 scope.searchSuggestions = [];
                 if (e.keyCode == 13) {
-                    _addKey();
+                    _searchAddKey();
                     return;
                 }
                 if (scope.searchSuggestionFunction) {
@@ -60,41 +77,24 @@
                 }
             }
 
-            function _focus() {
-            //    scope.showResults = true;
-            }
-
-            function _blur() {
-            //    $timeout(function() {
-            //        scope.showResults = false;
-            //    },300);
-            }
-
-            function _suggestionClicked(suggestion) {
-            //    if (scope.searchSuggestionFunction) {
-            //        scope.searchSuggestionFunction(suggestion)
-            //    }
-            }
-
             function _setSearchType(type) {
                 scope.searchType = type;
             }
 
-            function _addKey() {
-                if (scope.searchValue) {
-                    var found = false;
-                    angular.forEach(scope.searchKeys, function(key) {
-                        if (key.value === scope.searchValue && key.type === scope.searchType) {
-                            found = true;
-                        }
-                    });
-                    if (!found) {
-                        scope.searchKeys.push({
-                            value: scope.searchValue,
-                            type: scope.searchType,
-                        });
+            function _searchAddKey() {
+                _addKey({ value: scope.searchValue, type: scope.searchType });
+                scope.searchValue = null;
+            }
+
+            function _addKey(_key) {
+                var found = false;
+                angular.forEach(scope.searchKeys, function(key) {
+                    if (key.value === _key.value && key.type === _key.type) {
+                        found = true;
                     }
-                    scope.searchValue = null;
+                });
+                if (!found) {
+                    scope.searchKeys.push(_key);
                     scope.searchFunction(scope.searchKeys, scope.searchOrder);
                 }
             }
@@ -117,8 +117,43 @@
             function _suggestionClicked(suggestion) {
                 scope.searchSuggestions = [];
                 scope.searchValue = suggestion.name;
-                _addKey();
+                _searchAddKey();
             }
+        }
+    }
+
+    // 
+    // Use autocompleteService to access and control the search widget from a controller
+    //
+    function _service() {
+        var scope;
+
+        return {
+            setScope: _setScope,
+            getKeywords: _getKeywords,
+            setKeywords: _setKeywords,
+            addKey: _addKey,
+            removeKey: _removeKey
+        };
+
+        function _setScope(_scope) {
+            scope = _scope;
+        }
+        
+        function _addKey(_key) {
+            scope.addKey(_key);
+        }
+
+        function _removeKey(_key) {
+            scope.removeSearchKey(_key);
+        }
+
+        function _getKeywords() {
+            return scope.getKeywords();
+        }
+
+        function _setKeywords(keywords) {
+            scope.setKeywords(keywords);
         }
     }
 
