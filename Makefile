@@ -149,7 +149,7 @@ test_jenkins:
 
 # Build minified JS/CSS.
 ui_build:
-	gulp build
+        node node_modules/gulp/bin/gulp.js build	
 
 # Build a pip-installable package into dist/ with a timestamped version number.
 dev_build: 
