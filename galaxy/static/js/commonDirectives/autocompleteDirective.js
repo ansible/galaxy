@@ -133,7 +133,8 @@
             getKeywords: _getKeywords,
             setKeywords: _setKeywords,
             addKey: _addKey,
-            removeKey: _removeKey
+            removeKey: _removeKey,
+            setOrderBy: _setOrderBy
         };
 
         function _setScope(_scope) {
@@ -154,6 +155,10 @@
 
         function _setKeywords(keywords) {
             scope.setKeywords(keywords);
+        }
+
+        function _setOrderBy(order) {
+            scope.searchOrder = order;
         }
     }
 

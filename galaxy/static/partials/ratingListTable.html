@@ -57,7 +57,7 @@
         <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
     </div>
 
-    <div ng-hide="ratings">
+    <div ng-show="ratings.length === 0 && !loading">
         <p>No ratings found.</p>
     </div>
 </div>

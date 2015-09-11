@@ -67,9 +67,10 @@
         };
 
         $scope.orderOptions = [
-            { value:"name", title:"Name" },
-            { value:"username", title:"Author" },
-            { value:"-average_score", title:"Score" }
+            { value:"-created", title: "Created" },
+            { value:"name,username", title:"Name" },
+            { value:"username,name", title:"Author" },
+            { value:"-average_score,sort_name,username", title:"Score" }
         ];
 
         $scope.searchTypeOptions = [
@@ -83,10 +84,6 @@
         $scope.roles = [];
         $scope.num_roles = 0;
         $scope.status = '';
-
-        $scope.showViewMoreTags = true;
-        $scope.viewAllTags= _viewAllTags;
-        $scope.viewLessTags = _viewLessTags;
 
         $scope.loading = 1;
         $scope.viewing_roles = 1;
@@ -111,44 +108,35 @@
             'platforms': { method: 'GET', params:{ object: 'platforms' }, isArray: false}
         });
 
+        // Load the initial query parameters into $scope.list_data
         var restored_query = queryStorageFactory.restore_state(_getQueryParams($scope.list_data));
         $scope.list_data = angular.extend({}, $scope.list_data, _getQueryParams(restored_query));
 
         var lazy_resize = _.debounce(function() { 
             _windowResize();
-            _resizeTagsContainer(); 
         }, 500);
 
         $($window).resize(lazy_resize);
-
-        _viewLessTags();
+       
+        _getTopTags();
         _refresh().then(lazy_resize);
         
         $timeout(function() {
+            // Match the autocomplete widget to match query params
+            _windowResize();
             _setSearchTerms($scope.list_data);
+            _setOrderBy();
         }, 500);
+
+        $scope.$on('$destroy', function() {
+            $('body').css({ 'overflow-y': 'auto', 'height': '100%' });
+        });
         
-        return; 
+        return;
 
-
-        function _viewAllTags() {
-            $scope.showViewMoreTags = false;
-            return suggestions.tags({ order: '-roles', page: 1, page_size: $scope.tagCount }).$promise.then(function(data) {
+        function _getTopTags() {
+            suggestions.tags({ page: 1, page_size: 9999, order: '-roles' }).$promise.then(function(data) {
                 $scope.topTags = data.results;
-                _updateTopTags();
-            }).then(function() {
-                _resizeTagsContainer();
-            });
-        }
-
-        function _viewLessTags() {
-            $scope.showViewMoreTags = true;
-            return suggestions.tags({ order: '-roles', page: 1, page_size: 10 }).$promise.then(function(data) {
-                $scope.topTags = data.results;
-                $scope.tagCount = data.count;
-                _updateTopTags();
-            }).then(function() {
-                _resizeTagsContainer();
             });
         }
 
@@ -192,10 +180,8 @@
 
                     $scope.list_data.page = parseInt(data['cur_page']);
                     $scope.list_data.num_pages = parseInt(data['num_pages']);
-                    $scope.list_data.page = $scope.list_data.page || 1;
-                    $scope.list_data.num_pages = $scope.list_data.num_pages || 1;
+                    $scope.list_data.count = parseInt(data['count']);
                     
-                    $scope.num_roles = parseInt(data['count']);
                     $scope.list_data.page_range = [];
                     $scope.setPageRange();
                     _resizeSearchControls();
@@ -207,12 +193,6 @@
                 $scope.list_data.page++;
                 _refresh();
             }
-        }
-
-        function _getActiveTags() {
-            return $scope.topTags.filter(function(tag) {
-                return tag.active;
-            }).map(function(tag) { return tag.tag; });
         }
 
         function _activateTag(tag) {
@@ -324,7 +304,6 @@
 
         function _getQueryParams(data)  {
             var result = {};
-            console.log(data);
             result.page = data.page || 1;
             result.page_size = data.page_size || 10;
             result.tags = data.tags || '';
@@ -349,6 +328,16 @@
             autocompleteService.setKeywords(uniqKeys);
         }
 
+        function _setOrderBy() {
+            $scope.orderOptions.every(function(option) {
+                if (option.value === $scope.list_data.order) {
+                    autocompleteService.setOrderBy(option);
+                    return false;
+                }
+                return true;
+            });
+        }
+
         function _getKeys(type, data, results) {
             data.split(' ').forEach(function(key) {
                 results.push({
@@ -359,15 +348,24 @@
         }
 
         function _windowResize() {
-            var containerWidth = $('#role-list-results .role-list-results-column').eq(0).width();
-            var resultWidth = $('#role-list-results .results .result').eq(0).outerWidth();
-            var cnt = Math.floor(containerWidth / (resultWidth + 10));
-            var newWidth = cnt * (resultWidth + 10);
+            var windowHeight = $($window).height();
+            var searchHeight = $('#role-list-search').outerHeight() + 20;
+            var footerHeight = $('#galaxy-footer').outerHeight() + $('galaxy-footer-blue-line').outerHeight() + 5;
+            var newHeight = windowHeight - 140 - searchHeight - footerHeight;
+            $log.debug('searchHeight: ' + searchHeight + ' footerHeight: ' + footerHeight);
+            $('#results-container').height(newHeight);
+            $('body').css({ 'overflow-y': 'hidden', 'height': 'auto' });
+
+            var containerWidth = $('#results-column').width();
+            var resultWidth = $('#results-container .result').eq(0).outerWidth() + 10;
+            var cnt = Math.floor(containerWidth / resultWidth);
+            var newWidth = cnt * resultWidth;
+            var padding = Math.floor((containerWidth - newWidth) / 2)
             $log.debug('containerWidth: ' + containerWidth + ' resultWidth: ' + resultWidth + ' cnt: ' + cnt + ' newWidth: ' + newWidth);
             if (cnt && newWidth < containerWidth) {
-                $('#role-list-results .results').eq(0).css({ 'margin-left': (containerWidth - newWidth) / 2, 'width': newWidth + 'px' });
+                $('#results-container').css({ 'padding-left': padding, 'padding-right': padding });
             } else {
-                $('#role-list-results .results').eq(0).css({ 'margin-left': 0, 'width': 'auto' });
+                $('#results-container').css({ 'padding-left': 0, 'padding-right': 0 });
             }
         }
 

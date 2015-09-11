@@ -17,8 +17,8 @@
         </div>
         <div class="col-xs-6 text-right">
             <div class="user-info">
-                <a href="#/users/{{role.summary_fields.owner.id}}"><img ng-src="{{ role.summary_fields.owner.avatar_url }}" /></a>
-                <p class="username"><a href="#/users/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a><br \>
+                <a href="/detail#/user/{{role.summary_fields.owner.id}}"><img ng-src="{{ role.summary_fields.owner.avatar_url }}" /></a>
+                <p class="username"><a href="/detail#/user/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a><br \>
                     <span ng-show="role.summary_fields.owner.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span></p>
             </div>
         </div>

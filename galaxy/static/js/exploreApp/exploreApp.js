@@ -14,7 +14,7 @@
         'ngSanitize',
         'ngCookies',
         'exploreController',
-        'categoryService',
+        'tagService',
         'roleService',
         'userService',
     ]);

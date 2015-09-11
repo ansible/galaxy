@@ -25,7 +25,6 @@
             try {
                 var data = adapter.restore();
                 for (var fname in default_fields) {
-                    console.log('fname: ' + fname);
                     if (typeof(data[fname]) == 'undefined') {
                         data[fname] = default_fields[fname];
                     }

@@ -54,35 +54,19 @@
 
     .search-key {
         display: inline-block;
-        width: auto;
         background-color: @blue;
+        padding: 2px;
         border-radius: 2px;
         font-size: 10px;
-        padding: 3px 3px 0 6px;
+        /*padding: 0 3px 0 6px;*/
+        line-height: normal;
         color: @white;
         margin-right: 5px;
         margin-top: 5px;
-
-        .cancel-search-key {
-            display: inline-block;
-            vertical-align: top;
-            text-align: center;
-            background-color: #ccc;
-            color: @white;
-            padding-right: 3px;
-            padding-top: 3px;
-            padding-left: 3px;
-            margin-right: -5px;
-            margin-top: -3px;
-            margin-left: 6px;
-            height: 23px;
-            float: right;
-            border-top-right-radius: 2px; 
-            border-bottom-right-radius: 2px;
-        }
-        .cancel-search-key:hover {
-            cursor: pointer;
-        }
+    }
+    
+    .search-key:hover {
+        cursor: pointer
     }
 
     #autocomplete-order-by {

@@ -61,13 +61,11 @@
                 'list_filter'        : '',
                 'num_pages'          : 1,
                 'page'               : 1,
-                'results_per_page'   : 10,
+                'page_size'          : 10,
                 'reverse'            : false,
                 'selected_categories': [],
-                'sort_order'         : 'created',
-                'refresh'            : function() {
-                    $scope.$emit('getRelated', 'ratings', $scope.role.related.ratings);
-                }
+                'sort_order'         : '-created',
+                'refresh'            : _refreshRatings
             }
         };
 
@@ -75,16 +73,18 @@
         $scope.ratings = [];
         $scope.display_user_info = 1;
         $scope.getRole = _getRole;
-        $scope.$on('getRelated', _getRelated);
         $scope.showRatingDialog = _showRatingDialog;
         $scope.staffDeleteRating = _deleteRating;
         $scope.staffDeleteRole = _deleteRole;
-        _getRelated(null, 'ratings', role.related.ratings);
+        _refreshRatings();
         PaginateInit({'scope': $scope});
 
         return; 
 
-
+        function _refreshRatings() {
+            _getRelated('ratings', $scope.role.related.ratings);
+        }
+        
         function _modalController ($scope, $modalInstance, role, ratingFactory, rating) {
             $scope.alerts = [];
             $scope.role = role;
@@ -197,25 +197,30 @@
         }
 
         function _getRole() {
+            $scope.loading = 1;
             roleFactory.getRole($routeParams.role_id)
                 .success( function(data) {
                     $scope.role = data;
-                    $scope.$emit('getRelated', 'ratings', data.related.ratings);
+                    $scope.loading = 0;
+                    _refreshRatings();
                 })
                 .error( function(error) {
                     $scope.status = 'Unable to load role: ' + error.message;
                 });
         }
 
-        function _getRelated(e, target, url) {
+        function _getRelated(target, url) {
             $scope.list_data[target].url = url;
+            $scope.loading = 1;
             relatedFactory.getRelated($scope.list_data[target])
                 .success( function(data) {
                     $scope.list_data[target].page = parseInt(data['cur_page']);
                     $scope.list_data[target].num_pages = parseInt(data['num_pages']);
+                    $scope.list_data[target].count = parseInt(data['count']);
                     $scope.list_data[target].page_range = [];
                     $scope.setPageRange(target);
                     $scope[target] = data['results'];
+                    $scope.loading = 0;
                 })
                 .error(function (error) {
                     $scope.status = 'Unable to load related '+target+': ' + error.message;

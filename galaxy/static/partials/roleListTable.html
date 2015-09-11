@@ -18,7 +18,7 @@
       <tbody>
       <tr ng-repeat="role in roles">
            <td class="role">
-               <div class="rolename"><a href="/details#/role/{{role.id}}">{{role.name}}</a></div>
+               <div class="rolename"><a href="/detail#/role/{{role.id}}">{{role.name}}</a></div>
                <div class="score-section">
                    <div class="scores">
                        <div class="score">
@@ -29,7 +29,7 @@
                     </div>
                </div>
                <div ng-show="display_user_info" class="userinfo">
-                   <span class="username"><span class="fld-label">Author:</span> <a href="details#/user/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a></span><br />
+                   <span class="username"><span class="fld-label">Author:</span> <a href="detail#/user/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a></span><br />
                </div>
            </td>
            <td class="col-lg-2">
@@ -37,7 +37,7 @@
            </td>
            <td class="col-lg-7 description">{{role.description}}</td>
        </tr>
-       <tr ng-show="roles.length == 0">
+       <tr ng-show="roles.length == 0 && !loading">
            <td>No roles found.</td>
        </tr>
        </tbody>

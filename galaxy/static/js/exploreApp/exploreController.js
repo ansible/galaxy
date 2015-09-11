@@ -16,17 +16,17 @@
         '$timeout',
         'roleFactory',
         'userFactory',
-        'categoryFactory',
+        'tagFactory',
         _controller
     ]);
 
-    function _controller($scope, $timeout, roleFactory, userFactory, categoryFactory) {
+    function _controller($scope, $timeout, roleFactory, userFactory, tagFactory) {
 
         $scope.page_title = 'Explore';
         $scope.results_per_page = 10;
 
         $scope.loading = {
-            categories: 1,
+            tags: 1,
             topRoles: 1,
             newRoles: 1,
             topUsers: 1,
@@ -44,7 +44,7 @@
         $timeout(function() {
             // give the partial templates a chance to load before we do this...
             _restoreState()
-            _getCategories();
+            _getTags();
             _getTopRoles();
             _getNewRoles();
             _getTopContributors()
@@ -56,26 +56,25 @@
 
 
         function _restoreState() {
-            var data_names = ["categories","top_roles","new_roles","top_users","top_reviewers","new_users"];
+            var data_names = ["tags","top_roles","new_roles","top_users","top_reviewers","new_users"];
             data_names.forEach(function (entry) {
                 var default_sort_col = '';
                 var more_link = '';
                 var data_function = null;
-                if (entry === 'categories') {
+                if (entry === 'tags') {
                     default_sort_col = '-num_roles';
                     more_link = '/list#/roles/';
-                    data_function = _getCategories;
+                    data_function = _getTags;
                 }
                 else if (entry === 'top_roles') {
                     default_sort_col = '-average_score,-num_ratings';
-                    more_link = '/list#/roles?page=1&per_page=10&sort_order=average_score,name&reverse';
+                    more_link = '/list#/roles?page=1&per_page=10&order=-average_score,name';
                     //more_link = '/list#/roles/sort/sort-by-community-score';
                     data_function = _getTopRoles;
                 }
                 else if (entry === 'new_roles') {
                     default_sort_col = '-created,owner__username,name';
-                    more_link = '/list#/roles?page=1&per_page=10&sort_order=created&reverse';
-                    //more_link = '/list#/roles/sort/sort-by-created-on-date';
+                    more_link = '/list#/roles?page=1&per_page=10&order=-created';
                     data_function = _getNewRoles;
                 }
                 else if (entry === 'top_users') {
@@ -108,13 +107,10 @@
             });
         }
 
-        function _getCategories() {
-            return categoryFactory.getCategories(
-                $scope.categories.sort_col,
-                $scope.categories.reverse
-            ).then(function(data) {
-                $scope.categories.data = data.data.slice(0, $scope.results_per_page);
-                $scope.loading.categories = 0;
+        function _getTags() {
+            return tagFactory.get({ order: '-roles' }).$promise.then(function(data) {
+                $scope.tags.data = data.results.slice(0, $scope.results_per_page);
+                $scope.loading.tags = 0;
             });
         }
 

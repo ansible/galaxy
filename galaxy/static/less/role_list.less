@@ -3,8 +3,7 @@
  */
  
 #galaxy-role-list {
-    margin-bottom: 15px; 
-
+    
     #galaxy-page-title {
         position: fixed;
         left: 0;
@@ -13,25 +12,20 @@
         z-index: +1;
     }
 
+    #galaxy-page-row {
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+
     #role-list-container {
-        position: relative;
-        padding-top: 130px;
+        margin-top: 150px;
     }
 
-    #search-control-container {
-        position: fixed;
-        z-index: +1;
-        padding-top: 20px;
-        padding-bottom: 10px;
-        background-color: @white;
-        margin-right: 1px;
-    }
-
-    .search-controls {
+    #role-list-search {
+        padding-top: 5px;
         border-radius: 2px;
         background-color: #e1e1e1;
-        position: relative;
-        padding-top: 5px;
+        margin-bottom: 20px;
         
         #role-order-by {
             display: inline-block;
@@ -47,11 +41,6 @@
     }
 
     #role-tags-container {
-        position: fixed;
-        top: 150px;
-        right: 15px;
-        width: 20%;
-        z-index: +1;
         background-color: #e1e1e1;
         border-radius: 2px;
         overflow-y: none; 
@@ -66,14 +55,15 @@
             }
         }
         .body-wrapper {
-            padding: 10px;
-            text-align: center;
-            overflow-y: none;
+            height: 310px;
+            overflow: hidden;
         }
         .body {
+            padding: 10px;
+            text-align: center;
+            height: 300px;
             overflow-y: auto;
             .tag {
-                width: 100%;
                 font-size: 12px;
                 font-weight: normal;
                 margin-bottom: 5px;
@@ -113,24 +103,6 @@
                 }
             }
         }
-        .view-all-link {
-            font-size: 10px;
-            text-align: left;
-            margin-left: 8px;
-            margin-top: 5px;
-        }
-    }
-
-    @media (min-width: 1200px) {
-        #role-tags-container {
-            width: 15%;
-        }
-    }
-
-    @media (max-width: 1199px) {
-        #role-tags-container {
-            width: 23%;
-        }
     }
 
     @media (max-width: 768px) {
@@ -139,21 +111,15 @@
         }
     }
 
-    #role-list-results {
-        padding-top: 72px;
-    }
-
-    .results {
-        display: inline-block;
-        margin: 0 auto;
-        width: auto;
-        min-height: 300px;
+    #results-container {
+        overflow-x: hidden;
+        overflow-y: auto;
 
         .result {
             display: inline-block;
             vertical-align: top;
-            width: 225px;
-            height: 210px;
+            width: 260px;
+            height: 230px;
             padding: 10px;
             border: 1px solid #ccc; 
             border-radius: 2px;

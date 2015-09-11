@@ -273,7 +273,7 @@ class HaystackFilter(HaystackFilter):
                 if key in ('order', 'order_by'):
                     order_by = value
                     if ',' in value:
-                        order_by = tuple(value.split(','))
+                        order_by = value.split(',')
                     else:
                         order_by = (value,)
             if order_by:

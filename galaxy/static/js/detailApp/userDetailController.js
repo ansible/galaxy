@@ -16,6 +16,7 @@
         '$scope',
         '$routeParams',
         '$location',
+        '$timeout',
         'userFactory',
         'ratingFactory',
         'my_info',
@@ -34,6 +35,7 @@
         $scope,
         $routeParams,
         $location,
+        $timeout,
         userFactory,
         ratingFactory,
         my_info,
@@ -57,27 +59,23 @@
                 'list_filter'        : '',
                 'num_pages'          : 1,
                 'page'               : 1,
-                'results_per_page'   : 10,
+                'page_size'          : 10,
                 'reverse'            : false,
                 'selected_categories': [],
                 'sort_order'         : 'name',
-                'refresh'            : function() {
-                    $scope.$emit('refreshRelated', 'roles', user.related.roles);
-                    }
-                },
+                'refresh'            : _refreshRoles
+            },
             'ratings' : {
                 'list_filter'        : '',
                 'num_pages'          : 1,
                 'page'               : 1,
-                'results_per_page'   : 10,
+                'page_size'          : 10,
                 'reverse'            : true,
                 'selected_categories': [],
                 'sort_order'         : 'created',
-                'refresh'            : function() {
-                    $scope.$emit('refreshRelated', 'ratings', user.related.ratings);
-                    }
-                }
-            };
+                'refresh'            : _refreshRatings
+            }
+        };
 
         $scope.roles = [];
         $scope.ratings = [];
@@ -110,24 +108,16 @@
                     $scope.list_data[target].page = parseInt(data['cur_page']);
                     $scope.list_data[target].num_pages = parseInt(data['num_pages']);
                     $scope.list_data[target].page_range = [];
+                    $scope.list_data[target].count = parseInt(data['count']);
                     $scope.setPageRange(target);
-
-                    if (data['results'].length > 0 && !Empty(data['results'][0].reliability)) {
-                        // Add 'ranges' to the data that we can pipe through ng-repeat to create a graphic
-                        // representation of each rating.
-                        for (var i=0; i < data['results'].length; i++) {
-                            data['results'][i].reliability_range = Stars(data['results'][i].reliability);
-                            data['results'][i].documentation_range = Stars(data['results'][i].documentation);
-                            data['results'][i].code_quality_range = Stars(data['results'][i].code_quality);
-                            data['results'][i].wow_factor_range = Stars(data['results'][i].wow_factor);
-                            data['results'][i].score_range = Stars(data['results'][i].score);
-                        }
-                    }
                     $scope[target] = data['results'];
-                    $scope.loading--;
+                    $timeout(function() {
+                        $scope.loading = 0;
+                    }, 500);
                 })
                 .error(function (error) {
                     $scope.status = 'Unable to load related ' + target + ': ' + error.message;
+                    $scope.loading = 0;
                 });
         });
 
@@ -151,9 +141,22 @@
                 });
         };
 
-        $scope.loading = 2;
+        $scope.loading = 1;
         $scope.list_data.roles.refresh();
         $scope.list_data.ratings.refresh();
+
+        return; 
+
+
+        function _refreshRoles() {
+            $scope.loading = 1;
+            $scope.$emit('refreshRelated', 'roles', user.related.roles);
+        }
+
+        function _refreshRatings() {
+            $scope.loading = 1;
+            $scope.$emit('refreshRelated', 'ratings', user.related.ratings);
+        }
 
     }
 

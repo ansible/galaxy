@@ -708,7 +708,6 @@ class RoleDetailSerializer(BaseSerializer):
         return markdown.markdown(html_decode(obj.readme), extensions=['extra'])
 
 class RoleSearchSerializer(HaystackSerializer):
-    average_score = serializers.SerializerMethodField()
     id = serializers.SerializerMethodField()
     platforms = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
@@ -723,7 +722,7 @@ class RoleSearchSerializer(HaystackSerializer):
         # fields belong to the search index!
         fields = [
             "name", "description", "tags", "platforms", "username", "average_score", "num_ratings",
-            "created", "modified", "text", "autocomplete", "owner_id"
+            "created", "modified", "text", "autocomplete", "owner_id", "sort_name"
         ]
 
     def get_average_score(self, instance):

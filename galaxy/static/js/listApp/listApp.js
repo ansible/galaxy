@@ -16,7 +16,7 @@
         'ngCookies',
         'ui.bootstrap',
         'meService',
-        'categoryService',
+        'tagService',
         'ratingService',
         'roleService',
         'roleSearchService',

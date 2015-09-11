@@ -18,7 +18,7 @@
         dataFactory.getRelated = function(params) {
             var url = params.url; 
             var page = params.page; 
-            var results_per_page = params.results_per_page; 
+            var results_per_page = params.page_size; 
             var sort_order = params.sort_order; 
             var reverse = params.reverse; 
             var target_url = url + '?page=' + page + '&page_size=' + results_per_page;

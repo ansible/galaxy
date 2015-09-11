@@ -14,26 +14,24 @@
     <div class="row">
         <div class="col-lg-12">
             <img ng-src="{{user.avatar_url}}" id="user-avatar" width="96px" height="96px">
-            <div class="statistics">
-                <div class="user-info">
-                    <span class="username">{{user.username}}</span>
-                    <span class="name">{{user.full_name}}</span><br />
-                    <span ng-show="user.email" class="email">{{user.email}}</span><br />
-                    <span ng-show="user.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span>
-                </div>
-                <div class="score" ng-show="user.avg_role_score != '0.0'">
-                    <span class="score-value">{{user.avg_role_score|number:1}}</span>
-                    <span class="fld-label">Average Score</span>
-                </div>
-            </div><!-- statistics -->
+            <div class="user-info">
+                <span class="username">{{user.username}}</span>
+                <span class="name">{{user.full_name}}</span><br />
+                <span ng-show="user.email" class="email">{{user.email}}</span><br />
+                <span ng-show="user.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span>
+            </div>
+            <div class="score" ng-show="user.avg_role_score != '0.0'">
+                <span class="score-value">{{user.avg_role_score|number:1}}</span>
+                <span class="fld-label">Average Role Score</span>
+            </div>
         </div><!-- col-lg-12 -->
     </div><!-- row -->
 
-    <div class="row user-tabs" ng-hide="loading">
+    <div class="row user-tabs">
         <div class="col-lg-12">
             <tabset type="pills">
                 <tab>
-                    <tab-heading>Roles <span class="badge">{{user.num_roles}}</span></tab-heading>
+                    <tab-heading>Roles <span class="badge">{{ user.num_roles }}</span></tab-heading>
                     <ng-include src="'/static/partials/roleListTable.html'"></ng-include>
                 </tab>
                 <tab>

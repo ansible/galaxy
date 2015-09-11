@@ -158,7 +158,7 @@
 
                 $scope.list_data.page = parseInt(data['cur_page']);
                 $scope.list_data.num_pages = parseInt(data['num_pages']);
-                $scope.num_users = parseInt(data['count']);
+                $scope.list_data.count = parseInt(data['count']);
                 $scope.list_data.page_range = [];
                 $scope.setPageRange();
 

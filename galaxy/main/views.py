@@ -152,14 +152,19 @@ def home(request):
 def explore(request):
     context = build_standard_context(request)
     context["ng_app"] = "exploreApp"
-    context["extra_js"] = [
-      '/static/js/exploreApp/exploreApp.js',
-      '/static/js/exploreApp/exploreController.js',
-      '/static/js/commonServices/roleService.js',
-      '/static/js/commonServices/categoryService.js',
-      '/static/js/commonServices/userService.js',
-      '/static/js/commonServices/galaxyUtilities.js',
-    ]
+    if settings.SITE_ENV == 'DEV':
+        context["extra_js"] = [
+          '/static/js/exploreApp/exploreApp.js',
+          '/static/js/exploreApp/exploreController.js',
+          '/static/js/commonServices/roleService.js',
+          '/static/js/commonServices/tagService.js',
+          '/static/js/commonServices/userService.js',
+          '/static/js/commonServices/galaxyUtilities.js',
+        ]
+    else:
+        context["extra_js"] = [
+          '/static/dist/galaxy.exploreApp.min.js'
+        ]
     return render_to_response('explore.html', context)
 
 def intro(request):
@@ -179,28 +184,32 @@ def list_category(request, category=None, page=1):
     context["ng_app"] = "listApp"
     context["extra_css"] = [
     ]
-    context["extra_js"] = [
-      # '/static/js/angular-slider.min.js',
-      '/static/js/listApp/listApp.js',
-      '/static/js/listApp/roleListController.js',
-      '/static/js/listApp/userListController.js',
-      '/static/js/commonServices/categoryService.js',
-      '/static/js/commonServices/meService.js',
-      '/static/js/commonServices/ratingService.js',
-      '/static/js/commonServices/roleService.js',
-      '/static/js/commonServices/roleSearchService.js',
-      '/static/js/commonServices/storageService.js',
-      '/static/js/commonServices/userService.js',
-      '/static/js/commonServices/platformService.js',
-      '/static/js/commonServices/galaxyUtilities.js',
-      '/static/js/commonServices/searchService.js',
-      '/static/js/commonDirectives/commonDirectives.js',
-      '/static/js/commonDirectives/autocompleteDirective.js',
-      '/static/js/commonDirectives/textCollapseDirective.js',
-      '/static/js/commonDirectives/dotDotDotDirective.js',
-      '/static/js/commonServices/relatedService.js',
-      '/static/js/commonServices/paginateService.js',
-    ]
+    if settings.SITE_ENV == 'DEV':
+        context["extra_js"] = [
+          '/static/js/listApp/listApp.js',
+          '/static/js/listApp/roleListController.js',
+          '/static/js/listApp/userListController.js',
+          '/static/js/commonServices/tagService.js',
+          '/static/js/commonServices/meService.js',
+          '/static/js/commonServices/ratingService.js',
+          '/static/js/commonServices/roleService.js',
+          '/static/js/commonServices/roleSearchService.js',
+          '/static/js/commonServices/storageService.js',
+          '/static/js/commonServices/userService.js',
+          '/static/js/commonServices/platformService.js',
+          '/static/js/commonServices/galaxyUtilities.js',
+          '/static/js/commonServices/searchService.js',
+          '/static/js/commonDirectives/commonDirectives.js',
+          '/static/js/commonDirectives/autocompleteDirective.js',
+          '/static/js/commonDirectives/textCollapseDirective.js',
+          '/static/js/commonDirectives/dotDotDotDirective.js',
+          '/static/js/commonServices/relatedService.js',
+          '/static/js/commonServices/paginateService.js',
+        ]
+    else:
+        context["extra_js"] = [
+          '/static/dist/galaxy.listApp.min.js'
+        ]
     return render_to_response('list_category.html', context)
 
 def detail_category(request, category=None, page=1):
@@ -208,28 +217,33 @@ def detail_category(request, category=None, page=1):
     context["ng_app"] = "detailApp"
     context["extra_css"] = [
     ]
-    context["extra_js"] = [
-      # '/static/js/angular-slider.min.js',
-      '/static/js/detailApp/detailApp.js',
-      '/static/js/detailApp/roleDetailController.js',
-      '/static/js/detailApp/userDetailController.js',
-      '/static/js/commonServices/categoryService.js',
-      '/static/js/commonServices/meService.js',
-      '/static/js/commonServices/ratingService.js',
-      '/static/js/commonServices/roleService.js',
-      '/static/js/commonServices/roleSearchService.js',
-      '/static/js/commonServices/storageService.js',
-      '/static/js/commonServices/userService.js',
-      '/static/js/commonServices/platformService.js',
-      '/static/js/commonServices/galaxyUtilities.js',
-      '/static/js/commonServices/searchService.js',
-      '/static/js/commonDirectives/commonDirectives.js',
-      '/static/js/commonDirectives/autocompleteDirective.js',
-      '/static/js/commonDirectives/textCollapseDirective.js',
-      '/static/js/commonDirectives/dotDotDotDirective.js',
-      '/static/js/commonServices/relatedService.js',
-      '/static/js/commonServices/paginateService.js',
-    ]
+    if settings.SITE_ENV == 'DEV':
+        context["extra_js"] = [
+          # '/static/js/angular-slider.min.js',
+          '/static/js/detailApp/detailApp.js',
+          '/static/js/detailApp/roleDetailController.js',
+          '/static/js/detailApp/userDetailController.js',
+          '/static/js/commonServices/tagService.js',
+          '/static/js/commonServices/meService.js',
+          '/static/js/commonServices/ratingService.js',
+          '/static/js/commonServices/roleService.js',
+          '/static/js/commonServices/roleSearchService.js',
+          '/static/js/commonServices/storageService.js',
+          '/static/js/commonServices/userService.js',
+          '/static/js/commonServices/platformService.js',
+          '/static/js/commonServices/galaxyUtilities.js',
+          '/static/js/commonServices/searchService.js',
+          '/static/js/commonDirectives/commonDirectives.js',
+          '/static/js/commonDirectives/autocompleteDirective.js',
+          '/static/js/commonDirectives/textCollapseDirective.js',
+          '/static/js/commonDirectives/dotDotDotDirective.js',
+          '/static/js/commonServices/relatedService.js',
+          '/static/js/commonServices/paginateService.js',
+        ]
+    else:
+        context["extra_js"] = [
+          '/static/dist/galaxy.detailApp.min.js'
+        ]
     return render_to_response('list_category.html', context)
 
 def role_view(request, user, role):
@@ -320,14 +334,19 @@ def accounts_profile(request):
     context["ng_app"] = "accountsApp"
     context["extra_css"] = [
     ]
-    context["extra_js"] = [
-      '/static/js/commonServices/meService.js',
-      '/static/js/commonServices/storageService.js',
-      '/static/js/commonServices/relatedService.js',
-      '/static/js/commonServices/galaxyUtilities.js',
-      '/static/js/accountApp/myRolesController.js',
-      '/static/js/accountApp/accountApp.js',
-    ]
+    if settings.SITE_ENV == 'DEV':
+        context["extra_js"] = [
+          '/static/js/commonServices/meService.js',
+          '/static/js/commonServices/storageService.js',
+          '/static/js/commonServices/relatedService.js',
+          '/static/js/commonServices/galaxyUtilities.js',
+          '/static/js/accountApp/myRolesController.js',
+          '/static/js/accountApp/accountApp.js',
+        ]
+    else:
+        context["extra_js"] = [
+          '/static/dist/galaxy.accountApp.min.js'
+        ]
 
     if request.session.has_key("transient"):
         context["transient"] = request.session["transient"]

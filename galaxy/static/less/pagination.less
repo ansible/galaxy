@@ -7,6 +7,7 @@
     .pagination {
         margin-top: 0;
         margin-bottom: 0;
+        margin-right: 5px;
         font-size: 12px;
     }
 
@@ -23,38 +24,41 @@
         border-top-left-radius: 2px;
         border-bottom-left-radius: 2px;
     }
-
-    .page-label {
+    #page-number-label {
+        display: inline-block;
+        vertical-align: top;
         font-size: 12px;
         color: @ansible-dark-grey;
-        text-align: right;
+        margin-top: 3px;
     }
-
     #page-size-select {
-        font-size: 10px;
+        font-size: 12px;
+        color: @ansible-dark-grey;
         margin-left: 10px;
+        text-align: right;
         label {
             display: inline-block;
             font-weight: normal;
+            margin-bottom: 2px;
         }
         select {
             display: inline-block;
             width: auto;
         }
         .form-control {
-            height: 26px;
+            height: 26px;s
             line-height: 26px;
             font-size: 10px;
         }
     }
 
-    @media (max-width: 992px) {
-        .page-label {
-            text-align: center;
-            margin: 5px 0;
-        }
+    @media (max-width: 768px) {
         #page-size-select {
-            text-align: right;
+            text-align: center;
+            margin-top: 5px;
+        }
+        #page-number-container {
+            text-align: center;
         }
     }
 }

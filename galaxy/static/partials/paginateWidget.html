@@ -1,27 +1,36 @@
 <!-- Paginate Widget -->
 <div class="row page-row" id="galaxy-page-row" ng-show="!loading">
-    <div class="col-lg-6 col-md-6 col-sm-7 col-xs-9">
+    <div class="col-md-6" id="page-number-container">
         <ul class="pagination">
-           <li ng-hide="list_data.page == 1"><a href ng-click="getPage(1,target)"><i class="fa fa-angle-double-left"></i></a></li>
-           <li ng-hide="list_data.page == 1"><a href ng-click="getPage(list_data.page - 1,target)"><i class="fa fa-angle-left"></i></a></li>
-           <li ng-repeat="page_item in list_data.page_range" ng-class="(list_data.page == page_item) ? 'active' : ''"><a href ng-click="getPage(page_item,target)">{{ page_item }}</a></li>
-           <li ng-hide="list_data.page >= list_data.num_pages"><a href ng-click="getPage(list_data.page + 1,target)"><i class="fa fa-angle-right"></i></a></li>
-           <li ng-hide="list_data.page >= list_data.num_pages"><a href ng-click="getPage(list_data.num_pages,target)"><i class="fa fa-angle-double-right"></i></a></li>
+            <li ng-hide="list_data.page == 1">
+                <a href ng-click="getPage(1,target)"><i class="fa fa-angle-double-left"></i></a>
+            </li>
+            <li ng-hide="list_data.page == 1">
+                <a href ng-click="getPage(list_data.page - 1,target)"><i class="fa fa-angle-left"></i></a>
+            </li>
+            <li ng-repeat="page_item in list_data.page_range" ng-class="{ 'active': list_data.page === page_item }">
+                <a href ng-click="getPage(page_item,target)">{{ page_item }}</a>
+            </li>
+            <li ng-hide="list_data.page >= list_data.num_pages">
+                <a href ng-click="getPage(list_data.page + 1,target)"><i class="fa fa-angle-right"></i></a>
+            </li>
+            <li ng-hide="list_data.page >= list_data.num_pages">
+                <a href ng-click="getPage(list_data.num_pages,target)"><i class="fa fa-angle-double-right"></i></a>
+            </li>
         </ul>
+        <div id="page-number-label">PAGE {{ list_data.page }} OF {{ list_data.num_pages }}</div>
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-5 col-xs-3">
-        <div id="page-size-select" ng-show="num_roles || num_users">
-            <label class="hidden-xs">Page Size</label>
-            <select ng-model="list_data.page_size" class="form-control" ng-change="list_data.refresh()">
+    <div class="col-md-6">
+        <div id="page-size-select">
+            <label >ITEMS {{ (list_data.page * list_data.page_size) - list_data.page_size + 1 }} - 
+            {{ (list_data.page * list_data.page_size > list_data.count) ? list_data.count :  list_data.page * list_data.page_size }} OF 
+            {{ list_data.count }} &nbsp;&nbsp;VIEW PER PAGE</label>
+            <select ng-model="list_data.page_size" class="form-control" ng-change="list_data.page = 1; list_data.refresh()">
                 <option value="5">5</option>
                 <option value="10">10</option>
                 <option value="15">15</option>
                 <option value="20">20</option>
             </select>
         </div>
-    </div>
-    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-        <div class="page-label" ng-show="num_roles">Page {{list_data.page}} of {{list_data.num_pages}}. &nbsp;{{num_roles}} total roles.</div>
-        <div class="page-label" ng-show="num_users">Page {{list_data.page}} of {{list_data.num_pages}}. &nbsp;{{num_users}} total users.</div>
     </div>
 </div>
