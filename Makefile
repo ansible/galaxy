@@ -33,6 +33,7 @@ clean:
 	rm -rf dist/*
 	rm -rf build rpm-build *.egg-info
 	rm -rf debian deb-build
+	rm -f galaxy/static/dist/*.js
 	find . -type f -regex ".*\.py[co]$$" -delete
 
 # Fetch from origin, rebase local commits on top of origin commits.
@@ -148,7 +149,6 @@ test_jenkins:
 
 # Build minified JS/CSS.
 ui_build:
-	rm -f galaxy/static/dist/*.js
 	node node_modules/gulp/bin/gulp.js build	
 
 # Build a pip-installable package into dist/ with a timestamped version number.

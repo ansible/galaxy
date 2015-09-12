@@ -3,5 +3,6 @@ recursive-include galaxy/static *
 recursive-include galaxy/templates *
 recursive-include galaxy/lib/site-packages *
 recursive-include config *
+prune galaxy/static/js
 #include COPYING
 #prune galaxy/public
