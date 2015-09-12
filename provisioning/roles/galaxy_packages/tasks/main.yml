@@ -59,6 +59,7 @@
   - PyGithub
   - requests
   - requests-oauthlib
+  - bleach
 
 # the avatars directory needs to be there, otherwise the library
 # will complain. It isn't used, as all the avatar info is stored
