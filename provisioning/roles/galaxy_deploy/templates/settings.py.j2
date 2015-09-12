@@ -98,6 +98,26 @@ CACHES = {
     }
 }
 
+ELASTIC_SEARCH = {
+    'host': "{{ galaxy_es_host }}", 
+    'port': "{{ galaxy_es_port }}",
+    'transport': "{{ galaxy_es_transport }}"
+}
+
+ES_CONNECTION_URL = "%s://%s:%s/" % (
+    ELASTIC_SEARCH['transport'],
+    ELASTIC_SEARCH['host'],
+    ELASTIC_SEARCH['port']
+)
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': ES_CONNECTION_URL,
+        'INDEX_NAME': 'haystack',
+    },
+}
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_SAVE_EVERY_REQUEST = True
 
