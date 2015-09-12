@@ -148,7 +148,7 @@ test_jenkins:
 
 # Build minified JS/CSS.
 ui_build:
-        rm galaxy/static/dist/*.js
+	rm -f galaxy/static/dist/*.js
 	node node_modules/gulp/bin/gulp.js build	
 
 # Build a pip-installable package into dist/ with a timestamped version number.
