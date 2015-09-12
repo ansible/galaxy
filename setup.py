@@ -144,7 +144,8 @@ setup(
     data_files = proc_data_files([
             ("%s" % homedir,        ["config/wsgi.py",
                                      "galaxy/static/favicon.ico",
-            # ("%s" % webconfig,      ["config/galaxy.conf", ]),
+                                    ]
+            )
         ]
     ),
     options = {
