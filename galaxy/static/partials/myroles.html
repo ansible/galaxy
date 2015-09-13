@@ -12,7 +12,7 @@
         <tbody>
             <tr ng-repeat="role in my_info.summary_fields.roles" ng-class="{'danger':!role.active}">
                 <td>
-                 <a href="/list#/roles/{{role.id}}"><span ng-show="role.active">{{role.name}}</span><span ng-hide="role.active">{{role.original_name}}</span></a>
+                 <a href="/detail#/role/{{role.id}}"><span ng-show="role.active">{{role.name}}</span><span ng-hide="role.active">{{role.original_name}}</span></a>
                 </td>
                 <td>{{ role.description }}</td>
                 <td ng-switch="role.import.state">

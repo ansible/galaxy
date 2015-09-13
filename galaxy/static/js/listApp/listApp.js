@@ -11,6 +11,7 @@
 (function(angular) {
   
     var roleApp = angular.module('listApp', [
+        'ngResource',
         'ngRoute',
         'ngSanitize',
         'ngCookies',
@@ -36,26 +37,26 @@
     roleApp.config(['$routeProvider', _routes]);
 
     function _routes($routeProvider) {
-      $routeProvider.
-          when('/roles', {
-              templateUrl: '/static/partials/role-list.html',
-              controller: 'RoleListCtrl',
-              reloadOnSearch: false,
-              resolve: {
-                  my_info: ['$q', 'meFactory', _getMyInfo]
-              }
-          }).
-          when('/users', {
-              templateUrl: '/static/partials/user-list.html',
-              controller: 'UserListCtrl',
-              reloadOnSearch: false,
-              resolve: {
-                  my_info: ['$q', 'meFactory', _getMyInfo]
-              }
-          }).
-          otherwise({
-              redirectTo: '/roles'
-          });
+        $routeProvider.
+            when('/roles', {
+                templateUrl: '/static/partials/role-list.html',
+                controller: 'RoleListCtrl',
+                reloadOnSearch: false,
+                resolve: {
+                    my_info: ['$q', 'meFactory', _getMyInfo]
+                }
+            }).
+            when('/users', {
+                templateUrl: '/static/partials/user-list.html',
+                controller: 'UserListCtrl',
+                reloadOnSearch: false,
+                resolve: {
+                    my_info: ['$q', 'meFactory', _getMyInfo]
+                }
+            }).
+            otherwise({
+                redirectTo: '/roles'
+            });
     }
 
     function _getMyInfo($q, meFactory) {

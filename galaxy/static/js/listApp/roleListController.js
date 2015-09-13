@@ -126,6 +126,7 @@
             _windowResize();
             _setSearchTerms($scope.list_data);
             _setOrderBy();
+            _updateTopTags();
         }, 500);
 
         $scope.$on('$destroy', function() {
@@ -174,7 +175,7 @@
 
             return roleSearchService.get(params)
                 .$promise.then(function(data) {
-                    Array.prototype.push.apply($scope.roles, data.results);
+                    $scope.roles = data.results;
                     $scope.status = "";
                     $scope.loading = 0;
 
@@ -246,7 +247,9 @@
 
         function _updateTopTags() {
             // reset the active state of our topTags
-            var _tags = autocompleteService.getKeywords().filter(function(_key) { return (_key.type === 'Tag'); }).map(function(_key) { return _key.value });
+            var _tags = autocompleteService.getKeywords()
+                .filter(function(_key) { return (_key.type === 'Tag'); })
+                .map(function(_key) { return _key.value });
             $scope.topTags.forEach(function(tag) { tag.active = false; });
             $scope.topTags.forEach(function(tag) {
                 var found = _.find(_tags, function(_tag) { return (_tag === tag.tag); });

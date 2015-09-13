@@ -1,7 +1,7 @@
 <!-- Paginate Widget -->
 <div class="row page-row" id="galaxy-page-row" ng-show="!loading">
     <div class="col-md-6" id="page-number-container">
-        <ul class="pagination">
+        <ul class="pagination" ng-show="list_data.num_pages > 1">
             <li ng-hide="list_data.page == 1">
                 <a href ng-click="getPage(1,target)"><i class="fa fa-angle-double-left"></i></a>
             </li>
@@ -24,8 +24,9 @@
         <div id="page-size-select">
             <label >ITEMS {{ (list_data.page * list_data.page_size) - list_data.page_size + 1 }} - 
             {{ (list_data.page * list_data.page_size > list_data.count) ? list_data.count :  list_data.page * list_data.page_size }} OF 
-            {{ list_data.count }} &nbsp;&nbsp;VIEW PER PAGE</label>
-            <select ng-model="list_data.page_size" class="form-control" ng-change="list_data.page = 1; list_data.refresh()">
+            {{ list_data.count }} <span ng-show="list_data.num_pages > 1">&nbsp;&nbsp;VIEW PER PAGE</span></label>
+            <select ng-show="list_data.num_pages > 1" ng-model="list_data.page_size" class="form-control" 
+                ng-change="list_data.page = 1; list_data.refresh()">
                 <option value="5">5</option>
                 <option value="10">10</option>
                 <option value="15">15</option>

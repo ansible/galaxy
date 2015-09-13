@@ -41,7 +41,7 @@
                 </tr>
                 <tr ng-repeat="user in users">
                     <td class="col-sm-4 user">
-                        <a href="#/users/{{user.id}}"><img ng-src="{{user.avatar_url}}" /></a>
+                        <a href="/detail#/user/{{user.id}}"><img ng-src="{{user.avatar_url}}" /></a>
                         <div class="info">
                             <div><a class="username" href="/detail#/user/{{user.id}}">{{ user.username }}</a>
                                 <span class="name" ng-show="user.full_name">{{ user.full_name }}</span><br \>
@@ -63,7 +63,7 @@
                     <td class="col-sm-4 roles">
                         <div class="role-list">
                             <div ng-repeat="role in user.summary_fields.roles | limitTo:5">
-                              <a class="role" href="#/roles/{{role.id}}">{{role.name}}</a>
+                              <a class="role" href="/detail#/role/{{role.id}}">{{role.name}}</a>
                             </div>
                             <div ng-show="user.num_roles > 5"><a class="role" href="#/users/{{user.id}}">more...</a></div>
                             <div ng-show="user.num_roles == 0">This user has no roles</div>

@@ -40,8 +40,10 @@
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <div class="ratings-count">
                                     <h3>Ratings: <span ng-class="{ 'count-grey': role.num_ratings == 0, 'count-blue': role.num_ratings }">{{ role.num_ratings }}</span></h3>
-                                    <p><a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings == 0">Be the first to rate this role.</a>
-                                    <a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings">Rate this role.</a></p>
+                                    <p ng-show="my_info.authenticated">
+                                        <a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings == 0">Be the first to rate this role.</a>
+                                        <a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings">Rate this role.</a>
+                                    </p>
                                 </div>
                             </div>
                         </div>
