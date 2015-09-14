@@ -97,6 +97,7 @@ def import_role(role_id, target="all"):
 
     # get the role from the database
     try:
+        logger.info("Look up role_id: %d" % int(role_id))
         role = Role.objects.get(id=role_id)
         role_import = role.imports.latest()
         role_import.state = "RUNNING"
@@ -110,6 +111,7 @@ def import_role(role_id, target="all"):
     try:
         # FIXME: needs to use a real github account in order in order to
         #        avoid a ridiculously low rate limit (60/hr vs 5000/hr)
+        logger.info("Connecting to Github for role_id: %d" % int(role_id))
         if hasattr(settings, 'GITHUB_API_TOKEN'):
             gh_api = Github(settings.GITHUB_API_TOKEN)
         else:
@@ -118,6 +120,7 @@ def import_role(role_id, target="all"):
     except:
         fail_import_task(role, logger, "Failed to connect to Github API. This is most likely a temporary error, please re-try your import in a few minutes.")
     try:
+        logger.info("Accessing repo %s/%s for role_id: %s" % role.github_user, role.github_repo, int(role_id))
         user = gh_api.get_user(role.github_user)
         repo = user.get_repo("%s" % role.github_repo)
     except:
@@ -127,6 +130,7 @@ def import_role(role_id, target="all"):
     galaxy_info = {}
     dependencies = []
     try:
+        logger.info("Parse and validate meta/main.yml for role_id: %d" % int(role_id))
         meta_file = repo.get_file_contents("meta/main.yml")
         meta_data = yaml.safe_load(meta_file.content.decode('base64'))
         galaxy_info = meta_data.get("galaxy_info", None)
@@ -136,10 +140,11 @@ def import_role(role_id, target="all"):
     except Exception, e:
         fail_import_task(role, logger, "Failed to parse 'meta/main.yml'. Please refer to the 'Getting Started' documentation regarding the proper format of the 'meta/main.yml' file. Once the issue has been corrected in the repository, you can retry the import. Real Error: %s" % e)
 
-    readme_file = get_readme(repo)
-
+    
     # add the new fields 
     try:
+        logger.info("Parse and validate README.md for role_id: %d" % int(role_id))
+        readme_file = get_readme(repo)
         role.readme              = readme_file
         role.description         = strip_input(galaxy_info.get("description",""))
         role.author              = strip_input(galaxy_info.get("author",""))
@@ -172,6 +177,7 @@ def import_role(role_id, target="all"):
         logger.warning("No tags found for %s.%s" % role.owner__username,role.name)
 
     # Add in the platforms and versions
+    logger.info("Adding platforms for rold_id: %d" % int(role_id))
     meta_platforms = galaxy_info.get("platforms", [])
     platform_list = []
     for platform in meta_platforms:
@@ -220,7 +226,7 @@ def import_role(role_id, target="all"):
             role.platforms.remove(platform)
 
     # Add in dependencies (if there are any):
-    logger.warning("Adding dependencies")
+    logger.info("Adding dependencies for rold_id: %d" % int(role_id))
     dep_names = []
     for dep in dependencies:
         try:
