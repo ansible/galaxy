@@ -23,6 +23,7 @@ import bleach
 
 from celery import current_task, task
 from github import Github
+from github import GithubException
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -45,8 +46,8 @@ def fail_import_task(role, logger, msg):
                 transaction.commit()
     except Exception, e:
         transaction.rollback()
-        logger.error("Error updating import task state for role %s: %s" % (role,e))
-    logger.error(msg)
+        print "Error updating import task state for role %s: %s" % (role,e)
+    print msg
     raise Exception(msg)
 
 def strip_input(input):
@@ -97,7 +98,7 @@ def import_role(role_id, target="all"):
 
     # get the role from the database
     try:
-        logger.info("Look up role_id: %d" % int(role_id))
+        print "Look up role_id: %d" % int(role_id)
         role = Role.objects.get(id=role_id)
         role_import = role.imports.latest()
         role_import.state = "RUNNING"
@@ -111,7 +112,7 @@ def import_role(role_id, target="all"):
     try:
         # FIXME: needs to use a real github account in order in order to
         #        avoid a ridiculously low rate limit (60/hr vs 5000/hr)
-        logger.info("Connecting to Github for role_id: %d" % int(role_id))
+        print "Connecting to Github for role_id: %d" % int(role_id)
         if hasattr(settings, 'GITHUB_API_TOKEN'):
             gh_api = Github(settings.GITHUB_API_TOKEN)
         else:
@@ -120,17 +121,18 @@ def import_role(role_id, target="all"):
     except:
         fail_import_task(role, logger, "Failed to connect to Github API. This is most likely a temporary error, please re-try your import in a few minutes.")
     try:
-        logger.info("Accessing repo %s/%s for role_id: %s" % role.github_user, role.github_repo, int(role_id))
+        print "Accessing repo %s/%s for role_id: %s" % (role.github_user, role.github_repo, int(role_id))
         user = gh_api.get_user(role.github_user)
         repo = user.get_repo("%s" % role.github_repo)
-    except:
+    except GithubException, e:
+        print "Failed to access repo: %s %s" % (e.status, e.data)
         fail_import_task(role, logger, "Failed to get the specified repo: %s/%s. Please make sure it is a public repo on Github." % (role.github_user,role.github_repo))
 
     # parse and validate meta/main.yml data
     galaxy_info = {}
     dependencies = []
     try:
-        logger.info("Parse and validate meta/main.yml for role_id: %d" % int(role_id))
+        print "Parse and validate meta/main.yml for role_id: %d" % int(role_id)
         meta_file = repo.get_file_contents("meta/main.yml")
         meta_data = yaml.safe_load(meta_file.content.decode('base64'))
         galaxy_info = meta_data.get("galaxy_info", None)
@@ -143,7 +145,7 @@ def import_role(role_id, target="all"):
     
     # add the new fields 
     try:
-        logger.info("Parse and validate README.md for role_id: %d" % int(role_id))
+        print "Parse and validate README.md for role_id: %d" % int(role_id)
         readme_file = get_readme(repo)
         role.readme              = readme_file
         role.description         = strip_input(galaxy_info.get("description",""))
@@ -174,85 +176,88 @@ def import_role(role_id, target="all"):
     role.tags = meta_tags
 
     if len(role.tags) == 0:
-        logger.warning("No tags found for %s.%s" % role.owner__username,role.name)
+        print "Warning: No tags found for %s.%s" % (role.owner__username, role.name)
 
     # Add in the platforms and versions
-    logger.info("Adding platforms for rold_id: %d" % int(role_id))
+    print "Info: Adding platforms for rold_id: %d" % int(role_id)
     meta_platforms = galaxy_info.get("platforms", [])
     platform_list = []
     for platform in meta_platforms:
         if not isinstance(platform, dict):
-            logger.warning("The platform '%s' does not appear to be a dictionary, skipping" % str(platform))
+            print "The platform '%s' does not appear to be a dictionary, skipping" % str(platform)
             continue
         try:
             name     = platform.get("name")
             versions = platform.get("versions", ["all"])
             if not name:
-                logger.warning("No name specified for this platform, skipping")
+                print "Warning: No name specified for this platform, skipping"
                 continue
             elif not isinstance(versions, list):
-                logger.warning("Versions for this platform is not a list, skipping")
+                print "Warning: Versions for this platform is not a list, skipping"
                 continue
 
             if len(versions) == 1 and versions == ["all"] or 'all' in versions:
                 # grab all of the objects that start
                 # with the platform name
-                logger.info("adding all platforms for %s" % name)
+                print "Info: Adding all platforms for %s" % name
                 try:
                     platform_objs = Platform.objects.filter(name=name)
                     for p in platform_objs:
                         role.platforms.add(p)
                         platform_list.append("%s-%s" % (name, p.release))
                 except:
-                    logger.warning("Invalid platform: %s-all (skipping)" % name)
+                    print "Warning: Invalid platform: %s-all (skipping)" % name
             else:
                 # just loop through the versions and add them
                 for version in versions:
                     try:
-                        logger.info("adding platform: %s-%s" % (name,version))
+                        print "Info: adding platform: %s-%s" % (name,version)
                         p = Platform.objects.get(name=name, release=version)
                         role.platforms.add(p)
                         platform_list.append("%s-%s" % (name, p.release))
                     except:
-                        logger.warning("Invalid platform: %s-%s (skipping)" % (name,version))
+                        print "Warning: Invalid platform: %s-%s (skipping)" % (name,version)
         except Exception, e:
-            logger.warning("An unknown error occurred while adding platform: %s" % e)
+            print "Warning: An unknown error occurred while adding platform: %s" % e
 
     # Remove platforms/versions that are no longer listed in the metadata
     for platform in role.platforms.all():
         platform_key = "%s-%s" % (platform.name, platform.release)
         if platform_key not in platform_list:
-            logger.info(" platform %s is no longer in the meta/main.yml, removing it" % platform_key)
+            print "Info: platform %s is no longer in the meta/main.yml, removing it" % platform_key
             role.platforms.remove(platform)
 
     # Add in dependencies (if there are any):
-    logger.info("Adding dependencies for rold_id: %d" % int(role_id))
+    print "Info: Adding dependencies for rold_id: %d" % int(role_id)
     dep_names = []
-    for dep in dependencies:
-        try:
-            if isinstance(dep, dict):
-                if 'role' not in dep:
-                    raise Exception("'role' keyword was not found in the role dictionary")
-                else:
-                    dep = dep['role']
-            elif not isinstance(dep, basestring):
-                raise Exception("role dependencies must either be a string or dictionary (was %s)" % type(dep))
-            (dep_user_name,dep_role_name) = dep.split(".",1)
-            # strip out substrings from the dep role name, to account for 
-            # those that may have imported the role previously before this
-            # rule existed, that way we don't end up with broken/missing deps
-            dep_role_name = name_regex.sub('', dep_role_name)
-            dep_role = Role.objects.get(name=dep_role_name, owner__username=dep_user_name)
-            role.dependencies.add(dep_role)
-            dep_names.append(dep)
-        except Exception, e:
-            logger.warning("Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
+    try:
+        for dep in dependencies:
+            try:
+                if isinstance(dep, dict):
+                    if 'role' not in dep:
+                        raise Exception("'role' keyword was not found in the role dictionary")
+                    else:
+                        dep = dep['role']
+                elif not isinstance(dep, basestring):
+                    raise Exception("role dependencies must either be a string or dictionary (was %s)" % type(dep))
+                (dep_user_name,dep_role_name) = dep.split(".",1)
+                # strip out substrings from the dep role name, to account for 
+                # those that may have imported the role previously before this
+                # rule existed, that way we don't end up with broken/missing deps
+                dep_role_name = name_regex.sub('', dep_role_name)
+                dep_role = Role.objects.get(name=dep_role_name, owner__username=dep_user_name)
+                role.dependencies.add(dep_role)
+                dep_names.append(dep)
+            except Exception, e:
+                print "Warning: Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e)
+    except:
+        fail_import_task(role, logger, "Error: Failed to iterate dependencies. Make sure dependencies in meta/main.yml is defined as an empty array `[]` or an iterable list.")
 
     # Remove deps that are no longer listed in the metadata
     for dep in role.dependencies.all():
         dep_name = dep.__unicode__()
         if dep_name not in dep_names:
-            logger.info("dependency %s is no longer listed in the meta/main.yml, removing it" % str(dep))
+            print "Info: dependency %s is no longer listed in the meta/main.yml, removing it" % str(dep)
             role.dependencies.remove(dep)
 
     # helper function to save repeating code:
@@ -260,7 +265,7 @@ def import_role(role_id, target="all"):
         rv,created = RoleVersion.objects.get_or_create(name=category.name, role=role)
         if not created:
             # this version already exists
-            logger.info("version %s already exists for this role, skipping" % category.name)
+            print "Info: version %s already exists for this role, skipping" % category.name
             return
         rv.release_date = category.commit.commit.author.date
         rv.save()
@@ -270,7 +275,7 @@ def import_role(role_id, target="all"):
     try:
         git_tag_list = repo.get_tags()
         for git_tag in git_tag_list:
-            logger.info("git tag: %s" % git_tag.name)
+            print "Info: git tag: %s" % git_tag.name
             if target == "all":
                 add_role_version(git_tag)
             elif target == git_tag.tag:
