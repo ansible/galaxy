@@ -2,6 +2,7 @@
 #galaxy-search {
     position: relative;
     display: inline-block;
+    padding: 0 8px;
     
     .form-group {
         margin-bottom: 0;
@@ -45,28 +46,37 @@
             margin: 0;
         }
     }
-    
-    .search-keys {
-        display: inline-block;
-        vertical-align: top;
-        margin-left: 25px;
-    }
 
     .search-key {
-        display: inline-block;
-        background-color: @blue;
-        padding: 2px;
-        border-radius: 2px;
-        font-size: 10px;
-        /*padding: 0 3px 0 6px;*/
-        line-height: normal;
-        color: @white;
-        margin-right: 5px;
-        margin-top: 5px;
+        margin: 0 5px 5px 5px;
     }
     
-    .search-key:hover {
-        cursor: pointer
+    .search-keys-container {
+        margin-top: 0;
+        margin-bottom: 5px;
+        padding-top: 10px;
+    }
+
+    .search-container-divider {
+        margin-top: 10px;
+        margin-bottom: 0;
+        border-top-color: @white;
+    }
+
+    .btn-primary.search-key-label,
+    .btn-primary.search-key-close {
+        font-weight: normal;
+        font-size: 10px;
+    }
+
+    .btn-primary.search-key-close,
+    .search-key-type {
+        color: #e1e1e1;
+    }
+
+    .btn-primary.search-key-label:hover {
+        background-color: @blue;
+        cursor: default;
     }
 
     #autocomplete-order-by {
@@ -84,6 +94,18 @@
             display: inline-block;
         }
     }
+
+    .filter-toggle .btn-default,
+    .clear-all-search-keys-btn {
+        color: @ansible-dark-grey;
+        background-color: @white;
+    }
+    
+    .clear-all-search-keys-btn:hover,
+    .filter-toggle .btn-default:hover {
+        background-color: #f2f2f2;
+    }
+
 
    /* @media(max-width: 768px) {
         #autocomplete-order-by {

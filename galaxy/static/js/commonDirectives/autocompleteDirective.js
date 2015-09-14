@@ -38,6 +38,7 @@
             scope.searchType = 'Keyword';
             scope.searchOrder = "";
             scope.searchKeys = [];
+            scope.showSearchKeysContainer = true;
             
             scope.searchKeyup = _keyup;
             scope.applySuggestion = _suggestionClicked;
@@ -48,6 +49,8 @@
             scope.changeOrder = _changeOrder;
             scope.getKeywords = _getKeywords;
             scope.setKeywords = _setKeywords;
+            scope.toggleSearchKeysContainer = _toggleSearchkeysContainer;
+            scope.clearAllSearchKeys = _clearAllSearchKeys;
 
             autocompleteService.setScope(scope);
             
@@ -57,6 +60,10 @@
             
             return; 
 
+
+            function _toggleSearchkeysContainer() {
+                scope.showSearchKeysContainer = !scope.showSearchKeysContainer;
+            }
 
             function _getKeywords() {
                 return scope.searchKeys;
@@ -107,6 +114,11 @@
                     }
                     return true;
                 });
+                scope.searchFunction(scope.searchKeys, scope.searchOrder);
+            }
+
+            function _clearAllSearchKeys() {
+                scope.searchKeys = [];
                 scope.searchFunction(scope.searchKeys, scope.searchOrder);
             }
 
