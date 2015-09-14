@@ -33,5 +33,6 @@
 
 - name: Collect galaxy static files
   command: galaxy-manage collectstatic --clear --noinput
-  notify: restart apache
-  notify: restart supervisord
+  notify:
+    - restart apache
+    - restart supervisord
