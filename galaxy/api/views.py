@@ -450,7 +450,6 @@ def get_response(*args, **kwargs):
     if result:
         num_pages = int(math.ceil(result.hits.total / float(page_size)))
         cur_page = page + 1
-        print "cur_page: %d" % cur_page
         response['cur_page'] = cur_page
         response['num_pages'] = num_pages
         response['page_size'] = page_size

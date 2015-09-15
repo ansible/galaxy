@@ -54,7 +54,8 @@
 
             autocompleteService.setScope(scope);
             
-            var _lazySuggestions = (scope.searchSuggestionFunction) ? _.debounce(function() { 
+            var _lazySuggestions = (scope.searchSuggestionFunction) ? _.debounce(function() {
+                scope.searchSuggestions = [];
                 scope.searchSuggestionFunction(scope.searchType, scope.searchValue);
             }, 300, true) : null;
             
@@ -74,8 +75,8 @@
             }
 
             function _keyup(e) {
-                scope.searchSuggestions = [];
                 if (e.keyCode == 13) {
+                    scope.searchSuggestions = [];
                     _searchAddKey();
                     return;
                 }

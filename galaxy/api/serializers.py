@@ -743,7 +743,6 @@ class ElasticSearchDSLSerializer(serializers.BaseSerializer):
         result['score'] = obj.meta.score
         result['type'] = obj.meta.doc_type
         result['id'] = int(obj.meta.id)
-        print obj.meta.score
         for key in obj:
             if key != 'meta':
                 if hasattr(obj[key],'__iter__'):

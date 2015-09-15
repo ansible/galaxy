@@ -29,11 +29,11 @@
         'searchService',
         'platformService',
         'commonDirectives',
-        'galaxyUtilities',
-        'dc.endlessScroll'
+        'galaxyUtilities'
     ]);
 
     roleApp.config(['$routeProvider', _routes]);
+    roleApp.run(['$rootScope', '$location', _run]);
 
     function _routes($routeProvider) {
       $routeProvider.
@@ -56,6 +56,21 @@
           otherwise({
               redirectTo: '/roles'
           });
+    }
+
+    function _run($rootScope, $location) {
+        $rootScope.$on('$routeChangeSuccess', _routeChange);
+        
+        function _routeChange() {
+            if (/\/role/.test($location.path())) {
+                $('#nav-menu-browse-roles').addClass('active');
+                $('#nav-menu-browse-users').removeClass('active');
+            }
+            else {
+                $('#nav-menu-browse-roles').removeClass('active');
+                $('#nav-menu-browse-users').addClass('active');    
+            }
+        }
     }
 
     function _getMyInfo($q, meFactory) {
