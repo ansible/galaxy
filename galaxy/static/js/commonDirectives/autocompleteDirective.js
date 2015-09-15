@@ -40,7 +40,8 @@
             scope.searchKeys = [];
             scope.showSearchKeysContainer = true;
             
-            scope.searchKeyup = _keyup;
+            scope.searchKeyup = _searchKeyup;
+            scope.searchKeydown = _searchKeydown;
             scope.applySuggestion = _suggestionClicked;
             scope.setSearchType = _setSearchType;
             scope.searchAddKey = _searchAddKey;
@@ -51,6 +52,8 @@
             scope.setKeywords = _setKeywords;
             scope.toggleSearchKeysContainer = _toggleSearchkeysContainer;
             scope.clearAllSearchKeys = _clearAllSearchKeys;
+            scope.suggestionKeyup = _itemKeyup;
+            scope.searchFocus = _searchFocus;
 
             autocompleteService.setScope(scope);
             
@@ -59,7 +62,7 @@
                 scope.searchSuggestionFunction(scope.searchType, scope.searchValue);
             }, 300, true) : null;
             
-            return; 
+            return;
 
 
             function _toggleSearchkeysContainer() {
@@ -74,14 +77,53 @@
                 scope.searchKeys = keys;
             }
 
-            function _keyup(e) {
-                if (e.keyCode == 13) {
+            function _searchKeyup(e) {
+                if (e.keyCode === 13) {
+                    //return
                     scope.searchSuggestions = [];
                     _searchAddKey();
                     return;
                 }
+                if (e.keyCode === 40 && scope.searchSuggestions.length) {
+                    //down arrow
+                    $('#autocomplete-suggestions li a').eq(0).focus();
+                    return;
+                }
                 if (scope.searchSuggestionFunction) {
                     _lazySuggestions();
+                }
+            }
+
+            function _searchKeydown(e) {
+                if (e.keyCode === 9) {
+                    // tab
+                    scope.searchSuggestions = [];
+                    if (e.shiftKey) {
+                        $('#search-type-button').focus();
+                    } else {
+                        $('#orderby').focus();
+                    }
+                    e.preventDefault();
+                }
+            }
+
+            function _searchFocus(e) {
+                // When the search field gets focus, make sure the search type dropdown closes
+                $('.autocomplete-search-group .input-group-btn').eq(0).removeClass('open');
+            }
+
+            function _itemKeyup(e) {
+                // Use up/down arrow to traverse suggestions list
+                if (e.keyCode === 40) {
+                    //down arrow
+                    $(e.currentTarget).next().eq(0).find('a').eq(0).focus();
+                }
+                if (e.keyCode === 38) {
+                    //up arrow
+                    if (parseInt($(e.currentTarget).attr('data-index'),10) === 0) {
+                        $('#autocomplete-text-input').focus();
+                    }
+                    $(e.currentTarget).prev().eq(0).find('a').eq(0).focus();
                 }
             }
 

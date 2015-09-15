@@ -16,6 +16,13 @@
         button {
             width: 80px;
         }
+        button:focus {
+            // Default
+            outline: thin dotted;
+            // WebKit
+            outline: 5px auto -webkit-focus-ring-color;
+            outline-offset: -2px;
+        }
     }
 
     .search-icon {
@@ -30,21 +37,10 @@
         cursor: pointer;
     }
 
-    .autocomplete-results {
-        position: absolute;
+    #autocomplete-suggestions {
         top: 30px;
         left: 81px;
-        min-width: 150px;
-        z-index: +100;
-        border: 1px solid #ccc;
-        background-color: @white;
-        padding: 5px;
-        font-size: 12px;
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
+        display: block;
     }
 
     .search-key {
@@ -95,12 +91,14 @@
         }
     }
 
+    #search-type-button,
     .filter-toggle .btn-default,
     .clear-all-search-keys-btn {
         color: @ansible-dark-grey;
         background-color: @white;
     }
     
+    #search-type-button:hover,
     .clear-all-search-keys-btn:hover,
     .filter-toggle .btn-default:hover {
         background-color: #f2f2f2;
