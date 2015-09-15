@@ -62,6 +62,11 @@
                 scope.searchSuggestionFunction(scope.searchType, scope.searchValue);
             }, 300, true) : null;
             
+            $timeout(function() {
+                // set focus on the search box after page load
+                $('#autocomplete-text-input').focus();
+            },300);
+
             return;
 
 
@@ -129,6 +134,7 @@
 
             function _setSearchType(type) {
                 scope.searchType = type;
+                $('#autocomplete-text-input').focus();
             }
 
             function _searchAddKey() {
