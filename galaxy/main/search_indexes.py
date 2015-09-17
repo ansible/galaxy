@@ -8,7 +8,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     name = indexes.CharField(model_attr='name', faceted=True)
     description = indexes.CharField(model_attr='description')
-    tags = indexes.MultiValueField(model_attr='tags', default='', faceted=True)
+    tags = indexes.MultiValueField(default='', faceted=True)
     platforms = indexes.MultiValueField(default='', faceted=True)
     username = indexes.CharField(model_attr='owner__username')
     average_score = indexes.FloatField(default=0)
@@ -31,6 +31,9 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_platforms(self, obj):
         return [platform.name for platform in obj.platforms.filter(active=True).distinct('name')]
+
+    def prepare_tags(self, obj):
+        return [tag.name for tag in obj.tags.filter(active=True)]
 
     def prepare_average_score(self, obj):
         return round(obj.average_score,1)

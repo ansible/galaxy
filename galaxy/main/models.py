@@ -248,8 +248,8 @@ class Role(CommonModelNameNotUnique):
 
     tags = models.ManyToManyField(
         'Tag',
-        related_name = 'tags',
-        verbose_name = "Tags",
+        related_name = 'roles',
+        verbose_name = 'Tags',
         blank        = True,
         editable     = False,    
     )
@@ -348,6 +348,9 @@ class Role(CommonModelNameNotUnique):
 
     def get_username(self):
         return self.owner.username
+
+    def get_tags(self):
+        return [tag.name for tag in self.tags.filter(active=True)]        
 
 class RoleVersion(CommonModelNameNotUnique):
     class Meta:

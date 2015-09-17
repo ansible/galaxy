@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 from elasticsearch_dsl import Index
 
 # local
-from galaxy.main.models import Platform, Role
+from galaxy.main.models import Platform, Tag, Role
 from galaxy.main.search_models import TagDoc, PlatformDoc
 
 class Command(BaseCommand):
@@ -24,22 +24,10 @@ class Command(BaseCommand):
         galaxy_tags.delete(ignore=404)
         galaxy_tags.create()
         
-        tags = {}
-        for role in Role.objects.filter(active=True, is_valid=True).all():
-            if role.tags:
-                for tag in role.tags:
-                    if tag in tags:
-                        tags[tag] += 1
-                    else:
-                        tags[tag] = 1
-
-        cnt = 0
-        for key, value in tags.items():
-            doc = TagDoc(tag=key, roles=value)
-            doc.meta.id = cnt
+        for tag in Tag.objects.filter(active=True).all():
+            doc = TagDoc(tag=tag.name, roles=tag.get_num_roles())
+            doc.meta.id = tag.id
             doc.save()
-            cnt += 1
-
 
     def rebuild_platforms(self):
         galaxy_platforms = Index('galaxy_platforms')
@@ -56,7 +44,7 @@ class Command(BaseCommand):
             # self.es.create(index='galaxy_platforms', doc_type="platform", body=doc, id=cnt)
             doc = PlatformDoc(
                 name=platform.name,
-                release=[p.release for p in Platform.objects.filter(active=True, name=platform.name).order_by('release').distinct('release').all()],
+                releases=[p.release for p in Platform.objects.filter(active=True, name=platform.name).order_by('release').distinct('release').all()],
                 roles=Role.objects.filter(active=True, is_valid=True, platforms__name=platform.name).order_by('owner__username','name').distinct('owner__username','name').count(),
             )
             doc.meta.id = cnt
