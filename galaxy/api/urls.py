@@ -20,10 +20,10 @@
 
 from django.conf.urls import include, patterns, url as original_url
 from rest_framework import routers
-from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView
+from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView
 
 router = routers.DefaultRouter()
-router.register('v1/search/roles', RoleSearchView, base_name="search_roles")
+router.register('v1/search/roles', RoleSearchView, base_name="search-roles")
 
 def url(regex, view, kwargs=None, name=None, prefix=''):
     # Set default name from view name (if a string).
@@ -64,9 +64,9 @@ rating_urls = patterns('galaxy.api.views',
 
 
 search_urls = patterns('galaxy.api.views',
-    url(r'^$',                           'api_v1_search_view'),
-    url(r'facetedplatforms/$',           FacetedView.as_view(), kwargs={ 'facet_key': 'platforms', 'model': 'Role' }),
-    url(r'facetedtags/$',                FacetedView.as_view(), kwargs={ 'facet_key':'tags', 'model': 'Role' }),
+    url(r'^$',                           ApiV1SearchView.as_view(), name="search_view"),
+    url(r'facetedplatforms/$',           FacetedView.as_view(), kwargs={ 'facet_key': 'platforms', 'model': 'Role' }, name="faceted_platforms_view"),
+    url(r'facetedtags/$',                FacetedView.as_view(), kwargs={ 'facet_key':'tags', 'model': 'Role' }, name="faceted_tags_view"),
     url(r'platforms/$',                  PlatformsSearchView.as_view(), name='platforms_search_view'),
     url(r'tags/$',                       TagsSearchView.as_view(), name='tags_search_view'),
 )

@@ -117,7 +117,7 @@ class ApiV1RootView(APIView):
         data['ratings']    = reverse('api:rating_list')
         data['users']      = reverse('api:user_list')
         data['roles']      = reverse('api:role_list')
-        #data['search']     = reverse('api:')
+        data['search']     = reverse('api:search_view')
         return Response(data)
 
 class ApiV1SearchView(APIView):
@@ -125,7 +125,11 @@ class ApiV1SearchView(APIView):
     view_name = 'Search'
     def get(self, request, *args, **kwargs):
         data = OrderedDict()
-        data['roles'] = reverse('api:search_roles')
+        data['roles'] = reverse('api:search-roles-list')
+        data['tags'] = reverse('api:tags_search_view')
+        data['platforms'] = reverse('api:platforms_search_view')
+        data['faceted_platforms'] = reverse('api:faceted_platforms_view')
+        data['faceted_tags'] = reverse('api:faceted_tags_view')
         return Response(data)
 
 class PlatformList(ListAPIView):

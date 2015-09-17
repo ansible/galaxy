@@ -157,6 +157,24 @@ class Category(CommonModel):
     def get_num_roles(self):
         return self.roles.filter(active=True, owner__is_active=True).count()
 
+class Tag(CommonModel):
+    '''
+    a class representing the tags that have been assigned to roles
+    '''
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Tags'
+
+    def __unicode__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('api:tag_detail', args=(self.pk,))
+
+    def get_num_roles(self):
+        return self.roles.filter(active=True, owner__is_active=True).count()
+
+
 class Platform(CommonModelNameNotUnique):
     ''' a class represnting the valid platforms a role supports '''
     class Meta:
@@ -228,6 +246,14 @@ class Role(CommonModelNameNotUnique):
     )
     platforms.help_text = ""
 
+    tags = models.ManyToManyField(
+        'Tag',
+        related_name = 'tags',
+        verbose_name = "Tags",
+        blank        = True,
+        editable     = False,    
+    )
+
     #------------------------------------------------------------------------------
     # regular fields
 
@@ -276,7 +302,7 @@ class Role(CommonModelNameNotUnique):
         editable     = False,
     )
     
-    tags = ArrayField(models.CharField(max_length=256), null=True, editable=True, size=100)
+    #tags = ArrayField(models.CharField(max_length=256), null=True, editable=True, size=100)
 
     #------------------------------------------------------------------------------
     # fields calculated by a celery task or signal, not set
