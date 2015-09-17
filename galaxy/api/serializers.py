@@ -486,14 +486,15 @@ class UserDetailSerializer(BaseSerializer):
             return ''
 
 class CategorySerializer(BaseSerializer):
-    num_roles = serializers.SerializerMethodField()
     class Meta:
         model = Category
-        fields = BASE_FIELDS + ('num_roles',)
+        fields = BASE_FIELDS
 
-    def get_num_roles(self, obj):
-        return obj.get_num_roles()
-
+class TagSerializer(BaseSerializer):
+    class Meta:
+        model = Tag
+        fields = BASE_FIELDS
+    
 class PlatformSerializer(BaseSerializer):
     class Meta:
         model = Platform

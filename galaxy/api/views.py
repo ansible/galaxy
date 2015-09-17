@@ -113,11 +113,12 @@ class ApiV1RootView(APIView):
         ''' list top level resources '''
         data = SortedDict()
         data['me']         = reverse('api:user_me_list')
-        data['categories'] = reverse('api:category_list')
-        data['platforms']  = reverse('api:platform_list')
-        data['ratings']    = reverse('api:rating_list')
         data['users']      = reverse('api:user_list')
         data['roles']      = reverse('api:role_list')
+        data['categories'] = reverse('api:category_list')
+        data['tags']       = reverse('api:tag_list')
+        data['platforms']  = reverse('api:platform_list')
+        data['ratings']    = reverse('api:rating_list')
         data['search']     = reverse('api:search_view')
         return Response(data)
 
@@ -139,12 +140,23 @@ class CategoryList(ListAPIView):
     paginate_by = None
 
     def get_queryset(self):
-        return self.model.objects.filter(active=True).annotate(num_roles=Count('roles'))
+        return self.model.objects.filter(active=True)
+
+class TagList(ListAPIView):
+    model = Tag
+    serializer_class = TagSerializer
+    
+    def get_queryset(self):
+        return self.model.objects.filter(active=True)
+
+class TagDetail(RetrieveAPIView):
+    model = Tag
+    serializer_class = TagSerializer
 
 class CategoryDetail(RetrieveAPIView):
     model = Category
     serializer_class = CategorySerializer
-    
+
 class PlatformList(ListAPIView):
     model = Platform
     serializer_class = PlatformSerializer

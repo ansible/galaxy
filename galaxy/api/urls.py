@@ -67,6 +67,11 @@ category_urls = patterns('galaxy.api.views',
     url(r'^(?P<pk>[0-9]+)/$',          'category_detail'),
 )
 
+tag_urls = patterns('galaxy.api.views',
+    url(r'^$',                         'tag_list'),
+    url(r'^(?P<pk>[0-9]+)/$',          'tag_detail'),
+)
+
 search_urls = patterns('galaxy.api.views',
     url(r'^$',                           ApiV1SearchView.as_view(), name="search_view"),
     url(r'facetedplatforms/$',           FacetedView.as_view(), kwargs={ 'facet_key': 'platforms', 'model': 'Role' }, name="faceted_platforms_view"),
@@ -80,7 +85,8 @@ v1_urls = patterns('galaxy.api.views',
     url(r'^me/$',                      'user_me_list'),
     url(r'^users/',                    include(user_urls)),
     url(r'^roles/',                    include(role_urls)),
-    url(r'^categories/',                include(category_urls)),
+    url(r'^categories/',               include(category_urls)),
+    url(r'^tags/',                     include(tag_urls)),
     url(r'^platforms/',                include(platform_urls)),
     url(r'^ratings/',                  include(rating_urls)),
     url(r'^search/',                   include(search_urls)),
