@@ -9,27 +9,32 @@ import galaxy.main.mixins
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0013_remove_role_categories'),
+        ('main', '0010_auto_20150826_1017'),
     ]
+
+    @transaction.atomic
+    def copy_categories_to_tags(apps, schema_editor):
+        # tags will replace categories
+        Categories = apps.get_model("main", "Category")
+        Tag = apps.get_model("main", "Tag")
+        for category in Categories.objects.all():
+            tag = Tag(
+                name = category.name,
+                description = category.name,
+                active = True
+            )
+            tag.save()
 
     @transaction.atomic
     def copy_tags(apps, schema_editor):
         Roles = apps.get_model("main", "Role")
-        Tag = apps.get_model("main", "Tag")
+        Tags = apps.get_model("main", "Tag")
         for role in Roles.objects.all():
-            if role.tags:
-                for tag in role.tags:
-                    t = Tag(
-                        name = tag,
-                        description = tag,
-                        active = True
-                    )
-                    try:
-                        with transaction.atomic():
-                            t.save()
-                    except IntegrityError, e:
-                        pass 
-
+            for category in role.categories.all():
+                t = Tags.objects.get(name=category.name)
+                role.tags.add(t)
+            role.save()
+        
     operations = [
         migrations.CreateModel(
             name='Tag',
@@ -48,14 +53,11 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model, galaxy.main.mixins.DirtyMixin),
         ),
-        migrations.RunPython(copy_tags),    
-        migrations.RemoveField(
-            model_name='role',
-           name='tags',
-        ),
         migrations.AddField(
            model_name='role',
            name='tags',
            field=models.ManyToManyField(related_name='tags', verbose_name=b'Tags', editable=False, to='main.Tag', blank=True),
         ),
+        migrations.RunPython(copy_categories_to_tags),
+        migrations.RunPython(copy_tags),
     ]

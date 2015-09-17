@@ -44,7 +44,7 @@ from galaxy.main.fields import *
 from galaxy.main.mixins import *
 
 __all__ = [
-    'PrimordialModel', 'Platform', 'Category', 'Role', 'RoleRating', 'RoleImport', 'RoleVersion', 'UserAlias',
+    'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'RoleRating', 'RoleImport', 'RoleVersion', 'UserAlias',
 ]
 
 ###################################################################################
@@ -154,8 +154,8 @@ class Category(CommonModel):
     def get_absolute_url(self):
         return reverse('api:category_detail', args=(self.pk,))
 
-    def get_num_roles(self):
-        return self.roles.filter(active=True, owner__is_active=True).count()
+    #def get_num_roles(self):
+    #    return self.roles.filter(active=True, owner__is_active=True).count()
 
 class Tag(CommonModel):
     '''
@@ -253,6 +253,16 @@ class Role(CommonModelNameNotUnique):
         blank        = True,
         editable     = False,    
     )
+    tags.help_text = ""
+
+    categories = models.ManyToManyField(
+        'Category',
+        related_name = 'categories',
+        verbose_name = "Categories",
+        blank        = True,
+        editable     = False,    
+    )
+    categories.help_text = ""
 
     #------------------------------------------------------------------------------
     # regular fields

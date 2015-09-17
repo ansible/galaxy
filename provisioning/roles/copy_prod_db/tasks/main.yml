@@ -3,12 +3,20 @@
 - name: "Install boto"
   pip: name=boto
 
+- name: "Build prefix from current date"
+  shell: date +'data/%Y/%m/%d'
+  register: prefix
+
+- name: "Show prefix"
+  debug:
+    msg: "{{ prefix.stdout_lines[0] }} "
+
 - name: "Get the list of database backups"
   s3:
     aws_access_key: "{{ aws_access_key }}"
     aws_secret_key: "{{ aws_secret_key }}"
     bucket: "{{ galaxy_bucket }}"
-    prefix: "data"
+    prefix: "{{ prefix.stdout_lines[0] }}"
     mode: "list"
   register: data_list
 

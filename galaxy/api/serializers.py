@@ -485,6 +485,15 @@ class UserDetailSerializer(BaseSerializer):
         else:
             return ''
 
+class CategorySerializer(BaseSerializer):
+    num_roles = serializers.SerializerMethodField()
+    class Meta:
+        model = Category
+        fields = BASE_FIELDS + ('num_roles',)
+
+    def get_num_roles(self, obj):
+        return obj.get_num_roles()
+
 class PlatformSerializer(BaseSerializer):
     class Meta:
         model = Platform
@@ -585,6 +594,7 @@ class RoleListSerializer(BaseSerializer):
 
         d['dependencies'] = [str(g) for g in obj.dependencies.all()]
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
+        d['tags'] = [{'name':g.name} for g in obj.tags.all()]
         d['versions'] = [{'name':g.name,'release_date':g.release_date} for g in obj.versions.all()]
         d['owner'] = {
             'id': obj.owner.id,
@@ -688,6 +698,7 @@ class RoleDetailSerializer(BaseSerializer):
         d['dependencies'] = [{ 'id': g.id, 'name': str(g) } for g in obj.dependencies.all()]
         d['ratings'] = [{'id':g.id, 'score':g.score} for g in obj.ratings.filter(owner__is_active=True)]
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
+        d['tags'] = [{'name':g.name} for g in obj.tags.all()]
         d['versions'] = [{'name':g.name,'release_date':g.release_date} for g in obj.versions.all()]
         d['owner'] = {
             'id': obj.owner.id,

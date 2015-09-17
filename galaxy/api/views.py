@@ -113,6 +113,7 @@ class ApiV1RootView(APIView):
         ''' list top level resources '''
         data = SortedDict()
         data['me']         = reverse('api:user_me_list')
+        data['categories'] = reverse('api:category_list')
         data['platforms']  = reverse('api:platform_list')
         data['ratings']    = reverse('api:rating_list')
         data['users']      = reverse('api:user_list')
@@ -132,6 +133,18 @@ class ApiV1SearchView(APIView):
         data['faceted_tags'] = reverse('api:faceted_tags_view')
         return Response(data)
 
+class CategoryList(ListAPIView):
+    model = Category
+    serializer_class = CategorySerializer
+    paginate_by = None
+
+    def get_queryset(self):
+        return self.model.objects.filter(active=True).annotate(num_roles=Count('roles'))
+
+class CategoryDetail(RetrieveAPIView):
+    model = Category
+    serializer_class = CategorySerializer
+    
 class PlatformList(ListAPIView):
     model = Platform
     serializer_class = PlatformSerializer
@@ -201,7 +214,7 @@ class RoleList(ListCreateAPIView):
     def get_queryset(self):
         qs = super(RoleList, self).get_queryset()
         qs = qs.select_related('owner')
-        qs = qs.prefetch_related('platforms', 'versions', 'dependencies')
+        qs = qs.prefetch_related('platforms', 'tags', 'versions', 'dependencies')
         return filter_role_queryset(qs)
 
 class RoleTopList(ListCreateAPIView):
