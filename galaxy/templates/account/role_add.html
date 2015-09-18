@@ -22,11 +22,10 @@
             {% if form.non_field_errors %}
             <div class="alert alert-danger alert-dismissable">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <strong>Errors:</strong><br />
-                {% for error in form.non_field_errors %}{{error}}<br />{% endfor %}
+                <strong>ERROR:</strong> &nbsp;{% for error in form.non_field_errors %}{{error}}{% endfor %}
             </div>
             {% endif %}
-            <form id="add_role_form" method="post" action="{% url "main:accounts-role-save" %}">
+            <form id="add_role_form" method="post">
                 {% csrf_token %}
                 <div class="form-group row">
                     <div class="col-lg-6">

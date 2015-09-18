@@ -359,55 +359,55 @@ def accounts_connect(request):
     context = build_standard_context(request)
     return render_to_response('socialaccount/connections.html',context)
 
-@login_required
-@transaction.non_atomic_requests
-def accounts_role_save(request):
-    regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
-    if request.method == 'POST':
-        try:
-            with transaction.atomic():
-                form = RoleForm(request.POST)
-                if form.is_valid():
-                    # create the role, committing manually so that
-                    # we ensure the database is updated before we
-                    # kick off the celery task to do the import
-                    cd = form.cleaned_data
-                    role = Role()
-                    role.owner             = request.user
-                    role.github_user       = cd['github_user']
-                    role.github_repo       = cd['github_repo']
-                    role.name              = cd.get('name',None) or cd['github_repo']
-                    role.is_valid          = False
+# @login_required
+# @transaction.non_atomic_requests
+# def accounts_role_save(request):
+#     regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
+#     if request.method == 'POST':
+#         try:
+#             with transaction.atomic():
+#                 form = RoleForm(request.POST)
+#                 if form.is_valid():
+#                     # create the role, committing manually so that
+#                     # we ensure the database is updated before we
+#                     # kick off the celery task to do the import
+#                     cd = form.cleaned_data
+#                     role = Role()
+#                     role.owner             = request.user
+#                     role.github_user       = cd['github_user']
+#                     role.github_repo       = cd['github_repo']
+#                     role.name              = cd.get('name',None) or cd['github_repo']
+#                     role.is_valid          = False
 
-                    # strip out unwanted sub-strings from the name
-                    role.name = regex.sub('', role.name)
+#                     # strip out unwanted sub-strings from the name
+#                     role.name = regex.sub('', role.name)
 
-                    role.save()
-                    # commit the data to the database upon exiting the
-                    # transaction.atomic() block, to make sure it's available
-                    # for the celery task when it runs
-                else:
-                    context = build_standard_context(request)
-                    context["form"] = form
-                    return render_to_response('account/role_add.html', context)
-        except IntegrityError, e:
-            request.session["transient"] = {"status":"info","msg":"You have already created a role with that name."}
-        except Exception, e:
-            request.session["transient"] = {"status":"info","msg":"Failed: %s" % e}
-        else:
-            with transaction.atomic():
-                # start the celery task to run the import and save
-                # its info back to the database for later reference
-                task = import_role.delay(role.id)
-                role_import = RoleImport()
-                role_import.celery_task_id = task.id
-                role_import.role = role
-                role_import.save()
-            request.session["transient"] = {"status":"info","msg":"Role created successfully, import task started."}
-    else:
-        request.session["transient"] = {"status":"info","msg":"Invalid method."}
-    # redirect back home no matter what
-    return HttpResponseRedirect(reverse('main:accounts-profile'))
+#                     role.save()
+#                     # commit the data to the database upon exiting the
+#                     # transaction.atomic() block, to make sure it's available
+#                     # for the celery task when it runs
+#                 else:
+#                     context = build_standard_context(request)
+#                     context["form"] = form
+#                     return render_to_response('account/role_add.html', context)
+#         except IntegrityError, e:
+#             request.session["transient"] = {"status":"info","msg":"You have already created a role with that name."}
+#         except Exception, e:
+#             request.session["transient"] = {"status":"info","msg":"Failed: %s" % e}
+#         else:
+#             with transaction.atomic():
+#                 # start the celery task to run the import and save
+#                 # its info back to the database for later reference
+#                 task = import_role.delay(role.id)
+#                 role_import = RoleImport()
+#                 role_import.celery_task_id = task.id
+#                 role_import.role = role
+#                 role_import.save()
+#             request.session["transient"] = {"status":"info","msg":"Role created successfully, import task started."}
+#     else:
+#         request.session["transient"] = {"status":"info","msg":"Invalid method."}
+#     # redirect back home no matter what
+#     return HttpResponseRedirect(reverse('main:accounts-profile'))
 
 @login_required
 @transaction.non_atomic_requests
@@ -488,9 +488,50 @@ def accounts_role_reactivate(request, id=None):
 
 @login_required
 def accounts_role_add(request):
-    form = RoleForm()
     context = build_standard_context(request)
-    context["form"] = form
+    regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
+
+    if request.method == 'POST':
+        form = RoleForm(request.POST)
+        context["form"] = form
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    
+                    # create the role, committing manually so that
+                    # we ensure the database is updated before we
+                    # kick off the celery task to do the import
+                    cd = form.cleaned_data
+                    role = Role()
+                    role.owner             = request.user
+                    role.github_user       = cd['github_user']
+                    role.github_repo       = cd['github_repo']
+                    role.name              = cd.get('name',None) or cd['github_repo']
+                    role.is_valid          = False
+
+                    # strip out unwanted sub-strings from the name
+                    role.name = regex.sub('', role.name)
+
+                    role.save()
+                    # commit the data to the database upon exiting the
+                    # transaction.atomic() block, to make sure it's available
+                    # for the celery task when it runs            
+            except IntegrityError, e:
+                form.add_error(None,"You already created a role with that name.")
+            except Exception, e:
+                form.add_error(None,"Failed to add role: %s" % e)
+            else:
+                # start the celery task to run the import and save
+                # its info back to the database for later reference
+                task = import_role.delay(role.id)
+                role_import = RoleImport()
+                role_import.celery_task_id = task.id
+                role_import.role = role
+                role_import.save()
+                return HttpResponseRedirect(reverse('main:accounts-profile'))
+    else:   
+        form = RoleForm()
+        context["form"] = form
     return render_to_response('account/role_add.html', context)
 
 @login_required

@@ -345,13 +345,13 @@ class Role(CommonModelNameNotUnique):
 
     def get_unique_platforms(self):
         return [platform.name for platform in self.platforms.filter(active=True).distinct('name')]
-
+    
     def get_username(self):
         return self.owner.username
 
     def get_tags(self):
-        return [tag.name for tag in self.tags.filter(active=True)]        
-
+        return [tag.name for tag in self.tags.filter(active=True)]
+    
 class RoleVersion(CommonModelNameNotUnique):
     class Meta:
         ordering = ('-loose_version',)

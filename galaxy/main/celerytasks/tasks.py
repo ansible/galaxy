@@ -87,8 +87,8 @@ def get_readme(repo):
     return readme
 
 @task(throws=(Exception,))
-#@transaction.commit_manually
 def import_role(role_id, target="all"):
+    
     # regex used to strip unwanted substrings from the 
     # role name or from any deps
     name_regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
@@ -172,10 +172,25 @@ def import_role(role_id, target="all"):
     if galaxy_info.get("tags", None):
         for tag in galaxy_info.get("tags"):
             meta_tags.append(tag)
-    
-    role.tags = meta_tags
 
-    if len(role.tags) == 0:
+    for tag in set(meta_tags):
+        pg_tags = Tag.objects.filter(name=tag).all()
+        if len(pg_tags) == 0:
+            pg_tag = Tag(name=tag, description=tag, active=True)
+            pg_tag.save()
+        else:
+            pg_tag = pg_tags[0]
+        if not role.tags.filter(name=tag).exists():
+            role.tags.add(pg_tag)
+
+    # Remove tags no longer listed in the metadata
+    for tag in role.tags.all():
+        if tag.name not in meta_tags:
+            print "Info: tag %s is no longer in the meta/main.yml, removing it" % tag.name
+            role.tags.remove(tag)
+
+    # There are no tags?
+    if len(meta_tags) == 0:
         print "Warning: No tags found for %s.%s" % (role.owner__username, role.name)
 
     # Add in the platforms and versions

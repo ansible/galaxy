@@ -689,7 +689,7 @@ class RoleDetailSerializer(BaseSerializer):
             return obj.get_absolute_url()
 
     def get_tags(self, obj):
-        return [t for t in obj.tags]
+        return [t for t in obj.get_tags()]
 
     def get_summary_fields(self, obj):
         if obj is None:
