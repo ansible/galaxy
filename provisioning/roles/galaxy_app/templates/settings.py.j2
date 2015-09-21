@@ -51,7 +51,7 @@ ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL="/accounts/landing"
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS=1
 ACCOUNT_EMAIL_REQUIRED=True
 ACCOUNT_EMAIL_VERIFICATION="mandatory"
-ACCOUNT_EMAIL_SUBJECT_PREFIX="AnsibleWorks Galaxy "
+ACCOUNT_EMAIL_SUBJECT_PREFIX="Ansible Galaxy "
 ACCOUNT_LOGIN_ON_VALIDATE=True
 ACCOUNT_USERNAME_MIN_LENGTH=4
 ACCOUNT_USERNAME_BLACKLIST=['admin','administrator']
@@ -97,10 +97,22 @@ CACHES = {
     }
 }
 
+ELASTIC_SEARCH = {
+    'host': "{{ galaxy_es_host }}",
+    'port': "{{ galaxy_es_port }}",
+    'transport': "{{ galaxy_es_transport }}"
+}
+
+ES_CONNECTION_URL = "%s://%s:%s/" % (
+    ELASTIC_SEARCH['transport'],
+    ELASTIC_SEARCH['host'],
+    ELASTIC_SEARCH['port']
+)
+
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': '{{ galaxy_haystck_connection }}',
+        'URL': ES_CONNECTION_URL,
         'INDEX_NAME': 'haystack',
     },
 }
