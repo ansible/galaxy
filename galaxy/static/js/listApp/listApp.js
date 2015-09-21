@@ -33,10 +33,11 @@
         'galaxyUtilities',
     ]);
 
-    roleApp.config(['$routeProvider', _routes]);
+    roleApp.config(['$routeProvider', '$logProvider', _config]);
     roleApp.run(['$rootScope', '$location', _run]);
 
-    function _routes($routeProvider) {
+    function _config($routeProvider, $logProvider) {
+        $logProvider.debugEnabled(false);
         $routeProvider.
             when('/roles', {
                 templateUrl: '/static/partials/role-list.html',

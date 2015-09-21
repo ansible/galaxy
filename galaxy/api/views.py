@@ -127,9 +127,10 @@ class ApiV1SearchView(APIView):
     view_name = 'Search'
     def get(self, request, *args, **kwargs):
         data = OrderedDict()
+        data['platforms'] = reverse('api:platforms_search_view')
         data['roles'] = reverse('api:search-roles-list')
         data['tags'] = reverse('api:tags_search_view')
-        data['platforms'] = reverse('api:platforms_search_view')
+        data['users'] = reverse('api:user_search_view')
         data['faceted_platforms'] = reverse('api:faceted_platforms_view')
         data['faceted_tags'] = reverse('api:faceted_tags_view')
         return Response(data)
@@ -400,6 +401,32 @@ class FacetedView(APIView):
         qs = qs.facet(facet_key, **fkwargs)
         return Response(qs.facet_counts())
 
+class UserSearchView(APIView):
+    def get(self, request, *args, **kwargs):
+        q = None
+        page = 0
+        page_size = 10
+        order_fields = []
+        for key,value in request.GET.items():
+            if key in ('username','content','autocomplete'):
+                q = Q('match', username=value)
+            if key == 'page':
+                page = int(value) - 1 if int(value) > 0 else 0
+            if key == 'page_size':
+                page_size = int(value)
+            if key in ('order','order_by'):
+                order_fields = value.split(',')
+        s = Search(index='galaxy_users')
+        s = s.query(q) if q else s
+        s = s.sort(*order_fields) if len(order_fields) > 0 else s
+        print ('get from: %d to %d' % (page * page_size, page * page_size + page_size))
+        s = s[page * page_size:page * page_size + page_size]
+        result = s.execute()
+        serializer = ElasticSearchDSLSerializer(result.hits, many=True)
+        response = get_response(request=request, result=result, view='api:user_search_view')
+        response['results'] = serializer.data
+        return Response(response)
+
 
 class PlatformsSearchView(APIView):
     def get(self, request, *args, **kwargs):
@@ -415,9 +442,9 @@ class PlatformsSearchView(APIView):
             if key in ('content','autocomplete'):
                 q = Q('match', name=value) | Q('match', releases=value)
             if key == 'page':
-                page = int(value) - 1 if int(value) >= 0 else 0
+                page = int(value) - 1 if int(value) > 0 else 0
             if key == 'page_size':
-                page_size = value
+                page_size = int(value)
             if key in ('order','order_by'):
                 order_fields = value.split(',')
         s = Search(index='galaxy_platforms')
@@ -440,7 +467,7 @@ class TagsSearchView(APIView):
             if key in ('tag','content','autocomplete'):
                 q = Q('match', tag=value)
             if key == 'page':
-                page = int(value) - 1 if int(value) >= 0 else 0
+                page = int(value) - 1 if int(value) > 0 else 0
             if key == 'page_size':
                 page_size = int(value)
             if key in ('order', 'orderby'):
@@ -472,9 +499,9 @@ def get_response(*args, **kwargs):
     
     for key, value in request.GET.items():
         if key == 'page':
-            page = int(value) - 1 if int(value) >= 0 else 0
+            page = int(value) - 1 if int(value) > 0 else 0
         if key == 'page_size':
-            page_size = value
+            page_size = int(value)
     
     if result:
         num_pages = int(math.ceil(result.hits.total / float(page_size)))

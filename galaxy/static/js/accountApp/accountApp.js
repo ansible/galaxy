@@ -21,9 +21,10 @@
       'galaxyUtilities'
     ]);
 
-    accountsApp.config(['$routeProvider','MyInfoProvider', _routes]);
+    accountsApp.config(['$routeProvider','MyInfoProvider', '$logProvider', _config]);
 
-    function _routes($routeProvider, MyInfoProvider) {
+    function _routes($routeProvider, MyInfoProvider, $logProvider) {
+        $logProvider.debugEnabled(false);
         $routeProvider.
             when('/', {
                 templateUrl: '/static/partials/myroles.html',

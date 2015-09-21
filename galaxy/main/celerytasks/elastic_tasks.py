@@ -9,11 +9,11 @@ from django.conf import settings
 
 # local
 from galaxy.main.models import Tag, Role
-from galaxy.main.search_models import TagDoc, PlatformDoc
+from galaxy.main.search_models import TagDoc, PlatformDoc, UserDoc
 
 
 @task()
-def update_tag(tag):
+def update_tags(tag):
     print "TAG: %s" % tag
     pg_tag = Tag.objects.get(name=tag)
     es_tags = TagDoc.search().query('match', tag=tag).execute()
@@ -49,11 +49,11 @@ def update_tag(tag):
             doc.meta.id = pg_tag.id
             doc.save()
         except:
-            print 'TAG: exception failed to add %s' % tag
+            print "TAG: exception failed to add %s" % tag
             raise
 
 @task()
-def update_platform(platform):
+def update_platforms(platform):
     print "PLATFORM: %s" % platform
     cnt = Role.objects.filter(active=True, is_valid=True, platforms__name=platform).order_by('owner__username','name').distinct('owner__username','name').count(),
     es_platforms = PlatformDoc.search().query('match', name=platform).execute()
@@ -86,5 +86,27 @@ def update_platform(platform):
             print "PLATFORM: failed to add %s" % platform
             raise
 
+@task()
+def update_users(user):
+    print "USER: %s" % user
+    pg_tag = Tag.objects.get(name=tag)
+    es_users = UserDoc.search().query('match', username=user).execute()
+    #cnt = Role.objects.filter(active=True, is_valid=True, owner__username=user).count(),
+    updated = False    
+    
+    for es_user in es_users:
+        if es_user.username == user:
+            print "USER: %s already exists" % user
+            updated = True
+    
+    if not updated:
+        # new tag
+        try:
+            print "USER: add %s" % user
+            doc = UserDoc(uername=user)
+            doc.save()
+        except:
+            print "User: exception failed to add %s" % user
+            raise
 
     

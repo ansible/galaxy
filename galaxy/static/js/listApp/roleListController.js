@@ -61,6 +61,7 @@
             'page_range'         : [],
             'tags'               : '',
             'platforms'          : '',
+            'users'              : '',
             'autocomplete'       : '',
             'order'              : '',
             'refresh'            : _refresh
@@ -74,6 +75,7 @@
         ];
 
         $scope.searchTypeOptions = [
+            'Author',
             'Keyword',
             'Platform',
             'Tag'
@@ -103,9 +105,10 @@
 
         PaginateInit({ scope: $scope });
 
-        var suggestions = $resource('/api/v1/search/:object/', { 'object': '@object' }, {
+        var suggestions = $resource('/api/v1/search/:object/', { 'object': '@object', 'pagge': 1, 'page_size': 10 }, {
             'tags': { method: 'GET', params:{ object: 'tags' }, isArray: false },
-            'platforms': { method: 'GET', params:{ object: 'platforms' }, isArray: false}
+            'platforms': { method: 'GET', params:{ object: 'platforms' }, isArray: false },
+            'users': { method: 'GET', params:{ object: 'users' }, isArray: false }
         });
 
         // Load the initial query parameters into $scope.list_data
@@ -166,6 +169,10 @@
                 params.platforms = $scope.list_data.platforms;
             }
 
+            if ($scope.list_data.users) {
+                params.username = $scope.list_data.users;
+            }
+
             if ($scope.list_data.autocomplete) {
                 params.autocomplete = $scope.list_data.autocomplete;
             }
@@ -215,12 +222,14 @@
         function _search(_keywords, _orderby) {
             $scope.list_data.page = 1;
             $scope.roles = [];
-            var tags = [], platforms = [], keywords = [], params = {};
+            var tags = [], platforms = [], keywords = [], users = [], params = {};
             angular.forEach(_keywords, function(keyword) {
                 if (keyword.type === 'Tag') {
                     tags.push(keyword.value);
                 } else if (keyword.type === 'Platform') {
                     platforms.push(keyword.value);
+                } else if (keyword.type === 'Author') {
+                    users.push(keyword.value);
                 } else {
                     keywords.push(keyword.value);
                 }
@@ -229,6 +238,7 @@
             $scope.list_data.autocomplete = '';
             $scope.list_data.order = '';
             $scope.list_data.tags = '';
+            $scope.list_data.users = '';
             if (tags.length) {
                 $scope.list_data.tags = tags.join(' ');
             }
@@ -237,6 +247,9 @@
             }
             if (keywords.length) {
                 $scope.list_data.autocomplete = keywords.join(' ');
+            }
+            if (users.length) {
+                $scope.list_data.users = users.join(' ');
             }
             if (_orderby) {
                 $scope.list_data.order = _orderby.value;
@@ -279,6 +292,15 @@
                         });
                     });
                 });
+            } else if (type === 'Author' && value) {
+                suggestions.users({ autocomplete: value }).$promise.then(function(data) {
+                    angular.forEach(data.results, function(result) {
+                        $scope.searchSuggestions.push({
+                            type: 'Author',
+                            name: result.username
+                        });
+                    });
+                });
             }
         }
 
@@ -296,6 +318,9 @@
             if ($scope.list_data.platforms) {
                 result.platforms = $scope.list_data.platforms;
             }
+            if ($scope.list_data.users) {
+                result.users = $scope.list_data.users;
+            }
             if ($scope.list_data.autocomplete) {
                 result.autocomplete = $scope.list_data.autocomplete;
             }
@@ -311,6 +336,7 @@
             result.page_size = data.page_size || 10;
             result.tags = data.tags || '';
             result.platforms = data.platforms || '';
+            result.users = data.users || '';
             result.autocomplete = data.autocomplete || '';
             result.order = data.order || '';
             return result;
@@ -326,6 +352,9 @@
             }
             if (data.autocomplete) {
                 _getKeys('Keyword', data.autocomplete, keys);
+            }
+            if (data.users) {
+                _getKeys('Author', data.users, keys);
             }
             var uniqKeys = _.uniq(keys, false, function(val) { return val.type + ':' + val.value; });
             autocompleteService.setKeywords(uniqKeys);

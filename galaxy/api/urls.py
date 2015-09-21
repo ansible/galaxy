@@ -20,7 +20,7 @@
 
 from django.conf.urls import include, patterns, url as original_url
 from rest_framework import routers
-from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView
+from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView, UserSearchView
 
 router = routers.DefaultRouter()
 router.register('v1/search/roles', RoleSearchView, base_name="search-roles")
@@ -78,6 +78,7 @@ search_urls = patterns('galaxy.api.views',
     url(r'facetedtags/$',                FacetedView.as_view(), kwargs={ 'facet_key':'tags', 'model': 'Role' }, name="faceted_tags_view"),
     url(r'platforms/$',                  PlatformsSearchView.as_view(), name='platforms_search_view'),
     url(r'tags/$',                       TagsSearchView.as_view(), name='tags_search_view'),
+    url(r'users/$',                      UserSearchView.as_view(), name='user_search_view'),
 )
 
 v1_urls = patterns('galaxy.api.views',

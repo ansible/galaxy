@@ -6,7 +6,7 @@
 from datetime import datetime
 from elasticsearch_dsl import DocType, String, Long, Date, Nested, Boolean, MetaField, analyzer, token_filter
 
-__all__ = ["TagDoc", "PlatformDoc"]
+__all__ = ["TagDoc", "PlatformDoc", "UserDoc"]
 
 
 autocomplete = analyzer('autocomplete',
@@ -45,3 +45,13 @@ class PlatformDoc(BaseSearchModel):
         index = 'galaxy_platforms'
         all = MetaField(enabled=True)
         dynamic = MetaField(enabled=False)
+
+
+class UserDoc(BaseSearchModel):
+    username = String(analyzer=autocomplete, search_analyzer='standard')
+     
+    class Meta:
+        index = 'galaxy_users'
+        all = MetaField(enabled=False)
+        dynamic = MetaField(enabled=False)
+

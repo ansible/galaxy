@@ -62,6 +62,8 @@
                 scope.searchSuggestionFunction(scope.searchType, scope.searchValue);
             }, 300, true) : null;
             
+            var timeoutEventPromise = null;
+
             $timeout(function() {
                 // set focus on the search box after page load
                 $('#autocomplete-text-input').focus();
@@ -94,15 +96,34 @@
                     $('#autocomplete-suggestions li a').eq(0).focus();
                     return;
                 }
+                if (e.keyCode == 27) {
+                    $timeout.cancel(timeoutEventPromise);
+                    $timeout(function() {
+                        scope.searchSuggestions = [];
+                    }, 300);
+                    return;
+                }
                 if (scope.searchSuggestionFunction) {
-                    _lazySuggestions();
+                    if (scope.searchValue.length >= 3 ) {
+                        $timeout.cancel(timeoutEventPromise);
+                        timeoutEventPromise = $timeout(function() {
+                            scope.searchSuggestions = [];
+                            scope.searchSuggestionFunction(scope.searchType, scope.searchValue);    
+                        }, 300);
+                    }
+                    else if (scope.searchValue.length === 0) {
+                        scope.searchSuggestions = [];
+                    }
                 }
             }
 
             function _searchKeydown(e) {
                 if (e.keyCode === 9) {
                     // tab
-                    scope.searchSuggestions = [];
+                    $timeout.cancel(timeoutEventPromise);
+                    $timeout(function() {
+                        scope.searchSuggestions = [];
+                    }, 300);
                     if (e.shiftKey) {
                         $('#search-type-button').focus();
                     } else {

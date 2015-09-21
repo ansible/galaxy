@@ -18,12 +18,17 @@ class Migration(migrations.Migration):
         Categories = apps.get_model("main", "Category")
         Tag = apps.get_model("main", "Tag")
         for category in Categories.objects.all():
-            tag = Tag(
-                name = category.name,
-                description = category.name,
-                active = True
-            )
-            tag.save()
+            for name in category.name.split(':'):
+                try:
+                    with transaction.atomic():
+                        tag = Tag(
+                            name = name,
+                            description = name,
+                            active = True
+                        )
+                        tag.save()
+                except IntegrityError:
+                    pass
 
     @transaction.atomic
     def copy_tags(apps, schema_editor):
@@ -31,9 +36,11 @@ class Migration(migrations.Migration):
         Tags = apps.get_model("main", "Tag")
         for role in Roles.objects.all():
             for category in role.categories.all():
-                t = Tags.objects.get(name=category.name)
-                role.tags.add(t)
-            role.save()
+                for name in category.name.split(':'):
+                    if not role.tags.filter(name=name).exists():
+                        t = Tags.objects.get(name=name)
+                        role.tags.add(t)
+                        role.save()
         
     operations = [
         migrations.CreateModel(

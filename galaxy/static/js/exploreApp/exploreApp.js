@@ -19,9 +19,10 @@
         'userService',
     ]);
 
-    mod.config(['$routeProvider', _config]);
+    mod.config(['$routeProvider', '$logProvider', _config]);
 
-    function _config($routeProvider) {
+    function _config($routeProvider, $logProvider) {
+        $logProvider.debugEnabled(false);
         $routeProvider.
             when('/', {
                 templateUrl: '/static/partials/main.html',

@@ -163,17 +163,24 @@ def import_role(role_id, target="all"):
     except Exception, e:
         fail_import_task(role, logger, "Failed to update the specified role's fields. Please retry the import in a few minutes. If you continue to receive a failure, please contact support. Error was: %s" % str(e))
 
-    # Add tags / categories 
+    # Add tags / categories. Remove ':' and only allow alpha-numeric characters
     meta_tags = []
     if galaxy_info.get("categories", None):
-        for cat in galaxy_info.get("categories"):
-            meta_tags.append(cat)
+        for category in galaxy_info.get("categories"):
+            for cat in category.split(':'): 
+                if re.match('^[a-zA-Z0-9]+$',cat):
+                    meta_tags.append(cat)
+                else:
+                    print "Warning: %s is not a valid tag" & cat
 
     if galaxy_info.get("tags", None):
         for tag in galaxy_info.get("tags"):
-            meta_tags.append(tag)
-
-    for tag in set(meta_tags):
+            for t in tag.split(':'):
+                if re.match('^[a-zA-Z0-9:]+$',t):
+                    meta_tags.append(t)
+    meta_tags = meta_tags[0:20] if len(meta_tags) > 20 else meta_tags
+    meta_tags = list(set(meta_tags))
+    for tag in meta_tags:
         pg_tags = Tag.objects.filter(name=tag).all()
         if len(pg_tags) == 0:
             pg_tag = Tag(name=tag, description=tag, active=True)
@@ -312,44 +319,3 @@ def import_role(role_id, target="all"):
         fail_import_task(role, logger, "An unknown error occurred while saving the role. Please wait a few minutes and try again. If you continue to receive a failure, please contact support.")
     
     return True
-
-#----------------------------------------------------------------------
-# Periodic Tasks
-#----------------------------------------------------------------------
-
-# @task()
-# def calculate_top_roles():
-#     """
-#     Used to periodically generate the top X tasks 
-#     in each category. This information is written
-#     to the django cache (memcache) so that it is 
-#     accessible quickly and cheaply.
-#     """
-    
-#     db_common.calculate_top_roles()
-#     return True
-
-# @task()
-# def calculate_top_users():
-#     """
-#     Used to periodically rank users based on the ratings on 
-#     roles they have submitted. These rankings are stored in
-#     a separate table since we're using the default auth.User
-#     model.
-#     """
-
-#     db_common.calculate_top_users()
-#     return True
-
-# @task()
-# def calculate_top_reviewers():
-#     """
-#     Used to periodically rank users based on the number of 
-#     reviews they have submitted, plus the spread on the number 
-#     of up/down votes their reviews have received. These rankings 
-#     are stored in a separate table since we're using the default 
-#     auth.User model.
-#     """
-
-#     db_common.calculate_top_reviewers()
-#     return True

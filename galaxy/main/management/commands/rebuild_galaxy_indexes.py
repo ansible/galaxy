@@ -6,7 +6,8 @@ from elasticsearch_dsl import Index
 
 # local
 from galaxy.main.models import Platform, Tag, Role
-from galaxy.main.search_models import TagDoc, PlatformDoc
+from galaxy.main.search_models import TagDoc, PlatformDoc, UserDoc
+
 
 class Command(BaseCommand):
     help = 'Rebuild custom elasticsearch indexes: galaxy_platforms, galaxy_tags'
@@ -14,7 +15,24 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.rebuild_tags()
         self.rebuild_platforms()
-    
+        self.rebuild_users()
+
+    def rebuild_users(self):
+        galaxy_users = Index('galaxy_users')
+        galaxy_users.settings(
+            number_of_shards = 1
+        )
+        galaxy_users.doc_type(UserDoc)
+        galaxy_users.delete(ignore=404)
+        galaxy_users.create()
+        
+        #cnt = 0
+        for role in Role.objects.filter(active=True, is_valid=True).order_by('owner__username').distinct('owner__username').all():
+            doc = UserDoc(username=role.owner.username)
+            #doc.meta.id = cnt
+            doc.save()
+            #cnt += 1
+
     def rebuild_tags(self):
         galaxy_tags = Index('galaxy_tags')
         galaxy_tags.settings(
