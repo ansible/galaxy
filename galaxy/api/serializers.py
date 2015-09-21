@@ -560,7 +560,7 @@ class RoleListSerializer(BaseSerializer):
         model = Role
         fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings',
                                 'github_user','github_repo','min_ansible_version','issue_tracker_url',
-                                'license','company','description','tags', 'readme_html')
+                                'license','company','description', 'readme_html')
 
     def to_native(self, obj):
         ret = super(RoleListSerializer, self).to_native(obj)

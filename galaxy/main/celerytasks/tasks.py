@@ -173,8 +173,8 @@ def import_role(role_id, target="all"):
                 else:
                     print "Warning: %s is not a valid tag" & cat
 
-    if galaxy_info.get("tags", None):
-        for tag in galaxy_info.get("tags"):
+    if galaxy_info.get("galaxy_tags", None):
+        for tag in galaxy_info.get("galaxy_tags"):
             for t in tag.split(':'):
                 if re.match('^[a-zA-Z0-9:]+$',t):
                     meta_tags.append(t)
