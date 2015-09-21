@@ -37,7 +37,7 @@ def role_pre_save(sender, **kwargs):
     instance = kwargs['instance']
     tags = instance.get_tags() if instance.id else []
     platforms = instance.get_unique_platforms() if instance.id else []
-    username = instance.owner.username if instanice.id else ''
+    username = instance.owner.username if instance.id else ''
     instance._saved_tag_names = tags
     instance._saved_username = username
     instance._saved_platforms = platforms
@@ -61,6 +61,6 @@ def role_post_save(sender, **kwargs):
     platforms = getattr(instance, '_saved_platforms', None)
     if platforms:
         for platform in platforms:
-            update_platofmrs.delay(platforms)
+            update_platforms.delay(platforms)
 
         
