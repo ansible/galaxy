@@ -25,9 +25,6 @@
 - name: deploy apache configuration file
   template: src=galaxy.conf.j2 dest=/etc/httpd/conf.d/galaxy.conf
 
-- name: Make migrations
-  command: galaxy-manage makemigrations --noinput
-
 - name: Apply migrations
   command: galaxy-manage migrate --noinput
 
