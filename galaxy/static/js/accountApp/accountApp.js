@@ -23,7 +23,7 @@
 
     accountsApp.config(['$routeProvider','MyInfoProvider', '$logProvider', _config]);
 
-    function _routes($routeProvider, MyInfoProvider, $logProvider) {
+    function _config($routeProvider, MyInfoProvider, $logProvider) {
         $logProvider.debugEnabled(false);
         $routeProvider.
             when('/', {
