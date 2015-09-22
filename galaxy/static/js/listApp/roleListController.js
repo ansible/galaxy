@@ -193,6 +193,7 @@
                     $scope.list_data.page_range = [];
                     $scope.setPageRange();
                     _resizeSearchControls();
+                    $timeout(_windowResize, 500);
                 });
         }
 

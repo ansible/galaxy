@@ -440,7 +440,7 @@ class PlatformsSearchView(APIView):
             if key == 'releases':
                 q = Q('match', releases=value)
             if key in ('content','autocomplete'):
-                q = Q('match', name=value) | Q('match', releases=value)
+                q = Q('match', autocomplete=value)
             if key == 'page':
                 page = int(value) - 1 if int(value) > 0 else 0
             if key == 'page_size':

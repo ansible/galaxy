@@ -26,13 +26,10 @@ class Command(BaseCommand):
         galaxy_users.delete(ignore=404)
         galaxy_users.create()
         
-        #cnt = 0
         for role in Role.objects.filter(active=True, is_valid=True).order_by('owner__username').distinct('owner__username').all():
             doc = UserDoc(username=role.owner.username)
-            #doc.meta.id = cnt
             doc.save()
-            #cnt += 1
-
+        
     def rebuild_tags(self):
         galaxy_tags = Index('galaxy_tags')
         galaxy_tags.settings(
@@ -57,14 +54,25 @@ class Command(BaseCommand):
         galaxy_platforms.delete(ignore=404)
         galaxy_platforms.create()
 
-        cnt = 0
         for platform in Platform.objects.filter(active=True).distinct('name').all():
-            # self.es.create(index='galaxy_platforms', doc_type="platform", body=doc, id=cnt)
+            alias_list = [alias for alias in self.get_platform_search_terms(platform.name)]
+            alias_list = '' if len(alias_list) == 0 else alias_list
+            release_list = [p.release for p in Platform.objects.filter(active=True, name=platform.name).order_by('release').distinct('release').all()]
             doc = PlatformDoc(
                 name=platform.name,
-                releases=[p.release for p in Platform.objects.filter(active=True, name=platform.name).order_by('release').distinct('release').all()],
+                releases= release_list,
                 roles=Role.objects.filter(active=True, is_valid=True, platforms__name=platform.name).order_by('owner__username','name').distinct('owner__username','name').count(),
+                alias=alias_list,
+                autocomplete="%s %s %s" % (platform.name, ' '.join(release_list), ' '.join(alias_list))
             )
-            doc.meta.id = cnt
             doc.save()
-            cnt += 1
+        
+    def get_platform_search_terms(self, name):
+        '''
+        Fetch the unique set of aliases for a given platform
+        '''
+        terms = []
+        for platform in Platform.objects.filter(active=True, name=name).all():
+            if platform.alias:
+                terms += platform.alias.split(' ')
+        return set(terms) 

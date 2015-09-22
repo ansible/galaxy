@@ -1,7 +1,7 @@
-- name: install authorized_keys
+- name: Install authorized_keys
   authorized_key:
     state: 'present'
-    user: '{{ ansible_ssh_user }}'
+    user: "{{ item | basename | regex_replace('.keys$','') }}"
     key: "{{ lookup('file', item) }}"
   with_fileglob:
     - '*.keys'

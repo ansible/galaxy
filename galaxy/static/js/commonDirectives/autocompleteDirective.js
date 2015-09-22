@@ -104,7 +104,7 @@
                     return;
                 }
                 if (scope.searchSuggestionFunction) {
-                    if (scope.searchValue.length >= 3 ) {
+                    if (scope.searchValue.length >= 2 ) {
                         $timeout.cancel(timeoutEventPromise);
                         timeoutEventPromise = $timeout(function() {
                             scope.searchSuggestions = [];
@@ -159,8 +159,10 @@
             }
 
             function _searchAddKey() {
-                _addKey({ value: scope.searchValue, type: scope.searchType });
-                scope.searchValue = null;
+                if (scope.searchValue) {
+                    _addKey({ value: scope.searchValue, type: scope.searchType });
+                    scope.searchValue = null;
+                }
             }
 
             function _addKey(_key) {

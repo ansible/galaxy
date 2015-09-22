@@ -11,7 +11,7 @@ __all__ = ["TagDoc", "PlatformDoc", "UserDoc"]
 
 autocomplete = analyzer('autocomplete',
     tokenizer = 'standard',
-    filter = ["lowercase", token_filter('autocomplete_filter', 'edgeNGram', min_gram=1, max_gram=20)]
+    filter = ["lowercase", token_filter('autocomplete_filter', 'edgeNGram', min_gram=2, max_gram=20)]
 )
 
 
@@ -37,9 +37,11 @@ class TagDoc(BaseSearchModel):
 
 
 class PlatformDoc(BaseSearchModel):
-    name = String(analyzer=autocomplete, search_analyzer='standard')
-    releases = String(analyzer=autocomplete, search_analyzer='standard', multi=True)
+    name = String()
+    releases = String()
+    alias = String()
     roles = Long(include_in_all=False)
+    autocomplete = String(analyzer=autocomplete, search_analyzer='standard')
 
     class Meta:
         index = 'galaxy_platforms'
