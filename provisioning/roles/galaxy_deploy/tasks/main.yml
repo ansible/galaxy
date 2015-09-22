@@ -36,3 +36,19 @@
   notify:
     - restart apache
     - restart supervisord
+
+- name: Rebuild haystack search indexes
+  expect:
+      command: "galaxy-manage rebuild_index"
+      responses:
+          "Are you sure you wish to continue? [y/N]": y
+
+- name: Rebuild custom search indexes
+  command: galaxy-manage rebuild_galaxy_indexes
+
+- name: Send slack notification
+  local_action:
+      module: slack
+      token: "T026NJJ6Z/B0B4Z8BEH/YcNE4Z5Z5U0bKi4yHCfzzBDp"
+      color: good
+      msg: {{ galaxy_slack_message }}

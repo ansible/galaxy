@@ -1,3 +1,4 @@
+galaxy_slack_message: "Galaxy deployment completed successfully!"
 galaxy_dist_dir: "/tmp"
 galaxy_site_name: "galaxy.local"
 galaxy_site_env: "PROD"
