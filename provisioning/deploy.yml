@@ -8,7 +8,7 @@
       galaxy_email_password: "{{ lookup('env', 'GALAXY_EMAIL_PASSWORD' )}}"
       galaxy_rabbit_password: "{{ lookup('env', 'GALAXY_RABBIT_PASSWORD' )}}"
       galaxy_es_host: "{{ lookup('env', 'GALAXY_ES_HOST' )}}"
-      galaxy_slack_message: "{{ lookup('env', 'GALAXY_SLACK_MESSAGE' }}
+      galaxy_slack_message: "{{ lookup('env', 'GALAXY_SLACK_MESSAGE' }}"
   roles:
   - { role: galaxy_packages }
   - { role: galaxy_deploy }
