@@ -51,4 +51,4 @@
       module: slack
       token: "T026NJJ6Z/B0B4Z8BEH/YcNE4Z5Z5U0bKi4yHCfzzBDp"
       color: good
-      msg: "{{ galaxy_slack_message }}""
+      msg: "{{ galaxy_slack_message }}"
