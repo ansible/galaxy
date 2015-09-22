@@ -2,7 +2,13 @@
 - name: Install Elasticsearch
   hosts: all
   sudo: yes
+  vars:
+    - authorized_keys: True
   roles:
     - { role: packages }
     - { role: geerlingguy.elasticsearch }
     - { role: ntp }
+    - { role: iptables }
+    - { role: fail2ban }
+    - { role: auth_users }
+    - { role: auth_keys }

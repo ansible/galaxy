@@ -12,3 +12,4 @@
   - python-pip
   - make
   - ntp
+  - fail2ban

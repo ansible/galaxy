@@ -184,6 +184,12 @@ class Platform(CommonModelNameNotUnique):
         max_length   = 50,
         verbose_name = "Distribution Release Version",
     )
+    alias = models.CharField(
+        max_length   = 256,
+        blank        = True,
+        null         = True,
+        verbose_name = "Search terms"
+    )
 
     def __unicode__(self):
         return "%s-%s" % (self.name, self.release)

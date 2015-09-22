@@ -22,7 +22,7 @@
     </div>
     <div class="col-md-6">
         <div id="page-size-select">
-            <label >ITEMS {{ (list_data.page * list_data.page_size) - list_data.page_size + 1 }} - 
+            <label >ITEMS {{ (list_data.count) ? (list_data.page * list_data.page_size) - list_data.page_size + 1 : 0 }} - 
             {{ (list_data.page * list_data.page_size > list_data.count) ? list_data.count :  list_data.page * list_data.page_size }} OF 
             {{ list_data.count }} <span ng-show="list_data.num_pages > 1">&nbsp;&nbsp;VIEW PER PAGE</span></label>
             <select ng-show="list_data.num_pages > 1" ng-model="list_data.page_size" class="form-control" 
