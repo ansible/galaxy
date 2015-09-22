@@ -16,9 +16,4 @@ class Migration(migrations.Migration):
             name='alias',
             field=models.CharField(max_length=256, null=True, verbose_name=b'Search terms', blank=True),
         ),
-        migrations.AlterField(
-            model_name='role',
-            name='tags',
-            field=models.ManyToManyField(related_name='roles', editable=False, to='main.Tag', blank=True, help_text=b'', verbose_name=b'Tags'),
-        ),
     ]

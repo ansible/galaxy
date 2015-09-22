@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='role',
             name='tags',
-            field=models.ManyToManyField(related_name='tags', editable=False, to='main.Tag', blank=True, help_text=b'', verbose_name=b'Tags'),
+            field=models.ManyToManyField(related_name='roles', editable=False, to='main.Tag', blank=True, help_text=b'', verbose_name=b'Tags'),
         ),
     ]
