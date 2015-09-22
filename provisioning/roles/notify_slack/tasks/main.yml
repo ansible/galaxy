@@ -1,0 +1,7 @@
+- name: Send slack notification
+  local_action:
+      module: slack
+      token: "T026NJJ6Z/B0B4Z8BEH/YcNE4Z5Z5U0bKi4yHCfzzBDp"
+      msg: "{{ notify_slack_message }}" 
+      username: jenkins
+      icon_url: "https://s3-us-west-2.amazonaws.com/slack-files2/avatars/2015-09-22/11169629301_6d602d47e94ab08f4b1e_48.jpg"
