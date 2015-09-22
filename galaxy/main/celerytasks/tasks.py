@@ -31,7 +31,7 @@ from django.db import transaction
 from django.utils import text, html
 from django.utils.html import mark_safe
 
-from galaxy.main.utils import db_common
+#from galaxy.main.utils import db_common
 from galaxy.main.models import *
 
 def fail_import_task(role, logger, msg):
