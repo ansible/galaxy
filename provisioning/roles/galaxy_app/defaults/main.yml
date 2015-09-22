@@ -33,6 +33,6 @@ galaxy_ssl_cachain: null
 galaxy_github_api_token: ""
 
 # Elastic Search / Haystack
-galaxy_es_host: "45.79.217.103"
+galaxy_es_host: "45.79.204.176"
 galaxy_es_port: "9200"
 galaxy_es_transport: "http"
