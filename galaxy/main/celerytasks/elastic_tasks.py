@@ -55,7 +55,7 @@ def update_tags(tag):
 @task()
 def update_platforms(platform):
     print "PLATFORM: %s" % platform
-    cnt = Role.objects.filter(active=True, is_valid=True, platforms__name=platform).order_by('owner__username','name').distinct('owner__username','name').count(),
+    cnt = Role.objects.filter(active=True, is_valid=True, platforms__name=platform).order_by('owner__username','name').distinct('owner__username','name').count()
     es_platforms = PlatformDoc.search().query('match', name=platform).execute()
     updated = False
     
@@ -63,7 +63,7 @@ def update_platforms(platform):
         if es_platform.name == platform:
             updated = True
             if es_platform.roles != cnt:
-                print "PLATFORM: count update %s %d" % (platform, cnt)
+                print "PLATFORM: count update %s %s" % (platform, cnt)
                 try:
                     es_platform.update(roles=cnt)
                 except:
@@ -89,7 +89,7 @@ def update_platforms(platform):
 @task()
 def update_users(user):
     print "USER: %s" % user
-    pg_tag = Tag.objects.get(name=tag)
+    #pg_tag = Tag.objects.get(name=tag)
     es_users = UserDoc.search().query('match', username=user).execute()
     #cnt = Role.objects.filter(active=True, is_valid=True, owner__username=user).count(),
     updated = False    

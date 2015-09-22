@@ -61,6 +61,6 @@ def role_post_save(sender, **kwargs):
     platforms = getattr(instance, '_saved_platforms', None)
     if platforms:
         for platform in platforms:
-            update_platforms.delay(platforms)
+            update_platforms.delay(platform)
 
         

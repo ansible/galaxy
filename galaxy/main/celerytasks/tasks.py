@@ -198,7 +198,7 @@ def import_role(role_id, target="all"):
 
     # There are no tags?
     if len(meta_tags) == 0:
-        print "Warning: No tags found for %s.%s" % (role.owner__username, role.name)
+        print "Warning: No tags found for %s.%s" % (role.owner.username, role.name)
 
     # Add in the platforms and versions
     print "Info: Adding platforms for rold_id: %d" % int(role_id)
