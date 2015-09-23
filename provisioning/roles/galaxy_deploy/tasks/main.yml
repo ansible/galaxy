@@ -43,4 +43,3 @@
 
 - name: Rebuild custom search indexes
   command: "galaxy-manage rebuild_galaxy_indexes"
-
