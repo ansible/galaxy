@@ -12,4 +12,4 @@
   roles:
   - { role: galaxy_packages }
   - { role: galaxy_deploy }
-  - { role: notify_slack, notify_slack_message: {{ galaxy_slack_message }} }
+  - { role: notify_slack, notify_slack_message: "{{ galaxy_slack_message }}" }
