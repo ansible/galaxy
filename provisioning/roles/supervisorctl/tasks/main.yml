@@ -27,7 +27,7 @@
       value: "true"
     - option: stdout_logfile
       value: "/var/log/galaxy/celeryd.log"
-    - option: stderr_logfile:
+    - option: stderr_logfile
       value: "/var/log/galaxy/celeryd.log"
     - option: logfile_maxbytes
       value: 50MB
