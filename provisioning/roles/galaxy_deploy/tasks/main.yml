@@ -45,4 +45,4 @@
   ignore_errors: yes
 
 - name: Rebuild custom search indexes
-  command: "/galaxy_devel/manage.py rebuild_galaxy_indexes"
+  command: "galaxy-manage rebuild_galaxy_indexes"
