@@ -34,3 +34,7 @@ galaxy_postgresql_username: "galaxy"
 galaxy_postgresql_password: ""
 galaxy_postgresql_hostname: "127.0.0.1"
 galaxy_postgresql_port: ""
+
+# Memcached
+galaxy_memcached_hostname: "127.0.0.1"
+galaxy_memcached_port: 11211

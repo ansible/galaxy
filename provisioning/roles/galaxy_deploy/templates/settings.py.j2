@@ -1,4 +1,12 @@
-# Django settings for ansible galaxy project.
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+# Do NOT make changes to this file directly. 
+# This file is maintained by the Jenkins deployment process.
+# Any changes made here will be overwritten.  Make changes
+# to provisioning/role/galaxy_deploy/templates/settings.py.j2
+# and redeploy.
+#
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 import os
 import djcelery
@@ -88,13 +96,14 @@ DATABASES = {
         'PASSWORD': '{{ galaxy_postgresql_password }}',
         'HOST': '{{ galaxy_postgresql_hostname }}',
         'PORT': '{{ galaxy_postgresql_port }}',
+        'CONN_MAX_AGE': None,
     }
 }
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': '{{ galaxy_memcached_hostname }}:{{ galaxy_memcached_port }}',
     }
 }
 
