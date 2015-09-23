@@ -32,6 +32,6 @@
 
 - name: insert iptables rule for httpd (port 8000)
   lineinfile: dest=/etc/sysconfig/iptables state=present regexp="^.*INPUT.*tcp.*8000.*ACCEPT" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport 8000 -j ACCEPT"
-  when: iptables_installed.rc == 0 and iptables_exists.state != 'absent'
+  when: iptables_installed.rc == 0 and iptables_exists.state != 'absent' and galaxy_allow_port_8000
   notify: restart iptables
   tags: iptables

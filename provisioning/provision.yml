@@ -6,4 +6,4 @@
       galaxy_github_api_token: "{{ lookup('env', 'GALAXY_GITHUB_API_KEY') }}"
   roles:
   - { role: galaxy_app }
-  - { role: admin_user, when: galaxy_create_superuser }
+  - { role: admin_user }

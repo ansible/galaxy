@@ -70,9 +70,9 @@
   user: name=vagrant append=yes groups=galaxy_manage
   when: galaxy_env == "DEV"
 
-- name: add centos to galaxy_manage group
-  user: name=centos append=yes groups=galaxy_manage
-  when: galaxy_env == "PROD"
+#- name: add centos to galaxy_manage group
+#  user: name=centos append=yes groups=galaxy_manage
+#  when: galaxy_env == "PROD"
 
 - name: add apache to galaxy_manage group
   user: name=apache append=yes groups=galaxy_manage

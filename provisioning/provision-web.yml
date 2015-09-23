@@ -1,0 +1,10 @@
+---
+- name: Provision Web Server
+  hosts: all
+  sudo: yes
+  roles:
+  - { role: galaxy_packages }
+  - { role: selinux, when: galaxy_install_selinux }
+  - { role: ntp }
+  - { role: supervisorctl, when: galaxy_configure_supervisor, sup_init_name: "supervisord", sup_conf_location: "/etc/supervisord.conf" }
+  - { role: iptables, galaxy_allow_port_8000: False }
