@@ -1,5 +1,4 @@
 # Allow override of the galaxy package name
-galaxy_package_name: galaxy-latest
 galaxy_install_dev_tools: True
 galaxy_log_dir: "/galaxy_devel/logs"
 galaxy_install_selinux: False
