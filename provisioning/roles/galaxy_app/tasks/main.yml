@@ -42,13 +42,16 @@
 - name: migrate sites
   command: galaxy-manage migrate sites --noinput
   ignore_errors: yes
+  when: galaxy_migrations
 
 - name: migrate account
   command: galaxy-manage migrate account --noinput
   ignore_errors: yes
+  when: galaxy_migrations
 
 - name: migrate the full application
   command: galaxy-manage migrate --noinput
+  when: galaxy_migrations
 
 - name: collect galaxy static files
   command: galaxy-manage collectstatic --clear --noinput
