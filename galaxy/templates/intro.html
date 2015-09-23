@@ -125,7 +125,7 @@ $ ansible-galaxy -r install_roles.yml
 
                 <h3 id="review">Review Roles</h3>
 
-                <p>Once you’ve downloaded and used a role, let others know what you think by providing a score and comment.<p>
+                <p>Once you’ve downloaded and used a role, let others know what you think by providing a review. A review includes a score and a comment.<p>
 
                 <p>Picking a score is pretty simple. Just choose from one of the following options:</p>
                 <ol>
@@ -135,7 +135,7 @@ $ ansible-galaxy -r install_roles.yml
                     <li>Awesome!</li>
                     <li>Dude, I owe you a beer!</li>
                 </ol>
-                <p>You can optionally provide a comment as well. Take the opportunity to write a line or two about your experience with the role, how it helped you, and what others can expect.</p>
+                <p>You can optionally provide a comment as well. Take the opportunity to write a line or two about your experience with the role and how it helped you. Let others know what to expect when they download and use the role.</p>
 
                 <h3 id="share">Share Roles</h3>
                 <p>Share roles you create with the community. Roles can inlcude deploying popular applications, as well as automation around a product your company makes.</p>
@@ -220,10 +220,10 @@ MIT
 </pre>
                 <h5 id="meta">Meta Data - meta/main.yml</h5>
 
-                <p>In meta/main.yml is where you fill in details about supported platforms, minimum required Ansible version, Galaxy tags
+                <p>In meta/main.yml is where you fill in details about supported platforms, minimum required Ansible version, tags
                     that describe the role, dependencies, and information about you the author. All this information will appear on Galaxy. If it's
                     not accurate, users will not be able to find your role.</p>
-                <p>Using the ansible-galaxy init command provides a template meta/main.yml for you to modify. It's written in <a href="http://www.yaml.org" target="_blank">yaml</a>, so be sure to follow the yaml standard as you make changes.</p>
+                <p>Using <code>ansible-galaxy init</code> provides a template meta/main.yml for you to modify. It's written in <a href="http://www.yaml.org" target="_blank">yaml</a>, so be sure to follow the yaml standard as you make changes.</p>
                 <p>A modified meta.yml file for our example would look like the following:</p>
 
 <pre>
@@ -257,12 +257,10 @@ dependencies:
 <pre>
 dependencies:
   - { role: stouts.elasticsearch }
-  - { role: geerlingguy.java }
 </pre>
                 <p>Parameters can also be passed to the role:</p>
 <pre>
 dependencies:
-  - { role: geerlingguy.java }
   - { role: stouts.elasticsearch, elasticsearch_home: &quot;&#123;&#123; install_path_variable &#125;&#125;&quot;, elasticsearch_http_port: 8900 }
 </pre>
                 <p>For more on how Ansible handles role dependencies, see
