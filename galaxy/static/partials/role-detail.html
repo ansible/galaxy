@@ -17,8 +17,8 @@
         </div>
         <div class="col-xs-6 text-right">
             <div class="user-info">
-                <a href="#/users/{{role.summary_fields.owner.id}}"><img ng-src="{{ role.summary_fields.owner.avatar_url }}" /></a>
-                <p class="username"><a href="#/users/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a><br \>
+                <a href="/detail#/user/{{role.summary_fields.owner.id}}"><img ng-src="{{ role.summary_fields.owner.avatar_url }}" /></a>
+                <p class="username"><a href="/detail#/user/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a><br \>
                     <span ng-show="role.summary_fields.owner.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span></p>
             </div>
         </div>
@@ -31,15 +31,19 @@
                     <tab heading="Details">
                         <div class="row rating-section">
                             <div class="col-lg-3 col-md-6 col-sm-6">
-                                <div class="role-ratings">
-                                    <div class="score-breakdown" id="average_composite_breakdown"></div>
+                                <div class="score">
+                                   <span ng-show="role.average_score == '0.0'" class="score-value-na">NA</span>
+                                   <span ng-show="role.average_score != '0.0'" class="score-value">{{ role.average_score }}</span>
+                                   <span class="fld-label">Score</span>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <div class="ratings-count">
                                     <h3>Ratings: <span ng-class="{ 'count-grey': role.num_ratings == 0, 'count-blue': role.num_ratings }">{{ role.num_ratings }}</span></h3>
-                                    <p><a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings == 0">Be the first to rate this role.</a>
-                                    <a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings">Rate this role.</a></p>
+                                    <p ng-show="my_info.authenticated">
+                                        <a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings == 0">Be the first to rate this role.</a>
+                                        <a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings">Rate this role.</a>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -65,6 +69,15 @@
                                 <div class="installation">
                                     <h3>Installation</h3>
                                     <code>$ ansible-galaxy install {{role.summary_fields.owner.username}}.{{role.name}}</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row" ng-show="role.tags && role.tags.length">
+                            <div class="col-lg-12">
+                                <div class="tags-container">
+                                    <div class="title">Tags</div>
+                                    <div ng-repeat="tag in role.tags" class="galaxy-tag">{{ tag }}</div>
                                 </div>
                             </div>
                         </div>
@@ -117,13 +130,38 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="dependencies" ng-show="role.summary_fields.dependencies.length > 0">
+                                    <table class="table ga-table-striped">
+                                        <caption>Dependencies</caption>
+                                        <thead>
+                                            <tr>
+                                                <th>Role</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="table-scroller">
+                                        <table class="table ga-table-striped">
+                                            <tbody>
+                                            <tr ng-repeat="dependency in role.summary_fields.dependencies">
+                                                <td><a href="/detail#/role/{{ dependency.id }}">{{ dependency.name }}</a></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+
                     </tab>
 
                     <tab heading="README">
                         <div ng-bind-html="role.readme_html" class="readme"></div>
                     </tab>
                     <tab>
-                        <tab-heading>Ratings <span class="badge">{{ role.num_ratings }}</span></tab-heading>
+                        <tab-heading>Reviews <span class="badge">{{ role.num_ratings }}</span></tab-heading>
                         <ng-include src="'/static/partials/ratingListTable.html'"></ng-include>
                     </tab>
                 </tabset>

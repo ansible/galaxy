@@ -3,52 +3,53 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us"{% if ng_app %} ng-app="{{ ng_app }}"{% endif %}{% if ng_controller %} ng-controller="{{ ng_controller }}"{% endif %}>
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="author" content="Ansible, Inc" />
-  <link rel="shortcut icon" href="/static/img/favicon.ico" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Ansible, Inc" />
+    <link rel="shortcut icon" href="/static/img/favicon.ico" />
 
-  <title>Ansible Galaxy | Find, reuse, and share the best Ansible content</title>
+    <title>Ansible Galaxy | Find, reuse, and share the best Ansible content</title>
 
-  {% block extra_head %}{% endblock %}
+    {% block extra_head %}{% endblock %}
 
-  <!-- CSS -->
-  <link rel="stylesheet" type="text/css" href="/static/css/jquery-ui.min.css" />
-  <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="/static/fontawesome/css/font-awesome.css" />
-  <link rel="stylesheet" type="text/css" href="/static/css/select2.css" />
-  <link rel="stylesheet" type="text/css" href="/static/css/select2-bootstrap.css" />
-  <link rel="stylesheet" type="text/css" href="/static/css/loaders.min.css" />
-  <link rel="stylesheet" type="text/css" href="/static/css/galaxy.min.css" />
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="/static/css/jquery-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/fontawesome/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/select2.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/select2-bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/loaders.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/galaxy.min.css" />
 
-  {% for extra in extra_css %}<link href='{{extra}}' rel='stylesheet' type='text/css' />
-  {% endfor %}
+    {% for extra in extra_css %}<link href='{{extra}}' rel='stylesheet' type='text/css' />
+    {% endfor %}
 
-  <!-- JS -->
-  <script type="text/javascript" src="/static/js/vendor/jquery.min.js"></script>
-  <!-- script type="text/javascript" src="/static/js/vendor/jquery-ui.min.js"></script -->
-  <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/static/js/vendor/angular.min.js"></script>
-  <script type="text/javascript" src="/static/js/vendor/angular-resource.min.js"></script>
-  <script type="text/javascript" src="/static/js/vendor/angular-route.min.js"></script>
-  <script type="text/javascript" src="/static/js/vendor/angular-sanitize.min.js"></script>
-  <script type="text/javascript" src="/static/js/vendor/angular-cookies.min.js"></script>
-  <script type="text/javascript" src="/static/js/vendor/ui-bootstrap-tpls-0.12.0.js"></script>
-  <script type="text/javascript" src="/static/js/vendor/select2.js"></script>
+    <!-- JS -->
+    <script type="text/javascript" src="/static/vendorjs/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/jquery.dotdotdot.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/angular.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/angular-resource.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/angular-route.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/angular-cookies.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/ui-bootstrap-tpls-0.12.0.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/select2.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/underscore-min.js"></script>
+    
+    {% for extra in extra_js %}<script type="text/javascript" src="{{ extra }}"></script>
+    {% endfor %}
 
-  {% for extra in extra_js %}<script type="text/javascript" src="{{ extra }}"></script>
-  {% endfor %}
-
-  <!-- Google Tag Manager Data Layer -->
-  <script>
-   dataLayer = [];
-  </script>
-  <!-- End Google Tag Manager Data Layer -->
+    <!-- Google Tag Manager Data Layer -->
+    <script>
+        dataLayer = [];
+    </script>
+    <!-- End Google Tag Manager Data Layer -->
 
 </head>
 <body>
 
-  <!-- Google Tag Manager -->
-  <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-PSB293" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-PSB293');</script>
-  <!-- End Google Tag Manager -->
+    <!-- Google Tag Manager -->
+    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-PSB293" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-PSB293');</script>
+    <!-- End Google Tag Manager -->

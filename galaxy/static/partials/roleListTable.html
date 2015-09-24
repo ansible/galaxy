@@ -11,14 +11,14 @@
       <thead>
       <tr>
           <th>Role</th>
-          <th>Categories</th>
+          <th>Tags</th>
           <th>Description</th>
       </tr>
       </thead>
       <tbody>
       <tr ng-repeat="role in roles">
            <td class="role">
-               <div class="rolename"><a href="#/roles/{{role.id}}">{{role.name}}</a></div>
+               <div class="rolename"><a href="/detail#/role/{{role.id}}">{{role.name}}</a></div>
                <div class="score-section">
                    <div class="scores">
                        <div class="score">
@@ -26,25 +26,18 @@
                            <span ng-show="role.average_score != '0.0'" class="score-value">{{ role.average_score|number:1 }}</span>
                            <span class="fld-label">Score</span>
                        </div>
-                       <!--
-                       <div class="score">
-                           <span ng-show="role.average_aw_score == '0.0'" class="score-value-na">NA</span>
-                           <span ng-show="role.average_aw_score != '0.0'" class="score-value">{{ role.average_aw_score|number:1 }}</span>
-                           <span class="fld-label">Ansible Score</span>
-                       </div>
-                       -->
-                   </div>
+                    </div>
                </div>
                <div ng-show="display_user_info" class="userinfo">
-                   <span class="username"><span class="fld-label">Author:</span> <a href="#/users/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a></span><br />
+                   <span class="username"><span class="fld-label">Author:</span> <a href="detail#/user/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a></span><br />
                </div>
            </td>
            <td class="col-lg-2">
-               <a href="#/roles/category/{{category}}" ng-repeat="category in role.summary_fields.categories" class="category">{{category}}</a>
+               <div class="galaxy-tag" ng-repeat="tag in role.tags">{{ tag }}</div>
            </td>
            <td class="col-lg-7 description">{{role.description}}</td>
        </tr>
-       <tr ng-show="roles.length == 0">
+       <tr ng-show="roles.length == 0 && !loading">
            <td>No roles found.</td>
        </tr>
        </tbody>

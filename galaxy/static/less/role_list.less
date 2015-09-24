@@ -2,59 +2,192 @@
  * role_list.less
  */
  
- /* Browse Roles */
- .role-list-table {
-     tbody>tr>td {
-         padding-bottom: 15px;
-         padding-top: 15px;
-     }
-     .role {
-         min-width: 200px;
-         .rolename {
-             font-size: 16px;
-             font-weight: bold;
-         }
-         .fld-label {
-             color: @charcoal;
-         }
-         .score-section {
-             font-size: 12px;
-             margin-top: 15px;
-             margin-left: 15px;
-             .fld-label {
-                 padding-left: 5px;
-             }
-         }
-         .score {
-             margin-bottom: 5px;
-         }
-         .score-value, .score-value-na {
-             font-weight: bold;
-             font-size: 14px;
-             padding: 2px;
-             color: @black;
-         }
-         .score-value-na {
-             color: @grey;
-         }
-         .userinfo {
-             margin-top: 15px;
-             margin-left: 15px;
-         }
+#galaxy-role-list {
+    
+    #galaxy-page-title {
+        position: fixed;
+        left: 0;
+        top: 80px;
+        width: 100%;
+        z-index: +1;
+    }
 
-         @media (max-width: 1024px) {
-             min-width: 125px;
-         }
-     }
-     .category {
-         display: block;
-         /* color: @charcoal; */
-     }
-     .category:hover {
-         /* color: @black;
-         text-decoration: underline; */
-     }
-     .description {
-         color: @charcoal;
-     }
- }
+    #galaxy-page-row {
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+
+    #role-list-container {
+        margin-top: 150px;
+    }
+
+    #role-list-search {
+        padding-top: 5px;
+        border-radius: 2px;
+        background-color: #e1e1e1;
+        margin-bottom: 20px;
+        
+        #role-order-by {
+            display: inline-block;
+            margin-left: 15px;
+            #orderby {
+                width: 150px;
+            }
+            label {
+                font-weight: normal;
+                color: @ansible-dark-grey;
+            }
+        }
+    }
+
+    #role-tags-container {
+        background-color: #e1e1e1;
+        border-radius: 2px;
+        overflow-y: none; 
+        .header {
+            height: 40px;
+            padding-top: 10px;
+            border-bottom: 1px solid @white;
+            .title {
+                color: @ansible-dark-grey;
+                font-size: 14px;
+                text-align: center;
+            }
+        }
+        .body-wrapper {
+            height: 310px;
+            overflow: hidden;
+        }
+        .body {
+            padding: 10px;
+            text-align: center;
+            height: 300px;
+            overflow-y: auto;
+            .tag {
+                font-size: 12px;
+                font-weight: normal;
+                margin-bottom: 5px;
+                .tag-name {
+                    display: inline-block;
+                    vertical-align: top;
+                    width: 65%;
+                    border-radius: 2px;
+                    background-color: #b7b7b7;
+                    color: @white;
+                    padding: 3px 6px;
+                    text-align: left;
+                    margin-right: 5px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .tag-name:hover {
+                    background-color: @blue;
+                    cursor: pointer;                
+                }
+                .tag-name.active {
+                    background-color: @blue;
+                }
+                .tag-roles {
+                    display: inline-block;
+                    vertical-align: top;
+                    border-radius: 2px;
+                    background-color: @ansible-dark-grey;
+                    color: @white;
+                    padding: 3px 6px;
+                    width: 25%;
+                    text-align: center;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 768px) {
+        #role-tags-container {
+            display: none;
+        }
+    }
+
+    #results-container {
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        .result {
+            display: inline-block;
+            vertical-align: top;
+            width: 260px;
+            height: 230px;
+            padding: 10px;
+            border: 1px solid #ccc; 
+            border-radius: 2px;
+            font-size: 12px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+
+            -webkit-box-shadow: 2px 2px 2px 0 #ccc;
+            -moz-box-shadow:    2px 2px 2px 0 #ccc;
+            box-shadow:         2px 2px 3px 0 #ccc;
+        
+            .header {
+                position: relative;
+                .title {
+                    font-weight: bold;
+                }
+                .score-container {
+                    display: inline-block;
+                    position: relative; 
+                    float: right; 
+                    label {
+                        font-size: 10px;
+                        font-weight: normal;
+                        color: #ccc;
+                        padding-right: 5px;
+                    }
+                    .badge {
+                        font-weight: normal;
+                        font-size: 10px;
+                        background-color: @ansible-dark-grey;
+                    }
+                }
+                hr {
+                    margin-top: 10px;
+                    margin-bottom: 10px;
+                    border-color: #e1e1e1;
+                } 
+            }
+            
+            .body {
+                .description {
+                    height: 35px;
+                    overflow-y: hidden;
+                }
+                .description, .result-group {
+                    height: auto;
+                    max-height: 40px;
+                    margin-bottom: 10px;
+                }
+                .authors {
+                    height: 20px;
+                }
+                .result-label {
+                    color: @ansible-color;
+                    padding-right: 6px;
+                    font-weight: bold;
+                }
+                .platforms, .tags {
+                    color: #848992;
+                }
+            }
+        }
+
+        @media(min-width: 768px) {
+            label {
+                padding-top: 0;
+            }
+        }
+    }
+
+}

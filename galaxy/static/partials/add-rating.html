@@ -6,40 +6,15 @@
     <div class="modal-body galaxy-add-rating">
         <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">{{alert.msg}}</alert>
         <div class="score-breakdown">
-            <table>
-                <tbody>
-                    <tr class="primary-score">
-                        <td>Score</td>
-                        <td><i ng-repeat="itm in score.score_range" class="{{ itm.value }} fa-lg"></i>
-                            <span class="badge">{{ score.value | number:1 }}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Wow! Factor</td>
-                        <td><rating ng-model="rating.wow_factor" max="5" state-on="'fa fa-star fa-lg'" state-off="'fa fa-star-o fa-lg'" ng-class="{'text-danger':highlight.wow_factor}" ng-click="highlight.wow_factor=true"></rating>
-                            <span class="badge">{{ rating.wow_factor | number:1 }}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Documentation</td>
-                        <td><rating ng-model="rating.documentation" max="5" state-on="'fa fa-star fa-lg'" state-off="'fa fa-star-o fa-lg'" ng-class="{'text-danger':highlight.documentation}" ng-click="highlight.documentation=true"></rating>
-                            <span class="badge">{{ rating.documentation | number:1 }}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Reliability</td>
-                        <td><rating ng-model="rating.reliability" max="5" state-on="'fa fa-star fa-lg'" state-off="'fa fa-star-o fa-lg'" ng-class="{'text-danger':highlight.reliability}" ng-click="highlight.reliability=true"></rating>
-                            <span class="badge">{{ rating.reliability | number:1 }}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Code Quality</td>
-                        <td><rating ng-model="rating.code_quality" max="5" state-on="'fa fa-star fa-lg'" state-off="'fa fa-star-o fa-lg'" ng-class="{'text-danger':highlight.code_quality}" ng-click="highlight.code_quality=true"></rating>
-                        <span class="badge">{{ rating.code_quality | number:1 }}</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <h4>Score</h4>
+            <select ng-model="rating.score" class="form-control">
+                <option value="">Choose a score</option>
+                <option value="1">1 - Needs work</option>
+                <option value="2">2 - OK, but could be improved</option>
+                <option value="3">3 - Nice.</option>
+                <option value="4">4 - Awesome!</option>
+                <option value="5">5 - Dude, I owe you a beer!</option>
+            </select>
         </div>
         <div class="rating-comment">
             <h4>Comment <span class="counter-text"><span ng-class="(rating.comment.length>5000) ? 'text-danger':''">{{5000 - rating.comment.length}} characters remaining</span></span></h4>

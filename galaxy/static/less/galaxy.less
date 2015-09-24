@@ -71,7 +71,6 @@
 @import "role_detail";
 @import "account_landing";
 @import "explore";
-@import "score_breakdown";
 @import "ratings_list.less";
 @import "add_rating.less";
 @import "my_roles.less";
@@ -79,6 +78,10 @@
 @import "modal.less";
 @import "role_list.less";
 @import "search_filter.less";
+@import "autocomplete.less";
+@import "tags.less";
+@import "pagination.less";
+@import "role_add.less";
 
 /* Helper Classes */
 .pad-right-sm { padding-right: 10px; }
@@ -173,17 +176,6 @@ pre {
     }
 }
 
-.user-menu {
-    /* Using user-menu class so that we can adjust things on smaller
-       viewports. See media queries below. */
-    text-align: right;
-    li {
-        a {
-            text-align: left;
-        }
-    }
-}
-
 .wrap {
     min-height: 100%;
     height: auto!;
@@ -209,11 +201,6 @@ pre {
     font-size: 11px;
     padding-top: 3px;
     color: @red;
-}
-
-.page-row .page-label {
-    margin-top: 25px;
-    text-align: right;
 }
 
 .tag-cloud {
@@ -257,9 +244,12 @@ pre {
     .date {
         display: inline-block;
         vertical-align: top;
-    }
-    .date:last-child {
-        margin-left: 10px;
+        .fld-label, .value {
+            display: inline-block;
+        }
+        .fld-label {
+            width: 85px;
+        }
     }
 }
 
@@ -290,9 +280,6 @@ pre {
 /* Media Querries to handle small screen sizes */
 
 @media (max-width: 768px) {
-    .user-menu {
-        text-align: center;
-    }
     .galaxy-message {
         width: 100%;
     }

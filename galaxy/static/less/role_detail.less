@@ -47,9 +47,39 @@
         }
     }
 
+    .score {
+        text-align: center;
+        margin-top: 25px;
+        .fld-label {
+            font-size: 12px;
+            padding-left: 5px;
+            color: @charcoal;
+        }
+        .score-value, .score-value-na {
+            font-weight: bold;
+            font-size: 36px;
+            padding: 2px;
+            color: @black;
+        }
+        .score-value-na {
+            color: @grey;
+        }
+    }
+
     .table-scroller {
-        height: 300px;
+        min-height: 150px;
+        max-height: 300px;
         overflow-y: auto;
+    }
+
+    .tags-container {
+        margin: 20px 0;
+
+        .title {
+            color: #777;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
     }
 
     .readme {

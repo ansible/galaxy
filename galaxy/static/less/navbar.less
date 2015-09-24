@@ -42,6 +42,17 @@
     margin-right: 5px;
 }
 
+.user-menu {
+    /* Using user-menu class so that we can adjust things on smaller
+       viewports. See media queries below. */
+    text-align: right;
+    li {
+        a {
+            text-align: right;
+        }
+    }
+}
+
 @media (max-width: 1023px) {
     .navbar-default {
         .navbar-nav>li>a {
@@ -52,9 +63,6 @@
         .navbar-nav>li>a:hover {
             background-color: @navbar-item-hover-background;
             color: #161b1f;
-        }
-        .user-menu li a {
-            text-align: right;
         }
     }
     .navbar-default .navbar-nav .open {
@@ -99,12 +107,3 @@
         }
     }
 }
-
-/*@media (min-width: 1024px) {
-    .navbar-collapse.collapse {
-      display: block !important;
-      height: auto !important;
-      padding-bottom: 0;
-      overflow: visible !important;
-    }
-}*/

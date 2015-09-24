@@ -1,0 +1,64 @@
+/*
+ * pagination.less
+ *
+ */
+
+#galaxy-page-row {
+    .pagination {
+        margin-top: 0;
+        margin-bottom: 0;
+        margin-right: 5px;
+        font-size: 12px;
+    }
+
+    .pagination>li>a {
+        padding: 3px 6px;
+    }
+
+    .pagination>li:last-child>a {
+        border-top-right-radius: 2px;
+        border-bottom-right-radius: 2px;
+    }
+
+    .pagination>li:first-child>a {
+        border-top-left-radius: 2px;
+        border-bottom-left-radius: 2px;
+    }
+    #page-number-label {
+        display: inline-block;
+        vertical-align: top;
+        font-size: 12px;
+        color: @ansible-dark-grey;
+        margin-top: 3px;
+    }
+    #page-size-select {
+        font-size: 12px;
+        color: @ansible-dark-grey;
+        margin-left: 10px;
+        text-align: right;
+        label {
+            display: inline-block;
+            font-weight: normal;
+            margin-bottom: 2px;
+        }
+        select {
+            display: inline-block;
+            width: auto;
+        }
+        .form-control {
+            height: 26px;s
+            line-height: 26px;
+            font-size: 10px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        #page-size-select {
+            text-align: center;
+            margin-top: 5px;
+        }
+        #page-number-container {
+            text-align: center;
+        }
+    }
+}

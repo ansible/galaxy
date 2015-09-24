@@ -2,114 +2,164 @@
  * user_list.less
  */
 
- .user-list-table {
-     tbody>tr>td {
-         padding-bottom: 20px;
-     }
+#galaxy-user-list {
+    
+    #galaxy-page-row {
+        margin: 20px -15px;
+    }
 
-     .role-list {
-         margin-bottom: 10px;
-     }
+    #galaxy-page-title {
+        position: fixed;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        z-index: +200;
+    }
 
-     .roles {
-         .score {
+    #galaxy-user-list-search-container {
+        position: fixed;
+        left: 0;
+        top: 130px;
+        z-index: +200;
+        width: 100%;
+        padding-top: 30px;
+        background-color: @white;
+    }
+
+    #galaxy-user-list-title-container {
+        position: fixed;
+        left: 0;
+        top: 208px;
+        width: 100%;
+        z-index: +200;
+        background-color: @white;
+    }
+
+    #galaxy-user-list-container {
+        padding-top: 240px;
+    }
+
+    .user-list-table {
+         tbody>tr>td {
+             padding-bottom: 20px;
+         }
+
+         .role-list {
              margin-bottom: 10px;
-             .fld-label {
-                 color: @charcoal;
-             }
-             .score-value, .score-value-na {
-                 font-weight: bold;
-                 font-size: 14px;
-                 padding: 2px;
-                 color: @black;
-             }
-             .score-value-na {
-                 color: @charcoal;
-             }
          }
-     }
 
-     .rating {
-         .date {
-             font-size: 12px;
-             color: @charcoal;
-         }
-         .score {
-             margin-top: 10px;
-             .fld-label {
-                 color: @charcoal;
-             }
-             .score-value, .score-value-na {
-                 font-weight: bold;
-                 font-size: 14px;
-                 padding: 2px;
-                 color: @black;
-             }
-             .score-value-na {
-                 color: @charcoal;
+         .roles {
+             .score {
+                 margin-bottom: 10px;
+                 .fld-label {
+                     color: @charcoal;
+                 }
+                 .score-value, .score-value-na {
+                     font-weight: bold;
+                     font-size: 14px;
+                     padding: 2px;
+                     color: @black;
+                 }
+                 .score-value-na {
+                     color: @charcoal;
+                 }
              }
          }
-         .role-name {
-             font-weight: bold;
-         }
-         .role-name.pad-bottom {
-             padding-bottom: 10px;
-         }
-     }
 
-     .user {
-         .info {
-             display: inline-block;
-             vertical-algin: top;
-         }
-         .username {
-             font-size: 18px;
-             font-weight: bold;
-         }
-         .name {
-             font-size: 14px;
-             font-weight: bold;
-             padding-left: 5px;
-             color: @charcoal;
-         }
-         .score {
-             .fld-value-na {
-                 padding: 2px;
+         .rating {
+             .date {
+                 font-size: 12px;
+                 color: @charcoal;
              }
-             .fld-value {
-                 padding: 2px;
+             .score {
+                 margin-top: 10px;
+                 .fld-label {
+                     color: @charcoal;
+                 }
+                 .score-value, .score-value-na {
+                     font-weight: bold;
+                     font-size: 14px;
+                     padding: 2px;
+                     color: @black;
+                 }
+                 .score-value-na {
+                     color: @charcoal;
+                 }
+             }
+             .role-name {
                  font-weight: bold;
              }
+             .role-name.pad-bottom {
+                 padding-bottom: 10px;
+             }
+         }
+
+         .user {
+             .info {
+                 display: inline-block;
+                 vertical-algin: top;
+             }
+             .username {
+                 font-size: 18px;
+                 font-weight: bold;
+             }
+             .name {
+                 font-size: 14px;
+                 font-weight: bold;
+                 padding-left: 5px;
+                 color: @charcoal;
+             }
+             .score {
+                 .fld-value-na {
+                     padding: 2px;
+                 }
+                 .fld-value {
+                     padding: 2px;
+                     font-weight: bold;
+                 }
+                 color: @charcoal;
+                 margin-top: 25px;
+                 margin-left: 15px;
+             }
+             .date {
+                 font-size: 12px;
+                 display: block;
+                 color: @charcoal;
+                 margin-left: 15px;
+                 margin-top: 3px;
+             }
+             img {
+                 display: inline-block;
+                 vertical-align: top;
+                 width: 48px;
+                 height: 48px;
+                 margin-right: 8px;
+                 margin-top: 5px;
+                 border-radius: 2px;
+             }
+         }
+         .roles {
+             .role { display: block; }
+         }
+         .rating {
              color: @charcoal;
-             margin-top: 25px;
-             margin-left: 15px;
+             .text {
+                 margin-top: 10px;
+                 margin-bottom: 10px;
+                 overflow-x: hidden;
+             }
          }
-         .date {
-             font-size: 12px;
-             display: block;
-             color: @charcoal;
-             margin-left: 15px;
-             margin-top: 3px;
-         }
-         img {
-             display: inline-block;
-             vertical-align: top;
-             width: 48px;
-             height: 48px;
-             margin-right: 8px;
-             margin-top: 5px;
-             border-radius: 4px;
-         }
-     }
-     .roles {
-         .role { display: block; }
-     }
-     .rating {
-         color: @charcoal;
-         .text {
-             margin-top: 10px;
-             margin-bottom: 10px;
-             overflow-x: hidden;
-         }
-     }
- }
+    }
+
+    @media (max-width: 768px) {
+        #galaxy-user-list-container {
+            padding-top: 280px;
+        }
+        .user-list-table {
+            .user .date {
+                margin-left: 0;
+                font-size: 10px;
+            }
+        }
+    }
+}

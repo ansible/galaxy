@@ -1,0 +1,1 @@
+{{ object.name }} {{ object.description }}{% for tag in object.get_tags %} {{ tag }}{% endfor %}{% for platform in object.get_unique_platforms %} {{ platform }}{% endfor %} {{ object.company }} {{ object.get_username }}

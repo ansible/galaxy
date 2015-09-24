@@ -6,24 +6,24 @@
         <div class="col-lg-4 load-container">
             <!-- Top Categories -->
             <table class="table ga-table-striped">
-               <caption>Top Categories</caption>
+               <caption>Top Tags</caption>
                <thead>
                <tr>
-                   <th>Category</th>
+                   <th>Tag</th>
                    <th class="text-right"># Roles</th>
                </tr>
                </thead>
                <tbody>
-               <tr ng-repeat="category in categories.data">
-                   <td><a href="list#/roles?page=1&per_page=10&sort_order=owner__username,name&cats={{category.name}}">{{ category.name }}</a></td>
-                   <td class="text-right">{{category.num_roles}}</td>
+               <tr ng-repeat="tag in tags.data">
+                   <td><a href="list#/roles?page=1&per_page=10&order=username,name&tags={{ tag.tag }}">{{ tag.tag }}</a></td>
+                   <td class="text-right">{{tag.roles}}</td>
                </tr>
                </tbody>
             </table>
-            <div ng-show="!loading.categories" class="view-more-container">
-                <a ng-href="{{ categories.more_link }}" class="btn btn-default btn-xs">View More</a>
+            <div ng-show="!loading.tags" class="view-more-container">
+                <a ng-href="{{ tags.more_link }}" class="btn btn-default btn-xs">View More</a>
             </div>
-            <div ng-show="loading.categories" class="loader">
+            <div ng-show="loading.tags" class="loader">
                 <div class="loader-inner line-scale">
                     <div></div>
                     <div></div>
@@ -39,13 +39,13 @@
                <thead>
                <tr>
                    <th>Role</th>
-                   <th class="text-right nowrap"># Ratings</th>
+                   <th class="text-right nowrap"># Reviews</th>
                    <th class="text-right nowrap">Score</th>
                </tr>
                </thead>
                <tbody>
                <tr ng-repeat="role in top_roles.data">
-                   <td><span class="clip"><a href="/list#/roles/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
+                   <td><span class="clip"><a href="/detail#/role/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
                    <td class="text-right">{{role.num_ratings | number:0}}</td>
                    <td class="text-right">{{role.average_score | number:2}}</td>
                </tr>
@@ -75,7 +75,7 @@
                </thead>
                <tbody>
                <tr ng-repeat="role in new_roles.data">
-                   <td><span class="clip"><a href="/list#/roles/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
+                   <td><span class="clip"><a href="/detail#/role/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
                    <td class="text-right">{{role.created|date:'dd MMM, yyyy'}}</td>
                </tr>
                </tbody>
@@ -111,7 +111,7 @@
                  </thead>
                  <tbody>
                  <tr ng-repeat="user in top_users.data">
-                     <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
+                     <td><a href="/detail#/user/{{user.id}}">{{ user.username }}</a></td>
                      <td class="text-right">{{ user.num_roles | number:0 }}</td>
                  </tr>
                  </tbody>
@@ -140,7 +140,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="user in top_reviewers.data">
-                    <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
+                    <td><a href="/detail#/user/{{user.id}}">{{ user.username }}</a></td>
                     <td class="text-right">{{ user.num_ratings | number:0 }}</td>
                 </tr>
                 </tbody>
@@ -169,7 +169,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="user in new_users.data">
-                    <td><a href="/list#/users/{{user.id}}">{{ user.username }}</a></td>
+                    <td><a href="/detail#/user/{{user.id}}">{{ user.username }}</a></td>
                     <td class="text-right">{{ user.date_joined | date:'dd MMM, yyyy' }}</td>
                 </tr>
                 </tbody>

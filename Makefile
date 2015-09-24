@@ -26,14 +26,14 @@ endif
 .PHONY: clean rebase push requirements requirements_pypi develop refresh \
 	adduser syncdb migrate dbchange dbshell runserver celeryd test \
 	test_coverage coverage_html test_ui test_jenkins dev_build \
-	release_build release_clean sdist rpm
+	release_build release_clean sdist rpm ui_build
 
 # Remove temporary build files, compiled Python files.
 clean:
 	rm -rf dist/*
 	rm -rf build rpm-build *.egg-info
 	rm -rf debian deb-build
-	rm -f galaxy/ui/static/js/galaxy-min.js
+	rm -f galaxy/static/dist/*.js
 	find . -type f -regex ".*\.py[co]$$" -delete
 
 # Fetch from origin, rebase local commits on top of origin commits.
@@ -148,8 +148,8 @@ test_jenkins:
 	$(PYTHON) manage.py jenkins -v2
 
 # Build minified JS/CSS.
-minjs:
-	(cd tools/ui/ && ./compile.sh)
+ui_build:
+	node node_modules/gulp/bin/gulp.js build	
 
 # Build a pip-installable package into dist/ with a timestamped version number.
 dev_build: 
@@ -169,7 +169,7 @@ release_clean:
 	-(rm *.tar)
 	-(rm -rf ($RELEASE))
 
-sdist: clean #minjs
+sdist: clean ui_build
 	if [ "$(OFFICIAL)" = "yes" ] ; then \
 	   $(PYTHON) setup.py release_build; \
 	else \

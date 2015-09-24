@@ -1,0 +1,115 @@
+
+#galaxy-search {
+    position: relative;
+    display: inline-block;
+    padding: 0 8px;
+    
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .autocomplete-search-group {
+        position: relative;
+        .dropdown-menu {
+            font-size: 12px;
+        }
+        button {
+            width: 80px;
+        }
+        button:focus {
+            // Default
+            outline: thin dotted;
+            // WebKit
+            outline: 5px auto -webkit-focus-ring-color;
+            outline-offset: -2px;
+        }
+    }
+
+    .search-icon {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        z-index: +100;
+        color: @ansible-dark-grey;
+    }
+    
+    .search-icon:hover {
+        cursor: pointer;
+    }
+
+    #autocomplete-suggestions {
+        top: 30px;
+        left: 81px;
+        display: block;
+    }
+
+    .search-key {
+        margin: 0 5px 5px 5px;
+    }
+    
+    .search-keys-container {
+        margin-top: 0;
+        margin-bottom: 5px;
+        padding-top: 10px;
+    }
+
+    .search-container-divider {
+        margin-top: 10px;
+        margin-bottom: 0;
+        border-top-color: @white;
+    }
+
+    .btn-primary.search-key-label,
+    .btn-primary.search-key-close {
+        font-weight: normal;
+        font-size: 12px;
+    }
+
+    .btn-primary.search-key-close,
+    .search-key-type {
+        color: #e1e1e1;
+    }
+
+    .btn-primary.search-key-label:hover {
+        background-color: @blue;
+        cursor: default;
+    }
+
+    #autocomplete-order-by {
+        display: inline-block;
+        vertical-align: top;
+        label {
+            font-weight: normal;
+            font-size: 12px;
+            color: @ansible-dark-grey;
+        }
+        select {
+            width: 120px;
+        }
+        .form-control {
+            display: inline-block;
+        }
+    }
+
+    #search-type-button,
+    .filter-toggle .btn-default,
+    .clear-all-search-keys-btn {
+        color: @ansible-dark-grey;
+        background-color: @white;
+    }
+    
+    #search-type-button:hover,
+    .clear-all-search-keys-btn:hover,
+    .filter-toggle .btn-default:hover {
+        background-color: #f2f2f2;
+    }
+
+
+   /* @media(max-width: 768px) {
+        #autocomplete-order-by {
+            select {
+                width: auto;
+            }
+        }
+    } */
+}

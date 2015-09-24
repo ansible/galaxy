@@ -1,0 +1,7 @@
+---
+
+- name: Deploy configuration file jail.local
+  template: src=jail.local.j2 dest=/etc/fail2ban/jail.local
+
+- name: Start fail2ban
+  service: name=fail2ban state=running enabled=true

@@ -15,9 +15,9 @@
 <div class="container-fluid" id="galaxy-intro-page">
     <div class="row">
         <div class="col-lg-3 col-md-3">
-            <nav class="galaxy-intro-links hidden-sm hidden-xs" data-spy="affix" data-offset-top="120">
+            <nav class="galaxy-intro-links hidden-sm hidden-xs" data-spy="affix" data-offset-top="160">
                 <div class="galaxy-nav-title">
-                    <i class="fa fa-bars"></i> Menu
+                    <i class="fa fa-bars"></i> MENU
                     <hr />
                 </div>
                 <ul class="nav" role="tablist">
@@ -27,12 +27,20 @@
                     <li class="pad"><a href="#download-advanced">Advanced Downloading</a></li>
                     <li><a href="#review">Review</a></li>
                     <li><a href="#share">Share</a></li>
-                    <li class="pad"><a href="#create-role">Create a Role</a></li>
+                    <li class="pad"><a href="#create-role">Create a Role</a>
+                        <ul class="nav">
+                            <li class="pad"><a href="#readme">README.md</a></li>
+                            <li class="pad"><a href="#meta">Meta Data</a></li>
+                            <li class="pad"><a href="#dependencies">Dependencies</a></li>
+                            <li class="pad"><a href="#tags">Categories/Tags</a></li>
+                            <li class="pad"><a href="#variables">Variable Names</a></li>
+                        </ul>
+                    </li>
                     <li class="pad"><a href="#role-test">Test</a></li>
                     <li class="pad"><a href="#role-github">Upload to Github</a></li>
                     <li class="pad"><a href="#role-galaxy">Upload to Galaxy</a></li>
                     <li><a href="#questions">Questions</a></li>
-                    <li class="back-to-top-link"><a href="#"><i class="fa fa-chevron-circle-up"></i> Back to Top</a></li>
+                    <li class="back-to-top-link"><a href="#"><i class="fa fa-chevron-circle-up"></i> BACK TO TOP</a></li>
                 </ul>
             </nav>
         </div>
@@ -117,9 +125,9 @@ $ ansible-galaxy -r install_roles.yml
 
                 <h3 id="review">Review Roles</h3>
 
-                <p>Once you’ve downloaded and used a role, let others know what you think by rating and it providing some comments.<p>
+                <p>Once you’ve downloaded and used a role, let others know what you think by providing a review. A review includes a score and a comment.<p>
 
-                <p>We recommend the following ratings scale in each category:</p>
+                <p>Picking a score is pretty simple. Just choose from one of the following options:</p>
                 <ol>
                     <li>Needs work.</li>
                     <li>OK, but could be improved some.</li>
@@ -127,42 +135,9 @@ $ ansible-galaxy -r install_roles.yml
                     <li>Awesome!</li>
                     <li>Dude, I owe you a beer!</li>
                 </ol>
-
-                <h5>Reliability</h5>
-                <p>
-                    Are there any errors?<br />
-                    Can it be run repeatably, only making needed changes?<br />
-                </p>
-
-                <h5>Documentation</h5>
-                <p>
-                    Is the documentation accurate and easy to understand?<br />
-                    Is it obvious what parameters can be passed to the role, if any?<br />
-                    Does it run well on the listed platforms?
-                </p>
-
-                <h5>Code Quality</h5>
-                <p>
-                    Are tasks in the role all named with good descriptions?<br />
-                    Is the playbook simple and easy to understand?<br />
-                    Is there good use of whitespace?<br />
-                    Does it use relevant ansible modules as opposed to relying on the ‘shell’, ‘command’, or ‘script’ tasks?<br />
-                    Does the role use things like “when_changed” and “creates” to control reporting of when it makes changes on the remote system.<br />
-                    Does the module adhere to other documented <a href="http://docs.ansible.com/playbooks_best_practices.html">Ansible best practices</a>?
-                </p>
-
-                <h5>Wow Factor</h5>
-                <p>
-                    Did this role do something useful for you?<br />
-                    How awesome is this role?
-                </p>
-
-                <h5>Comment</h5>
-
-                <p>If the role helped you solve a problem, tell others how! Similarly, if you encountered problems, what problems did you encounter?</p>
+                <p>You can optionally provide a comment as well. Take the opportunity to write a line or two about your experience with the role and how it helped you. Let others know what to expect when they download and use the role.</p>
 
                 <h3 id="share">Share Roles</h3>
-
                 <p>Share roles you create with the community. Roles can inlcude deploying popular applications, as well as automation around a product your company makes.</p>
 
                 <h4 id="create-role">Create a Role</h4>
@@ -204,7 +179,7 @@ acme/
                 </ul>
                 <p>Sticking to these practices will help you create great roles. The community will love you, and you'll be hero!</p>
 
-                <h5>README.md</h5>
+                <h5 id="readme">README.md</h5>
                 <p>The init command provides a template README.md file. Tailor it to fit your role. This is your chance to
                   provide potential users what they need to get started using the role.</p>
                 <p>The file is composed in <a href="https://help.github.com/articles/markdown-basics/" target="_blank">Github markdown</a>.
@@ -243,19 +218,14 @@ Available variables are listed below, along with default values:
 
 MIT
 </pre>
-                <h5>Meta Data - meta/main.yml</h5>
+                <h5 id="meta">Meta Data - meta/main.yml</h5>
 
-                <p>In meta/main.yml is where you fill in details about supported platforms, minimum required Ansible version, Galaxy categories
+                <p>In meta/main.yml is where you fill in details about supported platforms, minimum required Ansible version, tags
                     that describe the role, dependencies, and information about you the author. All this information will appear on Galaxy. If it's
                     not accurate, users will not be able to find your role.</p>
-                <p>A template is also provided for you to modify. It's written in <a href="http://www.yaml.org" target="_blank">yaml</a>, so
-                    make sure to follow the yaml standard as you make changes.</p>
-                <p>Ansible uses the dependencies sections to pull in and apply any dependent roles. Add a list of roles and parameters that Ansible
-                    will execute before running the role. For more on how Ansible handles role dependencies, see
-                    <a href="http://docs.ansible.com/ansible/playbooks_roles.html#role-dependencies" target="_blank">Role Dependencies</a> at the
-                    Ansible docs site.</a>.<p>
-                <p>It's up to you to make sure your role works out of the box when users download it from Galaxy. List dependent roles in README.md.
-                    Don't use the path option when including roles. And finally, give careful consideration to variable names and values.</p>
+                <p>Using <code>ansible-galaxy init</code> provides a template meta/main.yml for you to modify. It's written in <a href="http://www.yaml.org" target="_blank">yaml</a>, so be sure to follow the yaml standard as you make changes.</p>
+                <p>A modified meta.yml file for our example would look like the following:</p>
+
 <pre>
 ---
 galaxy_info:
@@ -268,14 +238,36 @@ galaxy_info:
   - name: EL
     versions:
     - all
-  categories:
-  - web
+  galaxy_tags:
+    - acme
+    - installer
+    - web
 dependencies:
   - { role: username.common, some_parameter: 3 }
   - { role: username.iptables, open_port: 80 }
 </pre>
+                <h5 id="tags">Categories/Tags</h5>
+                <p>Categories have been replaced by Tags. Adding a role to Galaxy will accept a list of either <em>categories:</em> or <em>galaxy_tags:</em>. However, this change will not be reflected in ansible-galaxy until version 2.0 of ansible. This means your template meta/main.yml may contain <em>categories:</em>, and that's OK.</p>
+                <p>Regardless of which version of ansible you are running you can specify either <em>categories:</em> or <em>galaxy_tags:</em> in meta/main.yml. When adding the role to Galaxy the list will be treated as a list of tags. You can provide any tag values you feel will help users find your role. The number of tags imported by Galaxy is limited to 20, and tag values containing non-alphanumeric characters will be ignored.</p>
+                <p>Tag values containing a : will be split into multiple tags. The tag <em>cloud:ec2</em>, for example, will become two tags: <em>cloud</em> and <em>ec2</em>.</p>
+                <p>The idea behind tags of course is to help Galaxy users find your role. Provide multiple tags relevant to your role. Include broad terms such as <em>database</em> or <em>networking</em> along with more specific keywords like: <em>MySql</em>, <em>Cisco</em>, <em>ASR</em>, <em>TFTP</em>, etc.</p>
+                <h5 id="dependencies">Dependencies</h5>
+                <p>Ansible uses the dependencies section of meta/main.yml to download and apply any dependent roles. Add one or more dependent roles that Ansible will download and execute before running your role. Dependent role names are specified using the Galaxy author's username and the name of the role in the format <em>username.rolename</em>.</p>
+                <p>For example:</p>
+<pre>
+dependencies:
+  - { role: stouts.elasticsearch }
+</pre>
+                <p>Parameters can also be passed to the role:</p>
+<pre>
+dependencies:
+  - { role: stouts.elasticsearch, elasticsearch_home: &quot;&#123;&#123; install_path_variable &#125;&#125;&quot;, elasticsearch_http_port: 8900 }
+</pre>
+                <p>For more on how Ansible handles role dependencies, see
+                    <a href="http://docs.ansible.com/ansible/playbooks_roles.html#role-dependencies" target="_blank">Role Dependencies</a> at the Ansible 
+                    docs site.</a>.<p>
 
-                <h5>Variable Names</h5>
+                <h5 id="variables">Variable Names</h5>
                 <p>A special note on naming variables within your role. This applies to variables defined in <code>defaults/main.yml</code> and <code>vars/main.yml</code>.
                 <div class="alert alert-info"><p><strong>Note:</strong> Prefix variable names with the role name. Adding the role name
                     prevents variable name collision between roles. For example, use <code>rolname_foo</code> rather than <code>foo</code>.</p>
@@ -305,7 +297,7 @@ $ git push
 
                 <p>Log into Galaxy and click the <code>Add a Role</code> menu option. Provide your GitHub username and the name of the Github repository, and Galaxy will import your role, making it available to the Galaxy community.</p>
 
-                <p>If you applied any tags to your repository, Galaxy will automatically display a “version” for each tag.  This means users users can choose the version (tag) to download.</p>
+                <p>If you applied any tags to your repository, Galaxy will automatically display a “version” for each tag.  This means users can choose the version (tag) to download.</p>
 
                 <p>The default behavior, if there are no tags, is to make the “HEAD” version available.  This means users downloading the role will always get the latest from the github repository.</p>
 
@@ -315,8 +307,7 @@ $ git push
 
                 <p>If you have unanswered Galaxy questions, feel free to ask on the <a href="https://groups.google.com/forum/#!forum/ansible-project" target="_blank">Ansible mailing list</a>.</p>
                 <div class="alert alert-info">
-                    <p><strong>Note:</strong> Contents, usage and bugs related to specific roles will not be supported on the mailing list. Provide a review on Galaxy to comment on the
-                        role, and contact the role author via GitHub.</p>
+                    <p><strong>Note:</strong> Contents, usage and bugs related to specific roles will not be supported on the mailing list. Contact the role author via GitHub. The role details provided in Galaxy include a link to the Github repository, and when available, the issue tracker.</p>
                 </div>
             </div><!-- intro-content -->
         </div><!-- col-lg-9 -->

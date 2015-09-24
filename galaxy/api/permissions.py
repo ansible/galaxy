@@ -19,7 +19,7 @@
 # All Rights Reserved.
 
 # Python
-#import logging
+import logging
 
 # Django
 from django.contrib.auth.models import AnonymousUser
@@ -34,7 +34,7 @@ from galaxy.api.access import *
 from galaxy.api.utils import get_object_or_400
 from galaxy.main.models import *
 
-#logger = logging.getLogger('awx.api.permissions')
+logger = logging.getLogger('galaxy.api.permissions')
 
 __all__ = ['ModelAccessPermission',]
 
@@ -119,20 +119,19 @@ class ModelAccessPermission(permissions.BasePermission):
         result = check_method and check_method(request, view, obj)
         if not result:
             raise PermissionDenied("")
-
         return result
 
     def has_permission(self, request, view, obj=None):
-        #logger.debug('has_permission(user=%s method=%s data=%r, %s, %r)',
-        #             request.user, request.method, request.DATA,
-        #             view.__class__.__name__, obj)
+        logger.debug('has_permission(user=%s method=%s data=%r, %s, %r)',
+                     request.user, request.method, request.DATA,
+                     view.__class__.__name__, obj)
         try:
             response = self.check_permissions(request, view, obj)
         except Exception, e:
-            #logger.debug('has_permission raised %r', e, exc_info=True)
+            logger.debug('has_permission raised %r', e, exc_info=True)
             raise
         else:
-            #logger.debug('has_permission returned %r', response)
+            logger.debug('has_permission returned %r', response)
             return response
 
     def has_object_permission(self, request, view, obj):

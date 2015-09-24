@@ -49,9 +49,9 @@ class PaginationSerializer(pagination.BasePaginationSerializer):
     Custom pagination serializer to output only URL path (without host/port).
     '''
 
-    count = serializers.Field(source='paginator.count')
-    cur_page = serializers.Field(source='number')
-    num_pages = serializers.Field(source='paginator.num_pages')
+    count = serializers.ReadOnlyField(source='paginator.count')
+    cur_page = serializers.ReadOnlyField(source='number')
+    num_pages = serializers.ReadOnlyField(source='paginator.num_pages')
     next = NextPageField(source='*')
     previous = PreviousPageField(source='*')
 

@@ -53,7 +53,7 @@ def proc_data_files(data_files):
     # system paths (mainly useful for running tests via tox).
     if hasattr(sys, 'real_prefix'):
         return result
-    
+
     for dir,files in data_files:
         includes = []
         for item in files:
@@ -110,14 +110,13 @@ class sdist_galaxy(_sdist, object):
 setup(
     name='galaxy',
     version=__version__.split("-")[0], # FIXME: Should keep full version here?
-    author='AnsibleWorks, Inc.',
-    author_email='support@ansibleworks.com',
-    description='AWX: API, UI and Task Engine for Ansible',
-    long_description='AWX provides a web-based user interface, REST API and '
-                     'task engine built on top of Ansible',
+    author='Ansible, Inc.',
+    author_email='support@ansible.com',
+    description='Galaxy: Find, reuse and share the best Ansible content.',
+    long_description='Galaxy is a web site and command line tool for creating and sharing Ansible roles.',
     license='Proprietary',
-    keywords='ansible',
-    url='http://github.com/ansible/ansible-commander',
+    keywords='ansible galaxy',
+    url='http://github.com/ansible/galaxy',
     packages=['galaxy'],
     include_package_data=True,
     zip_safe=False,
@@ -145,8 +144,8 @@ setup(
     data_files = proc_data_files([
             ("%s" % homedir,        ["config/wsgi.py",
                                      "galaxy/static/favicon.ico",
-                                    ]),
-            ("%s" % webconfig,      ["config/galaxy.conf", ]),
+                                    ]
+            )
         ]
     ),
     options = {

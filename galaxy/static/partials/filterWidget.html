@@ -1,26 +1,23 @@
 <!-- Filter Widget -->
 <div class="row search-filter">
-    <div class="col-lg-4">
+    <div class="col-lg-4 col-md-4 col-sm-4">
       <input type="text" name="filter-value" id="filter-value" class="form-control" placeholder="{{ searchPlaceHolder }}"
           ng-model="list_data.list_filter" ng-keypress="applyFilter($event)" >
       <a class="search-reset-start" ng-click="toggleSearchIcon()" ng-hide="showSearchIcon"><i class="fa fa-times"></i></a>
       <a class="search-reset-start" ng-click="toggleSearchIcon()" ng-show="showSearchIcon"><i class="fa fa-search"></i></a>
     </div>
-    <div class="col-lg-4 platform-search-container" ng-show="showPlatforms">
+    <div class="col-lg-4 col-md-4 col-sm-3 platform-search-container" ng-show="showPlatforms">
         <select class="form-control platform" ng-change="$parent.selectPlatform()" ng-model="sort.platform"
             ng-options="platform.name for platform in platforms">
             <option value="">All Platforms</option>
         </select>
-        <select class="form-control release" ng-change="$parent.selectRelease()" ng-model="sort.release" ng-disabled="disableReleases"
-            ng-options="release.name for release in releases">
-        </select>
     </div>
-    <div class="col-lg-3">
+    <div class="col-lg-3 col-md-3 col-sm-3">
         <select class="form-control" ng-change="$parent.list_data.refresh('SortOrderSelect')" ng-model="sort.obj" ng-options="opt.label for opt in sort_options" >
              <option value="">-- Sort order --</option>
         </select>
     </div>
-    <div class="col-lg-1">
+    <div class="col-lg-1 col-md-1 col-sm-1">
         <label class="checkbox-inline" style="padding-top: 5px;"><input type="checkbox" ng-model="list_data.reverse" name="sort-reverse" ng-change="$parent.list_data.refresh()" > Reverse</label>
     </div>
 </div>

@@ -1,0 +1,16 @@
+---
+# tasks file for auth_users
+
+- name: Add each user
+  user:
+    name: "{{ item }}" 
+    state: present
+    createhome: yes
+    groups: wheel
+    shell: "/bin/bash"
+ 
+  with_items:
+    - chouseknecht
+    - jcammarata
+    - tgerla
+    - jenkins

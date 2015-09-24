@@ -29,6 +29,9 @@ from django.dispatch import receiver
 from django.forms.models import model_to_dict
 from django.utils.timezone import now, make_aware, get_default_timezone
 
+# postgresql specific
+from django.contrib.postgres.fields import ArrayField
+
 # celery/djcelery
 
 from djcelery.models import TaskMeta
@@ -41,7 +44,7 @@ from galaxy.main.fields import *
 from galaxy.main.mixins import *
 
 __all__ = [
-    'PrimordialModel', 'Platform', 'Category', 'Role', 'RoleRating', 'RoleImport', 'RoleVersion', 'UserAlias',
+    'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'RoleRating', 'RoleImport', 'RoleVersion', 'UserAlias',
 ]
 
 ###################################################################################
@@ -151,8 +154,26 @@ class Category(CommonModel):
     def get_absolute_url(self):
         return reverse('api:category_detail', args=(self.pk,))
 
+    #def get_num_roles(self):
+    #    return self.roles.filter(active=True, owner__is_active=True).count()
+
+class Tag(CommonModel):
+    '''
+    a class representing the tags that have been assigned to roles
+    '''
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Tags'
+
+    def __unicode__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('api:tag_detail', args=(self.pk,))
+
     def get_num_roles(self):
         return self.roles.filter(active=True, owner__is_active=True).count()
+
 
 class Platform(CommonModelNameNotUnique):
     ''' a class represnting the valid platforms a role supports '''
@@ -162,6 +183,12 @@ class Platform(CommonModelNameNotUnique):
     release = models.CharField(
         max_length   = 50,
         verbose_name = "Distribution Release Version",
+    )
+    alias = models.CharField(
+        max_length   = 256,
+        blank        = True,
+        null         = True,
+        verbose_name = "Search terms"
     )
 
     def __unicode__(self):
@@ -216,14 +243,6 @@ class Role(CommonModelNameNotUnique):
         blank        = True,
         editable     = False,
     )
-    categories = models.ManyToManyField(
-        Category,
-        related_name = 'roles',
-        verbose_name = "Categories",
-        blank        = True,
-        editable     = False,
-    )
-    categories.help_text = ""
     platforms = models.ManyToManyField(
         'Platform',
         related_name = 'roles',
@@ -232,6 +251,24 @@ class Role(CommonModelNameNotUnique):
         editable     = False,
     )
     platforms.help_text = ""
+
+    tags = models.ManyToManyField(
+        'Tag',
+        related_name = 'roles',
+        verbose_name = 'Tags',
+        blank        = True,
+        editable     = False,    
+    )
+    tags.help_text = ""
+
+    categories = models.ManyToManyField(
+        'Category',
+        related_name = 'categories',
+        verbose_name = "Categories",
+        blank        = True,
+        editable     = False,    
+    )
+    categories.help_text = ""
 
     #------------------------------------------------------------------------------
     # regular fields
@@ -280,16 +317,26 @@ class Role(CommonModelNameNotUnique):
         default      = False,
         editable     = False,
     )
+    
+    #tags = ArrayField(models.CharField(max_length=256), null=True, editable=True, size=100)
 
     #------------------------------------------------------------------------------
-    # fields calculated by a celery task, not set
+    # fields calculated by a celery task or signal, not set
 
     bayesian_score = models.FloatField(
         default    = 0.0,
         db_index   = True,
         editable   = False,
     )
-
+    num_ratings = models.IntegerField(
+        default    = 0,
+        db_index   = False,
+    )
+    average_score = models.FloatField(
+        default    = 0.0,
+        db_index   = False,
+    )
+    
     #------------------------------------------------------------------------------
     # other functions and properties
 
@@ -302,40 +349,15 @@ class Role(CommonModelNameNotUnique):
         except Exception, e:
             return {}
 
-    def get_num_ratings(self):
-        return self.ratings.filter(active=True).count()
+    def get_unique_platforms(self):
+        return [platform.name for platform in self.platforms.filter(active=True).distinct('name')]
+    
+    def get_username(self):
+        return self.owner.username
 
-    def get_average_score(self):
-        return self.ratings.filter(active=True).aggregate(avg=AvgWithZeroForNull('score'))['avg'] or 0
-
-    def get_average_composite(self):
-        avg = self.ratings.filter(active=True).aggregate(
-            avg_reliability   = AvgWithZeroForNull('reliability'),
-            avg_documentation = AvgWithZeroForNull('documentation'),
-            avg_code_quality  = AvgWithZeroForNull('code_quality'),
-            avg_wow_factor    = AvgWithZeroForNull('wow_factor'),
-        )
-        for k in avg:
-            avg[k] = avg[k] if avg[k] is not None else 0
-        return avg;
-
-    def get_num_aw_ratings(self):
-        return self.ratings.filter(owner__is_staff=True, active=True).count()
-
-    def get_average_aw_score(self):
-        return self.ratings.filter(owner__is_staff=True, active=True).aggregate(avg=AvgWithZeroForNull('score'))['avg'] or 0
-
-    def get_average_aw_composite(self):
-        avg = self.ratings.filter(owner__is_staff=True, active=True).aggregate(
-                   avg_reliability   = AvgWithZeroForNull('reliability'),
-                   avg_documentation = AvgWithZeroForNull('documentation'),
-                   avg_code_quality  = AvgWithZeroForNull('code_quality'),
-                   avg_wow_factor    = AvgWithZeroForNull('wow_factor'),
-               )
-        for k in avg:
-            avg[k] = avg[k] if avg[k] is not None else 0
-        return avg
-
+    def get_tags(self):
+        return [tag.name for tag in self.tags.filter(active=True)]
+    
 class RoleVersion(CommonModelNameNotUnique):
     class Meta:
         ordering = ('-loose_version',)
@@ -441,39 +463,16 @@ class RoleRating(PrimordialModel):
         Role,
         related_name = 'ratings',
     )
-    up_votes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name = 'user_up_votes',
-        default      = None,
-    )
-    down_votes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name = 'user_down_votes',
-        default      = None,
-    )
-
+    
     #------------------------------------------------------------------------------
     # regular fields
 
-    reliability = models.IntegerField(
-        default = 5,
-    )
-    documentation = models.IntegerField(
-        default = 5,
-    )
-    code_quality = models.IntegerField(
-        default = 5,
-    )
-    wow_factor = models.IntegerField(
-        default = 5,
-    )
     comment = models.TextField(
         blank      = True,
         null       = True,
     )
-    score = models.FloatField(
-        default      = 0.0,
-        editable     = False,
+    score = models.IntegerField(
+        default      = 0,
         db_index     = True,
     )
 
@@ -492,23 +491,12 @@ class RoleRating(PrimordialModel):
                 return 1
             else:
                 return value
-
-        self.reliability   = clamp_range(self.reliability)
-        self.documentation = clamp_range(self.documentation)
-        self.code_quality  = clamp_range(self.code_quality)
-        self.wow_factor    = clamp_range(self.wow_factor)
-
+        
+        self.score = clamp_range(self.score)
+        
         if len(self.comment) > 5000:
             self.comment = self.comment[:5000]
-
-        # the value of score is based on the
-        # values in the other rating fields
-        self.score = (
-            self.reliability + \
-            self.documentation + \
-            self.code_quality + \
-            self.wow_factor
-        ) / 4.0
+        print 'saving!' 
         super(RoleRating, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

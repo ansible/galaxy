@@ -1,3 +1,4 @@
+galaxy_slack_message: "Galaxy deployment completed successfully!"
 galaxy_dist_dir: "/tmp"
 galaxy_site_name: "galaxy.local"
 galaxy_site_env: "PROD"
@@ -39,3 +40,8 @@ galaxy_postgresql_port: ""
 # Memcached
 galaxy_memcached_hostname: "127.0.0.1"
 galaxy_memcached_port: 11211
+
+# Elastic Search / Haystack
+galaxy_es_host: "45.79.217.103" 
+galaxy_es_port: "9200" 
+galaxy_es_transport: "http"

@@ -19,7 +19,6 @@
      pre {
          margin: 15px 0 20px 0;
      }
-
      .galaxy-intro-links {
          z-index: +1;
          width: 264px;
@@ -31,16 +30,27 @@
              background-color: @white;
              border-radius: 2px;
          }
+         .nav > li > a {
+            padding-top: 5px;
+            padding-bottom: 5px;
+         }
+         .nav > li > ul > li a {
+            padding-top: 3px;
+            padding-bottom: 3px;
+         }
          .pad {
              padding-left: 15px;
          }
-
          .back-to-top-link > a,
          .back-to-top-link > a:hover,
          .back-to-top-link > a:active,
          .back-to-top-link > a:visited {
              color: #848992;
          }
+     }
+
+     .galaxy-intro-links.affix {
+        top: 30px;
      }
 
      .galaxy-nav-title {
@@ -90,5 +100,13 @@
         .col-lg-9 {
             width: 85%;
         }
+    }
+ }
+
+ @media (max-height: 700px) {
+    #galaxy-intro-page {
+        .galaxy-intro-links.affix {
+            top: 0;
+        } 
     }
  }

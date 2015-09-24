@@ -1,27 +1,33 @@
 
-<ul class="nav navbar-nav navbar-right">
-    <li><a href="/intro">About</a></li>
-    <li><a href="{% url 'main:explore' %}#/">Explore</a></li>
-    <li><a href="{% url 'main:list-category' %}#/roles">Browse Roles</a></li>
-    <li><a href="{% url 'main:list-category' %}#/users">Browse Users</a></li>
+<ul class="nav navbar-nav navbar-right" id="galaxy-nav-items">
+    <li {% if url_items.1.0 == 'intro' %} class="active" {% endif %}><a href="/intro">About</a></li>
+    <li {% if url_items.1.0 == 'explore' %} class="active" {% endif %}><a href="{% url 'main:explore' %}#/">Explore</a></li>
+    <li id="nav-menu-browse-roles"><a href="{% url 'main:list-category' %}#/roles">Browse Roles</a></li>
+    <li id="nav-menu-browse-users"><a href="{% url 'main:list-category' %}#/users">Browse Users</a></li>
     {% if not user.is_authenticated %}
-    <!-- <a type="button" class="btn btn-sm btn-default" href="/accounts/login">Sign In</a> -->
+        {% if url_items|length > 1 %}
+            <li><a href="/accounts/login">Sign In</a></li>
+        {% endif %}
     {% else %}
-    <li><a type="button" href="{% url 'main:accounts-role-add' %}">Add a Role</a></li>
-    <li class="dropdown">
-        <a href class="dropdown-toggle" data-toggle="dropdown" >
-            <i class="fa fa-user"></i> <span class="username">{{ user.username }}</span> <span class="caret"></span></a>
-        <ul class="dropdown-menu user-menu">
-            <li><a href="{% url 'main:accounts-profile' %}">My Roles</a></li>
-            <li><a href="/list#/users/{{ user.id }}">My User Page</a></li>
-            <li><a href="{% url 'account_email' %}">Manage E-mail</a></li>
-            {% url 'socialaccount_connections' as connections_url %}
-            {% if connections_url %}
-            <li><a href="{{ connections_url }}">Manage Linked Accounts</a></li>
-            {% endif %}
-            <li role="separator" class="divider"></li>
-            <li><a href="{% url 'account_logout' %}"><i class="fa fa-sign-out"></i> Sign out</a></li>
-        </ul>
-    </li>
+        <li {% if url_items.1.0 == 'accounts' and url_items.2.0 == 'role' and url_items.3.0 == 'add' %} class="active" {% endif %}><a type="button" href="{% url 'main:accounts-role-add' %}">Add a Role</a></li>
+        {% if url_items.1.0 == 'accounts' and url_items.2.0 == 'profile' or url_items.2.0 == 'email' %}
+            <li class="dropdown active">
+        {% else %}
+            <li id="nav-menu-dropdown" class="dropdown">
+        {% endif %}
+            <a href class="dropdown-toggle" data-toggle="dropdown" >
+                <i class="fa fa-user"></i> <span class="username">{{ user.username }}</span> <span class="caret"></span></a>
+            <ul class="dropdown-menu dropdown-menu-right user-menu">
+                <li><a href="{% url 'main:accounts-profile' %}">My Roles</a></li>
+                <li><a href="/detail#/user/{{ user.id }}">My User Page</a></li>
+                <li><a href="{% url 'account_email' %}">Manage E-mail</a></li>
+                {% url 'socialaccount_connections' as connections_url %}
+                {% if connections_url %}
+                    <li><a href="{{ connections_url }}">Manage Linked Accounts</a></li>
+                {% endif %}
+                <li role="separator" class="divider"></li>
+                <li><a href="{% url 'account_logout' %}"><i class="fa fa-sign-out"></i> Sign out</a></li>
+            </ul>
+        </li>
     {% endif %}
 </ul>

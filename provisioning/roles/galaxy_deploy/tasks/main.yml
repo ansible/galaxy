@@ -6,7 +6,7 @@
 - name: Remove the existing app
   pip: name=galaxy state=absent
   ignore_errors: yes
-  
+
 - name: Install the Galaxy app
   pip: name={{ app_tar.stdout }}
 
@@ -33,4 +33,16 @@
 
 - name: Collect galaxy static files
   command: galaxy-manage collectstatic --clear --noinput
-  notify: restart apache
+  notify:
+    - restart apache
+    - restart supervisord
+
+- name: Rebuild haystack search index
+  expect:
+    command: "galaxy-manage rebuild_index"
+    responses:
+      "Are you sure you wish to continue?": y
+  ignore_errors: yes
+
+- name: Rebuild custom search indexes
+  command: "galaxy-manage rebuild_galaxy_indexes"

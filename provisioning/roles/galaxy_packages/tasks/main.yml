@@ -49,12 +49,17 @@
   - django-celery
   - django-filter
   - django-site-maintenance
-  - djangorestframework==2.4.6
+  - djangorestframework==3.0.5
   - django-debug-toolbar
+  - django-haystack
+  - drf-haystack
+  - elasticsearch
+  - elasticsearch-dsl
   - markdown==2.4.1 # 2.5 currently has a python 2.6.x incompatibility
   - PyGithub
   - requests
   - requests-oauthlib
+  - bleach
 
 # the avatars directory needs to be there, otherwise the library
 # will complain. It isn't used, as all the avatar info is stored
