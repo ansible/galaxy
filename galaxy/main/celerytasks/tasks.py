@@ -271,7 +271,7 @@ def import_role(role_id, target="all"):
 #----------------------------------------------------------------------
 
 @task()
-@transaction.commit_manually
+#@transaction.commit_manually
 def clear_stuck_imports():
     logger = clear_stuck_imports.get_logger()
     two_hours_ago = timezone.now() - datetime.timedelta(seconds=7200)
