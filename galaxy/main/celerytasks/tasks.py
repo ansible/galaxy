@@ -26,7 +26,7 @@ from github import Github
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.utils import text, html
+from django.utils import text, html, timezone
 
 from galaxy.main.utils import db_common
 from galaxy.main.models import *
@@ -271,38 +271,17 @@ def import_role(role_id, target="all"):
 #----------------------------------------------------------------------
 
 @task()
-def calculate_top_roles():
-    """
-    Used to periodically generate the top X tasks 
-    in each category. This information is written
-    to the django cache (memcache) so that it is 
-    accessible quickly and cheaply.
-    """
-    
-    db_common.calculate_top_roles()
-    return True
-
-@task()
-def calculate_top_users():
-    """
-    Used to periodically rank users based on the ratings on 
-    roles they have submitted. These rankings are stored in
-    a separate table since we're using the default auth.User
-    model.
-    """
-
-    db_common.calculate_top_users()
-    return True
-
-@task()
-def calculate_top_reviewers():
-    """
-    Used to periodically rank users based on the number of 
-    reviews they have submitted, plus the spread on the number 
-    of up/down votes their reviews have received. These rankings 
-    are stored in a separate table since we're using the default 
-    auth.User model.
-    """
-
-    db_common.calculate_top_reviewers()
+@transaction.commit_manually
+def clear_stuck_imports():
+    logger = clear_stuck_imports.get_logger()
+    two_hours_ago = timezone.now() - datetime.timedelta(seconds=7200)
+    try:
+        for ri in RoleImport.objects.filter(released__lte=two_hours_ago, state=''):
+            logger.info("Removing stuck import %s for role %s" % (ri, ri.role))
+            ri.state = "FAILED"
+            ri.status_message = "Import timed out, please try again. If you continue seeing this message you may have a syntax error in your meta/main.yml file."
+            ri.save()
+        transaction.commit()
+    except Exception, e:
+        logger.error("Exception occurred while clearing stuck imports: %s" % str(e))
     return True

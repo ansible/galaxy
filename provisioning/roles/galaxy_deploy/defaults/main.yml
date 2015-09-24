@@ -9,6 +9,7 @@ galaxy_site_aliases: []
 galaxy_ssl_cert: "/etc/pki/tls/certs/localhost.crt"
 galaxy_ssl_key: "/etc/pki/tls/private/localhost.key"
 galaxy_ssl_cachain: ""
+galaxy_wsgi_processes: 2
 
 # email
 galaxy_email_hostname: "email-smtp.us-east-1.amazonaws.com"

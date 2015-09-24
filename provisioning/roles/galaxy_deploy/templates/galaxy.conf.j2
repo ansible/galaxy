@@ -30,7 +30,7 @@ WSGISocketPrefix /var/run/wsgi
   WSGIScriptAlias / /var/lib/galaxy/wsgi.py
   WSGIPassAuthorization On
 
-  WSGIDaemonProcess galaxy_http processes=2 threads=20 maximum-requests=1000 display-name="%{GROUP}-http"
+  WSGIDaemonProcess galaxy_http processes={{ galaxy_wsgi_processes }} threads=20 maximum-requests=1000 display-name="%{GROUP}-http"
   WSGIProcessGroup galaxy_http
 
   Alias /favicon.ico /var/lib/galaxy/public/static/favicon.ico
