@@ -3,6 +3,19 @@
 - name: create the /etc/galaxy directory
   file: path=/etc/galaxy owner=root group=galaxy_manage mode=2770 state=directory
 
+# Install npm packages and things needed to build the package
+- name: install development tools
+  npm: path={{ galaxy_project_dir }}
+  when: galaxy_install_dev_tools
+
+- name: install gulp globally
+  npm: name=gulp global=yes
+  when: galaxy_install_dev_tools
+
+- name: install less globally
+  npm: name=less global=yes
+  when: galaxy_install_dev_tools
+
 # Install galaxy tarball
 - name: make the sdist tar
   shell: make clean &>/dev/null && OFFICIAL={{ galaxy_official_build }} make sdist &>/dev/null  chdir="{{ galaxy_project_dir }}"

@@ -13,7 +13,7 @@ galaxy_official_build: no
 galaxy_install_dev_tools: True
 galaxy_install_postgresql: True
 galaxy_install_selinux: False 
-galaxy_migraions: True
+galaxy_migrations: True
 
 # Outbound SMTP settings
 
