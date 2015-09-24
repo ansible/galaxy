@@ -271,7 +271,7 @@ def import_role(role_id, target="all"):
 # Periodic Tasks
 #----------------------------------------------------------------------
 
-@task()
+@task(name="galaxy.main.celerytasks.tasks.clear_stuck_imports")
 #@transaction.commit_manually
 def clear_stuck_imports():
     logger = clear_stuck_imports.get_logger()
