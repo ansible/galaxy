@@ -38,11 +38,7 @@
     - restart supervisord
 
 - name: Rebuild haystack search index
-  expect:
-    command: "galaxy-manage rebuild_index"
-    responses:
-      "Are you sure you wish to continue?": y
-  ignore_errors: yes
+  shell: "echo 'y' | galaxy-manage rebuild_index"
 
 - name: Rebuild custom search indexes
-  command: "galaxy-manage rebuild_galaxy_indexes"
+  shell: "echo 'y' | galaxy-manage rebuild_galaxy_indexes"
