@@ -26,6 +26,7 @@
         'relatedService',
         'roleListController',
         'userListController',
+        'menuController',
         'paginateService',
         'searchService',
         'platformService',
@@ -37,7 +38,7 @@
     roleApp.run(['$rootScope', '$location', _run]);
 
     function _config($routeProvider, $logProvider) {
-        $logProvider.debugEnabled(false);
+        $logProvider.debugEnabled(true);
         $routeProvider.
             when('/roles', {
                 templateUrl: '/static/partials/role-list.html',

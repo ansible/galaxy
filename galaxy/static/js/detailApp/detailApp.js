@@ -25,6 +25,7 @@
         'relatedService',
         'roleDetailController',
         'userDetailController',
+        'menuController',
         'paginateService',
         'searchService',
         'platformService',

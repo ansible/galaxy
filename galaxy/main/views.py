@@ -104,6 +104,7 @@ def build_standard_context(request):
     context["url_items"] = url_items
     context["url_items_length"] = len(url_items)
     context["site_name"] = settings.SITE_NAME
+    context["use_menu_controller"] = False
 
     if request.user.is_authenticated():
         context["connected_to_github"] = False
@@ -189,6 +190,7 @@ def list_category(request, category=None, page=1):
           '/static/js/listApp/listApp.js',
           '/static/js/listApp/roleListController.js',
           '/static/js/listApp/userListController.js',
+          '/static/js/listApp/menuController.js',
           '/static/js/commonServices/tagService.js',
           '/static/js/commonServices/meService.js',
           '/static/js/commonServices/ratingService.js',
@@ -210,6 +212,7 @@ def list_category(request, category=None, page=1):
         context["extra_js"] = [
           '/static/dist/galaxy.listApp.min.js'
         ]
+    context["use_menu_controller"] = True
     return render_to_response('list_category.html', context)
 
 def detail_category(request, category=None, page=1):
@@ -223,6 +226,7 @@ def detail_category(request, category=None, page=1):
           '/static/js/detailApp/detailApp.js',
           '/static/js/detailApp/roleDetailController.js',
           '/static/js/detailApp/userDetailController.js',
+          '/static/js/detailApp/menuController.js',
           '/static/js/commonServices/tagService.js',
           '/static/js/commonServices/meService.js',
           '/static/js/commonServices/ratingService.js',
@@ -244,6 +248,7 @@ def detail_category(request, category=None, page=1):
         context["extra_js"] = [
           '/static/dist/galaxy.detailApp.min.js'
         ]
+    context["use_menu_controller"] = True
     return render_to_response('list_category.html', context)
 
 def role_view(request, user, role):
