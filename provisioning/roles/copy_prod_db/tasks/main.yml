@@ -75,7 +75,7 @@
 
 # Assume we're importing the schema and data into an empty database
 - name: "Import the backup"
-  shell: pg_restore -Fc -U galaxy -d galaxy /tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}
+  shell: pg_restore -Fc -U postgres -d galaxy /tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}
   notify:
       - restart postgres
       - restart apache
@@ -90,10 +90,6 @@
   file:
     path: "/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\\.gz$','') }}"
     state: absent
-
-# Perform migrations
-- name: "Make Migrations"
-  command: galaxy-manage makemigrations --noinput
 
 - name: "Apply Migrations"
   command: galaxy-manage migrate --fake-initial --noinput
