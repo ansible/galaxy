@@ -10,7 +10,7 @@
 
 (function(angular) {
 
-    var mod = angular.module('roleDetailController', []); 
+    var mod = angular.module('roleDetailController', ['headerService']); 
 
     mod.controller('RoleDetailCtrl', [
         '$q',
@@ -30,6 +30,7 @@
         'queryParams',
         'fromQueryParams',
         'role',
+        'headerService',
         _roleDetailCtrl
     ]);
 
@@ -59,7 +60,8 @@
         PaginateInit,
         queryParams,
         fromQueryParams,
-        role) {
+        role,
+        headerService) {
 
         $scope.page_title = 'Role Detail';
         $scope.showRoleName = false;
@@ -77,6 +79,8 @@
                 'refresh'            : _refreshRatings
             }
         };
+
+        headerService.setTitle('Galaxy - ' + role.summary_fields.owner.username + '.' + role.name);  // update the page title element
 
         $scope.role = role;
         $scope.ratings = [];

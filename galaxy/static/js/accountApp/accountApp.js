@@ -24,7 +24,8 @@
     accountsApp.config(['$routeProvider','MyInfoProvider', '$logProvider', _config]);
 
     function _config($routeProvider, MyInfoProvider, $logProvider) {
-        $logProvider.debugEnabled(false);
+        var debug = (GLOBAL_DEBUG === 'on') ? true : false;
+        $logProvider.debugEnabled(debug);
         $routeProvider.
             when('/', {
                 templateUrl: '/static/partials/myroles.html',

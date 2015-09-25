@@ -8,8 +8,12 @@
     <meta name="author" content="Ansible, Inc" />
     <link rel="shortcut icon" href="/static/img/favicon.ico" />
 
+    {% if ng_controller %}
+    <title ng-bind="getTitle()"></title>
+    {% else %}
     <title>Ansible Galaxy | Find, reuse, and share the best Ansible content</title>
-
+    {% endif %}
+    
     {% block extra_head %}{% endblock %}
 
     <!-- CSS -->
@@ -37,6 +41,10 @@
     <script type="text/javascript" src="/static/vendorjs/select2.js"></script>
     <script type="text/javascript" src="/static/vendorjs/underscore-min.js"></script>
     
+    <script>
+        var GLOBAL_DEBUG = "{{ debug }}";
+    </script>
+
     {% for extra in extra_js %}<script type="text/javascript" src="{{ extra }}"></script>
     {% endfor %}
 

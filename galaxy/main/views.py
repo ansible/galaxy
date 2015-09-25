@@ -76,7 +76,7 @@ def build_standard_context(request):
     # just in case it might need them
     context["request"] = request
     context["user"] = request.user
-
+    context["debug"] = 'on' if settings.DEBUG else 'off'
     context.update(csrf(request))
 
     # the default redirect url is the current path
@@ -183,8 +183,7 @@ def accounts_landing(request):
 def list_category(request, category=None, page=1):
     context = build_standard_context(request)
     context["ng_app"] = "listApp"
-    context["extra_css"] = [
-    ]
+    context["extra_css"] = []
     if settings.SITE_ENV == 'DEV':
         context["extra_js"] = [
           '/static/js/listApp/listApp.js',
@@ -218,6 +217,7 @@ def list_category(request, category=None, page=1):
 def detail_category(request, category=None, page=1):
     context = build_standard_context(request)
     context["ng_app"] = "detailApp"
+    context["ng_controller"] = "HeaderCtrl"
     context["extra_css"] = [
     ]
     if settings.SITE_ENV == 'DEV':
@@ -227,6 +227,8 @@ def detail_category(request, category=None, page=1):
           '/static/js/detailApp/roleDetailController.js',
           '/static/js/detailApp/userDetailController.js',
           '/static/js/detailApp/menuController.js',
+          '/static/js/detailApp/headerController.js',
+          '/static/js/detailApp/headerService.js',
           '/static/js/commonServices/tagService.js',
           '/static/js/commonServices/meService.js',
           '/static/js/commonServices/ratingService.js',

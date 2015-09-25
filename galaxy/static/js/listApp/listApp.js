@@ -38,7 +38,8 @@
     roleApp.run(['$rootScope', '$location', _run]);
 
     function _config($routeProvider, $logProvider) {
-        $logProvider.debugEnabled(true);
+        var debug = (GLOBAL_DEBUG === 'on') ? true : false;
+        $logProvider.debugEnabled(debug);
         $routeProvider.
             when('/roles', {
                 templateUrl: '/static/partials/role-list.html',

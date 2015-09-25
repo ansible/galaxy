@@ -25,7 +25,9 @@
         'relatedService',
         'roleDetailController',
         'userDetailController',
+        'headerController',
         'menuController',
+        'headerService',
         'paginateService',
         'searchService',
         'platformService',
@@ -37,7 +39,8 @@
     roleApp.run(['$rootScope', '$location', _run]);
 
     function _config($routeProvider, $logProvider) {
-      $logProvider.debugEnabled(false);
+      var debug = (GLOBAL_DEBUG === 'on') ? true : false;
+      $logProvider.debugEnabled(debug);
       $routeProvider.
           when('/role/:role_id', {
               templateUrl: '/static/partials/role-detail.html',

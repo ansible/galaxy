@@ -10,7 +10,7 @@
 
 (function(angular) {
 
-    var mod = angular.module('userDetailController', []);
+    var mod = angular.module('userDetailController', ['headerService']);
 
     mod.controller('UserDetailCtrl', [
         '$scope',
@@ -27,7 +27,8 @@
         'PaginateInit',
         'queryParams',
         'fromQueryParams',
-        'user',    
+        'user',
+        'headerService',
         _userDetailCtrl
     ]);
 
@@ -46,9 +47,9 @@
         PaginateInit,
         queryParams,
         fromQueryParams,
-        user) {
+        user,
+        headerService) {
 
-        console.log(user);
         $scope.my_info = my_info;
         $scope.page_title = 'User Detail';
         $scope.showRoleName = true;
@@ -77,6 +78,8 @@
             }
         };
 
+        headerService.setTitle('Galaxy - ' + user.username);
+        
         $scope.roles = [];
         $scope.ratings = [];
 

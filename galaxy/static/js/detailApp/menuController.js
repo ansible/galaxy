@@ -1,5 +1,5 @@
 /*
- * menuListController.js
+ * menuController.js
  *
  * (c) 2012-2015, Ansible, Inc.
  *
@@ -10,7 +10,7 @@
 
 (function(angular) {
 
-    var mod = angular.module('menuController', ['ngResource']);
+    var mod = angular.module('menuController', []);
 
     mod.controller('MenuCtrl', ['$scope', '$log', '$location', '$window', _controller]);
 
