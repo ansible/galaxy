@@ -1,19 +1,21 @@
 ---
-- name: Provision Web Server
+- name: Provision DB Server
   hosts: all
   vars:
+      galaxy_postgresql_password: "{{ lookup('env', 'GALAXY_POSTGRESQL_PASSWORD') | default('galaxy',true) }}"
       galaxy_install_dev_tools: False
       galaxy_install_selinux: False
-      galaxy_configure_supervisor: False
+      galaxy_configure_supervisor: True
       galaxy_env: PROD
       galaxy_log_dir: '/var/log/galaxy'
   sudo: yes
   roles:
-  - { role: auth_users }
+  - { role: auth_users } 
   - { role: auth_keys }
   - { role: galaxy_packages }
   - { role: selinux, when: galaxy_install_selinux }
   - { role: ntp }
   - { role: supervisorctl, when: galaxy_configure_supervisor, sup_init_name: "supervisord", sup_conf_location: "/etc/supervisord.conf" }
-  - { role: iptables, galaxy_allow_port_8000: False }
+  - { role: iptables, galaxy_host_type: 'DB' }
   - { role: fail2ban }
+  - { role: postgresql }

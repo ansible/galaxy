@@ -1,0 +1,3 @@
+---
+- name: Copy elasticsearch.yml
+  template: src=elasticsearch.yml.j2 dest=/etc/elasticsearch/elasticsearch.yml owner=root group=root mode=0644 

@@ -5,4 +5,3 @@
     key: "{{ lookup('file', item) }}"
   with_fileglob:
     - '*.keys'
-  when: authorized_keys is defined

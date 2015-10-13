@@ -1,0 +1,10 @@
+# Set sysctl values required by elasticsearch:
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration.html
+
+---
+
+- name: Set vm.swappiness
+  sysctl: name=vm.swappiness value=1 state=present
+
+- name: Set vm.max_map_count
+  sysctl: name=vm.max_map_count value=262144 state=present

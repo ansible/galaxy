@@ -8,3 +8,6 @@ galaxy_postgresql_username: "galaxy"
 galaxy_postgresql_password: "galaxy"
 galaxy_postgresql_hostname: "*"
 galaxy_postgresql_port: "*"
+
+# django
+galaxy_apply_migrations: True

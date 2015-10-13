@@ -47,7 +47,7 @@ before = paths-fedora.conf
 # "ignoreip" can be an IP address, a CIDR mask or a DNS host. Fail2ban will not
 # ban a host which matches an address in this list. Several addresses can be
 # defined using space separator.
-ignoreip = 127.0.0.1/8
+ignoreip = {{ fail2ban_config_ignoreip }} 
 
 # External command that will take an tagged arguments to ignore, e.g. <ip>,
 # and return true if the IP is to be ignored. False otherwise.
@@ -56,14 +56,14 @@ ignoreip = 127.0.0.1/8
 ignorecommand =
 
 # "bantime" is the number of seconds that a host is banned.
-bantime  = 3600
+bantime  = {{ fail2ban_config_bantime }} 
 
 # A host is banned if it has generated "maxretry" during the last "findtime"
 # seconds.
 findtime  = 600
 
 # "maxretry" is the number of failures before a host get banned.
-maxretry = 5
+maxretry = {{ fail2ban_config_maxretry }} 
 
 # "backend" specifies the backend used to get files modification.
 # Available options are "pyinotify", "gamin", "polling", "systemd" and "auto".
@@ -126,7 +126,7 @@ filter = %(__name__)s
 
 # Destination email address used solely for the interpolations in
 # jail.{conf,local,d/*} configuration files.
-destemail = root@localhost
+destemail = {{ fail2ban_config_destemail }}
 
 # Sender email address used solely for some actions
 sender = root@localhost
@@ -209,7 +209,7 @@ action = %(action_)s
 #
 
 [sshd]
-
+enabled = true
 port    = ssh
 logpath = %(sshd_log)s
 
@@ -218,9 +218,16 @@ logpath = %(sshd_log)s
 # This jail corresponds to the standard configuration in Fail2ban.
 # The mail-whois action send a notification e-mail with a whois request
 # in the body.
+enabled = true
 port    = ssh
 logpath = %(sshd_log)s
 
+[ssh-iptables]
+
+enabled  = true
+filter   = sshd
+logpath  = /var/log/secure
+maxretry = 5
 
 [dropbear]
 

@@ -20,7 +20,7 @@
     mode: "list"
   register: data_list
 
-- name: "Show the name fo the file"
+- name: "Show the name of the file"
   debug:
     msg: "{{ data_list.s3_keys[-1] }}"
 
@@ -93,3 +93,4 @@
 
 - name: "Apply Migrations"
   command: galaxy-manage migrate --fake-initial --noinput
+  when: galaxy_apply_migrations

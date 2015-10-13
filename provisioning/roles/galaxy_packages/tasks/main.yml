@@ -26,7 +26,14 @@
   - rabbitmq-server
   - supervisor
   - tmux
-  - zlib
+  - libtiff-devel
+  - libjpeg-devel
+  - libzip-devel
+  - freetype-devel
+  - lcms2-devel
+  - libwebp-devel
+  - tcl-devel
+  - tk-devel
 
 - name: install development tool packages
   yum: name={{item}}
