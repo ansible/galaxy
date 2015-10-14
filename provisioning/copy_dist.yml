@@ -9,7 +9,9 @@
       register: app_tar
 
 - name: Copy the distribution file to web and celery hosts 
-  hosts: web, celery 
+  hosts:
+    - web
+    - celery 
   tasks:
     - name: Remove old dist files
       shell: rm -f /tmp/galaxy-*.tar.gz
