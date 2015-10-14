@@ -9,7 +9,7 @@
       - galaxy-vault.yml
   roles:
       - { role: galaxy_packages }
-      - { role: galaxy_deploy, tags: ["all", "web"] }
+      - { role: galaxy_deploy, tags: ["web"] }
   # - { role: notify_slack, notify_slack_message: "{{ galaxy_slack_message }}", when: galaxy_slack_message is defined }
 
 - name: Deploy Celery
@@ -21,7 +21,7 @@
       - galaxy-vault.yml
   roles:
       - { role: galaxy_packages }
-      - { role: galaxy_deploy, tags: ["all", "celery"] }
+      - { role: galaxy_deploy, tags: ["celery"] }
 
 - name: Rebuild Search Indexes
   hosts: es_rebuild_host

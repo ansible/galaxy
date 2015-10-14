@@ -45,6 +45,7 @@ WSGISocketPrefix /var/run/wsgi
 
 <VirtualHost _default_:443>
  ServerName {% for host in groups['node_balancer'] %}{{ host }}{% endfor %}
+
  DocumentRoot /var/lib/galaxy/public
 
  RewriteEngine On
