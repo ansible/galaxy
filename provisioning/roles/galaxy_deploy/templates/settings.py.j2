@@ -108,7 +108,7 @@ CACHES = {
 }
 
 ELASTIC_SEARCH = {
-    hosts: [{% for host in groups['es_hosts'] %}"{{ host }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+    'hosts': [{% for host in groups['es_hosts'] %}"{{ host }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 }
 
 HAYSTACK_CONNECTIONS = {

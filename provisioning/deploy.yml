@@ -1,3 +1,12 @@
+---
+
+- name: Include vars
+  hosts: 127.0.0.1
+  connection: local
+  tasks:
+    - name: Include vars
+      include_vars: galaxy-vault.yml
+
 - name: Deploy Web Servers
   hosts: web
   sudo: yes
@@ -15,8 +24,10 @@
 
 - name: Rebuild Search Indexes
   hosts: es_rebuild_host
-  shell: "echo 'y' | galaxy-manage rebuild_index"
+  tasks:
+    - shell: "echo 'y' | galaxy-manage rebuild_index"
 
 - name: Rebuild custom search indexes
   hosts: es_rebuild_host
-  shell: "galaxy-manage rebuild_galaxy_indexes"
+  tasks:
+    - shell: "galaxy-manage rebuild_galaxy_indexes"
