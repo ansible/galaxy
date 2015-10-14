@@ -45,7 +45,7 @@
     - celery 
 
 - name: Celery tasks
-  inlcude: celery.yml
+  include: celery.yml
   when: galaxy_deploy_celery
 
 - name: Web tasks
