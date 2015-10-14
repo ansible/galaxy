@@ -94,7 +94,7 @@ DATABASES = {
         'NAME': "{{ galaxy_postgresql_dbname }}",
         'USER': "{{ galaxy_postgresql_username }}",
         'PASSWORD': "{{ galaxy_postgresql_password }}",
-        {% if galaxy_database_local == yes %} 
+        {% if galaxy_database_local %} 
         'HOST': "127.0.0.1",
         {% else %}
         'HOST': "{% for host in groups['db'] %}{{host}}{% endfor %}",
