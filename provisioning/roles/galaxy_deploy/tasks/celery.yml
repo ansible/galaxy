@@ -1,0 +1,4 @@
+- name: Restart supervisord
+  service: name=supervisord state=restarted
+  tags:
+    - celery

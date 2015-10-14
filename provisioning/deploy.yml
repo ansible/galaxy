@@ -5,22 +5,26 @@
   sudo: yes
   vars:
       - galaxy_database_local: no
+      - galaxy_deploy_web: yes
+      - galaxy_deploy_celery: no
   vars_files:
       - galaxy-vault.yml
   roles:
       - { role: galaxy_packages }
-      - { role: galaxy_deploy, tags: ['web'] }
+      - { role: galaxy_deploy }
 
 - name: Deploy Celery
   hosts: celery
   sudo: yes
   vars:
       - galaxy_database_local: yes 
+      - galaxy_deploy_web: no 
+      - galaxy_deploy_celery: yes 
   vars_files:
       - galaxy-vault.yml
   roles:
       - { role: galaxy_packages }
-      - { role: galaxy_deploy, tags: ['celery'] }
+      - { role: galaxy_deploy }
 
 - name: Rebuild Search Indexes
   hosts: es_rebuild_host

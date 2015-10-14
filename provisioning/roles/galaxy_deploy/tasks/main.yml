@@ -19,10 +19,6 @@
     - web
     - celery 
 
-- name: Configure galaxy/public/static directory
-  file: path=/var/lib/galaxy/public/static state=directory mode=0755
-  tags:
-    - web
 
 - name: Configure /etc/galaxy directory
   file: path=/etc/galaxy owner=root group=galaxy_manage mode=2770 state=directory
@@ -48,24 +44,10 @@
     - web
     - celery 
 
-- name: Deploy apache configuration file
-  template: src=galaxy.conf.j2 dest=/etc/httpd/conf.d/galaxy.conf
-  tags:
-    - web
+- name: Celery tasks
+  inlcude: celery.yml
+  when: galaxy_deploy_celery
 
-- name: Apply migrations
-  command: galaxy-manage migrate --fake-initial --noinput
-  tags:
-    - web
-
-- name: Collect galaxy static files
-  command: galaxy-manage collectstatic --clear --noinput
-  tags:
-    - web
-  notify:
-    - restart apache
-
-- name: Restart supervisord
-  service: name=supervisord state=restarted
-  tags:
-    - celery
+- name: Web tasks
+  include: web.yml
+  when: galaxy_deploy_web
