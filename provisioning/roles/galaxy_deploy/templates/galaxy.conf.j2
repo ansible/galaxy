@@ -13,12 +13,8 @@ NameVirtualHost *:443
 WSGISocketPrefix /var/run/wsgi
 
 <VirtualHost _default_:80>
-  ServerName {{ galaxy_site_name }}
+  ServerName {% for host in groups['node_balancer'] %}{{ host }}{% endfor %} 
   DocumentRoot /var/lib/galaxy/public
-
-  RewriteEngine on
-  RewriteCond %{HTTP:X-Forwarded-Proto} !https
-  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 
   RewriteCond $MAINTENANCE_FILE -f
   RewriteCond %{REQUEST_URI} !/$STATIC_URL/maintenance/under-maintenance.gif
@@ -48,7 +44,7 @@ WSGISocketPrefix /var/run/wsgi
 </VirtualHost>
 
 <VirtualHost _default_:443>
- ServerName {{ galaxy_site_name }}
+ ServerName {{% for host in groups['node_balancer'] %}{{ host }}{% endfor %}
  DocumentRoot /var/lib/galaxy/public
 
  RewriteEngine On

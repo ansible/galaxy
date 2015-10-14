@@ -179,7 +179,7 @@ ALLOWED_HOSTS = [SITE_NAME]
 {% for alias in galaxy_site_aliases %}
 ALLOWED_HOSTS.append('{{ alias }}')
 {% endfor %}
-{% for host in groups['node_balancers'] %}
+{% for host in groups['node_balancer'] %}
 ALLOWED_HOSTS.append('{{ host }}')
 {% endfor %}
 
