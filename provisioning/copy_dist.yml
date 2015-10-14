@@ -1,19 +1,18 @@
 ---
 # copy the distribution tar file to the remote hosts
 
-- name: copy the distribution tar file to the remote hosts
-  hosts: local
+- name: Get the name of the local distribution file
+  hosts: 127.0.0.1 
+  connection: local
   tasks:
     - shell: ls -1 $(pwd)/dist/galaxy-*.tar.gz chdir="{{ playbook_dir }}/.."
       register: app_tar
 
-- name: remove old dist files
-  hosts: target
+- name: Copy the distribution file to web and celery hosts 
+  hosts: web, celery 
   tasks:
-    - shell: rm -f /tmp/galaxy-*.tar.gz
-
-- name: copy the dist file
-  hosts: target
-  tasks:
-    - copy: src={{ hostvars['127.0.0.1']['app_tar'].stdout }} dest=/tmp/{{ hostvars['127.0.0.1']['app_tar'].stdout | basename }}
+    - name: Remove old dist files
+      shell: rm -f /tmp/galaxy-*.tar.gz
+    - name: Copy the file
+      copy: src={{ hostvars['127.0.0.1']['app_tar'].stdout }} dest=/tmp/{{ hostvars['127.0.0.1']['app_tar'].stdout | basename }}
       register: copy_result
