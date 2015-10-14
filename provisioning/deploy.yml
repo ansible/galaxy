@@ -1,18 +1,22 @@
-- name: Deploy Galaxy
-  hosts: all
+- name: Deploy Web Servers
+  hosts: web
   sudo: yes
-  vars:
-      galaxy_github_api_token: "{{ lookup('env', 'GALAXY_GITHUB_API_TOKEN') }}"
-      galaxy_email_username: "{{ lookup('env', 'GALAXY_EMAIL_USERNAME') }}"
-      galaxy_email_password: "{{ lookup('env', 'GALAXY_EMAIL_PASSWORD' )}}"
-      galaxy_rabbit_password: "{{ lookup('env', 'GALAXY_RABBIT_PASSWORD' )}}"
-      galaxy_rabbit_hostname: "{{ lookup('env', 'GALAXY_DATABASE_HOST' ) | default('127.0.0.1', true) }}"
-      galaxy_postgresql_hostname: "{{ lookup('env', 'GALAXY_DATABASE_HOST' ) | default('127.0.0.1', true) }}"
-      galaxy_postgresql_password: "{{ lookup('env', 'GALAXY_POSTGRESQL_PASSWORD') | default('galaxy',true) }}"
-      galaxy_memcached_hostname: "{{ lookup('env', 'GALAXY_DATABASE_HOST' ) | default('127.0.0.1', true) }}"
-      galaxy_es_host: "{{ lookup('env', 'GALAXY_ES_HOST' )}}"
-      galaxy_slack_message: "{{ lookup('env', 'GALAXY_SLACK_MESSAGE') }}"
   roles:
   - { role: galaxy_packages }
-  - { role: galaxy_deploy }
+  - { role: galaxy_deploy , tags: ["all", "web"] }
   # - { role: notify_slack, notify_slack_message: "{{ galaxy_slack_message }}", when: galaxy_slack_message is defined }
+
+- name: Deploy Celery
+  hosts: celery
+  sudo: yes
+  roles:
+  - { role: galaxy_packages }
+  - { role: galaxy_deploy , tags: ["all", "celery"] }
+
+- name: Rebuild Search Indexes
+  hosts: es_rebuild_host
+  shell: "echo 'y' | galaxy-manage rebuild_index"
+
+- name: Rebuild custom search indexes
+  hosts: es_rebuild_host
+  shell: "galaxy-manage rebuild_galaxy_indexes"

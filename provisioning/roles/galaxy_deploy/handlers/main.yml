@@ -2,6 +2,3 @@
 
 - name: restart apache
   service: name=httpd state=restarted
-
-- name: restart supervisord 
-  service: name=supervisord state=restarted

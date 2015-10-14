@@ -2,43 +2,63 @@
 - name: Check for the tar file
   shell: ls -1 {{ galaxy_dist_dir }}/galaxy-*.tar.gz
   register: app_tar
+  tags:
+    - all
 
 - name: Remove the existing app
   pip: name=galaxy state=absent
   ignore_errors: yes
+  tags:
+    - all
 
 - name: Install the Galaxy app
   pip: name={{ app_tar.stdout }}
+  tags:
+    - all
 
 - name: Configure galaxy/public/static directory
   file: path=/var/lib/galaxy/public/static state=directory mode=0755
+  tags:
+    - web
 
 - name: Configure /etc/galaxy directory
   file: path=/etc/galaxy owner=root group=galaxy_manage mode=2770 state=directory
+  tags:
+    - all
 
 - name: Deploy settings file
   template: src=settings.py.j2 dest=/etc/galaxy/settings.py owner=root group=galaxy_manage mode=0660
+  tags:
+    - all
 
 - name: Create the SECRET_KEY file
   command: /usr/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)" creates=/etc/galaxy/SECRET_KEY
+  tags:
+    - all
 
 - name: Adjust SECRET_KEY permissions
   file: path=/etc/galaxy/SECRET_KEY state=file owner=root group=galaxy_manage mode=0660
+  tags:
+    - all
 
 - name: Deploy apache configuration file
   template: src=galaxy.conf.j2 dest=/etc/httpd/conf.d/galaxy.conf
+  tags:
+    - web
 
 - name: Apply migrations
   command: galaxy-manage migrate --fake-initial --noinput
+  tags:
+    - web
 
 - name: Collect galaxy static files
   command: galaxy-manage collectstatic --clear --noinput
+  tags:
+    - web
   notify:
     - restart apache
-    - restart supervisord
 
-- name: Rebuild haystack search index
-  shell: "echo 'y' | galaxy-manage rebuild_index"
-
-- name: Rebuild custom search indexes
-  shell: "galaxy-manage rebuild_galaxy_indexes"
+- name: Restart supervisord
+  service: name=supervisord state=restarted
+  tags:
+    - celery

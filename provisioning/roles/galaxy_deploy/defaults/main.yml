@@ -33,7 +33,7 @@ galaxy_github_api_token: ""
 # Postgresql
 galaxy_postgresql_dbname: "galaxy"
 galaxy_postgresql_username: "galaxy"
-galaxy_postgresql_password: ""
+galaxy_postgresql_password: "galaxy"
 galaxy_postgresql_hostname: "127.0.0.1"
 galaxy_postgresql_port: ""
 
@@ -42,6 +42,6 @@ galaxy_memcached_hostname: "127.0.0.1"
 galaxy_memcached_port: 11211
 
 # Elastic Search / Haystack
-galaxy_es_host: "45.79.217.103" 
+galaxy_es_host: "127.0.0.1"
 galaxy_es_port: "9200" 
 galaxy_es_transport: "http"

@@ -1,0 +1,19 @@
+#
+# QA Inventory file for jenkins jobs
+#
+[web]
+45.79.148.64
+
+[es_rebuild_host]
+45.79.148.64
+
+[es_hosts]
+45.79.153.137
+45.79.130.17
+45.79.162.76
+
+[db]
+45.79.153.136
+
+[celery]
+45.79.153.136

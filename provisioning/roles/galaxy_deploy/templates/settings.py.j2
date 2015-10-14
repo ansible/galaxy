@@ -90,12 +90,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '{{ galaxy_postgresql_dbname }}',
-        'USER': '{{ galaxy_postgresql_username }}',
-        'PASSWORD': '{{ galaxy_postgresql_password }}',
-        'HOST': '{{ galaxy_postgresql_hostname }}',
-        'PORT': '{{ galaxy_postgresql_port }}',
+        'ENGINE': "django.db.backends.postgresql_psycopg2",
+        'NAME': "{{ galaxy_postgresql_dbname }}",
+        'USER': "{{ galaxy_postgresql_username }}",
+        'PASSWORD': "{{ galaxy_postgresql_password }}",
+        'HOST': "{% for host in groups['db'] %}{{host}}{% endfor %}",
+        'PORT': "{{ galaxy_postgresql_port }}",
         'CONN_MAX_AGE': None,
     }
 }
@@ -108,21 +108,13 @@ CACHES = {
 }
 
 ELASTIC_SEARCH = {
-    'host': "{{ galaxy_es_host }}", 
-    'port': "{{ galaxy_es_port }}",
-    'transport': "{{ galaxy_es_transport }}"
+    hosts: [{% for host in groups['es_hosts'] %}"{{ host }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 }
-
-ES_CONNECTION_URL = "%s://%s:%s/" % (
-    ELASTIC_SEARCH['transport'],
-    ELASTIC_SEARCH['host'],
-    ELASTIC_SEARCH['port']
-)
 
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': ES_CONNECTION_URL,
+        'URL': [{% for host in groups['es_hosts'] %}"{{ galaxy_es_transport }}://{{ host }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}],
         'INDEX_NAME': 'haystack',
     },
 }

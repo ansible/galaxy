@@ -19,9 +19,6 @@ class Command(BaseCommand):
 
     def rebuild_users(self):
         galaxy_users = Index('galaxy_users')
-        galaxy_users.settings(
-            number_of_shards = 1
-        )
         galaxy_users.doc_type(UserDoc)
         galaxy_users.delete(ignore=404)
         galaxy_users.create()
@@ -32,9 +29,6 @@ class Command(BaseCommand):
         
     def rebuild_tags(self):
         galaxy_tags = Index('galaxy_tags')
-        galaxy_tags.settings(
-            number_of_shards = 1
-        )
         galaxy_tags.doc_type(TagDoc)
         galaxy_tags.delete(ignore=404)
         galaxy_tags.create()
@@ -46,10 +40,7 @@ class Command(BaseCommand):
 
     def rebuild_platforms(self):
         galaxy_platforms = Index('galaxy_platforms')
-        galaxy_platforms.settings(
-            number_of_shards=1
-        )
-
+        
         galaxy_platforms.doc_type(PlatformDoc)
         galaxy_platforms.delete(ignore=404)
         galaxy_platforms.create()
@@ -75,4 +66,5 @@ class Command(BaseCommand):
         for platform in Platform.objects.filter(active=True, name=name).all():
             if platform.alias:
                 terms += platform.alias.split(' ')
-        return set(terms) 
+        return set(terms)
+
