@@ -13,5 +13,5 @@ class MainConfig(AppConfig):
     verbose_name = "Galaxy"
 
     def ready(self):
-        connections.connections.create_connection(hosts=settings.ELASTICSEARCH.hosts, timeout=20)
+        connections.connections.create_connection(hosts=settings.ELASTICSEARCH['hosts'], timeout=20)
         import galaxy.main.signals.handlers
