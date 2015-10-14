@@ -29,7 +29,7 @@
   template: src=galaxy.conf.j2 dest=/etc/httpd/conf.d/galaxy.conf
 
 - name: Apply migrations
-  command: galaxy-manage migrate --noinput
+  command: galaxy-manage migrate --fake-initial --noinput
 
 - name: Collect galaxy static files
   command: galaxy-manage collectstatic --clear --noinput
