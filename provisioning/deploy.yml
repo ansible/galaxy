@@ -1,15 +1,10 @@
 ---
 
-- name: Include vars
-  hosts: 127.0.0.1
-  connection: local
-  tasks:
-    - name: Include vars
-      include_vars: galaxy-vault.yml
-
 - name: Deploy Web Servers
   hosts: web
   sudo: yes
+  vars_files:
+    - galaxy-vault.yml
   roles:
   - { role: galaxy_packages }
   - { role: galaxy_deploy , tags: ["all", "web"] }
@@ -18,6 +13,8 @@
 - name: Deploy Celery
   hosts: celery
   sudo: yes
+  vars_files:
+    - galaxy-vault.yml
   roles:
   - { role: galaxy_packages }
   - { role: galaxy_deploy , tags: ["all", "celery"] }
