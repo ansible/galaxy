@@ -98,22 +98,14 @@ CACHES = {
     }
 }
 
-ELASTIC_SEARCH = {
-    'host': "{{ galaxy_es_host }}",
-    'port': "{{ galaxy_es_port }}",
-    'transport': "{{ galaxy_es_transport }}"
+ELASTICSEARCH = {
+    'host': "{{ galaxy_es_host }}:{{ galaxy_es_port }}",
 }
-
-ES_CONNECTION_URL = "%s://%s:%s/" % (
-    ELASTIC_SEARCH['transport'],
-    ELASTIC_SEARCH['host'],
-    ELASTIC_SEARCH['port']
-)
 
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': ES_CONNECTION_URL,
+        'URL': "{{ galaxy_es_transport }}//{{ galaxy_es_host }}:{{ galaxy_es_port }}",
         'INDEX_NAME': 'haystack',
     },
 }
