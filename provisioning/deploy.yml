@@ -9,8 +9,7 @@
       - galaxy-vault.yml
   roles:
       - { role: galaxy_packages }
-      - { role: galaxy_deploy, tags: ["web"] }
-  # - { role: notify_slack, notify_slack_message: "{{ galaxy_slack_message }}", when: galaxy_slack_message is defined }
+      - { role: galaxy_deploy, tags: ['web'] }
 
 - name: Deploy Celery
   hosts: celery
@@ -21,7 +20,7 @@
       - galaxy-vault.yml
   roles:
       - { role: galaxy_packages }
-      - { role: galaxy_deploy, tags: ["celery"] }
+      - { role: galaxy_deploy, tags: ['celery'] }
 
 - name: Rebuild Search Indexes
   hosts: es_rebuild_host
@@ -34,3 +33,8 @@
   sudo: yes
   tasks:
       - shell: "galaxy-manage rebuild_galaxy_indexes"
+
+#- name: Notify slack
+#  hosts: 127.0.0.1 
+#  roles:
+#      - { role: notify_slack, notify_slack_message: "{{ galaxy_slack_message }}", when: galaxy_slack_message is defined }
