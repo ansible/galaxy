@@ -1,5 +1,12 @@
-- name: Restart supervisord
+- name: Restart and enable supervisord on postgres master
   service: name=supervisord state=restarted enabled=yes
+  when: postgres_master
+  tags:
+      - celery
+
+- name: Stop and enable supervisord on postgres slave
+  service: name=supervisord state=restarted enabled=yes
+  when: not postgres_master
   tags:
       - celery
 
