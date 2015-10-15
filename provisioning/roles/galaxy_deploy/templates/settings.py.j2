@@ -106,7 +106,11 @@ DATABASES = {
         {% if galaxy_database_local %} 
         'HOST': "127.0.0.1",
         {% else %}
-        'HOST': "{% for host in groups['db'] %}{{host}}{% endfor %}",
+        {% for host in groups['db'] %}
+        {% if hostvars[host]['postgres_master'] %}
+        'HOST': "{{host}}"
+        {% endif %}
+        {% endfor %}",
         {% endif %}
         'PORT': "{{ galaxy_postgresql_port }}",
         'CONN_MAX_AGE': None,

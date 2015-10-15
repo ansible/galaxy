@@ -16,8 +16,8 @@
 45.79.162.76
 
 [db]
-45.79.153.136
-45.79.148.68
+45.79.153.136 postgres_master=yes
+45.79.148.68 postgres_master=no
 
 [rabbitmq_host]
 45.79.153.136
