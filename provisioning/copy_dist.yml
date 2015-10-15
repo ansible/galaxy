@@ -11,7 +11,7 @@
 - name: Copy the distribution file to web and celery hosts 
   hosts:
     - web
-    - celery 
+    - db
   tasks:
     - name: Remove old dist files
       shell: rm -f /tmp/galaxy-*.tar.gz
