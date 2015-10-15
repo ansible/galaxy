@@ -19,7 +19,7 @@ galaxy_email_username: ""
 galaxy_email_password: ""
 
 # rabbitmq
-galaxy_rabbit_hostname: "localhost"
+galaxy_rabbit_host: "localhost"
 galaxy_rabbit_port: 5672
 galaxy_rabbit_vhost: "/galaxy"
 galaxy_rabbit_username: "galaxy"
