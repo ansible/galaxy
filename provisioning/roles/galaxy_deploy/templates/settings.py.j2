@@ -107,10 +107,10 @@ DATABASES = {
         'HOST': "127.0.0.1",
         {% else %}
         {% for host in groups['db'] %}
-        {% if hostvars[host]['postgres_master'] %}
+        {% if hostvars[host]['postgres_master'] == True %}
         'HOST': "{{ host }}",
         {% endif %}
-        {% endfor %}",
+        {% endfor %}
         {% endif %}
         'PORT': "{{ galaxy_postgresql_port }}",
         'CONN_MAX_AGE': None,
