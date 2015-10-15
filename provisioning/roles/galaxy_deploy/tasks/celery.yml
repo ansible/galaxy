@@ -1,4 +1,10 @@
 - name: Restart supervisord
-  service: name=supervisord state=restarted
+  service: name=supervisord state=restarted enabled=yes
   tags:
-    - celery
+      - celery
+
+- name: Restart rabbitmq
+  service: name=rabbitmq-server state=restarted enabled=yes
+  tags:
+      - celery
+

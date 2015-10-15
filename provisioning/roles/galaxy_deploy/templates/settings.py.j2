@@ -76,7 +76,11 @@ SOCIALACCOUNT_PROVIDERS={
 SOCIALACCOUNT_AVATAR_SUPPORT=True
 
 # Settings for celery/rabbitmq
-BROKER_URL='amqp://{{galaxy_rabbit_username}}:{{galaxy_rabbit_password}}@{{galaxy_rabbit_hostname}}:{{galaxy_rabbit_port}}/{{galaxy_rabbit_vhost}}'
+{% if galaxy_deploy_web %}
+BROKER_URL='amqp://{{galaxy_rabbit_username}}:{{galaxy_rabbit_password}}@{% for host in groups['rabbitmq_host'] %}{{ host }}{% endfor %}:{{galaxy_rabbit_port}}/{{galaxy_rabbit_vhost}}'
+{% else %}
+BROKER_URL='amqp://{{galaxy_rabbit_username}}:{{galaxy_rabbit_password}}@{{ galaxy_rabbit_host }}:{{galaxy_rabbit_port}}/{{galaxy_rabbit_vhost}}'
+{% endif %}
 CELERY_IMPORTS=('galaxy.main.celerytasks.tasks',)
 CELERY_TRACK_STARTED=True
 CELERYBEAT_SCHEDULER='djcelery.schedulers.DatabaseScheduler'

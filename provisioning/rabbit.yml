@@ -1,0 +1,7 @@
+- name: Configure rabbitmq
+  hosts: db
+  sudo: yes
+  vars_files:
+      - galaxy-vault.yml
+  roles:
+      - { role: rabbitmq }

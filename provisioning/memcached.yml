@@ -1,0 +1,7 @@
+- name: start memcached
+  hosts:
+      - db
+      - web
+  sudo: yes
+  roles:
+      - { role: memcached }  
