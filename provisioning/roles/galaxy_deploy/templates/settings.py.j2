@@ -108,7 +108,7 @@ DATABASES = {
         {% else %}
         {% for host in groups['db'] %}
         {% if hostvars[host]['postgres_master'] %}
-        'HOST': "{{host}}"
+        'HOST': "{{ host }}",
         {% endif %}
         {% endfor %}",
         {% endif %}
