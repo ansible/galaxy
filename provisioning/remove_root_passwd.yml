@@ -1,0 +1,6 @@
+- name: Remove root password
+  hosts: all
+  sudo: yes
+  tasks:
+      - name: Remove it
+        command: passwd -d root

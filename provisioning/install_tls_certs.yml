@@ -1,0 +1,7 @@
+- name: Install certs and private key on web servers
+  hosts: web
+  sudo: yes
+  vars_files:
+      - galaxy-vault.yml
+  roles: 
+      - { role: tls_certs }

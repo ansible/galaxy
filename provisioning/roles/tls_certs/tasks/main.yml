@@ -1,0 +1,24 @@
+- name: Copy intermediate cert
+  copy:
+      src: GandiStandardSSLCA.cer
+      dest: /etc/pki/tls/certs
+      owner: root
+      group: root
+      mode: 0644
+
+- name: Copy galaxy cert
+  copy:
+      src: galaxy.ansible.com.crt
+      dest: /etc/pki/tls/certs
+      owner: root
+      group: root
+      mode: 0644
+
+- name: Install private key 
+  copy:
+      content: "{{ galaxy_private_key }}"
+      dest: /etc/pki/tls/private/galaxy.ansible.com.key
+      owner: root
+      group: root
+      mode: 0600
+  

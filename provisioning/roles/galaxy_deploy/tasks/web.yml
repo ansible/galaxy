@@ -19,3 +19,11 @@
     - web
   notify:
     - restart apache
+
+- name: Rebuild Search Indexes
+  shell: "echo 'y' | galaxy-manage rebuild_index"
+  when: galaxy_rebuild_host
+
+- name: Rebuild custom search indexes
+  shell: "galaxy-manage rebuild_galaxy_indexes"
+  when: galaxy_rebuild_host

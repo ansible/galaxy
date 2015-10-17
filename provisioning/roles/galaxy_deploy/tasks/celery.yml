@@ -4,8 +4,8 @@
   tags:
       - celery
 
-- name: Stop and enable supervisord on postgres slave
-  service: name=supervisord state=stopped enabled=yes
+- name: Stop and disable supervisord on postgres slave
+  service: name=supervisord state=stopped enabled=no
   when: not postgres_master
   tags:
       - celery

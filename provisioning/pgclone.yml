@@ -1,0 +1,12 @@
+---
+- name: Database clone
+  hosts: all
+  sudo: yes
+  vars_files:
+      - galaxy-vault.yml
+  vars:
+      pgbase_username: "{{ galaxy_replicator_user }}"
+      pgbase_connect_user: "{{ galaxy_replicator_user }}" 
+      pgbase_connect_pass: "{{ galaxy_replicator_pass }}" 
+  roles:
+      - { role: chouseknecht.pgclone } 

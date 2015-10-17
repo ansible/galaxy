@@ -1,0 +1,10 @@
+- name: Configure postgres
+  hosts: db
+  sudo: yes
+  vars:
+      galaxy_install_dev_tools: False
+      galaxy_install_selinux: False
+      galaxy_env: PROD
+      galaxy_log_dir: '/var/log/galaxy'
+  roles:
+      - { role: postgresql }

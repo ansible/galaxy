@@ -1,12 +1,21 @@
-# {{ ansible_managed }}
-# !!!Any changes made directly in this file may be overwritten!!!
-
 # Database administrative login by UNIX sockets
 # note: you may wish to restrict this further later
+
 local   all         postgres                          trust
 
 # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
 local   all         all                               md5
 host    all         all         127.0.0.1/32          md5
 host    all         all         207.67.11.130/32      md5
+host    all         all         ::1/128               md5
+{% if galaxy_env == 'PROD' %}
+{% for host in groups['db'] %}
+{% if hostvars[host].postgres_master == [False] %}
+host    replication replicator  {{ host }}/32       md5
+{% endif %}
+{% endfor %}
+{% endif %}
+{% for host in groups['web'] %}
+host    all         all         {{ host }}/32      md5
+{% endfor %}
 host    all         all         ::1/128               md5

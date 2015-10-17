@@ -1,18 +1,19 @@
 ---
 - name: Provision Web Server
-  hosts: all
+  hosts: web
+  sudo: yes
   vars:
       galaxy_install_dev_tools: False
       galaxy_install_selinux: False
       galaxy_env: PROD
       galaxy_log_dir: '/var/log/galaxy'
-  sudo: yes
   roles:
-  - { role: auth_users }
-  - { role: auth_keys }
-  - { role: galaxy_packages }
-  - { role: selinux, when: galaxy_install_selinux }
-  - { role: ntp }
-  - { role: iptables, galaxy_allow_port_8000: False }
-  - { role: fail2ban }
-  - { role: memcached }
+      - { role: galaxy_packages }
+      - { role: auth_users }
+      - { role: auth_keys }
+      - { role: selinux, when: galaxy_install_selinux }
+      - { role: ntp }
+      - { role: iptables, galaxy_allow_port_8000: False }
+      - { role: fail2ban }
+      - { role: memcached }
+      - { role: machine_init }

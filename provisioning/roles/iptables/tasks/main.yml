@@ -19,23 +19,44 @@
   tags: iptables
 
 - name: insert iptables rule for httpd (port 443)
-  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="^.*INPUT.*tcp.*443.*ACCEPT" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport 443 -j ACCEPT"
+  lineinfile: 
+      dest: /etc/sysconfig/iptables
+      state: present
+      regexp: "^.*INPUT.*tcp.*443.*ACCEPT"
+      insertafter: "^:OUTPUT "
+      line: "-A INPUT -p tcp --dport 443 -j ACCEPT"
   when: iptables_installed.rc == 0 and iptables_exists.state != 'absent' and galaxy_host_type == 'Web'
   notify: restart iptables
   tags: iptables
 
 - name: insert iptables rule for httpd (port 80)
-  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="^.*INPUT.*tcp.*80.*ACCEPT" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport 80 -j ACCEPT"
+  lineinfile:
+      dest: /etc/sysconfig/iptables
+      state: present
+      regexp: "^.*INPUT.*tcp.*80.*ACCEPT"
+      insertafter: "^:OUTPUT "
+      line: "-A INPUT -p tcp --dport 80 -j ACCEPT"
   when: iptables_installed.rc == 0 and iptables_exists.state != 'absent' and galaxy_host_type == 'Web' 
   notify: restart iptables
   tags: iptables
 
 - name: insert iptables rule for httpd (port 8000)
-  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="^.*INPUT.*tcp.*8000.*ACCEPT" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport 8000 -j ACCEPT"
-  when: iptables_installed.rc == 0 and iptables_exists.state != 'absent' and galaxy_host_type == 'Web' and galaxy_allow_port_8000
+  lineinfile:
+      dest: /etc/sysconfig/iptables
+      state: present
+      regexp: "^.*INPUT.*tcp.*8000.*ACCEPT"
+      insertafter: "^:OUTPUT "
+      line: "-A INPUT -p tcp --dport 8000 -j ACCEPT"
+  when: iptables_installed.rc == 0 and iptables_exists.state != 'absent' and galaxy_host)type == 'Web' and galaxy_allow_port_8000
   notify: restart iptables
   tags: iptables
 
 - name: insert iptables rule for psql access (port 5432) from Durham office 
-  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="^.*INPUT.*tcp.*5432.*ACCEPT.*207.67.11.130" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport 5432 -s 207.67.11.130 -j ACCEPT"
+  lineinfile:
+      dest: /etc/sysconfig/iptables
+      state: present
+      regexp: "^.*INPUT.*tcp.*5432.*207.67.11.130"
+      insertafter: "^:OUTPUT "
+      line: "-A INPUT -p tcp --dport 5432 -s 207.67.11.130 -j ACCEPT"
   when: iptables_installed.rc == 0 and iptables_exists.state != 'absent' and galaxy_host_type == 'DB'
+  tags: iptables

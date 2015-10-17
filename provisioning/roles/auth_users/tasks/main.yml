@@ -1,12 +1,15 @@
 ---
 # tasks file for auth_users
 
+- name: create galaxy_manage group
+  group: name=galaxy_manage state=present
+
 - name: Add each user
   user:
     name: "{{ item }}" 
     state: present
     createhome: yes
-    groups: wheel
+    groups: wheel,galaxy_manage
     shell: "/bin/bash"
  
   with_items:

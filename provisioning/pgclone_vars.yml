@@ -1,0 +1,12 @@
+---
+pgbase_output_dir: /var/lib/pgsql/data
+pgbase_host: 45.79.128.80 
+pgbase_create_recover_file: True 
+pgbase_standby_mode: on 
+pgbase_connect_host: 45.79.128.80 
+pgbase_connect_port: 5432
+pgbase_trigger_file: "/tmp/trigger"
+pgbase_backup_dir: /tmp 
+pgbase_save_files:
+    - pg_hba.conf
+    - postgresql.conf

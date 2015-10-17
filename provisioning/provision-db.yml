@@ -1,21 +1,22 @@
 ---
 - name: Provision DB Server
-  hosts: all
+  hosts: db
+  sudo: yes
   vars:
       galaxy_install_dev_tools: False
       galaxy_install_selinux: False
       galaxy_env: PROD
       galaxy_log_dir: '/var/log/galaxy'
-  sudo: yes
   roles:
-  - { role: auth_users } 
-  - { role: auth_keys }
-  - { role: galaxy_packages }
-  - { role: selinux, when: galaxy_install_selinux }
-  - { role: ntp }
-  - { role: supervisorctl, sup_init_name: "supervisord", sup_conf_location: "/etc/supervisord.conf" }
-  - { role: iptables, galaxy_host_type: 'DB' }
-  - { role: fail2ban }
-  - { role: postgresql }
-  - { role: memcached }
-  - { role: rabbitmq }
+      - { role: galaxy_packages }
+      - { role: auth_users } 
+      - { role: auth_keys }
+      - { role: selinux, when: galaxy_install_selinux }
+      - { role: ntp }
+      - { role: supervisorctl, sup_init_name: "supervisord", sup_conf_location: "/etc/supervisord.conf" }
+      - { role: iptables, galaxy_host_type: 'DB' }
+      - { role: fail2ban }
+      - { role: postgresql }
+      - { role: memcached }
+      - { role: rabbitmq }
+      - { role: machine_init }

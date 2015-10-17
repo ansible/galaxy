@@ -5,19 +5,16 @@
 69.164.223.190
 
 [web]
-45.79.148.64 linode_private_ip=192.168.221.153
-
-[es_rebuild_host]
-45.79.148.64
+45.79.148.64 linode_private_ip=192.168.221.153, es_rebuild_host=True, linode_hostname=galaxy-qa-web-001
 
 [es_hosts]
-45.79.153.137
-45.79.130.17
-45.79.162.76
+45.79.153.137 linode_hostname=galaxy-qa-es-001
+45.79.130.17 linode_hostname=galaxy-qa-es-002
+45.79.162.76 linode_hostname=galaxy-qa-es-003
 
 [db]
-45.79.153.136 postgres_master=True
-45.79.148.68 postgres_master=False
+45.79.153.136 postgres_master=True, linode_hostname=galaxy-qa-db-001
+45.79.148.68 postgres_master=False, linode_hostname=galaxy-qa-db-002
 
 [rabbitmq_host]
 45.79.153.136
