@@ -60,7 +60,7 @@
   - django-debug-toolbar
   - django-haystack
   - drf-haystack
-  - elasticsearch
+  - elasticsearch==1.7.0   # Latest version not compatible with django-haystack
   - elasticsearch-dsl
   - markdown==2.4.1 # 2.5 currently has a python 2.6.x incompatibility
   - PyGithub
