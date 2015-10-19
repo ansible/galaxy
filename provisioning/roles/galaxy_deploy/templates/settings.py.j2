@@ -19,11 +19,7 @@ ADMINS = (
 )
 
 SITE_ENV="{{ galaxy_site_env }}"
-{% if linode_private_ip is defined %}
-SITE_NAME="{{ linode_private_ip }}"
-{% else %}
 SITE_NAME="{{ galaxy_site_name }}"
-{% endif %}
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SEND_EMAIL={{ galaxy_send_email }}
