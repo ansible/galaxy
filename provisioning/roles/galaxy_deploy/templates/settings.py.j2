@@ -184,9 +184,9 @@ TEMPLATES = [
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [SITE_NAME]
-{% for alias in galaxy_site_aliases %}
-ALLOWED_HOSTS.append('{{ alias }}')
-{% endfor %}
+{% if linode_private_ip is defined %} 
+ALLOWED_HOSTS.append('{{ linode_private_ip }}')
+{% endif %}
 {% for host in groups['node_balancer'] %}
 ALLOWED_HOSTS.append('{{ host }}')
 {% endfor %}
