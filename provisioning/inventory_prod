@@ -14,8 +14,8 @@
 45.79.164.152 linode_hostname=galaxy-pr-es-003
 
 [db]
-45.79.128.80 postgres_master=True, linode_hostname=galaxy-pr-db-001
-45.79.157.86 postgres_master=False, linode_hostname=galaxy-pr-db-002
+45.79.128.80 postgres_master=true, linode_hostname=galaxy-pr-db-001
+45.79.157.86 postgres_master=false, linode_hostname=galaxy-pr-db-002
 
 [rabbitmq_host]
 45.79.128.80
