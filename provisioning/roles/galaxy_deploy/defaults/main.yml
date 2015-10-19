@@ -9,7 +9,6 @@ galaxy_site_aliases: []
 # Apache configuration settings
 galaxy_ssl_cert: "/etc/pki/tls/certs/localhost.crt"
 galaxy_ssl_key: "/etc/pki/tls/private/localhost.key"
-galaxy_ssl_cachain: ""
 galaxy_wsgi_processes: 2
 
 # email

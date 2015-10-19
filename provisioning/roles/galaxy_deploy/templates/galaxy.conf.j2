@@ -56,7 +56,8 @@ WSGISocketPrefix /var/run/wsgi
  SSLEngine on
  SSLCertificateFile {{ galaxy_ssl_cert }}
  SSLCertificateKeyFile {{ galaxy_ssl_key }}
- {% if galaxy_ssl_cachain %}SSLCertificateChainFile {{ galaxy_ssl_cachain }}
+ {% if galaxy_ssl_cachain is defined %}
+ SSLCertificateChainFile {{ galaxy_ssl_cachain }}
  {% endif %}
  SSLVerifyClient none
  SSLProtocol all -SSLv2 -SSLv3
