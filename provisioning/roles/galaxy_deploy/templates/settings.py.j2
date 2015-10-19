@@ -107,7 +107,8 @@ DATABASES = {
         'HOST': "127.0.0.1",
 {% else %}
 {% for host in groups['db'] %}
-{% if hostvars[host]['postgres_master'] == 'true' %}
+{% if hostvars[host]['postgres_master'] %}
+        host: {{ host }} postgres_master: {{ hostvars[host]['postgres_master'] }}
         'HOST': "{{ host }}",
 {% endif %}
 {% endfor %}
