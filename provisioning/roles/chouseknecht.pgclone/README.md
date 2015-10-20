@@ -1,7 +1,7 @@
 pgclone
 =======
 
-Using pg_basebackup clone a PostgreSQL cluster from a remote host. Optionally create a recover.conf and 
+Use pg_basebackup to clone a PostgreSQL cluster from a remote host. Optionally create a recover.conf and 
 put the clone in standby mode.
 
 

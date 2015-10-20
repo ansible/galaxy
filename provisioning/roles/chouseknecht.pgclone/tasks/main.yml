@@ -42,8 +42,8 @@
 
 - name: Write recovery.conf file
   template:
-      src: recover.conf.j2
-      dest: "{{ pgbase_output_dir }}/recover.conf"
+      src: recovery.conf.j2
+      dest: "{{ pgbase_output_dir }}/recovery.conf"
       owner: postgres
       group: postgres
       mode: 0600 
