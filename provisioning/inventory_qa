@@ -6,6 +6,7 @@
 
 [web]
 45.79.148.64 linode_private_ip=192.168.221.153 es_rebuild_host=True linode_hostname=galaxy-qa-web-001
+45.79.158.144 linode_private_ip=192.168.211.158 es_rebuild_host=False linode_hostname=galaxy-qa-web-002 
 
 [es_hosts]
 45.79.153.137 linode_hostname=galaxy-qa-es-001
