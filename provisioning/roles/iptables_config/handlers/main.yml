@@ -1,0 +1,2 @@
+- name: restart_iptables
+  service: name=iptables stated=restarte enabled=yes

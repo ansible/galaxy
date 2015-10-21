@@ -13,7 +13,7 @@
       - { role: auth_keys }
       - { role: selinux, when: galaxy_install_selinux }
       - { role: ntp }
-      - { role: iptables, galaxy_allow_port_8000: False }
+      - { role: iptables_config, galaxy_host_type: 'web' }
       - { role: fail2ban }
       - { role: memcached }
       - { role: machine_init }

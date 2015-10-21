@@ -1,0 +1,7 @@
+- name: Apply web configuration
+  include: web.yml
+  when: galaxy_host_type == 'web'
+
+- name: Apply db configuration
+  include: db.yml
+  when: galaxy_host_type == 'db'

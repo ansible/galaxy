@@ -9,18 +9,34 @@
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 NameVirtualHost *:80
+NameVirtualHost *:8080
 NameVirtualHost *:443
 WSGISocketPrefix /var/run/wsgi
 ExtendedStatus On
+Listen {{ linode_private_ip }}:8080
 
 <VirtualHost _default_:80>
+  ServerName {% for host in groups['node_balancer'] %}{{ host }}{% endfor %} 
+  DocumentRoot /var/lib/galaxy/public
+
+  # Redirect to https  
+  RewriteEngine on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+
+  CustomLog "/var/log/httpd/galaxy_access.log" common
+  ErrorLog "/var/log/httpd/galaxy_error.log"
+</VirtualHost>
+
+# Nodebalancer should send traffic here on internal IP address
+<VirtualHost _default_:8080>
   ServerName {% for host in groups['node_balancer'] %}{{ host }}{% endfor %} 
   DocumentRoot /var/lib/galaxy/public
 
   RewriteCond $MAINTENANCE_FILE -f
   RewriteCond %{REQUEST_URI} !/$STATIC_URL/maintenance/under-maintenance.gif
   RewriteRule ^(.+) $MAINTENANCE_URL [R,L]
-
+ 
   CustomLog "/var/log/httpd/galaxy_access.log" common
   ErrorLog "/var/log/httpd/galaxy_error.log"
 
@@ -74,8 +90,7 @@ ExtendedStatus On
   WSGIScriptAlias / /var/lib/galaxy/wsgi.py
   WSGIPassAuthorization On
  
-  # FIXME: May want to tune these parameters after performance testing.
-  WSGIDaemonProcess galaxy_https processes=2 threads=20 maximum-requests=1000 display-name="%{GROUP}-https"
+  WSGIDaemonProcess galaxy_https processes={{ galaxy_wsgi_processes }} threads=20 maximum-requests=1000 display-name="%{GROUP}-https"
   WSGIProcessGroup galaxy_https
  
   Alias /favicon.ico /var/lib/galaxy/public/static/favicon.ico
