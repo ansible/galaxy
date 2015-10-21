@@ -17,7 +17,7 @@
   hosts: db
   sudo: yes
   vars:
-      - galaxy_database_local: yes 
+      - galaxy_database_local: yes
       - galaxy_deploy_web: no 
       - galaxy_deploy_celery: yes 
   vars_files:
