@@ -63,7 +63,7 @@ Listen {{ linode_private_ip }}:8080
     SetHandler server-status
     Order deny,allow
     Deny from all
-    Allow from localhost
+    Allow from {{ linode_private_ip }} 
   </Location>
 
 </VirtualHost>
@@ -110,7 +110,7 @@ Listen {{ linode_private_ip }}:8080
      SetHandler server-status
      Order deny,allow
      Deny from all
-     Allow from localhost
+     Allow from {{ linode_private_ip }} 
    </Location>
 
 </VirtualHost>
