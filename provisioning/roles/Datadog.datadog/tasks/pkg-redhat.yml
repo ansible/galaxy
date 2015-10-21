@@ -1,0 +1,6 @@
+---
+- name: Copy repo file into place
+  template: src=datadog.repo.j2 dest=/etc/yum.repos.d/datadog.repo owner=root group=root mode=0644
+
+- name: Install datadog-agent package
+  yum: name=datadog-agent state=latest

@@ -11,6 +11,7 @@
 NameVirtualHost *:80
 NameVirtualHost *:443
 WSGISocketPrefix /var/run/wsgi
+ExtendedStatus On
 
 <VirtualHost _default_:80>
   ServerName {% for host in groups['node_balancer'] %}{{ host }}{% endfor %} 
@@ -41,44 +42,60 @@ WSGISocketPrefix /var/run/wsgi
   <Directory /var/lib/galaxy/public/>
     Require all granted
   </Directory>
+  
+  <Location /server-status>
+    SetHandler server-status
+    Order deny,allow
+    Deny from all
+    Allow from localhost
+  </Location>
+
 </VirtualHost>
 
 <VirtualHost _default_:443>
  ServerName {% for host in groups['node_balancer'] %}{{ host }}{% endfor %}
+ 
+  DocumentRoot /var/lib/galaxy/public
+ 
+  RewriteEngine On
+  RewriteCond $MAINTENANCE_FILE -f
+  RewriteCond %{REQUEST_URI} !/$STATIC_URL/maintenance/under-maintenance.gif
+  RewriteRule ^(.+) $MAINTENANCE_URL [R,L]
+ 
+  SSLEngine on
+  SSLCertificateFile {{ galaxy_ssl_cert }}
+  SSLCertificateKeyFile {{ galaxy_ssl_key }}
+  {% if galaxy_ssl_cachain is defined %}
+  SSLCertificateChainFile {{ galaxy_ssl_cachain }}
+  {% endif %}
+  SSLVerifyClient none
+  SSLProtocol all -SSLv2 -SSLv3
+ 
+  WSGIScriptAlias / /var/lib/galaxy/wsgi.py
+  WSGIPassAuthorization On
+ 
+  # FIXME: May want to tune these parameters after performance testing.
+  WSGIDaemonProcess galaxy_https processes=2 threads=20 maximum-requests=1000 display-name="%{GROUP}-https"
+  WSGIProcessGroup galaxy_https
+ 
+  Alias /favicon.ico /var/lib/galaxy/public/static/favicon.ico
+  Alias /static/ /var/lib/galaxy/public/static/
+ 
+  <Directory /var/lib/galaxy/>
+    <Files wsgi.py>
+      Require all granted
+    </Files>
+  </Directory>
+ 
+  <Directory /var/lib/galaxy/public/>
+    Require all granted
+  </Directory>
 
- DocumentRoot /var/lib/galaxy/public
+  <Location /server-status>
+     SetHandler server-status
+     Order deny,allow
+     Deny from all
+     Allow from localhost
+   </Location>
 
- RewriteEngine On
- RewriteCond $MAINTENANCE_FILE -f
- RewriteCond %{REQUEST_URI} !/$STATIC_URL/maintenance/under-maintenance.gif
- RewriteRule ^(.+) $MAINTENANCE_URL [R,L]
-
- SSLEngine on
- SSLCertificateFile {{ galaxy_ssl_cert }}
- SSLCertificateKeyFile {{ galaxy_ssl_key }}
- {% if galaxy_ssl_cachain is defined %}
- SSLCertificateChainFile {{ galaxy_ssl_cachain }}
- {% endif %}
- SSLVerifyClient none
- SSLProtocol all -SSLv2 -SSLv3
-
- WSGIScriptAlias / /var/lib/galaxy/wsgi.py
- WSGIPassAuthorization On
-
- # FIXME: May want to tune these parameters after performance testing.
- WSGIDaemonProcess galaxy_https processes=2 threads=20 maximum-requests=1000 display-name="%{GROUP}-https"
- WSGIProcessGroup galaxy_https
-
- Alias /favicon.ico /var/lib/galaxy/public/static/favicon.ico
- Alias /static/ /var/lib/galaxy/public/static/
-
- <Directory /var/lib/galaxy/>
-   <Files wsgi.py>
-     Require all granted
-   </Files>
- </Directory>
-
- <Directory /var/lib/galaxy/public/>
-   Require all granted
- </Directory>
 </VirtualHost>

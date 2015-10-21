@@ -1,0 +1,80 @@
+---
+- name: Install Datadog Monitoring - Web
+  hosts: web
+  sudo: yes
+  roles:
+      - { role: Datadog.datadog }
+  vars_files:
+      - galaxy-vault.yml
+  vars:
+      datadog_checks:
+          mcache:
+              init_config:
+              instances:
+                  - url: localhost
+                    port: 11211  
+          apache:
+              init_config:
+              instances:
+                  - apache_status_url: http://localhost/server-status?auto 
+  tags:
+      - web
+
+- name: Install Datadog Monitoring - DB
+  hosts: db     
+  sudo: yes
+  tasks:
+     - name: Enable rabbitmq management plugin
+       shell: rabbitmq-plugins enable rabbitmq_management
+     - name: Grant rabbitmq user permissions
+       shell: rabbitmqctl set_permissions -p /galaxy guest ".*" ".*" ".*"
+     - name: Restart rabbitmq
+       service: name=rabbitmq-server state=restarted
+  roles:
+      - { role: postgres_monitor }
+      - { role: Datadog.datadog }
+  vars_files:
+      - galaxy-vault.yml
+  vars:
+      datadog_checks:
+          postgres: 
+              init_config:
+              instances:
+                  - host: localhost
+                    port: 5432
+                    username: "{{ datadog_postgres_user }}" 
+                    password: "{{ datadog_postgres_pass }}" 
+          mcache:
+              init_config:
+              instances:
+                  - url: localhost
+                    port: 11211  
+          rabbitmq:
+              init_config:
+              instances:
+                  - rabbitmq_api_url: http://localhost:15672/api/
+                    rabbitmq_user: guest
+                    rabbitmq_pass: guest
+  tags:
+      - database
+      - db
+
+- name: Install Datadog Monitoring - ES 
+  hosts: es_hosts
+  sudo: yes
+  roles:
+      - { role: Datadog.datadog }
+  vars_files:
+      - galaxy-vault.yml
+  vars:
+      datadog_checks:
+          elastic:
+              init_config:
+              instances:
+                  - url: http://{{ inventory_hostname }}:9200
+                    cluster_stats: true
+                    pshard_stats: true
+  tags:
+      - elasticsearch
+      - elastic
+      - es
