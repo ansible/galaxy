@@ -1,12 +1,13 @@
 ---
+# Used in jenkins deployment
 #
-# Create the robots.txt file for development / QA sites that may be publicly accessible
-# It gets served up by Django, so we're creating it locally on the jenkins box where it will
-# be picked up by sdist and treated like a template.
+# Create robots.txt that disallows everything. Use for development / QA sites that may be publicly accessible.
 #
-- name: Create robots.txt
+- name: Create restricted robots.txt
   hosts: local
   vars:
     searchbots_path: "{{ galaxy_project_dir }}/galaxy/templates"
+    searchbots_disallows: 
+        - '/'
   roles:
     - { role: searchbots }

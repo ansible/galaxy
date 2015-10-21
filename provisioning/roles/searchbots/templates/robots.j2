@@ -1,4 +1,8 @@
 User-agent: *
+{% if searchbots_disallows > 0 %}
 {% for disallow in searchbots_disallows %}
 Disallow: {{ disallow }} 
 {% endfor %}
+{% else %}
+Disallow:
+{% endif %}
