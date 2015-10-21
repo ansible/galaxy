@@ -13,7 +13,8 @@
                     ng-keyup="searchKeyup($event)" 
                     placeholder="{{ searchPlaceholder }}" 
                     ng-keydown="searchKeydown($event)" 
-                    ng-focus="searchFocus($event)" 
+                    ng-focus="searchFocus($event)"
+                    ng-blur="searchBlur($event)"
                     tabindex="2">
                 <div class="search-icon" ng-show="showSearchIcon" ng-click="searchAddKey()"><i class="fa fa-search"></i></div>
                     <ul class="dropdown-menu" id="autocomplete-suggestions" ng-show="searchSuggestions.length">

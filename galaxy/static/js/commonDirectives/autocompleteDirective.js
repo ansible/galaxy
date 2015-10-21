@@ -31,7 +31,7 @@
         };
 
         function _link(scope, element, attr) {
-            scope.searchValue = null;
+            scope.searchValue = '';
             scope.autocompletePlatforms = [];
             scope.autocompleteTags = [];
             scope.showSearchIcon = true;
@@ -54,7 +54,7 @@
             scope.clearAllSearchKeys = _clearAllSearchKeys;
             scope.suggestionKeyup = _itemKeyup;
             scope.searchFocus = _searchFocus;
-
+            scope.searchBlur = _searchBlur;
             autocompleteService.setScope(scope);
             
             var _lazySuggestions = (scope.searchSuggestionFunction) ? _.debounce(function() {
@@ -136,6 +136,12 @@
             function _searchFocus(e) {
                 // When the search field gets focus, make sure the search type dropdown closes
                 $('.autocomplete-search-group .input-group-btn').eq(0).removeClass('open');
+            }
+
+            function _searchBlur(e) {
+                $timeout(function() {
+                    scope.searchSuggestions = [];
+                }, 300);
             }
 
             function _itemKeyup(e) {
