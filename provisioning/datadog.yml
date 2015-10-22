@@ -24,12 +24,18 @@
   hosts: db     
   sudo: yes
   tasks:
+     - name: Start rabbitmq
+       service: name=rabbitmq-server state=started
      - name: Enable rabbitmq management plugin
        shell: rabbitmq-plugins enable rabbitmq_management
      - name: Grant rabbitmq user permissions
        shell: rabbitmqctl set_permissions -p /galaxy guest ".*" ".*" ".*"
-     - name: Restart rabbitmq
+     - name: Restart rabbitmq on master
        service: name=rabbitmq-server state=restarted
+       when: postgres_master
+     - name: Stop rabbitmq on slave
+       service: name=rabbitmq-server state=stopped
+       when: not postgres_master
   roles:
       - { role: postgres_monitor }
       - { role: Datadog.datadog }
