@@ -139,9 +139,11 @@
             }
 
             function _searchBlur(e) {
-                $timeout(function() {
-                    scope.searchSuggestions = [];
-                }, 300);
+                if (e.relatedTarget && e.relatedTarget.offsetParent.id !== 'autocomplete-suggestions') {
+                    $timeout(function() {
+                        scope.searchSuggestions = [];
+                    }, 300);
+                }
             }
 
             function _itemKeyup(e) {
@@ -149,6 +151,8 @@
                 if (e.keyCode === 40) {
                     //down arrow
                     $(e.currentTarget).next().eq(0).find('a').eq(0).focus();
+                    e.preventDefault();
+                    return;
                 }
                 if (e.keyCode === 38) {
                     //up arrow
@@ -156,6 +160,7 @@
                         $('#autocomplete-text-input').focus();
                     }
                     $(e.currentTarget).prev().eq(0).find('a').eq(0).focus();
+                    e.preventDefault();
                 }
             }
 
