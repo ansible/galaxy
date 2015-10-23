@@ -36,11 +36,16 @@
 
     roleApp.config(['$routeProvider', '$logProvider', _config]);
     roleApp.run(['$rootScope', '$location', _run]);
+    roleApp.controller('RedirectToDetail', ['$routeParams', '$window', _redirectToDetail]);
 
     function _config($routeProvider, $logProvider) {
         var debug = (GLOBAL_DEBUG === 'on') ? true : false;
         $logProvider.debugEnabled(debug);
         $routeProvider.
+            when('/roles/:role_id', {
+                templateUrl: '/static/partials/blank-page.html',
+                controller: 'RedirectToDetail'
+            }).
             when('/roles', {
                 templateUrl: '/static/partials/role-list.html',
                 controller: 'RoleListCtrl',
@@ -60,6 +65,12 @@
             otherwise({
                 redirectTo: '/roles'
             });
+    }
+
+    function _redirectToDetail($routeParams, $window) {
+        // Allow /list#/role/:role_id to still work by redirecting
+        // to /detail#/role/:role_id
+        $window.location.replace("/detail#/role/" + $routeParams.role_id + "/");
     }
 
     function _run($rootScope, $location) {
