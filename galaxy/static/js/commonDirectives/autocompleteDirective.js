@@ -139,7 +139,7 @@
             }
 
             function _searchBlur(e) {
-                if (e.relatedTarget && e.relatedTarget.offsetParent.id !== 'autocomplete-suggestions') {
+                if (!e.relatedTarget || e.relatedTarget.offsetParent.id !== 'autocomplete-suggestions') {
                     $timeout(function() {
                         scope.searchSuggestions = [];
                     }, 300);
