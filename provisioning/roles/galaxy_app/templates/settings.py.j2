@@ -53,7 +53,7 @@ ACCOUNT_EMAIL_REQUIRED=True
 ACCOUNT_EMAIL_VERIFICATION="mandatory"
 ACCOUNT_EMAIL_SUBJECT_PREFIX="Ansible Galaxy "
 ACCOUNT_LOGIN_ON_VALIDATE=True
-ACCOUNT_USERNAME_MIN_LENGTH=4
+ACCOUNT_USERNAME_MIN_LENGTH=3
 ACCOUNT_USERNAME_BLACKLIST=['admin','administrator']
 ACCOUNT_PASSWORD_MIN_LENGTH=8
 SOCIALACCOUNT_PROVIDERS={
@@ -99,13 +99,13 @@ CACHES = {
 }
 
 ELASTICSEARCH = {
-    'host': "{{ galaxy_es_host }}:{{ galaxy_es_port }}",
+    'hosts': ["{{ galaxy_es_host }}:{{ galaxy_es_port }}"]
 }
 
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': "{{ galaxy_es_transport }}//{{ galaxy_es_host }}:{{ galaxy_es_port }}",
+        'URL': ['{{ galaxy_es_transport }}://{{ galaxy_es_host }}:{{ galaxy_es_port }}']
         'INDEX_NAME': 'haystack',
     },
 }
