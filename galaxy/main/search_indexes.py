@@ -18,8 +18,12 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     owner_id = indexes.IntegerField(model_attr='owner__id')
     sort_name = indexes.CharField(default='')
     
-    # autocomplete 
+    # autocomplete fields
     autocomplete = indexes.EdgeNgramField(use_template=True)
+    tags_autocomplete = indexes.EdgeNgramField(default='')
+    platforms_autocomplete = indexes.EdgeNgramField(default='')
+    username_autocomplete = indexes.EdgeNgramField(model_attr='owner__username')
+
 
 
     def get_model(self):
@@ -33,10 +37,20 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
         return [platform.name for platform in obj.platforms.filter(active=True).distinct('name')]
 
     def prepare_tags(self, obj):
-        return [tag.name for tag in obj.tags.filter(active=True)]
+        return obj.get_tags()
 
     def prepare_average_score(self, obj):
         return round(obj.average_score,1)
 
     def prepare_sort_name(self, obj):
         return re.sub(r'[-\.]','',obj.name)
+
+    def prepare_platforms_autocomplete(self, obj):
+        return "%s %s %s" % (
+            ' '.join(obj.get_unique_platforms()), 
+            ' '.join(obj.get_unique_platform_search_terms()),
+            ' '.join(obj.get_unique_platform_versions())
+            )
+    
+    def prepare_tags_autocomplete(self, obj):
+        return ' '.join(obj.get_tags())

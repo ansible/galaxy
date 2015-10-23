@@ -125,7 +125,7 @@
         _refresh().then(lazy_resize);
         
         $timeout(function() {
-            // Match the autocomplete widget to match query params
+            // Match the autocomplete widget to query params
             _windowResize();
             _setSearchTerms($scope.list_data);
             _setOrderBy();
@@ -162,15 +162,15 @@
             }
 
             if ($scope.list_data.tags) {
-                params.tags = $scope.list_data.tags;
+                params.tags_autocomplete = $scope.list_data.tags;
             }
 
             if ($scope.list_data.platforms) {
-                params.platforms = $scope.list_data.platforms;
+                params.platforms_autocomplete = $scope.list_data.platforms;
             }
 
             if ($scope.list_data.users) {
-                params.username = $scope.list_data.users;
+                params.username_autocomplete = $scope.list_data.users;
             }
 
             if ($scope.list_data.autocomplete) {

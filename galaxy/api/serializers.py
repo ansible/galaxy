@@ -734,7 +734,8 @@ class RoleSearchSerializer(HaystackSerializer):
         # fields belong to the search index!
         fields = [
             "name", "description", "tags", "platforms", "username", "average_score", "num_ratings",
-            "created", "modified", "text", "autocomplete", "owner_id", "sort_name"
+            "created", "modified", "text", "autocomplete", "owner_id", "sort_name", "platforms_autocomplete",
+            "tags_autocomplete", "username_autocomplete"
         ]
 
     def get_average_score(self, instance):

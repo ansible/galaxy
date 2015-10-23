@@ -350,7 +350,19 @@ class Role(CommonModelNameNotUnique):
             return {}
 
     def get_unique_platforms(self):
-        return [platform.name for platform in self.platforms.filter(active=True).distinct('name')]
+        return [platform.name for platform in self.platforms.filter(active=True).order_by('name').distinct('name')]
+
+    def get_unique_platform_versions(self):
+        return [platform.release for platform in self.platforms.filter(active=True).order_by('release').distinct('release')]
+    
+    def get_unique_platform_search_terms(self):
+        '''
+        Fetch the unique set of aliases
+        '''
+        terms = []
+        for platform in self.platforms.filter(active=True).exclude(alias__isnull=True).exclude(alias__exact='').all():
+            terms += platform.alias.split(' ')
+        return set(terms)
     
     def get_username(self):
         return self.owner.username

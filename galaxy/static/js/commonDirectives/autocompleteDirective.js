@@ -87,7 +87,10 @@
             function _searchKeyup(e) {
                 if (e.keyCode === 13) {
                     //return
-                    scope.searchSuggestions = [];
+                    $timeout.cancel(timeoutEventPromise);
+                    $timeout(function() {
+                        scope.searchSuggestions = [];
+                    }, 300);
                     _searchAddKey();
                     return;
                 }
