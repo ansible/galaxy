@@ -38,7 +38,8 @@
   tasks:
       - shell: "galaxy-manage rebuild_galaxy_indexes"
 
-#- name: Notify slack
-#  hosts: 127.0.0.1 
-#  roles:
-#      - { role: notify_slack, notify_slack_message: "{{ galaxy_slack_message }}", when: galaxy_slack_message is defined }
+- name: Notify slack
+  hosts: 127.0.0.1 
+  connection: local
+  roles:
+      - { role: notify_slack, notify_slack_message: "{{ galaxy_slack_message }}", when: galaxy_slack_message is defined }
