@@ -369,7 +369,7 @@ class Role(CommonModelNameNotUnique):
 
     def get_tags(self):
         return [tag.name for tag in self.tags.filter(active=True)]
-    
+   
 class RoleVersion(CommonModelNameNotUnique):
     class Meta:
         ordering = ('-loose_version',)
@@ -508,7 +508,6 @@ class RoleRating(PrimordialModel):
         
         if len(self.comment) > 5000:
             self.comment = self.comment[:5000]
-        print 'saving!' 
         super(RoleRating, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

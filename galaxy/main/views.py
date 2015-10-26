@@ -496,7 +496,6 @@ def accounts_role_reactivate(request, id=None):
 @login_required
 def accounts_role_add(request):
     context = build_standard_context(request)
-    regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
 
     if request.method == 'POST':
         form = RoleForm(request.POST)
@@ -515,15 +514,9 @@ def accounts_role_add(request):
                     role.github_repo       = cd['github_repo']
                     role.name              = cd.get('name',None) or cd['github_repo']
                     role.is_valid          = False
-
-                    # strip out unwanted sub-strings from the name
-                    role.name = regex.sub('', role.name)
-
                     role.save()
-                    # commit the data to the database upon exiting the
-                    # transaction.atomic() block, to make sure it's available
-                    # for the celery task when it runs            
             except IntegrityError, e:
+                print e
                 form.add_error(None,"You already created a role with that name.")
             except Exception, e:
                 form.add_error(None,"Failed to add role: %s" % e)

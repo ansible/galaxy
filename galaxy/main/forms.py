@@ -18,16 +18,20 @@
 import re
 
 from django.forms import ModelForm, CharField, ValidationError
+from django.utils.html import mark_safe
 
 from models import Role
 
 class RoleForm(ModelForm):
     name = CharField(required=False)
+    
     class Meta:
         model = Role
         fields = ('github_user','github_repo','name')
 
     def clean(self):
+        regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
+
         # github only allows alphanumerics plus a dash for user names
         username_re = re.compile(r"^[0-9A-Za-z\-]+$")
         # repos can also have underscores, which we'll also allow
@@ -42,9 +46,15 @@ class RoleForm(ModelForm):
         # cleanup the data a bit
         github_user = github_user.strip()
         github_repo = github_repo.strip()
+        
         # we don't allow periods in the repo name, to prevent issues
         # like user.name.repo.name
         name = name.strip().replace(".", "_")
+        
+        if not name in ['ansible','Ansible']:
+            # Remove undesirable substrings
+            name = regex.sub('', name)
+
 
         # then do some basic validation
         if github_user == "":
@@ -61,7 +71,15 @@ class RoleForm(ModelForm):
                                               "The github repo field contains invalid characters. "
                                               "Please use alphanumeric characters, dashes and underscores only."
                                           ])
-        if name != "" and not reponame_re.search(name):
+        if name == "":
+            self.add_error(None, mark_safe('Empty name encountered.'
+                '<p style="padding-top:10px;"><strong>NOTE:</strong> When determining '
+                'the role name, <em>(ansible[-_.+]*)*(role[-_.+]*)*</em> is stripped from the '
+                'beginning of the name.</p>'
+                '<p>For example, the name <em>ansible-role-ansible</em> results in a role name of '
+                '<em>ansible</em>. Both <em>ansible-role</em> and <em>ansible-ansible</em> result '
+                'in an empty string, which is not valid.</p>'))
+        elif not reponame_re.search(name):
             self._errors["name"] = self.error_class([
                                        "The name field contains invalid characters. "
                                        "Please use alphanumeric characters, dashes and underscores only."
