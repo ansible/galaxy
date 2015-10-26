@@ -13,10 +13,10 @@
                 <p>The role should exist in its own Github repository. Provide your Github username and the repository name, and Galaxy will retrieve the role from Github.</p>
                 <p>For example, if the role is located at <code>http://github.com/myusername/myrolename</code>, put 'myusername' in the first field and 'myrolename' in the second.<p>
                 <h5 style="padding-top:5px;">Role Naming</h5>
-                <p>By default the role name is taken from the Github repository name. Use the Alternate Name to override the default behavior and provide a different name.</p>
-                <p>Galaxy strips 
-                <em>(ansible[-_.+]*)*(role[-_.+]*)*</em> from the beginning of the name. For example,  
+                <p>By default the role name is taken from the Github repository name. Use Alternate Name to provide a custom name.</p>
+                <p>Galaxy strips <em>(ansible[-_.+]*)*(role[-_.+]*)*</em> from the beginning of the name. For example,  
                 <em>ansible-role-ansible</em> produces a role name of <em>ansible</em>. Both <em>ansible-ansible</em> and <em>ansible-role</em> result in an empty string and an error. The name <em>ansible</em> by itself, however, is allowed.</p>
+                <p>Galaxy replaces &quot;.&quot; with &quot;_&quot;. For example, a Github repository named <em>ansible-ruby-2.1</em> will receive the role name <em>ruby-2_1</em>.</p> 
                 <h5 style="padding-top:5px;">Role Creation</h5>
                 <p>For more information about how to create a role, see the <a href="{% url 'main:intro' %}">getting starteddocumentation</a>.</p>
             </div>

@@ -297,11 +297,20 @@ $ git push
 
                 <p>Log into Galaxy and click the <code>Add a Role</code> menu option. Provide your GitHub username and the name of the Github repository, and Galaxy will import your role, making it available to the Galaxy community.</p>
 
+                <h5>Role Name</h5>
+                <p>By default the role name is taken from the Github repository name. Use the Alternate Name field to provide a custom name.</p>
+                
+                <p>Galaxy strips <em>(ansible[-_.+]*)*(role[-_.+]*)*</em> from the beginning of the name. For example,  
+                <em>ansible-role-ansible</em> produces a role name of <em>ansible</em>. Both <em>ansible-ansible</em> and <em>ansible-role</em> result in an empty string and an error. The name <em>ansible</em> by itself, however, is allowed.</p>
+
+                <p>Galaxy also replaces &quot;.&quot; with &quot;_&quot;. For example, a Github repository named <em>ansible-ruby-2.1</em> will receive the role name <em>ruby-2_1</em>.</p>
+
+                <h5>Versions</h5>
                 <p>If you applied any tags to your repository, Galaxy will automatically display a “version” for each tag.  This means users can choose the version (tag) to download.</p>
 
-                <p>The default behavior, if there are no tags, is to make the “HEAD” version available.  This means users downloading the role will always get the latest from the github repository.</p>
+                <p>The default behavior, if there are no tags, is to make the “HEAD” version available. This means users downloading the role will always get the latest from the github repository.</p>
 
-                <p>To import new tags, you can trigger a re-import from the “Your Roles” page anytime.</p>
+                <p>To import new tags, trigger a re-import from the <em>My Roles</em> page anytime.</p>
 
                 <h3 id="questions">Questions?</h3>
 
