@@ -4,7 +4,8 @@
 
 #galaxy-info {
     margin-top: 60px;
-    text-align: center;
+    padding-bottom: 50px;
+
     .info-label {
         display: inline-block;
         vertical-align: middle;
@@ -20,23 +21,26 @@
         vertical-align: middle;
         width: 60px;
         height: 60px;
-        border-radius: 30px;
-        margin: 0 auto;
+        border-radius: 50%;
         i {
             color: @white;
             padding-top: 6px;
+            padding-left: 10px;
         }
     }
     .download-icon {
         background-color: @ansible-color;
         border: 1px solid @ansible-color;
+        i {
+            padding-left: 7px;
+        }
     }
     .share-icon {
         background-color: @blue;
         border: 1px solid @blue;
         i {
             padding-top: 8px;
-            padding-right: 4px;
+            padding-left: 8px;
         }
     }
     .thumbs-up-icon {
@@ -44,8 +48,11 @@
         border: 1px solid @red;
     }
     .content-txt {
-        text-align: left;
-        padding: 15px 15px 0 15px;
+        text-align: justify;
+        padding: 15px 0 0 0;
+    }
+    pre {
+        font-size: 12px;
     }
 }
 

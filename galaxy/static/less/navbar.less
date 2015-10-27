@@ -15,7 +15,7 @@
 
 .navbar-brand {
     height: @navbar-height;
-    padding: 0 15px;
+    padding: 0;
 }
 
 .navbar-default {
@@ -87,11 +87,15 @@
         border-bottom-right-radius: 0;
     }
     .navbar-nav {
-        margin-top: 18px;
+        margin-top: 15px;
     }
     .navbar-default {
-        .navbar-nav>li:last-of-type {
-            margin-right: 20px;
+        .navbar-nav {
+            li:last-child {
+                a {
+                    margin: 0;
+                }
+            }
         }
         .navbar-nav>li>a {
             text-align: center;
@@ -106,4 +110,15 @@
             color: #161b1f;
         }
     }
+    .navbar-default.navbar-fixed-top {
+        .navbar-nav {
+            li:last-child {
+                margin-right: 15px;
+                a {
+                    margin: 0;
+                }
+            }
+        }
+    }
+    
 }

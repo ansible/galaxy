@@ -8,65 +8,153 @@
 }
 
 #galaxy-footer {
-    min-height: 90px;
     background-color: @black;
-    a {
-        color: @grey;
-    }
-    a:active, a:hover, a:visited {
-        color: @grey;
-    }
-    .social-logos {
-        text-align: right;
-        padding-top: 25px;
-        padding-right: 30px;
+    padding: 30px 0;
 
+    a, a:active, a:visited {
+        display: block;
+        width: auto;
+        color: @white;
+    }
+    a:hover {
+        color: @blue;
+    }
+
+    h2 {
+        color: @ansible-color;
+        margin: 0;
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+
+    section {
+        h2 {
+            margin-bottom: 5px;
+        }
+        margin-top: 30px;
+        a {
+            line-height: 24px;
+        }
+    }
+
+    section:last-of-type {
+        margin-bottom: 20px;
+    }
+
+    .left-border {
+        border-left: 1px solid #ccc;
+        padding-left: 30px;
+    }
+
+    .free-link, .free-link:active, .free-link:visited {
+        color: @ansible-color;
+        line-height: 24px;
+        text-transform: uppercase;
+    }
+    .free-link:hover {
+        color: @ansible-color;
+    }
+
+    .social-logos {
+        margin-top: 60px;
+        margin-bottom: 20px;
+
+        a:hover {
+            color: @blue;
+            border-color: @blue;
+        }
         .github-icon,
         .twitter-icon,
-        .linkedin-icon {
+        .linkedin-icon,
+        .facebook-icon {
             display: inline-block;
             vertical-align: top;
-            border: 2px solid @grey;
+            border: 2px solid @white;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             margin-right: 5px;
+            color: @white;
         }
         .twitter-icon i {
             padding-top: 5px;
-            padding-right: 5px;
+            padding-left: 5px;
         }
         .github-icon i {
             padding-top: 4px;
-            padding-right: 5.5px;
+            padding-left: 5.5px;
         }
         .linkedin-icon i {
             padding-top: 2px;
-            padding-right: 5px;
+            padding-left: 7px;
+        }
+        .facebook-icon {
+            padding-top: 5px;
+            padding-left: 9px;
         }
     }
-    .copyright {
-        padding-top: 30px;
-        padding-left: 30px;
+
+    .banner-container {
+        text-align: center;
+        padding: 13px 30px 0 15px;
+        #ansible-logo {
+            max-width: 110px;
+            margin-bottom: 30px;
+        }
+        #tower-banner {
+            border-radius: 2px;
+            background-color: rgb(255, 88, 80);
+            width: 100%;
+            text-transform: uppercase;
+            color: @white;
+            padding: 30px 20px;
+            text-align: left;
+            h2 {
+                color: white;
+                font-size: 18px;
+                font-weight: bold;
+            }
+            h3 {
+                font-size: 24px;
+                font-weight: 300;
+            }
+            .download-btn {
+                font-size: 14px;
+                margin-top: 15px;
+                text-transform: uppercase;
+            }
+            .btn-primary {
+                border-radius: 3px;
+            }
+            .btn-sm {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
     }
  }
 
-@media (max-width: 768px) {
-    #galaxy-footer {
-        .copyright {
-            text-align: center;
-        }
-        .social-logos {
-            text-align: center;
-            padding-top: 20px;
-            padding-right: 0;
-            padding-bottom: 20px;
+ #galaxy-copyright {
+    background-color: @navbar-background;
+    color: #e1e1e1;
+    padding: 20px 0;
+    a, a:active, a:visited {
+        color: #e1e1e1;
+    }
+    a:hover {
+        color: @white;
+    }
+ }
 
-            .github-icon,
-            .twitter-icon,
-            .linkedin-icon {
-                text-align: right;
-            }
+@media (max-width: 990px) {
+    #galaxy-footer {
+        .banner-container {
+            padding-right: 15px;
+            padding-bottom: 30px;
+        }
+        .left-border {
+            border-left: none;
+            padding-left: 15px;
         }
     }
 }

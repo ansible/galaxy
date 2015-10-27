@@ -4,7 +4,7 @@
 {% block body %}
 
 <nav id="galaxy-navbar" class="navbar navbar-default {% if ng_app == 'listApp' %} navbar-fixed-top {% endif %}">
-    <div class="container-fluid">
+    <div class="{% if url_items_length and url_items_length == 1 %}container{% else %}container-fluid{% endif %}">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                 <span class="sr-only">Toggle navigation</span>
