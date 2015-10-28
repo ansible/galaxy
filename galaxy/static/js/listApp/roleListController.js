@@ -385,7 +385,7 @@
         function _windowResize() {
             $('#galaxy-copyright').hide();
             $('#galaxy-footer-blue-line').hide();
-            
+
             var windowHeight = $($window).height();
             var searchHeight = $('#role-list-search').outerHeight() + 20;
             var footerHeight = 0;
