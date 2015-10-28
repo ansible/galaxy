@@ -4,6 +4,7 @@
 <div id="galaxy-footer-blue-line" class="container-fluid"></div>
 {% endif %}
 
+{% if url_items_length == 1 %}
 <div id="galaxy-footer">
     <div class="container">
         <div class="row">
@@ -58,12 +59,13 @@
         </div><!-- container -->
     </div>
 </div><!-- footer -->
+{% endif %}
 
 <div id="galaxy-copyright">
-    <div class="container">
+    <div class="{% if url_items_length == 1 %}container{% else %}container-fluid{% endif %}">
         <div class="row">
             <div class="col-lg-12">
-                Copyright &copy; 2015 Ansible, Inc. | <a href="http://www.ansible.com/privacy-policy" target="_blank">Privacy Policy</a>
+                Copyright &copy; 2015 Ansible, Inc.{% if url_items_length == 1 %} | <a href="http://www.ansible.com/privacy-policy" target="_blank">Privacy Policy{% endif %}</a>
             </div>
         </div>
     </div>

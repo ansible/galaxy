@@ -383,7 +383,11 @@
         function _windowResize() {
             var windowHeight = $($window).height();
             var searchHeight = $('#role-list-search').outerHeight() + 20;
-            var footerHeight = $('#galaxy-footer').outerHeight() + $('galaxy-footer-blue-line').outerHeight() + 5;
+            var footerHeight = 0;
+            /*if ($($window).width() > 768) {
+                footerHeight = $('#galaxy-footer').outerHeight() +
+                    $('galaxy-footer-blue-line').outerHeight() + $('#galaxy-copyright').outerHeight() + 15;
+            }*/
             var newHeight = windowHeight - 140 - searchHeight - footerHeight;
             $log.debug('searchHeight: ' + searchHeight + ' footerHeight: ' + footerHeight);
             $('#results-container').height(newHeight);

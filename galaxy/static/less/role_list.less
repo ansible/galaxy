@@ -21,6 +21,17 @@
         margin-top: 150px;
     }
 
+    #simple-galaxy-copyright {
+        margin-bottom: 30px;
+        color: @ansible-dark-grey;
+
+        @media (max-width: 768px) {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+        }
+    }
+
     #role-list-search {
         padding-top: 5px;
         border-radius: 2px;
@@ -36,6 +47,13 @@
             label {
                 font-weight: normal;
                 color: @ansible-dark-grey;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-toggle {
+                margin-right: 10px;
+                margin-top: 5px;
             }
         }
     }
