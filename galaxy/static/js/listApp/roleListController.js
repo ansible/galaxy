@@ -50,6 +50,7 @@
         platformService,
         autocompleteService) {
 
+        $('#bs-example-navbar-collapse-1').removeClass('in');  //force collapse of mobile navbar
         
         $scope.page_title = 'Browse Roles';
         $scope.my_info = my_info;

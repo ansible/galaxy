@@ -45,13 +45,13 @@
         </div>
     </div>
     <div class="row search-keys-container" ng-show="searchKeys && searchKeys.length && showSearchKeysContainer">
-        <div class="col-xs-11">
+        <div class="col-xs-10">
             <div class="btn-group btn-group-xs search-key" role="group" ng-repeat="key in searchKeys">
                   <button type="button" class="btn btn-primary search-key-label"><span class="search-key-type">{{ key.type + ': ' }}</span>{{ key.value }}</button>
                   <button type="button" class="btn btn-primary search-key-close" ng-click="removeSearchKey(key)" tabindex="{{ 5 + $index }}"><i class="fa fa-close"></i></button>
             </div>
         </div>
-        <div class="col-xs-1">
+        <div class="col-xs-2">
             <button type="button" class="btn btn-default btn-xs clear-all-search-keys-btn pull-right" ng-click="clearAllSearchKeys()" tabindex="{{ 5 + searchKeys.length }}">CLEAR ALL</button>
         </div>
     </div>
