@@ -45,6 +45,8 @@
             NUM_ROLES_SORT = 'num_roles,username',
             NUM_RATINGS_SORT = 'num_ratings,username';
 
+        $('#bs-example-navbar-collapse-1').removeClass('in');  //force collapse of mobile navbar
+
         $scope.page_title = 'Browse Users';
         $scope.my_info = my_info;
 
