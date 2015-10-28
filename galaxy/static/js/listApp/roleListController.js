@@ -133,6 +133,8 @@
         }, 500);
 
         $scope.$on('$destroy', function() {
+            $('#galaxy-copyright').show();
+            $('#galaxy-footer-blue-line').show();
             $('body').css({ 'overflow-y': 'auto', 'height': '100%' });
         });
         
@@ -381,6 +383,9 @@
         }
 
         function _windowResize() {
+            $('#galaxy-copyright').hide();
+            $('#galaxy-footer-blue-line').hide();
+            
             var windowHeight = $($window).height();
             var searchHeight = $('#role-list-search').outerHeight() + 20;
             var footerHeight = 0;
