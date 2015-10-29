@@ -52,6 +52,10 @@
 
         $('#bs-example-navbar-collapse-1').removeClass('in');  //force collapse of mobile navbar
         $('#galaxy-navbar-container, #galaxy-page-title-container').removeClass('container').addClass('container-fluid');
+        $('#galaxy-copyright').hide();
+        $('#galaxy-footer-blue-line').hide();
+        $('body').css({ 'overflow-y': 'hidden', 'height': 'auto' });
+
         
         $scope.galaxy_page_title_fluid = true;
         $scope.page_title = 'Browse Roles';
@@ -387,21 +391,13 @@
             });
         }
 
-        function _windowResize() {
-            $('#galaxy-copyright').hide();
-            $('#galaxy-footer-blue-line').hide();
-
+        function _windowResize() {            
             var windowHeight = $($window).height();
             var searchHeight = $('#role-list-search').outerHeight() + 20;
-            var footerHeight = 0;
-            /*if ($($window).width() > 768) {
-                footerHeight = $('#galaxy-footer').outerHeight() +
-                    $('galaxy-footer-blue-line').outerHeight() + $('#galaxy-copyright').outerHeight() + 15;
-            }*/
+            var footerHeight = 40;
             var newHeight = windowHeight - 140 - searchHeight - footerHeight;
             $log.debug('searchHeight: ' + searchHeight + ' footerHeight: ' + footerHeight);
             $('#results-container').height(newHeight);
-            $('body').css({ 'overflow-y': 'hidden', 'height': 'auto' });
 
             var containerWidth = $('#results-column').width();
             var resultWidth = $('#results-container .result').eq(0).outerWidth() + 10;
@@ -428,7 +424,7 @@
             var tagsHeight = ($scope.topTags.length * 28) + 75;
             $log.debug('containerHeight: ' + containerHeight);
             $('#role-tags-container').css({ 'height': Math.min(containerHeight, tagsHeight) + 'px' });
-            $('#role-tags-container .body').css({ 'height': (Math.min(containerHeight, tagsHeight) - 80) + 'px '});
+            $('#role-tags-container .body-wrapper').css({ 'height': (Math.min(containerHeight, tagsHeight) - 20) + 'px '});
         }
     }
 })(angular);
