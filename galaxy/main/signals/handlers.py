@@ -6,10 +6,14 @@ from django.contrib.auth import get_user_model
 # elasticsearch
 from elasticsearch_dsl import Search, Q
 
+# allauth
+from allauth.account.signals import user_logged_in
+
 # local
 from galaxy.main.models import Role, RoleRating, Tag
 from galaxy.main.search_models import TagDoc, PlatformDoc
 from galaxy.main.celerytasks.elastic_tasks import update_tags, update_platforms, update_users
+from galaxy.main.celerytasks.tasks import update_user_organizations
 
 User = get_user_model()
 
@@ -62,5 +66,13 @@ def role_post_save(sender, **kwargs):
     if platforms:
         for platform in platforms:
             update_platforms.delay(platform)
+
+
+@receiver(user_logged_in)
+def user_logged_in(request, user, **kwargs):
+    update_user_organizations.delay(user)
+
+
+
 
         

@@ -21,6 +21,7 @@ import time
 import yaml
 import datetime
 import bleach
+import requests
 
 from celery import current_task, task
 from github import Github
@@ -31,7 +32,8 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils import text, html, timezone
 
-#from galaxy.main.utils import db_common
+from allauth.socialaccount.models import SocialToken
+
 from galaxy.main.models import *
 
 def fail_import_task(role, logger, msg):
@@ -319,6 +321,26 @@ def import_role(role_id, target="all"):
         fail_import_task(role, logger, "An unknown error occurred while saving the role. Please wait a few minutes and try again. If you continue to receive a failure, please contact support.")
     
     return True
+
+#----------------------------------------------------------------------
+# Allauth Tasks
+#----------------------------------------------------------------------
+@task(throws=(Exception,))
+def update_user_organizations(user):
+    logger = update_user_organizations.get_logger()
+    tokens = SocialToken.objects.filter(account__user=user, account__provider='github')
+    try:
+        for token in tokens:
+            header = { 'Authorization': 'token ' + token.token }
+            orgs = requests.get('https://api.github.com/user/orgs', headers=header)
+            logger.info("Received orgs: %s" % orgs)
+            for org in orgs.json():
+                org_detail = requests.get('https://api.github.com/orgs/' + org.id, headers=header)
+                logger.info("User organization: %s" % org_detail.name)
+    except Exception, e:
+        logger.error("Failed to update organizations for %s: %s" % (user.username,e))
+    return True
+
 
 #----------------------------------------------------------------------
 # Periodic Tasks
