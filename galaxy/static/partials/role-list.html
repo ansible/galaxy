@@ -51,9 +51,13 @@
                             </div>
                         </div><!-- result -->
                         <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
-                        <div id="simple-galaxy-copyright" ng-show="!loading">
-                        Copyright &copy; 2015 Ansible, Inc.
+                        
+                        <div id="galaxy-copyright-role-list" ng-show="!loading">
+                            <div class="copyright-txt">
+                                Copyright &copy; 2015 Ansible, Inc. | <a href="http://www.ansible.com/security" target="_blank">Security Disclosures</a> | <a href="http://www.ansible.com/privacy-policy" target="_blank">Privacy Policy</a>
+                            </div>
                         </div>
+
                     </div><!-- results -->
                 </div><!-- search-controls-container -->
             </div>
