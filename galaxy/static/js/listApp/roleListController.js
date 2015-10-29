@@ -51,7 +51,9 @@
         autocompleteService) {
 
         $('#bs-example-navbar-collapse-1').removeClass('in');  //force collapse of mobile navbar
+        $('#galaxy-navbar-container, #galaxy-page-title-container').removeClass('container').addClass('container-fluid');
         
+        $scope.galaxy_page_title_fluid = true;
         $scope.page_title = 'Browse Roles';
         $scope.my_info = my_info;
 
@@ -131,9 +133,12 @@
             _setSearchTerms($scope.list_data);
             _setOrderBy();
             _updateTopTags();
+            $('#galaxy-page-title-container').removeClass('container').addClass('container-fluid');
         }, 500);
 
         $scope.$on('$destroy', function() {
+            $('#galaxy-navbar-container').removeClass('container-fluid').addClass('container');
+            $('#galaxy-page-title-container').removeClass('container-fluid').addClass('container');
             $('#galaxy-copyright').show();
             $('#galaxy-footer-blue-line').show();
             $('body').css({ 'overflow-y': 'auto', 'height': '100%' });

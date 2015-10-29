@@ -3,8 +3,8 @@
  */
 
 #galaxy-footer-blue-line {
-    height: 5px;
-    background-color: @blue;
+    height: 1px;
+    background-color: @ansible-dark-grey;
 }
 
 #galaxy-footer {
@@ -132,19 +132,28 @@
             }
         }
     }
- }
+}
 
- #galaxy-copyright {
-    background-color: @navbar-background;
-    color: #e1e1e1;
-    padding: 20px 0;
+#galaxy-copyright,
+#galaxy-copyright-role-list {
+    background-color: @white;
+    color: @ansible-dark-grey;
+    padding: 10px 0;
+    font-size: 12px;
     a, a:active, a:visited {
-        color: #e1e1e1;
+        color: @ansible-dark-grey;
     }
     a:hover {
-        color: @white;
+        color: #ccc;
     }
- }
+    img {
+        height: 50px;
+    }
+    .copyright-txt {
+        float: right;
+        margin-top: 18px;
+    }
+}
 
 @media (max-width: 990px) {
     #galaxy-footer {

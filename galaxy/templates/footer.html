@@ -61,11 +61,14 @@
 </div><!-- footer -->
 {% endif %}
 
-<div id="galaxy-copyright">
-    <div class="{% if url_items_length == 1 %}container{% else %}container-fluid{% endif %}">
+<div id="galaxy-copyright"{% if url_items_length > 1 %} class="interior"{% endif %}>
+    <div class="{% if url_items_length == 1 %}container{% else %}container{% endif %}">
         <div class="row">
             <div class="col-lg-12">
-                Copyright &copy; 2015 Ansible, Inc.{% if url_items_length == 1 %} | <a href="http://www.ansible.com/privacy-policy" target="_blank">Privacy Policy{% endif %}</a>
+                <img src="/static/img/redhat-ansible-footer.png">
+                <div class="copyright-txt">
+                    Copyright &copy; 2015 Ansible, Inc. | <a href="http://www.ansible.com/security" target="_blank">Security Disclosures</a> | <a href="http://www.ansible.com/privacy-policy" target="_blank">Privacy Policy</a>
+                </div>
             </div>
         </div>
     </div>
