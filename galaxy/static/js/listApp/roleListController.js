@@ -138,7 +138,6 @@
 
         $scope.$on('$destroy', function() {
             $('#galaxy-navbar-container').removeClass('container-fluid').addClass('container');
-            $('#galaxy-page-title-container').removeClass('container-fluid').addClass('container');
             $('#galaxy-copyright').show();
             $('#galaxy-footer-blue-line').show();
             $('body').css({ 'overflow-y': 'auto', 'height': '100%' });
