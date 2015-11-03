@@ -333,12 +333,10 @@ def update_user_organizations(user):
         for token in tokens:
             header = { 'Authorization': 'token ' + token.token }
             orgs = requests.get('https://api.github.com/user/orgs', headers=header)
-            logger.info("Received orgs: %s" % orgs)
             for org in orgs.json():
-                org_detail = requests.get('https://api.github.com/orgs/' + org.id, headers=header)
-                logger.info("User organization: %s" % org_detail.name)
+                logger.info("User organization: %s" % org['login'])
     except Exception, e:
-        logger.error("Failed to update organizations for %s: %s" % (user.username,e))
+        logger.error("Failed to update organizations for %s" % (user.username))
     return True
 
 

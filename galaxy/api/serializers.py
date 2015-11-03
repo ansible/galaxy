@@ -303,6 +303,21 @@ class UserRatingContributorsSerializer(BaseSerializer):
     
     def get_avg_rating(self, obj):
         return round(obj.avg_rating,1)
+
+class OrganizationListSerializer(BaseSerializer):
+    class Meta:
+        model = Organization
+        fields = BASE_FIELDS + ('description',)
+
+    def get_related(self, obj):
+        if obj is None or isinstance(obj, AnonymousUser):
+            return {}
+        res = super(OrganizationListSerializer, self).get_related(obj)
+        res.update(dict(
+            users = reverse('api:organization_users_list', args=(obj.pk,)),
+            roles = reverse('api:organization_roles_list', args=(obj.pk,)),
+        ))
+        return res
     
 class UserListSerializer(BaseSerializer):
     avatar_url     = serializers.SerializerMethodField()
@@ -316,15 +331,15 @@ class UserListSerializer(BaseSerializer):
     class Meta:
         model = User
         fields = ('id','username','email','karma','staff',
-                 'full_name','date_joined','avatar_url','avg_rating','avg_role_score',
-                 'num_ratings','num_roles')
+                 'full_name','date_joined','avatar_url','avg_rating',
+                 'avg_role_score','num_ratings','num_roles')
 
     def get_related(self, obj):
         if obj is None or isinstance(obj, AnonymousUser):
             return {}
         res = super(UserListSerializer, self).get_related(obj)
         res.update(dict(
-            roles   = reverse('api:user_roles_list', args=(obj.pk,)),
+            organizations = reverse('api:user_organizations_list', args=(obj.pk,)),
             ratings = reverse('api:user_ratings_list', args=(obj.pk,)),
         ))
         return res
@@ -333,14 +348,6 @@ class UserListSerializer(BaseSerializer):
         if obj is None or isinstance(obj, AnonymousUser):
             return {}
         d = super(UserListSerializer, self).get_summary_fields(obj)
-        d['roles'] = [
-              OrderedDict([
-                  ('id', g.id),
-                  ('name', g.name),
-                  ('num_ratings', g.num_ratings),
-                  ('average_score', g.average_score),
-              ]) for g in obj.user_roles
-        ]
         d['ratings'] = [
             OrderedDict([
                 ('id', g.id),
@@ -350,9 +357,23 @@ class UserListSerializer(BaseSerializer):
                 ('modified', g.modified),
                 ('role_id', g.role.id),
                 ('role_name', g.role.name),
-                ('role_owner_id', g.role.owner.id),
-                ('role_owner_username', g.role.owner.username),
+                ('role_organization_id', g.role.organization.id),
+                ('role_organization_name', g.role.organization.name),
             ]) for g in obj.user_ratings
+        ]
+        d['roles'] = [
+            OrderedDict([
+                ('id', role.id),
+                ('name', role.name),
+                ('organization_id', org.id),
+                ('organization_name', org.name)
+            ]) for org in obj.user_organizations for role in org.user_roles
+        ]
+        d['organizations'] = [
+            OrderedDict([
+                ('id', g.id),
+                ('name', g.name)
+            ]) for g in obj.user_organizations
         ]
         return d
 
@@ -366,15 +387,20 @@ class UserListSerializer(BaseSerializer):
         return round(sum([rating.score for rating in obj.user_ratings]) / len(obj.user_ratings), 1) if len(obj.user_ratings) > 0 else 0
     
     def get_num_roles(self, obj):
-        return len(obj.user_roles)
+        cnt = 0;
+        for org in obj.user_organizations:
+            for role in org.user_roles:
+                cnt += 1
+        return cnt
 
     def get_avg_role_score(self, obj):
         cnt = 0
         total_score = 0
-        for role in obj.user_roles:
-            if role.average_score > 0:
-                cnt += 1
-                total_score += role.average_score
+        for org in obj.user_organizations:
+            for role in org.user_roles:
+                if role.average_score > 0:
+                    cnt += 1
+                    total_score += role.average_score
         return round(total_score / cnt,1) if cnt > 0 else 0
 
     def get_email(self, obj):
@@ -382,6 +408,26 @@ class UserListSerializer(BaseSerializer):
             return obj.email
         else:
             return ''
+
+class OrganizationDetailSerializer(BaseSerializer):
+    class Meta:
+        model = Organization
+        fields = BASE_FIELDS
+
+    def get_summary_fields(self, obj):
+        if obj is None or isinstance(obj, AnonymousUser):
+            return {}
+
+    def get_related(self, obj):
+        if obj is None or isinstance(obj, AnonymousUser):
+            return {}
+        res = super(OrganizationDetailSerializer, self).get_related(obj)
+        res.update(dict(
+            roles = reverse('api:organization_roles_list', args=(obj.pk,)),
+            users = reverse('api:organization_users_list', args=(obj.pk,)),
+        ))
+        return res
+
 
 class UserDetailSerializer(BaseSerializer):
     password = serializers.CharField(
@@ -433,7 +479,7 @@ class UserDetailSerializer(BaseSerializer):
             return {}
         res = super(UserDetailSerializer, self).get_related(obj)
         res.update(dict(
-            roles   = reverse('api:user_roles_list', args=(obj.pk,)),
+            organizations = reverse('api:user_organizations_list', args=(obj.pk,)),
             ratings = reverse('api:user_ratings_list', args=(obj.pk,)),
         ))
         return res
@@ -444,10 +490,12 @@ class UserDetailSerializer(BaseSerializer):
         d = super(UserDetailSerializer, self).get_summary_fields(obj)
         d['roles'] = [
             OrderedDict([
-                ('id', g.id),
-                ('name', g.name),
-                ('average_score', round(g.average_score, 1)),
-            ]) for g in obj.roles.filter(active=True, is_valid=True).order_by('pk')
+                ('id', role.id),
+                ('name', role.name),
+                ('average_score', round(role.average_score, 1)),
+                ('organization_id', org.id),
+                ('organization_name', org.name)
+            ]) for org in obj.organizations.filter(active=True) for role in org.roles.filter(active=True, is_valid=True)
         ]
         d['ratings'] = [
             OrderedDict([
@@ -458,8 +506,8 @@ class UserDetailSerializer(BaseSerializer):
                 ('modified', g.modified),
                 ('role_id', g.role.id),
                 ('role_name', g.role.name),
-                ('role_owner_id', g.role.owner.id),
-                ('role_owner_username', g.role.owner.username),
+                ('role_organization_id', g.role.organization.id),
+                ('role_organization_name', g.role.organization.name),
             ]) for g in obj.ratings.filter(active=True, role__active=True, role__is_valid=True).order_by('-created')
         ]
         return d
@@ -468,7 +516,7 @@ class UserDetailSerializer(BaseSerializer):
         return get_user_avatar_url(obj)
 
     def get_num_ratings(self, obj):
-        return round(obj.get_num_ratings(),1)
+        return obj.get_num_ratings()
 
     def get_avg_rating(self, obj):
         return round(obj.get_rating_average(),1)
@@ -571,12 +619,12 @@ class RoleListSerializer(BaseSerializer):
             return {}
         res = super(RoleListSerializer, self).get_related(obj)
         res.update(dict(
-            owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        authors  = reverse('api:role_authors_list', args=(obj.pk,)),
-            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_imports_list', args=(obj.pk,)),
-            ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
-            versions = reverse('api:role_versions_list', args=(obj.pk,)),
+            organization    = reverse('api:organization_detail', args=(obj.owner.pk,)),
+	        authors         = reverse('api:role_authors_list', args=(obj.pk,)),
+            dependencies    = reverse('api:role_dependencies_list', args=(obj.pk,)),
+            imports         = reverse('api:role_imports_list', args=(obj.pk,)),
+            ratings         = reverse('api:role_ratings_list', args=(obj.pk,)),
+            versions        = reverse('api:role_versions_list', args=(obj.pk,)),
         ))
         return res
 
@@ -597,12 +645,9 @@ class RoleListSerializer(BaseSerializer):
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
         d['tags'] = [{'name':g.name} for g in obj.tags.all()]
         d['versions'] = [{'name':g.name,'release_date':g.release_date} for g in obj.versions.all()]
-        d['owner'] = {
-            'id': obj.owner.id,
-            'username': obj.owner.username,
-            'full_name': obj.owner.full_name,
-            'staff': obj.owner.is_staff,
-            'avatar_url': get_user_avatar_url(obj.owner),
+        d['organization'] = {
+            'id': obj.organization.id,
+            'name': obj.organization.name,
         }
 
         return d
@@ -631,12 +676,12 @@ class RoleTopSerializer(BaseSerializer):
             return {}
         res = super(RoleTopSerializer, self).get_related(obj)
         res.update(dict(
-            owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        authors  = reverse('api:role_authors_list', args=(obj.pk,)),
-            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_imports_list', args=(obj.pk,)),
-            ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
-            versions = reverse('api:role_versions_list', args=(obj.pk,)),
+            organization    = reverse('api:organization_detail', args=(obj.owner.pk,)),
+	        authors         = reverse('api:role_authors_list', args=(obj.pk,)),
+            dependencies    = reverse('api:role_dependencies_list', args=(obj.pk,)),
+            imports         = reverse('api:role_imports_list', args=(obj.pk,)),
+            ratings         = reverse('api:role_ratings_list', args=(obj.pk,)),
+            versions        = reverse('api:role_versions_list', args=(obj.pk,)),
         ))
         return res
 
@@ -655,12 +700,13 @@ class RoleDetailSerializer(BaseSerializer):
     average_score        = serializers.SerializerMethodField()
     readme_html          = serializers.SerializerMethodField()
     tags                 = serializers.SerializerMethodField()
+    organization         = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Role
         fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings',
                                 'github_user','github_repo','min_ansible_version','issue_tracker_url',
-                                'license','company','description','readme_html', 'tags')
+                                'license','company','description','readme_html', 'tags', 'organization')
 
     def to_native(self, obj):
         ret = super(RoleDetailSerializer, self).to_native(obj)
@@ -671,12 +717,12 @@ class RoleDetailSerializer(BaseSerializer):
             return {}
         res = super(RoleDetailSerializer, self).get_related(obj)
         res.update(dict(
-            owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        authors  = reverse('api:role_authors_list', args=(obj.pk,)),
-            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_imports_list', args=(obj.pk,)),
-            ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
-            versions = reverse('api:role_versions_list', args=(obj.pk,)),
+            organization    = reverse('api:organization_detail', args=(obj.organization.pk,)),
+	        authors         = reverse('api:role_authors_list', args=(obj.pk,)),
+            dependencies    = reverse('api:role_dependencies_list', args=(obj.pk,)),
+            imports         = reverse('api:role_imports_list', args=(obj.pk,)),
+            ratings         = reverse('api:role_ratings_list', args=(obj.pk,)),
+            versions        = reverse('api:role_versions_list', args=(obj.pk,)),
         ))
         return res
 
@@ -701,18 +747,17 @@ class RoleDetailSerializer(BaseSerializer):
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
         d['tags'] = [{'name':g.name} for g in obj.tags.all()]
         d['versions'] = [{'name':g.name,'release_date':g.release_date} for g in obj.versions.all()]
-        d['owner'] = {
-            'id': obj.owner.id,
-            'username': obj.owner.username,
-            'full_name': obj.owner.full_name,
-            'staff': obj.owner.is_staff,
-            'avatar_url': get_user_avatar_url(obj.owner),
+        d['organization'] = {
+            'id': obj.organization.id,
+            'name': obj.organization.name,
+            'active': obj.organization.active,
+            'created': obj.organization.created,
+            'modified': obj.organization.modified
         }
-
         return d
     
     def get_average_score(self, obj):
-        return "%0.1f" % obj.average_score
+        return round(obj.average_score,1)
 
     def get_readme_html(self, obj):
         if obj is None:

@@ -74,9 +74,9 @@ def filter_rating_queryset(qs):
 def annotate_user_queryset(qs):
     return qs.annotate(
                num_ratings = Count('ratings', distinct=True),
-               num_roles = Count('roles', distinct=True),
+               num_roles = Count('organizations__roles', distinct=True),
                avg_rating = AvgWithZeroForNull('ratings__score'),
-               avg_role_score = AvgWithZeroForNull('roles__average_score'),
+               avg_role_score = AvgWithZeroForNull('organizations__roles__average_score'),
            )
 
 def annotate_role_queryset(qs):
@@ -113,6 +113,7 @@ class ApiV1RootView(APIView):
         ''' list top level resources '''
         data = SortedDict()
         data['me']         = reverse('api:user_me_list')
+        data['organizations'] = reverse('api:organization_list')
         data['users']      = reverse('api:user_list')
         data['roles']      = reverse('api:role_list')
         data['categories'] = reverse('api:category_list')
@@ -226,7 +227,7 @@ class RoleList(ListCreateAPIView):
 
     def get_queryset(self):
         qs = super(RoleList, self).get_queryset()
-        qs = qs.select_related('owner')
+        qs = qs.select_related('organization')
         qs = qs.prefetch_related('platforms', 'tags', 'versions', 'dependencies')
         return filter_role_queryset(qs)
 
@@ -236,7 +237,7 @@ class RoleTopList(ListCreateAPIView):
 
     def get_queryset(self):
         qs = super(RoleTopList, self).get_queryset()
-        qs = qs.select_related('owner')
+        qs = qs.select_related('organization')
         return filter_role_queryset(qs)
 
 class RoleDetail(RetrieveUpdateDestroyAPIView):
@@ -255,11 +256,42 @@ class UserRatingsList(SubListAPIView):
     parent_model = User
     relationship = 'ratings'
 
+
+class UserOrganizationsList(SubListAPIView):
+    model = Organization
+    serializer_class = OrganizationDetailSerializer
+    parent_model = User
+    relationship = 'organizations'
+
+    def get_queryset(self):
+        qs = super(UserOrganizationsList, self).get_queryset()
+        return qs.filter(active=True)
+
+class OrganizationRolesList(SubListAPIView):
+    model = Role
+    serializer_class = RoleDetailSerializer
+    parent_model = Organization
+    relationship = 'roles'
+
+    def get_queryset(self):
+        qs = super(OrganizationRolesList, self).get_queryset()
+        return qs.filter(is_valid=True)
+
+class OrganizationUsersList(SubListAPIView):
+    model = User
+    serializer_class = UserDetailSerializer
+    parent_model = Organization
+    relationship = 'users'
+
+    def get_queryset(self):
+        qs = super(OrganizationUsersList, self).get_queryset()
+        return qs
+
 class UserRolesList(SubListAPIView):
     model = Role
     serializer_class = RoleDetailSerializer
     parent_model = User
-    relationship = 'roles'
+    relationship = 'organizations'
 
     def get_queryset(self):
         qs = super(UserRolesList, self).get_queryset()
@@ -291,6 +323,30 @@ class UserDetail(RetrieveUpdateDestroyAPIView):
             raise Http404()
         return obj
 
+class OrganizationList(ListAPIView):
+    model = Organization
+    serializer_class = OrganizationListSerializer
+
+    def get_queryset(self):
+        qs = super(OrganizationList, self).get_queryset()
+        return qs.filter(active=True)
+
+class OrganizationDetail(RetrieveUpdateDestroyAPIView):
+    model = Organization
+    serializer_class = OrganizationDetailSerializer
+    
+    def update_filter(self, request, *args, **kwargs):
+        ''' make sure non-read-only fields that can only be edited by admins, are only edited by admins '''
+        obj = Organization.objects.get(pk=kwargs['pk'])
+        if not check_user_access(request.user, Organization, 'admin', obj, request.DATA):
+            raise PermissionDenied('Cannot change Organization %s' % obj.name)
+
+    def get_object(self, qs=None):
+        obj = super(OrganizationDetail, self).get_object()
+        if not obj.active:
+            raise Http404()
+        return obj    
+
 class UserList(ListAPIView):
     model = User
     serializer_class = UserListSerializer
@@ -299,18 +355,24 @@ class UserList(ListAPIView):
         qs = super(UserList, self).get_queryset()
         qs = qs.prefetch_related(
             Prefetch(
-                'roles',
+                 'organizations',
+                 queryset=Organization.objects.filter(active=True).order_by('pk'),
+                 to_attr='user_organizations',
+            ),
+            Prefetch(
+                'user_organizations__roles',
                 queryset=Role.objects.filter(active=True, is_valid=True).order_by('pk'),
-                to_attr='user_roles'
+                to_attr='user_roles',
             ),
             Prefetch(
                 'ratings',
                 queryset=RoleRating.objects.select_related('role').filter(active=True, role__active=True, role__is_valid=True).order_by('-created'),
-                to_attr='user_ratings'
+                to_attr='user_ratings',
             ),
         )
         return annotate_user_queryset(filter_user_queryset(qs))
 
+'''
 class UserRoleContributorsList(ListAPIView):
     model = User
     serializer_class = UserRoleContributorsSerializer
@@ -342,7 +404,7 @@ class UserRatingContributorsList(ListAPIView):
             avg_rating = AvgWithZeroForNull('ratings__score'),
         )
         return annotate_user_queryset(filter_user_queryset(qs))
-
+'''
 class RatingList(ListAPIView):
     model = RoleRating
     serializer_class = RoleRatingSerializer

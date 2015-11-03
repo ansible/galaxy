@@ -28,6 +28,7 @@ from django.utils import timezone
 
 from galaxy.api.aggregators import *
 from galaxy.main.mixins import *
+from galaxy.main.models import Organization
 
 class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     """
@@ -102,18 +103,29 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
                )['avg_rating'] or 0
 
     def get_num_roles(self):
-        return self.roles.filter(active=True, is_valid=True).count()
+        cnt = 0
+        for org in self.organizations.filter(active=True):
+            for role in org.roles.filter(active=True, is_valid=True):
+                cnt += 1
+        return cnt
 
     def get_role_average(self):
-        return self.roles.filter(active=True, is_valid=True, average_score__gt=0).aggregate(
-                   avg = AvgWithZeroForNull('average_score'),
-               )['avg'] or 0
-
+        cnt = 0
+        total_score = 0
+        for org in self.organizations.filter(active=True):
+            for role in org.roles.filter(active=True, is_valid=True, average_score__gt=0):
+                cnt += 1
+                total_score += role.average_score
+        return round(total_score / cnt, 1) if cnt > 0 else 0
+   
     def email_user(self, subject, message, from_email=None):
         """
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email])
+
+    def get_default_organization(self):
+        return self.organizations.filter(name=self.username)[0]
 
     def hasattr(self, attr):
         return hasattr(self, attr)
