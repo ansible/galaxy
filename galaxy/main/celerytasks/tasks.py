@@ -326,48 +326,19 @@ def import_role(role_id, target="all"):
 # Allauth Tasks
 #----------------------------------------------------------------------
 @task(throws=(Exception,))
-@transaction.atomic()
 def update_user_organizations(user):
     logger = update_user_organizations.get_logger()
     tokens = SocialToken.objects.filter(account__user=user, account__provider='github')
     try:
-        with transaction.atomic():
-            for token in tokens:
-                header = { 'Authorization': 'token ' + token.token }
-                ''' Determine github username '''
-                github_user = requests.get('https://api.github.com/user', headers=header)
-                github_username = github_user.json()['login']
-                ''' Access public orgs only '''
-                github_orgs = requests.get("https://api.github.com/users/%s/orgs" % github_username, headers=header)
-                github_org_names = [user.username]
-                
-                ''' check that the user is represented in Organizations '''
-                if Organization.objects.filter(name=user.username).count() == 0:
-                    print "add username organization: %s" % user.username
-                    user_org = Organization.objects.create(name=user.username, description=user.username)
-                    user_org.users.add(user)
-                
-                ''' create any new Organizations and add user '''
-                for github_org in github_orgs.json():
-                    print "checking github org: %s" % github_org['login']
-                    github_org_names.append(github_org['login'])
-                    if Organization.objects.filter(name=github_org['login']).count() == 0:
-                        print "add organization: %s" % github_org['login']
-                        new_org = Organization.objects.create(name=github_org['login'], description=github_org['login'])
-                        new_org.users.add(user)
-                    if Organization.objects.filter(name=github_org['login'],users=user).count() == 0:
-                        print "add user %s to organization: %s" % (user.username,github_org['login'],)
-                        org = Organization.objects.get(name=github_org['login'])
-                        org.users.add(user)
-
-                ''' remove users from any Organizations no longer found on github '''
-                for org in Organization.objects.filter(users=user):
-                    if (not org.name in github_org_names):
-                        print "remove user %s from org: %s" % (user.username,org.name,)
-                        org.users.remove(user)
+        for token in tokens:
+            header = { 'Authorization': 'token ' + token.token }
+            orgs = requests.get('https://api.github.com/user/orgs', headers=header)
+            logger.info("Received orgs: %s" % orgs)
+            for org in orgs.json():
+                org_detail = requests.get('https://api.github.com/orgs/' + org.id, headers=header)
+                logger.info("User organization: %s" % org_detail.name)
     except Exception, e:
-        print "Failed to update organizations for user %s" % (user.username)
-        logger.error("Failed to update organizations for user %s" % (user.username))
+        logger.error("Failed to update organizations for %s: %s" % (user.username,e))
     return True
 
 

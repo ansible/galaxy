@@ -44,7 +44,7 @@ from galaxy.main.fields import *
 from galaxy.main.mixins import *
 
 __all__ = [
-    'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'RoleRating', 'RoleImport', 'RoleVersion', 'Organization', 'UserAlias',
+    'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'RoleRating', 'RoleImport', 'RoleVersion', 'UserAlias',
 ]
 
 ###################################################################################
@@ -172,7 +172,7 @@ class Tag(CommonModel):
         return reverse('api:tag_detail', args=(self.pk,))
 
     def get_num_roles(self):
-        return self.roles.filter(active=True, organization__active=True).count()
+        return self.roles.filter(active=True, owner__is_active=True).count()
 
 
 class Platform(CommonModelNameNotUnique):
@@ -218,42 +218,17 @@ class UserAlias(models.Model):
     def __unicode__(self):
         return unicode("%s (alias of %s)"% (self.alias_name, self.alias_of.username))
 
-class Organization(CommonModel):
-    '''
-    class representing an organization. Every user has at least one organization matching
-    their username. A user may have additional organizations as defined in Github.
-    '''
-    class Meta:
-        verbose_name_plural = "Organizations"
-
-    #------------------------------------------------------------------------------
-    # foreign keys
-
-    users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name = 'organizations',
-        editable     = False,
-    )
-
-    #------------------------------------------------------------------------------
-    # other functions and properties
-
-    def __unicode__(self):
-        return self.name
-
-
-
 class Role(CommonModelNameNotUnique):
-    ''' Class representing a role '''
+    ''' a class representing a user role '''
 
     class Meta:
-        unique_together = ('organization','name')
+        unique_together = ('owner','name')
 
     #------------------------------------------------------------------------------
     # foreign keys
 
-    organization = models.ForeignKey(
-        Organization,
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
         related_name = 'roles',
         editable     = False,
     )
@@ -366,7 +341,7 @@ class Role(CommonModelNameNotUnique):
     # other functions and properties
 
     def __unicode__(self):
-        return "%s.%s" % (self.organization.name,self.name)
+        return "%s.%s" % (self.owner.username,self.name)
 
     def get_last_import(self):
         try:
@@ -390,10 +365,7 @@ class Role(CommonModelNameNotUnique):
         return set(terms)
     
     def get_username(self):
-        return self.organization.name
-
-    def get_organization_name(self):
-        return self.organization.name
+        return self.owner.username
 
     def get_tags(self):
         return [tag.name for tag in self.tags.filter(active=True)]
@@ -426,7 +398,7 @@ class RoleVersion(CommonModelNameNotUnique):
     # other functions and properties
 
     def __unicode__(self):
-        return "%s.%s-%s" % (self.role.organization.name,self.role.name,self.name)
+        return "%s.%s-%s" % (self.role.owner.username,self.role.name,self.name)
 
     def save(self, *args, **kwargs):
         # the value of score is based on the
@@ -477,7 +449,7 @@ class RoleImport(PrimordialModel):
     # other functions and properties
 
     def __unicode__(self):
-        return "%s-%s" % (self.organization.name,self.released.strftime("%Y%m%d-%H%M%S-%Z"))
+        return "%s-%s" % (self.role.name,self.released.strftime("%Y%m%d-%H%M%S-%Z"))
 
     @property
     def celery_task(self):
@@ -520,7 +492,7 @@ class RoleRating(PrimordialModel):
     # other functions and properties
 
     def __unicode__(self):
-        return "%s.%s -> %s" % (self.role.organization.name,self.role.name,self.score)
+        return "%s.%s -> %s" % (self.role.owner.username,self.role.name,self.score)
 
     def save(self, *args, **kwargs):
         def clamp_range(value):

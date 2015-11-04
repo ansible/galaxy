@@ -135,19 +135,6 @@ class BaseAccess(object):
     def can_unattach(self, obj, sub_obj, relationship):
         return self.can_change(obj, None)
 
-class OrganizationAccess(BaseAccess):
-    model = Organization
-
-    def get_queryset(self):
-        return self.model.objects.filter(active=True).distinct()
-
-    def can_change(self, obj, data):
-        if not self.user.is_authenticated:
-            return False
-        if not self.user.is_staff:
-            return False
-        return True
-
 class UserAccess(BaseAccess):
     '''
     I can see user records when:
@@ -229,4 +216,3 @@ register_access(Role, RoleAccess)
 register_access(RoleRating, RoleRatingAccess)
 register_access(RoleVersion, RoleVersionAccess)
 register_access(RoleImport, RoleImportAccess)
-register_access(Organization, OrganizationAccess)

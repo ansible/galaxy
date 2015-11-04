@@ -33,19 +33,11 @@ def url(regex, view, kwargs=None, name=None, prefix=''):
 
 user_urls = patterns('galaxy.api.views',
     url(r'^$',                         'user_list'),
-    # url(r'rolecontributors/$',         'user_role_contributors_list'),
-    # url(r'ratingcontributors/$',       'user_rating_contributors_list'),
+    url(r'rolecontributors/$',         'user_role_contributors_list'),
+    url(r'ratingcontributors/$',       'user_rating_contributors_list'),
     url(r'^(?P<pk>[0-9]+)/$',          'user_detail'),
-    url(r'^(?P<pk>[0-9]+)/organizations/$', 'user_organizations_list'),
-    #url(r'^(?P<pk>[0-9]+)/roles/$',    'user_roles_list'),
+    url(r'^(?P<pk>[0-9]+)/roles/$',    'user_roles_list'),
     url(r'^(?P<pk>[0-9]+)/ratings/$',  'user_ratings_list'),
-)
-
-organization_urls = patterns('galaxy.api.views',
-    url(r'^$',                      'organization_list'),
-    url(r'^(?P<pk>[0-9]+)/$',       'organization_detail'),
-    url(r'^(?P<pk>[0-9]+)/roles/$', 'organization_roles_list'),
-    url(r'^(?P<pk>[0-9]+)/users/$', 'organization_users_list'),
 )
 
 role_urls = patterns('galaxy.api.views',
@@ -93,7 +85,6 @@ v1_urls = patterns('galaxy.api.views',
     url(r'^$',                         'api_v1_root_view'),
     url(r'^me/$',                      'user_me_list'),
     url(r'^users/',                    include(user_urls)),
-    url(r'^organizations/',            include(organization_urls)),
     url(r'^roles/',                    include(role_urls)),
     url(r'^categories/',               include(category_urls)),
     url(r'^tags/',                     include(tag_urls)),
