@@ -222,7 +222,7 @@ class Role(CommonModelNameNotUnique):
     ''' a class representing a user role '''
 
     class Meta:
-        unique_together = ('github_user','name')
+        unique_together = ('namespace','name')
 
     #------------------------------------------------------------------------------
     # foreign keys
@@ -267,12 +267,12 @@ class Role(CommonModelNameNotUnique):
 
     #------------------------------------------------------------------------------
     # regular fields
-    #namespace = models.CharField(
-    #    max_length = 256,
-    #    verbose_name = "Namespace",
-    #    blank = True,
-    #    null = True
-    #)
+    namespace = models.CharField(
+       max_length = 256,
+       verbose_name = "Namespace",
+       blank = True,
+       null = True
+    )
     github_user = models.CharField(
         max_length   = 256,
         verbose_name = "Github Username",

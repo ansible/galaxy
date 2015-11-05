@@ -20,4 +20,8 @@ class Migration(migrations.Migration):
             name='namespace',
             field=models.CharField(max_length=256, null=True, verbose_name=b'Namespace', blank=True),
         ),
+        migrations.AlterUniqueTogether(
+            name='role',
+            unique_together=set([('namespace', 'name')]),
+        ),
     ]
