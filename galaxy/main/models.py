@@ -222,7 +222,7 @@ class Role(CommonModelNameNotUnique):
     ''' a class representing a user role '''
 
     class Meta:
-        unique_together = ('owner','name')
+        unique_together = ('github_user','name')
 
     #------------------------------------------------------------------------------
     # foreign keys
@@ -230,11 +230,6 @@ class Role(CommonModelNameNotUnique):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name = 'roles',
-        editable     = False,
-    )
-    authors = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name = 'author_on',
         editable     = False,
     )
     dependencies = models.ManyToManyField(
@@ -272,7 +267,12 @@ class Role(CommonModelNameNotUnique):
 
     #------------------------------------------------------------------------------
     # regular fields
-
+    #namespace = models.CharField(
+    #    max_length = 256,
+    #    verbose_name = "Namespace",
+    #    blank = True,
+    #    null = True
+    #)
     github_user = models.CharField(
         max_length   = 256,
         verbose_name = "Github Username",
