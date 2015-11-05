@@ -90,7 +90,3 @@
   file:
     path: "/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\\.gz$','') }}"
     state: absent
-
-- name: "Apply Migrations"
-  command: galaxy-manage migrate --fake-initial --noinput
-  when: galaxy_apply_migrations
