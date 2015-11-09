@@ -18,6 +18,7 @@
 # standard python libraries
 import sys
 import math
+import requests
 
 # rest framework stuff
 from rest_framework import filters
@@ -27,6 +28,8 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
+from rest_framework.authtoken.models import Token
 
 # django stuff
 from django.contrib.auth.models import AnonymousUser
@@ -34,6 +37,9 @@ from django.db.models import F, Count, Avg, Prefetch
 from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.apps import apps
+
+#allauth
+from allauth.socialaccount.models import SocialAccount
 
 # haystack
 from drf_haystack.viewsets import HaystackViewSet
@@ -52,6 +58,7 @@ from galaxy.api.permissions import *
 from galaxy.api.serializers import *
 from galaxy.main.models import *
 from galaxy.main.utils import camelcase_to_underscore
+from galaxy.api.permissions import ModelAccessPermission
 
 
 #--------------------------------------------------------------------------------
@@ -91,17 +98,19 @@ def annotate_role_queryset(qs):
 
 #--------------------------------------------------------------------------------
 
+
 class ApiRootView(APIView):
     permission_classes = (AllowAny,)
     view_name = 'REST API'
+
     def get(self, request, format=None):
         ''' list supported API versions '''
         current = reverse('api:api_v1_root_view', args=[])
         data = dict(
             description = 'GALAXY REST API',
-            current_version = current,
+            current_version = 'v1', 
             available_versions = dict(
-                v1 = current
+                v1 = current,
             )
         )
         return Response(data)
@@ -119,6 +128,8 @@ class ApiV1RootView(APIView):
         data['tags']       = reverse('api:tag_list')
         data['platforms']  = reverse('api:platform_list')
         data['ratings']    = reverse('api:rating_list')
+        data['import']     = reverse('api:import_task_list')
+        data['token']      = reverse('api:token')
         data['search']     = reverse('api:search_view')
         return Response(data)
 
@@ -248,6 +259,12 @@ class RoleDetail(RetrieveUpdateDestroyAPIView):
         if not obj.is_valid or not obj.active:
             raise Http404()
         return obj
+
+class ImportTaskList(ListCreateAPIView):
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated,ModelAccessPermission)
+    model = ImportTask
+    serializer_class = ImportTaskListSerializer
 
 class UserRatingsList(SubListAPIView):
     model = RoleRating
@@ -482,7 +499,48 @@ class TagsSearchView(APIView):
         response['results'] = serializer.data
         return Response(response)
         
-
+class TokenView(APIView):
+    '''
+    Provides token authentication for ansible-galaxy CLI
+    '''
+    def post(self, request, *args, **kwargs):
+        
+        gh_user = None
+        user = None
+        token = None
+        github_token = request.data.get('github_token', None)
+        
+        if github_token == None:
+            return Response({ "message": "Invalid request." })
+        
+        try:
+            status = requests.get('https://api.github.com')
+            status.raise_for_status()
+        except:
+            return Response({"message": "Error accessing Github API. Please try again later."})
+        
+        try:
+            header = { 'Authorization': 'token ' + github_token }
+            gh_user = requests.get('https://api.github.com/user', headers=header)
+            gh_user.raise_for_status()
+            gh_user = gh_user.json()
+            if hasattr(gh_user,'message'):
+                return Response({ "message": gh_user['message'] })
+        except:
+            return Response({ "message": "Error while attempting to access Github with provided token."})
+        
+        if SocialAccount.objects.filter(provider='github',uid=gh_user['id']).count() > 0:
+            user = SocialAccount.objects.get(provider='github',uid=gh_user['id']).user
+        else:
+            return Response({ "message": "Galaxy user account not found. You must first log into galaxy.ansible.com using your Github account."})
+        
+        if Token.objects.filter(user=user).count() > 0:
+            token = Token.objects.filter(user=user)[0]
+        else:
+            token = Token.objects.create(user=user)
+            token.save()
+        return Response({ "token": token.key, "username": user.username })
+        
 def get_response(*args, **kwargs):
     """ 
     Create a response object with paging, count and timing attributes for search result views.

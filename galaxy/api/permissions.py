@@ -67,7 +67,9 @@ class ModelAccessPermission(permissions.BasePermission):
         else:
             if obj:
                 return True
-            return check_user_access(request.user, view.model, 'add', request.DATA)
+            if hasattr(view,'model'):
+                return check_user_access(request.user, view.model, 'add', request.DATA)
+            return True
 
     def check_put_permissions(self, request, view, obj=None):
         if not obj:

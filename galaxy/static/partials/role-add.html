@@ -1,0 +1,33 @@
+<ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
+
+<div class="container" id="galaxy-role-add">
+    <form novalidate name="addRoleForm">
+        <div class="form-group">
+            <label ng-show="form.githubUrlLabelShow">{{ form.githubUrlLabel }}</label>
+            <input type="url" name="githubUrl" class="form-control" id="github-url-input"
+                ng-model="form.githubUrl" 
+                ng-focus="form.fieldFocus('githubUrl')" 
+                ng-blur="form.fieldBlur('githubUrl')" 
+                ng-change="form.githubUrlChange()" 
+                placeholder="{{ form.githubUrlPlaceholder }}"
+                ng-pattern="form.githubUrlPattern">
+            <div ng-show="addRoleForm.githubUrl.$error.url || addRoleForm.githubUrl.$error.pattern">Invalid URL. Provide the HTTPS clone URL for the Github repository.</div>
+        </div>
+        <div class="form-group">
+            <label ng-show="form.namespaceLabelShow">{{ form.namespaceLabel }}</label>
+            <input type="text" name="namespace" class="form-control" id="namespace-input" 
+                placeholder="{{ form.namespacePlaceholder }}"
+                ng-model="form.namespace" 
+                ng-focus="form.fieldFocus('namespace')" 
+                ng-blur="form.fieldBlur('namespace')">     
+        </div>
+        <div class="form-group">
+            <label ng-show="form.repoLabelShow">{{ form.repoLabel }}</label>
+            <input type="text" name="repo" class="form-control" id="repo-input" 
+                placeholder="{{ form.repoPlaceholder }}"
+                ng-model="form.repo" 
+                ng-focus="form.fieldFocus('repo')" 
+                ng-blur="form.fieldBlur('repo')">
+        </div>
+    </form>
+</div>

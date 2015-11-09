@@ -505,6 +505,21 @@ class RoleVersionSerializer(BaseSerializer):
         model = RoleVersion
         fields = ('id','name','release_date',)
 
+class ImportTaskListSerializer(BaseSerializer):
+    class Meta:
+        model = ImportTask
+        fields = (
+            'id',
+            'role',
+            'owner'
+            'github_user',
+            'github_repo',
+            'celery_task_id',
+            'state',
+            'started',
+            'created',
+            'modified')
+
 class RoleImportSerializer(BaseSerializer):
     class Meta:
         model = RoleImport

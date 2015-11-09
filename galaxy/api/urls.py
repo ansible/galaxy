@@ -20,7 +20,7 @@
 
 from django.conf.urls import include, patterns, url as original_url
 from rest_framework import routers
-from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView, UserSearchView
+from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView, UserSearchView, TokenView
 
 router = routers.DefaultRouter()
 router.register('v1/search/roles', RoleSearchView, base_name="search-roles")
@@ -90,6 +90,8 @@ v1_urls = patterns('galaxy.api.views',
     url(r'^tags/',                     include(tag_urls)),
     url(r'^platforms/',                include(platform_urls)),
     url(r'^ratings/',                  include(rating_urls)),
+    url(r'^import/',                   'import_task_list'),
+    url(r'^token/',                    TokenView.as_view(), name='token'),
     url(r'^search/',                   include(search_urls)),
 )
 

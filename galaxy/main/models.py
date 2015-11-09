@@ -44,7 +44,8 @@ from galaxy.main.fields import *
 from galaxy.main.mixins import *
 
 __all__ = [
-    'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'RoleRating', 'RoleImport', 'RoleVersion', 'UserAlias',
+    'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 
+    'RoleImport', 'RoleVersion', 'UserAlias'
 ]
 
 ###################################################################################
@@ -405,6 +406,89 @@ class RoleVersion(CommonModelNameNotUnique):
         # values in the other rating fields
         self.loose_version = self.name
         super(RoleVersion, self).save(*args, **kwargs)
+
+
+class ImportTask(PrimordialModel):
+    github_user = models.CharField(
+        max_length   = 256,
+        verbose_name = "Github Username",
+        null         = False,
+        blank        = False,
+        editable     = True,
+    )
+    github_repo = models.CharField(
+        max_length   = 256,
+        verbose_name = "Github Repository",
+        null         = False,
+        blank        = False,
+        editable     = True,
+    )
+    role = models.ForeignKey(
+        Role,
+        related_name = 'import_tasks',
+        null = True,
+        blank = True,
+        default = None,
+        db_index = True,
+    )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name  = 'import_tasks',
+        null          = True,
+        blank         = True,
+        db_index      = True 
+    )
+    celery_task_id = models.CharField(
+        max_length   = 100,
+        blank        = True,
+        null         = True,
+        editable     = False,
+        db_index     = True,
+    )
+    state = models.CharField(
+        max_length   = 20,
+        blank        = True,
+        null         = True,
+        default      = '',
+        editable     = False,
+        db_index     = True,
+    )
+    started = models.DateTimeField(
+        editable     = False,
+        auto_now_add = False,
+        null         = True,
+        blank        = True,
+    )
+
+    def __unicode__(self):
+        return "%d-%s" % (self.id,self.started.strftime("%Y%m%d-%H%M%S-%Z"))
+
+
+class ImportTaskMessage(PrimordialModel):
+    task = models.ForeignKey(
+        ImportTask,
+        related_name = 'messages',
+        null         = False,
+        blank        = False,
+    )
+    message_type = models.CharField(
+        max_length = 10,
+        blank      = False,
+        null       = False,
+        editable   = False,
+        db_index   = False
+    )
+    message_text = models.CharField(
+        max_length  = 256,
+        blank       = False,
+        null        = False,
+        editable    = False,
+        db_index    = False
+    )
+
+    def __unicode__(self):
+        return "%d-%s-%s" % (self.task.id,self.message_type,self.message_text)
+
 
 class RoleImport(PrimordialModel):
     class Meta:

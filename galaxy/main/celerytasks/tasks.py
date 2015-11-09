@@ -23,8 +23,8 @@ import datetime
 import bleach
 import requests
 
-from celery import current_task, task
-from github import Github
+from celery import task
+from github import Github, AuthenticatedUser
 from github import GithubException
 
 from django.conf import settings
@@ -35,6 +35,7 @@ from django.utils import text, html, timezone
 from allauth.socialaccount.models import SocialToken
 
 from galaxy.main.models import *
+from galaxy.main.celerytasks.tasks import TaskException
 
 def fail_import_task(role, logger, msg):
     transaction.rollback()
@@ -88,8 +89,10 @@ def get_readme(repo):
     
     return readme
 
+
+
 @task(throws=(Exception,))
-def import_role(role_id, target="all"):
+def import_role(task_id, target="all"):
     
     # regex used to strip unwanted substrings from the 
     # role name or from any deps
@@ -100,36 +103,48 @@ def import_role(role_id, target="all"):
 
     # get the role from the database
     try:
-        print "Look up role_id: %d" % int(role_id)
-        role = Role.objects.get(id=role_id)
-        role_import = role.imports.latest()
-        role_import.state = "RUNNING"
-        role_import.status_message = "Import task is running..."
-        role_import.save()
+        print "Look up task_id: %d" % int(task_id)
+        import_task = ImportTask.objects.get(id=task_id)
+        import_task.state = "RUNNING"
+        import_task.started = datetime.datetime.now()
+        import_task.save()
         transaction.commit()
+        role = import_task.role
+        user = import_task.user
     except:
-        fail_import_task(None, logger, "Failed to get role id: %d. No role was found." % int(role_id))
+        fail_import_task(None, logger, "Failed to get task id: %d" % int(task_id))
+
+    try:
+        token = SocialToken.objects.get(account__user=user, account__provider='github')
+    except:
+        faile_import_task(None, logger,"Failed to get Github account for Galaxy user %s. You must first " +
+            "authenticate with Github." % user.username)
 
     # create an API object and get the repo
     try:
-        # FIXME: needs to use a real github account in order in order to
-        #        avoid a ridiculously low rate limit (60/hr vs 5000/hr)
-        print "Connecting to Github for role_id: %d" % int(role_id)
-        if hasattr(settings, 'GITHUB_API_TOKEN'):
-            gh_api = Github(settings.GITHUB_API_TOKEN)
-        else:
-            gh_api = Github(settings.GITHUB_USERNAME, settings.GITHUB_PASSWORD)
+        gh_api = Github(token.token)
         gh_api.get_api_status()
     except:
         fail_import_task(role, logger, "Failed to connect to Github API. This is most likely a temporary error, please re-try your import in a few minutes.")
+    
     try:
-        print "Accessing repo %s/%s for role_id: %s" % (role.github_user, role.github_repo, int(role_id))
-        user = gh_api.get_user(role.github_user)
-        repo = user.get_repo("%s" % role.github_repo)
-    except GithubException, e:
-        print "Failed to access repo: %s %s" % (e.status, e.data)
-        fail_import_task(role, logger, "Failed to get the specified repo: %s/%s. Please make sure it is a public repo on Github." % (role.github_user,role.github_repo))
+        gh_user = AuthenticatedUser(token.token)
+    except:
+        fail_import_task(role, logger, "Failed to get Github authorized user.")
 
+    # print "Accessing repo %s/%s for role_id: %s" % (role.github_user, role.github_repo, int(role_id))
+    repo_full_name = role.github_user + "/" + role.github_repo
+    repo_access = False
+    print "Verifying user %s has access to repo %s" % (user.username,repo_full_name)
+    for repo in user.get_repos():
+        if repo.full_name == repo_full_name:
+            repo_access = True
+            continue
+    if not repo_access:
+        fail_import_task(role, logger, "Galaxy user %s does not have access to repo %s" % (user.username,repo_full_name))
+
+    repo = gh_user.get_repo("%s" % role.github_repo)
+    
     # parse and validate meta/main.yml data
     galaxy_info = {}
     dependencies = []
@@ -320,25 +335,6 @@ def import_role(role_id, target="all"):
     except Exception, e:
         fail_import_task(role, logger, "An unknown error occurred while saving the role. Please wait a few minutes and try again. If you continue to receive a failure, please contact support.")
     
-    return True
-
-#----------------------------------------------------------------------
-# Allauth Tasks
-#----------------------------------------------------------------------
-@task(throws=(Exception,))
-def update_user_organizations(user):
-    logger = update_user_organizations.get_logger()
-    tokens = SocialToken.objects.filter(account__user=user, account__provider='github')
-    try:
-        for token in tokens:
-            header = { 'Authorization': 'token ' + token.token }
-            orgs = requests.get('https://api.github.com/user/orgs', headers=header)
-            logger.info("Received orgs: %s" % orgs)
-            for org in orgs.json():
-                org_detail = requests.get('https://api.github.com/orgs/' + org.id, headers=header)
-                logger.info("User organization: %s" % org_detail.name)
-    except Exception, e:
-        logger.error("Failed to update organizations for %s: %s" % (user.username,e))
     return True
 
 
