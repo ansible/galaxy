@@ -120,7 +120,7 @@ class ModelAccessPermission(permissions.BasePermission):
                                request.method.lower(), None)
         result = check_method and check_method(request, view, obj)
         if not result:
-            raise PermissionDenied("")
+            raise PermissionDenied("You do not have permission to perform this action.")
         return result
 
     def has_permission(self, request, view, obj=None):

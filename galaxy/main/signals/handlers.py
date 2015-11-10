@@ -13,7 +13,6 @@ from allauth.account.signals import user_logged_in
 from galaxy.main.models import Role, RoleRating, Tag, ImportTask
 from galaxy.main.search_models import TagDoc, PlatformDoc
 from galaxy.main.celerytasks.elastic_tasks import update_tags, update_platforms, update_users
-from galaxy.main.celerytasks.tasks import update_user_organizations
 
 User = get_user_model()
 
@@ -67,35 +66,3 @@ def role_post_save(sender, **kwargs):
         for platform in platforms:
             update_platforms.delay(platform)
 
-@receiver(post_save, sender=ImportTask)
-def import_task_post_save(sender, **kwargs):
-    '''
-    Signal celery to import the requested role
-    '''
-    instance = kwargs['instance']
-    if getattr(instance, role, None) == None:
-        regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
-        name = instance.github_repo 
-
-        # we don't allow periods in the repo name, to prevent issues
-        # like user.name.repo.name
-        name = name.strip().replace(".", "_")
-        if not name in ['ansible','Ansible']:
-            # Remove undesirable substrings
-            name = regex.sub('', name)
-        
-        role, created = Role.objects.get_or_create(namespace=instance.github_user,github_repo=instance.github_role
-            defaults={
-                namespace = instance.github_user,
-                name = name,
-                github_user = instance.github_user,
-                github_repo = instance.github_role,
-                is_valid = False   
-            })
-        
-        instance.role = role
-        instance.state = 'PENDING'
-        instance.save()
-        import_role.delay(instance.id)
-
-        

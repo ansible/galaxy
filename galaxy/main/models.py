@@ -224,6 +224,7 @@ class Role(CommonModelNameNotUnique):
 
     class Meta:
         unique_together = ('namespace','name')
+        ordering = ['namespace', 'name']
 
     #------------------------------------------------------------------------------
     # foreign keys
@@ -299,7 +300,7 @@ class Role(CommonModelNameNotUnique):
         verbose_name = "Issue Tracker URL",
     )
     license = models.CharField(
-        max_length   = 30,
+        max_length   = 50,
         blank        = True,
         verbose_name = "License (optional)",
     )
@@ -409,6 +410,9 @@ class RoleVersion(CommonModelNameNotUnique):
 
 
 class ImportTask(PrimordialModel):
+    class Meta:
+        ordering = ('-id',)
+
     github_user = models.CharField(
         max_length   = 256,
         verbose_name = "Github Username",
@@ -426,17 +430,26 @@ class ImportTask(PrimordialModel):
     role = models.ForeignKey(
         Role,
         related_name = 'import_tasks',
-        null = True,
-        blank = True,
-        default = None,
-        db_index = True,
+        null         = True,
+        blank        = True,
+        default      = None,
+        db_index     = True,
+        editable     = False
     )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name  = 'import_tasks',
         null          = True,
         blank         = True,
-        db_index      = True 
+        db_index      = True,
+        editable      = False
+    )
+    alternate_role_name = models.CharField(
+        max_length    = 256,
+        verbose_name  = "Alternate Role Name",
+        null          = True,
+        blank         = True,
+        editable      = True
     )
     celery_task_id = models.CharField(
         max_length   = 100,

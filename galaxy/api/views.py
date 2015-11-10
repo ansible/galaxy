@@ -19,12 +19,14 @@
 import sys
 import math
 import requests
+import re
 
 # rest framework stuff
 from rest_framework import filters
 from rest_framework import mixins
 from rest_framework import renderers
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -59,6 +61,7 @@ from galaxy.api.serializers import *
 from galaxy.main.models import *
 from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
+from galaxy.main.celerytasks.tasks import import_role
 
 
 #--------------------------------------------------------------------------------
@@ -241,7 +244,7 @@ class RoleList(ListCreateAPIView):
         qs = qs.prefetch_related('platforms', 'tags', 'versions', 'dependencies')
         return filter_role_queryset(qs)
 
-class RoleTopList(ListCreateAPIView):
+class RoleTopList(ListAPIView):
     model = Role
     serializer_class = RoleTopSerializer
 
@@ -262,10 +265,69 @@ class RoleDetail(RetrieveUpdateDestroyAPIView):
 
 class ImportTaskList(ListCreateAPIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (IsAuthenticated,ModelAccessPermission)
+    permission_classes = (ModelAccessPermission,)
     model = ImportTask
     serializer_class = ImportTaskListSerializer
+    
+    def get_queryset(self):
+        return super(ImportTaskList, self).get_queryset()
+       
 
+    def post(self, request, *args, **kwargs):
+
+        github_user = request.data.get('github_user', None)
+        github_repo = request.data.get('github_repo', None)
+        alternate_role_name = request.data.get('alternate_role_name', None)
+
+        if github_user == None or github_repo == None:
+            return Response({ "message": "Invalid request." })
+        
+        regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
+        name = alternate_role_name if alternate_role_name else github_repo
+
+        # we don't allow periods in the repo name, to prevent issues
+        # like user.name.repo.name
+        name = name.strip().replace(".", "_")
+        
+        if not name in ['ansible','Ansible']:
+            # Remove undesirable substrings
+            name = regex.sub('', name)
+        
+        role, created = Role.objects.get_or_create(namespace=github_user,github_repo=github_repo,
+            defaults={
+                'namespace':   github_user,
+                'name':        name,
+                'github_user': github_user,
+                'github_repo': github_repo,
+                'is_valid':    False,
+                'owner_id':    request.user.id
+            })
+
+        task = ImportTask.objects.create(
+           github_user = github_user,
+           github_repo = github_repo,
+           role        = role,
+           owner       = request.user,
+           state       = 'PENDING'
+        )
+        task.save()
+        
+        import_role.delay(task.id)
+        
+        serializer = self.get_serializer(instance=task)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+class ImportTaskDetail(RetrieveAPIView):
+    model = ImportTask
+    serializer_class = ImportTaskDetailSerializer
+
+    def get_object(self, qs=None):
+        obj = super(ImportTaskDetail, self).get_object()
+        if not obj.active:
+            raise Http404()
+        return obj
+ 
 class UserRatingsList(SubListAPIView):
     model = RoleRating
     serializer_class = RoleRatingSerializer
@@ -501,7 +563,7 @@ class TagsSearchView(APIView):
         
 class TokenView(APIView):
     '''
-    Provides token authentication for ansible-galaxy CLI
+    Allows ansible-galaxy CLI to retrieve an auth token
     '''
     def post(self, request, *args, **kwargs):
         
@@ -540,7 +602,55 @@ class TokenView(APIView):
             token = Token.objects.create(user=user)
             token.save()
         return Response({ "token": token.key, "username": user.username })
+
+
+class CreateImportTaskView(APIView):
+    '''
+    Allow token authenticated Galaxy CLI to create an Import ImportTask
+    '''
+    authentication_classes = (TokenAuthentication)
+    permission_classes = (IsAuthenticated)
+
+    def post(self, request, *args, **kwargs):
+
+        github_user = request.data.get('github_user', None)
+        github_repo = request.data.get('github_repo', None)
+
+        if github_user == None or github_rep == None:
+            return Response({ "message": "Invalid request." })
         
+        regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
+        name = github_repo 
+
+        # we don't allow periods in the repo name, to prevent issues
+        # like user.name.repo.name
+        name = name.strip().replace(".", "_")
+        
+        if not name in ['ansible','Ansible']:
+            # Remove undesirable substrings
+            name = regex.sub('', name)
+        
+        role, created = Role.objects.get_or_create(namespace=github_user,github_repo=github_repo,
+            defaults={
+                namespace:   github_user,
+                name:        name,
+                github_user: github_user,
+                github_repo: github_repo,
+                is_valid:    False   
+            })
+
+        task = ImportTask.objects.create(
+            github_user = github_user,
+            github_repo = github_repo,
+            role = role,
+            owner = request.user,
+            state = 'PENDING'
+        )
+        task.save
+        import_role.delay(task.id)
+
+    
+            
 def get_response(*args, **kwargs):
     """ 
     Create a response object with paging, count and timing attributes for search result views.

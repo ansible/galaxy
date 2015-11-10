@@ -212,16 +212,31 @@ class RoleImportAccess(BaseAccess):
         qs = self.model.objects.filter(active=True, role__active=True, role__owner__is_active=True).distinct()
 
 class ImportTaskAccess(BaseAccess):
+    model = ImportTask
+    
     def can_add(self, data):
-        return self.user.is_authenticated
-    def can_change(self, obj, data):
-        return self.user.is_staff
+        return self.user.is_authenticated()
+
+    def can_change(self,data):
+        return false
+
+    def can_attach(self, data):
+        return false
+    
+    def get_queryset(self):
+        qs = self.model.objects.filter(active=True).distinct()
 
 class ImportTaskMessageAccess(BaseAccess):
+    model = ImportTaskMessage
+
     def can_add(self, data):
         return False
+    
     def can_change(self, data):
         return False
+    
+    def get_queryset(self):
+        qs = self.model.objects.filter(active=True, task__active=True).distinct()
 
 register_access(User, UserAccess)
 register_access(Role, RoleAccess)

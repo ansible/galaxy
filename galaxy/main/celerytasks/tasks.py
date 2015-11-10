@@ -21,11 +21,11 @@ import time
 import yaml
 import datetime
 import bleach
-import requests
 
 from celery import task
 from github import Github, AuthenticatedUser
 from github import GithubException
+from urlparse import urlparse
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -35,21 +35,18 @@ from django.utils import text, html, timezone
 from allauth.socialaccount.models import SocialToken
 
 from galaxy.main.models import *
-from galaxy.main.celerytasks.tasks import TaskException
 
-def fail_import_task(role, logger, msg):
+def fail_import_task(import_task, logger, msg):
     transaction.rollback()
     try:
-        if role:
-            role_import = role.imports.latest()
-            if role_import:
-                role_import.state = "FAILED"
-                role_import.status_message = msg
-                role_import.save()
-                transaction.commit()
+        if import_task:
+            import_task.state = "FAILED"
+            import_task.messages.create(message_type="ERROR", message_text=msg)        
+            import_task.save()
+            transaction.commit()
     except Exception, e:
         transaction.rollback()
-        print "Error updating import task state for role %s: %s" % (role,e)
+        print "Error updating import task state for role %s: %s" % (role,str(e))
     print msg
     raise Exception(msg)
 
@@ -65,30 +62,45 @@ def strip_input(input):
     else:
         return input
 
-def get_readme(repo):
+def add_message(import_task, msg_type, msg_text):
+    try:
+        import_task.messages.create(message_type=msg_type,message_text=msg_text)
+        import_task.save()
+        transaction.commit()
+    except Exception, e:
+        transaction.rollback()
+        print "Error adding message to import task for role %s: %s" % (import_task.role.name,str(e))
+    print "Role %d: %s - %s" % (import_task.role.id, msg_type, msg_text)
+
+def get_readme(import_task, repo):
     """
     Retrieve README.md from the repo and sanitize by removing all markup. Should preserve unicode characters.
     """
+    add_message(import_task, "INFO", "Parsing and validating README.md")
+
     # load README.md
     try: 
         readme = repo.get_file_contents("README.md")
     except:
-        fail_import_task(role, logger, "Failed to find a README.md. All role repositories must include a README.md. Please refer to the 'Getting Started' documentation regarding role requirements. Once the issue has been corrected in the repsotitory, you can retry the import.")
+        readme = None
+        add_message(import_task, "ERROR", "Failed to find a README.md. All role repositories must include a README.md.")
     
-    # decode base64
-    try: 
-        readme = readme.content.decode('base64')
-    except:
-        fail_import_task(role, logger, "Failed to base64 decode README.md file.")
-
-    # Remove all HTML tags while preserving any unicde chars
-    try:
-        readme = bleach.clean(readme, strip=True, tags=[])
-    except Exception, e:
-        fail_import_task(role, logger, "Failed to strip HTML tags in README.md: %s" % e)
+    if not readme is None:
+        # decode base64
+        try: 
+            readme = readme.content.decode('base64')
+        except:
+            readme = None
+            add_messge(import_task, "ERROR", "Failed to base64 decode README.md file.")
+    
+    if not readme is None:
+        # Remove all HTML tags while preserving any unicde chars
+        try:
+            readme = bleach.clean(readme, strip=True, tags=[])
+        except Exception, e:
+            add_message(import_task, "ERROR", "Failed to strip HTML tags in README.md: %s" % str(e))
     
     return readme
-
 
 
 @task(throws=(Exception,))
@@ -103,21 +115,28 @@ def import_role(task_id, target="all"):
 
     # get the role from the database
     try:
-        print "Look up task_id: %d" % int(task_id)
+        print "Starting task: %d" % int(task_id)
         import_task = ImportTask.objects.get(id=task_id)
         import_task.state = "RUNNING"
         import_task.started = datetime.datetime.now()
         import_task.save()
         transaction.commit()
-        role = import_task.role
-        user = import_task.user
     except:
         fail_import_task(None, logger, "Failed to get task id: %d" % int(task_id))
 
     try:
+        role = Role.objects.get(id=import_task.role.id)
+    except:
+        fail_import_task(import_task, "Failed to get role for task id: %d" % int(task_id))
+
+    user = import_task.owner
+    repo_full_name = role.github_user + "/" + role.github_repo
+    add_message(import_task, "INFO", "Starting import: role_id=%d role_name=%s repo=%s" % (role.id,role.name,repo_full_name))
+    
+    try:
         token = SocialToken.objects.get(account__user=user, account__provider='github')
     except:
-        faile_import_task(None, logger,"Failed to get Github account for Galaxy user %s. You must first " +
+        fail_import_task(import_task, logger,"Failed to get Github account for Galaxy user %s. You must first " +
             "authenticate with Github." % user.username)
 
     # create an API object and get the repo
@@ -125,78 +144,120 @@ def import_role(task_id, target="all"):
         gh_api = Github(token.token)
         gh_api.get_api_status()
     except:
-        fail_import_task(role, logger, "Failed to connect to Github API. This is most likely a temporary error, please re-try your import in a few minutes.")
+        fail_import_task(import_task, "Failed to connect to Github API. This is most likely a temporary error, please retry your import in a few minutes.")
     
     try:
-        gh_user = AuthenticatedUser(token.token)
+        gh_user = gh_api.get_user()
     except:
-        fail_import_task(role, logger, "Failed to get Github authorized user.")
+        fail_import_task(import_task, "Failed to get Github authorized user.")
 
-    # print "Accessing repo %s/%s for role_id: %s" % (role.github_user, role.github_repo, int(role_id))
-    repo_full_name = role.github_user + "/" + role.github_repo
-    repo_access = False
-    print "Verifying user %s has access to repo %s" % (user.username,repo_full_name)
-    for repo in user.get_repos():
-        if repo.full_name == repo_full_name:
-            repo_access = True
+    repo = None
+    add_message(import_task, "INFO", "Retrieving Github repo %s" % repo_full_name)
+    for r in gh_user.get_repos():
+        if r.full_name == repo_full_name:
+            repo = r
             continue
-    if not repo_access:
-        fail_import_task(role, logger, "Galaxy user %s does not have access to repo %s" % (user.username,repo_full_name))
+    if repo is None:
+        fail_import_task(import_task, "Galaxy user %s does not have access to repo %s" % (user.username,repo_full_name))
 
-    repo = gh_user.get_repo("%s" % role.github_repo)
-    
     # parse and validate meta/main.yml data
-    galaxy_info = {}
-    dependencies = []
+    add_message(import_task, "INFO", "Parsing and validating meta/main.yml")
+   
     try:
-        print "Parse and validate meta/main.yml for role_id: %d" % int(role_id)
         meta_file = repo.get_file_contents("meta/main.yml")
-        meta_data = yaml.safe_load(meta_file.content.decode('base64'))
-        galaxy_info = meta_data.get("galaxy_info", None)
-        dependencies = meta_data.get("dependencies", [])
-        if not galaxy_info:
-            raise Exception("galaxy info not found")
-    except Exception, e:
-        fail_import_task(role, logger, "Failed to parse 'meta/main.yml'. Please refer to the 'Getting Started' documentation regarding the proper format of the 'meta/main.yml' file. Once the issue has been corrected in the repository, you can retry the import. Real Error: %s" % e)
+    except:
+        fail_import_task(import_task, "Failed to find meta/main.yml. The role must include a meta/main.yml file.")
 
-    
-    # add the new fields 
     try:
-        print "Parse and validate README.md for role_id: %d" % int(role_id)
-        readme_file = get_readme(repo)
-        role.readme              = readme_file
-        role.description         = strip_input(galaxy_info.get("description",""))
-        role.author              = strip_input(galaxy_info.get("author",""))
-        role.company             = strip_input(galaxy_info.get("company",""))
-        role.license             = strip_input(galaxy_info.get("license",""))
-        role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version","1.2"))
-        role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url",""))
-        if role.description == "":
-            role.description = repo.description
-            if role.description == "":
-                raise Exception("The description field cannot be blank.")
-        if role.issue_tracker_url == "" and repo.has_issues:
-            role.issue_tracker_url = "https://github.com/%s/%s/issues" % (role.github_user, role.github_repo)
+        meta_data = yaml.safe_load(meta_file.content.decode('base64'))
     except Exception, e:
-        fail_import_task(role, logger, "Failed to update the specified role's fields. Please retry the import in a few minutes. If you continue to receive a failure, please contact support. Error was: %s" % str(e))
+        fail_import_task(import_task, "Failed to parse meta/main.yml. The role must have a valid meta/main.yml file.")
+    
+    galaxy_info = meta_data.get("galaxy_info", None)
+    if galaxy_info is None:
+        add_messge(import_task, "ERROR", "Key galaxy_info not found in meta/main.yml")
+        galaxy_info = {}
 
+    role.description         = strip_input(galaxy_info.get("description",""))
+    role.author              = strip_input(galaxy_info.get("author",""))
+    role.company             = strip_input(galaxy_info.get("company",""))
+    role.license             = strip_input(galaxy_info.get("license",""))
+    role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version",""))
+    role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url",""))
+
+    if role.issue_tracker_url == "" and repo.has_issues:
+        role.issue_tracker_url = repo.issues_url
+    
+    if role.company != "" and len(role.company) > 50:
+        add_message(import_task, "WARNING", "galaxy_info.compnay exceeds max length of 50 in meta/main.yml")
+        role.company = role.company[:50]
+    
+    if role.description == "":
+        add_message(import_task, "ERROR", "galaxy_info.description missing value in meta/main.yml")
+    elif len(role.description) > 255:
+        add_message(import_task, "WARNING", "galaxy_info.description exceeds max length of 255 in meta/main.yml")
+        role.description = role.description[:255]
+    
+    if role.license == "":
+        add_message(import_task, "ERROR", "galaxy_info.license missing value in meta/main.yml")
+    elif len(role.license) > 50:
+        add_message(import_task, "WARNING", "galaxy_info.license exceeds max length of 50 in meta/main.yml")
+        role.license = role.license[:50]
+        
+    if role.min_ansible_version == "":
+        add_message(import_task, "WARNING", "galaxy.min_ansible_version missing value in meta/main.yml. Defaulting to 1.2.")
+        role.min_ansible_version = '1.2'
+    elif len(role.min_ansible_version) > 10:
+        add_message(import_task, "WARNING", "galaxy.min.ansible_version exceeds max length of 10 in meta/main.yml. Setting value to default of 1.2.")
+        role.min_ansible_version = '1.2'
+
+    if role.issue_tracker_url == "":
+        add_message(import_task, "WARNING", "No issue tracker defined. Enable issue tracker in repo settings or define galaxy_info.issue_tracker_url in meta/main.yml.")
+    else:
+        parsed_url = urlparse(role.issue_tracker_url)
+        if parsed_url.scheme == '' or parsed_url.netloc == '' or parsed_url.path == '':
+            add_message(impor_task, "WARNING", "Invalid URL provided for galaxy_info.issue_tracker_url in meta/main.yml")
+            role.issue_tracker_url = ""
+   
+    role.readme = get_readme(import_task, repo)
+    
     # Add tags / categories. Remove ':' and only allow alpha-numeric characters
     meta_tags = []
     if galaxy_info.get("categories", None):
-        for category in galaxy_info.get("categories"):
-            for cat in category.split(':'): 
-                if re.match('^[a-zA-Z0-9]+$',cat):
-                    meta_tags.append(cat)
-                else:
-                    print "Warning: %s is not a valid tag" & cat
-
+        add_message(import_task, "WARNING", "Found galaxy_info.categories. Update meta/main.yml to use galaxy_info.galaxy_tags.")
+        cats = galaxy_info.get("categories")
+        if isinstance(cats,basestring) or not hasattr(cats, '__iter__'):
+            add_message(import_task, "ERROR","In meta/main.yml galaxy_info.categories must be an iterable list.")
+        else:
+            for category in cats:
+                for cat in category.split(':'): 
+                    if re.match('^[a-zA-Z0-9]+$',cat):
+                        meta_tags.append(cat)
+                    else:
+                        add_message(import_task, "WARNING", "%s is not a valid tag" % cat)
+    
     if galaxy_info.get("galaxy_tags", None):
-        for tag in galaxy_info.get("galaxy_tags"):
-            for t in tag.split(':'):
-                if re.match('^[a-zA-Z0-9:]+$',t):
-                    meta_tags.append(t)
-    meta_tags = meta_tags[0:20] if len(meta_tags) > 20 else meta_tags
+        tags = galaxy_info.get("galaxy_tags")
+        if isinstance(tags,basestring) or not hasattr(tags, '__iter__'):
+            add_message(import_task,"ERROR","In meta/main.yml galaxy_info.galaxy_tags must be an iterable list.")
+        else:
+            for tag in tags:
+                for t in tag.split(':'):
+                    if re.match('^[a-zA-Z0-9:]+$',t):
+                        meta_tags.append(t)
+                    else:
+                        add_message(import_task, "WARNING", "%s is not a valid tag" % cat)
+
+    # There are no tags?
+    if len(meta_tags) == 0:
+        add_message(import_task, "ERROR", "No values found for galaxy_tags. galaxy_info.galaxy_tags must be an iterable list in meta/main.yml")
+
+    if len(meta_tags) > 20:
+        add_message(import_task, "WARNING", "Found more than 20 values for galaxy_info.galaxy_tags in meta/main.yml. Only the first 20 will be used.")
+        meta_tags = meta_tags[0:20]
+
     meta_tags = list(set(meta_tags))
+
     for tag in meta_tags:
         pg_tags = Tag.objects.filter(name=tag).all()
         if len(pg_tags) == 0:
@@ -210,66 +271,69 @@ def import_role(task_id, target="all"):
     # Remove tags no longer listed in the metadata
     for tag in role.tags.all():
         if tag.name not in meta_tags:
-            print "Info: tag %s is no longer in the meta/main.yml, removing it" % tag.name
             role.tags.remove(tag)
 
-    # There are no tags?
-    if len(meta_tags) == 0:
-        print "Warning: No tags found for %s.%s" % (role.owner.username, role.name)
-
     # Add in the platforms and versions
-    print "Info: Adding platforms for rold_id: %d" % int(role_id)
-    meta_platforms = galaxy_info.get("platforms", [])
-    platform_list = []
-    for platform in meta_platforms:
-        if not isinstance(platform, dict):
-            print "The platform '%s' does not appear to be a dictionary, skipping" % str(platform)
-            continue
-        try:
-            name     = platform.get("name")
-            versions = platform.get("versions", ["all"])
-            if not name:
-                print "Warning: No name specified for this platform, skipping"
+    add_message(import_task, "INFO", "Parsing platforms")
+    meta_platforms = galaxy_info.get("platforms", None)
+    if meta_platforms is None:
+        add_message(import_task, "ERROR", "galaxy_info.platforms not defined in meta.main.yml. Must be an iterable list.")
+    elif isinstance(meta_platforms,basestring) or not hasattr(meta_platforms, '__iter__'):
+        add_message(import_task, "ERROR", "Failed to iterate platforms. galaxy_info.platforms must be an iterable list in meta/main.yml.")
+    else:
+        platform_list = []
+        for platform in meta_platforms:
+            if not isinstance(platform, dict):
+                add_message(import_task, "ERROR", "The platform '%s' does not appear to be a dictionary, skipping" % str(platform))
                 continue
-            elif not isinstance(versions, list):
-                print "Warning: Versions for this platform is not a list, skipping"
-                continue
+            try:
+                name     = platform.get("name")
+                versions = platform.get("versions", ["all"])
+                if not name:
+                    add_message(import_task, "ERROR", "No name specified for platform, skipping")
+                    continue
+                elif not isinstance(versions, list):
+                    add_message(import_task, "ERROR", "No name specified for platform %s, skipping" % name)
+                    continue
 
-            if len(versions) == 1 and versions == ["all"] or 'all' in versions:
-                # grab all of the objects that start
-                # with the platform name
-                print "Info: Adding all platforms for %s" % name
-                try:
-                    platform_objs = Platform.objects.filter(name=name)
-                    for p in platform_objs:
-                        role.platforms.add(p)
-                        platform_list.append("%s-%s" % (name, p.release))
-                except:
-                    print "Warning: Invalid platform: %s-all (skipping)" % name
-            else:
-                # just loop through the versions and add them
-                for version in versions:
+                if len(versions) == 1 and versions == ["all"] or 'all' in versions:
+                    # grab all of the objects that start
+                    # with the platform name
                     try:
-                        print "Info: adding platform: %s-%s" % (name,version)
-                        p = Platform.objects.get(name=name, release=version)
-                        role.platforms.add(p)
-                        platform_list.append("%s-%s" % (name, p.release))
+                        platform_objs = Platform.objects.filter(name=name)
+                        for p in platform_objs:
+                            role.platforms.add(p)
+                            platform_list.append("%s-%s" % (name, p.release))
                     except:
-                        print "Warning: Invalid platform: %s-%s (skipping)" % (name,version)
-        except Exception, e:
-            print "Warning: An unknown error occurred while adding platform: %s" % e
-
-    # Remove platforms/versions that are no longer listed in the metadata
-    for platform in role.platforms.all():
-        platform_key = "%s-%s" % (platform.name, platform.release)
-        if platform_key not in platform_list:
-            print "Info: platform %s is no longer in the meta/main.yml, removing it" % platform_key
-            role.platforms.remove(platform)
+                        add_message(import_task, "ERROR", "Invalid platform: %s-all (skipping)" % name)
+                else:
+                    # just loop through the versions and add them
+                    for version in versions:
+                        try:
+                            p = Platform.objects.get(name=name, release=version)
+                            role.platforms.add(p)
+                            platform_list.append("%s-%s" % (name, p.release))
+                        except:
+                            add_message(import_task, "ERROR", "Invalid platform: %s-%s (skipping)" % (name,version))
+            except Exception, e:
+                add_message(import_task, "ERROR", "An unknown error occurred while adding platform: %s" % str(e))
+            
+        # Remove platforms/versions that are no longer listed in the metadata
+        for platform in role.platforms.all():
+            platform_key = "%s-%s" % (platform.name, platform.release)
+            if platform_key not in platform_list:
+                role.platforms.remove(platform)
 
     # Add in dependencies (if there are any):
-    print "Info: Adding dependencies for rold_id: %d" % int(role_id)
-    dep_names = []
-    try:
+    add_message(import_task, "INFO", "Adding dependencies")
+    dependencies = meta_data.get("dependencies", None)
+
+    if dependencies is None:
+        add_message(import_task, "ERROR", "meta/main.yml missing definition for dependencies. Define dependencies as [] or an iterable list.")
+    elif isinstance(dependencies,basestring) or not hasattr(dependencies, '__iter__'):
+        add_message(import_task, "ERROR", "Failed to iterate dependencies. Define dependencies in meta/main.yml as [] or an iterable list.")
+    else:
+        dep_names = []
         for dep in dependencies:
             try:
                 if isinstance(dep, dict):
@@ -288,52 +352,50 @@ def import_role(task_id, target="all"):
                 role.dependencies.add(dep_role)
                 dep_names.append(dep)
             except Exception, e:
-                print "Warning: Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e)
-    except:
-        fail_import_task(role, logger, "Error: Failed to iterate dependencies. Make sure dependencies in meta/main.yml is defined as an empty array `[]` or an iterable list.")
+                add_message(import_task, "ERROR: Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
 
-    # Remove deps that are no longer listed in the metadata
-    for dep in role.dependencies.all():
-        dep_name = dep.__unicode__()
-        if dep_name not in dep_names:
-            print "Info: dependency %s is no longer listed in the meta/main.yml, removing it" % str(dep)
-            role.dependencies.remove(dep)
+        # Remove deps that are no longer listed in the metadata
+        for dep in role.dependencies.all():
+            dep_name = dep.__unicode__()
+            if dep_name not in dep_names:
+                role.dependencies.remove(dep)
 
     # helper function to save repeating code:
     def add_role_version(category):
         rv,created = RoleVersion.objects.get_or_create(name=category.name, role=role)
-        if not created:
-            # this version already exists
-            print "Info: version %s already exists for this role, skipping" % category.name
-            return
         rv.release_date = category.commit.commit.author.date
         rv.save()
 
     # get the tags for the repo, and then loop through them
     # so we can create version objects for the role
+    add_message(import_task, "INFO", "Adding repo tags as role versions")
     try:
         git_tag_list = repo.get_tags()
         for git_tag in git_tag_list:
-            print "Info: git tag: %s" % git_tag.name
             if target == "all":
                 add_role_version(git_tag)
             elif target == git_tag.tag:
                 add_role_version(git_tag)
                 break
     except Exception, e:
-        fail_import_task(role, logger, "An error occurred while importing versions/tags. Please verify the formatting of your 'meta/main.yml' and ensure that these fields conform to the style specified in the 'Getting Started' documentation. Once the issue has been corrected, you can retry your import")
+        add_message(import_task, "ERROR", "An error occurred while importing repo tags: %s" % str(e))
     
-    # mark the role valid and save it
+    # determine state of import task
+    error_count = import_task.messages.filter(message_type="ERROR").count()
+    warning_count = import_task.messages.filter(message_type="WARNING").count()
+    import_state = "SUCCESS" if error_count == 0 else "FAILED"
+    add_message(import_task, "INFO", "Import completed")
+    add_message(import_task, "INFO", "Status %s : warnings=%d errors=%d" % (import_state,warning_count,error_count))
+    
     try:
-        role_import.state = "SUCCESS"
-        role_import.status_message = "Import completed successfully"
-        role_import.save()
-
-        role.is_valid = True
-        role.save()
+        import_task.state = import_state
+        import_task.save()
+        if import_state == "SUCCESS":
+            role.is_valid = True
+            role.save()
         transaction.commit()
     except Exception, e:
-        fail_import_task(role, logger, "An unknown error occurred while saving the role. Please wait a few minutes and try again. If you continue to receive a failure, please contact support.")
+        fail_import_task(import_task, "An error occurred while saving the role: %s" % str(e))
     
     return True
 

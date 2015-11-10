@@ -81,6 +81,11 @@ search_urls = patterns('galaxy.api.views',
     url(r'users/$',                      UserSearchView.as_view(), name='user_search_view'),
 )
 
+import_task_urls = patterns('galaxy.api.views',
+    url(r'^$',                         'import_task_list'),
+    url(r'^(?P<pk>[0-9]+)/$',          'import_task_detail'),
+)
+
 v1_urls = patterns('galaxy.api.views',
     url(r'^$',                         'api_v1_root_view'),
     url(r'^me/$',                      'user_me_list'),
@@ -90,7 +95,7 @@ v1_urls = patterns('galaxy.api.views',
     url(r'^tags/',                     include(tag_urls)),
     url(r'^platforms/',                include(platform_urls)),
     url(r'^ratings/',                  include(rating_urls)),
-    url(r'^import/',                   'import_task_list'),
+    url(r'^import/',                   include(import_task_urls)),
     url(r'^token/',                    TokenView.as_view(), name='token'),
     url(r'^search/',                   include(search_urls)),
 )

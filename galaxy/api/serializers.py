@@ -508,17 +508,44 @@ class RoleVersionSerializer(BaseSerializer):
 class ImportTaskListSerializer(BaseSerializer):
     class Meta:
         model = ImportTask
-        fields = (
-            'id',
-            'role',
-            'owner'
-            'github_user',
-            'github_repo',
-            'celery_task_id',
-            'state',
-            'started',
-            'created',
-            'modified')
+        fields = ('id', 'github_user', 'github_repo', 'role', 'owner', 'alternate_role_name', 'celery_task_id', 'state', 'started')
+
+    def to_native(self, obj):
+        ret = super(ImportTaskSerializer, self).to_native(obj)
+        return ret
+
+    def get_url(self, obj):
+        if obj is None:
+            return ''
+        elif isinstance(obj, ImportTask):
+            return reverse('api:import_task_detail', args=(obj.pk,))
+        else:
+            return obj.get_absolute_url()
+
+    def get_related(self, obj):
+        if obj is None:
+            return {}
+        res = super(ImportTaskListSerializer, self).get_related(obj)
+        res.update(dict(
+            role = reverse('api:role_detail', args=(obj.role_id,))
+        ))
+        return res 
+
+    def get_summary_fields(self, obj):
+        if obj is None:
+            return {}
+        d = super(ImportTaskListSerializer, self).get_summary_fields(obj)
+        d['task_messages'] = [{
+            'id': g.id,
+            'message_type': g.message_type,
+            'message_text': g.message_text
+        } for g in obj.messages.all().order_by('id')]
+        return d
+
+class ImportTaskDetailSerializer(ImportTaskListSerializer):
+    class Meta:
+        model = ImportTask
+        fields = ('id', 'github_user', 'github_repo', 'role', 'owner', 'alternate_role_name', 'celery_task_id', 'state', 'started')
 
 class RoleImportSerializer(BaseSerializer):
     class Meta:
@@ -573,7 +600,7 @@ class RoleListSerializer(BaseSerializer):
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings',
+        fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings','is_valid',
                                 'github_user','github_repo','min_ansible_version','issue_tracker_url',
                                 'license','company','description', 'readme_html')
 
@@ -673,7 +700,7 @@ class RoleDetailSerializer(BaseSerializer):
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings',
+        fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings','is_valid',
                                 'github_user','github_repo','min_ansible_version','issue_tracker_url',
                                 'license','company','description','readme_html', 'tags')
 
