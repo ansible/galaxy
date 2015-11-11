@@ -511,7 +511,7 @@ class NotificationSecretSerializer(BaseSerializer):
         required=False,
         write_only=True,
         default='',
-        help_text='Write-only field used to change the secret.'
+        help_text=''
     )
     class Meta:
         model = NotificationSecret

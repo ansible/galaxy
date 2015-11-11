@@ -99,9 +99,9 @@ v1_urls = patterns('galaxy.api.views',
     url(r'^tags/',                     include(tag_urls)),
     url(r'^platforms/',                include(platform_urls)),
     url(r'^ratings/',                  include(rating_urls)),
-    url(r'^import/',                   include(import_task_urls)),
-    url(r'^token/',                    TokenView.as_view(), name='token'),
-    url(r'^notification_secret/',      include(notification_secret_urls)),
+    url(r'^imports/',                   include(import_task_urls)),
+    url(r'^tokens/',                    TokenView.as_view(), name='token'),
+    url(r'^notification_secrets/',     include(notification_secret_urls)),
     url(r'^search/',                   include(search_urls)),
 )
 

@@ -131,9 +131,9 @@ class ApiV1RootView(APIView):
         data['tags']       = reverse('api:tag_list')
         data['platforms']  = reverse('api:platform_list')
         data['ratings']    = reverse('api:rating_list')
-        data['import']     = reverse('api:import_task_list')
-        data['token']      = reverse('api:token')
-        data['notification_secret'] = reverse('api:notification_secret_list')
+        data['imports']     = reverse('api:import_task_list')
+        data['tokens']      = reverse('api:token')
+        data['notification_secrets'] = reverse('api:notification_secret_list')
         data['search']     = reverse('api:search_view')
         return Response(data)
 
@@ -347,6 +347,9 @@ class UserRolesList(SubListAPIView):
         return filter_role_queryset(qs)
 
 class NotificationSecretList(ListCreateAPIView):
+    '''
+    Add web hook notification and integration tokens.
+    '''
     model = NotificationSecret
     serializer_class = NotificationSecretSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
