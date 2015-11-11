@@ -45,7 +45,7 @@ from galaxy.main.mixins import *
 
 __all__ = [
     'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 
-    'RoleVersion', 'UserAlias'
+    'RoleVersion', 'UserAlias', 'NotificationSecret'
 ]
 
 ###################################################################################
@@ -408,6 +408,62 @@ class RoleVersion(CommonModelNameNotUnique):
         self.loose_version = self.name
         super(RoleVersion, self).save(*args, **kwargs)
 
+class RoleRating(PrimordialModel):
+
+    class Meta:
+        unique_together = ('owner','role')
+
+    #------------------------------------------------------------------------------
+    # foreign keys
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name = 'ratings',
+    )
+    role = models.ForeignKey(
+        Role,
+        related_name = 'ratings',
+    )
+    
+    #------------------------------------------------------------------------------
+    # regular fields
+
+    comment = models.TextField(
+        blank      = True,
+        null       = True,
+    )
+    score = models.IntegerField(
+        default      = 0,
+        db_index     = True,
+    )
+
+    #------------------------------------------------------------------------------
+    # other functions and properties
+
+    def __unicode__(self):
+        return "%s.%s -> %s" % (self.role.owner.username,self.role.name,self.score)
+
+    def save(self, *args, **kwargs):
+        def clamp_range(value):
+            value = int(value)
+            if value > 5:
+                return 5
+            elif value < 1:
+                return 1
+            else:
+                return value
+        
+        self.score = clamp_range(self.score)
+        
+        if len(self.comment) > 5000:
+            self.comment = self.comment[:5000]
+        super(RoleRating, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        if self.pk:
+            return reverse('api:rating_detail', args=(self.pk,))
+        else:
+            return ""
 
 class ImportTask(PrimordialModel):
     class Meta:
@@ -510,59 +566,30 @@ class ImportTaskMessage(PrimordialModel):
     def __unicode__(self):
         return "%d-%s-%s" % (self.task.id,self.message_type,self.message_text)
 
-class RoleRating(PrimordialModel):
-
+class NotificationSecret(PrimordialModel):
     class Meta:
-        unique_together = ('owner','role')
-
-    #------------------------------------------------------------------------------
-    # foreign keys
-
+        ordering = ('source',)
+    
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name = 'ratings',
+        related_name  = 'notification_secrets',
+        db_index      = True,
+        editable      = False
     )
-    role = models.ForeignKey(
-        Role,
-        related_name = 'ratings',
+    source = models.CharField(
+        max_length    = 20,
+        blank         = False,
+        null          = False,
+        editable      = True
     )
-    
-    #------------------------------------------------------------------------------
-    # regular fields
-
-    comment = models.TextField(
-        blank      = True,
-        null       = True,
+    secret = models.CharField(
+        max_length    = 256,
+        blank         = False,
+        null          = False,
+        editable      = True
     )
-    score = models.IntegerField(
-        default      = 0,
-        db_index     = True,
-    )
-
-    #------------------------------------------------------------------------------
-    # other functions and properties
 
     def __unicode__(self):
-        return "%s.%s -> %s" % (self.role.owner.username,self.role.name,self.score)
+        return "%s-%s" % (self.owner.username,self.source)
 
-    def save(self, *args, **kwargs):
-        def clamp_range(value):
-            value = int(value)
-            if value > 5:
-                return 5
-            elif value < 1:
-                return 1
-            else:
-                return value
-        
-        self.score = clamp_range(self.score)
-        
-        if len(self.comment) > 5000:
-            self.comment = self.comment[:5000]
-        super(RoleRating, self).save(*args, **kwargs)
 
-    def get_absolute_url(self):
-        if self.pk:
-            return reverse('api:rating_detail', args=(self.pk,))
-        else:
-            return ""

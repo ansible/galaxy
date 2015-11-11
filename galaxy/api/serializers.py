@@ -505,7 +505,35 @@ class RoleVersionSerializer(BaseSerializer):
         model = RoleVersion
         fields = ('id','name','release_date',)
 
-class ImportTaskListSerializer(BaseSerializer):
+
+class NotificationSecretSerializer(BaseSerializer):
+    secret = serializers.CharField(
+        required=False,
+        write_only=True,
+        default='',
+        help_text='Write-only field used to change the secret.'
+    )
+    class Meta:
+        model = NotificationSecret
+        fields = (
+            'id',
+            'owner',
+            'source',
+            'secret',
+            'created',
+            'modified',
+            'active'
+        )
+
+    def get_url(self, obj):
+        if obj is None:
+            return ''
+        elif isinstance(obj, NotificationSecret):
+            return reverse('api:notification_secret_detail', args=(obj.pk,))
+        else:
+            return obj.get_absolute_url()
+
+class ImportTaskSerializer(BaseSerializer):
     class Meta:
         model = ImportTask
         fields = (
@@ -518,7 +546,10 @@ class ImportTaskListSerializer(BaseSerializer):
             'alternate_role_name',
             'celery_task_id',
             'state',
-            'started'
+            'started',
+            'modified',
+            'created',
+            'active'
         )
 
     def to_native(self, obj):
@@ -536,7 +567,7 @@ class ImportTaskListSerializer(BaseSerializer):
     def get_related(self, obj):
         if obj is None:
             return {}
-        res = super(ImportTaskListSerializer, self).get_related(obj)
+        res = super(ImportTaskSerializer, self).get_related(obj)
         res.update(dict(
             role = reverse('api:role_detail', args=(obj.role_id,))
         ))
@@ -545,19 +576,13 @@ class ImportTaskListSerializer(BaseSerializer):
     def get_summary_fields(self, obj):
         if obj is None:
             return {}
-        d = super(ImportTaskListSerializer, self).get_summary_fields(obj)
+        d = super(ImportTaskSerializer, self).get_summary_fields(obj)
         d['task_messages'] = [{
             'id': g.id,
             'message_type': g.message_type,
             'message_text': g.message_text
         } for g in obj.messages.all().order_by('id')]
         return d
-
-class ImportTaskDetailSerializer(ImportTaskListSerializer):
-    class Meta:
-        model = ImportTask
-        fields = ('id', 'github_user', 'github_repo', 'role', 'owner', 'alternate_role_name', 'celery_task_id', 'state', 'started')
-
 
 class RoleRatingSerializer(BaseSerializer):
     

@@ -133,6 +133,7 @@ class ApiV1RootView(APIView):
         data['ratings']    = reverse('api:rating_list')
         data['import']     = reverse('api:import_task_list')
         data['token']      = reverse('api:token')
+        data['notification_secret'] = reverse('api:notification_secret_list')
         data['search']     = reverse('api:search_view')
         return Response(data)
 
@@ -220,7 +221,7 @@ class RoleUsersList(SubListAPIView):
 
 class RoleImportTaskList(SubListAPIView):
     model = ImportTask
-    serializer_class = ImportTaskDetailSerializer
+    serializer_class = ImportTaskSerializer
     parent_model = Role
     relationship = 'import_tasks'
 
@@ -266,7 +267,7 @@ class ImportTaskList(ListCreateAPIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (ModelAccessPermission,)
     model = ImportTask
-    serializer_class = ImportTaskListSerializer
+    serializer_class = ImportTaskSerializer
     
     def get_queryset(self):
         return super(ImportTaskList, self).get_queryset()
@@ -321,7 +322,7 @@ class ImportTaskList(ListCreateAPIView):
 
 class ImportTaskDetail(RetrieveAPIView):
     model = ImportTask
-    serializer_class = ImportTaskDetailSerializer
+    serializer_class = ImportTaskSerializer
 
     def get_object(self, qs=None):
         obj = super(ImportTaskDetail, self).get_object()
@@ -344,6 +345,49 @@ class UserRolesList(SubListAPIView):
     def get_queryset(self):
         qs = super(UserRolesList, self).get_queryset()
         return filter_role_queryset(qs)
+
+class NotificationSecretList(ListCreateAPIView):
+    model = NotificationSecret
+    serializer_class = NotificationSecretSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (ModelAccessPermission,)
+    
+    def list(self, request, *args, **kwargs):
+        # only list secrets belonging to the authenticated user
+        queryset = self.filter_queryset(self.get_queryset())
+        queryset = queryset.filter(owner=request.user)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+    def post(self, request, *args, **kwargs):
+        secret = request.data.get('secret', None)
+        source = request.data.get('source', None)
+
+        if secret is None or source is None:
+            return Response({ "message": "Invalid request." })
+
+        if not source in ['github', 'travis']:
+            return Response({ "message": "Invalid source value. Expecting one of: [github, travis]"})
+        
+        secret, create = NotificationSecret.objects.get_or_create(owner=request.user, source=source, secret=secret,
+            defaults = {
+                'owner':  request.user,
+                'source': source,
+                'secret': secret
+            })
+
+        if not create:
+            return Response({ "message": "Duplicate Key Error" })
+
+        serializer = self.get_serializer(instance=secret)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
+    model = NotificationSecret
+    serializer_class = NotificationSecretSerializer
 
 class UserDetail(RetrieveUpdateDestroyAPIView):
     model = User
@@ -604,49 +648,6 @@ class TokenView(APIView):
             token.save()
         return Response({ "token": token.key, "username": user.username })
 
-class TokenView(APIView):
-    '''
-    Allows ansible-galaxy CLI to retrieve an auth token
-    '''
-    def post(self, request, *args, **kwargs):
-        
-        gh_user = None
-        user = None
-        token = None
-        github_token = request.data.get('github_token', None)
-        
-        if github_token == None:
-            return Response({ "message": "Invalid request." })
-        
-        try:
-            status = requests.get('https://api.github.com')
-            status.raise_for_status()
-        except:
-            return Response({"message": "Error accessing Github API. Please try again later."})
-        
-        try:
-            header = { 'Authorization': 'token ' + github_token }
-            gh_user = requests.get('https://api.github.com/user', headers=header)
-            gh_user.raise_for_status()
-            gh_user = gh_user.json()
-            if hasattr(gh_user,'message'):
-                return Response({ "message": gh_user['message'] })
-        except:
-            return Response({ "message": "Error while attempting to access Github with provided token."})
-        
-        if SocialAccount.objects.filter(provider='github',uid=gh_user['id']).count() > 0:
-            user = SocialAccount.objects.get(provider='github',uid=gh_user['id']).user
-        else:
-            return Response({ "message": "Galaxy user account not found. You must first log into galaxy.ansible.com using your Github account."})
-        
-        if Token.objects.filter(user=user).count() > 0:
-            token = Token.objects.filter(user=user)[0]
-        else:
-            token = Token.objects.create(user=user)
-            token.save()
-        return Response({ "token": token.key, "username": user.username })
-
-    
             
 def get_response(*args, **kwargs):
     """ 
