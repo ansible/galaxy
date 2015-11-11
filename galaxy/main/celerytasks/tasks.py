@@ -131,7 +131,8 @@ def import_role(task_id, target="all"):
 
     user = import_task.owner
     repo_full_name = role.github_user + "/" + role.github_repo
-    add_message(import_task, "INFO", "Starting import: role_id=%d role_name=%s repo=%s" % (role.id,role.name,repo_full_name))
+    add_message(import_task, "INFO", "Starting import %d: role_id=%d role_name=%s repo=%s" % 
+        (import_task.id,role.id,role.name,repo_full_name))
     
     try:
         token = SocialToken.objects.get(account__user=user, account__provider='github')
@@ -218,10 +219,9 @@ def import_role(task_id, target="all"):
         if parsed_url.scheme == '' or parsed_url.netloc == '' or parsed_url.path == '':
             add_message(impor_task, "WARNING", "Invalid URL provided for galaxy_info.issue_tracker_url in meta/main.yml")
             role.issue_tracker_url = ""
-   
-    role.readme = get_readme(import_task, repo)
-    
+
     # Add tags / categories. Remove ':' and only allow alpha-numeric characters
+    add_message(import_task, "INFO", "Parsing galaxy_tags")
     meta_tags = []
     if galaxy_info.get("categories", None):
         add_message(import_task, "WARNING", "Found galaxy_info.categories. Update meta/main.yml to use galaxy_info.galaxy_tags.")
@@ -360,6 +360,8 @@ def import_role(task_id, target="all"):
             if dep_name not in dep_names:
                 role.dependencies.remove(dep)
 
+    role.readme = get_readme(import_task, repo)
+    
     # helper function to save repeating code:
     def add_role_version(category):
         rv,created = RoleVersion.objects.get_or_create(name=category.name, role=role)
@@ -385,7 +387,7 @@ def import_role(task_id, target="all"):
     warning_count = import_task.messages.filter(message_type="WARNING").count()
     import_state = "SUCCESS" if error_count == 0 else "FAILED"
     add_message(import_task, "INFO", "Import completed")
-    add_message(import_task, "INFO", "Status %s : warnings=%d errors=%d" % (import_state,warning_count,error_count))
+    add_message(import_task, import_state, "Status %s : warnings=%d errors=%d" % (import_state,warning_count,error_count))
     
     try:
         import_task.state = import_state
