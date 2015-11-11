@@ -45,7 +45,7 @@ from galaxy.main.mixins import *
 
 __all__ = [
     'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 
-    'RoleImport', 'RoleVersion', 'UserAlias'
+    'RoleVersion', 'UserAlias'
 ]
 
 ###################################################################################
@@ -347,7 +347,7 @@ class Role(CommonModelNameNotUnique):
 
     def get_last_import(self):
         try:
-            return model_to_dict(self.imports.latest(), fields=('released','state','status_message'))
+            return model_to_dict(self.import_tasks.latest(), fields=('id','state'))
         except Exception, e:
             return {}
 
@@ -412,6 +412,7 @@ class RoleVersion(CommonModelNameNotUnique):
 class ImportTask(PrimordialModel):
     class Meta:
         ordering = ('-id',)
+        get_latest_by = 'created'
 
     github_user = models.CharField(
         max_length   = 256,
@@ -426,6 +427,13 @@ class ImportTask(PrimordialModel):
         null         = False,
         blank        = False,
         editable     = True,
+    )
+    github_reference = models.CharField(
+        max_length   = 256,
+        verbose_name = "Github Reference",
+        null         = True,
+        blank        = True,
+        editable     = True
     )
     role = models.ForeignKey(
         Role,
@@ -501,60 +509,6 @@ class ImportTaskMessage(PrimordialModel):
 
     def __unicode__(self):
         return "%d-%s-%s" % (self.task.id,self.message_type,self.message_text)
-
-
-class RoleImport(PrimordialModel):
-    class Meta:
-        get_latest_by = "released"
-
-    #------------------------------------------------------------------------------
-    # foreign keys
-
-    role = models.ForeignKey(Role,
-        related_name = 'imports',
-    )
-
-    #------------------------------------------------------------------------------
-    # regular fields
-
-    celery_task_id = models.CharField(
-        max_length   = 100,
-        blank        = True,
-        default      = '',
-        editable     = False,
-        db_index     = True,
-    )
-    released = models.DateTimeField(
-        editable     = True,
-        auto_now_add = True,
-    )
-    state = models.CharField(
-        max_length   = 20,
-        blank        = True,
-        default      = '',
-        #editable     = False,
-        db_index     = True,
-    )
-    status_message = models.CharField(
-        max_length   = 512,
-        blank        = True,
-        default      = '',
-        #editable     = False,
-    )
-
-    #------------------------------------------------------------------------------
-    # other functions and properties
-
-    def __unicode__(self):
-        return "%s-%s" % (self.role.name,self.released.strftime("%Y%m%d-%H%M%S-%Z"))
-
-    @property
-    def celery_task(self):
-        try:
-            if self.celery_task_id:
-                return TaskMeta.objects.get(task_id=self.celery_task_id)
-        except TaskMeta.DoesNotExist:
-            return None
 
 class RoleRating(PrimordialModel):
 

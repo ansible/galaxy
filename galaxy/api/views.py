@@ -181,16 +181,6 @@ class PlatformDetail(RetrieveAPIView):
     model = Platform
     serializer_class = PlatformSerializer
 
-class RoleImportsList(SubListAPIView):
-    model = RoleImport
-    serializer_class = RoleImportSerializer
-    parent_model = Role
-    relationship = 'imports'
-
-class RoleImportDetail(RetrieveUpdateDestroyAPIView):
-    model = RoleImport
-    serializer_class = RoleImportSerializer
-
 class RoleRatingsList(SubListCreateAPIView):
     model = RoleRating
     serializer_class = RoleRatingSerializer
@@ -227,6 +217,15 @@ class RoleUsersList(SubListAPIView):
     def get_queryset(self):
         qs = super(RoleUsersList, self).get_queryset()
         return annotate_user_queryset(filter_user_queryset(qs))
+
+class RoleImportTaskList(SubListAPIView):
+    model = ImportTask
+    serializer_class = ImportTaskDetailSerializer
+    parent_model = Role
+    relationship = 'import_tasks'
+
+    def get_queryset(self):
+        return super(RoleImportTaskList, self).get_queryset()
 
 class RoleVersionsList(SubListCreateAPIView):
     model = RoleVersion
@@ -272,11 +271,11 @@ class ImportTaskList(ListCreateAPIView):
     def get_queryset(self):
         return super(ImportTaskList, self).get_queryset()
        
-
     def post(self, request, *args, **kwargs):
 
         github_user = request.data.get('github_user', None)
         github_repo = request.data.get('github_repo', None)
+        github_reference = request.data.get('github_reference', None)
         alternate_role_name = request.data.get('alternate_role_name', None)
 
         if github_user == None or github_repo == None:
@@ -304,8 +303,10 @@ class ImportTaskList(ListCreateAPIView):
             })
 
         task = ImportTask.objects.create(
-           github_user = github_user,
-           github_repo = github_repo,
+           github_user         = github_user,
+           github_repo         = github_repo,
+           github_reference    = github_reference,
+           alternate_role_name = alternate_role_name,
            role        = role,
            owner       = request.user,
            state       = 'PENDING'
@@ -603,51 +604,47 @@ class TokenView(APIView):
             token.save()
         return Response({ "token": token.key, "username": user.username })
 
-
-class CreateImportTaskView(APIView):
+class TokenView(APIView):
     '''
-    Allow token authenticated Galaxy CLI to create an Import ImportTask
+    Allows ansible-galaxy CLI to retrieve an auth token
     '''
-    authentication_classes = (TokenAuthentication)
-    permission_classes = (IsAuthenticated)
-
     def post(self, request, *args, **kwargs):
-
-        github_user = request.data.get('github_user', None)
-        github_repo = request.data.get('github_repo', None)
-
-        if github_user == None or github_rep == None:
+        
+        gh_user = None
+        user = None
+        token = None
+        github_token = request.data.get('github_token', None)
+        
+        if github_token == None:
             return Response({ "message": "Invalid request." })
         
-        regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
-        name = github_repo 
-
-        # we don't allow periods in the repo name, to prevent issues
-        # like user.name.repo.name
-        name = name.strip().replace(".", "_")
+        try:
+            status = requests.get('https://api.github.com')
+            status.raise_for_status()
+        except:
+            return Response({"message": "Error accessing Github API. Please try again later."})
         
-        if not name in ['ansible','Ansible']:
-            # Remove undesirable substrings
-            name = regex.sub('', name)
+        try:
+            header = { 'Authorization': 'token ' + github_token }
+            gh_user = requests.get('https://api.github.com/user', headers=header)
+            gh_user.raise_for_status()
+            gh_user = gh_user.json()
+            if hasattr(gh_user,'message'):
+                return Response({ "message": gh_user['message'] })
+        except:
+            return Response({ "message": "Error while attempting to access Github with provided token."})
         
-        role, created = Role.objects.get_or_create(namespace=github_user,github_repo=github_repo,
-            defaults={
-                namespace:   github_user,
-                name:        name,
-                github_user: github_user,
-                github_repo: github_repo,
-                is_valid:    False   
-            })
-
-        task = ImportTask.objects.create(
-            github_user = github_user,
-            github_repo = github_repo,
-            role = role,
-            owner = request.user,
-            state = 'PENDING'
-        )
-        task.save
-        import_role.delay(task.id)
+        if SocialAccount.objects.filter(provider='github',uid=gh_user['id']).count() > 0:
+            user = SocialAccount.objects.get(provider='github',uid=gh_user['id']).user
+        else:
+            return Response({ "message": "Galaxy user account not found. You must first log into galaxy.ansible.com using your Github account."})
+        
+        if Token.objects.filter(user=user).count() > 0:
+            token = Token.objects.filter(user=user)[0]
+        else:
+            token = Token.objects.create(user=user)
+            token.save()
+        return Response({ "token": token.key, "username": user.username })
 
     
             

@@ -205,12 +205,6 @@ class RoleVersionAccess(BaseAccess):
     def get_queryset(self):
         qs = self.model.objects.filter(active=True, role__active=True, role__owner__is_active=True).distinct()
 
-class RoleImportAccess(BaseAccess):
-    model = RoleImport
-
-    def get_queryset(self):
-        qs = self.model.objects.filter(active=True, role__active=True, role__owner__is_active=True).distinct()
-
 class ImportTaskAccess(BaseAccess):
     model = ImportTask
     
@@ -242,6 +236,5 @@ register_access(User, UserAccess)
 register_access(Role, RoleAccess)
 register_access(RoleRating, RoleRatingAccess)
 register_access(RoleVersion, RoleVersionAccess)
-register_access(RoleImport, RoleImportAccess)
 register_access(ImportTask, ImportTaskAccess)
 register_access(ImportTaskMessage, ImportTaskMessageAccess)

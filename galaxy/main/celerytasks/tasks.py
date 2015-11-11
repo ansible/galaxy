@@ -80,7 +80,7 @@ def get_readme(import_task, repo):
 
     # load README.md
     try: 
-        readme = repo.get_file_contents("README.md")
+        readme = repo.get_file_contents("README.md",ref=import_task.github_reference)
     except:
         readme = None
         add_message(import_task, "ERROR", "Failed to find a README.md. All role repositories must include a README.md.")
@@ -104,7 +104,7 @@ def get_readme(import_task, repo):
 
 
 @task(throws=(Exception,))
-def import_role(task_id, target="all"):
+def import_role(task_id):
     
     # regex used to strip unwanted substrings from the 
     # role name or from any deps
@@ -131,8 +131,8 @@ def import_role(task_id, target="all"):
 
     user = import_task.owner
     repo_full_name = role.github_user + "/" + role.github_repo
-    add_message(import_task, "INFO", "Starting import %d: role_id=%d role_name=%s repo=%s" % 
-        (import_task.id,role.id,role.name,repo_full_name))
+    add_message(import_task, "INFO", "Starting import %d: role_name=%s repo=%s ref=" % 
+        (import_task.id,role.name,repo_full_name,import_task.github_reference))
     
     try:
         token = SocialToken.objects.get(account__user=user, account__provider='github')
@@ -165,7 +165,7 @@ def import_role(task_id, target="all"):
     add_message(import_task, "INFO", "Parsing and validating meta/main.yml")
    
     try:
-        meta_file = repo.get_file_contents("meta/main.yml")
+        meta_file = repo.get_file_contents("meta/main.yml", ref=import_task.github_reference)
     except:
         fail_import_task(import_task, "Failed to find meta/main.yml. The role must include a meta/main.yml file.")
 
@@ -374,9 +374,9 @@ def import_role(task_id, target="all"):
     try:
         git_tag_list = repo.get_tags()
         for git_tag in git_tag_list:
-            if target == "all":
+            if import_task.github_reference is None:
                 add_role_version(git_tag)
-            elif target == git_tag.tag:
+            elif import_task.github_reference == git_tag.tag:
                 add_role_version(git_tag)
                 break
     except Exception, e:
@@ -406,18 +406,18 @@ def import_role(task_id, target="all"):
 # Periodic Tasks
 #----------------------------------------------------------------------
 
-@task(name="galaxy.main.celerytasks.tasks.clear_stuck_imports")
-#@transaction.commit_manually
-def clear_stuck_imports():
-    logger = clear_stuck_imports.get_logger()
-    two_hours_ago = timezone.now() - datetime.timedelta(seconds=7200)
-    try:
-        for ri in RoleImport.objects.filter(released__lte=two_hours_ago, state=''):
-            logger.info("Removing stuck import %s for role %s" % (ri, ri.role))
-            ri.state = "FAILED"
-            ri.status_message = "Import timed out, please try again. If you continue seeing this message you may have a syntax error in your meta/main.yml file."
-            ri.save()
-        transaction.commit()
-    except Exception, e:
-        logger.error("Exception occurred while clearing stuck imports: %s" % str(e))
-    return True
+# @task(name="galaxy.main.celerytasks.tasks.clear_stuck_imports")
+# #@transaction.commit_manually
+# def clear_stuck_imports():
+#     logger = clear_stuck_imports.get_logger()
+#     two_hours_ago = timezone.now() - datetime.timedelta(seconds=7200)
+#     try:
+#         for ri in RoleImport.objects.filter(released__lte=two_hours_ago, state=''):
+#             logger.info("Removing stuck import %s for role %s" % (ri, ri.role))
+#             ri.state = "FAILED"
+#             ri.status_message = "Import timed out, please try again. If you continue seeing this message you may have a syntax error in your meta/main.yml file."
+#             ri.save()
+#         transaction.commit()
+#     except Exception, e:
+#         logger.error("Exception occurred while clearing stuck imports: %s" % str(e))
+#     return True

@@ -38,9 +38,9 @@ class RoleVersionAdmin(admin.ModelAdmin):
     pass
 admin.site.register(RoleVersion, RoleVersionAdmin)
 
-class RoleImportAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(RoleImport, RoleImportAdmin)
+#class RoleImportAdmin(admin.ModelAdmin):
+#    pass
+#admin.site.register(RoleImport, RoleImportAdmin)
 
 class RoleRatingAdmin(admin.ModelAdmin):
     pass

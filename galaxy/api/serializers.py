@@ -508,7 +508,18 @@ class RoleVersionSerializer(BaseSerializer):
 class ImportTaskListSerializer(BaseSerializer):
     class Meta:
         model = ImportTask
-        fields = ('id', 'github_user', 'github_repo', 'role', 'owner', 'alternate_role_name', 'celery_task_id', 'state', 'started')
+        fields = (
+            'id',
+            'github_user',
+            'github_repo',
+            'github_reference',
+            'role',
+            'owner',
+            'alternate_role_name',
+            'celery_task_id',
+            'state',
+            'started'
+        )
 
     def to_native(self, obj):
         ret = super(ImportTaskSerializer, self).to_native(obj)
@@ -547,10 +558,6 @@ class ImportTaskDetailSerializer(ImportTaskListSerializer):
         model = ImportTask
         fields = ('id', 'github_user', 'github_repo', 'role', 'owner', 'alternate_role_name', 'celery_task_id', 'state', 'started')
 
-class RoleImportSerializer(BaseSerializer):
-    class Meta:
-        model = RoleImport
-        fields = ('celery_task_id','released',)
 
 class RoleRatingSerializer(BaseSerializer):
     
@@ -614,9 +621,8 @@ class RoleListSerializer(BaseSerializer):
         res = super(RoleListSerializer, self).get_related(obj)
         res.update(dict(
             owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        authors  = reverse('api:role_authors_list', args=(obj.pk,)),
-            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_imports_list', args=(obj.pk,)),
+	        dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
+            imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
             ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
             versions = reverse('api:role_versions_list', args=(obj.pk,)),
         ))
@@ -674,9 +680,8 @@ class RoleTopSerializer(BaseSerializer):
         res = super(RoleTopSerializer, self).get_related(obj)
         res.update(dict(
             owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        authors  = reverse('api:role_authors_list', args=(obj.pk,)),
-            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_imports_list', args=(obj.pk,)),
+	        dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
+            imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
             ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
             versions = reverse('api:role_versions_list', args=(obj.pk,)),
         ))
@@ -714,9 +719,8 @@ class RoleDetailSerializer(BaseSerializer):
         res = super(RoleDetailSerializer, self).get_related(obj)
         res.update(dict(
             owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        authors  = reverse('api:role_authors_list', args=(obj.pk,)),
-            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_imports_list', args=(obj.pk,)),
+	        dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
+            imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
             ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
             versions = reverse('api:role_versions_list', args=(obj.pk,)),
         ))
