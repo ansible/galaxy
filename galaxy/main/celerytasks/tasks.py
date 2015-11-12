@@ -80,7 +80,10 @@ def get_readme(import_task, repo):
 
     # load README.md
     try: 
-        readme = repo.get_file_contents("README.md",ref=import_task.github_reference)
+        if import_task.github_reference:
+            readme = repo.get_file_contents("README.md",ref=import_task.github_reference)
+        else:
+            readme = repo.get_file_contents("README.md")    
     except:
         readme = None
         add_message(import_task, "ERROR", "Failed to find a README.md. All role repositories must include a README.md.")
@@ -131,7 +134,7 @@ def import_role(task_id):
 
     user = import_task.owner
     repo_full_name = role.github_user + "/" + role.github_repo
-    add_message(import_task, "INFO", "Starting import %d: role_name=%s repo=%s ref=" % 
+    add_message(import_task, "INFO", "Starting import %d: role_name=%s repo=%s ref=%s" % 
         (import_task.id,role.name,repo_full_name,import_task.github_reference))
     
     try:
@@ -145,12 +148,12 @@ def import_role(task_id):
         gh_api = Github(token.token)
         gh_api.get_api_status()
     except:
-        fail_import_task(import_task, "Failed to connect to Github API. This is most likely a temporary error, please retry your import in a few minutes.")
+        fail_import_task(import_task, logger, "Failed to connect to Github API. This is most likely a temporary error, please retry your import in a few minutes.")
     
     try:
         gh_user = gh_api.get_user()
     except:
-        fail_import_task(import_task, "Failed to get Github authorized user.")
+        fail_import_task(import_task, logger, "Failed to get Github authorized user.")
 
     repo = None
     add_message(import_task, "INFO", "Retrieving Github repo %s" % repo_full_name)
@@ -159,20 +162,23 @@ def import_role(task_id):
             repo = r
             continue
     if repo is None:
-        fail_import_task(import_task, "Galaxy user %s does not have access to repo %s" % (user.username,repo_full_name))
+        fail_import_task(import_task, logger, "Galaxy user %s does not have access to repo %s" % (user.username,repo_full_name))
 
     # parse and validate meta/main.yml data
     add_message(import_task, "INFO", "Parsing and validating meta/main.yml")
    
     try:
-        meta_file = repo.get_file_contents("meta/main.yml", ref=import_task.github_reference)
+        if import_task.github_reference:
+            meta_file = repo.get_file_contents("meta/main.yml", ref=import_task.github_reference)
+        else:
+            meta_file = repo.get_file_contents("meta/main.yml")    
     except:
-        fail_import_task(import_task, "Failed to find meta/main.yml. The role must include a meta/main.yml file.")
+        fail_import_task(import_task, logger, "Failed to find meta/main.yml. The role must include a meta/main.yml file.")
 
     try:
         meta_data = yaml.safe_load(meta_file.content.decode('base64'))
     except Exception, e:
-        fail_import_task(import_task, "Failed to parse meta/main.yml. The role must have a valid meta/main.yml file.")
+        fail_import_task(import_task, logger, "Failed to parse meta/main.yml. The role must have a valid meta/main.yml file.")
     
     galaxy_info = meta_data.get("galaxy_info", None)
     if galaxy_info is None:
@@ -208,10 +214,7 @@ def import_role(task_id):
     if role.min_ansible_version == "":
         add_message(import_task, "WARNING", "galaxy.min_ansible_version missing value in meta/main.yml. Defaulting to 1.2.")
         role.min_ansible_version = '1.2'
-    elif len(role.min_ansible_version) > 10:
-        add_message(import_task, "WARNING", "galaxy.min.ansible_version exceeds max length of 10 in meta/main.yml. Setting value to default of 1.2.")
-        role.min_ansible_version = '1.2'
-
+    
     if role.issue_tracker_url == "":
         add_message(import_task, "WARNING", "No issue tracker defined. Enable issue tracker in repo settings or define galaxy_info.issue_tracker_url in meta/main.yml.")
     else:
@@ -374,7 +377,7 @@ def import_role(task_id):
     try:
         git_tag_list = repo.get_tags()
         for git_tag in git_tag_list:
-            if import_task.github_reference is None:
+            if not import_task.github_reference:
                 add_role_version(git_tag)
             elif import_task.github_reference == git_tag.tag:
                 add_role_version(git_tag)
@@ -397,7 +400,7 @@ def import_role(task_id):
             role.save()
         transaction.commit()
     except Exception, e:
-        fail_import_task(import_task, "An error occurred while saving the role: %s" % str(e))
+        fail_import_task(import_task, logger, "An error occurred while saving the role: %s" % str(e))
     
     return True
 

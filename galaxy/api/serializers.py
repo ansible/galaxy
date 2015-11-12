@@ -507,12 +507,8 @@ class RoleVersionSerializer(BaseSerializer):
 
 
 class NotificationSecretSerializer(BaseSerializer):
-    secret = serializers.CharField(
-        required=False,
-        write_only=True,
-        default='',
-        help_text=''
-    )
+    secret     = serializers.SerializerMethodField()
+
     class Meta:
         model = NotificationSecret
         fields = (
@@ -532,6 +528,15 @@ class NotificationSecretSerializer(BaseSerializer):
             return reverse('api:notification_secret_detail', args=(obj.pk,))
         else:
             return obj.get_absolute_url()
+
+    def get_secret(self, obj):
+        # show only last 4 digits of secret
+        last = ''
+        try: 
+            last = obj.secret[-4:]
+        except:
+            pass
+        return '******' + last
 
 class ImportTaskSerializer(BaseSerializer):
     class Meta:

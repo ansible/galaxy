@@ -32,9 +32,11 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import ValidationError
 
 # django stuff
 from django.contrib.auth.models import AnonymousUser
+from django.db import IntegrityError
 from django.db.models import F, Count, Avg, Prefetch
 from django.http import Http404
 from django.utils.datastructures import SortedDict
@@ -276,11 +278,11 @@ class ImportTaskList(ListCreateAPIView):
 
         github_user = request.data.get('github_user', None)
         github_repo = request.data.get('github_repo', None)
-        github_reference = request.data.get('github_reference', None)
-        alternate_role_name = request.data.get('alternate_role_name', None)
+        github_reference = request.data.get('github_reference', '')
+        alternate_role_name = request.data.get('alternate_role_name', '')
 
-        if github_user == None or github_repo == None:
-            return Response({ "message": "Invalid request." })
+        if not github_user or not github_repo:
+            raise ValidationError({ "detail": "Invalid request." })
         
         regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
         name = alternate_role_name if alternate_role_name else github_repo
@@ -353,7 +355,7 @@ class NotificationSecretList(ListCreateAPIView):
     model = NotificationSecret
     serializer_class = NotificationSecretSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (ModelAccessPermission,)
+    permission_classes = (IsAuthenticated, ModelAccessPermission,)
     
     def list(self, request, *args, **kwargs):
         # only list secrets belonging to the authenticated user
@@ -367,11 +369,11 @@ class NotificationSecretList(ListCreateAPIView):
         secret = request.data.get('secret', None)
         source = request.data.get('source', None)
 
-        if secret is None or source is None:
-            return Response({ "message": "Invalid request." })
+        if not secret or not source:
+            raise ValidationError({ "detail": "Invalid request." })
 
         if not source in ['github', 'travis']:
-            return Response({ "message": "Invalid source value. Expecting one of: [github, travis]"})
+            raise ValidationError({ "detail": "Invalid source value. Expecting one of: [github, travis]"})
         
         secret, create = NotificationSecret.objects.get_or_create(owner=request.user, source=source, secret=secret,
             defaults = {
@@ -381,7 +383,7 @@ class NotificationSecretList(ListCreateAPIView):
             })
 
         if not create:
-            return Response({ "message": "Duplicate Key Error" })
+            raise ValidationError({ "detail": "Duplicate key. Requested source and secret already loaded." })
 
         serializer = self.get_serializer(instance=secret)
         headers = self.get_success_headers(serializer.data)
@@ -391,6 +393,31 @@ class NotificationSecretList(ListCreateAPIView):
 class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
     model = NotificationSecret
     serializer_class = NotificationSecretSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated, ModelAccessPermission,)
+
+    def put(self, request, *args, **kwargs):
+        source = request.data.get('source',None)
+        secret = request.data.get('secret',None)
+        
+        if not source or not secret:
+            raise ValidationError({ "detail": "Invalid request." })
+        
+        if not source in ['github','travis']:
+            raise ValidationError({ "detail": "Invalid source value. Expecting one of: [github, travis]"})
+        
+        instance = self.get_object()
+
+        try:
+            instance.source = source
+            instance.secret = secret
+            instance.save()
+        except IntegrityError as e:
+            raise ValidationError({ "detail": "Duplicate key. Requested source and secret already loaded" })
+
+        serializer = self.get_serializer(instance=instance)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
 
 class UserDetail(RetrieveUpdateDestroyAPIView):
     model = User
@@ -621,13 +648,13 @@ class TokenView(APIView):
         github_token = request.data.get('github_token', None)
         
         if github_token == None:
-            return Response({ "message": "Invalid request." })
+            raise ValidationError({ "detail": "Invalid request." })
         
         try:
-            status = requests.get('https://api.github.com')
-            status.raise_for_status()
+            git_status = requests.get('https://api.github.com')
+            git_status.raise_for_status()
         except:
-            return Response({"message": "Error accessing Github API. Please try again later."})
+            raise ValidationError({"detail": "Error accessing Github API. Please try again later."})
         
         try:
             header = { 'Authorization': 'token ' + github_token }
@@ -635,14 +662,14 @@ class TokenView(APIView):
             gh_user.raise_for_status()
             gh_user = gh_user.json()
             if hasattr(gh_user,'message'):
-                return Response({ "message": gh_user['message'] })
+                raise ValidationError({ "detail": gh_user['message'] })
         except:
-            return Response({ "message": "Error while attempting to access Github with provided token."})
-        
+            raise ValidationError({ "detail": "Error accessing Github with provided token." })
+            
         if SocialAccount.objects.filter(provider='github',uid=gh_user['id']).count() > 0:
             user = SocialAccount.objects.get(provider='github',uid=gh_user['id']).user
         else:
-            return Response({ "message": "Galaxy user account not found. You must first log into galaxy.ansible.com using your Github account."})
+            raise ValidationError({ "detail": "Galaxy user not found. You must first log into Galaxy using your Github account."})
         
         if Token.objects.filter(user=user).count() > 0:
             token = Token.objects.filter(user=user)[0]

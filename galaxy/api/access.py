@@ -221,6 +221,10 @@ class NotificationSecretAccess(BaseAccess):
             return True
         return False
 
+    def can_delete(self, obj):
+        if self.user.is_authenticated() and obj.active and obj.owner.id == self.user.id:
+            return True
+
 class ImportTaskAccess(BaseAccess):
     model = ImportTask
     
