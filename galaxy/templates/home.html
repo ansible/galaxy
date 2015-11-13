@@ -27,7 +27,7 @@
             {% if not user.is_authenticated %}
             <div class="col-sm-6 login-text-container">
                 <div class="login-text">
-                    <h2 class="login-title"><a href="/accounts/github/login/">Log Into <span class="ansible-color">Galaxy</span> with Github</a></h2>
+                    <h2 class="login-title"><a href="/accounts/github/login/">Log Into Galaxy with Github</a></h2>
                     <div class="github-icon"><a href="/accounts/github/login/"><i class="fa fa-github fa-4x"></i></a></div>
                     <div class="alternate-signin"><a href="{% url 'account_login' %}">Use an existing account<br />not associated with Github</a></div>
                 </div>
@@ -42,7 +42,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-4">
-                <div class="download-icon"><i class="fa fa-cloud-download fa-3x"></i></div>
+                <div class="download-icon"><i class="fa fa-cloud-download fa-2x"></i></div>
                 <div class="info-label">Download</div>
                 <div class="content-txt">
                     <p>Jump-start your automation project with great content from the Ansible community. Galaxy provides pre-packaged units of work known to Ansible as <a href="http://docs.ansible.com/playbooks_roles.html#roles" target="_blank">roles</a>.
@@ -56,7 +56,7 @@ $ ansible-galaxy install username.rolename
                </div>
             </div>
             <div class="col-lg-4 col-md-4 col-sm-4">
-               <div class="share-icon"><i class="fa fa-share-alt fa-3x"></i></div>
+               <div class="share-icon"><i class="fa fa-share-alt fa-2x"></i></div>
                <div class="info-label">Share</div>
                <div class="content-txt">
                    <p>Be an active member of the community and help other Ansible users by sharing roles that you create.</p>
@@ -67,7 +67,7 @@ $ ansible-galaxy install username.rolename
                </div>
             </div>
             <div class="col-lg-4 col-md-4 col-sm-4">
-               <div class="thumbs-up-icon"><i class="fa fa-thumbs-up fa-3x"></i></div>
+               <div class="thumbs-up-icon"><i class="fa fa-thumbs-up fa-2x"></i></div>
                <div class="info-label">Review</div>
                <div class="content-txt">
                    <p>Help others find great automation content by reviewing roles that you use. Score the reliability, documentation,
@@ -81,6 +81,61 @@ $ ansible-galaxy install username.rolename
     </div>
 </div>
 
-<div ng-view></div>
+<div id="galaxy-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 banner-container">
+                <a href="http://www.ansible.com" target="_blank"><img id="ansible-logo" src="/static/img/ansible-logo.png"></a>
+                <div id="tower-banner">
+                    <h2>Try Ansible Tower</h2>
+                    <h3>Mission Control for Ansible</h3>
+                    <a href="http://cta-service-cms2.hubspot.com/ctas/v2/public/cs/c/?cta_guid=caffc3a7-7bd2-48be-9448-1e9f6ff68a24&placement_guid=c0f85a93-3309-47ba-b757-9f41c01be7b8&portal_id=330046&redirect_url=APefjpHLDSZnr1f7Y7x8u-qZA_rw2zIzt6vtYU6tiiEgm2kLMjGbP8VoNsXu0XJWOrqpUMWfZU0vx8DyRoAoa_fLVIFxpruLdWCOi0T6PElHvpibPhgDMuDYqs1xzz_QRpYg7GAdgUiLfkFhxwhJ2borIcusAn5-ht3FRXC4uXnIbcI34U3Z7E4B5N_BdRU-o65_mXi4YA_WKOp54o6M6PIObEBR5UrnYGle19C90HRJ5slxq13XhP2axCjZXbT4NniOZIOk5cE9E79U1ukpzpRvwHf9Vplqqg&hsutk=511166f6913230fe9fb7e3c9bd0f51d0&utm_referrer=http%3A%2F%2Fwww.ansible.com%2Forchestration&canon=http%3A%2F%2Fwww.ansible.com%2Forchestration&pageId=3363034806" class="download-btn btn btn-primary btn-sm" target="_blank">
+                    <i class="fa fa-download"></i>&nbsp;&nbsp;Download <strong>Free Tower Trial</strong></a>
+                </div>
+            </div>
+            <div class="col-md-4 left-border">
+                <section>
+                    <h2>Products</h2>
+                    <a href="http://www.ansible.com/tower" target="_blank" class="resource-link">Ansible Tower</a>
+                    <a href="http://www.ansible.com/tower-features" target="_blank" class="resource-link">Tower Editions</a>
+                    <a href="http://www.ansible.com/pricing" target="_blank" class="resource-link">Tower Pricing</a>
+                    <a href="http://www.ansible.com/tower-trial" target="_blank" class="resource-link">Free Tower Trial</a>    
+                    <a href="http://www.ansible.com/services" target="_blank" class="resource-link">Ansible Consulting</a>    
+                </section>
+                <section>
+                    <h2>Resources</h2>
+                    <a href="http://www.ansible.com/get-started" target="_blank" class="resource-link">Ansible Quick Start Guide</a>
+                    <a href="http://www.ansible.com/videos" target="_blank" class="resource-link">Videos</a>
+                    <a href="http://www.ansible.com/webinars-training" target="_blank" class="resource-link">Webinars &amp; Training</a>
+                    <a href="http://www.ansible.com/case-studies" target="_blank" class="resource-link">Case Studies</a>
+                    <a href="http://www.ansible.com/whitepapers" target="_blank" class="resource-link">Whitepapers</a>        
+                </section>
+            </div>
+            <div class="col-md-4 left-border">
+                <section>
+                    <h2>Community</h2>
+                    <a href="http://www.ansible.com/events" target="_blank" class="resource-link">Sponsored Events</a>
+                    <a href="http://www.ansible.com/ansible-meetups" target="_blank" class="resource-link">Local Meetups</a>
+                    <a href="https://github.com/ansible" target="_blank" class="resource-link">Ansible on Github</a>
+                </section>
+
+                <a class="free-link" href="https://support.ansible.com/" target="_blank" >Ansible Support</a>
+                <a class="free-link" href="http://docs.ansible.com/" target="_blank" >Ansible Docs</a>
+                <a class="free-link" href="http://ansible-inc.myshopify.com/" target="_blank" >Ansible Store</a>
+                <a class="free-link" href="http://www.ansible.com/blog" target="_blank" >Ansible Blog</a>
+                
+                <div class="social-logos">
+                    <a class="twitter-icon" href="http://twitter.com/ansible" target="_blank"><i class="fa fa-twitter fa-2x"></i></a>
+                    <a class="linkedin-icon" href="https://www.linkedin.com/groups/Ansible-Users-4648083" target="_blank"><i class="fa fa-linkedin fa-2x"></i></a>
+                    <a class="facebook-icon" href="https://www.facebook.com/ansibleautomation" target="_blank"><i class="fa fa-facebook-f fa-2x"></i></a>
+                    <a class="github-icon" href="http://github.com/ansible" target="_blank"><i class="fa fa-github fa-2x"></i></a>
+                </div>
+
+            </div>
+        </div><!-- container -->
+    </div>
+</div><!-- footer -->
+
+<!-- div ng-view></div-->
 
 {% endblock %}
