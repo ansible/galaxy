@@ -14,7 +14,7 @@
     background-repeat: no-repeat;
     color: @white;
 
-    #galaxy-banner-inner {
+    /*#galaxy-banner-inner {
         position: absolute;
         left: 0;
         top: 0;
@@ -22,14 +22,14 @@
         height: 370px;
         background-color: @black;
         opacity: .4;
-    }
+    }*/
+}
 
-    #galaxy-banner-text {
-        position: absolute;
-        left: 0;
-        top: 100px;
-        width: 100%;
-    }
+#galaxy-banner-text {
+    position: absolute;
+    left: 0;
+    top: 150px;
+    width: 100%;
 
     .login-text-container {
         text-align: right;
@@ -70,10 +70,10 @@
             margin-top: 20px;
             color: @ansible-color;
             a, a:active, a:visited {
-                color: @ansible-color;
+                color: @white;
             }
             a:hover {
-                color: @white;
+                color: @ansible-color;
             }
         }
     }
@@ -86,7 +86,81 @@
          font-weight: 300;
          font-size: 28px;
          line-height: 46px;
+         color: @white;
     }
+}
+
+
+/* 
+ * Animated Background 
+ */
+
+#galaxy-banner {
+    z-index: 0;
+    //position: fixed;
+    //top: 0;
+    //left: 0;
+    width: 100%;
+    height: 370px;
+    background: #03092b;
+    -webkit-transition: background 0.8s ease-out;
+    -moz-transition: background 0.8s ease-out;
+    -o-transition: background 0.8s ease-out;
+    -ms-transition: background 0.8s ease-out;
+    transition: background 0.8s ease-out;
+}
+#galaxy-banner,
+#galaxy-banner .bg {
+    width: 100%;
+    height: 370px;
+    overflow: hidden;
+}
+#galaxy-banner * {
+    position: absolute;
+}
+#galaxy-banner .bg {
+    background: url('../img/bg.jpg') no-repeat 50% 50%;
+}
+#galaxy-banner .bg.center {
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    height: 200px;
+    margin: -100px 0 0 -200px;
+    opacity: 0.8;
+    -webkit-border-radius: 500px;
+    -moz-border-radius: 500px;
+    border-radius: 500px;
+}
+#galaxy-banner [class^="stars"] {
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+}
+#galaxy-banner .stars-back {
+    background: url('../img/back.png');
+    -webkit-animation: orbit-clock-wise 440s infinite linear;
+    -moz-animation: orbit-clock-wise 440s infinite linear;
+    -o-animation: orbit-clock-wise 440s infinite linear;
+    -ms-animation: orbit-clock-wise 440s infinite linear;
+    animation: orbit-clock-wise 440s infinite linear;
+}
+#galaxy-banner .stars-middle {
+    background: url('../img/middle.png');
+    -webkit-animation: orbit-counter-clock-wise 360s infinite linear;
+    -moz-animation: orbit-counter-clock-wise 360s infinite linear;
+    -o-animation: orbit-counter-clock-wise 360s infinite linear;
+    -ms-animation: orbit-counter-clock-wise 360s infinite linear;
+    animation: orbit-counter-clock-wise 360s infinite linear;
+}
+#galaxy-banner .stars-front {
+    background: url('../img/front.png');
+    -webkit-animation: orbit-clock-wise 160s infinite linear;
+    -moz-animation: orbit-clock-wise 160s infinite linear;
+    -o-animation: orbit-clock-wise 160s infinite linear;
+    -ms-animation: orbit-clock-wise 160s infinite linear;
+    animation: orbit-clock-wise 160s infinite linear;
 }
 
 @media (max-width: 768px) {
@@ -138,3 +212,54 @@
      }
  }
  */
+
+ @-webkit-keyframes orbit-clock-wise {
+    0% { opacity: 0.4; -webkit-transform: rotate(0deg); }
+    2% { opacity: 0.8; }
+    4% { opacity: 0.2; }
+    5% { opacity: 0.8; }
+    100% { opacity: 0.4; -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes orbit-counter-clock-wise {
+    from { -webkit-transform: rotate(360deg); } to { -webkit-transform: rotate(0deg); }
+}
+@-moz-keyframes orbit-clock-wise {
+    0% { opacity: 0.4; -moz-transform: rotate(0deg); }
+    2% { opacity: 0.8; }
+    4% { opacity: 0.2; }
+    5% { opacity: 0.8; }
+    100% { opacity: 0.4; -moz-transform: rotate(360deg); }
+}
+@-moz-keyframes orbit-counter-clock-wise {
+    from { -moz-transform: rotate(360deg); } to { -moz-transform: rotate(0deg); }
+}
+@-o-keyframes orbit-clock-wise {
+    0% { opacity: 0.4; -o-transform: rotate(0deg); }
+    2% { opacity: 0.8; }
+    4% { opacity: 0.2; }
+    5% { opacity: 0.8; }
+    100% { opacity: 0.4; -o-transform: rotate(360deg); }
+}
+@-o-keyframes orbit-counter-clock-wise {
+    from { -o-transform: rotate(360deg); } to { -o-transform: rotate(0deg); }
+}
+@-ms-keyframes orbit-clock-wise {
+    0% { opacity: 0.4; -ms-transform: rotate(0deg); }
+    2% { opacity: 0.8; }
+    4% { opacity: 0.2; }
+    5% { opacity: 0.8; }
+    100% { opacity: 0.4; -ms-transform: rotate(360deg); }
+}
+@-ms-keyframes orbit-counter-clock-wise {
+    from { -ms-transform: rotate(360deg); } to { -ms-transform: rotate(0deg); }
+}
+@keyframes orbit-clock-wise {
+    0% { opacity: 0.4; transform: rotate(0deg); }
+    2% { opacity: 0.8; }
+    4% { opacity: 0.2; }
+    5% { opacity: 0.8; }
+    100% { opacity: 0.4; transform: rotate(360deg); }
+}
+@keyframes orbit-counter-clock-wise {
+    from { transform: rotate(360deg); } to { transform: rotate(0deg); }
+}
