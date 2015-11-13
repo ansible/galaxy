@@ -164,7 +164,8 @@
 }
 
 @media (max-width: 768px) {
-    #galaxy-banner {
+    #galaxy-banner-text {
+        top: 100px;
         .title-text {
             text-align: center;
         }
@@ -176,14 +177,16 @@
         .login-text-container {
             text-align: center;
         }
-
-        #galaxy-banner-text {
-            top: 40px;
+        h1 {
+            font-size: 24px;
+        }
+        h2 {
+            font-size: 18px;
         }
     }
 }
 
-@media (max-width: 600px) {
+/*@media (max-width: 600px) {
     #galaxy-banner {
         height: 430px;
     }
@@ -193,27 +196,9 @@
     #galaxy-banner {
         height: 470px;
     }    
-}
+}*/
 
-/*
- @media (min-width: 1400px) {
-    #galaxy-banner {
-        .galaxy-banner-inner {
-            opacity: .3;
-        }
-    }
- }
-
- @media (min-width: 1200px) {
-     #galaxy-banner {
-         .title-text {
-             width: 40%;
-         }
-     }
- }
- */
-
- @-webkit-keyframes orbit-clock-wise {
+@-webkit-keyframes orbit-clock-wise {
     0% { opacity: 0.4; -webkit-transform: rotate(0deg); }
     2% { opacity: 0.8; }
     4% { opacity: 0.2; }
