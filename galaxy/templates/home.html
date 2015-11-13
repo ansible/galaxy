@@ -6,37 +6,37 @@
 
 {% block general_content %}
 
+<div id="galaxy-banner-content">
+    <div id="galaxy-banner">
+        <div class="bg"></div>
+        <div class="stars-back"></div>
+        <div class="stars-middle"></div>
+        <div class="stars-front"></div>
+        <div class="bg center"></div>
+        <!-- <div id="galaxy-banner-inner"></div> -->
+    </div>
 
-<div id="galaxy-banner">
-    <div class="bg"></div>
-    <div class="stars-back"></div>
-    <div class="stars-middle"></div>
-    <div class="stars-front"></div>
-    <div class="bg center"></div>
-    <!-- <div id="galaxy-banner-inner"></div> -->
-</div>
-
-<div id="galaxy-banner-text">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-6">  
-                <div class="title-text">
-                    <h1><span class="ansible-color">Ansible Galaxy</span> is your hub for finding, reusing and sharing the best Ansible content.</h1>
+    <div id="galaxy-banner-text">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6">  
+                    <div class="title-text">
+                        <h1><span class="ansible-color">Ansible Galaxy</span> is your hub for finding, reusing and sharing the best Ansible content.</h1>
+                    </div>
                 </div>
-            </div>
-            {% if not user.is_authenticated %}
-            <div class="col-sm-6 login-text-container">
-                <div class="login-text">
-                    <h2 class="login-title"><a href="/accounts/github/login/">Log Into Galaxy with GitHub</a></h2>
-                    <div class="github-icon"><a href="/accounts/github/login/"><i class="fa fa-github fa-4x"></i></a></div>
-                    <div class="alternate-signin"><a href="{% url 'account_login' %}">Use an existing account<br />not associated with GitHub</a></div>
+                {% if not user.is_authenticated %}
+                <div class="col-sm-6 login-text-container">
+                    <div class="login-text">
+                        <h2 class="login-title"><a href="/accounts/github/login/">Log Into Galaxy with GitHub</a></h2>
+                        <div class="github-icon"><a href="/accounts/github/login/"><i class="fa fa-github fa-4x"></i></a></div>
+                        <div class="alternate-signin"><a href="{% url 'account_login' %}">Use an existing account<br />not associated with GitHub</a></div>
+                    </div>
                 </div>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     </div>
 </div>
-
 
 <div id="galaxy-info">
     <div class="container">
