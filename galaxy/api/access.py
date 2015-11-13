@@ -254,6 +254,18 @@ class ImportTaskMessageAccess(BaseAccess):
     def get_queryset(self):
         return self.model.objects.filter(active=True, task__active=True).distinct()
 
+class NotificationAccess(BaseAccess):
+
+    def can_add(self,data):
+        return True
+
+    def can_change(self, obj, data):
+        return False
+
+    def can_attach(self, obj, sub_obj, relationship, data,
+                   skip_sub_obj_read_check=False):
+        return False
+
 register_access(User, UserAccess)
 register_access(Role, RoleAccess)
 register_access(RoleRating, RoleRatingAccess)
@@ -261,3 +273,4 @@ register_access(RoleVersion, RoleVersionAccess)
 register_access(ImportTask, ImportTaskAccess)
 register_access(ImportTaskMessage, ImportTaskMessageAccess)
 register_access(NotificationSecret, NotificationSecretAccess)
+register_access(Notification, NotificationAccess)

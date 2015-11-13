@@ -423,7 +423,15 @@ class NotificationList(ListCreateAPIView):
     serializer_class = NotificationSerializer
 
     def post(self, request, *args, **kwargs):
+        response = {}
+        if request.META['HTTP_TRAVIS_REPO_SLUG'] or request.META['Travis-Repo-Slug']:
+            
+            # owner
+            # role
+            # source
 
+
+        return Response({})
         
 
 class NotificationDetail(RetrieveAPIView):

@@ -544,6 +544,10 @@ class NotificationSecret(PrimordialModel):
     source = models.CharField(
         max_length    = 20,
     )
+    github_repo = models.CharField(
+        max_length    = 256
+        
+    )
     secret = models.CharField(
         max_length    = 256,
     )
