@@ -69,7 +69,7 @@
             font-size: 14px;
             margin-top: 20px;
             color: @ansible-color;
-            text-shadow: 2px 2px #000;
+            text-shadow: 2px 1px #000;
         }
         a, a:active, a:visited {
             color: @white;
@@ -82,14 +82,14 @@
     h2 {
          font-weight: 300;
          font-size: 24px;
-         text-shadow: 2px 2px #000;
+         text-shadow: 2px 1px #000;
     }
     h1 {
          font-weight: 300;
          font-size: 28px;
          line-height: 46px;
          color: @white;
-         text-shadow: 2px 2px #000;
+         text-shadow: 2px 1px #000;
     }
 }
 
@@ -169,12 +169,14 @@
 @media (max-width: 768px) {
     #galaxy-banner-text {
         top: 100px;
+        
         .title-text {
             text-align: center;
         }
 
         .login-text {
             padding-top: 30px;
+            line-height: normal;
         }
 
         .login-text-container {
@@ -185,9 +187,11 @@
         }
         h1 {
             font-size: 24px;
+            line-height: normal;
         }
         h2 {
             font-size: 18px;
+            line-height: normal;
         }
     }
 }
@@ -369,6 +373,32 @@
                 padding-left: 20px;
                 padding-right: 20px;
             }
+        }
+    }
+}
+
+
+@media (max-width: 1200px) {
+    #galaxy-footer {
+        .banner-container {
+            #tower-banner {
+                .download-btn {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 990px) {
+    #galaxy-footer {
+        .banner-container {
+            padding-right: 15px;
+            padding-bottom: 30px;
+        }
+        .left-border {
+            border-left: none;
+            padding-left: 15px;
         }
     }
 }
