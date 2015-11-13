@@ -90,6 +90,12 @@ notification_secret_urls = patterns('galaxy.api.views',
     url(r'^(?P<pk>[0-9]+)/$',          'notification_secret_detail'),
 )
 
+notification_urls = patterns('galaxy.api.views',
+    url(r'^$',                         'notification_list'),
+    url(r'^(?P<pk>[0-9]+)/$',          'notification_detail'),
+)
+
+
 v1_urls = patterns('galaxy.api.views',
     url(r'^$',                         'api_v1_root_view'),
     url(r'^me/$',                      'user_me_list'),
@@ -102,6 +108,7 @@ v1_urls = patterns('galaxy.api.views',
     url(r'^imports/',                   include(import_task_urls)),
     url(r'^tokens/',                    TokenView.as_view(), name='token'),
     url(r'^notification_secrets/',     include(notification_secret_urls)),
+    url(r'^notifications/',            include(notification_urls)),
     url(r'^search/',                   include(search_urls)),
 )
 

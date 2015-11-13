@@ -136,6 +136,7 @@ class ApiV1RootView(APIView):
         data['imports']     = reverse('api:import_task_list')
         data['tokens']      = reverse('api:token')
         data['notification_secrets'] = reverse('api:notification_secret_list')
+        data['notifications'] = reverse('api:notification_list')
         data['search']     = reverse('api:search_view')
         return Response(data)
 
@@ -350,7 +351,7 @@ class UserRolesList(SubListAPIView):
 
 class NotificationSecretList(ListCreateAPIView):
     '''
-    Add web hook notification and integration tokens.
+    Integration tokens.
     '''
     model = NotificationSecret
     serializer_class = NotificationSecretSerializer
@@ -389,7 +390,6 @@ class NotificationSecretList(ListCreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-
 class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
     model = NotificationSecret
     serializer_class = NotificationSecretSerializer
@@ -418,6 +418,17 @@ class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance=instance)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
+class NotificationList(ListCreateAPIView):
+    model = Notification
+    serializer_class = NotificationSerializer
+
+    def post(self, request, *args, **kwargs):
+
+        
+
+class NotificationDetail(RetrieveAPIView):
+    model = Notification
+    serializer_class = NotificationSerializer
 
 class UserDetail(RetrieveUpdateDestroyAPIView):
     model = User

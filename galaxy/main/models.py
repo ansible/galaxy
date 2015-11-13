@@ -45,7 +45,7 @@ from galaxy.main.mixins import *
 
 __all__ = [
     'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 
-    'RoleVersion', 'UserAlias', 'NotificationSecret'
+    'RoleVersion', 'UserAlias', 'NotificationSecret', 'Notification'
 ]
 
 ###################################################################################
@@ -312,7 +312,7 @@ class Role(CommonModelNameNotUnique):
     )
     is_valid = models.BooleanField(
         default      = False,
-        editable     = True,
+        editable     = False,
         db_index     = True,
     )
     featured = models.BooleanField(
@@ -473,65 +473,41 @@ class ImportTask(PrimordialModel):
     github_user = models.CharField(
         max_length   = 256,
         verbose_name = "Github Username",
-        null         = False,
-        blank        = False,
-        editable     = True,
     )
     github_repo = models.CharField(
         max_length   = 256,
         verbose_name = "Github Repository",
-        null         = False,
-        blank        = False,
-        editable     = True,
     )
     github_reference = models.CharField(
         max_length   = 256,
         verbose_name = "Github Reference",
-        null         = True,
-        blank        = True,
-        editable     = True
     )
     role = models.ForeignKey(
         Role,
         related_name = 'import_tasks',
-        null         = True,
-        blank        = True,
-        default      = None,
         db_index     = True,
-        editable     = False
     )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name  = 'import_tasks',
-        null          = True,
-        blank         = True,
         db_index      = True,
-        editable      = False
     )
     alternate_role_name = models.CharField(
         max_length    = 256,
         verbose_name  = "Alternate Role Name",
         null          = True,
         blank         = True,
-        editable      = True
     )
     celery_task_id = models.CharField(
         max_length   = 100,
         blank        = True,
         null         = True,
-        editable     = False,
-        db_index     = True,
     )
     state = models.CharField(
         max_length   = 20,
-        blank        = True,
-        null         = True,
-        default      = '',
-        editable     = False,
-        db_index     = True,
+        default      = 'PENDING',
     )
     started = models.DateTimeField(
-        editable     = False,
         auto_now_add = False,
         null         = True,
         blank        = True,
@@ -545,22 +521,12 @@ class ImportTaskMessage(PrimordialModel):
     task = models.ForeignKey(
         ImportTask,
         related_name = 'messages',
-        null         = False,
-        blank        = False,
     )
     message_type = models.CharField(
         max_length = 10,
-        blank      = False,
-        null       = False,
-        editable   = False,
-        db_index   = False
     )
     message_text = models.CharField(
         max_length  = 256,
-        blank       = False,
-        null        = False,
-        editable    = False,
-        db_index    = False
     )
 
     def __unicode__(self):
@@ -574,22 +540,33 @@ class NotificationSecret(PrimordialModel):
         settings.AUTH_USER_MODEL,
         related_name  = 'notification_secrets',
         db_index      = True,
-        editable      = False
     )
     source = models.CharField(
         max_length    = 20,
-        blank         = False,
-        null          = False,
-        editable      = True
     )
     secret = models.CharField(
         max_length    = 256,
-        blank         = False,
-        null          = False,
-        editable      = True
     )
 
     def __unicode__(self):
         return "%s-%s" % (self.owner.username,self.source)
+
+class Notification(PrimordialModel):
+    class Meta:
+        ordering = ('-id',)
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name  = 'notifications',
+        db_index      = True,
+    )
+    role = models.ForeignKey(
+        Role,
+        related_name = 'notifications',
+        db_index     = True,
+    )
+    source = models.CharField(
+        max_length    = 20,
+    )
 
 

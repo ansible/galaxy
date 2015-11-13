@@ -538,6 +538,27 @@ class NotificationSecretSerializer(BaseSerializer):
             pass
         return '******' + last
 
+class NotificationSerializer(BaseSerializer):
+    class Meta:
+        model = Notification
+        fields = (
+            'id',
+            'owner',
+            'role',
+            'source',
+            'created',
+            'modified'
+        )
+
+    def get_url(self, obj):
+        if obj is None:
+            return ''
+        elif isinstance(obj, Notification):
+            return reverse('api:notification_detail', args=(obj.pk,))
+        else:
+            return obj.get_absolute_url()
+
+
 class ImportTaskSerializer(BaseSerializer):
     class Meta:
         model = ImportTask
