@@ -26,6 +26,10 @@
     .navbar-toggle:hover .icon-bar {
         background-color: #bbb;
     }
+    .navbar-nav>.active>a {
+        background-color: @navbar-item-hover-background;
+        color: @white;
+    }
     .navbar-nav>li>a {
         text-transform: uppercase;
         max-width: 225px;
@@ -60,9 +64,13 @@
             color: @white;
             max-width: 1023px;
         }
+        .navbar-nav>.active>a {
+            background-color: @navbar-item-hover-background;
+            color: @white;
+        }
         .navbar-nav>li>a:hover {
             background-color: @navbar-item-hover-background;
-            color: #161b1f;
+            color: @white;
         }
     }
     .navbar-default .navbar-nav .open {
@@ -97,6 +105,10 @@
                 }
             }
         }
+        .navbar-nav>.active>a {
+            background-color: @navbar-item-hover-background;
+            color: @white;
+        }
         .navbar-nav>li>a {
             text-align: center;
             padding: 10px 15px;
@@ -107,7 +119,7 @@
         }
         .navbar-nav>li>a:hover {
             background-color: @navbar-item-hover-background;
-            color: #161b1f;
+            color: @white;
         }
     }
     .navbar-default.navbar-fixed-top {
