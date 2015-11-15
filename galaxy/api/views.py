@@ -369,22 +369,27 @@ class NotificationSecretList(ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         secret = request.data.get('secret', None)
         source = request.data.get('source', None)
+        github_user = request.data.get('github_user', None)
+        github_repo = request.data.get('github_repo', None)
 
-        if not secret or not source:
-            raise ValidationError({ "detail": "Invalid request." })
+        if not secret or not source or not github_user or not github_repo:
+            raise ValidationError({ "detail": "Invalid request. Missing one or more required values." })
 
         if not source in ['github', 'travis']:
             raise ValidationError({ "detail": "Invalid source value. Expecting one of: [github, travis]"})
         
-        secret, create = NotificationSecret.objects.get_or_create(owner=request.user, source=source, secret=secret,
+        secret, create = NotificationSecret.objects.get_or_create(source=source, github_user=github_user, github_repo=github_repo,
             defaults = {
                 'owner':  request.user,
                 'source': source,
-                'secret': secret
+                'secret': secret,
+                'github_user': github_user,
+                'github_repo': github_repo
             })
 
         if not create:
-            raise ValidationError({ "detail": "Duplicate key. Requested source and secret already loaded." })
+            raise ValidationError({ "detail": "Duplicate key. An integration for %s %s %s already exists." %
+                (source, github_user, github_repo)})
 
         serializer = self.get_serializer(instance=secret)
         headers = self.get_success_headers(serializer.data)
@@ -399,11 +404,13 @@ class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
     def put(self, request, *args, **kwargs):
         source = request.data.get('source',None)
         secret = request.data.get('secret',None)
+        github_user = request.data.get('github_user', None)
+        github_repo = request.data.get('github_repo', None)
         
-        if not source or not secret:
-            raise ValidationError({ "detail": "Invalid request." })
-        
-        if not source in ['github','travis']:
+        if not secret or not source or not github_user or not github_repo:
+            raise ValidationError({ "detail": "Invalid request. Missing one or more required values." })
+
+        if not source in ['github', 'travis']:
             raise ValidationError({ "detail": "Invalid source value. Expecting one of: [github, travis]"})
         
         instance = self.get_object()
@@ -411,9 +418,12 @@ class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
         try:
             instance.source = source
             instance.secret = secret
+            instance.github_user = github_user
+            instance.github_repo = github_repo
             instance.save()
         except IntegrityError as e:
-            raise ValidationError({ "detail": "Duplicate key. Requested source and secret already loaded" })
+            raise ValidationError({ "detail": "An integration for %s %s %s already exists." %
+                (source, github_user, github_repo)})
 
         serializer = self.get_serializer(instance=instance)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
@@ -422,16 +432,16 @@ class NotificationList(ListCreateAPIView):
     model = Notification
     serializer_class = NotificationSerializer
 
-    def post(self, request, *args, **kwargs):
-        response = {}
-        if request.META['HTTP_TRAVIS_REPO_SLUG'] or request.META['Travis-Repo-Slug']:
+    # def post(self, request, *args, **kwargs):
+    #     response = {}
+    #     if request.META['HTTP_TRAVIS_REPO_SLUG'] or request.META['Travis-Repo-Slug']:
             
-            # owner
-            # role
-            # source
+    #         # owner
+    #         # role
+    #         # source
 
 
-        return Response({})
+    #     return Response({})
         
 
 class NotificationDetail(RetrieveAPIView):

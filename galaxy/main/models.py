@@ -534,8 +534,9 @@ class ImportTaskMessage(PrimordialModel):
 
 class NotificationSecret(PrimordialModel):
     class Meta:
-        ordering = ('source',)
-    
+        ordering = ('source','github_user','github_repo')
+        unique_together = ('source','github_user','github_repo')
+        
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name  = 'notification_secrets',
@@ -543,13 +544,19 @@ class NotificationSecret(PrimordialModel):
     )
     source = models.CharField(
         max_length    = 20,
+        verbose_name  = "Source"
+    )
+    github_user = models.CharField(
+        max_length   = 256,
+        verbose_name = "Github Username",
     )
     github_repo = models.CharField(
-        max_length    = 256
-        
+        max_length   = 256,
+        verbose_name = "Github Repository",
     )
     secret = models.CharField(
         max_length    = 256,
+        verbose_name  = "Secret"
     )
 
     def __unicode__(self):
@@ -571,6 +578,7 @@ class Notification(PrimordialModel):
     )
     source = models.CharField(
         max_length    = 20,
+        verbose_name  = "Source"
     )
 
 

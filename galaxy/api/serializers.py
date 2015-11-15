@@ -514,6 +514,8 @@ class NotificationSecretSerializer(BaseSerializer):
         fields = (
             'id',
             'owner',
+            'github_user',
+            'github_repo',
             'source',
             'secret',
             'created',
