@@ -20,6 +20,7 @@ import sys
 import math
 import requests
 import re
+from hashlib import sha256
 
 # rest framework stuff
 from rest_framework import filters
@@ -243,7 +244,6 @@ class RoleList(ListCreateAPIView):
 
     def get_queryset(self):
         qs = super(RoleList, self).get_queryset()
-        qs = qs.select_related('owner')
         qs = qs.prefetch_related('platforms', 'tags', 'versions', 'dependencies')
         return filter_role_queryset(qs)
 
@@ -253,7 +253,6 @@ class RoleTopList(ListAPIView):
 
     def get_queryset(self):
         qs = super(RoleTopList, self).get_queryset()
-        qs = qs.select_related('owner')
         return filter_role_queryset(qs)
 
 class RoleDetail(RetrieveUpdateDestroyAPIView):
@@ -276,36 +275,41 @@ class ImportTaskList(ListCreateAPIView):
         return super(ImportTaskList, self).get_queryset()
        
     def post(self, request, *args, **kwargs):
-
         github_user = request.data.get('github_user', None)
         github_repo = request.data.get('github_repo', None)
         github_reference = request.data.get('github_reference', '')
-        alternate_role_name = request.data.get('alternate_role_name', '')
-
+        
         if not github_user or not github_repo:
-            raise ValidationError({ "detail": "Invalid request." })
+            raise ValidationError({ "detail": "Invalid request. Expecting github_user and github_repo." })
         
-        regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
-        name = alternate_role_name if alternate_role_name else github_repo
+        if Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True).count() > 1:
+            # multiple roles match github_user/github_repo
+            response = {}
+            response['results'] = []
+            for role in Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True):
+                task = ImportTask.objects.create(
+                   github_user         = github_user,
+                   github_repo         = github_repo,
+                   github_reference    = github_reference,
+                   alternate_role_name = '',
+                   role        = role,
+                   owner       = request.user,
+                   state       = 'PENDING'
+                )
+                import_role.delay(task.id)
+                serializer = self.get_serializer(instance=task)
+                response['results'].append(serializer.data)
+            return Response(response, status=status.HTTP_201_CREATED, headers=self.get_success_headers(response))
 
-        # we don't allow periods in the repo name, to prevent issues
-        # like user.name.repo.name
-        name = name.strip().replace(".", "_")
-        
-        if not name in ['ansible','Ansible']:
-            # Remove undesirable substrings
-            name = regex.sub('', name)
-        
-        role, created = Role.objects.get_or_create(namespace=github_user,github_repo=github_repo,
+        role, created = Role.objects.get_or_create(github_user=github_user,github_repo=github_repo, active=True,
             defaults={
                 'namespace':   github_user,
-                'name':        name,
+                'name':        github_repo,
                 'github_user': github_user,
                 'github_repo': github_repo,
                 'is_valid':    False,
-                'owner_id':    request.user.id
-            })
-
+            }
+        )
         task = ImportTask.objects.create(
            github_user         = github_user,
            github_repo         = github_repo,
@@ -315,10 +319,8 @@ class ImportTaskList(ListCreateAPIView):
            owner       = request.user,
            state       = 'PENDING'
         )
-        task.save()
-        
         import_role.delay(task.id)
-        
+
         serializer = self.get_serializer(instance=task)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -378,6 +380,9 @@ class NotificationSecretList(ListCreateAPIView):
         if not source in ['github', 'travis']:
             raise ValidationError({ "detail": "Invalid source value. Expecting one of: [github, travis]"})
         
+        if source == 'travis':
+            secret = sha256(github_user + '/' + github_repo + secret).hexdigest()
+
         secret, create = NotificationSecret.objects.get_or_create(source=source, github_user=github_user, github_repo=github_repo,
             defaults = {
                 'owner':  request.user,
@@ -385,7 +390,8 @@ class NotificationSecretList(ListCreateAPIView):
                 'secret': secret,
                 'github_user': github_user,
                 'github_repo': github_repo
-            })
+            }
+        )
 
         if not create:
             raise ValidationError({ "detail": "Duplicate key. An integration for %s %s %s already exists." %
@@ -432,21 +438,104 @@ class NotificationList(ListCreateAPIView):
     model = Notification
     serializer_class = NotificationSerializer
 
-    # def post(self, request, *args, **kwargs):
-    #     response = {}
-    #     if request.META['HTTP_TRAVIS_REPO_SLUG'] or request.META['Travis-Repo-Slug']:
+    def post(self, request, *args, **kwargs):
+        if request.META.get('HTTP_TRAVIS_REPO_SLUG',None) or request.META.get('Travis-Repo-Slug',None):
+            # travis
+            secret = None
+            if request.META.get('HTTP_AUTHORIZATION',None):
+                secret = request.META['HTTP_AUTHORIZATION']
+            if request.META.get('Authorization',None):
+                secret = request.META['Authorization']
             
-    #         # owner
-    #         # role
-    #         # source
+            if not secret:
+                raise ValidationError('Invalid Request. Expected Authorization header.')
+            
+            try:
+                ns = NotificationSecret.objects.get(secret=secret,active=True)
+            except:
+                raise ValidationError("Travis secret *****%s not found." % ns[-4:])
 
+            repo = None
+            if request.META.get('HTTP_TRAVIS_REPO_SLUG',None):
+                repo = request.META['HTTP_TRAVIS_REPO_SLUG']
+            if request.META.get('Travis-Repo-Slug'):
+                repo = request.META['Travis-Repo-Slug']
 
-    #     return Response({})
-        
+            if not repo or repo != ns.repo_full_name():
+                raise ValidationError('Invalid Request. Expected %s to match %s' % (repo, ns.repo_full_name()))
+            
+            notification = Notification.objects.create(
+                owner = ns.owner,
+                source = 'travis',
+            )
+                
+            if Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True).count() > 1:
+                # multiple roles associated with github_user/github_repo
+                for role in Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True):
+                    task = notification.imports.create(
+                        github_user         = role.github_user,
+                        github_repo         = role.github_repo,
+                        github_reference    = request.data.branch,
+                        alternate_role_name = '',
+                        role        = role,
+                        owner       = ns.owner,
+                        state       = 'PENDING'
+                    )
+                    import_role.delay(task.id)
+                    notification.roles.add(role)
+                    notification.save()   
+            else:
+                role, created = Role.objects.get_or_create(github_user=ns.github_user,github_repo=ns.github_repo, active=True,
+                    defaults={
+                        'namespace':   ns.github_user,
+                        'name':        ns.github_repo,
+                        'github_user': ns.github_user,
+                        'github_repo': ns.github_repo,
+                        'is_valid':    False,
+                    }
+                )
+                task = notification.imports.create(
+                   github_user         = role.github_user,
+                   github_repo         = role.github_repo,
+                   github_reference    = '',
+                   alternate_role_name = '',
+                   role        = role,
+                   owner       = ns.owner,
+                   state       = 'PENDING'
+                )
+                notification.roles.add(role)
+                import_role.delay(task.id)
+            
+            serializer = self.get_serializer(instance=notification)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+        ValidationError("Invalid request. Expecting Travis or GitHub web hook request.")
+
 
 class NotificationDetail(RetrieveAPIView):
     model = Notification
     serializer_class = NotificationSerializer
+
+class NotificationRolesList(SubListAPIView):
+    model = Role
+    serializer_class = RoleDetailSerializer
+    parent_model = Notification
+    relationship = 'roles'
+
+    def get_queryset(self):
+        qs = super(NotificationRolesList, self).get_queryset()
+        return qs
+
+class NotificationImportsList(SubListAPIView):
+    model = ImportTask
+    serializer_class = ImportTaskSerializer
+    parent_model = Notification
+    relationship = 'imports'
+
+    def get_queryset(self):
+        qs = super(NotificationImportsList, self).get_queryset()
+        return qs
 
 class UserDetail(RetrieveUpdateDestroyAPIView):
     model = User

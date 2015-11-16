@@ -31,6 +31,7 @@ class Migration(migrations.Migration):
                 ('state', models.CharField(default=b'PENDING', max_length=20)),
                 ('started', models.DateTimeField(null=True, blank=True)),
                 ('owner', models.ForeignKey(related_name='import_tasks', to=settings.AUTH_USER_MODEL)),
+                ('role', models.ForeignKey(related_name='import_tasks', to='main.Role')),
             ],
             options={
                 'ordering': ('-id',),
@@ -65,6 +66,8 @@ class Migration(migrations.Migration):
                 ('active', models.BooleanField(default=True, db_index=True)),
                 ('source', models.CharField(max_length=20)),
                 ('owner', models.ForeignKey(related_name='notifications', to=settings.AUTH_USER_MODEL)),
+                ('role', models.ForeignKey(related_name='notifications', to='main.Role')),
+                ('task', models.ForeignKey(related_name='notifications', to='main.ImportTask', null=True)),
             ],
             options={
                 'ordering': ('-id',),
@@ -82,15 +85,13 @@ class Migration(migrations.Migration):
                 ('source', models.CharField(max_length=20)),
                 ('secret', models.CharField(max_length=256)),
                 ('owner', models.ForeignKey(related_name='notification_secrets', to=settings.AUTH_USER_MODEL)),
+                ('github_repo',models.CharField(max_length=256)),
+                ('github_user',models.CharField(max_length=256)),
             ],
             options={
                 'ordering': ('source',),
             },
             bases=(models.Model, galaxy.main.mixins.DirtyMixin),
-        ),
-        migrations.RemoveField(
-            model_name='roleimport',
-            name='role',
         ),
         migrations.AlterModelOptions(
             name='role',
@@ -99,24 +100,18 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='role',
             name='is_valid',
-            field=models.BooleanField(default=False, db_index=True, editable=False),
+            field=models.BooleanField(default=False, editable=False),
         ),
         migrations.AlterField(
             model_name='role',
             name='license',
             field=models.CharField(max_length=50, verbose_name=b'License (optional)', blank=True),
         ),
+        migrations.RemoveField(
+            model_name='roleimport',
+            name='role',
+        ),
         migrations.DeleteModel(
             name='RoleImport',
-        ),
-        migrations.AddField(
-            model_name='notification',
-            name='role',
-            field=models.ForeignKey(related_name='notifications', to='main.Role'),
-        ),
-        migrations.AddField(
-            model_name='importtask',
-            name='role',
-            field=models.ForeignKey(related_name='import_tasks', to='main.Role'),
-        ),
+        )
     ]

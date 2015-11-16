@@ -93,8 +93,9 @@ notification_secret_urls = patterns('galaxy.api.views',
 notification_urls = patterns('galaxy.api.views',
     url(r'^$',                         'notification_list'),
     url(r'^(?P<pk>[0-9]+)/$',          'notification_detail'),
+    url(r'^(?P<pk>[0-9]+)/roles/$',    'notification_roles_list'),
+    url(r'^(?P<pk>[0-9]+)/imports/$',  'notification_imports_list'),    
 )
-
 
 v1_urls = patterns('galaxy.api.views',
     url(r'^$',                         'api_v1_root_view'),

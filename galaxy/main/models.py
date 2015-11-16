@@ -229,11 +229,6 @@ class Role(CommonModelNameNotUnique):
     #------------------------------------------------------------------------------
     # foreign keys
 
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name = 'roles',
-        editable     = False,
-    )
     dependencies = models.ManyToManyField(
         'Role',
         related_name = '+',
@@ -313,7 +308,6 @@ class Role(CommonModelNameNotUnique):
     is_valid = models.BooleanField(
         default      = False,
         editable     = False,
-        db_index     = True,
     )
     featured = models.BooleanField(
         default      = False,
@@ -343,7 +337,7 @@ class Role(CommonModelNameNotUnique):
     # other functions and properties
 
     def __unicode__(self):
-        return "%s.%s" % (self.owner.username,self.name)
+        return "%s.%s" % (self.namespace,self.name)
 
     def get_last_import(self):
         try:
@@ -556,11 +550,15 @@ class NotificationSecret(PrimordialModel):
     )
     secret = models.CharField(
         max_length    = 256,
-        verbose_name  = "Secret"
+        verbose_name  = "Secret",
+        db_index      = True
     )
 
     def __unicode__(self):
         return "%s-%s" % (self.owner.username,self.source)
+
+    def repo_full_name(self):
+        return "%s/%s" % (self.github_user, self.github_repo)
 
 class Notification(PrimordialModel):
     class Meta:
@@ -571,14 +569,17 @@ class Notification(PrimordialModel):
         related_name  = 'notifications',
         db_index      = True,
     )
-    role = models.ForeignKey(
-        Role,
-        related_name = 'notifications',
-        db_index     = True,
-    )
     source = models.CharField(
         max_length    = 20,
         verbose_name  = "Source"
     )
-
-
+    roles = models.ManyToManyField(
+        Role,
+        related_name = 'notifications',
+        verbose_name = 'Roles',
+    )
+    imports = models.ManyToManyField(
+        ImportTask,
+        related_name = 'notifications',
+        verbose_name = 'Tasks',
+    )

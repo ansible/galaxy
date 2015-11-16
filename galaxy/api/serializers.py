@@ -349,10 +349,9 @@ class UserListSerializer(BaseSerializer):
                 ('created', g.created),
                 ('modified', g.modified),
                 ('role_id', g.role.id),
+                ('role_namespace', g.role.namespace),
                 ('role_name', g.role.name),
-                ('role_owner_id', g.role.owner.id),
-                ('role_owner_username', g.role.owner.username),
-            ]) for g in obj.user_ratings
+           ]) for g in obj.user_ratings
         ]
         return d
 
@@ -457,9 +456,8 @@ class UserDetailSerializer(BaseSerializer):
                 ('created', g.created),
                 ('modified', g.modified),
                 ('role_id', g.role.id),
+                ('role_namespace', g.role.namespace),
                 ('role_name', g.role.name),
-                ('role_owner_id', g.role.owner.id),
-                ('role_owner_username', g.role.owner.username),
             ]) for g in obj.ratings.filter(active=True, role__active=True, role__is_valid=True).order_by('-created')
         ]
         return d
@@ -546,7 +544,6 @@ class NotificationSerializer(BaseSerializer):
         fields = (
             'id',
             'owner',
-            'role',
             'source',
             'created',
             'modified'
@@ -560,6 +557,33 @@ class NotificationSerializer(BaseSerializer):
         else:
             return obj.get_absolute_url()
 
+    def get_summary_fields(self, obj):
+        if obj is None:
+            return {}
+        d = super(NotificationSerializer, self).get_summary_fields(obj)
+        d['owner'] = OrderedDict([
+            ('id', obj.owner.id),
+            ('username', obj.owner.username)
+        ])
+        d['roles'] = [OrderedDict([
+            ('id', r.id),
+            ('namespace', r.namespace),
+            ('name', r.name)
+        ]) for r in obj.roles.all() ]
+        d['imports'] = [OrderedDict([
+            ('id', t.id) 
+        ]) for t in obj.imports.all() ]
+        return d
+
+    def get_related(self, obj):
+        if obj is None:
+            return {}
+        res = super(NotificationSerializer, self).get_related(obj)
+        res.update(dict(
+            roles = reverse('api:notification_roles_list', args=(obj.pk,)),
+            imports = reverse('api:notification_imports_list', args=(obj.pk,))
+        ))
+        return res
 
 class ImportTaskSerializer(BaseSerializer):
     class Meta:
@@ -599,17 +623,27 @@ class ImportTaskSerializer(BaseSerializer):
         res.update(dict(
             role = reverse('api:role_detail', args=(obj.role_id,))
         ))
+        if obj.notifications.count() > 0:
+            key = obj.notifications.all()[0].id
+            res.update(dict(
+                notification = reverse('api:notification_detail', args=(key,))
+            ))
         return res 
 
     def get_summary_fields(self, obj):
         if obj is None:
             return {}
         d = super(ImportTaskSerializer, self).get_summary_fields(obj)
-        d['task_messages'] = [{
-            'id': g.id,
-            'message_type': g.message_type,
-            'message_text': g.message_text
-        } for g in obj.messages.all().order_by('id')]
+        d['role'] = OrderedDict([
+            ('id',obj.role.id),
+            ('namespace',obj.role.namespace),
+            ('name',obj.role.name)
+        ])
+        d['task_messages'] = [OrderedDict([
+            ('id',g.id),
+            ('message_type',g.message_type),
+            ('message_text',g.message_text)
+        ]) for g in obj.messages.all().order_by('id')]
         return d
 
 class RoleRatingSerializer(BaseSerializer):
@@ -641,9 +675,8 @@ class RoleRatingSerializer(BaseSerializer):
         d = super(RoleRatingSerializer, self).get_summary_fields(obj)
         d['role'] = {
             'id': obj.role.id,
+            'namespace': obj.role.namespace,
             'name': obj.role.name,
-            'owner_id': obj.role.owner.id,
-            'owner_username': obj.role.owner.username
         }
         d['owner'] = {
             'id': obj.owner.id,
@@ -673,8 +706,7 @@ class RoleListSerializer(BaseSerializer):
             return {}
         res = super(RoleListSerializer, self).get_related(obj)
         res.update(dict(
-            owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
+            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
             imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
             ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
             versions = reverse('api:role_versions_list', args=(obj.pk,)),
@@ -693,19 +725,10 @@ class RoleListSerializer(BaseSerializer):
         if obj is None:
             return {}
         d = super(RoleListSerializer, self).get_summary_fields(obj)
-
         d['dependencies'] = [str(g) for g in obj.dependencies.all()]
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
         d['tags'] = [{'name':g.name} for g in obj.tags.all()]
         d['versions'] = [{'name':g.name,'release_date':g.release_date} for g in obj.versions.all()]
-        d['owner'] = {
-            'id': obj.owner.id,
-            'username': obj.owner.username,
-            'full_name': obj.owner.full_name,
-            'staff': obj.owner.is_staff,
-            'avatar_url': get_user_avatar_url(obj.owner),
-        }
-
         return d
 
     def get_average_score(self, obj):
@@ -732,8 +755,7 @@ class RoleTopSerializer(BaseSerializer):
             return {}
         res = super(RoleTopSerializer, self).get_related(obj)
         res.update(dict(
-            owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
+            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
             imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
             ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
             versions = reverse('api:role_versions_list', args=(obj.pk,)),
@@ -771,8 +793,7 @@ class RoleDetailSerializer(BaseSerializer):
             return {}
         res = super(RoleDetailSerializer, self).get_related(obj)
         res.update(dict(
-            owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
+            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
             imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
             ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
             versions = reverse('api:role_versions_list', args=(obj.pk,)),
@@ -794,20 +815,11 @@ class RoleDetailSerializer(BaseSerializer):
         if obj is None:
             return {}
         d = super(RoleDetailSerializer, self).get_summary_fields(obj)
-
         d['dependencies'] = [{ 'id': g.id, 'name': str(g) } for g in obj.dependencies.all()]
         d['ratings'] = [{'id':g.id, 'score':g.score} for g in obj.ratings.filter(owner__is_active=True)]
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
         d['tags'] = [{'name':g.name} for g in obj.tags.all()]
         d['versions'] = [{'name':g.name,'release_date':g.release_date} for g in obj.versions.all()]
-        d['owner'] = {
-            'id': obj.owner.id,
-            'username': obj.owner.username,
-            'full_name': obj.owner.full_name,
-            'staff': obj.owner.is_staff,
-            'avatar_url': get_user_avatar_url(obj.owner),
-        }
-
         return d
     
     def get_average_score(self, obj):
@@ -833,7 +845,7 @@ class RoleSearchSerializer(HaystackSerializer):
         # fields belong to the search index!
         fields = [
             "name", "description", "tags", "platforms", "username", "average_score", "num_ratings",
-            "created", "modified", "text", "autocomplete", "owner_id", "sort_name", "platforms_autocomplete",
+            "created", "modified", "text", "autocomplete", "sort_name", "platforms_autocomplete",
             "tags_autocomplete", "username_autocomplete"
         ]
 
