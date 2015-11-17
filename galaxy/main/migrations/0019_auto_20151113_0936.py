@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import galaxy.main.mixins
 from django.conf import settings
+import django.contrib.postgres.fields
 import galaxy.main.fields
 
 
@@ -64,10 +65,12 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),
-                ('source', models.CharField(max_length=20, verbose_name=b'Source')),
-                ('owner', models.ForeignKey(related_name='notifications', to=settings.AUTH_USER_MODEL)),
-                ('roles', models.ManyToManyField(related_name='notifications', verbose_name=b'Roles', to='main.Role')),
-                ('imports', models.ManyToManyField(related_name='notifications', verbose_name=b'Tasks', to='main.ImportTask')),
+                ('source', models.CharField(max_length=20, verbose_name=b'Source',editable=False)),
+                ('owner', models.ForeignKey(related_name='notifications', to=settings.AUTH_USER_MODEL,editable=False)),
+                ('roles', models.ManyToManyField(related_name='notifications', verbose_name=b'Roles', to='main.Role',editable=False)),
+                ('imports', models.ManyToManyField(related_name='notifications', verbose_name=b'Tasks', to='main.ImportTask', editable=False)),
+                ('github_branch', models.CharField(max_length=256, verbose_name=b'GitHub Branch', blank=True, editable=False)),
+                ('messages', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.CharField(max_length=256), size=None, editable=False))
             ],
             options={
                 'ordering': ('-id',),
@@ -118,6 +121,11 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='role',
             name='owner',
+        ),
+        migrations.AddField(
+            model_name='role',
+            name='github_branch',
+            field=models.CharField(default=b'', max_length=256, verbose_name=b'Github Branch', blank=True),
         ),
         migrations.DeleteModel(
             name='RoleImport',
