@@ -102,6 +102,19 @@ def annotate_role_queryset(qs):
                avg_wow_factor    = AvgWithZeroForNull('ratings__wow_factor'),
            )
 
+def create_import_task(github_user, github_repo, github_branch, role, user):
+    task = ImportTask.objects.create(
+        github_user         = github_user,
+        github_repo         = github_repo,
+        github_reference    = github_branch,
+        alternate_role_name = '',
+        role        = role,
+        owner       = user,
+        state       = 'PENDING'
+    )
+    import_role.delay(task.id)
+    return task
+
 #--------------------------------------------------------------------------------
 
 
@@ -287,7 +300,7 @@ class ImportTaskList(ListCreateAPIView):
         if Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True).count() > 1:
             # multiple roles match github_user/github_repo
             for role in Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True):
-                task = self.__create_task(github_user, github_repo, github_reference, role, request.user)
+                task = create_import_task(github_user, github_repo, github_reference, role, request.user)
                 import_role.delay(task.id)
                 serializer = self.get_serializer(instance=task)
                 response['results'].append(serializer.data)
@@ -301,24 +314,11 @@ class ImportTaskList(ListCreateAPIView):
                     'is_valid':    False,
                 }
             )
-            task = self.__create_task(github_user, github_repo, github_reference, role, request.user)
+            task = create_import_task(github_user, github_repo, github_reference, role, request.user)
             serializer = self.get_serializer(instance=task)
             response['results'].append(serializer.data)
         return Response(response, status=status.HTTP_201_CREATED, headers=self.get_success_headers(response))
     
-    def __create_task(self, github_user, github_repo, github_reference, role, user):
-        task = ImportTask.objects.create(
-            github_user         = github_user,
-            github_repo         = github_repo,
-            github_reference    = github_reference,
-            alternate_role_name = '',
-            role        = role,
-            owner       = user,
-            state       = 'PENDING'
-        )
-        import_role.delay(task.id)
-        return task
-
 class ImportTaskDetail(RetrieveAPIView):
     model = ImportTask
     serializer_class = ImportTaskSerializer
@@ -433,12 +433,12 @@ class NotificationList(ListCreateAPIView):
     serializer_class = NotificationSerializer
 
     def post(self, request, *args, **kwargs):
-        if request.META.get('HTTP_TRAVIS_REPO_SLUG',None) or request.META.get('Travis-Repo-Slug',None):
+        if request.META.get('HTTP_TRAVIS_REPO_SLUG', None) or request.META.get('Travis-Repo-Slug', None):
             # travis
             secret = None
-            if request.META.get('HTTP_AUTHORIZATION',None):
+            if request.META.get('HTTP_AUTHORIZATION', None):
                 secret = request.META['HTTP_AUTHORIZATION']
-            if request.META.get('Authorization',None):
+            if request.META.get('Authorization', None):
                 secret = request.META['Authorization']
             
             if not secret:
@@ -450,7 +450,7 @@ class NotificationList(ListCreateAPIView):
                 raise ValidationError("Travis secret *****%s not found." % ns[-4:])
 
             repo = None
-            if request.META.get('HTTP_TRAVIS_REPO_SLUG',None):
+            if request.META.get('HTTP_TRAVIS_REPO_SLUG', None):
                 repo = request.META['HTTP_TRAVIS_REPO_SLUG']
             if request.META.get('Travis-Repo-Slug'):
                 repo = request.META['Travis-Repo-Slug']
@@ -461,29 +461,18 @@ class NotificationList(ListCreateAPIView):
             notification = Notification.objects.create(
                 owner = ns.owner,
                 source = 'travis',
-                github_branch = request.data.branch
+                github_branch = request.data['branch']
             )
 
             if Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True).count() > 1:
                 # multiple roles associated with github_user/github_repo
-                for role in Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True):
-                    
-                    if role.github_branch and role.github_branch != request.data.branch:
+                for role in Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True):    
+                    if role.github_branch and role.github_branch != request.data['branch']:
                         notification.messages.append('Skipping role %d - github_branch %s does not match requested branch.' %
                             (role.id, role.github_branch))
-
-                    task = notification.imports.create(
-                        github_user         = role.github_user,
-                        github_repo         = role.github_repo,
-                        github_reference    = request.data.branch,
-                        alternate_role_name = '',
-                        role        = role,
-                        owner       = ns.owner,
-                        state       = 'PENDING'
-                    )
-                    import_role.delay(task.id)
+                    task = create_import_task(role.github_user, role.github_repo, request.data['branch'], role, ns.owner)
+                    notification.imports.add(task)
                     notification.roles.add(role)
-                    notification.save()   
             else:
                 role, created = Role.objects.get_or_create(github_user=ns.github_user,github_repo=ns.github_repo, active=True,
                     defaults={
@@ -494,23 +483,14 @@ class NotificationList(ListCreateAPIView):
                         'is_valid':    False,
                     }
                 )
-                if not created and role.github_branch and role.github_branch != request.data.branch:
+                if not created and role.github_branch and role.github_branch != request.data['branch']:
                     notification.messages.append('Skipping role %d - github_branch %s does not match requested branch.' %
                         (role.id, role.github_branch))
-                else:  
-                    notification = notification.imports.create(
-                        github_user         = role.github_user,
-                        github_repo         = role.github_repo,
-                        github_reference    = request.data.branch,
-                        alternate_role_name = '',
-                        role        = role,
-                        owner       = ns.owner,
-                        state       = 'PENDING'
-                    )
+                else:
+                    task = create_import_task(role.github_user, role.github_repo, request.data['branch'], role, ns.owner)
+                    notification.imports.add(task)
                     notification.roles.add(role)
-                    import_role.delay(task.id)
-                notification.save()
-            
+            notification.save()
             serializer = self.get_serializer(instance=notification)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
