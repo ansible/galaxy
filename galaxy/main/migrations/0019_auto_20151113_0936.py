@@ -64,10 +64,10 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),
-                ('source', models.CharField(max_length=20)),
+                ('source', models.CharField(max_length=20, verbose_name=b'Source')),
                 ('owner', models.ForeignKey(related_name='notifications', to=settings.AUTH_USER_MODEL)),
-                ('role', models.ForeignKey(related_name='notifications', to='main.Role')),
-                ('task', models.ForeignKey(related_name='notifications', to='main.ImportTask', null=True)),
+                ('roles', models.ManyToManyField(related_name='notifications', verbose_name=b'Roles', to='main.Role')),
+                ('imports', models.ManyToManyField(related_name='notifications', verbose_name=b'Tasks', to='main.ImportTask')),
             ],
             options={
                 'ordering': ('-id',),
@@ -82,16 +82,20 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),
-                ('source', models.CharField(max_length=20)),
-                ('secret', models.CharField(max_length=256)),
+                ('source', models.CharField(max_length=20, verbose_name=b'Source')),
+                ('secret', models.CharField(max_length=256, verbose_name=b'Secret', db_index=True)),
                 ('owner', models.ForeignKey(related_name='notification_secrets', to=settings.AUTH_USER_MODEL)),
-                ('github_repo',models.CharField(max_length=256)),
-                ('github_user',models.CharField(max_length=256)),
+                ('github_repo',models.CharField(max_length=256, verbose_name=b'Github Repository')),
+                ('github_user',models.CharField(max_length=256, verbose_name=b'Github Username')),
             ],
             options={
-                'ordering': ('source',),
+                'ordering': ('source','github_user', 'github_repo',),
             },
             bases=(models.Model, galaxy.main.mixins.DirtyMixin),
+        ),
+        migrations.AlterUniqueTogether(
+            name='notificationsecret',
+            unique_together=set([('source', 'github_user', 'github_repo')]),
         ),
         migrations.AlterModelOptions(
             name='role',
@@ -110,6 +114,10 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='roleimport',
             name='role',
+        ),
+        migrations.RemoveField(
+            model_name='role',
+            name='owner',
         ),
         migrations.DeleteModel(
             name='RoleImport',

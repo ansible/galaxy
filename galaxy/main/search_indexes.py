@@ -10,20 +10,22 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     description = indexes.CharField(model_attr='description')
     tags = indexes.MultiValueField(default='', faceted=True)
     platforms = indexes.MultiValueField(default='', faceted=True)
-    username = indexes.CharField(model_attr='owner__username')
+    username = indexes.CharField(model_attr='namespace')
     average_score = indexes.FloatField(default=0)
     num_ratings = indexes.IntegerField(model_attr='num_ratings')
     created = indexes.DateTimeField(model_attr='created', default='')
     modified = indexes.DateTimeField(model_attr='modified', default='')
     owner_id = indexes.IntegerField(model_attr='owner__id')
     sort_name = indexes.CharField(default='')
+    github_user = indexes.CharField(model_attr='github_user')
+    github_repo = indexes.CharField(model_attr='github_repo')
+    github_branch = indexes.CharField(model_attr='github_branch')
     
     # autocomplete fields
     autocomplete = indexes.EdgeNgramField(use_template=True)
     tags_autocomplete = indexes.EdgeNgramField(default='')
     platforms_autocomplete = indexes.EdgeNgramField(default='')
-    username_autocomplete = indexes.EdgeNgramField(model_attr='owner__username')
-
+    username_autocomplete = indexes.EdgeNgramField(model_attr='namespace')
 
 
     def get_model(self):

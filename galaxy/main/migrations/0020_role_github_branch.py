@@ -7,12 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0020_auto_20151115_0608'),
+        ('main', '0019_auto_20151113_0936'),
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.AddField(
             model_name='role',
-            name='owner',
-        )
+            name='github_branch',
+            field=models.CharField(default=b'', max_length=256, verbose_name=b'Github Branch', blank=True),
+        ),
     ]

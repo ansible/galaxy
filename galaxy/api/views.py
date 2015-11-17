@@ -311,13 +311,13 @@ class ImportTaskList(ListCreateAPIView):
             }
         )
         task = ImportTask.objects.create(
-           github_user         = github_user,
-           github_repo         = github_repo,
-           github_reference    = github_reference,
-           alternate_role_name = alternate_role_name,
-           role        = role,
-           owner       = request.user,
-           state       = 'PENDING'
+            github_user         = github_user,
+            github_repo         = github_repo,
+            github_reference    = github_reference,
+            alternate_role_name = alternate_role_name,
+            role        = role,
+            owner       = request.user,
+            state       = 'PENDING'
         )
         import_role.delay(task.id)
 
@@ -495,13 +495,13 @@ class NotificationList(ListCreateAPIView):
                     }
                 )
                 task = notification.imports.create(
-                   github_user         = role.github_user,
-                   github_repo         = role.github_repo,
-                   github_reference    = '',
-                   alternate_role_name = '',
-                   role        = role,
-                   owner       = ns.owner,
-                   state       = 'PENDING'
+                    github_user         = role.github_user,
+                    github_repo         = role.github_repo,
+                    github_reference    = '',
+                    alternate_role_name = '',
+                    role        = role,
+                    owner       = ns.owner,
+                    state       = 'PENDING'
                 )
                 notification.roles.add(role)
                 import_role.delay(task.id)

@@ -23,8 +23,8 @@ class Command(BaseCommand):
         galaxy_users.delete(ignore=404)
         galaxy_users.create()
         
-        for role in Role.objects.filter(active=True, is_valid=True).order_by('owner__username').distinct('owner__username').all():
-            doc = UserDoc(username=role.owner.username)
+        for role in Role.objects.filter(active=True, is_valid=True).order_by('namespace').distinct('namespace').all():
+            doc = UserDoc(username=role.namespace)
             doc.save()
         
     def rebuild_tags(self):

@@ -40,7 +40,7 @@ def role_pre_save(sender, **kwargs):
     instance = kwargs['instance']
     tags = instance.get_tags() if instance.id else []
     platforms = instance.get_unique_platforms() if instance.id else []
-    username = instance.owner.username if instance.id else ''
+    username = instance.namespace if instance.id else ''
     instance._saved_tag_names = tags
     instance._saved_username = username
     instance._saved_platforms = platforms
