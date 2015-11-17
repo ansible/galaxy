@@ -314,7 +314,7 @@ class ImportTaskList(ListCreateAPIView):
             github_user         = github_user,
             github_repo         = github_repo,
             github_reference    = github_reference,
-            alternate_role_name = alternate_role_name,
+            alternate_role_name = '',
             role        = role,
             owner       = request.user,
             state       = 'PENDING'
