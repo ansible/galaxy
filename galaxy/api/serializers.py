@@ -538,6 +538,7 @@ class NotificationSecretSerializer(BaseSerializer):
             pass
         return '******' + last
 
+
 class NotificationSerializer(BaseSerializer):
     class Meta:
         model = Notification
@@ -545,6 +546,8 @@ class NotificationSerializer(BaseSerializer):
             'id',
             'owner',
             'source',
+            'github_branch',
+            'messages',
             'created',
             'modified'
         )

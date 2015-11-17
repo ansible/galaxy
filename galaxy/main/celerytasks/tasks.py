@@ -196,9 +196,9 @@ def import_role(task_id):
     role.license             = strip_input(galaxy_info.get("license",""))
     role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version",""))
     role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url",""))
-    role.github_branch       = strip_input(galaxy_info.get("github_branch",""))
+    role.github_branch       = strip_input(galaxy_info.get("github_branch",repo.default_branch))
 
-    if role.branch and role.branch != import_task.github_reference:
+    if import_task.github_reference and role.branch != import_task.github_reference:
         fail_import_task(import_task, logger, "Requested branch %s does not match branch %s specified " +
             "in meta/main.yml." % (import_task.github_reference,role.branch))
 
@@ -387,11 +387,7 @@ def import_role(task_id):
     try:
         git_tag_list = repo.get_tags()
         for git_tag in git_tag_list:
-            if not import_task.github_reference:
-                add_role_version(git_tag)
-            elif import_task.github_reference == git_tag.tag:
-                add_role_version(git_tag)
-                break
+            add_role_version(git_tag)
     except Exception, e:
         add_message(import_task, "ERROR", "An error occurred while importing repo tags: %s" % str(e))
     
@@ -420,21 +416,19 @@ def import_role(task_id):
 #----------------------------------------------------------------------
 
 @task(name="galaxy.main.celerytasks.tasks.clear_stuck_imports")
-@transaction.commit_manually
 def clear_stuck_imports():
-    logger = clear_stuck_imports.get_logger()
     two_hours_ago = timezone.now() - datetime.timedelta(seconds=7200)
     try:
         for ri in ImportTask.objects.filter(created__lte=two_hours_ago, state='PENDING'):
-            logger.info("Removing stuck import %s for role %s" % (ri, ri.role))
+            print "Removing stuck import %s for role %s" % (ri, ri.role)
             ri.state = "FAILED"
-            ri.save()
             ri.messages.create(
                 message_type="ERROR",
                 message_text="Import timed out, please try again. If you continue seeing this message you may have a " +
                 "syntax error in your meta/main.yml file."
             )
-        transaction.commit()
+            ri.save()
+            transaction.commit()
     except Exception, e:
-        logger.error("Exception occurred while clearing stuck imports: %s" % str(e))
+        print "Exception while clearing stuck imports: %s" % str(e)
     return True

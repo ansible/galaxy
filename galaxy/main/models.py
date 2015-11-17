@@ -579,6 +579,11 @@ class Notification(PrimordialModel):
         max_length    = 20,
         verbose_name  = "Source"
     )
+    github_branch = models.CharField(
+        max_length    = 256,
+        verbose_name  = "GitHub Branch",
+        blank         = True
+    )
     roles = models.ManyToManyField(
         Role,
         related_name = 'notifications',
@@ -588,4 +593,8 @@ class Notification(PrimordialModel):
         ImportTask,
         related_name = 'notifications',
         verbose_name = 'Tasks',
+    )
+    messages = ArrayField(
+        models.CharField(max_length=256),
+        default = list
     )

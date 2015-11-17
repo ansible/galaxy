@@ -288,13 +288,13 @@ class ImportTaskList(ListCreateAPIView):
             response['results'] = []
             for role in Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True):
                 task = ImportTask.objects.create(
-                   github_user         = github_user,
-                   github_repo         = github_repo,
-                   github_reference    = github_reference,
-                   alternate_role_name = '',
-                   role        = role,
-                   owner       = request.user,
-                   state       = 'PENDING'
+                    github_user         = github_user,
+                    github_repo         = github_repo,
+                    github_reference    = github_reference,
+                    alternate_role_name = '',
+                    role        = role,
+                    owner       = request.user,
+                    state       = 'PENDING'
                 )
                 import_role.delay(task.id)
                 serializer = self.get_serializer(instance=task)
@@ -467,11 +467,17 @@ class NotificationList(ListCreateAPIView):
             notification = Notification.objects.create(
                 owner = ns.owner,
                 source = 'travis',
+                github_branch = request.data.branch
             )
-                
+
             if Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True).count() > 1:
                 # multiple roles associated with github_user/github_repo
                 for role in Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True):
+                    
+                    if role.github_branch and role.github_branch != request.data.branch:
+                        notification.messages.append('Skipping role %d - github_branch %s does not match requested branch.' %
+                            (role.id, role.github_branch))
+
                     task = notification.imports.create(
                         github_user         = role.github_user,
                         github_repo         = role.github_repo,
@@ -494,17 +500,22 @@ class NotificationList(ListCreateAPIView):
                         'is_valid':    False,
                     }
                 )
-                task = notification.imports.create(
-                    github_user         = role.github_user,
-                    github_repo         = role.github_repo,
-                    github_reference    = '',
-                    alternate_role_name = '',
-                    role        = role,
-                    owner       = ns.owner,
-                    state       = 'PENDING'
-                )
-                notification.roles.add(role)
-                import_role.delay(task.id)
+                if not created and role.github_branch and role.github_branch != request.data.branch:
+                    notification.messages.append('Skipping role %d - github_branch %s does not match requested branch.' %
+                        (role.id, role.github_branch))
+                else:  
+                    notification = notification.imports.create(
+                        github_user         = role.github_user,
+                        github_repo         = role.github_repo,
+                        github_reference    = request.data.branch,
+                        alternate_role_name = '',
+                        role        = role,
+                        owner       = ns.owner,
+                        state       = 'PENDING'
+                    )
+                    notification.roles.add(role)
+                    import_role.delay(task.id)
+                notification.save()
             
             serializer = self.get_serializer(instance=notification)
             headers = self.get_success_headers(serializer.data)
