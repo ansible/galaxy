@@ -574,27 +574,33 @@ class Notification(PrimordialModel):
         settings.AUTH_USER_MODEL,
         related_name  = 'notifications',
         db_index      = True,
+        editable      = False
     )
     source = models.CharField(
         max_length    = 20,
-        verbose_name  = "Source"
+        verbose_name  = "Source",
+        editable      = False
     )
     github_branch = models.CharField(
         max_length    = 256,
         verbose_name  = "GitHub Branch",
-        blank         = True
+        blank         = True,
+        editable      = False
     )
     roles = models.ManyToManyField(
         Role,
-        related_name = 'notifications',
-        verbose_name = 'Roles',
+        related_name  = 'notifications',
+        verbose_name  = 'Roles',
+        editable      = False
     )
     imports = models.ManyToManyField(
         ImportTask,
-        related_name = 'notifications',
-        verbose_name = 'Tasks',
+        related_name  = 'notifications',
+        verbose_name  = 'Tasks',
+        editable      = False
     )
     messages = ArrayField(
         models.CharField(max_length=256),
-        default = list
+        default       = list,
+        editable      = False
     )
