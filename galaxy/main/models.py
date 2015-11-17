@@ -173,7 +173,7 @@ class Tag(CommonModel):
         return reverse('api:tag_detail', args=(self.pk,))
 
     def get_num_roles(self):
-        return self.roles.filter(active=True, owner__is_active=True).count()
+        return self.roles.filter(active=True, is_valid=True).count()
 
 
 class Platform(CommonModelNameNotUnique):
@@ -400,7 +400,7 @@ class RoleVersion(CommonModelNameNotUnique):
     # other functions and properties
 
     def __unicode__(self):
-        return "%s.%s-%s" % (self.role.owner.username,self.role.name,self.name)
+        return "%s.%s-%s" % (self.role.namespace,self.role.name,self.name)
 
     def save(self, *args, **kwargs):
         # the value of score is based on the
@@ -441,7 +441,7 @@ class RoleRating(PrimordialModel):
     # other functions and properties
 
     def __unicode__(self):
-        return "%s.%s -> %s" % (self.role.owner.username,self.role.name,self.score)
+        return "%s.%s -> %s" % (self.role.namespace,self.role.name,self.score)
 
     def save(self, *args, **kwargs):
         def clamp_range(value):
