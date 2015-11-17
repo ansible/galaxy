@@ -196,7 +196,7 @@ def import_role(task_id):
     role.license             = strip_input(galaxy_info.get("license",""))
     role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version",""))
     role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url",""))
-    role.github_branch       = strip_input(galaxy_info.get("branch",""))
+    role.github_branch       = strip_input(galaxy_info.get("github_branch",""))
 
     if role.branch and role.branch != import_task.github_reference:
         fail_import_task(import_task, logger, "Requested branch %s does not match branch %s specified " +
