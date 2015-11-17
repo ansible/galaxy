@@ -60,7 +60,7 @@ def update_platforms(platform):
     print "PLATFORM: %s" % platform
     try:
         with memcache_lock("platform_%s" % platform):      
-            cnt = Role.objects.filter(active=True, is_valid=True, platforms__name=platform).order_by('owner__username','name').distinct('owner__username','name').count()
+            cnt = Role.objects.filter(active=True, is_valid=True, platforms__name=platform).order_by('namespace','name').distinct('namespace','name').count()
             es_platforms = PlatformDoc.search().query('match', name=platform).execute()
             updated = False
             

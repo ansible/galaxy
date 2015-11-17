@@ -164,10 +164,8 @@ def import_role(task_id):
     if repo is None:
         fail_import_task(import_task, logger, "Galaxy user %s does not have access to repo %s" % (user.username,repo_full_name))
 
-    if import_task.github_reference:
-        add_message(import_task, "INFO", "Accessing branch: " % import_task.github_reference)
-    else:
-        add_message(import_task, "INFO", "Accessing branch: " % repo.default_branch)
+    branch = import_task.github_reference if import_task.github_reference else repo.default_branch
+    add_message(import_task, "INFO", "Accessing branch: %s" % branch)
         
     # parse and validate meta/main.yml data
     add_message(import_task, "INFO", "Parsing and validating meta/main.yml")
@@ -361,7 +359,7 @@ def import_role(task_id):
                 # those that may have imported the role previously before this
                 # rule existed, that way we don't end up with broken/missing deps
                 dep_role_name = name_regex.sub('', dep_role_name)
-                dep_role = Role.objects.get(name=dep_role_name, owner__username=dep_user_name)
+                dep_role = Role.objects.get(name=dep_role_name, namespace=dep_user_name)
                 role.dependencies.add(dep_role)
                 dep_names.append(dep)
             except Exception, e:

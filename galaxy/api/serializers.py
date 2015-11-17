@@ -696,7 +696,7 @@ class RoleListSerializer(BaseSerializer):
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings','is_valid',
+        fields = BASE_FIELDS + ('namespace','average_score','bayesian_score','num_ratings','is_valid',
                                 'github_user','github_repo','min_ansible_version','issue_tracker_url',
                                 'license','company','description', 'readme_html')
 

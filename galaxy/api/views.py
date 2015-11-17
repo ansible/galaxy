@@ -282,48 +282,42 @@ class ImportTaskList(ListCreateAPIView):
         if not github_user or not github_repo:
             raise ValidationError({ "detail": "Invalid request. Expecting github_user and github_repo." })
         
+        response = {}
+        response['results'] = []
         if Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True).count() > 1:
             # multiple roles match github_user/github_repo
-            response = {}
-            response['results'] = []
             for role in Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True):
-                task = ImportTask.objects.create(
-                    github_user         = github_user,
-                    github_repo         = github_repo,
-                    github_reference    = github_reference,
-                    alternate_role_name = '',
-                    role        = role,
-                    owner       = request.user,
-                    state       = 'PENDING'
-                )
+                task = self.__create_task(github_user, github_repo, github_reference, role, request.user)
                 import_role.delay(task.id)
                 serializer = self.get_serializer(instance=task)
                 response['results'].append(serializer.data)
-            return Response(response, status=status.HTTP_201_CREATED, headers=self.get_success_headers(response))
-
-        role, created = Role.objects.get_or_create(github_user=github_user,github_repo=github_repo, active=True,
-            defaults={
-                'namespace':   github_user,
-                'name':        github_repo,
-                'github_user': github_user,
-                'github_repo': github_repo,
-                'is_valid':    False,
-            }
-        )
+        else:
+            role, created = Role.objects.get_or_create(github_user=github_user,github_repo=github_repo, active=True,
+                defaults={
+                    'namespace':   github_user,
+                    'name':        github_repo,
+                    'github_user': github_user,
+                    'github_repo': github_repo,
+                    'is_valid':    False,
+                }
+            )
+            task = self.__create_task(github_user, github_repo, github_reference, role, request.user)
+            serializer = self.get_serializer(instance=task)
+            response['results'].append(serializer.data)
+        return Response(response, status=status.HTTP_201_CREATED, headers=self.get_success_headers(response))
+    
+    def __create_task(self, github_user, github_repo, github_reference, role, user):
         task = ImportTask.objects.create(
             github_user         = github_user,
             github_repo         = github_repo,
             github_reference    = github_reference,
             alternate_role_name = '',
             role        = role,
-            owner       = request.user,
+            owner       = user,
             state       = 'PENDING'
         )
         import_role.delay(task.id)
-
-        serializer = self.get_serializer(instance=task)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return task
 
 class ImportTaskDetail(RetrieveAPIView):
     model = ImportTask
