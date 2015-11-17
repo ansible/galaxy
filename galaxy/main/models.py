@@ -367,7 +367,7 @@ class Role(CommonModelNameNotUnique):
         return set(terms)
     
     def get_username(self):
-        return self.owner.username
+        return self.namespace
 
     def get_tags(self):
         return [tag.name for tag in self.tags.filter(active=True)]
