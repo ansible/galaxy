@@ -52,7 +52,7 @@ class Command(BaseCommand):
             doc = PlatformDoc(
                 name=platform.name,
                 releases= release_list,
-                roles=Role.objects.filter(active=True, is_valid=True, platforms__name=platform.name).order_by('owner__username','name').distinct('owner__username','name').count(),
+                roles=Role.objects.filter(active=True, is_valid=True, platforms__name=platform.name).order_by('namespace','name').distinct('namespace','name').count(),
                 alias=alias_list,
                 autocomplete="%s %s %s" % (platform.name, ' '.join(release_list), ' '.join(alias_list))
             )
