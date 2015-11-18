@@ -457,22 +457,22 @@ class NotificationList(ListCreateAPIView):
 
             if not repo or repo != ns.repo_full_name():
                 raise ValidationError('Invalid Request. Expected %s to match %s' % (repo, ns.repo_full_name()))
-
-            print request.data
             
+            request_branch = request.data['payload']['branch']
+
             notification = Notification.objects.create(
                 owner = ns.owner,
                 source = 'travis',
-                github_branch = request.data['branch']
+                github_branch = request_branch
             )
 
             if Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True).count() > 1:
                 # multiple roles associated with github_user/github_repo
                 for role in Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True):    
-                    if role.github_branch and role.github_branch != request.data['branch']:
+                    if role.github_branch and role.github_branch != request_branch:
                         notification.messages.append('Skipping role %d - github_branch %s does not match requested branch.' %
                             (role.id, role.github_branch))
-                    task = create_import_task(role.github_user, role.github_repo, request.data['branch'], role, ns.owner)
+                    task = create_import_task(role.github_user, role.github_repo, request_branch, role, ns.owner)
                     notification.imports.add(task)
                     notification.roles.add(role)
             else:
@@ -485,7 +485,7 @@ class NotificationList(ListCreateAPIView):
                         'is_valid':    False,
                     }
                 )
-                if not created and role.github_branch and role.github_branch != request.data['branch']:
+                if not created and role.github_branch and role.github_branch != request_branch:
                     notification.messages.append('Skipping role %d - github_branch %s does not match requested branch.' %
                         (role.id, role.github_branch))
                 else:
