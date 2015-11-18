@@ -20,6 +20,7 @@ import sys
 import math
 import requests
 import re
+import json
 from hashlib import sha256
 
 # rest framework stuff
@@ -458,7 +459,7 @@ class NotificationList(ListCreateAPIView):
             if not repo or repo != ns.repo_full_name():
                 raise ValidationError('Invalid Request. Expected %s to match %s' % (repo, ns.repo_full_name()))
             
-            payload = request.data['payload']
+            payload = json.loads(request.data['payload'])
             request_branch = payload['branch']
 
             notification = Notification.objects.create(
