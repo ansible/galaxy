@@ -487,13 +487,13 @@ class NotificationList(ListCreateAPIView):
                         'is_valid':    False,
                     }
                 )
+                notification.roles.add(role)
                 if not created and role.github_branch and role.github_branch != request_branch:
                     notification.messages.append('Skipping role %d - github_branch %s does not match requested branch.' %
                         (role.id, role.github_branch))
                 else:
-                    task = create_import_task(role.github_user, role.github_repo, request.data['branch'], role, ns.owner)
+                    task = create_import_task(role.github_user, role.github_repo, request_branch, role, ns.owner)
                     notification.imports.add(task)
-                    notification.roles.add(role)
             notification.save()
             serializer = self.get_serializer(instance=notification)
             headers = self.get_success_headers(serializer.data)
