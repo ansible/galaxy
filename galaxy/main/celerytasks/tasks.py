@@ -231,6 +231,12 @@ def import_role(task_id):
             add_message(impor_task, "WARNING", "Invalid URL provided for galaxy_info.issue_tracker_url in meta/main.yml")
             role.issue_tracker_url = ""
 
+    # Update role attributes from repo
+    role.stargazers_count = repo.stargazers_count
+    role.watchers_count = repo.watchers_count
+    role.forks_count = repo.forks_count
+    role.open_issues_count = repo.open_issues_count 
+    
     # Add tags / categories. Remove ':' and only allow alpha-numeric characters
     add_message(import_task, "INFO", "Parsing galaxy_tags")
     meta_tags = []

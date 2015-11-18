@@ -325,6 +325,20 @@ class Role(CommonModelNameNotUnique):
         default      = '',
         verbose_name = "Travis Build Status"
     )
+
+    # GitHub repo attributes
+    stargazers_count = models.IntegerField(
+        default      = 0
+    )
+    watchers_count   = models.IntegerField(
+        default      = 0
+    )
+    forks_count      = models.IntegerField(
+        default      = 0
+    )
+    open_issue_count = models.IntegerField(
+        default      = 0
+    )
     
     #tags = ArrayField(models.CharField(max_length=256), null=True, editable=True, size=100)
 

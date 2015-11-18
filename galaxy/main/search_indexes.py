@@ -20,6 +20,10 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     github_repo = indexes.CharField(model_attr='github_repo')
     github_branch = indexes.CharField(model_attr='github_branch')
     travis_status_url = indexes.CharField(model_attr='travis_status_url')
+    stargazers_count = indexes.IntegerField(model_attr='stargazers_count')
+    watchers_count = indexes.IntegerField(model_attr='watchers_count')
+    forks_count = indexes.IntegerField(model_attr='forks_count')
+    open_issues_count = indexes.IntegerField(model_attr='open_issues_count')
     
     # autocomplete fields
     autocomplete = indexes.EdgeNgramField(use_template=True)

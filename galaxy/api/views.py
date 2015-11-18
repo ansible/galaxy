@@ -467,9 +467,9 @@ class NotificationList(ListCreateAPIView):
                 owner = ns.owner,
                 source = 'travis',
                 github_branch = request_branch,
-                travis_build_url = payload['build_url']
-                commit_message = payload['message']
-                committed_at = payload['committed_at']
+                travis_build_url = payload['build_url'],
+                commit_message = payload['message'],
+                committed_at = payload['committed_at'],
                 commit = payload['commit']
             )
 
