@@ -458,7 +458,8 @@ class NotificationList(ListCreateAPIView):
             if not repo or repo != ns.repo_full_name():
                 raise ValidationError('Invalid Request. Expected %s to match %s' % (repo, ns.repo_full_name()))
             
-            request_branch = request.data['payload']['branch']
+            payload = request.data['payload']
+            request_branch = payload['branch']
 
             notification = Notification.objects.create(
                 owner = ns.owner,
