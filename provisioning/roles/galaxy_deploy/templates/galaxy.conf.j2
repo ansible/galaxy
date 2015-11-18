@@ -22,10 +22,36 @@ Listen {{ linode_private_ip }}:8080
   # Redirect to https  
   RewriteEngine on
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
-  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+  RewriteRule !/api/v1/notifications https://%{HTTP_HOST}%{REQUEST_URI}
 
   CustomLog "/var/log/httpd/galaxy_access.log" common
   ErrorLog "/var/log/httpd/galaxy_error.log"
+
+  WSGIScriptAlias / /var/lib/galaxy/wsgi.py
+  WSGIPassAuthorization On
+
+  WSGIDaemonProcess notify_http processes=2 threads=20 maximum-requests=1000 display-name="notify_http"
+  WSGIProcessGroup notify_http
+
+  Alias /favicon.ico /var/lib/galaxy/public/static/favicon.ico
+  Alias /static/ /var/lib/galaxy/public/static/
+
+  <Directory /var/lib/galaxy/>
+    <Files wsgi.py>
+      Require all granted
+    </Files>
+  </Directory>
+
+  <Directory /var/lib/galaxy/public/>
+    Require all granted
+  </Directory>
+  
+  <Location /server-status>
+    SetHandler server-status
+    Order deny,allow
+    Deny from all
+    Allow from {{ linode_private_ip }} 
+  </Location>
 </VirtualHost>
 
 # Nodebalancer should send traffic here on internal IP address
@@ -43,7 +69,7 @@ Listen {{ linode_private_ip }}:8080
   WSGIScriptAlias / /var/lib/galaxy/wsgi.py
   WSGIPassAuthorization On
 
-  WSGIDaemonProcess galaxy_http processes={{ galaxy_wsgi_processes }} threads=20 maximum-requests=1000 display-name="%{GROUP}-http"
+  WSGIDaemonProcess galaxy_http processes={{ galaxy_wsgi_processes }} threads=20 maximum-requests=1000 display-name="galaxy_http"
   WSGIProcessGroup galaxy_http
 
   Alias /favicon.ico /var/lib/galaxy/public/static/favicon.ico
@@ -65,7 +91,6 @@ Listen {{ linode_private_ip }}:8080
     Deny from all
     Allow from {{ linode_private_ip }} 
   </Location>
-
 </VirtualHost>
 
 <VirtualHost _default_:443>
@@ -90,7 +115,7 @@ Listen {{ linode_private_ip }}:8080
   WSGIScriptAlias / /var/lib/galaxy/wsgi.py
   WSGIPassAuthorization On
  
-  WSGIDaemonProcess galaxy_https processes={{ galaxy_wsgi_processes }} threads=20 maximum-requests=1000 display-name="%{GROUP}-https"
+  WSGIDaemonProcess galaxy_https processes={{ galaxy_wsgi_processes }} threads=20 maximum-requests=1000 display-name="galaxy_https"
   WSGIProcessGroup galaxy_https
  
   Alias /favicon.ico /var/lib/galaxy/public/static/favicon.ico
@@ -112,5 +137,4 @@ Listen {{ linode_private_ip }}:8080
      Deny from all
      Allow from {{ linode_private_ip }} 
    </Location>
-
 </VirtualHost>
