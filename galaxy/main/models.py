@@ -336,7 +336,7 @@ class Role(CommonModelNameNotUnique):
     forks_count      = models.IntegerField(
         default      = 0
     )
-    open_issue_count = models.IntegerField(
+    open_issues_count = models.IntegerField(
         default      = 0
     )
     

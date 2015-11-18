@@ -43,6 +43,7 @@ from django.db.models import F, Count, Avg, Prefetch
 from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.apps import apps
+from django.utils.dateparse import parse_datetime
 
 #allauth
 from allauth.socialaccount.models import SocialAccount
@@ -462,14 +463,14 @@ class NotificationList(ListCreateAPIView):
             payload = json.loads(request.data['payload'])
             request_branch = payload['branch']
             travis_status_url = "https://travis-ci.org/%s/%s.svg?branch=%s" % (ns.github_user,ns.github_repo,request_branch)
-
+            
             notification = Notification.objects.create(
                 owner = ns.owner,
                 source = 'travis',
                 github_branch = request_branch,
                 travis_build_url = payload['build_url'],
                 commit_message = payload['message'],
-                committed_at = payload['committed_at'],
+                committed_at = parse_datetime(payload['committed_at']),
                 commit = payload['commit']
             )
 
