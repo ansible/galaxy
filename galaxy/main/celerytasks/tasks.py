@@ -196,7 +196,7 @@ def import_role(task_id):
     role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url",""))
     role.github_branch       = strip_input(galaxy_info.get("github_branch",repo.default_branch))
 
-    if import_task.github_reference and role.branch != import_task.github_reference:
+    if import_task.github_reference and role.github_branch != import_task.github_reference:
         fail_import_task(import_task, logger, "Requested branch %s does not match branch %s specified " +
             "in meta/main.yml." % (import_task.github_reference,role.branch))
 
@@ -204,7 +204,7 @@ def import_role(task_id):
         role.issue_tracker_url = repo.issues_url
     
     if role.company != "" and len(role.company) > 50:
-        add_message(import_task, "WARNING", "galaxy_info.compnay exceeds max length of 50 in meta/main.yml")
+        add_message(import_task, "WARNING", "galaxy_info.company exceeds max length of 50 in meta/main.yml")
         role.company = role.company[:50]
     
     if role.description == "":
