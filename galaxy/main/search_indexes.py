@@ -19,6 +19,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     github_user = indexes.CharField(model_attr='github_user')
     github_repo = indexes.CharField(model_attr='github_repo')
     github_branch = indexes.CharField(model_attr='github_branch')
+    travis_status_url = indexes.CharField(model_attr='travis_status_url')
     
     # autocomplete fields
     autocomplete = indexes.EdgeNgramField(use_template=True)

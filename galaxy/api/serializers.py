@@ -547,6 +547,10 @@ class NotificationSerializer(BaseSerializer):
             'owner',
             'source',
             'github_branch',
+            'travis_build_url',
+            'commit_message',
+            'committed_at',
+            'commit',
             'messages',
             'created',
             'modified'
@@ -642,6 +646,13 @@ class ImportTaskSerializer(BaseSerializer):
             ('namespace',obj.role.namespace),
             ('name',obj.role.name)
         ])
+        d['notifications'] = [OrderedDict([
+            ('id', n.id),
+            ('travis_build_url', n.travis_build_url),
+            ('commit_messagge', n.commit_messagge),
+            ('committed_at', n.committed_at),
+            ('commit', n.commit)
+        )] for n in obj.notifications.all()]
         d['task_messages'] = [OrderedDict([
             ('id',g.id),
             ('message_type',g.message_type),
@@ -698,7 +709,7 @@ class RoleListSerializer(BaseSerializer):
         model = Role
         fields = BASE_FIELDS + ('namespace','average_score','bayesian_score','num_ratings','is_valid',
                                 'github_user','github_repo','min_ansible_version','issue_tracker_url',
-                                'license','company','description', 'readme_html')
+                                'license','company','description', 'readme_html','travis_status_url')
 
     def to_native(self, obj):
         ret = super(RoleListSerializer, self).to_native(obj)
@@ -785,7 +796,7 @@ class RoleDetailSerializer(BaseSerializer):
         model = Role
         fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings','is_valid',
                                 'github_user','github_repo','min_ansible_version','issue_tracker_url',
-                                'license','company','description','readme_html', 'tags')
+                                'license','company','description','readme_html', 'tags','travis_status_url')
 
     def to_native(self, obj):
         ret = super(RoleDetailSerializer, self).to_native(obj)
@@ -850,7 +861,7 @@ class RoleSearchSerializer(HaystackSerializer):
             "username", "name", "description", "github_user", "github_repo", "github_branch",
             "tags", "platforms", "average_score", "num_ratings", "created", "modified", "text",
             "autocomplete", "sort_name", "platforms_autocomplete", "tags_autocomplete",
-            "username_autocomplete"
+            "username_autocomplete", "travis_status_url"
         ]
 
     def get_average_score(self, instance):

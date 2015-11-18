@@ -319,6 +319,12 @@ class Role(CommonModelNameNotUnique):
         default      = False,
         editable     = False,
     )
+    travis_status_url = models.CharField(
+        max_length   = 256,
+        blank        = True,
+        default      = '',
+        verbose_name = "Travis Build Status"
+    )
     
     #tags = ArrayField(models.CharField(max_length=256), null=True, editable=True, size=100)
 
@@ -586,6 +592,22 @@ class Notification(PrimordialModel):
         verbose_name  = "GitHub Branch",
         blank         = True,
         editable      = False
+    )
+    travis_build_url = models.CharField(
+        max_length   = 256,
+        blank        = True
+    )
+    commit           = models.CharField(
+        max_length   = 256,
+        blank        = True
+    )
+    committed_at     = models.DateTimeField(
+        auto_now     = False,
+        null         = True
+    )
+    commit_message   = models.CharField(
+        max_length   = 256,
+        blank        = True
     )
     roles = models.ManyToManyField(
         Role,
