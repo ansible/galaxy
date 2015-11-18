@@ -447,7 +447,7 @@ class NotificationList(ListCreateAPIView):
             try:
                 ns = NotificationSecret.objects.get(secret=secret,active=True)
             except:
-                raise ValidationError("Travis secret *****%s not found." % ns[-4:])
+                raise ValidationError("Travis secret *****%s not found." % secret[-4:])
 
             repo = None
             if request.META.get('HTTP_TRAVIS_REPO_SLUG', None):
