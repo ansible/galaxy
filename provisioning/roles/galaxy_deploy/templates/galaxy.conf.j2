@@ -23,6 +23,8 @@ Listen {{ linode_private_ip }}:8080
   RewriteEngine on
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule !/api/v1/notifications https://%{HTTP_HOST}%{REQUEST_URI}
+  RewriteCond %{REQUEST_METHOD} !POST
+  RewriteRule /api/v1/notifications https://%{HTTP_HOST}%{REQUEST_URI}
 
   CustomLog "/var/log/httpd/galaxy_access.log" common
   ErrorLog "/var/log/httpd/galaxy_error.log"
