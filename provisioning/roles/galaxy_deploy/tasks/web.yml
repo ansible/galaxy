@@ -10,6 +10,7 @@
 
 - name: Apply migrations
   command: galaxy-manage migrate --fake-initial --noinput
+  when: django_migrate
   tags:
     - web
 
