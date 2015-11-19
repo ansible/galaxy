@@ -650,7 +650,7 @@ class ImportTaskSerializer(BaseSerializer):
         d['notifications'] = [OrderedDict([
             ('id', n.id),
             ('travis_build_url', n.travis_build_url),
-            ('commit_messagge', n.commit_messagge),
+            ('commit_message', n.commit_message),
             ('committed_at', n.committed_at),
             ('commit', n.commit)
         ]) for n in obj.notifications.all().order_by('id')]
