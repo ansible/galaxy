@@ -12,53 +12,90 @@
     
     var mod = angular.module('roleAddController', []);
 
-    mod.controller('RoleAddCtrl', ['$scope', _controller]);
+    mod.controller('RoleAddCtrl', [
+        '$scope',
+        '$interval',
+        'githubRepoService',
+        'currentUserService',
+        'importService',
+        'roleRemoveService',
+        _controller
+    ]);
 
-    function _controller($scope) {
-        var urlPattern = new RegExp('^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$');
+    function _controller($scope, $interval, githubRepoService, currentUserService, importService, roleRemoveService) {
 
-        $scope.form = {
-            githubUrl: null,
-            githubUrlLabel: "HTTPS Clone URL",
-            githubUrlPlaceholder: "HTTPS Clone URL",
-            githubUrlLabelShow: false,
-            githubUrlPattern: urlPattern,
-            githubUrlChange : _githubUrlChange,
-            namespace: null,
-            namespaceLabel: "Github User or Organization",
-            namespacePlaceholder: "Github user or organization",
-            namespaceLabelShow: false,
-            repo: null,
-            repoLabel: "Github Repository Name",
-            repoPlaceholder: "Github Repository Name",
-            repoLabelShow: false,
-            fieldFocus: _fieldFocus,
-            fieldBlur : _fieldBlur
-        };
+        $scope.repositories = [];
+        $scope.username = currentUserService.username;
+        $scope.toggleRepository = _toggleRepository;
+        
+        _getRepositories();
+
+        var longPole = null;
 
         return;
 
-        var backupPlaceholder = null;
 
-        function _fieldFocus(_field) {
-            $scope.form[_field + 'LabelShow'] = true;
-            backupPlaceholder = $scope.form[_field + 'Placeholder'];
-            $scope.form[_field + 'Placeholder'] = null;
+        function _toggleRepository(_repo) {
+            var names = _repo.name.split('/');
+            if (_repo.active) {
+                _repo.state = 'PENDING';
+                importService.imports.save({
+                    'github_user': names[0],
+                    'github_repo': names[1],
+                }).$promise.then(_checkStatus);
+            } else {
+                _repo.state = 'PENDING';
+                roleRemoveService.delete({
+                    'github_user': names[0],
+                    'github_repo': names[1]
+                }).$promise.then(function(response) {
+                    $scope.repositories.forEach(function(repo) {
+                        var names = repo.name.split('/');
+                        response.deleted_roles.forEach(function(deleted) {
+                            if (deleted.github_user === names[0] && deleted.github_repo === names[1]) {
+                                repo.state = null;
+                            }
+                        });
+                    });
+                });
+            }
         }
 
-        function _fieldBlur(_field) {
-            $scope.form[_field + 'LabelShow'] = false;
-            $scope.form[_field + 'Placeholder'] = backupPlaceholder;
+        function _checkStatus(response) {
+            var stop = $interval(function(_id) {
+                console.log('looking for id: ' + _id);
+                importService.imports.query({ id: _id}).$promise.then(function(response) {
+                    $scope.repositories.every(function(repo) {
+                        var names = repo.name.split('/');
+                        if (names[0] == response.results[0].github_user && 
+                            names[1] === response.results[0].github_repo) {
+                            repo.state = response.results[0].state;
+                            return false;
+                        }
+                        return true;
+                    });
+                    if (response.results[0].state == 'SUCCESS' || response.results[0].state == 'FAILED') {
+                        _kill();
+                    }
+                });
+            }, 5000, 0, false, response.results[0].id)
+
+            function _kill() {
+                $interval.cancel(stop);
+            }
         }
 
-        function _githubUrlChange() {
-            if ($scope.form.githubUrl) {
-                var url = $scope.form.githubUrl.replace('https://','');
-                var parts = url.split('/');
-                if (parts.length == 3) {
-                    $scope.form.namespace = parts[1];
-                    $scope.form.repo = parts[2];
-                }
+        function _getRepositories() {
+            $scope.loading = true;
+            githubRepoService.get(null, _success, _error);
+            
+            function _success(data) {
+                $scope.repositories = data.results;
+                $scope.loading = false;
+            }
+
+            function _error(response) {
+                console.log(response);
             }
         }
     }

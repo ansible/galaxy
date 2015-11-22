@@ -27,14 +27,14 @@ urlpatterns = patterns('galaxy.main.views',
     url(r'^accounts/landing[/]?$', 'accounts_landing', name='accounts-landing'),
     url(r'^list$', 'list_category', name='list-category'),
     url(r'^detail$', 'detail_category', name='detail-category'),
-    url(r'^roleadd$', 'role_add_category', name='role-add-category'),
+    url(r'^roleadd$', 'role_add_view', name='role-add-category'),
+    url(r'^imports$', 'import_status_view', name='import-status-view'),
     
     # Logged in/secured URLs
     url(r'^accounts/connect/$', 'accounts_connect'),
     url(r'^accounts/connect/success/$', 'accounts_connect'),
     #url(r'^accounts/social/connections/$', TemplateView.as_view(template_name="custom404.html", content_type='text/html')),
     url(r'^accounts/profile/$', 'accounts_profile', name='accounts-profile'),
-    #url(r'^accounts/role/add$', 'accounts_role_add', name='accounts-role-add'),
     url(r'^accounts/role/view/(?P<role>[\w\-\._:]+)$', 'accounts_role_view', name='accounts-role-view'),
     url(r'^accounts/role/refresh/(?P<id>[\w\-\._:]+)$', 'accounts_role_refresh', name='accounts-role-refresh'),
     

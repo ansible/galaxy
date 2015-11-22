@@ -41,7 +41,8 @@ def fail_import_task(import_task, logger, msg):
     try:
         if import_task:
             import_task.state = "FAILED"
-            import_task.messages.create(message_type="ERROR", message_text=msg)        
+            import_task.messages.create(message_type="ERROR", message_text=msg)
+            import_task.finished = datetime.datetime.now()        
             import_task.save()
             transaction.commit()
     except Exception, e:
@@ -236,6 +237,12 @@ def import_role(task_id):
     role.watchers_count = repo.watchers_count
     role.forks_count = repo.forks_count
     role.open_issues_count = repo.open_issues_count 
+
+    last_commit = repo.get_commits(sha=branch)[0].commit
+    role.commit = last_commit.sha
+    role.commit_message = last_commit.message
+    role.commit_url = last_commit.html_url
+
     
     # Add tags / categories. Remove ':' and only allow alpha-numeric characters
     add_message(import_task, "INFO", "Parsing galaxy_tags")
@@ -404,6 +411,7 @@ def import_role(task_id):
     
     try:
         import_task.state = import_state
+        import_task.finished = datetime.datetime.now()
         import_task.save()
         if import_state == "SUCCESS":
             role.is_valid = True

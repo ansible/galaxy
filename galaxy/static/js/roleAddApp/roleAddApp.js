@@ -16,21 +16,24 @@
       'ui.bootstrap',
       'meService',
       'galaxyUtilities',
-      'roleAddController'
+      'roleAddController',
+      'githubRepoService',
+      'currentUserService',
+      'toggle-switch',
+      'importService',
+      'roleRemoveSerivice'
     ]);
 
-    accountsApp.config(['$routeProvider','MyInfoProvider', '$logProvider', _config]);
+    accountsApp.config(['$routeProvider','MyInfoProvider', '$logProvider', '$resourceProvider', _config]);
 
-    function _config($routeProvider, MyInfoProvider, $logProvider) {
+    function _config($routeProvider, MyInfoProvider, $logProvider, $resourceProvider) {
         var debug = (GLOBAL_DEBUG === 'on') ? true : false;
         $logProvider.debugEnabled(debug);
+        $resourceProvider.defaults.stripTrailingSlashes = false;
         $routeProvider.
             when('/', {
                 templateUrl: '/static/partials/role-add.html',
-                controller: 'RoleAddCtrl'
-                //resolve: {
-                //    my_info: ['$q', 'meFactory', MyInfoProvider.$get[2]]
-                //}
+                controller: 'RoleAddCtrl',
             }).
             otherwise({
                 redirectTo: '/'

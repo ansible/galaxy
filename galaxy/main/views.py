@@ -74,6 +74,8 @@ common_services = [
     '/static/js/commonDirectives/dotDotDotDirective.js',
     '/static/js/commonServices/relatedService.js',
     '/static/js/commonServices/paginateService.js',
+    '/static/js/commonServices/githubRepoService.js',
+    '/static/js/commonServices/importService.js',
 ]
 
 #------------------------------------------------------------------------------
@@ -238,7 +240,7 @@ def detail_category(request, category=None, page=1):
     context["use_menu_controller"] = True
     return render_to_response('list_category.html', context)
 
-def role_add_category(request, category=None, page=1):
+def role_add_view(request, category=None, page=1):
     context = build_standard_context(request)
     context["ng_app"] = "roleAddApp"
     context["extra_css"] = []
@@ -246,6 +248,7 @@ def role_add_category(request, category=None, page=1):
         context["extra_js"] = [
             '/static/js/roleAddApp/roleAddApp.js',
             '/static/js/roleAddApp/roleAddController.js',
+            '/static/js/roleAddApp/roleRemoveService.js',
             '/static/js/detailApp/menuController.js',
         ] + common_services
     else:
@@ -280,6 +283,33 @@ def prefs_set_sort(request):
 #------------------------------------------------------------------------------
 # Logged in/secured URLs
 #------------------------------------------------------------------------------
+
+@login_required
+def import_status_view(request):
+    """
+    Allow logged in users to view the status of import requests.
+    """
+    context = build_standard_context(request)
+    context["ng_app"] = "importStatusApp"
+    context["extra_css"] = []
+
+    if settings.SITE_ENV == 'DEV':
+        context["extra_js"] = [
+            '/static/js/importStatusApp/importStatusApp.js',
+            '/static/js/importStatusApp/importStatusController.js',
+            '/static/js/commonServices/galaxyUtilities.js',
+        ] + common_services
+    else:
+        context["extra_js"] = [
+            '/static/dist/galaxy.importStatusApp.min.js'
+        ]
+
+    if request.session.has_key("transient"):
+        context["transient"] = request.session["transient"]
+        del request.session["transient"]
+
+    return render_to_response('import_status.html',context)
+
 
 @login_required
 def accounts_profile(request):
@@ -394,45 +424,6 @@ def accounts_role_reactivate(request, id=None):
     # redirect back home
     return HttpResponseRedirect(reverse('main:accounts-profile'))
 
-def accounts_role_add(request):
-    context = build_standard_context(request)
-
-    if request.method == 'POST':
-        form = RoleForm(request.POST)
-        context["form"] = form
-        if form.is_valid():
-            try:
-                with transaction.atomic():
-                    
-                    # create the role, committing manually so that
-                    # we ensure the database is updated before we
-                    # kick off the celery task to do the import
-                    cd = form.cleaned_data
-                    role = Role()
-                    role.owner             = request.user
-                    role.github_user       = cd['github_user']
-                    role.github_repo       = cd['github_repo']
-                    role.name              = cd.get('name',None) or cd['github_repo']
-                    role.is_valid          = False
-                    role.save()
-            except IntegrityError, e:
-                print e
-                form.add_error(None,"You already created a role with that name.")
-            except Exception, e:
-                form.add_error(None,"Failed to add role: %s" % e)
-            else:
-                # start the celery task to run the import and save
-                # its info back to the database for later reference
-                task = import_role.delay(role.id)
-                role_import = RoleImport()
-                role_import.celery_task_id = task.id
-                role_import.role = role
-                role_import.save()
-                return HttpResponseRedirect(reverse('main:accounts-profile'))
-    else:   
-        form = RoleForm()
-        context["form"] = form
-    return render_to_response('account/role_add.html', context)
 
 @login_required
 def accounts_role_view(request, role=None):

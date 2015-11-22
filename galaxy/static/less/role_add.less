@@ -4,10 +4,67 @@
 
  #galaxy-role-add {
 
-    margin-bottom: 30px;
+    input[type=checkbox] {
+        margin-left: 0;
+        padding: 20px;
+    }
 
-    .help-block {
-        font-size: 12px;
-        padding: 5px;
+    .instructions .text {
+        line-height: normal;
+        padding: 15px 0;
+        font-size: 16px;
+    }
+
+    .repository-list {
+        margin-top: 20px;
+        padding-bottom: 60px;
+        .repository {
+            margin-bottom: 15px;
+            .toggle-switch {
+                border: 1px solid @ansible-dark-grey;
+                border-radius: 2px;
+            }
+            .toggle-switch .switch-left {
+                background-color: @green;
+            }
+            .toggle-switch,
+            .name,
+            .state {
+                display: inline-block;
+                vertical-align: middle;
+            }
+            .name {
+                font-size: 18px;
+                color: @ansible-dark-grey;
+            }
+            .state {
+                width: 40px;
+                text-align: center;
+                color: @ansible-dark-grey;
+            }
+        }
+        .repository.loading {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .search-roles {
+            position: relative;
+            margin-bottom: 30px;
+            width: 400px;
+            input {
+                padding-right: 15px;
+            }
+            .search-icon {
+                display: inline-block;
+                position: absolute;
+                right: 6px;
+                top: 5px;
+                color: @ansible-dark-grey;
+                .fa-times:hover {
+                    cursor: pointer;
+                }
+            }
+        }
+
     }
  }

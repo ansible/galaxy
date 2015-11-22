@@ -1,0 +1,68 @@
+
+<div id="import-status-page">
+    
+    <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
+    
+    <div class="container main">
+        <div class="loading-status"><i class="fa fa-lg fa-refresh" ng-class="{ 'fa-spin': checking }"></i></div>
+        <div class="row">
+            <div class="col-md-4" id="import-list-container">
+                <div class="import-list">
+                    <div class="search-roles">
+                        <input type="text" placeholder="Search Imports" class="form-control input-sm" ng-model="searchText" ng-disabled="!imports.length">
+                        <div class="search-icon"><i class="fa fa-search" ng-show="!searchText"></i></div>
+                        <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
+                    </div>
+                    <h5 class="title">IMPORTS <a href="/roleadd" class="add-role-link" title="Add an Import"><i class="fa fa-plus"></i></a></h5>
+                    <div class="import" ng-repeat="import in imports | filter:searchText track by import.id" ng-click="showDetail(import.id)" title="{{import.github_user}}/{{import.github_repo}}">
+                        <div class="marker" ng-class="{ 'active': import.id == selected_id }"></div>
+                        <div class="status {{ import.summary_fields.details.state | lowercase }}"><i class="{{ import.status_icon }}"></i></div>
+                        <div class="title">
+                            <div class="title-text {{ import.summary_fields.details.state | lowercase }}">
+                                {{import.github_user}}/{{import.github_repo}}
+                            </div>
+                            <div class="date-text">
+                                {{ import.date_label }}: {{import.summary_fields.details.modified | date:'short'}}
+                            </div>
+                        </div>
+                    </div>
+                    <div clas="import" ng-show="imports.length == 0" style="margin-top: 30px; color: #ccc">
+                        <div class="title">
+                            <div class="title-text">You have not imported any roles. Click <i class="fa fa-plus"></i> above to import a role.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8" id="import-details-column">
+                <div class="import-details-container" ng-show="!loading">
+                    <h3 ng-show="imports.length">
+                        <a href="/detail#/role/{{ import_detail.role }}/" class="title-link">{{ import_detail.github_user + '/' + import_detail.github_repo }}</a> 
+                        <a href="" ng-click="reimportRole(role.github_user, role.github_repo, role.github_branch)" class="reimport-link"><i class="fa fa-upload"></i> Re-Import</a>
+                    </h3>
+                    <h3 ng-show="!imports.length" class="no-imports">No imports found</h3>
+                    <div class="title-bar">
+                        <div class="branch">
+                            {{ role.github_branch }} <span class="message">{{ role.commit_message }}</span>
+                            <div ng-show="imports.length" class="last-run">{{ import_detail.last_run }}</div>
+                        </div>
+                        <!-- div class="when">{{ import_notice.when }}</div -->
+                        <div class="stats">
+                            <div class="count commit">
+                                <a href="{{ role.commit_url }}" target="_blank"><div class="icon"><i class="fa fa-github"></i></div> Commit {{ role.commit.substring(0,7) }}</a>
+                            </div>
+                            <div class="count stargazers"><div class="icon"><i class="fa fa-star-o"></i></div> Stars {{ role.stargazers_count }}</div>
+                            <div class="count forks"><div class="icon"><i class="fa fa-code-fork"></i></div> Forks {{ role.forks_count }}</div>
+                            <div class="count watchers"><div class="icon"><i class="fa fa-eye"></i></div> Watchers {{ role.watchers_count }}</div>
+                        </div>
+                    </div>
+                    <div class="message-list">
+                        <div class="message" ng-repeat="message in import_detail.summary_fields.task_messages track by message.id">
+                            <span class="text {{ message.message_type | lowercase }}">{{ message.message_text }}</span>
+                        </div>
+                    </div>
+                </div>
+                <ng-include src="'/static/partials/loader.html'"></ng-include>
+            </div>
+        </div>
+    </div>
+</div>

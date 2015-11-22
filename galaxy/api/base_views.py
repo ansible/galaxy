@@ -550,20 +550,20 @@ class RetrieveUpdateAPIView(RetrieveAPIView, generics.RetrieveUpdateAPIView):
         pass
 
 class RetrieveUpdateDestroyAPIView(RetrieveUpdateAPIView, generics.RetrieveUpdateDestroyAPIView):
-
-    def destroy(self, request, *args, **kwargs):
-        # somewhat lame that delete has to call it's own permissions check
-        obj = self.get_object()
-        # FIXME: Why isn't the active check being caught earlier by RBAC?
-        if getattr(obj, 'active', True) == False:
-            raise Http404()
-        if getattr(obj, 'is_active', True) == False:
-            raise Http404()
-        if not check_user_access(request.user, self.model, 'delete', obj):
-            raise PermissionDenied()
-        if hasattr(obj, 'mark_inactive'):
-            obj.mark_inactive()
-        else:
-            raise NotImplementedError('destroy() not implemented yet for %s' % obj)
-        return HttpResponse(status=204)
+    pass
+#     def destroy(self, request, *args, **kwargs):
+#         # somewhat lame that delete has to call it's own permissions check
+#         obj = self.get_object()
+#         # FIXME: Why isn't the active check being caught earlier by RBAC?
+#         if getattr(obj, 'active', True) == False:
+#             raise Http404()
+#         if getattr(obj, 'is_active', True) == False:
+#             raise Http404()
+#         if not check_user_access(request.user, self.model, 'delete', obj):
+#             raise PermissionDenied()
+#         if hasattr(obj, 'mark_inactive'):
+#             obj.mark_inactive()
+#         else:
+#             raise NotImplementedError('destroy() not implemented yet for %s' % obj)
+#         return HttpResponse(status=204)
 

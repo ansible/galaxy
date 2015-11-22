@@ -339,6 +339,18 @@ class Role(CommonModelNameNotUnique):
     open_issues_count = models.IntegerField(
         default      = 0
     )
+    commit           = models.CharField(
+        max_length   = 256,
+        blank        = True
+    )
+    commit_message   = models.CharField(
+        max_length   = 256,
+        blank        = True
+    )
+    commit_url       = models.CharField(
+        max_length   = 256,
+        blank        = True
+    )
     
     #tags = ArrayField(models.CharField(max_length=256), null=True, editable=True, size=100)
 
@@ -347,16 +359,13 @@ class Role(CommonModelNameNotUnique):
 
     bayesian_score = models.FloatField(
         default    = 0.0,
-        db_index   = True,
         editable   = False,
     )
     num_ratings = models.IntegerField(
         default    = 0,
-        db_index   = False,
     )
     average_score = models.FloatField(
         default    = 0.0,
-        db_index   = False,
     )
     
     #------------------------------------------------------------------------------
@@ -528,6 +537,11 @@ class ImportTask(PrimordialModel):
         default      = 'PENDING',
     )
     started = models.DateTimeField(
+        auto_now_add = False,
+        null         = True,
+        blank        = True,
+    )
+    finished = models.DateTimeField(
         auto_now_add = False,
         null         = True,
         blank        = True,

@@ -4,5 +4,31 @@
 <div class="main page-content">
 {% block general_content %}{% endblock %}
 </div>
+
+<script>
+    /*
+     * Provide current user info
+     */
+    'use strict';
+    (function(angular) {
+
+        var mod = angular.module('currentUserService', []);
+
+        mod.factory('currentUserService', [_factory]);
+
+        function _factory() {
+            return {
+                "id": "{{ user.id }}", 
+                "authenticated": "{{ user.is_authenticated }}", 
+                "staff": "{{ user.is_staff }}", 
+                "username": "{{ user.username }}", 
+                "created": "{{ user.date_joined }}", 
+                "modified": "{{ user.last_login }}", 
+                "active": "{{ user.is_active }}"
+            }
+        }
+    })(angular);
+</script>
+
 {% endblock %}
 

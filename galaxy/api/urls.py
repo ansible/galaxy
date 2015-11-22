@@ -20,7 +20,8 @@
 
 from django.conf.urls import include, patterns, url as original_url
 from rest_framework import routers
-from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView, UserSearchView, TokenView
+from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView, UserSearchView, \
+    TokenView, RemoveRole, GithubRepoList
 
 router = routers.DefaultRouter()
 router.register('v1/search/roles', RoleSearchView, base_name="search-roles")
@@ -82,6 +83,7 @@ search_urls = patterns('galaxy.api.views',
 
 import_task_urls = patterns('galaxy.api.views',
     url(r'^$',                         'import_task_list'),
+    url(r'latest/$',                   'import_task_latest_list'),
     url(r'^(?P<pk>[0-9]+)/$',          'import_task_detail'),
 )
 
@@ -106,11 +108,13 @@ v1_urls = patterns('galaxy.api.views',
     url(r'^tags/',                     include(tag_urls)),
     url(r'^platforms/',                include(platform_urls)),
     url(r'^ratings/',                  include(rating_urls)),
-    url(r'^imports/',                   include(import_task_urls)),
-    url(r'^tokens/',                    TokenView.as_view(), name='token'),
+    url(r'^imports/',                  include(import_task_urls)),
+    url(r'^tokens/',                   TokenView.as_view(), name='token'),
+    url(r'^removerole/',               RemoveRole.as_view(), name='remove_role'),
     url(r'^notification_secrets/',     include(notification_secret_urls)),
     url(r'^notifications/',            include(notification_urls)),
     url(r'^search/',                   include(search_urls)),
+    url(r'^repolist/',                 GithubRepoList.as_view(), name='github_repo_list')
 )
 
 urlpatterns = patterns('galaxy.api.views',

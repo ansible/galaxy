@@ -23,6 +23,9 @@ import re
 import json
 from hashlib import sha256
 
+# Github
+from github import Github, AuthenticatedUser
+
 # rest framework stuff
 from rest_framework import filters
 from rest_framework import mixins
@@ -39,7 +42,7 @@ from rest_framework.exceptions import ValidationError
 # django stuff
 from django.contrib.auth.models import AnonymousUser
 from django.db import IntegrityError
-from django.db.models import F, Count, Avg, Prefetch
+from django.db.models import F, Count, Avg, Prefetch, Max
 from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.apps import apps
@@ -47,6 +50,7 @@ from django.utils.dateparse import parse_datetime
 
 #allauth
 from allauth.socialaccount.models import SocialAccount
+from allauth.socialaccount.models import SocialToken
 
 # haystack
 from drf_haystack.viewsets import HaystackViewSet
@@ -89,9 +93,9 @@ def filter_rating_queryset(qs):
 def annotate_user_queryset(qs):
     return qs.annotate(
                num_ratings = Count('ratings', distinct=True),
-               num_roles = Count('roles', distinct=True),
+               # num_roles = Count('roles', distinct=True),
                avg_rating = AvgWithZeroForNull('ratings__score'),
-               avg_role_score = AvgWithZeroForNull('roles__average_score'),
+               # avg_role_score = AvgWithZeroForNull('roles__average_score'),
            )
 
 def annotate_role_queryset(qs):
@@ -142,18 +146,21 @@ class ApiV1RootView(APIView):
     def get(self, request, format=None):
         ''' list top level resources '''
         data = SortedDict()
-        data['me']         = reverse('api:user_me_list')
-        data['users']      = reverse('api:user_list')
-        data['roles']      = reverse('api:role_list')
-        data['categories'] = reverse('api:category_list')
-        data['tags']       = reverse('api:tag_list')
-        data['platforms']  = reverse('api:platform_list')
-        data['ratings']    = reverse('api:rating_list')
+        data['me']          = reverse('api:user_me_list')
+        data['users']       = reverse('api:user_list')
+        data['roles']       = reverse('api:role_list')
+        data['remove role'] = reverse('api:remove_role')
+        data['categories']  = reverse('api:category_list')
+        data['tags']        = reverse('api:tag_list')
+        data['platforms']   = reverse('api:platform_list')
+        data['ratings']     = reverse('api:rating_list')
         data['imports']     = reverse('api:import_task_list')
-        data['tokens']      = reverse('api:token')
-        data['notification_secrets'] = reverse('api:notification_secret_list')
-        data['notifications'] = reverse('api:notification_list')
-        data['search']     = reverse('api:search_view')
+        data['latest impoorts'] = reverse('api:import_task_latest_list')
+        data['tokens']          = reverse('api:token')
+        data['notification secrets'] = reverse('api:notification_secret_list')
+        data['notifications']        = reverse('api:notification_list')
+        data['search']               = reverse('api:search_view')
+        data['GitHub repo list']     = reverse('api:github_repo_list')
         return Response(data)
 
 class ApiV1SearchView(APIView):
@@ -208,7 +215,7 @@ class RoleRatingsList(SubListCreateAPIView):
     parent_key = 'role'
     relationship = 'ratings'
 
-class RoleAuthorsList(SubListCreateAPIView):
+class RoleAuthorsList(SubListAPIView):
     model = User
     serializer_class = UserDetailSerializer
     parent_model = Role
@@ -218,7 +225,7 @@ class RoleAuthorsList(SubListCreateAPIView):
         qs = super(RoleAuthorsList, self).get_queryset()
         return annotate_user_queryset(filter_user_queryset(qs))
 
-class RoleDependenciesList(SubListCreateAPIView):
+class RoleDependenciesList(SubListAPIView):
     model = Role
     serializer_class = RoleDetailSerializer
     parent_model = Role
@@ -247,13 +254,13 @@ class RoleImportTaskList(SubListAPIView):
     def get_queryset(self):
         return super(RoleImportTaskList, self).get_queryset()
 
-class RoleVersionsList(SubListCreateAPIView):
+class RoleVersionsList(SubListAPIView):
     model = RoleVersion
     serializer_class = RoleVersionSerializer
     parent_model = Role
     relationship = 'versions'
 
-class RoleList(ListCreateAPIView):
+class RoleList(ListAPIView):
     model = Role
     serializer_class = RoleListSerializer
 
@@ -270,7 +277,7 @@ class RoleTopList(ListAPIView):
         qs = super(RoleTopList, self).get_queryset()
         return filter_role_queryset(qs)
 
-class RoleDetail(RetrieveUpdateDestroyAPIView):
+class RoleDetail(RetrieveAPIView):
     model = Role
     serializer_class = RoleDetailSerializer
 
@@ -330,7 +337,14 @@ class ImportTaskDetail(RetrieveAPIView):
         if not obj.active:
             raise Http404()
         return obj
- 
+
+class ImportTaskLatestList(ListAPIView):
+    model = ImportTask
+    serializer_class = ImportTaskLatestSerializer
+
+    def get_queryset(self):
+        return ImportTask.objects.values('owner_id','github_user','github_repo').annotate(last_id=Max('id')).order_by()
+
 class UserRatingsList(SubListAPIView):
     model = RoleRating
     serializer_class = RoleRatingSerializer
@@ -429,6 +443,14 @@ class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(instance=instance)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            obj = NotificationSecret.objects.get(pk=self.kwargs[self.lookup_field])
+        except:
+            raise ValidationError({ "detail": "Request secret not found." })
+        obj.delete()
+        return Response({ "detail": "Requested secret deleted. "}, status=status.HTTP_202_ACCEPTED)
 
 class NotificationList(ListCreateAPIView):
     model = Notification
@@ -540,7 +562,7 @@ class NotificationImportsList(SubListAPIView):
         qs = super(NotificationImportsList, self).get_queryset()
         return qs
 
-class UserDetail(RetrieveUpdateDestroyAPIView):
+class UserDetail(RetrieveAPIView):
     model = User
     serializer_class = UserDetailSerializer
 
@@ -573,11 +595,11 @@ class UserList(ListAPIView):
     def get_queryset(self):
         qs = super(UserList, self).get_queryset()
         qs = qs.prefetch_related(
-            Prefetch(
-                'roles',
-                queryset=Role.objects.filter(active=True, is_valid=True).order_by('pk'),
-                to_attr='user_roles'
-            ),
+            # Prefetch(
+            #     'roles',
+            #     queryset=Role.objects.filter(active=True, is_valid=True).order_by('pk'),
+            #     to_attr='user_roles'
+            # ),
             Prefetch(
                 'ratings',
                 queryset=RoleRating.objects.select_related('role').filter(active=True, role__active=True, role__is_valid=True).order_by('-created'),
@@ -756,7 +778,127 @@ class TagsSearchView(APIView):
         response = get_response(request=request, result=result, view='api:tags_search_view')
         response['results'] = serializer.data
         return Response(response)
+
+class RemoveRole(APIView):
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated,)
+
+    def delete(self, request, *args, **kwargs):
+
+        gh_user = request.data.get('github_user', None)
+        gh_repo = request.data.get('github_repo', None)
         
+        if not gh_user or not gh_repo:
+            raise ValidationError({ "detail": "Invalid request." })
+
+        # Verify via GitHub API that user has access to requested role
+        try:
+            token = SocialToken.objects.get(account__user=request.user, account__provider='github')
+        except:
+            raise ValidationError({"detail": "Failed to get Github account for Galaxy user %s. You must first " +
+                "authenticate with Github." % request.user.username })
+
+        try:
+            gh_api = Github(token.token)
+            gh_api.get_api_status()
+        except:
+            raise ValidationError({"detail": "Failed to connect to Github API. This is most likely a temporary " +
+                "error, please try again in a few minutes."})
+    
+        try:
+            ghu = gh_api.get_user()
+        except:
+            raise ValidationError({"detail": "Failed to get Github authorized user."})
+
+        allowed = False
+        repo_full_name = "%s/%s" % (gh_user, gh_repo)
+        for r in ghu.get_repos():
+            if r.full_name == repo_full_name:
+                allowed = True
+                continue
+        if not allowed:
+            raise ValidationError({"detail": "Galaxy user %s does not have access to repo %s" % (request.user.username,repo_full_name)})
+
+        # User has access. Delete requested role and associated bits.
+        response = OrderedDict([
+            ('deleted_roles', []),
+            ('status','')
+        ])
+        
+        roles = Role.objects.filter(github_user=gh_user,github_repo=gh_repo)
+        cnt = len(roles)
+        if cnt == 0: 
+            response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user,gh_repo)
+            return Response(response)
+        elif cnt == 1:
+            response['status'] = "Role %s.%s deleted" % (gh_user,gh_repo)
+        else:
+            response['status'] = "Deleted %d roles associated with %s/%s" % (len(roles),gh_user,gh_repo)
+
+        for role in roles:
+            response['deleted_roles'].append({
+                "id": role.id,
+                "namespace": role.namespace,
+                "name": role.name,
+                "github_user": role.github_user,
+                "github_repo": role.github_repo
+            })
+            for notification in role.notifications.all():
+                notification.delete()
+
+        Role.objects.filter(github_user=gh_user,github_repo=gh_repo).delete()
+        ImportTask.objects.filter(github_user=gh_user,github_repo=gh_repo).delete()
+
+        return Response(response)
+
+    def put(self, request, *args, **kwargs):
+        return self.delete(request, args, kwargs)
+
+class GithubRepoList(APIView):
+    '''
+    Return a list of GitHub repos the user has access to.
+    '''
+
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        # Verify via GitHub API that user has access to requested role
+        try:
+            token = SocialToken.objects.get(account__user=request.user, account__provider='github')
+        except:
+            raise ValidationError({"detail": "Failed to connect to Github account for Galaxy user %s. You must first " +
+                "authenticate with Github." % request.user.username })
+
+        try:
+            gh_api = Github(token.token)
+            gh_api.get_api_status()
+        except:
+            raise ValidationError({"detail": "Failed to connect to Github API. This is most likely a temporary " +
+                "error, please try again in a few minutes."})
+    
+        try:
+            ghu = gh_api.get_user()
+        except:
+            raise ValidationError({"detail": "Failed to get Github authorized user."})
+
+        response = {}
+        response['results'] = []
+        for r in ghu.get_repos():
+            try:
+                # check if repo is a role
+                meta = r.get_file_contents("meta/main.yml")
+                name = r.full_name.split('/')
+                cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+                response['results'].append({
+                    'name': r.full_name,
+                    'active': cnt > 0
+                })
+            except:
+                pass    
+
+        return Response(response, status=status.HTTP_200_OK)
+
 class TokenView(APIView):
     '''
     Allows ansible-galaxy CLI to retrieve an auth token
@@ -797,7 +939,7 @@ class TokenView(APIView):
         else:
             token = Token.objects.create(user=user)
             token.save()
-        return Response({ "token": token.key, "username": user.username })
+        return Response({ "token": token.key, "username": user.username }, status=status.HTTP_200_OK)
 
             
 def get_response(*args, **kwargs):
