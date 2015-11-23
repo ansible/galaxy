@@ -6,36 +6,77 @@
         
         <div class="inner-container">
             <div class="instructions">
-                <h2>{{ username }}</h2>
+                <h2>Import Your Roles from GitHub</h2>
                 <div class="text">
-                    <p><strong>Add or remove any of your public GitHub repositories containing an Ansible role.</strong>
-                    Click the toggle next to the repository to reveal a check mark. This will add the role to Galaxy, making it visible on the Browse Roles page and allowing anyone to download it using the ansible-galaxy command line tool.</p>
+                    <p><strong></strong>
+                    Click the toggle next to the repository to reveal a check mark. This will add the role to Galaxy, making it visible on the Browse Roles page and allowing anyone to download it using the ansible-galaxy command line tool. Removing the check mark will delete the role from Galaxy.</p>
+                    <p><strong>NOTE:</strong> Only public repositories containing a meta/main.yml file can be imported.</p>
                 </div>
             </div>
 
             <div class="repository-list">
-                <div class="search-roles">
-                    <input type="text" placeholder="Search Imports" class="form-control input-sm" ng-model="searchText" ng-disabled="!repositories.length">
-                    <div class="search-icon"><i class="fa fa-search" ng-show="!searchText"></i></div>
-                    <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
+                <div class="row title-container">
+                    <div class="col-sm-5 title">
+                        {{ username }}
+                    </div>
+                    <div class="col-sm-7 tools">
+                        <a href="" ng-click="refreshRepos()" ng-disabled="refreshing" class="refresh-link btn btn-sm btn-default" title="Refresh your repositories from GitHub."><i class="fa fa-refresh"></i> Refresh</a>
+                        <div class="refreshing-icon"><i class="fa fa-spin fa-spinner" ng-show="refreshing"></i></div>
+                        <div class="search-roles">
+                            <input type="text" placeholder="Search Roles" class="form-control input-sm" ng-model="searchText" ng-disabled="!repositories.length">
+                            <div class="search-icon"><i class="fa fa-search" ng-show="!searchText"></i></div>
+                            <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="repository" ng-repeat="repo in repositories | filter:searchText">
                     <!-- http://jumplink.github.io/angular-toggle-switch/ -->
                     <toggle-switch 
-                        class="switch-success switch-small"
+                        class="switch-success switch-mini"
                         html="true" 
-                        ng-model="repo.active"
+                        ng-model="repo.is_enabled"
                         on-label='<i class="fa fa-check"></i>'
                         off-label='<i class="fa fa-times"></i>'
                         ng-change="toggleRepository(repo)"
-                        is-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING'"></toggle-switch>
+                        is-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING' || refreshing"></toggle-switch>
                     <div class="state"><i class="fa fa-spin fa-lg fa-spinner" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'"></i></div>
-                    <div class="name">{{ repo.name }}</div>
+                    <div class="settings"><a href="" ng-click="showIntegrations(repo)" title="Configure Travis or GitHub integration."><i class="fa fa-large fa-gear"></i></a></div>
+                    <div class="name">
+                        <a ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" ng-if="repo.is_enabled" title="View role import details.">{{ repo.github_user + '/' + repo.github_repo }}</a>
+                        <span ng-if="!repo.is_enabled">{{ repo.github_user + '/' + repo.github_repo }}</span>
+                    </div>
+                                    
+                    <div uib-collapse="!repo.show_integrations" class="integration-container">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">GitHub Secret</label>
+                                <div class="col-sm-9 input-container">
+                                    <input type="{{ repo.github_secret_type }}" class="form-control input-sm" name="github_secret" ng-model="repo.github_secret" placeholder="GitHub Secret" autcomplete="off"/>
+                                    <a href="" class="reveal-link" ng-click="revealGithub(repo)" ng-show="repo.github_secret"><i class="fa fa-eye"></i></a>
+                                    <a href="" class="clear-link" ng-click="clearGithub(repo)" ng-show="repo.github_secret"><i class="fa fa-times"></i></a>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Travis Token</label>
+                                <div class="col-sm-9 input-container">
+                                    <input type="{{ repo.travis_token_type }}" class="form-control input-sm" name="travis_token" ng-model="repo.travis_token" placeholder="Travis Token" autcomplete="off"/>
+                                    <a href="" class="reveal-link" ng-click="revealTravis(repo)" ng-show="repo.travis_token"><i class="fa fa-eye"></i></a>
+                                    <a href="" class="clear-link" ng-click="clearTravis(repo)" ng-show="repo.travis_token"><i class="fa fa-times"></i></a>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <div class="form-button text-right">
+                                        <a href="" ng-click="applyIntegrations(repo)" class="btn btn-sm btn-primary"><i class="fa fa-check"></i> Save</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr />
                 </div>
-                <div class="repository loading" ng-show="loading">
-                    Waiting on the GitHub API...
-                </div>
-                <div class="repository loading" ng-show="!loading && repositories.length == 0">
+                <div class="repository loading" ng-show="!refreshing && repositories.length == 0">
                     No roles found in your public GitHub repositories.
                 </div>
             </div>

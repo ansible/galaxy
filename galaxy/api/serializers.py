@@ -307,8 +307,8 @@ class UserListSerializer(BaseSerializer):
             return {}
         res = super(UserListSerializer, self).get_related(obj)
         res.update(dict(
-            roles   = reverse('api:user_roles_list', args=(obj.pk,)),
             ratings = reverse('api:user_ratings_list', args=(obj.pk,)),
+            repositories = reverse('api:user_repositories_list', args=(obj.pk,))
         ))
         return res
 
@@ -410,8 +410,8 @@ class UserDetailSerializer(BaseSerializer):
             return {}
         res = super(UserDetailSerializer, self).get_related(obj)
         res.update(dict(
-            roles   = reverse('api:user_roles_list', args=(obj.pk,)),
             ratings = reverse('api:user_ratings_list', args=(obj.pk,)),
+            repositories = reverse('api:user_repositories_list', args=(obj.pk,))
         ))
         return res
 
@@ -473,6 +473,29 @@ class RoleVersionSerializer(BaseSerializer):
     class Meta:
         model = RoleVersion
         fields = ('id','name','release_date',)
+
+
+class RepositorySerializer(BaseSerializer):
+    class Meta:
+        model = Repository
+        fields = ('id', 'owner', 'github_user', 'github_repo', 'is_enabled')
+
+    def get_url(self, obj):
+        if obj is None:
+            return ''
+        elif isinstance(obj, Repository):
+            return reverse('api:user_repos_detail', args=(obj.pk,))
+        else:
+            return obj.get_absolute_url()
+
+    def get_related(self, obj):
+        if obj is None:
+            return {}
+        res = super(RepositorySerializer, self).get_related(obj)
+        res.update(dict(
+            owner = reverse('api:user_detail', args=(obj.owner.id,)),
+        ))
+        return res
 
 
 class NotificationSecretSerializer(BaseSerializer):

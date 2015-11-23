@@ -15,9 +15,47 @@
         font-size: 16px;
     }
 
+    .ats-switch .fa-times {
+        color: @ansible-dark-grey;
+    }
+
     .repository-list {
-        margin-top: 20px;
         padding-bottom: 60px;
+        
+        .title-container {
+            margin-bottom: 20px;
+            .title {
+                font-size: 32px;
+                color: @ansible-dark-grey;
+            }
+            .refreshing-icon {
+                display: inline-block;
+                width: 20px;
+                text-align: center;
+            }
+            .search-roles {
+                position: relative;
+                display:inline-block;
+                width: 60%;
+                input {
+                    padding-right: 15px;
+                }
+                .search-icon {
+                    display: inline-block;
+                    position: absolute;
+                    right: 6px;
+                    top: 5px;
+                    color: @ansible-dark-grey;
+                    .fa-times:hover {
+                        cursor: pointer;
+                    }
+                }
+            }
+            .tools {
+                padding-top: 10px;
+            }
+        }
+        
         .repository {
             margin-bottom: 15px;
             .toggle-switch {
@@ -27,43 +65,98 @@
             .toggle-switch .switch-left {
                 background-color: @green;
             }
-            .toggle-switch,
+            
+            .ats-switch,
             .name,
-            .state {
+            .state,
+            .settings {
                 display: inline-block;
                 vertical-align: middle;
+                line-height: normal;
+            }
+            .settings {
+                margin-right: 10px;
+                a, a:active, a:visited {
+                    color: @ansible-dark-grey;
+                }
+                a:hover {
+                    color: @blue;
+                }
             }
             .name {
                 font-size: 18px;
                 color: @ansible-dark-grey;
+                width: 60%;
+                    a, a:active, a:visited {
+                    color: @blue;
+                }
+                a:hover {
+                    color: @ansible-color;
+                }
             }
             .state {
                 width: 40px;
                 text-align: center;
                 color: @ansible-dark-grey;
             }
+
+            .integration-container {
+                width: 600px;
+                padding: 10px;
+                margin-left: 120px;
+                margin-top: 10px;
+                border-radius: 2px; 
+                border: 1px solid #ccc;
+                background-color: #eee;
+                color: @ansible-dark-grey;
+                input,
+                .form-button {
+                    width: 90%
+                }
+                .input-container {
+                    position: relatavie;
+                }
+                .reveal-link {
+                    position: absolute;
+                    top: 6px;
+                    right: 35px;
+                }
+                .clear-link {
+                    position: absolute;
+                    top: 6px;
+                    right: 15px;
+                }
+                .reveal-link:hover,
+                .clear-link:hover {
+                    color: @ansible-color;
+                }
+                .form-group:last-of-type {
+                    margin-bottom: 0;
+                }
+
+                @media (max-width: 825px) {
+                    width: 100%;
+                    margin-left: 0;
+                }
+                @media (max-width: 468px) {
+                    .reveal-link {
+                        right: 30px;
+                    }
+                    .clear-link {
+                        right: 10px;
+                    }
+                }
+            }
+
+            @media (min-width: 1024px) {
+                .name { 
+                    width: 80%;
+                }
+            }
         }
         .repository.loading {
             font-size: 16px;
             font-weight: bold;
-        }
-        .search-roles {
-            position: relative;
-            margin-bottom: 30px;
-            width: 400px;
-            input {
-                padding-right: 15px;
-            }
-            .search-icon {
-                display: inline-block;
-                position: absolute;
-                right: 6px;
-                top: 5px;
-                color: @ansible-dark-grey;
-                .fa-times:hover {
-                    cursor: pointer;
-                }
-            }
         }
 
     }

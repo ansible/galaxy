@@ -422,6 +422,39 @@ def import_role(task_id):
     
     return True
 
+#----------------------------------------------------------------------
+# Login Task
+#----------------------------------------------------------------------
+
+@task(name="galaxy.main.celerytasks.tasks.manage_user_repos")
+def manage_user_repos(user):
+    try:
+        token = SocialToken.objects.get(account__user=user, account__provider='github')
+        gh_api = Github(token.token)
+        ghu = gh_api.get_user()
+        repo_names = []
+        for r in ghu.get_repos():
+            try:
+                meta = r.get_file_contents("meta/main.yml")
+                repo_names.append(r.full_name)
+                name = r.full_name.split('/')
+                cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+                user.repositories.get_or_create(github_user=name[0],github_repo=name[1],
+                    defaults={
+                        'github_user': name[0],
+                        'github_repo': name[1],
+                        'is_enabled': cnt > 0
+                    }
+                )
+            except:
+                pass
+        # remove repos to which user no longer has access
+        for r in user.repositories.all():
+            name = r.github_user + '/' + r.github_repo
+            if not name in repo_names:
+                r.delete()
+    except:
+        pass
 
 #----------------------------------------------------------------------
 # Periodic Tasks

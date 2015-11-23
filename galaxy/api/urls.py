@@ -20,8 +20,8 @@
 
 from django.conf.urls import include, patterns, url as original_url
 from rest_framework import routers
-from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView, UserSearchView, \
-    TokenView, RemoveRole, GithubRepoList
+from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView, \
+    ApiV1ReposView, UserSearchView, TokenView, RemoveRole, RefreshUserRepos
 
 router = routers.DefaultRouter()
 router.register('v1/search/roles', RoleSearchView, base_name="search-roles")
@@ -37,8 +37,8 @@ user_urls = patterns('galaxy.api.views',
     url(r'rolecontributors/$',         'user_role_contributors_list'),
     url(r'ratingcontributors/$',       'user_rating_contributors_list'),
     url(r'^(?P<pk>[0-9]+)/$',          'user_detail'),
-    url(r'^(?P<pk>[0-9]+)/roles/$',    'user_roles_list'),
     url(r'^(?P<pk>[0-9]+)/ratings/$',  'user_ratings_list'),
+    url(r'^(?P<pk>[0-9]+)/repos/$',    'user_repositories_list')
 )
 
 role_urls = patterns('galaxy.api.views',
@@ -99,6 +99,13 @@ notification_urls = patterns('galaxy.api.views',
     url(r'^(?P<pk>[0-9]+)/imports/$',  'notification_imports_list'),    
 )
 
+repo_urls = patterns('galaxy.api.views',
+    url(r'^$',                         ApiV1ReposView.as_view(), name="repos_view"),
+    url(r'list/$',                     'user_repos_list'),
+    url(r'list/(?P<pk>[0-9]+)/$',      'user_repos_detail'),
+    url(r'refresh/$',                  RefreshUserRepos.as_view(), name='refresh_user_repos')
+)
+
 v1_urls = patterns('galaxy.api.views',
     url(r'^$',                         'api_v1_root_view'),
     url(r'^me/$',                      'user_me_list'),
@@ -113,8 +120,8 @@ v1_urls = patterns('galaxy.api.views',
     url(r'^removerole/',               RemoveRole.as_view(), name='remove_role'),
     url(r'^notification_secrets/',     include(notification_secret_urls)),
     url(r'^notifications/',            include(notification_urls)),
+    url(r'^repos/',                    include(repo_urls)),
     url(r'^search/',                   include(search_urls)),
-    url(r'^repolist/',                 GithubRepoList.as_view(), name='github_repo_list')
 )
 
 urlpatterns = patterns('galaxy.api.views',

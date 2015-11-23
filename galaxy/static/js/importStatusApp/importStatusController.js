@@ -18,12 +18,13 @@
         '$window',
         '$interval',
         '$timeout',
+        '$location',
         'currentUserService',
         'importService',
         'imports',
         _controller]);
 
-    function _controller($scope, $log, $window, $interval, $timeout, currentUserService, importService, imports) {
+    function _controller($scope, $log, $window, $interval, $timeout, $location, currentUserService, importService, imports) {
         $scope.imports = imports;
         $scope.user = currentUserService;
         $scope.checking = false;
@@ -35,10 +36,24 @@
         $scope.checkAddRole = _checkAddRole;
         $scope.showAddForm = _showAddForm;
 
+        var params = $location.search();
+        if (Object.keys(params).length > 0) {
+            imports.every(function(imp) {
+                if (imp.github_user == params.github_user && imp.github_repo == params.github_repo) {
+                    $scope.selected_id = imp.id;
+                    return false;
+                }
+                return true;
+            });
+        }
+
+        if (imports.length && !$scope.selected_id) {
+            $scope.selected_id = imports[0].id;
+        }
+
         if ($scope.imports.length) {
             $scope.loading = true;
-            $scope.selected_id = imports[0].id;
-            _showDetail($scope.imports[0].id);
+            _showDetail($scope.selected_id);
         }
 
         $interval(_getImports, 5000);
@@ -90,11 +105,11 @@
 
         function _resize() {
             if ($($window).width() > 992) {
-                var h = $($window).height() - 240 - $('#galaxy-copyright').height();
-                h = (h < 400) ? 400 : h;
-                $('#import-details-column').css({ 'min-height': h + 'px' });
+                var h = $($window).height() - 300 - $('#galaxy-copyright').height();
+                h = (h < 300) ? 300 : h;
+                $('#import-list-inner').css({ 'height': h + 'px' });
             } else {
-                $('#import-details-column').css({ 'min-height': 0 });
+                $('#import-list-inner').css({ 'height': '300px' });
             }
 
         }

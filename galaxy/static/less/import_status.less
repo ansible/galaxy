@@ -9,9 +9,10 @@
     }
     
     .loading-status {
-        width: 100%;
+        display: inline-block;
         text-align: right;
         color: #e1e1e1;
+        margin-left: 10px;
         
         .fa-spin {
             color: @ansible-dark-grey;
@@ -31,7 +32,11 @@
     }
     
     .import-list {
-        position: relative; 
+        position: relative;
+
+        #import-list-inner {
+            overflow-y: auto;
+        }
 
         .add-role-form {
             h5 {
@@ -74,24 +79,15 @@
             }
         }
 
-        h5.title {
-            color: @ansible-dark-grey;
-            font-weight: normal;
+        .title-row {
             margin-bottom: 20px;
-        }
-
-        .add-role-link {
-            margin-left: 10px;
-            color: @black;
-            font-size: 12px;
-        }
-        .add-role-link:active,
-        .add-role-link:visited {
-            color: @black;
-        }
-
-        .add-role-link:hover {
-            color: @ansible-dark-grey;
+            .title {
+                font-size: 18px;
+                color: @ansible-dark-grey;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
 
         .main {
@@ -103,14 +99,14 @@
             height: 60px;
             padding: 10px;
             .marker {
-                width: 5px;
+                width: 3px;
                 height: 60px;
                 position: absolute;
                 top: 0;
                 left: 0;
             }
             .marker.active {
-                background: @ansible-dark-grey;
+                background: @blue;
             }
             .title {
                 display: inline-block;
@@ -149,7 +145,7 @@
         }
         .import:hover {
             cursor: pointer;
-            background-color: #e1e1e1;
+            background-color: #eee;
         }
         .disabled {
             .import:hover {
@@ -165,25 +161,21 @@
         h3.no-imports {
             color: #e1e1e1;
         }
-        .title-link, .title-link:active, .title-link:visited {
-            color: @black;
-        }
-        .title-link:hover {
-            color: @ansible-dark-grey;
-        }
-        .reimport-link {
-            font-size: 12px;
-            margin-left: 15px;
-        }
-        .reimport-link, .reimport-link:active, .reimport-link:visited {
-            color: @black;
-        }
-        .reimport-link:hover {
-            color: @ansible-dark-grey;
+        .title-row {
+            .title {
+                color: @ansible-dark-grey;
+                font-size: 20px;
+                a, a:active, a:visited {
+                    color: @blue;
+                }
+                a:hover {
+                    color: @ansible-color;
+                }
+            }
         }
         .title-bar {
             position: relative;
-            margin-top: 30px;
+            margin-top: 22px;
             margin-bottom: 20px;
             background-color: #f0f0f0;
             height: 90px;
@@ -193,6 +185,12 @@
             .branch {
                 font-weight: bold;
                 color: @ansible-dark-grey;
+                .commit {
+                    width: 80%;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
                 .message {
                     font-size: 16px;
                 }
@@ -200,6 +198,12 @@
                     font-size: 12px;
                     font-weight: normal;
                     padding-top: 15px;
+                }
+
+                @media (max-width: 650px) {
+                    .commit {
+                        width: 55%;
+                    }
                 }
             }
             .stats {
@@ -244,7 +248,7 @@
         }
         .import-list {
             padding-bottom: 20px;
-            max-height: 300px;
+        //    max-height: 300px;
         }
         #import-details-column {
             border-left: 0px;

@@ -45,7 +45,7 @@ from galaxy.main.mixins import *
 
 __all__ = [
     'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 
-    'RoleVersion', 'UserAlias', 'NotificationSecret', 'Notification'
+    'RoleVersion', 'UserAlias', 'NotificationSecret', 'Notification', 'Repository'
 ]
 
 ###################################################################################
@@ -654,3 +654,29 @@ class Notification(PrimordialModel):
         default       = list,
         editable      = False
     )
+
+class Repository (PrimordialModel):
+    class Meta:
+        index_together = [
+            ['owner', 'github_user', 'github_repo', 'is_enabled'],
+            ['github_user', 'github_repo']
+        ]
+        ordering = ('github_user','github_repo')
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name  = 'repositories',
+        editable      = False
+    )
+    github_user = models.CharField(
+        max_length   = 256,
+        verbose_name = "Github Username",
+    )
+    github_repo = models.CharField(
+        max_length   = 256,
+        verbose_name = "Github Repository",
+    )
+    is_enabled = models.BooleanField(
+        default      = False
+    )
+

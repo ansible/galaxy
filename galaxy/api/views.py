@@ -70,7 +70,7 @@ from galaxy.api.serializers import *
 from galaxy.main.models import *
 from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
-from galaxy.main.celerytasks.tasks import import_role
+from galaxy.main.celerytasks.tasks import import_role, manage_user_repos
 
 
 #--------------------------------------------------------------------------------
@@ -159,8 +159,8 @@ class ApiV1RootView(APIView):
         data['tokens']          = reverse('api:token')
         data['notification secrets'] = reverse('api:notification_secret_list')
         data['notifications']        = reverse('api:notification_list')
+        data['repos']                = reverse('api:repos_view')
         data['search']               = reverse('api:search_view')
-        data['GitHub repo list']     = reverse('api:github_repo_list')
         return Response(data)
 
 class ApiV1SearchView(APIView):
@@ -174,6 +174,15 @@ class ApiV1SearchView(APIView):
         data['users'] = reverse('api:user_search_view')
         data['faceted_platforms'] = reverse('api:faceted_platforms_view')
         data['faceted_tags'] = reverse('api:faceted_tags_view')
+        return Response(data)
+
+class ApiV1ReposView(APIView):
+    permission_classes = (AllowAny,)
+    view_name = 'Repos'
+    def get(self, request, *args, **kwargs):
+        data = OrderedDict()
+        data['list'] = reverse('api:user_repos_list')
+        data['refresh'] = reverse('api:refresh_user_repos')
         return Response(data)
 
 class CategoryList(ListAPIView):
@@ -343,7 +352,13 @@ class ImportTaskLatestList(ListAPIView):
     serializer_class = ImportTaskLatestSerializer
 
     def get_queryset(self):
-        return ImportTask.objects.values('owner_id','github_user','github_repo').annotate(last_id=Max('id')).order_by()
+        return ImportTask.objects.values('owner_id','github_user','github_repo').annotate(last_id=Max('id')).order_by('owner_id','github_user','github_repo')
+
+class UserRepositoriesList(SubListAPIView):
+    model = Repository
+    serializer_class = RepositorySerializer
+    parent_model = User
+    relationship = 'repositories'
 
 class UserRatingsList(SubListAPIView):
     model = RoleRating
@@ -845,6 +860,11 @@ class RemoveRole(APIView):
             })
             for notification in role.notifications.all():
                 notification.delete()
+                
+        # Update the repository cache
+        for repo in Repository.objects.filter(github_user=gh_user,github_repo=gh_repo):
+            repo.is_enabled = False
+            repo.save()
 
         Role.objects.filter(github_user=gh_user,github_repo=gh_repo).delete()
         ImportTask.objects.filter(github_user=gh_user,github_repo=gh_repo).delete()
@@ -854,16 +874,30 @@ class RemoveRole(APIView):
     def put(self, request, *args, **kwargs):
         return self.delete(request, args, kwargs)
 
-class GithubRepoList(APIView):
+class UserReposList(ListAPIView):
+    model = Repository
+    serializer_class = RepositorySerializer
+
+    def get_queryset(self):
+        qs = super(UserReposList, self).get_queryset()
+        qs.select_related('owner')
+        return qs
+
+class UserReposDetail(RetrieveAPIView):
+    model = Repository
+    serializer_class = RepositorySerializer
+
+
+class RefreshUserRepos(APIView):
     '''
-    Return a list of GitHub repos the user has access to.
+    Return user GitHub repos directly from GitHub. Use to refresh cache for the authenticated user.
     '''
 
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
-        # Verify via GitHub API that user has access to requested role
+        # Return a the list of user's repositories diretly from GitHub
         try:
             token = SocialToken.objects.get(account__user=request.user, account__provider='github')
         except:
@@ -891,13 +925,18 @@ class GithubRepoList(APIView):
                 name = r.full_name.split('/')
                 cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
                 response['results'].append({
-                    'name': r.full_name,
-                    'active': cnt > 0
+                    'github_user': name[0],
+                    'github_repo': name[1],
+                    'is_enabled': cnt > 0
                 })
             except:
-                pass    
-
+                pass
+        
+        # update the database    
+        manage_user_repos.delay(request.user)
+        
         return Response(response, status=status.HTTP_200_OK)
+
 
 class TokenView(APIView):
     '''

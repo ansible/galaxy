@@ -13,7 +13,14 @@
 
     function _factory($resource) {
 
-        return $resource('/api/v1/repolist');
+        return {
+            get: function(params) {
+                return $resource('/api/v1/repos/list/?page_size=1000').get(params);
+            },
+            refresh: function(params) {
+                return $resource('/api/v1/repos/refresh/').get(params);
+            }
+        }
     }
 
 

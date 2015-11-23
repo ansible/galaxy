@@ -1,3 +1,20 @@
+# (c) 2012-2014, Ansible, Inc. <support@ansible.com>
+#
+# This file is part of Ansible Galaxy
+#
+# Ansible Galaxy is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible Galaxy is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+
 from django.conf import settings
 from django.dispatch import receiver
 from django.db.models.signals import m2m_changed, pre_save, pre_delete, post_save, post_delete
@@ -8,13 +25,24 @@ from elasticsearch_dsl import Search, Q
 
 # allauth
 from allauth.account.signals import user_logged_in
+from allauth.socialaccount.models import SocialToken
+
+# github
+from github import Github, AuthenticatedUser
 
 # local
-from galaxy.main.models import Role, RoleRating, Tag, ImportTask
+from galaxy.main.models import Role, RoleRating, Tag, ImportTask, Repository
 from galaxy.main.search_models import TagDoc, PlatformDoc
 from galaxy.main.celerytasks.elastic_tasks import update_tags, update_platforms, update_users
+from galaxy.main.celerytasks.tasks import manage_user_repos
 
 User = get_user_model()
+
+
+@receiver(user_logged_in)
+def user_logged_in_handler(request, user, **kwargs):
+    manage_user_repos.delay(user)
+
 
 @receiver(post_save, sender=RoleRating)
 @receiver(post_delete, sender=RoleRating)
@@ -29,6 +57,17 @@ def rolerating_post_save_handler(sender, **kwargs):
     role.average_score = total_score / cnt if cnt > 0 else 0.0
     role.num_ratings = cnt
     role.save()
+
+@receiver(post_save, sender=ImportTask)
+def import_task_post_save(sender, **kwargs):
+    ''' 
+    Update user repository cache
+    '''
+    instance = kwargs['instance']
+    for repo in Repository.objects.filter(github_user=instance.github_user,github_repo=instance.github_repo):
+        print "Updating repository %d" % repo.id
+        repo.is_enabled = True
+        repo.save()
 
 
 @receiver(pre_save, sender=Role)

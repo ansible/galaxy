@@ -13,8 +13,9 @@
       'ngRoute',
       'ngSanitize',
       'ngCookies',
+      'ngResource',
+      'ngAnimate',
       'ui.bootstrap',
-      'meService',
       'galaxyUtilities',
       'roleAddController',
       'githubRepoService',
@@ -24,9 +25,9 @@
       'roleRemoveSerivice'
     ]);
 
-    accountsApp.config(['$routeProvider','MyInfoProvider', '$logProvider', '$resourceProvider', _config]);
+    accountsApp.config(['$routeProvider','$logProvider', '$resourceProvider', _config]);
 
-    function _config($routeProvider, MyInfoProvider, $logProvider, $resourceProvider) {
+    function _config($routeProvider, $logProvider, $resourceProvider) {
         var debug = (GLOBAL_DEBUG === 'on') ? true : false;
         $logProvider.debugEnabled(debug);
         $resourceProvider.defaults.stripTrailingSlashes = false;
@@ -34,10 +35,19 @@
             when('/', {
                 templateUrl: '/static/partials/role-add.html',
                 controller: 'RoleAddCtrl',
+                resolve: {
+                    repositories: ['githubRepoService', _getRepositories]
+                }
             }).
             otherwise({
                 redirectTo: '/'
             });
+    }
+
+    function _getRepositories(githubRepoService) {
+        return githubRepoService.get().$promise.then(function(response) {
+            return response.results;
+        });
     }
 
 })(angular);
