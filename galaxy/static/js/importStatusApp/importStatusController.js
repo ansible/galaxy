@@ -125,8 +125,14 @@
         function _showDetail(_import_id) {
             importService.import.get({ import_id: _import_id }).$promise.then(function(data) {
                 $scope.import_detail = data;
-                
-                if ($scope.import_detail.finished) {
+
+                if ($scope.import_detail.state == 'PENDING') {
+                     $scope.import_detail['last_run'] = "Waiting to start...";
+                }
+                else if ($scope.import_detail.state == 'RUNNING') {
+                    $scope.import_detail['last_run'] = "Running...";
+                }
+                else if ($scope.import_detail.finished) {
                     var now = new Date();
                     var finished = new Date($scope.import_detail.finished);
 
@@ -143,12 +149,13 @@
                     } else if (minutes) {
                         when = 'Finished about ' + minutes + ' minutes' + ((minutes > 1) ? 's' : '') + ' ago';
                     } else {
-                        when = seconds + ' second' + ((seconds > 1) ? 's' : '') + ' ago';
+                        when = 'Finished about ' + seconds + ' second' + ((seconds > 1) ? 's' : '') + ' ago';
                     }
                     $scope.import_detail['last_run'] = when;
                 } else {
-                    $scope.import_detail['last_run'] = "waiting to start..."
+                  $scope.import_detail['last_run'] = ''; 
                 }
+
                 $scope.loading = false;
                 _getRole($scope.import_detail.role);
             });
