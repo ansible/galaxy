@@ -22,7 +22,8 @@
       'currentUserService',
       'toggle-switch',
       'importService',
-      'roleRemoveSerivice'
+      'roleRemoveSerivice',
+      'notificationSecretService'
     ]);
 
     accountsApp.config(['$routeProvider','$logProvider', '$resourceProvider', _config]);

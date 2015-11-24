@@ -497,6 +497,20 @@ class RepositorySerializer(BaseSerializer):
         ))
         return res
 
+    def get_summary_fields(self, obj):
+        if obj is None:
+            return {}
+        d = super(RepositorySerializer, self).get_summary_fields(obj)
+        d['notification_secrets'] = [
+            OrderedDict([
+                ('id',s.id),
+                ('github_user',s.github_user),
+                ('github_repo',s.github_repo),
+                ('source',s.source),
+                ('secret','******' + s.secret[-4:]),
+            ]) for s in NotificationSecret.objects.filter(github_user=obj.github_user,github_repo=obj.github_repo)]
+        return d
+
 
 class NotificationSecretSerializer(BaseSerializer):
     secret     = serializers.SerializerMethodField()

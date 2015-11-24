@@ -250,6 +250,7 @@ def role_add_view(request, category=None, page=1):
             '/static/js/roleAddApp/roleAddController.js',
             '/static/js/roleAddApp/roleRemoveService.js',
             '/static/js/detailApp/menuController.js',
+            '/static/js/roleAddApp/notificationSecretService.js',
         ] + common_services
     else:
         context["extra_js"] = [

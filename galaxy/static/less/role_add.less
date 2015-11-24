@@ -107,44 +107,31 @@
                 margin-top: 10px;
                 border-radius: 2px; 
                 border: 1px solid #ccc;
-                background-color: #eee;
+                background-color: #e1e1e1;
                 color: @ansible-dark-grey;
-                input,
-                .form-button {
-                    width: 90%
-                }
                 .input-container {
-                    position: relatavie;
-                }
-                .reveal-link {
-                    position: absolute;
-                    top: 6px;
-                    right: 35px;
+                    position: relative;
+                    input {
+                        padding-right: 30px;
+                    }
                 }
                 .clear-link {
                     position: absolute;
                     top: 6px;
-                    right: 15px;
+                    right: 8px;
                 }
-                .reveal-link:hover,
                 .clear-link:hover {
                     color: @ansible-color;
                 }
                 .form-group:last-of-type {
                     margin-bottom: 0;
+                    .btn {
+                        margin-left: 10px;
+                    }
                 }
-
-                @media (max-width: 825px) {
+                @media (max-width: 925px) {
                     width: 100%;
                     margin-left: 0;
-                }
-                @media (max-width: 468px) {
-                    .reveal-link {
-                        right: 30px;
-                    }
-                    .clear-link {
-                        right: 10px;
-                    }
                 }
             }
 

@@ -47,28 +47,26 @@
                     </div>
                                     
                     <div uib-collapse="!repo.show_integrations" class="integration-container">
-                        <div class="form-horizontal">
+                        <div class="form">
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">GitHub Secret</label>
-                                <div class="col-sm-9 input-container">
+                                <label>Travis Token</label>
+                                <div class="input-container">
+                                    <input type="{{ repo.travis_token_type }}" class="form-control input-sm" name="travis_token" ng-model="repo.travis_token" placeholder="Travis Token" autcomplete="off"/>
+                                    <a href="" class="clear-link" ng-click="clearTravis(repo)" ng-show="repo.travis_token"><i class="fa fa-times"></i></a>
+                                </div>
+                            </div>
+                            <!--div class="form-group">
+                                <label>GitHub Secret</label>
+                                <div class="input-container">
                                     <input type="{{ repo.github_secret_type }}" class="form-control input-sm" name="github_secret" ng-model="repo.github_secret" placeholder="GitHub Secret" autcomplete="off"/>
                                     <a href="" class="reveal-link" ng-click="revealGithub(repo)" ng-show="repo.github_secret"><i class="fa fa-eye"></i></a>
                                     <a href="" class="clear-link" ng-click="clearGithub(repo)" ng-show="repo.github_secret"><i class="fa fa-times"></i></a>
                                 </div>
-                            </div>
+                            </div-->
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">Travis Token</label>
-                                <div class="col-sm-9 input-container">
-                                    <input type="{{ repo.travis_token_type }}" class="form-control input-sm" name="travis_token" ng-model="repo.travis_token" placeholder="Travis Token" autcomplete="off"/>
-                                    <a href="" class="reveal-link" ng-click="revealTravis(repo)" ng-show="repo.travis_token"><i class="fa fa-eye"></i></a>
-                                    <a href="" class="clear-link" ng-click="clearTravis(repo)" ng-show="repo.travis_token"><i class="fa fa-times"></i></a>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-3 col-sm-9">
-                                    <div class="form-button text-right">
-                                        <a href="" ng-click="applyIntegrations(repo)" class="btn btn-sm btn-primary"><i class="fa fa-check"></i> Save</a>
-                                    </div>
+                                <div class="form-button text-right">
+                                    <a href="" ng-click="updateSecrets(repo)" class="btn btn-sm btn-primary"><i class="fa fa-check"></i> Save</a>
+                                    <a href="" ng-click="cancelIntegrations(repo)" class="btn btn-sm btn-default"><i class="fa fa-times"></i> Cancel</a>
                                 </div>
                             </div>
                         </div>

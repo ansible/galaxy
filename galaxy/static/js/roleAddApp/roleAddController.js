@@ -15,22 +15,26 @@
     mod.controller('RoleAddCtrl', [
         '$scope',
         '$interval',
+        '$timeout',
         'githubRepoService',
         'currentUserService',
         'importService',
         'roleRemoveService',
         'repositories',
+        'notificationSecretService',
         _controller
     ]);
 
     function _controller(
         $scope,
         $interval,
+        $timeout,
         githubRepoService,
         currentUserService,
         importService,
         roleRemoveService,
-        repositories) {
+        repositories,
+        notificationSecretService) {
 
         $scope.repositories = repositories;
         $scope.username = currentUserService.username;
@@ -38,10 +42,12 @@
         $scope.refreshing = false;
         $scope.refreshRepos = _refresh;
         $scope.showIntegrations = _showIntegrations;
+        $scope.cancelIntegrations = _cancelIntegrations;
         $scope.revealGithub = _revealGithub;
         $scope.revealTravis = _revealTravis;
         $scope.clearTravis = _clearTravis;
         $scope.clearGithub = _clearGithub;
+        $scope.updateSecrets = _updateSecrets;
         
         _setup();
         
@@ -51,6 +57,16 @@
             $scope.repositories.forEach(function(repo) {
                 repo.github_secret_type = "password";
                 repo.travis_token_type = "password";
+                repo.summary_fields.notification_secrets.forEach(function(secret) {
+                    if (secret.source == 'travis') {
+                        repo.travis_id = secret.id;
+                        repo.travis_token = secret.secret;
+                    } else {
+                        repo.github_id = secret.id;
+                        repo.github_secret = secret.secret;
+                    }
+                });
+                console.log(repo);
             });
         }
 
@@ -58,6 +74,24 @@
             _repo.show_integrations = !_repo.show_integrations; 
             _repo.github_secret_type = "password";
             _repo.travis_token_type = "password";
+            if (_repo.show_integrations) {
+                // reveal the form. keep a copy in case user clicks cancel.
+                console.log('set master');
+                $scope.master = {
+                    travis_id: _repo.travis_id,
+                    travis_token: _repo.travis_token,
+                    github_id: _repo.github_id,
+                    github_secret: _repo.github_secret
+                };
+            }
+        }
+
+        function _cancelIntegrations(_repo) {
+            _repo.travis_id = $scope.master.travis_id;
+            _repo.travis_token = $scope.master.travis_token;
+            _repo.github_id = $scope.master.github_id;
+            _repo.github_secret = $scope.github_secret;
+            _repo.show_integrations = !_repo.show_integrations; 
         }
 
         function _revealGithub(_repo) {
@@ -74,6 +108,55 @@
 
         function _clearGithub(_repo) {
             _repo.github_secret = null;
+        }
+
+        function _updateSecrets(_repo) {
+            // deleted secretn
+            if (_repo.travis_id && !_repo.travis_token) {
+                notificationSecretService.delete({id: _repo.travis_id}).$promise.then(function(repsonse) {
+                    _repo.travis_id = null;
+                    _repo.show_integrations = false;
+                    $timeout(function() {
+                        $scope.$apply();
+                    },300);
+                });
+            }
+            /*if (_repo.github_id && !_repo.github_secret) {
+                _repo.github_id = null;
+                notificationSecretService.delete({id: _repo.github_id});
+            }*/
+            // modified secret
+            if (_repo.travis_id && _repo.travis_token && !/^\*{6}/.test(_repo.travis_token)) {
+                notificationSecretService.put({
+                    id: _repo.travis_id,
+                    source: 'travis',
+                    github_user: _repo.github_user,
+                    github_repo: _repo.github_repo,
+                    secret: _repo.travis_token
+                }).$promise.then(function(response) {
+                    _repo.travis_token = response.secret;
+                    _repo.show_integrations = true;
+                    $timeout(function() {
+                        $scope.$apply();
+                    },300);
+                });
+            }
+            // new secret
+            if (!_repo.travis_id && _repo.travis_token && !/^\*{6}/.test(_repo.travis_token)) {
+                notificationSecretService.save({
+                    source: 'travis',
+                    github_user: _repo.github_user,
+                    github_repo: _repo.github_repo,
+                    secret: _repo.travis_token
+                }).$promise.then(function(response) {
+                    _repo.travis_id = response.id;
+                    _repo.travis_token = response.secret;
+                    _repo.show_integrations = false;
+                    $timeout(function() {
+                        $scope.$apply();
+                    },300);
+                });
+            }
         }
         
         function _refresh() {
