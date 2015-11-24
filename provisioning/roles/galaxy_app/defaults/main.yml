@@ -8,11 +8,12 @@ galaxy_site_name: "galaxy.local"
 galaxy_site_aliases: []
 galaxy_make_sdist: True
 galaxy_send_email: False
-galaxy_configure_supervisor: False
-galaxy_official_build: no
+galaxy_official_build: False
 galaxy_install_dev_tools: True
 galaxy_install_postgresql: True
-galaxy_install_selinux: False 
+galaxy_install_selinux: False
+galaxy_configure_iptables: False
+galaxy_configure_supervisor: False
 galaxy_migrations: True
 
 # Outbound SMTP settings

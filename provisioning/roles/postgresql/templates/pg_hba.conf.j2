@@ -14,8 +14,8 @@ host    all         all         ::1/128               md5
 host    replication replicator  {{ host }}/32       md5
 {% endif %}
 {% endfor %}
-{% endif %}
 {% for host in groups['web'] %}
 host    all         all         {{ host }}/32      md5
 {% endfor %}
+{% endif %}
 host    all         all         ::1/128               md5

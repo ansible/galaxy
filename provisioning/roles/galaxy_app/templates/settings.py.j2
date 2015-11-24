@@ -11,7 +11,7 @@ ADMINS = (
 )
 
 SITE_ENV="{{ galaxy_site_env }}"
-SITE_NAME="{{ inventory_hostname }}"
+SITE_NAME="localhost"
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SEND_EMAIL={{ galaxy_send_email }}
 
@@ -45,7 +45,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 # Settings for django-allauth
 ACCOUNT_ADAPTER = 'galaxy.main.auth.AccountAdapter'
 ACCOUNT_AUTHENTICATION_METHOD="username_email"
-ACCOUNT_DEFAULT_HTTP_PROTOCOL="https"
+ACCOUNT_DEFAULT_HTTP_PROTOCOL="http"
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL="/accounts/profile/"
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL="/accounts/landing"
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS=1
@@ -105,7 +105,7 @@ ELASTICSEARCH = {
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': ['{{ galaxy_es_transport }}://{{ galaxy_es_host }}:{{ galaxy_es_port }}']
+        'URL': ['{{ galaxy_es_transport }}://{{ galaxy_es_host }}:{{ galaxy_es_port }}'],
         'INDEX_NAME': 'haystack',
     },
 }
