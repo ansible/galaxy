@@ -140,8 +140,8 @@
         .result {
             display: inline-block;
             vertical-align: top;
-            width: 260px;
-            height: 260px;
+            width: 350px;
+            height: 220px;
             padding: 10px;
             border: 1px solid #ccc; 
             border-radius: 2px;
@@ -154,14 +154,14 @@
             box-shadow:         2px 2px 3px 0 #ccc;
         
             .header {
-                position: relative;
                 .title {
-                    font-weight: bold;
+                    font-size: 14px;
+                    color: @blue;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 .score-container {
-                    display: inline-block;
-                    position: relative; 
-                    float: right; 
                     label {
                         font-size: 10px;
                         font-weight: normal;
@@ -174,33 +174,56 @@
                         background-color: @ansible-dark-grey;
                     }
                 }
-                hr {
-                    margin-top: 10px;
-                    margin-bottom: 10px;
-                    border-color: #e1e1e1;
-                } 
             }
+
+            hr {
+                margin-top: 10px;
+                margin-bottom: 5px;
+                border-color: #e1e1e1;
+            } 
             
             .body {
                 .description {
-                    height: 35px;
-                    overflow-y: hidden;
+                    height: 40px;
+                    overflow: hidden;
                 }
-                .description, .result-group {
-                    height: auto;
-                    max-height: 40px;
-                    margin-bottom: 10px;
-                }
-                .authors {
-                    height: 20px;
-                }
+                .stats-table {
+                    .key,.value {
+                        padding: 3px 0 3px 5px;
+                    }
+                    .key {
+                        width: 100px;
+                        background-color: #e1e1e1;
+                        color: @ansible-dark-grey;
+                    }
+                    .value {
+                        display: block;
+                        width: 230px;
+                        background-color: #eee;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                }              
                 .result-label {
                     color: @ansible-color;
                     padding-right: 6px;
                     font-weight: bold;
                 }
-                .platforms, .tags {
-                    color: #848992;
+            }
+            .footer {
+                margin-top: 10px;
+                .img-container {
+                    display: inline-block;
+                }
+                .counts {
+                    color: @ansible-dark-grey;
+                    display: inline-block;
+                    float: right;
+                    font-size: 12px;
+                    span {
+                        padding-left: 10px;
+                    }
                 }
             }
         }
