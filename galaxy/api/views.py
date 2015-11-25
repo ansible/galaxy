@@ -924,11 +924,21 @@ class RefreshUserRepos(APIView):
                 meta = r.get_file_contents("meta/main.yml")
                 name = r.full_name.split('/')
                 cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
-                response['results'].append({
+                r = {
                     'github_user': name[0],
                     'github_repo': name[1],
-                    'is_enabled': cnt > 0
-                })
+                    'is_enabled': cnt > 0,
+                    'summary_fields': {
+                        'notification_secrets': [{
+                            'id': g.id,
+                            'github_user': g.github_user,
+                            'github_repo': g.github_repo,
+                            'source': g.source,
+                            'secret': '******' + s.secret[-4:]
+                        } for g in NotificationSecret.objects.filter(github_user=name[0],github_repo=name[1])]
+                    }
+                }
+                response['results'].append(r)
             except:
                 pass
         

@@ -57,15 +57,17 @@
             $scope.repositories.forEach(function(repo) {
                 repo.github_secret_type = "password";
                 repo.travis_token_type = "password";
-                repo.summary_fields.notification_secrets.forEach(function(secret) {
-                    if (secret.source == 'travis') {
-                        repo.travis_id = secret.id;
-                        repo.travis_token = secret.secret;
-                    } else {
-                        repo.github_id = secret.id;
-                        repo.github_secret = secret.secret;
-                    }
-                });
+                if (repo.summary_fields) {
+                    repo.summary_fields.notification_secrets.forEach(function(secret) {
+                        if (secret.source == 'travis') {
+                            repo.travis_id = secret.id;
+                            repo.travis_token = secret.secret;
+                        } else {
+                            repo.github_id = secret.id;
+                            repo.github_secret = secret.secret;
+                        }
+                    });
+                }
                 console.log(repo);
             });
         }
@@ -165,6 +167,9 @@
                 $scope.repositories = response.results;
                 _setup();
                 $scope.refreshing = false;
+                $timeout(function() {
+                    $scope.$apply();
+                },300);
             });
         }
 
@@ -194,7 +199,6 @@
 
         function _checkStatus(response) {
             var stop = $interval(function(_id) {
-                console.log('looking for id: ' + _id);
                 importService.imports.query({ id: _id}).$promise.then(function(response) {
                     $scope.repositories.every(function(repo) {
                         if (repo.github_user == response.results[0].github_user && 

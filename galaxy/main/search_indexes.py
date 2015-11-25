@@ -15,7 +15,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     num_ratings = indexes.IntegerField(model_attr='num_ratings')
     created = indexes.DateTimeField(model_attr='created', default='')
     modified = indexes.DateTimeField(model_attr='modified', default='')
-    imported = indexes.DateTimeField(model_attr='imported', default='')
+    imported = indexes.DateTimeField(model_attr='imported', default=None)
     sort_name = indexes.CharField(default='')
     github_user = indexes.CharField(model_attr='github_user')
     github_repo = indexes.CharField(model_attr='github_repo')
