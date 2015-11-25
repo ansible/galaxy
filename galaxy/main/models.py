@@ -325,6 +325,10 @@ class Role(CommonModelNameNotUnique):
         default      = '',
         verbose_name = "Travis Build Status"
     )
+    imported         = models.DateTimeField(
+        null         = True,
+        verbose_name = "Last Import"
+    )
 
     # GitHub repo attributes
     stargazers_count = models.IntegerField(

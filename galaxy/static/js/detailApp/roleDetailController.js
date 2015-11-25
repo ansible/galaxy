@@ -22,7 +22,6 @@
         'roleFactory',
         'userFactory',
         'ratingFactory',
-        'meFactory',
         'relatedFactory',
         'my_info',
         'Stars',
@@ -53,7 +52,6 @@
         roleFactory,
         userFactory,
         ratingFactory,
-        meFactory,
         relatedFactory,
         my_info,
         Stars,
@@ -66,6 +64,8 @@
         $scope.page_title = 'Role Detail';
         $scope.showRoleName = false;
         $scope.my_info = my_info;
+
+        console.log(my_info);
 
         $scope.list_data = {
             'ratings' : {
@@ -80,7 +80,7 @@
             }
         };
 
-        headerService.setTitle('Galaxy - ' + role.summary_fields.owner.username + '.' + role.name);  // update the page title element
+        headerService.setTitle('Galaxy - ' + role.namespace + '.' + role.name);  // update the page title element
 
         $scope.role = role;
         $scope.ratings = [];

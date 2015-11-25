@@ -46,9 +46,11 @@
             width: 50%;
         }
     }
-
+    .score, .ratings-count {
+        display: inline-block;
+    }
     .score {
-        text-align: center;
+        margin-right: 30px;
         .fld-label {
             font-size: 12px;
             padding-left: 5px;
@@ -62,6 +64,18 @@
         }
         .score-value-na {
             color: @grey;
+        }
+    }
+
+    .ratings-count {
+        .title {
+            display: inline-block;
+            font-size: 24px;
+            padding-right: 20px;
+        }
+        .title-link {
+            display: inline-block;
+            font-size: 14px;
         }
     }
 

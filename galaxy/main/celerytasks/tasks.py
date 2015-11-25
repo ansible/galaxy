@@ -414,6 +414,7 @@ def import_role(task_id):
         import_task.finished = datetime.datetime.now()
         import_task.save()
         if import_state == "SUCCESS":
+            role.imported = datetime.datetime.now()   
             role.is_valid = True
             role.save()
         transaction.commit()
@@ -432,6 +433,12 @@ def manage_user_repos(user):
         token = SocialToken.objects.get(account__user=user, account__provider='github')
         gh_api = Github(token.token)
         ghu = gh_api.get_user()
+
+        user.github_avatar = ghu.avatar_url
+        user.github_user = ghu.login
+        user.save()
+
+        # update user repos
         repo_names = []
         for r in ghu.get_repos():
             try:

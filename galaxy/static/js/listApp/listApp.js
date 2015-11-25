@@ -16,7 +16,6 @@
         'ngSanitize',
         'ngCookies',
         'ui.bootstrap',
-        'meService',
         'tagService',
         'ratingService',
         'roleService',
@@ -49,18 +48,12 @@
             when('/roles', {
                 templateUrl: '/static/partials/role-list.html',
                 controller: 'RoleListCtrl',
-                reloadOnSearch: false,
-                resolve: {
-                    my_info: ['$q', 'meFactory', _getMyInfo]
-                }
+                reloadOnSearch: false
             }).
             when('/users', {
                 templateUrl: '/static/partials/user-list.html',
                 controller: 'UserListCtrl',
-                reloadOnSearch: false,
-                resolve: {
-                    my_info: ['$q', 'meFactory', _getMyInfo]
-                }
+                reloadOnSearch: false
             }).
             otherwise({
                 redirectTo: '/roles'
@@ -86,19 +79,6 @@
                 $('#nav-menu-browse-users').addClass('active');    
             }
         }
-    }
-
-    function _getMyInfo($q, meFactory) {
-        var d = $q.defer();
-        meFactory.fetchMyInfo()
-            .success(function(data) {
-                meFactory.saveInfo(data);
-                d.resolve(data);
-                })
-            .error(function(err) {
-                d.reject(err);
-                });
-        return d.promise;
     }
 
 })(angular);

@@ -18,13 +18,13 @@
 
         function _factory() {
             return {
-                "id": "{{ user.id }}", 
-                "authenticated": "{{ user.is_authenticated }}", 
-                "staff": "{{ user.is_staff }}", 
+                "id": ("{{ user.id }}" == "None") ? null : parseInt("{{ user.id }}"), 
+                "authenticated": ("{{ user.is_authenticated }}" == "True") ? true : false, 
+                "staff": ("{{ user.is_staff }}" == "True") ? true : false, 
                 "username": "{{ user.username }}", 
-                "created": "{{ user.date_joined }}", 
-                "modified": "{{ user.last_login }}", 
-                "active": "{{ user.is_active }}"
+                "created": ("{{ user.date_joined }}" == "") ? null : "{{ user.date_joined }}", 
+                "modified": ("{{ user.last_login }}" == "") ? null : "{{ user.last_login }}", 
+                "active": ("{{ user.is_active }}" == "True") ? true : false
             }
         }
     })(angular);

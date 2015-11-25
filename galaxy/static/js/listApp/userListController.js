@@ -18,7 +18,6 @@
         '$routeParams',
         'userFactory',
         'queryStorageFactory',
-        'my_info',
         'SearchInit',
         'PaginateInit',
         'Stars',
@@ -34,7 +33,6 @@
         $routeParams,
         userFactory,
         storageFactory,
-        my_info,
         SearchInit,
         PaginateInit,
         Stars,
@@ -48,8 +46,7 @@
         $('#bs-example-navbar-collapse-1').removeClass('in');  //force collapse of mobile navbar
 
         $scope.page_title = 'Browse Users';
-        $scope.my_info = my_info;
-
+        
         $scope.list_data = {
             'list_filter'        : '',
             'num_pages'          : 1,

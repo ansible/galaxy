@@ -2,7 +2,7 @@
 
 <div class="container" id="galaxy-role-detail">
 
-    <div class="row" style="margin-bottom: 20px;" ng-show="my_info.staff">
+    <div class="row" ng-show="my_info.staff">
         <div class="col-lg-12">
             <div class="text-right">
                 <a class="btn btn-danger btn-sm" href ng-click="staffDeleteRole(role.id)"><i class="fa fa-trash-o"></i> Delete Role</a>
@@ -15,13 +15,13 @@
             <h2 class="rolename">{{role.name}}</h2>
             <div class="description">{{role.description}}</div>
         </div>
-        <div class="col-xs-6 text-right">
+        <!--div class="col-xs-6 text-right">
             <div class="user-info">
                 <a href="/detail#/user/{{role.summary_fields.owner.id}}"><img ng-src="{{ role.summary_fields.owner.avatar_url }}" /></a>
-                <p class="username"><a href="/detail#/user/{{role.summary_fields.owner.id}}">{{role.summary_fields.owner.username}}</a><br \>
-                    <span ng-show="role.summary_fields.owner.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span></p>
+                <p class="username"><a href="/detail#/user/{{role.summary_fields.owner.id}}">{{role.namespace}}</a><br \>
+                    <span ng-show="my_info.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span></p>
             </div>
-        </div>
+        </div-->
     </div>
 
     <div class="row">
@@ -29,21 +29,17 @@
             <div class="documentation">
                 <tabset type="pills">
                     <tab heading="Details">
-                        <div class="row rating-section">
-                            <div class="col-lg-3 col-md-6 col-sm-6">
-                                <div class="score" ng-class="{ 'add-margin': my_info.authenticated }">
-                                   <span ng-show="role.average_score == '0.0'" class="score-value-na">NA</span>
-                                   <span ng-show="role.average_score != '0.0'" class="score-value">{{ role.average_score }}</span>
-                                   <span class="fld-label">Score</span>
-                                </div>
+                        <div class="rating-section">
+                            <div class="score">
+                               <span ng-show="role.average_score == '0.0'" class="score-value-na">NA</span>
+                               <span ng-show="role.average_score != '0.0'" class="score-value">{{ role.average_score }}</span>
+                               <span class="fld-label">Score</span>
                             </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6">
-                                <div class="ratings-count">
-                                    <h3>Ratings: <span ng-class="{ 'count-grey': role.num_ratings == 0, 'count-blue': role.num_ratings }">{{ role.num_ratings }}</span></h3>
-                                    <p ng-show="my_info.authenticated">
-                                        <a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings == 0">Be the first to rate this role.</a>
-                                        <a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings">Rate this role.</a>
-                                    </p>
+                            <div class="ratings-count">
+                                <div class="title">Ratings: {{ role.num_ratings }}</div>
+                                <div class="title-link" ng-show="my_info.authenticated">
+                                    <a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings == 0">Be the first to rate this role.</a>
+                                    <a href="" ng-click="showRatingDialog()" ng-show="role.num_ratings">Rate this role.</a>
                                 </div>
                             </div>
                         </div>
@@ -68,7 +64,7 @@
                             <div class="col-lg-6">
                                 <div class="installation">
                                     <h3>Installation</h3>
-                                    <code>$ ansible-galaxy install {{role.summary_fields.owner.username}}.{{role.name}}</code>
+                                    <code>$ ansible-galaxy install {{role.namespace}}.{{role.name}}</code>
                                 </div>
                             </div>
                         </div>
@@ -84,7 +80,7 @@
 
                         <div class="row">
                             <div class="col-lg-6 col-md-6" ng-if="role.summary_fields.versions">
-                                <div class="versions" ng-show="role.summary_fields.versions.length > 0">
+                                <div class="versions">
                                     <table class="table ga-table-striped">
                                         <caption>Version History</caption>
                                         <thead>
@@ -101,13 +97,16 @@
                                                 <td>{{ version.name }}</td>
                                                 <td>{{ version.release_date | date:"short" }}</td>
                                             </tr>
+                                            <tr ng-show="!role.summary_fields.versions.length">
+                                                <td colspan="2">No version history available.</td>
+                                            </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6">
-                                <div class="platforms" ng-show="role.summary_fields.platforms && role.summary_fields.platforms.length > 0">
+                                <div class="platforms">
                                     <table class="table ga-table-striped">
                                         <caption>Supported Platforms</caption>
                                         <thead>
@@ -124,6 +123,9 @@
                                                 <td>{{ platform.name }}</td>
                                                 <td>{{ platform.release }}</td>
                                             </tr>
+                                            <tr ng-show="!role.summary_fields.platforms.length">
+                                                <td colspan="2">No platform information available.</td>
+                                            </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -133,7 +135,7 @@
 
                         <div class="row">
                             <div class="col-lg-6 col-md-6">
-                                <div class="dependencies" ng-show="role.summary_fields.dependencies.length > 0">
+                                <div class="dependencies">
                                     <table class="table ga-table-striped">
                                         <caption>Dependencies</caption>
                                         <thead>
@@ -147,6 +149,9 @@
                                             <tbody>
                                             <tr ng-repeat="dependency in role.summary_fields.dependencies">
                                                 <td><a href="/detail#/role/{{ dependency.id }}">{{ dependency.name }}</a></td>
+                                            </tr>
+                                            <tr ng-show="!role.summary_fields.dependencies.length">
+                                                <td colspan="2">No dependencies.</td>
                                             </tr>
                                             </tbody>
                                         </table>

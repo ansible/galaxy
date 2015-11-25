@@ -88,8 +88,8 @@
                 'github_repo': _github_repo,
                 'github_reference': _github_branch
             }).$promise.then(function(data) {
-                console.log('selected_id: ' + $scope.selected_id);
                 $scope.selected_id = data.results[0].id;
+                _getImports();
             });
         }
 

@@ -15,7 +15,7 @@
         'ngSanitize',
         'ngCookies',
         'ui.bootstrap',
-        'meService',
+        'currentUserService',
         'tagService',
         'ratingService',
         'roleService',
@@ -47,7 +47,7 @@
               controller: 'RoleDetailCtrl',
               resolve: {
                   role: ['roleFactory', '$route', _getRole],
-                  my_info: ['$q', 'meFactory', _getMyInfo]
+                  my_info: ['currentUserService', _getMyInfo]
               }
           }).
           when('/user/:user_id', {
@@ -55,7 +55,7 @@
               controller: 'UserDetailCtrl',
               resolve: {
                   user: ['userFactory', '$route', _getUser],
-                  my_info: ['$q', 'meFactory', _getMyInfo]
+                  my_info: ['currentUserService', _getMyInfo]
               }
           }).
           otherwise({
@@ -78,17 +78,8 @@
         }
     }
 
-    function _getMyInfo($q, meFactory) {
-        var d = $q.defer();
-        meFactory.fetchMyInfo()
-            .success(function(data) {
-                meFactory.saveInfo(data);
-                d.resolve(data);
-                })
-            .error(function(err) {
-                d.reject(err);
-                });
-        return d.promise;
+    function _getMyInfo(currentUserService) {
+        return currentUserService;
     }
 
     function _getRole(roleFactory, $route) {

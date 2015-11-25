@@ -43,19 +43,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
         validators=[
             validators.RegexValidator(re.compile('^[\w.@+-]+$'), _('Enter a valid username.'), 'invalid')
         ])
-    full_name = models.CharField(_('full name'), max_length=254, blank=True)
-    short_name = models.CharField(_('short name'), max_length=30, blank=True)
-    email = models.EmailField(_('email address'), max_length=254, unique=True)
-    is_staff = models.BooleanField(_('staff status'), default=False,
-        help_text=_('Designates whether the user can log into this admin '
-                    'site.'))
-    is_active = models.BooleanField(_('active'), default=True, db_index=True,
-        help_text=_('Designates whether this user should be treated as '
-                    'active. Unselect this instead of deleting accounts.'))
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    full_name       = models.CharField(_('full name'), max_length=254, blank=True)
+    short_name      = models.CharField(_('short name'), max_length=30, blank=True)
+    email           = models.EmailField(_('email address'), max_length=254, unique=True)
+    is_staff        = models.BooleanField(_('staff status'), default=False,
+                        help_text=_('Designates whether the user can log into this admin site.'))
+    is_active       = models.BooleanField(_('active'), default=True, db_index=True,
+                        help_text=_('Designates whether this user should be treated as '
+                            'active. Unselect this instead of deleting accounts.'))
+    date_joined     = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    # custom fields
-    karma = models.IntegerField(default = 0, db_index = True)
+    karma           = models.IntegerField(default = 0, db_index = True)
+    github_avatar   = models.CharField(_('github avatar'), max_length=254, blank=True)
+    github_user     = models.CharField(_('github user'), max_length=254, blank=True)
 
     objects = UserManager()
 

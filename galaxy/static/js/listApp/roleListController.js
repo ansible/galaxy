@@ -23,7 +23,6 @@
         'roleFactory',
         'roleSearchService',
         'queryStorageFactory',
-        'my_info',
         'Empty',
         'SearchInit',
         'PaginateInit',
@@ -43,7 +42,6 @@
         roleFactory,
         roleSearchService,
         queryStorageFactory,
-        my_info,
         Empty,
         SearchInit,
         PaginateInit,
@@ -59,8 +57,7 @@
         
         $scope.galaxy_page_title_fluid = true;
         $scope.page_title = 'Browse Roles';
-        $scope.my_info = my_info;
-
+        
         $scope.list_data = {
             'num_pages'          : 1,
             'page'               : 1,

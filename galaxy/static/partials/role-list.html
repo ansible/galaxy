@@ -17,6 +17,7 @@
                     </div>
                     <div id="results-container">
                         <div class="result" ng-repeat="role in roles">
+                            <a ng-href="/detail#/role/{{ role.id }}">
                             <div class="row header">
                                 <div class="title col-xs-8">{{ role.name }}</div>
                                 <div class="score-container text-right col-xs-4">
@@ -58,6 +59,7 @@
                                     <span class="download-count" title="Galaxy Download Count"><i class="fa fa-download"></i> &nbsp;{{ role.download_count || 0}}</span>
                                 </div>
                             </div>
+                            </a>
                         </div><!-- result -->
                         
                         <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
