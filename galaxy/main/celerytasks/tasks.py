@@ -243,6 +243,16 @@ def import_role(task_id):
     role.commit_message = last_commit.message
     role.commit_url = last_commit.html_url
 
+    # Update the import task in the event the role is left in an invalid state.
+    import_task.stargazers_count = repo.stargazers_count
+    import_task.watchers_count = repo.watchers_count
+    import_task.forks_count = repo.forks_count
+    import_task.open_issues_count = repo.open_issues_count 
+
+    import_task.commit = last_commit.sha
+    import_task.commit_message = last_commit.message
+    import_task.commit_url = last_commit.html_url
+    import_task.github_branch = role.github_branch
     
     # Add tags / categories. Remove ':' and only allow alpha-numeric characters
     add_message(import_task, "INFO", "Parsing galaxy_tags")

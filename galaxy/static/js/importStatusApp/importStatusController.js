@@ -34,8 +34,7 @@
         $scope.showDetail = _getDetail;
         $scope.reimportRole = _reimport;
         $scope.checkAddRole = _checkAddRole;
-        $scope.showAddForm = _showAddForm;
-
+        
         var params = $location.search();
         if (Object.keys(params).length > 0) {
             imports.every(function(imp) {
@@ -64,6 +63,11 @@
 
         $($window).resize(lazy_resize);
         _resize();
+
+        $scope.$on('$destroy', function() {
+            console.log('clear!');
+            $interval.clear();
+        });
 
         return;
 
@@ -115,7 +119,7 @@
         }
 
         function _getDetail(_import_id) {
-            if (!$scope.showAddRole) {
+            if (!$scope.loading) {
                 $scope.loading = true;
                 $scope.selected_id = _import_id;
                 _showDetail(_import_id);
@@ -155,15 +159,7 @@
                 } else {
                   $scope.import_detail['last_run'] = ''; 
                 }
-
                 $scope.loading = false;
-                _getRole($scope.import_detail.role);
-            });
-        }
-
-        function _getRole(_role_id) {
-            importService.role.get({ role_id: _role_id}).$promise.then(function(data) {
-                $scope.role = data;
             });
         }
     }

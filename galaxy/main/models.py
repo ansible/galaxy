@@ -551,6 +551,38 @@ class ImportTask(PrimordialModel):
         blank        = True,
     )
 
+    # GitHub repo attributes at time of import
+    stargazers_count = models.IntegerField(
+        default      = 0
+    )
+    watchers_count   = models.IntegerField(
+        default      = 0
+    )
+    forks_count      = models.IntegerField(
+        default      = 0
+    )
+    open_issues_count = models.IntegerField(
+        default      = 0
+    )
+    github_branch    = models.CharField(
+        max_length = 256,
+        blank = True,
+        default = '',
+        verbose_name = "Github Branch"
+    )
+    commit           = models.CharField(
+        max_length   = 256,
+        blank        = True
+    )
+    commit_message   = models.CharField(
+        max_length   = 256,
+        blank        = True
+    )
+    commit_url       = models.CharField(
+        max_length   = 256,
+        blank        = True
+    )
+
     def __unicode__(self):
         return "%d-%s" % (self.id,self.started.strftime("%Y%m%d-%H%M%S-%Z"))
 

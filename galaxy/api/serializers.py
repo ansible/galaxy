@@ -608,6 +608,7 @@ class ImportTaskSerializer(BaseSerializer):
             'github_user',
             'github_repo',
             'github_reference',
+            'github_branch',
             'role',
             'owner',
             'alternate_role_name',
@@ -617,7 +618,14 @@ class ImportTaskSerializer(BaseSerializer):
             'finished',
             'modified',
             'created',
-            'active'
+            'active',
+            'stargazers_count', 
+            'watchers_count',
+            'forks_count',
+            'open_issues_count',
+            'commit',
+            'commit_message',
+            'commit_url',
         )
 
     def to_native(self, obj):
@@ -653,7 +661,9 @@ class ImportTaskSerializer(BaseSerializer):
         d['role'] = OrderedDict([
             ('id',obj.role.id),
             ('namespace',obj.role.namespace),
-            ('name',obj.role.name)
+            ('name',obj.role.name),
+            ('is_valid', obj.role.is_valid),
+            ('active', obj.role.active),
         ])
         
         d['notifications'] = [OrderedDict([
@@ -689,15 +699,28 @@ class ImportTaskLatestSerializer(BaseSerializer):
             return {}
         d = super(ImportTaskLatestSerializer, self).get_summary_fields(obj)
         g = ImportTask.objects.get(id=obj['last_id'])
+        r = Role.objects.get(id=g.role.id)
         d['details'] = OrderedDict([
             ('id', g.id),
             ('state', g.state),
             ('github_user', g.github_user),
             ('github_repo', g.github_repo),
             ('github_reference', g.github_reference),
+            ('github_branch', g.github_branch),
             ('role', g.role.id),
             ('modified', g.modified),
-            ('created', g.created)
+            ('created', g.created),
+            ('stargazers_count', g.stargazers_count),
+            ('watchers_count', g.watchers_count),
+            ('forks_count', g.forks_count),
+            ('open_issues_count', g.open_issues_count),
+            ('commit', g.commit),
+            ('commit_message', g.commit_message),
+            ('commit_url', g.commit_url)
+        ])
+        d['role'] = OrderedDict([
+            ('id',r.id),
+            ('is_valid', r.is_valid),
         ])
         return d
         

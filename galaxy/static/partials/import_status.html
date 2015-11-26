@@ -46,27 +46,28 @@
                 <div class="import-details-container" ng-show="!loading">
                     <div class="row title-row" ng-show="imports.length">
                         <div class="col-sm-8 title">
-                            <a href="/detail#/role/{{ import_detail.role }}/" class="title-link">{{ import_detail.github_user + '/' + import_detail.github_repo }}</a>
+                            <a href="/detail#/roles/{{ import_detail.role }}/" class="title-link" ng-if="import_detail.summary_fields.role.is_valid">{{ import_detail.github_user + '/' + import_detail.github_repo }}</a>
+                            <span class="title-text" ng-if="!import_detail.summary_fields.role.is_valid">{{ import_detail.github_user + '/' + import_detail.github_repo }}</span>
                         </div>
                         <div class="col-sm-4 text-right">
-                            <a href="" ng-click="reimportRole(role.github_user, role.github_repo, role.github_branch)" class="btn btn-sm btn-default"><i class="fa fa-upload"></i> Re-Import</a>
+                            <a href="" ng-click="reimportRole(import_detail.github_user, import_detail.github_repo, import_detail.github_branch)" class="btn btn-sm btn-default"><i class="fa fa-upload"></i> Re-Import</a>
                             <div class="loading-status"><i class="fa fa-lg fa-refresh" ng-class="{ 'fa-spin': checking }"></i></div>
                         </div>
                     </div>
                     <h3 ng-show="!imports.length" class="no-imports">No imports found</h3>
                     <div class="title-bar">
                         <div class="branch">
-                            <div class="commit">{{ role.github_branch }} <span class="message">{{ role.commit_message }}</span></div>
+                            <div class="commit">{{ import_detail.github_branch }} <span class="message">{{ import_detail.commit_message }}</span></div>
                             <div ng-show="imports.length" class="last-run">{{ import_detail.last_run }}</div>
                         </div>
                         <!-- div class="when">{{ import_notice.when }}</div -->
                         <div class="stats">
                             <div class="count commit">
-                                <a href="{{ role.commit_url }}" target="_blank"><div class="icon"><i class="fa fa-github"></i></div> Commit {{ role.commit.substring(0,7) }}</a>
+                                <a href="{{ import_detail.commit_url }}" target="_blank"><div class="icon"><i class="fa fa-github"></i></div> Commit {{ import_detail.commit.substring(0,7) }}</a>
                             </div>
-                            <div class="count stargazers"><div class="icon"><i class="fa fa-star-o"></i></div> Stars {{ role.stargazers_count }}</div>
-                            <div class="count forks"><div class="icon"><i class="fa fa-code-fork"></i></div> Forks {{ role.forks_count }}</div>
-                            <div class="count watchers"><div class="icon"><i class="fa fa-eye"></i></div> Watchers {{ role.watchers_count }}</div>
+                            <div class="count stargazers"><div class="icon"><i class="fa fa-star-o"></i></div> Stars {{ import_detail.stargazers_count }}</div>
+                            <div class="count forks"><div class="icon"><i class="fa fa-code-fork"></i></div> Forks {{ import_detail.forks_count }}</div>
+                            <div class="count watchers"><div class="icon"><i class="fa fa-eye"></i></div> Watchers {{ import_detail.watchers_count }}</div>
                         </div>
                     </div>
                     <div class="message-list">

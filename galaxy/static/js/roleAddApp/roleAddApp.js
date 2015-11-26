@@ -37,7 +37,7 @@
                 templateUrl: '/static/partials/role-add.html',
                 controller: 'RoleAddCtrl',
                 resolve: {
-                    repositories: ['githubRepoService', _getRepositories]
+                    repositories: ['githubRepoService', 'currentUserService', _getRepositories]
                 }
             }).
             otherwise({
