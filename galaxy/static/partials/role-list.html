@@ -64,11 +64,11 @@
                                     <div class="stargaze">
                                         <a href="" ng-if="!role.user_is_stargazer" ng-click="star(role)"
                                             class="btn btn-default btn-xs">
-                                            <i class="fa fa-star"></i> Star {{ role.stargazers_count }}
+                                            <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Star {{ role.stargazers_count }}
                                         </a>
                                         <a href="" ng-if="role.user_is_stargazer" ng-click="unstar(role)"
                                             class="btn btn-default btn-xs">
-                                            <i class="fa fa-star"></i> Unstar {{ role.stargazers_count }}
+                                            <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Unstar {{ role.stargazers_count }}
                                         </a>
                                     </div>
                                 </div>

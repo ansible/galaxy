@@ -113,6 +113,8 @@
 
         $scope.subscribe = _subscribe;
         $scope.unsubscribe = _unsubscribe;
+        $scope.star = _star;
+        $scope.unstar = _unstar;
 
         PaginateInit({ scope: $scope });
 
@@ -470,6 +472,47 @@
                     _role.subscribing = false;
                     currentUserService.update();
                 });
+            } else {
+                _role.subscribing = false;
+            }
+        }
+
+        function _star(_role) {
+            // Subscribe the user to the role repo
+            _role.starring = true;
+            githubRepoService.star({
+                github_user: _role.github_user,
+                github_repo: _role.github_repo
+            }).$promise.then(function() {
+                _role.stargazers_count++;
+                _role.user_is_stargazer = true;
+                _role.starring = false;
+                currentUserService.update();
+            });
+        }
+
+        function _unstar(_role) {
+            // Find the user's subscription to the role repo and delete it
+            _role.starring = true;
+            var id;
+            currentUserService.starred.every(function(star) {
+                if (star.github_user == _role.github_user && star.github_repo == _role.github_repo) {
+                    id = star.id;
+                    return false;
+                }
+                return true;
+            });
+            if (id) {
+                githubRepoService.unstar({
+                    id: id
+                }).$promise.then(function() {
+                    _role.stargazers_count--;
+                    _role.user_is_stargazer = false;
+                    _role.starring = false;
+                    currentUserService.update();
+                });
+            } else {
+                _role.starring = false;
             }
         }
     }

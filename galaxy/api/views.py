@@ -415,17 +415,18 @@ class StargazerList(ListCreateAPIView):
                 'github_repo': github_repo
             })
 
-        star_count = gh_repo.stargazers_count    #+ 1
+        star_count = gh_repo.stargazers_count + 1
         
         for role in Role.objects.filter(github_user=github_user,github_repo=github_repo):
             role.stargazers_count = star_count
             role.save()
         
         return Response({
-            result: {
+            'result': {
                 'id': new_star.id,
                 'github_user': new_star.github_user,
-                'github_repo': new_star.github_repo
+                'github_repo': new_star.github_repo,
+                'stargazers_count': star_count
             }
         }, status=status.HTTP_201_CREATED)
 
@@ -468,7 +469,7 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
         
         obj.delete()
 
-        star_count = gh_repo.stargazers_count   # - 1 if gh_repo.stargazers_count > 1 else 0
+        star_count = gh_repo.stargazers_count - 1 if gh_repo.stargazers_count > 1 else 0
 
         for role in Role.objects.filter(github_user=obj.github_user,github_repo=obj.github_repo):
             role.stargazers_count = star_count
@@ -541,7 +542,8 @@ class SubscriptionList(ListCreateAPIView):
             'result': {
                 'id': new_sub.id,
                 'github_user': new_sub.github_user,
-                'github_repo': new_sub.github_repo
+                'github_repo': new_sub.github_repo,
+                'watchers_count': sub_count
             }
         }, status=status.HTTP_201_CREATED)
 

@@ -68,12 +68,12 @@ CELERY_IMPORTS=('galaxy.main.celerytasks.tasks',)
 CELERY_TRACK_STARTED=True
 CELERYBEAT_SCHEDULER='djcelery.schedulers.DatabaseScheduler'
 
-# Settings for Github API (pygithub)
-{#
-GITHUB_USERNAME='{{ galaxy_github_api_username }}'
-GITHUB_PASSWORD='{{ galaxy_github_api_password }}'
-#}
-GITHUB_API_TOKEN='{{ galaxy_github_api_token }}'
+GITHUB_TASK_USERS = [
+    { 'username': 'galaxytasks01', 'password': 'u5V4fGwoQz80F0YK' },
+    { 'username': 'galaxytasks02', 'password': 'u5V4fGwoQz80F0YK' },
+    { 'username': 'galaxytasks03', 'password': 'u5V4fGwoQz80F0YK' },
+    { 'username': 'galaxytasks04', 'password': 'u5V4fGwoQz80F0YK' }
+]
 
 # Custom settings
 GALAXY_COMMENTS_THRESHOLD=10.0
