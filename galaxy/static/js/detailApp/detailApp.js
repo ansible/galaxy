@@ -24,7 +24,6 @@
         'userService',
         'relatedService',
         'roleDetailController',
-        'userDetailController',
         'headerController',
         'menuController',
         'headerService',
