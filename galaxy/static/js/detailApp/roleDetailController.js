@@ -20,6 +20,7 @@
         'currentUserService',
         'role',
         'headerService',
+        'githubRepoService',
         _roleDetailCtrl
     ]);
 
@@ -30,11 +31,14 @@
         roleService,
         currentUserService,
         role,
-        headerService) {
+        headerService,
+        githubRepoService) {
 
         $scope.page_title = 'Role Detail';
         $scope.showRoleName = false;
         $scope.my_info = currentUserService;
+        $scope.loadReadMe = _loadReadMe;
+        $scope.readMe = '';
 
         headerService.setTitle('Galaxy - ' + role.namespace + '.' + role.name);  // update the page title element
 
@@ -42,12 +46,105 @@
         $scope.display_user_info = 1;
         $scope.staffDeleteRole = _deleteRole;
 
+        $scope.subscribe = _subscribe;
+        $scope.unsubscribe = _unsubscribe;
+        $scope.star = _star;
+        $scope.unstar = _unstar;
+
         return; 
 
         function _deleteRole(id) {
             roleService.deleteRole(id).$promise.then(function(response) {
                 $location.path('/roles');
             });
+        }
+
+        function _loadReadMe() {
+            if (!$scope.readMe) {
+                $scope.loading = true;
+                roleService.getReadMe($scope.role.role_id).then(function(readme) {
+                    $scope.readMe = readme;
+                    $scope.loading = false;
+                });
+            }
+        }
+
+        function _subscribe() {
+            // Subscribe the user to the role repo
+            role.subscribing = true;
+            githubRepoService.subscribe({
+                github_user: role.github_user,
+                github_repo: role.github_repo
+            }).$promise.then(function() {
+                role.watchers_count++;
+                role.user_is_subscriber = true;
+                role.subscribing = false;
+                currentUserService.update();
+            });
+        }
+
+        function _unsubscribe() {
+            // Find the user's subscription to the role repo and delete it
+            role.subscribing = true;
+            var id;
+            currentUserService.subscriptions.every(function(sub) {
+                if (sub.github_user == role.github_user && sub.github_repo == role.github_repo) {
+                    id = sub.id;
+                    return false;
+                }
+                return true;
+            });
+            if (id) {
+                githubRepoService.unsubscribe({
+                    id: id
+                }).$promise.then(function() {
+                    role.watchers_count--;
+                    role.user_is_subscriber = false;
+                    role.subscribing = false;
+                    currentUserService.update();
+                });
+            } else {
+                role.subscribing = false;
+            }
+        }
+
+        function _star() {
+            // Subscribe the user to the role repo
+            role.starring = true;
+            githubRepoService.star({
+                github_user: role.github_user,
+                github_repo: role.github_repo
+            }).$promise.then(function() {
+                role.stargazers_count++;
+                role.user_is_stargazer = true;
+                role.starring = false;
+                currentUserService.update();
+            });
+        }
+
+        function _unstar() {
+            // Find the user's subscription to the role repo and delete it
+            role.starring = true;
+            var id;
+            currentUserService.starred.every(function(star) {
+                if (star.github_user == role.github_user && star.github_repo == role.github_repo) {
+                    id = star.id;
+                    return false;
+                }
+                return true;
+            });
+            if (id) {
+                githubRepoService.unstar({
+                    id: id
+                }).$promise.then(function() {
+                    role.stargazers_count--;
+                    role.user_is_stargazer = false;
+                    role.starring = false;
+                    currentUserService.update();
+                });
+            } else {
+                role.starring = false;
+            }
         }
     }
 

@@ -37,8 +37,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     user_is_subscriber = indexes.BooleanField(default=False, indexed=False)
     user_is_stargazer = indexes.BooleanField(default=False, indexed=False)
     download_count = indexes.IntegerField(model_attr='download_count')
-    readme_html = indexes.CharField(model_attr='readme',default='',indexed=False)
-
+    
     def get_model(self):
         return Role
 

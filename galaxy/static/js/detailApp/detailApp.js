@@ -22,15 +22,17 @@
         'menuController',
         'headerService',
         'commonDirectives',
-        'galaxyUtilities'
+        'galaxyUtilities',
+        'githubRepoService'
     ]);
 
-    roleApp.config(['$routeProvider', '$logProvider', _config]);
+    roleApp.config(['$routeProvider', '$logProvider', '$resourceProvider', _config]);
     roleApp.run(['$rootScope', '$location', _run]);
 
-    function _config($routeProvider, $logProvider) {
+    function _config($routeProvider, $logProvider, $resourceProvider) {
       var debug = (GLOBAL_DEBUG === 'on') ? true : false;
       $logProvider.debugEnabled(debug);
+      $resourceProvider.defaults.stripTrailingSlashes = false;
       $routeProvider.
           when('/role/:role_id', {
               templateUrl: '/static/partials/role-detail.html',

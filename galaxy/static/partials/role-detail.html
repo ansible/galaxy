@@ -41,20 +41,20 @@
                                 
                                 <a class="btn btn-default btn-md" ng-href="https://github.com/{{role.github_user}}/{{role.github_repo}}" target="_blank"><i class="fa fa-github"></i> Github Repo</a>
                                 
-                                <a href="" ng-if="!role.user_is_subscriber" ng-click="subscribe(role)"
+                                <a href="" ng-if="!role.user_is_subscriber" ng-click="subscribe()"
                                     class="btn btn-default btn-md">
                                     <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Watch &nbsp;{{ role.watchers_count }}
                                 </a>
-                                <a href="" ng-if="role.user_is_subscriber" ng-click="unsubscribe(role)"
+                                <a href="" ng-if="role.user_is_subscriber" ng-click="unsubscribe()"
                                     class="btn btn-default btn-md">
                                     <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Unwatch &nbsp;{{ role.watchers_count }}
                                 </a>
 
-                                <a href="" ng-if="!role.user_is_stargazer" ng-click="star(role)"
+                                <a href="" ng-if="!role.user_is_stargazer" ng-click="star()"
                                         class="btn btn-default btn-md">
                                         <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Star {{ role.stargazers_count }}
                                 </a>
-                                <a href="" ng-if="role.user_is_stargazer" ng-click="unstar(role)"
+                                <a href="" ng-if="role.user_is_stargazer" ng-click="unstar()"
                                     class="btn btn-default btn-md">
                                     <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Unstar {{ role.stargazers_count }}
                                 </a>
@@ -169,8 +169,9 @@
 
                     </uib-tab>
 
-                    <uib-tab heading="README">
-                        <div ng-bind-html="role.readme_html" class="readme"></div>
+                    <uib-tab heading="README" select="loadReadMe()">
+                        <div ng-bind-html="readMe" class="readme"></div>
+                        <ng-include src="'/static/partials/loader.html'"></ng-include>
                     </uib-tab>
                 </uib-tabset>
             </div>

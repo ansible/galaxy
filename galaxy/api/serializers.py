@@ -790,8 +790,7 @@ class RoleSearchSerializer(HaystackSerializer):
     platform_details = serializers.SerializerMethodField()
     user_is_subscriber = serializers.SerializerMethodField()
     user_is_stargazer = serializers.SerializerMethodField()
-    readme_html = serializers.SerializerMethodField()
-
+    
     class Meta:
         index_classes = [RoleIndex]
         fields = (
@@ -825,7 +824,6 @@ class RoleSearchSerializer(HaystackSerializer):
             "user_is_stargazer",
             "user_is_subscriber",
             "download_count",
-            "readme_html",
         )
 
     def to_representation(self, instance):
@@ -882,11 +880,6 @@ class RoleSearchSerializer(HaystackSerializer):
             except:
                 pass
         return False
-
-    def get_readme_html(self, instance):
-        if instance is None:
-            return ''
-        return markdown.markdown(html_decode(instance.readme_html), extensions=['extra'])
 
 class ElasticSearchDSLSerializer(serializers.BaseSerializer):
     def to_representation(self, obj):

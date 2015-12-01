@@ -17,6 +17,7 @@
         return {
             "get": _getRole,
             "delete": _deleteRole,
+            "getReadMe": _getReadMe
         };
 
         function _getRole(params) {
@@ -27,6 +28,11 @@
             return $resource('api/v1/roles/:id/', { 'id': id }, {
                 "delete": { method: 'DELETE', headers: { "X-CSRFToken": token }}
             }).delete();
+        }
+        function _getReadMe(id) {
+            return $resource('/api/v1/roles/:id/', { 'id': id }).get().$promise.then(function(response) {
+                return response.readme_html;
+            });
         }
     }
 
