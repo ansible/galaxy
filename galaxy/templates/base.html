@@ -47,8 +47,6 @@
                 "update": function() {
                     // refresh anything about the user that may change
                     $resource('/api/v1/users/' + userData.id + '/').get().$promise.then(function(response) {
-                        console.log('user data:')
-                        console.log(response);
                         userData.subscriptions = response.summary_fields.subscriptions;
                         userData.starred = response.summary_fields.starred;
                     });

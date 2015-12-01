@@ -196,7 +196,7 @@
 
             if (Object.keys(params).length == 2) {
                 // no parameters
-                params.order = 'id';
+                params.order = 'role_id';
             }
 
             // Update the query string

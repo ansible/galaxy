@@ -234,7 +234,7 @@ def import_role(task_id):
 
     # Update role attributes from repo
     sub_count = 0
-    for sub in role.get_subscribers():
+    for sub in repo.get_subscribers():
         sub_count += 1   # only way to get subscriber count via pygithub
     role.stargazers_count = repo.stargazers_count
     role.watchers_count = sub_count
@@ -450,6 +450,19 @@ def manage_user_repos(user):
     user.github_avatar = ghu.avatar_url
     user.github_user = ghu.login
     user.save()
+    
+    # update user repos
+    user.repositories.all().delete()
+    for r in ghu.get_repos():
+        try:
+            meta = r.get_file_contents("meta/main.yml")
+            name = r.full_name.split('/')
+            cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+            print "count: %s" % cnt
+            enabled = cnt > 0
+            user.repositories.create(github_user=name[0],github_repo=name[1],is_enabled=enabled)
+        except:
+            pass
 
     # Refresh user subscriptions class
     user.subscriptions.all().delete()
@@ -478,17 +491,6 @@ def manage_user_repos(user):
                     'github_user': name[0],
                     'github_repo': name[1]    
                 })
-
-    # update user repos
-    user.repositories.all().delete()
-    for r in ghu.get_repos():
-        try:
-            meta = r.get_file_contents("meta/main.yml")
-            name = r.full_name.split('/')
-            cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
-            user.repositories.create(github_user=name[0],github_repo=name[1])
-        except:
-            pass
 
 @task(name="galaxy.main.celerytasks.tasks.refresh_role_counts")
 def refresh_role_counts(start, end, gh_api):

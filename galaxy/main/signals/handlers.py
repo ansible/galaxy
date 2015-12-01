@@ -55,6 +55,7 @@ def import_task_post_save(sender, **kwargs):
 
 
 @receiver(pre_save, sender=Role)
+@receiver(pre_delete, sender=Role)
 def role_pre_save(sender, **kwargs):
     '''
     Before changes are made to a role grab the list of associated tags. The list will be used on post save 
@@ -70,6 +71,7 @@ def role_pre_save(sender, **kwargs):
 
 
 @receiver(post_save, sender=Role)
+@receiver(post_delete, sender=Role)
 def role_post_save(sender, **kwargs):
     '''
     Signal celery to update the indexes.

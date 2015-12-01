@@ -790,7 +790,7 @@ class RoleSearchSerializer(HaystackSerializer):
     class Meta:
         index_classes = [RoleIndex]
         fields = (
-            "id", 
+            "role_id", 
             "username",
             "name", 
             "description", 

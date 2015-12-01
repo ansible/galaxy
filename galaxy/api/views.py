@@ -453,7 +453,7 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
             gh_repo = gh_api.get_repo(obj.github_user + '/' + obj.github_repo)
         except GithubException as e:
             raise ValidationError({"detail": "GitHub API failed to return repo for %s/%s. %s - %s" %
-                (github_user, github_repo, e.data, e.status)})
+                (obj.github_user, obj.github_repo, e.data, e.status)})
         
         try:
             gh_user = gh_api.get_user()
@@ -464,8 +464,8 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
         try:
             gh_user.remove_from_starred(gh_repo)
         except GithubException as e:
-            raise ValidationError({"detail": "GitHub API failed to remove user %d from stargazers for %s/%s. %s - %s" %
-                (request.user.github_user, github_user, github_repo, e.data, e.status)})
+            raise ValidationError({"detail": "GitHub API failed to remove user %s from stargazers for %s/%s. %s - %s" %
+                (request.user.github_user, obj.github_user, obj.github_repo, e.data, e.status)})
         
         obj.delete()
 
@@ -571,7 +571,7 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
             gh_repo = gh_api.get_repo(obj.github_user + '/' + obj.github_repo)
         except GithubException as e:
             raise ValidationError({"detail": "GitHub API failed to return repo for %s/%s." % 
-                (github_user, github_repo, e.data, e.status)})
+                (obj.github_user, obj.github_repo, e.data, e.status)})
         
         try:
             gh_user = gh_api.get_user()
@@ -582,8 +582,8 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
         try:
             gh_user.remove_from_subscriptions(gh_repo)
         except GithubException as e:
-            raise ValidationError({"detail": "GitHub API failed to unsubscribe %d from %s/%s. %s - %s" %
-                (request.user.github_user, github_user, github_repo, e.data, e.status)})
+            raise ValidationError({"detail": "GitHub API failed to unsubscribe %s from %s/%s. %s - %s" %
+                (request.user.github_user, obj.github_user, obj.github_repo, e.data, e.status)})
         
         obj.delete()
 

@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
         agg = Role.objects.filter(is_valid=True,active=True).aggregate(Max('id'))
         max_id = agg['id__max']
-        size = ceil(max_id / len(settings.GITHUB_TASK_USERS))
+        size = ceil(max_id / float(len(settings.GITHUB_TASK_USERS)))
         
         print 'Refresh Role Counts'
         for i in range(len(settings.GITHUB_TASK_USERS)):
