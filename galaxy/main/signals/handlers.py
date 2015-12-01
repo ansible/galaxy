@@ -43,21 +43,6 @@ User = get_user_model()
 def user_logged_in_handler(request, user, **kwargs):
     manage_user_repos.delay(user)
 
-
-@receiver(post_save, sender=RoleRating)
-@receiver(post_delete, sender=RoleRating)
-def rolerating_post_save_handler(sender, **kwargs):
-    role = Role.objects.get(pk=kwargs['instance'].role_id)
-    cnt = 0.0
-    total_score = 0.0
-    for rating in role.ratings.all() :
-        if rating.active:
-            cnt += 1.0
-            total_score += rating.score
-    role.average_score = total_score / cnt if cnt > 0 else 0.0
-    role.num_ratings = cnt
-    role.save()
-
 @receiver(post_save, sender=ImportTask)
 def import_task_post_save(sender, **kwargs):
     ''' 
@@ -65,7 +50,6 @@ def import_task_post_save(sender, **kwargs):
     '''
     instance = kwargs['instance']
     for repo in Repository.objects.filter(github_user=instance.github_user,github_repo=instance.github_repo):
-        print "Updating repository %d" % repo.id
         repo.is_enabled = True
         repo.save()
 

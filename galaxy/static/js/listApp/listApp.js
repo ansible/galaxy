@@ -24,22 +24,24 @@
         'userService',
         'relatedService',
         'roleListController',
-        'userListController',
         'menuController',
         'paginateService',
         'searchService',
         'platformService',
         'commonDirectives',
         'galaxyUtilities',
+        'githubRepoService',
+        'currentUserService'
     ]);
 
-    roleApp.config(['$routeProvider', '$logProvider', _config]);
+    roleApp.config(['$routeProvider', '$logProvider', '$resourceProvider', _config]);
     roleApp.run(['$rootScope', '$location', _run]);
     roleApp.controller('RedirectToDetail', ['$routeParams', '$window', _redirectToDetail]);
 
-    function _config($routeProvider, $logProvider) {
+    function _config($routeProvider, $logProvider, $resourceProvider) {
         var debug = (GLOBAL_DEBUG === 'on') ? true : false;
         $logProvider.debugEnabled(debug);
+        $resourceProvider.defaults.stripTrailingSlashes = false;
         $routeProvider.
             when('/roles/:role_id', {
                 templateUrl: '/static/partials/blank-page.html',
@@ -48,11 +50,6 @@
             when('/roles', {
                 templateUrl: '/static/partials/role-list.html',
                 controller: 'RoleListCtrl',
-                reloadOnSearch: false
-            }).
-            when('/users', {
-                templateUrl: '/static/partials/user-list.html',
-                controller: 'UserListCtrl',
                 reloadOnSearch: false
             }).
             otherwise({

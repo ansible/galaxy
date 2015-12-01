@@ -208,7 +208,6 @@ def list_category(request, category=None, page=1):
         context["extra_js"] = [
           '/static/js/listApp/listApp.js',
           '/static/js/listApp/roleListController.js',
-          '/static/js/listApp/userListController.js',
           '/static/js/listApp/menuController.js',
         ] + common_services
     else:

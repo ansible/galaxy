@@ -18,13 +18,9 @@
                     <div id="results-container">
                         <div class="result" ng-repeat="role in roles">
                             <a ng-href="/detail#/role/{{ role.id }}">
-                            <div class="row header">
-                                <div class="title col-xs-8">{{ role.name }}</div>
-                                <div class="score-container text-right col-xs-4">
-                                    <label>Score</label>
-                                    <span class="badge" ng-if="role.average_score > 0">{{ role.average_score | number:1 }}</span>
-                                    <span class="badge" ng-if="role.average_score === 0">NA</span>
-                                </div>
+                            <div class="header">
+                                <div class="title">{{ role.name }}</div>
+                                <div class="badge" tooltip-placement="top" uib-tooltip="Galaxy Download Count">{{ role.download_count }}</div>
                             </div>   
                             <hr />
                             <div class="body">
@@ -50,13 +46,31 @@
                                     </tr>
                                 </table>
                             </div>
-                            <div class="footer">
+                            <div class="row footer">
                                 <div class="img-container">
                                     <img ng-src="{{ role.travis_status_url }}" class="travis-status-img" />
                                 </div>
                                 <div class="counts">
-                                    <span class="star-count" title="GitHub Stargazers Count"><i class="fa fa-star"></i> &nbsp;{{ role.stargazers_count }}</span>
-                                    <span class="download-count" title="Galaxy Download Count"><i class="fa fa-download"></i> &nbsp;{{ role.download_count || 0}}</span>
+                                    <div class="subscribe">
+                                        <a href="" ng-if="!role.user_is_subscriber" ng-click="subscribe(role)"
+                                            class="btn btn-default btn-xs">
+                                            <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Watch &nbsp;{{ role.watchers_count }}
+                                        </a>
+                                        <a href="" ng-if="role.user_is_subscriber" ng-click="unsubscribe(role)"
+                                            class="btn btn-default btn-xs">
+                                            <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Unwatch &nbsp;{{ role.watchers_count }}
+                                        </a>
+                                    </div>
+                                    <div class="stargaze">
+                                        <a href="" ng-if="!role.user_is_stargazer" ng-click="star(role)"
+                                            class="btn btn-default btn-xs">
+                                            <i class="fa fa-star"></i> Star {{ role.stargazers_count }}
+                                        </a>
+                                        <a href="" ng-if="role.user_is_stargazer" ng-click="unstar(role)"
+                                            class="btn btn-default btn-xs">
+                                            <i class="fa fa-star"></i> Unstar {{ role.stargazers_count }}
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                             </a>

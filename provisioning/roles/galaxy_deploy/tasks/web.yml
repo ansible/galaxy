@@ -22,7 +22,7 @@
     - restart apache
 
 - name: Rebuild Search Indexes
-  shell: "echo 'y' | galaxy-manage rebuild_index"
+  shell: "galaxy-manage rebuild_index --noinput"
   when: es_rebuild_host
 
 - name: Rebuild custom search indexes

@@ -28,6 +28,8 @@
         'PaginateInit',
         'platformService',
         'autocompleteService',
+        'githubRepoService',
+        'currentUserService',
         _RoleListCtrl
     ]);
 
@@ -46,7 +48,9 @@
         SearchInit,
         PaginateInit,
         platformService,
-        autocompleteService) {
+        autocompleteService,
+        githubRepoService,
+        currentUserService) {
 
         $('#bs-example-navbar-collapse-1').removeClass('in');  //force collapse of mobile navbar
         $('#galaxy-navbar-container, #galaxy-page-title-container').removeClass('container').addClass('container-fluid');
@@ -72,10 +76,10 @@
         };
 
         $scope.orderOptions = [
-            { value:"-created", title: "Created" },
             { value:"name,username", title:"Name" },
             { value:"username,name", title:"Author" },
-            { value:"-average_score,sort_name,username", title:"Score" }
+            { value:"-stargazers_count,name", title: "Stargazers" },
+            { value:"-watchers_count,name", title: "Watchers"}
         ];
 
         $scope.searchTypeOptions = [
@@ -106,6 +110,9 @@
         $scope.changeOrderby = _changeOrderby;
         
         $scope.$on('endlessScroll:next', _loadNextPage);
+
+        $scope.subscribe = _subscribe;
+        $scope.unsubscribe = _unsubscribe;
 
         PaginateInit({ scope: $scope });
 
@@ -159,7 +166,7 @@
         function _refresh() {
             $scope.loading = 1;
             $scope.roles = [];
-            
+
             var params = {
                 page: $scope.list_data.page,
                 page_size: $scope.list_data.page_size,
@@ -183,6 +190,11 @@
 
             if ($scope.list_data.autocomplete) {
                 params.autocomplete = $scope.list_data.autocomplete;
+            }
+
+            if (Object.keys(params).length == 2) {
+                // no parameters
+                params.order = 'id';
             }
 
             // Update the query string
@@ -422,6 +434,43 @@
             $log.debug('containerHeight: ' + containerHeight);
             $('#role-tags-container').css({ 'height': Math.min(containerHeight, tagsHeight) + 'px' });
             $('#role-tags-container .body-wrapper').css({ 'height': (Math.min(containerHeight, tagsHeight) - 20) + 'px '});
+        }
+
+        function _subscribe(_role) {
+            // Subscribe the user to the role repo
+            _role.subscribing = true;
+            githubRepoService.subscribe({
+                github_user: _role.github_user,
+                github_repo: _role.github_repo
+            }).$promise.then(function() {
+                _role.watchers_count++;
+                _role.user_is_subscriber = true;
+                _role.subscribing = false;
+                currentUserService.update();
+            });
+        }
+
+        function _unsubscribe(_role) {
+            // Find the user's subscription to the role repo and delete it
+            _role.subscribing = true;
+            var id;
+            currentUserService.subscriptions.every(function(sub) {
+                if (sub.github_user == _role.github_user && sub.github_repo == _role.github_repo) {
+                    id = sub.id;
+                    return false;
+                }
+                return true;
+            });
+            if (id) {
+                githubRepoService.unsubscribe({
+                    id: id
+                }).$promise.then(function() {
+                    _role.watchers_count--;
+                    _role.user_is_subscriber = false;
+                    _role.subscribing = false;
+                    currentUserService.update();
+                });
+            }
         }
     }
 })(angular);

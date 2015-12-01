@@ -117,3 +117,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
 
     def hasattr(self, attr):
         return hasattr(self, attr)
+
+    def get_subscriptions(self):
+        return [{
+            'id': g.id,
+            'github_user': g.github_user,
+            'github_repo': g.github_repo,
+        } for g in self.subscriptions.all()]
+
+    def get_starred(self):
+        return [{
+            'id': g.id,
+            'github_user': g.github_user,
+            'github_repo': g.github_repo,
+        } for g in self.starred.all()]

@@ -156,24 +156,19 @@
         
             .header {
                 .title {
+                    display:inline-block;
+                    width: 75%;
                     font-size: 14px;
                     color: @blue;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
                 }
-                .score-container {
-                    label {
-                        font-size: 10px;
-                        font-weight: normal;
-                        color: #ccc;
-                        padding-right: 5px;
-                    }
-                    .badge {
-                        font-weight: normal;
-                        font-size: 10px;
-                        background-color: @ansible-dark-grey;
-                    }
+                .badge {
+                    display:inline-block;
+                    float: right;
+                    background-color: #b7b7b7;
+                    font-weight: normal;
                 }
             }
 
@@ -195,13 +190,13 @@
                     }
                     .key {
                         width: 100px;
-                        background-color: #e1e1e1;
+                        background-color: #ebebeb;
                         color: @ansible-dark-grey;
                     }
                     .value {
                         display: block;
                         width: 230px;
-                        background-color: #eee;
+                        background-color: #f6f6f6;
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
@@ -218,14 +213,24 @@
                 margin-top: 10px;
                 .img-container {
                     display: inline-block;
+                    margin-left: 15px;
+                    img {
+                        width: 90px;
+                    }
                 }
                 .counts {
-                    color: @ansible-dark-grey;
                     display: inline-block;
                     float: right;
-                    font-size: 12px;
-                    span {
-                        padding-left: 10px;
+                    margin-right: 15px;
+                    text-align: right;
+                    .stargaze, .subscribe {
+                        display: inline-block;
+                        btn {
+                            margin-right: 3px;
+                        }
+                    }
+                    .subscribe {
+                        margin-right: 5px;
                     }
                 }
             }

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us"{% if ng_app %} ng-app="{{ ng_app }}"{% endif %}{% if ng_controller %} ng-controller="{{ ng_controller }}"{% endif %}>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Ansible, Inc" />
     <link rel="shortcut icon" href="/static/img/favicon.ico" />
 
@@ -20,14 +20,11 @@
     <link rel="stylesheet" type="text/css" href="/static/css/jquery-ui.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/fontawesome/css/font-awesome.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/select2.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/select2-bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/loaders.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/galaxy.min.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/angular-toggle-switch-bootstrap-3.css" />    
+    <link rel="stylesheet" type="text/css" href="/static/css/angular-toggle-switch-bootstrap-3.css" />
 
-    {% for extra in extra_css %}<link href='{{extra}}' rel='stylesheet' type='text/css' />
-    {% endfor %}
+    {% for extra in extra_css %}<link href='{{extra}}' rel='stylesheet' type='text/css' />{% endfor %}   
 
     <!-- JS -->
     <script type="text/javascript" src="/static/vendorjs/jquery.min.js"></script>

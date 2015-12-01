@@ -29,7 +29,7 @@ from urlparse import urlparse
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.db import transaction
+from django.db import transaction, connection
 from django.utils import text, html, timezone
 
 from allauth.socialaccount.models import SocialToken
@@ -233,8 +233,11 @@ def import_role(task_id):
             role.issue_tracker_url = ""
 
     # Update role attributes from repo
+    sub_count = 0
+    for sub in role.get_subscribers():
+        sub_count += 1   # only way to get subscriber count via pygithub
     role.stargazers_count = repo.stargazers_count
-    role.watchers_count = repo.watchers_count
+    role.watchers_count = sub_count
     role.forks_count = repo.forks_count
     role.open_issues_count = repo.open_issues_count 
 
@@ -245,7 +248,7 @@ def import_role(task_id):
 
     # Update the import task in the event the role is left in an invalid state.
     import_task.stargazers_count = repo.stargazers_count
-    import_task.watchers_count = repo.watchers_count
+    import_task.watchers_count = sub_count
     import_task.forks_count = repo.forks_count
     import_task.open_issues_count = repo.open_issues_count 
 
@@ -439,39 +442,73 @@ def import_role(task_id):
 
 @task(name="galaxy.main.celerytasks.tasks.manage_user_repos")
 def manage_user_repos(user):
-    try:
-        token = SocialToken.objects.get(account__user=user, account__provider='github')
-        gh_api = Github(token.token)
-        ghu = gh_api.get_user()
+    
+    token = SocialToken.objects.get(account__user=user, account__provider='github')
+    gh_api = Github(token.token)
+    ghu = gh_api.get_user()
 
-        user.github_avatar = ghu.avatar_url
-        user.github_user = ghu.login
-        user.save()
+    user.github_avatar = ghu.avatar_url
+    user.github_user = ghu.login
+    user.save()
 
-        # update user repos
-        repo_names = []
-        for r in ghu.get_repos():
-            try:
-                meta = r.get_file_contents("meta/main.yml")
-                repo_names.append(r.full_name)
-                name = r.full_name.split('/')
-                cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
-                user.repositories.get_or_create(github_user=name[0],github_repo=name[1],
-                    defaults={
-                        'github_user': name[0],
-                        'github_repo': name[1],
-                        'is_enabled': cnt > 0
-                    }
-                )
-            except:
-                pass
-        # remove repos to which user no longer has access
-        for r in user.repositories.all():
-            name = r.github_user + '/' + r.github_repo
-            if not name in repo_names:
-                r.delete()
-    except:
-        pass
+    # Refresh user subscriptions class
+    user.subscriptions.all().delete()
+    for s in ghu.get_subscriptions():
+        name = s.full_name.split('/')
+        cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+        if cnt > 0:
+            user.subscriptions.get_or_create(
+                github_user=name[0],
+                github_repo=name[1],
+                defaults={
+                    'github_user': name[0],
+                    'github_repo': name[1]
+                })
+            
+    # Refresh user starred cache
+    user.starred.all().delete()
+    for s in ghu.get_starred():
+        name = s.full_name.split('/')
+        cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+        if cnt > 0:
+            user.starred.get_or_create(
+                github_user=name[0],
+                github_repo=name[1],
+                defaults={
+                    'github_user': name[0],
+                    'github_repo': name[1]    
+                })
+
+    # update user repos
+    user.repositories.all().delete()
+    for r in ghu.get_repos():
+        try:
+            meta = r.get_file_contents("meta/main.yml")
+            name = r.full_name.split('/')
+            cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+            user.repositories.create(github_user=name[0],github_repo=name[1])
+        except:
+            pass
+
+@task(name="galaxy.main.celerytasks.tasks.refresh_role_counts")
+def refresh_role_counts(start, end, gh_api):
+    '''
+    Update each role with latest counts from GitHub
+    '''
+    cursor = connection.cursor()
+    for role in Role.objects.filter(is_valid=True,active=True,id__gt=start,id__lte=end):
+        full_name = "%s/%s" % (role.github_user,role.github_repo)
+        print "Updating repo: %s" % full_name
+        try:
+            gh_repo = gh_api.get_repo(full_name)
+            sub_count = 0
+            for sub in gh_repo.get_subscribers():
+                sub_count += 1   # only way to get subscriber count via pygithub
+            ''' use raw SQL in order to NOT trigger Role signals that update elastic search indexes '''
+            cursor.execute("UPDATE main_role SET watchers_count=%s, stargazers_count=%s, forks_count=%s, open_issues_count=%s WHERE id=%s",
+                [sub_count, gh_repo.stargazers_count, gh_repo.forks_count, gh_repo.open_issues_count, role.id])
+        except:
+            print "Failed to update %s" % full_name
 
 #----------------------------------------------------------------------
 # Periodic Tasks

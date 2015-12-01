@@ -45,7 +45,7 @@ from galaxy.main.mixins import *
 
 __all__ = [
     'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 
-    'RoleVersion', 'UserAlias', 'NotificationSecret', 'Notification', 'Repository'
+    'RoleVersion', 'UserAlias', 'NotificationSecret', 'Notification', 'Repository', 'Subscription', 'Stargazer'
 ]
 
 ###################################################################################
@@ -328,6 +328,9 @@ class Role(CommonModelNameNotUnique):
     imported         = models.DateTimeField(
         null         = True,
         verbose_name = "Last Import"
+    )
+    download_count   = models.IntegerField(
+        default      = 0
     )
 
     # GitHub repo attributes
@@ -702,7 +705,6 @@ class Repository (PrimordialModel):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name  = 'repositories',
-        editable      = False
     )
     github_user = models.CharField(
         max_length   = 256,
@@ -715,4 +717,42 @@ class Repository (PrimordialModel):
     is_enabled = models.BooleanField(
         default      = False
     )
+
+class Subscription (PrimordialModel):
+    class Meta:
+        unique_together = ('owner','github_user','github_repo')
+        ordering = ('owner', 'github_user', 'github_repo')
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name   = 'subscriptions',
+    )
+    github_user = models.CharField(
+        max_length     = 256,
+        verbose_name   = "Github Username",
+    )
+    github_repo = models.CharField(
+        max_length     = 256,
+        verbose_name   = "Github Repository",
+    )
+
+class Stargazer (PrimordialModel):
+    class Meta:
+        unique_together = ('owner','github_user','github_repo')
+        ordering = ('owner', 'github_user', 'github_repo')
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name = 'starred',
+    )
+    github_user = models.CharField(
+        max_length   = 256,
+        verbose_name = "Github Username",
+    )
+    github_repo = models.CharField(
+        max_length   = 256,
+        verbose_name = "Github Repository",
+    )
+
+
 
