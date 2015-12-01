@@ -259,6 +259,21 @@ class RoleList(ListAPIView):
     model = Role
     serializer_class = RoleListSerializer
 
+    def list(self, request, *args, **kwargs):
+        if request.query_params.get('owner__username', None) and request.query_params.get('name', None):
+            # Preserve the old Galaxy CLI lookup_role_by_name query
+            req_namespace = request.query_params['owner__username']
+            req_name = request.query_params['name']
+            qs = self.get_queryset()
+            qs = qs.filter(namespace=req_namespace,name=req_name)
+            page = self.paginate_queryset(qs)
+            if page is not None:
+                serializer = self.get_pagination_serializer(page)
+            else:
+                serializer = self.get_serializer(qs, many=True)
+            return Response(serializer.data)
+        return super(RoleList, self).list(self, request, *args, **kwargs)
+        
     def get_queryset(self):
         qs = super(RoleList, self).get_queryset()
         qs = qs.prefetch_related('platforms', 'tags', 'versions', 'dependencies')
@@ -268,6 +283,7 @@ class RoleDetail(RetrieveAPIView):
     model = Role
     serializer_class = RoleDetailSerializer
 
+    
     def get_object(self, qs=None):
         obj = super(RoleDetail, self).get_object()
         if not obj.is_valid or not obj.active:

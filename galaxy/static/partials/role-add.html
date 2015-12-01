@@ -40,7 +40,7 @@
                         off-label='<i class="fa fa-times"></i>'
                         ng-change="toggleRepository(repo)"
                         is-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING' || refreshing"></toggle-switch>
-                    <div class="state"><i class="fa fa-spin fa-lg fa-spinner" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'"></i></div>
+                    <div class="state"><i class="fa fa-spin fa-spinner" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'"></i></div>
                     <div class="settings"><a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Configure Travis Notification"><i class="fa fa-large fa-gear"></i></a></div>
                     <div class="name">
                         <a ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" ng-if="repo.is_enabled" tooltip-placement="top" uib-tooltip="View Role Import Details">{{ repo.github_user + '/' + repo.github_repo }}</a>

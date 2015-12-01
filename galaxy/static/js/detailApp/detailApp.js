@@ -13,23 +13,14 @@
     var roleApp = angular.module('detailApp', [
         'ngRoute',
         'ngSanitize',
-        'ngCookies',
         'ui.bootstrap',
         'currentUserService',
-        'tagService',
-        'ratingService',
         'roleService',
-        'roleSearchService',
         'storageService',
-        'userService',
-        'relatedService',
         'roleDetailController',
         'headerController',
         'menuController',
         'headerService',
-        'paginateService',
-        'searchService',
-        'platformService',
         'commonDirectives',
         'galaxyUtilities'
     ]);
@@ -45,16 +36,7 @@
               templateUrl: '/static/partials/role-detail.html',
               controller: 'RoleDetailCtrl',
               resolve: {
-                  role: ['roleFactory', '$route', _getRole],
-                  my_info: ['currentUserService', _getMyInfo]
-              }
-          }).
-          when('/user/:user_id', {
-              templateUrl: '/static/partials/user-detail.html',
-              controller: 'UserDetailCtrl',
-              resolve: {
-                  user: ['userFactory', '$route', _getUser],
-                  my_info: ['currentUserService', _getMyInfo]
+                  role: ['roleService', '$route', _getRole]
               }
           }).
           otherwise({
@@ -77,16 +59,12 @@
         }
     }
 
-    function _getMyInfo(currentUserService) {
-        return currentUserService;
-    }
-
-    function _getRole(roleFactory, $route) {
-        return roleFactory.getRole($route.current.params.role_id).then(function(data) { return data.data; });
-    }
-
-    function _getUser(userFactory, $route) {
-        return userFactory.getUser($route.current.params.user_id).then(function(data) { return data.data; });
+    function _getRole(roleService, $route) {
+        return roleService.get({ "role_id": $route.current.params.role_id }).$promise.then(function(response) {
+            if (response.results.length)
+                return response.results[0];
+            return [];
+        });
     }
 
 })(angular);

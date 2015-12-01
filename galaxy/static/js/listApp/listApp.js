@@ -18,7 +18,6 @@
         'ui.bootstrap',
         'tagService',
         'ratingService',
-        'roleService',
         'roleSearchService',
         'storageService',
         'userService',

@@ -227,7 +227,6 @@ def detail_category(request, category=None, page=1):
             # '/static/js/angular-slider.min.js',
             '/static/js/detailApp/detailApp.js',
             '/static/js/detailApp/roleDetailController.js',
-            '/static/js/detailApp/userDetailController.js',
             '/static/js/detailApp/menuController.js',
             '/static/js/detailApp/headerController.js',
             '/static/js/detailApp/headerService.js',

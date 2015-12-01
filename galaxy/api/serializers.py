@@ -18,6 +18,7 @@
 import hashlib
 import markdown
 import collections
+import json
 
 try:
     from urllib.parse import urljoin, urlencode
@@ -784,8 +785,12 @@ class RoleDetailSerializer(BaseSerializer):
 class RoleSearchSerializer(HaystackSerializer):
     platforms = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
+    versions = serializers.SerializerMethodField()
+    dependencies = serializers.SerializerMethodField()
+    platform_details = serializers.SerializerMethodField()
     user_is_subscriber = serializers.SerializerMethodField()
     user_is_stargazer = serializers.SerializerMethodField()
+    readme_html = serializers.SerializerMethodField()
 
     class Meta:
         index_classes = [RoleIndex]
@@ -798,7 +803,10 @@ class RoleSearchSerializer(HaystackSerializer):
             "github_repo",
             "github_branch",
             "tags",
-            "platforms", 
+            "platforms",
+            "platform_details", 
+            "versions",
+            "dependencies",
             "created", 
             "modified",
             "imported",
@@ -808,13 +816,16 @@ class RoleSearchSerializer(HaystackSerializer):
             "tags_autocomplete",
             "username_autocomplete",
             "travis_status_url",
+            "issue_tracker_url",
             "stargazers_count",
             "watchers_count",
             "forks_count",
             "open_issues_count",
+            "min_ansible_version",
             "user_is_stargazer",
             "user_is_subscriber",
             "download_count",
+            "readme_html",
         )
 
     def to_representation(self, instance):
@@ -826,11 +837,30 @@ class RoleSearchSerializer(HaystackSerializer):
         return result
 
     def get_platforms(self, instance):
+        if instance is None:
+            return []
         return [p for p in instance.platforms]
 
     def get_tags(self, instance):
+        if instance is None:
+            return []
         return [t for t in instance.tags]
 
+    def get_versions(self, instance):
+        if instance is None:
+            return []
+        return json.loads(instance.versions)
+
+    def get_dependencies(self, instance):
+        if instance is None:
+            return []
+        return json.loads(instance.dependencies)
+
+    def get_platform_details(self, instance):
+        if instance is None:
+            return []
+        return json.loads(instance.platform_details)
+        
     def get_user_is_subscriber(self, instance):
         # override user_is_subscriber found in ES
         request = self.context.get('request', None)
@@ -852,6 +882,11 @@ class RoleSearchSerializer(HaystackSerializer):
             except:
                 pass
         return False
+
+    def get_readme_html(self, instance):
+        if instance is None:
+            return ''
+        return markdown.markdown(html_decode(instance.readme_html), extensions=['extra'])
 
 class ElasticSearchDSLSerializer(serializers.BaseSerializer):
     def to_representation(self, obj):
