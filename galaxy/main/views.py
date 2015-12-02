@@ -92,6 +92,8 @@ def get_settings():
 def build_standard_context(request):
     context = {}
 
+    context['version'] = settings.version
+    
     # everything gets the request user and a csrf token,
     # just in case it might need them
     context["request"] = request

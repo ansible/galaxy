@@ -26,10 +26,11 @@
         margin-top: 20px;
         margin-bottom: 30px;
         color: @charcoal;
+        font-size: 16px;
     }
 
     .documentation .row {
-        margin-top: 20px;
+        margin-top: 40px;
     }
 
     .documentation .row:first-of-type {
@@ -49,41 +50,36 @@
             width: 50%;
         }
     }
-    .score, .ratings-count {
+    
+    .ansible-version {
+        h3 {
+            margin-top: 0;
+        }
+        .value {
+            font-size: 16px;
+        }
+    }
+
+    .installation {
+        h3 {
+            margin-top: 0;
+        }
+        code {
+            font-size: 16px;
+        }
+    }
+
+    .download-count {
         display: inline-block;
-    }
-    .score {
-        margin-right: 30px;
-        .fld-label {
-            font-size: 12px;
-            padding-left: 5px;
-            color: @charcoal;
-        }
-        .score-value, .score-value-na {
-            font-weight: bold;
-            font-size: 45px;
-            padding: 2px;
-            color: @black;
-        }
-        .score-value-na {
-            color: @grey;
-        }
-    }
-
-    .ratings-count {
+        color: @ansible-dark-grey;
+        margin-left: 10px;
         .title {
-            display: inline-block;
-            font-size: 24px;
-            padding-right: 20px;
+            padding-left: 5px;
+            padding-top: 3px;
         }
-        .title-link {
-            display: inline-block;
-            font-size: 14px;
+        .badge {
+            background-color: @ansible-dark-grey;
         }
-    }
-
-    .score.add-margin {
-        margin-top: 15px;
     }
 
     .table-scroller {
@@ -93,8 +89,6 @@
     }
 
     .tags-container {
-        margin: 20px 0;
-
         .title {
             color: #777;
             font-size: 16px;
@@ -137,6 +131,37 @@
             code {
                 white-space: pre;
                 overflow: initial;
+            }
+        }
+    }
+
+     @media(max-width: 767px) {
+        .ansible-version .value {
+            font-size: 14px;
+        }
+        .installation {
+            h3 {
+                margin-top: 20px;
+            }
+            code {
+                font-size: 12px;
+            }
+        }
+        .button-row {
+            text-align: center;
+            .btn {
+                margin-top: 5px;
+            }
+            .download-count {
+                margin-top: 10px;
+            }
+        }
+    }
+
+    @media(max-width: 1024px) {
+        .installation {
+            code {
+                font-size: 12px;
             }
         }
     }

@@ -53,21 +53,21 @@
                                 <div class="counts">
                                     <div class="subscribe">
                                         <a href="" ng-if="!role.user_is_subscriber" ng-click="subscribe(role)"
-                                            class="btn btn-default btn-xs">
+                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
                                             <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Watch &nbsp;{{ role.watchers_count }}
                                         </a>
                                         <a href="" ng-if="role.user_is_subscriber" ng-click="unsubscribe(role)"
-                                            class="btn btn-default btn-xs">
+                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
                                             <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Unwatch &nbsp;{{ role.watchers_count }}
                                         </a>
                                     </div>
                                     <div class="stargaze">
                                         <a href="" ng-if="!role.user_is_stargazer" ng-click="star(role)"
-                                            class="btn btn-default btn-xs">
+                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
                                             <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Star {{ role.stargazers_count }}
                                         </a>
                                         <a href="" ng-if="role.user_is_stargazer" ng-click="unstar(role)"
-                                            class="btn btn-default btn-xs">
+                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
                                             <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Unstar {{ role.stargazers_count }}
                                         </a>
                                     </div>
@@ -81,6 +81,7 @@
                         <div id="galaxy-copyright-role-list" ng-show="!loading">
                             <div class="copyright-txt">
                                 Copyright &copy; 2015 Ansible, Inc. | <a href="http://www.ansible.com/security" target="_blank">Security Disclosures</a> | <a href="http://www.ansible.com/privacy-policy" target="_blank">Privacy Policy</a>
+                                <div class="version">GALAXY {{ version }}</div>
                             </div>
                         </div>
 

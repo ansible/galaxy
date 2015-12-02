@@ -59,6 +59,7 @@
         
         $scope.galaxy_page_title_fluid = true;
         $scope.page_title = 'Browse Roles';
+        $scope.version = GLOBAL_VERSION;
         
         $scope.list_data = {
             'num_pages'          : 1,
@@ -77,7 +78,8 @@
             { value:"name,username", title:"Name" },
             { value:"username,name", title:"Author" },
             { value:"-stargazers_count,name", title: "Stargazers" },
-            { value:"-watchers_count,name", title: "Watchers"}
+            { value:"-watchers_count,name", title: "Watchers"},
+            { value:"-download_count", title: "Galaxy Download Count"}
         ];
 
         $scope.searchTypeOptions = [
@@ -113,6 +115,7 @@
         $scope.unsubscribe = _unsubscribe;
         $scope.star = _star;
         $scope.unstar = _unstar;
+        $scope.is_authenticated = currentUserService.authenticated;
 
         PaginateInit({ scope: $scope });
 
@@ -169,7 +172,7 @@
 
             var params = {
                 page: $scope.list_data.page,
-                page_size: $scope.list_data.page_size,
+                page_size: $scope.list_data.page_size
             };
             
             if ($scope.list_data.order) {
@@ -437,80 +440,88 @@
         }
 
         function _subscribe(_role) {
-            // Subscribe the user to the role repo
-            _role.subscribing = true;
-            githubRepoService.subscribe({
-                github_user: _role.github_user,
-                github_repo: _role.github_repo
-            }).$promise.then(function() {
-                _role.watchers_count++;
-                _role.user_is_subscriber = true;
-                _role.subscribing = false;
-                currentUserService.update();
-            });
-        }
-
-        function _unsubscribe(_role) {
-            // Find the user's subscription to the role repo and delete it
-            _role.subscribing = true;
-            var id;
-            currentUserService.subscriptions.every(function(sub) {
-                if (sub.github_user == _role.github_user && sub.github_repo == _role.github_repo) {
-                    id = sub.id;
-                    return false;
-                }
-                return true;
-            });
-            if (id) {
-                githubRepoService.unsubscribe({
-                    id: id
+            if (currentUserService.authenticated) {
+                // Subscribe the user to the role repo
+                _role.subscribing = true;
+                githubRepoService.subscribe({
+                    github_user: _role.github_user,
+                    github_repo: _role.github_repo
                 }).$promise.then(function() {
-                    _role.watchers_count--;
-                    _role.user_is_subscriber = false;
+                    _role.watchers_count++;
+                    _role.user_is_subscriber = true;
                     _role.subscribing = false;
                     currentUserService.update();
                 });
-            } else {
-                _role.subscribing = false;
+            }
+        }
+
+        function _unsubscribe(_role) {
+            if (currentUserService.authenticated) {
+                // Find the user's subscription to the role repo and delete it
+                _role.subscribing = true;
+                var id;
+                currentUserService.subscriptions.every(function(sub) {
+                    if (sub.github_user == _role.github_user && sub.github_repo == _role.github_repo) {
+                        id = sub.id;
+                        return false;
+                    }
+                    return true;
+                });
+                if (id) {
+                    githubRepoService.unsubscribe({
+                        id: id
+                    }).$promise.then(function() {
+                        _role.watchers_count--;
+                        _role.user_is_subscriber = false;
+                        _role.subscribing = false;
+                        currentUserService.update();
+                    });
+                } else {
+                    _role.subscribing = false;
+                }
             }
         }
 
         function _star(_role) {
-            // Subscribe the user to the role repo
-            _role.starring = true;
-            githubRepoService.star({
-                github_user: _role.github_user,
-                github_repo: _role.github_repo
-            }).$promise.then(function() {
-                _role.stargazers_count++;
-                _role.user_is_stargazer = true;
-                _role.starring = false;
-                currentUserService.update();
-            });
-        }
-
-        function _unstar(_role) {
-            // Find the user's subscription to the role repo and delete it
-            _role.starring = true;
-            var id;
-            currentUserService.starred.every(function(star) {
-                if (star.github_user == _role.github_user && star.github_repo == _role.github_repo) {
-                    id = star.id;
-                    return false;
-                }
-                return true;
-            });
-            if (id) {
-                githubRepoService.unstar({
-                    id: id
+            if (currentUserService.authenticated) {
+                // Subscribe the user to the role repo
+                _role.starring = true;
+                githubRepoService.star({
+                    github_user: _role.github_user,
+                    github_repo: _role.github_repo
                 }).$promise.then(function() {
-                    _role.stargazers_count--;
-                    _role.user_is_stargazer = false;
+                    _role.stargazers_count++;
+                    _role.user_is_stargazer = true;
                     _role.starring = false;
                     currentUserService.update();
                 });
-            } else {
-                _role.starring = false;
+            }
+        }
+
+        function _unstar(_role) {
+            if (currentUserService.authenticated) {
+                // Find the user's subscription to the role repo and delete it
+                _role.starring = true;
+                var id;
+                currentUserService.starred.every(function(star) {
+                    if (star.github_user == _role.github_user && star.github_repo == _role.github_repo) {
+                        id = star.id;
+                        return false;
+                    }
+                    return true;
+                });
+                if (id) {
+                    githubRepoService.unstar({
+                        id: id
+                    }).$promise.then(function() {
+                        _role.stargazers_count--;
+                        _role.user_is_stargazer = false;
+                        _role.starring = false;
+                        currentUserService.update();
+                    });
+                } else {
+                    _role.starring = false;
+                }
             }
         }
     }

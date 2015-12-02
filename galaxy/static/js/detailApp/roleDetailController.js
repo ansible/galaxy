@@ -41,6 +41,7 @@
         $scope.my_info = currentUserService;
         $scope.loadReadMe = _loadReadMe;
         $scope.readMe = '';
+        $scope.is_authenticated = currentUserService.authenticated;
 
         headerService.setTitle('Galaxy - ' + role.username + '.' + role.name);  // update the page title element
 
@@ -48,14 +49,28 @@
         $scope.display_user_info = 1;
         $scope.staffDeleteRole = _deleteRole;
 
-        $scope.subscribe = _subscribe;
-        $scope.unsubscribe = _unsubscribe;
-        $scope.star = _star;
-        $scope.unstar = _unstar;
+        $scope.subscribe = function () {
+            if (currentUserService.authenticated)
+                _subscribe();
+        }
+        $scope.unsubscribe = function () { 
+            if (currentUserService.authenticated)
+                _unsubscribe();
+        }
+        $scope.star = function () { 
+            if (currentUserService.authenticated)
+                _star();
+        }
+        $scope.unstar = function () { 
+            if (currentUserService.authenticated)
+                _unstar();
+        }
 
         _getUserAvatar();
 
         return; 
+
+
 
         function _getUserAvatar() {
             userService.get({ "github_user": role.github_user },
@@ -73,6 +88,7 @@
                 $scope.avatar = "/static/img/avatar.png";
             }
         }
+
         function _deleteRole(id) {
             roleService.deleteRole(id).$promise.then(function(response) {
                 $location.path('/roles');
