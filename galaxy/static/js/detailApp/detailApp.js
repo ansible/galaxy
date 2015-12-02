@@ -23,7 +23,8 @@
         'headerService',
         'commonDirectives',
         'galaxyUtilities',
-        'githubRepoService'
+        'githubRepoService',
+        'userService'
     ]);
 
     roleApp.config(['$routeProvider', '$logProvider', '$resourceProvider', _config]);

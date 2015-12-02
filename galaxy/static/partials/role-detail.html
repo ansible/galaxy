@@ -2,11 +2,9 @@
 
 <div class="container" id="galaxy-role-detail">
 
-    <div class="row" ng-show="my_info.staff">
-        <div class="col-lg-12">
-            <div class="text-right">
-                <a class="btn btn-danger btn-sm" href ng-click="staffDeleteRole(role.id)"><i class="fa fa-trash-o"></i> Delete Role</a>
-            </div>
+    <div class="row" ng-show="my_info.staff" style="margin-bottom: 15px;">
+        <div class="col-xs-offset-6 col-xs-6 text-right">
+            <a class="btn btn-danger btn-sm" href ng-click="staffDeleteRole(role.id)"><i class="fa fa-trash-o"></i> Delete Role</a>
         </div>
     </div>
 
@@ -15,13 +13,12 @@
             <h2 class="rolename">{{role.name}}</h2>
             <div class="description">{{role.description}}</div>
         </div>
-        <!-- div class="col-xs-6 text-right">
-            <div class="user-info">
-                <a ng-href="https://github.com/{{ role.namespace }}"><img ng-src="{{ role.summary_fields.owner.avatar_url }}" /></a>
-                <p class="username"><a href="/detail#/user/{{role.summary_fields.owner.id}}">{{role.namespace}}</a><br \>
-                    <span ng-show="my_info.staff" class="staff-marker"><i class="fa fa-asterisk"></i> Ansible Staff</span></p>
+        <div class="col-xs-6 text-right">
+            <div class="user-info" ng-show="avatar">
+                <img ng-src="{{ avatar }}" />
+                <p class="username"><a href="https://github.com/{{ role.username }}" target="_blank">{{ role.username }}</a></p>
             </div>
-        </div-->
+        </div>
     </div>
 
     <div class="row">
@@ -71,7 +68,7 @@
                             <div class="col-lg-6">
                                 <div class="installation">
                                     <h3>Installation</h3>
-                                    <code>$ ansible-galaxy install {{role.namespace}}.{{role.name}}</code>
+                                    <code>$ ansible-galaxy install {{role.username}}.{{role.name}}</code>
                                 </div>
                             </div>
                         </div>

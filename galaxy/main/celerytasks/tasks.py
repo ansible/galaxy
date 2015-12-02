@@ -384,7 +384,7 @@ def import_role(task_id):
                 # strip out substrings from the dep role name, to account for 
                 # those that may have imported the role previously before this
                 # rule existed, that way we don't end up with broken/missing deps
-                dep_role_name = name_regex.sub('', dep_role_name)
+                #dep_role_name = name_regex.sub('', dep_role_name)
                 dep_role = Role.objects.get(name=dep_role_name, namespace=dep_user_name)
                 role.dependencies.add(dep_role)
                 dep_names.append(dep)

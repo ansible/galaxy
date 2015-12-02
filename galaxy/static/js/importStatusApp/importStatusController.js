@@ -37,6 +37,7 @@
         
         var params = $location.search();
         if (Object.keys(params).length > 0) {
+            $scope.searchText = params.github_repo
             imports.every(function(imp) {
                 if (imp.github_user == params.github_user && imp.github_repo == params.github_repo) {
                     $scope.selected_id = imp.id;

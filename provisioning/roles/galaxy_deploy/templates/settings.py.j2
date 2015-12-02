@@ -154,14 +154,12 @@ REST_FRAMEWORK = {
     'PAGINATE_BY': 10,
     'PAGINATE_BY_PARAM': 'page_size',
     'MAX_PAGINATE_BY': 100,
-    #'DEFAULT_THROTTLE_CLASSES': (
-    #    'rest_framework.throttling.AnonRateThrottle',
-    #    'rest_framework.throttling.UserRateThrottle'
-    #),
-    #'DEFAULT_THROTTLE_RATES': {
-    #    'anon': '60/hour',
-    #    'user': '600/hour'
-    #}
+    'DEFAULT_THROTTLE_CLASSES': (
+        'galaxy.api.throttling.RoleDownloadCountThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'download_count': '1/day',
+    }
 }
 
 TEMPLATES = [

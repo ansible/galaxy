@@ -23,7 +23,10 @@ class RoleDownloadCountThrottle(ScopedRateThrottle):
         logger.debug('RoleDownloadCountThrottle:')
         if (request.query_params.get('owner__username', None) or request.query_params.get('namespace', None)) and request.query_params.get('name', None):
             # this is a download request
-            role_namespace = request.query_params['owner__username']
+            if request.query_params.get('owner__username', None):
+                role_namespace = request.query_params['owner__username']
+            else:
+                role_namespace = request.query_params['namespace']
             role_name = request.query_params['name']
             try:
                 # attempt to lookup role first. if that fails, we don't want get_cache_key to be called.

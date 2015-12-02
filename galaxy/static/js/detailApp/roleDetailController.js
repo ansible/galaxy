@@ -21,6 +21,7 @@
         'role',
         'headerService',
         'githubRepoService',
+        'userService',
         _roleDetailCtrl
     ]);
 
@@ -32,7 +33,8 @@
         currentUserService,
         role,
         headerService,
-        githubRepoService) {
+        githubRepoService,
+        userService) {
 
         $scope.page_title = 'Role Detail';
         $scope.showRoleName = false;
@@ -40,7 +42,7 @@
         $scope.loadReadMe = _loadReadMe;
         $scope.readMe = '';
 
-        headerService.setTitle('Galaxy - ' + role.namespace + '.' + role.name);  // update the page title element
+        headerService.setTitle('Galaxy - ' + role.username + '.' + role.name);  // update the page title element
 
         $scope.role = role;
         $scope.display_user_info = 1;
@@ -51,8 +53,26 @@
         $scope.star = _star;
         $scope.unstar = _unstar;
 
+        _getUserAvatar();
+
         return; 
 
+        function _getUserAvatar() {
+            userService.get({ "github_user": role.github_user },
+                _success, _error);
+
+            function _success(response) {
+                if (response.results.length && response.results[0].github_avatar) {
+                    $scope.avatar = response.results[0].github_avatar;
+                } else {
+                    $scope.avatar = "/static/img/avatar.png";
+                }
+            }
+
+            function _error(response) {
+                $scope.avatar = "/static/img/avatar.png";
+            }
+        }
         function _deleteRole(id) {
             roleService.deleteRole(id).$promise.then(function(response) {
                 $location.path('/roles');
