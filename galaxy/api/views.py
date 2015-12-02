@@ -258,10 +258,10 @@ class RoleVersionsList(SubListAPIView):
 class RoleList(ListAPIView):
     model = Role
     serializer_class = RoleListSerializer
+    throttle_scope = 'download_count'
 
     def list(self, request, *args, **kwargs):
         if request.query_params.get('owner__username', None) and request.query_params.get('name', None):
-            # Preserve the old Galaxy CLI lookup_role_by_name query
             req_namespace = request.query_params['owner__username']
             req_name = request.query_params['name']
             qs = self.get_queryset()

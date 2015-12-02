@@ -389,7 +389,7 @@ def import_role(task_id):
                 role.dependencies.add(dep_role)
                 dep_names.append(dep)
             except Exception, e:
-                add_message(import_task, "ERROR: Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
+                add_message(import_task, "ERROR", "Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
 
         # Remove deps that are no longer listed in the metadata
         for dep in role.dependencies.all():

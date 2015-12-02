@@ -55,7 +55,7 @@
             _showDetail($scope.selected_id);
         }
 
-        $interval(_getImports, 5000);
+        var stop = $interval(_getImports, 5000);
 
         var lazy_resize = _.debounce(function() { 
             _resize();
@@ -65,8 +65,7 @@
         _resize();
 
         $scope.$on('$destroy', function() {
-            console.log('clear!');
-            $interval.clear();
+            $interval.cancel(stop);
         });
 
         return;
