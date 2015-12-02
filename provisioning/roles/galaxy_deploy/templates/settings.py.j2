@@ -118,6 +118,10 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': '{{ galaxy_memcached_hostname }}:{{ galaxy_memcached_port }}',
+    },
+    'download_count': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'main_download_count_cache',
     }
 }
 

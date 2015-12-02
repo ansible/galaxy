@@ -28,3 +28,7 @@
 - name: Rebuild custom search indexes
   shell: "galaxy-manage rebuild_galaxy_indexes"
   when: es_rebuild_host
+
+- name: Create download cache table
+  shell: "galaxy-manage createcachetable"
+  when: es_rebuild_host
