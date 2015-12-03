@@ -1,0 +1,7 @@
+---
+- name: Refresh role count
+  hosts: db
+  tasks:  
+    - name: Start the refresh        
+      shell: galaxy-manage refresh_role_counts
+      when: postgres_master
