@@ -758,6 +758,14 @@ class RefreshRoleCount (PrimordialModel):
     state = models.CharField(
         max_length   = 20
     )
-    
+    passed = models.IntegerField(
+        default      = 0,
+        null         = True
+    )
+    failed = models.IntegerField(
+        default      = 0,
+        null         = True
+    )
+
 
 

@@ -28,7 +28,7 @@ class Command(BaseCommand):
             print 'Range: %d - %d' % (start, end)
             r = RefreshRoleCount.objects.create(
                 state='PENDING',
-                description='User: %s Range: %s - %s' % (settings.GITHUB_TASK_USERS[i]['username'], start, end)
+                description='User: %s Range: %s-%s' % (settings.GITHUB_TASK_USERS[i]['username'], start, end)
             )
             objs.append(r)
             gh_api = Github(settings.GITHUB_TASK_USERS[i]['username'],settings.GITHUB_TASK_USERS[i]['password'])
@@ -43,7 +43,7 @@ class Command(BaseCommand):
                 if not obj.state == 'FINISHED':
                     finished = False
                 else:
-                    print '%s Finished' % obj.description
+                    print '%s Total: %s Passed: %s Failed: %s' % (obj.description, obj.failed + obj.passed, obj.passed, obj.failed)
             time.sleep(60)
 
         elapsed = time.time() - started

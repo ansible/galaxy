@@ -500,6 +500,8 @@ def refresh_role_counts(start, end, gh_api, tracker):
     cursor = connection.cursor()
     tracker.state = 'RUNNING'
     tracker.save()
+    passed = 0
+    failed = 0
     for role in Role.objects.filter(is_valid=True,active=True,id__gt=start,id__lte=end):
         full_name = "%s/%s" % (role.github_user,role.github_repo)
         print "Updating repo: %s" % full_name
@@ -511,9 +513,13 @@ def refresh_role_counts(start, end, gh_api, tracker):
             ''' use raw SQL in order to NOT trigger Role signals that update elastic search indexes '''
             cursor.execute("UPDATE main_role SET watchers_count=%s, stargazers_count=%s, forks_count=%s, open_issues_count=%s WHERE id=%s",
                 [sub_count, gh_repo.stargazers_count, gh_repo.forks_count, gh_repo.open_issues_count, role.id])
+            passed += 1
         except:
             print "Failed to update %s" % full_name
+            failed += 1
     tracker.state = 'FINISHED'
+    tracker.passed = passed
+    tracker.failed = failed
     tracker.save()
 
 #----------------------------------------------------------------------
