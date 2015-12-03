@@ -754,5 +754,10 @@ class Stargazer (PrimordialModel):
         verbose_name = "Github Repository",
     )
 
+class RefreshRoleCount (PrimordialModel):
+    state = models.CharField(
+        max_length   = 20
+    )
+    
 
 

@@ -77,9 +77,10 @@
         $scope.orderOptions = [
             { value:"name,username", title:"Name" },
             { value:"username,name", title:"Author" },
+            { value:"-created,name", title:"Created" },
             { value:"-stargazers_count,name", title: "Stargazers" },
             { value:"-watchers_count,name", title: "Watchers"},
-            { value:"-download_count", title: "Galaxy Download Count"}
+            { value:"-download_count,name", title: "Downloads"}
         ];
 
         $scope.searchTypeOptions = [

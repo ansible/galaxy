@@ -72,6 +72,7 @@ search_urls = patterns('galaxy.api.views',
     url(r'platforms/$',                  PlatformsSearchView.as_view(), name='platforms_search_view'),
     url(r'tags/$',                       TagsSearchView.as_view(), name='tags_search_view'),
     url(r'users/$',                      UserSearchView.as_view(), name='user_search_view'),
+    url(r'top_contributors/$',           'top_contributors_list', name='top_contributors_list'),
 )
 
 import_task_urls = patterns('galaxy.api.views',

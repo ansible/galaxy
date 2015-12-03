@@ -179,10 +179,11 @@ def explore(request):
         context["extra_js"] = [
           '/static/js/exploreApp/exploreApp.js',
           '/static/js/exploreApp/exploreController.js',
-          '/static/js/commonServices/roleService.js',
+          '/static/js/commonServices/roleSearchService.js',
           '/static/js/commonServices/tagService.js',
           '/static/js/commonServices/userService.js',
           '/static/js/commonServices/galaxyUtilities.js',
+          '/static/js/commonDirectives/dotDotDotDirective.js',
         ]
     else:
         context["extra_js"] = [

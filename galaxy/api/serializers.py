@@ -416,9 +416,16 @@ class RepositorySerializer(BaseSerializer):
             ]) for s in NotificationSecret.objects.filter(github_user=obj.github_user,github_repo=obj.github_repo)]
         return d
 
+class TopContributorsSerializer(serializers.BaseSerializer):
+    
+    def to_representation(self, obj):
+        return {
+            'github_user': obj['github_user'],
+            'role_count': obj['count']
+        }
 
 class NotificationSecretSerializer(BaseSerializer):
-    secret     = serializers.SerializerMethodField()
+    secret = serializers.SerializerMethodField()
 
     class Meta:
         model = NotificationSecret

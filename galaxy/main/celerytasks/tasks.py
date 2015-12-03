@@ -493,11 +493,13 @@ def manage_user_repos(user):
                 })
 
 @task(name="galaxy.main.celerytasks.tasks.refresh_role_counts")
-def refresh_role_counts(start, end, gh_api):
+def refresh_role_counts(start, end, gh_api, tracker):
     '''
     Update each role with latest counts from GitHub
     '''
     cursor = connection.cursor()
+    tracker.state = 'RUNNING'
+    tracker.save()
     for role in Role.objects.filter(is_valid=True,active=True,id__gt=start,id__lte=end):
         full_name = "%s/%s" % (role.github_user,role.github_repo)
         print "Updating repo: %s" % full_name
@@ -511,6 +513,8 @@ def refresh_role_counts(start, end, gh_api):
                 [sub_count, gh_repo.stargazers_count, gh_repo.forks_count, gh_repo.open_issues_count, role.id])
         except:
             print "Failed to update %s" % full_name
+    tracker.state = 'FINISHED'
+    tracker.save()
 
 #----------------------------------------------------------------------
 # Periodic Tasks

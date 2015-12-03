@@ -175,6 +175,7 @@ class ApiV1SearchView(APIView):
         data['users'] = reverse('api:user_search_view')
         data['faceted_platforms'] = reverse('api:faceted_platforms_view')
         data['faceted_tags'] = reverse('api:faceted_tags_view')
+        data['top_contributors'] = reverse('api:top_contributors_list')
         return Response(data)
 
 class ApiV1ReposView(APIView):
@@ -844,19 +845,20 @@ class UserList(ListAPIView):
 
     def get_queryset(self):
         qs = super(UserList, self).get_queryset()
-        qs = qs.prefetch_related(
-            # Prefetch(
-            #     'roles',
-            #     queryset=Role.objects.filter(active=True, is_valid=True).order_by('pk'),
-            #     to_attr='user_roles'
-            # ),
-            Prefetch(
-                'ratings',
-                queryset=RoleRating.objects.select_related('role').filter(active=True, role__active=True, role__is_valid=True).order_by('-created'),
-                to_attr='user_ratings'
-            ),
-        )
         return annotate_user_queryset(filter_user_queryset(qs))
+
+class TopContributorsList(ListAPIView):
+    model = Role
+    serializer_class = TopContributorsSerializer
+
+    def list(self, request, *args, **kwargs):
+        qs = Role.objects.values('github_user').annotate(count=Count('id')).order_by('-count','github_user')
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_pagination_serializer(page)
+        else:
+            serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
 
 class UserMeList(RetrieveAPIView):
     model = User
