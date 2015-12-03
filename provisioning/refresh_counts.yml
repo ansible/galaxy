@@ -1,7 +1,14 @@
 ---
 - name: Refresh role count
   hosts: db
+  sudo: yes
   tasks:  
     - name: Start the refresh        
       shell: galaxy-manage refresh_role_counts
+      register: out
       when: postgres_master
+    - debug: var=out.stdout_lines
+    - name: Rebuild Indexes
+      shell: galaxy-manage rebuild_index --noinput
+    - name: Rebuild Custom Indexes
+      shell: galaxy-manage rebuild_galaxy_indexes --noinput
