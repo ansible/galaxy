@@ -5,7 +5,7 @@ from math import ceil, floor
 from github import Github
 
 from django.conf import settings
-from django.db.models import Max
+from django.db.models import Max, Q
 from django.core.management.base import BaseCommand, CommandError
 
 from galaxy.main.models import Role, RefreshRoleCount
@@ -20,26 +20,25 @@ class Command(BaseCommand):
         size = ceil(max_id / float(len(settings.GITHUB_TASK_USERS)))
         in_list = []
         print 'Refresh Role Counts'
-        # for i in range(len(settings.GITHUB_TASK_USERS)):
-        i = 1
-        start = size * i
-        end = size * (i + 1)
-        print 'User: %s' % settings.GITHUB_TASK_USERS[i]['username']
-        print 'Range: %d - %d' % (start, end)
-        r = RefreshRoleCount.objects.create(
-            state='PENDING',
-            description='User: %s Range: %s-%s' % (settings.GITHUB_TASK_USERS[i]['username'], start, end)
-        )
-        in_list.append(r.id)
-        gh_api = Github(settings.GITHUB_TASK_USERS[i]['username'],settings.GITHUB_TASK_USERS[i]['password'])
-        refresh_role_counts.delay(start, end, gh_api, r)
+        for i in range(len(settings.GITHUB_TASK_USERS)):
+            start = size * i
+            end = size * (i + 1)
+            print 'User: %s' % settings.GITHUB_TASK_USERS[i]['username']
+            print 'Range: %d - %d' % (start, end)
+            r = RefreshRoleCount.objects.create(
+                state='PENDING',
+                description='User: %s Range: %s-%s' % (settings.GITHUB_TASK_USERS[i]['username'], start, end)
+            )
+            in_list.append(r.id)
+            gh_api = Github(settings.GITHUB_TASK_USERS[i]['username'],settings.GITHUB_TASK_USERS[i]['password'])
+            refresh_role_counts.delay(start, end, gh_api, r)
         print "Request submitted to Celery."
 
         finished = False
         started = time.time()
         while not finished:
             finished = True
-            for obj in RefreshRoleCount.objects.filter(pk__in=in_list,state__not='COMPLETED'):
+            for obj in RefreshRoleCount.objects.filter(pk__in=in_list,~Q(state='COMPLETED')):
                 if not obj.state == 'FINISHED':
                     finished = False
                 else:
