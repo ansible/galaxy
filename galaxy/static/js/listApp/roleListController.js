@@ -207,6 +207,7 @@
             return roleSearchService.get(params)
                 .$promise.then(function(data) {
                     $scope.roles = data.results;
+                    $scope.roles[0].created = null;
                     $scope.status = "";
                     $scope.loading = 0;
 

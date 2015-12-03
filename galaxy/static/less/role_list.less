@@ -141,7 +141,7 @@
             display: inline-block;
             vertical-align: top;
             width: 350px;
-            height: 225px;
+            height: 250px;
             padding: 10px;
             border: 1px solid #ccc; 
             border-radius: 2px;
@@ -184,6 +184,9 @@
                     overflow: hidden;
                     color: @black;
                 }
+                .description.na {
+                    color: @ansible-dark-grey;
+                }
                 .stats-table {
                     .key,.value {
                         padding: 3px 0 3px 5px;
@@ -201,6 +204,9 @@
                         overflow: hidden;
                         text-overflow: ellipsis;
                         color: @black;
+                    }
+                    .value.na {
+                        color: @ansible-dark-grey;
                     }
                 }              
                 .result-label {

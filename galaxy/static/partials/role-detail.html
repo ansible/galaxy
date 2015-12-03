@@ -86,6 +86,21 @@
                             </div>
                         </div>
 
+                        <div class="row" ng-show="role.tags && role.tags.length">
+                            <div class="col-sm-6">
+                                <div class="date-container">
+                                    <div class="title">Created</div>
+                                    <div>{{ role.created | date:"short" }}</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="date-container">
+                                    <div class="title">Last Imported</div>
+                                    <div>{{ role.imported | date:"short" }}</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-sm-6 col-md-6">
                                 <div class="versions">

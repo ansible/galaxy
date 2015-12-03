@@ -24,25 +24,33 @@
                             </div>   
                             <hr />
                             <div class="body">
-                                <div class="description" dot-dot-dot>{{ role.description }}</div>
+                                <div class="description" dot-dot-dot ng-if="role.description">{{ role.description }}</div>
+                                <div class="description na" dot-dot-dot ng-if="!role.description">NA</div>
                                 <table class="stats-table">
                                     <tr class="stat-row">
                                         <td class="key">Author</td>
-                                        <td class="value">{{ role.username }}&nbsp;</td>
+                                        <td class="value" ng-if="role.username">{{ role.username }}</td>
+                                        <td class="value na" ng-if="!role.username">{{ role.username }}</td>    
                                     </tr>
                                     <tr class="stat-row">
                                         <td class="key">Platforms</td>
-                                        <td class="value" ng-show="role.platforms.length" ng-bind="role.platforms.join(', ')"></td>
-                                        <td class="value" ng-show="!role.platforms.length">&nbsp;</td>
+                                        <td class="value" ng-if="role.platforms.length" ng-bind="role.platforms.join(', ')"></td>
+                                        <td class="value na" ng-if="!role.platforms.length">NA</td>
                                     </tr>
                                     <tr class="stat-row">
                                         <td class="key">Tags</td>
-                                        <td class="value" ng-show="role.tags.length" ng-bind="role.tags.join(', ') + ' '"></td>
-                                        <td class="value" ng-show="!role.tags.length">&nbsp;</td>
+                                        <td class="value" ng-if="role.tags.length" ng-bind="role.tags.join(', ') + ' '"></td>
+                                        <td class="value na" ng-if="!role.tags.length">NA</td>
+                                    </tr>
+                                    <tr class="stat-row">
+                                        <td class="key">Created</td>
+                                        <td class="value" ng-if="role.created">{{ role.created | date:"short" }}</td>
+                                        <td class="value na" ng-if="!role.created">NA</td>
                                     </tr>
                                     <tr class="stat-row">
                                         <td class="key">Last Imported</td>
-                                        <td class="value">{{ role.imported | date:"short" }}&nbsp;</td>
+                                        <td class="value" ng-if="role.imported">{{ role.imported | date:"short" || "NA"}}</td>
+                                        <td class="value na" ng-if="!role.imported">NA</td>
                                     </tr>
                                 </table>
                             </div>
