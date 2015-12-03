@@ -986,39 +986,41 @@ class RemoveRole(APIView):
 
     def delete(self, request, *args, **kwargs):
 
-        gh_user = request.data.get('github_user', None)
-        gh_repo = request.data.get('github_repo', None)
+        gh_user = request.query_params.get('github_user',None)
+        gh_repo = request.query_params.get('github_repo', None)
+        
         
         if not gh_user or not gh_repo:
             raise ValidationError({ "detail": "Invalid request." })
 
-        # Verify via GitHub API that user has access to requested role
-        try:
-            token = SocialToken.objects.get(account__user=request.user, account__provider='github')
-        except:
-            raise ValidationError({"detail": "Failed to get Github account for Galaxy user %s. You must first " +
-                "authenticate with Github." % request.user.username })
+        if not request.user.is_staff:
+            # Verify via GitHub API that user has access to requested role
+            try:
+                token = SocialToken.objects.get(account__user=request.user, account__provider='github')
+            except:
+                raise ValidationError({"detail": "Failed to get Github account for Galaxy user %s. You must first " +
+                    "authenticate with Github." % request.user.username })
 
-        try:
-            gh_api = Github(token.token)
-            gh_api.get_api_status()
-        except:
-            raise ValidationError({"detail": "Failed to connect to Github API. This is most likely a temporary " +
-                "error, please try again in a few minutes."})
-    
-        try:
-            ghu = gh_api.get_user()
-        except:
-            raise ValidationError({"detail": "Failed to get Github authorized user."})
+            try:
+                gh_api = Github(token.token)
+                gh_api.get_api_status()
+            except:
+                raise ValidationError({"detail": "Failed to connect to Github API. This is most likely a temporary " +
+                    "error, please try again in a few minutes."})
+        
+            try:
+                ghu = gh_api.get_user()
+            except:
+                raise ValidationError({"detail": "Failed to get Github authorized user."})
 
-        allowed = False
-        repo_full_name = "%s/%s" % (gh_user, gh_repo)
-        for r in ghu.get_repos():
-            if r.full_name == repo_full_name:
-                allowed = True
-                continue
-        if not allowed:
-            raise ValidationError({"detail": "Galaxy user %s does not have access to repo %s" % (request.user.username,repo_full_name)})
+            allowed = False
+            repo_full_name = "%s/%s" % (gh_user, gh_repo)
+            for r in ghu.get_repos():
+                if r.full_name == repo_full_name:
+                    allowed = True
+                    continue
+            if not allowed:
+                raise ValidationError({"detail": "Galaxy user %s does not have access to repo %s" % (request.user.username,repo_full_name)})
 
         # User has access. Delete requested role and associated bits.
         response = OrderedDict([
@@ -1056,9 +1058,6 @@ class RemoveRole(APIView):
         ImportTask.objects.filter(github_user=gh_user,github_repo=gh_repo).delete()
 
         return Response(response)
-
-    def put(self, request, *args, **kwargs):
-        return self.delete(request, args, kwargs)
 
 class RepositoryList(ListAPIView):
     model = Repository

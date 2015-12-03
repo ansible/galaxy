@@ -16,6 +16,7 @@
         '$scope',
         '$routeParams',
         '$location',
+        '$window',
         'roleService',
         'currentUserService',
         'role',
@@ -29,6 +30,7 @@
         $scope,
         $routeParams,
         $location,
+        $window,
         roleService,
         currentUserService,
         role,
@@ -89,9 +91,12 @@
             }
         }
 
-        function _deleteRole(id) {
-            roleService.deleteRole(id).$promise.then(function(response) {
-                $location.path('/roles');
+        function _deleteRole(_role) {
+            roleService.delete({ 
+                "github_user": _role.github_user,
+                "github_repo": _role.github_repo
+            }).$promise.then(function(response) {
+                $window.location = '/list#/roles';
             });
         }
 

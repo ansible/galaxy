@@ -14,6 +14,7 @@
     mod.factory('roleService', ['$resource','getCSRFToken', _factory]);
 
     function _factory($resource, getCSRFToken) {
+        var token = getCSRFToken();
         return {
             "get": _getRole,
             "delete": _deleteRole,
@@ -24,10 +25,10 @@
             return $resource('/api/v1/search/roles/').get(params);
         }
 
-        function _deleteRole(id) {
-            return $resource('api/v1/roles/:id/', { 'id': id }, {
+        function _deleteRole(params) {
+            return $resource('api/v1/removerole/', null, {
                 "delete": { method: 'DELETE', headers: { "X-CSRFToken": token }}
-            }).delete();
+            }).delete(params);
         }
         function _getReadMe(id) {
             return $resource('/api/v1/roles/:id/', { 'id': id }).get().$promise.then(function(response) {
