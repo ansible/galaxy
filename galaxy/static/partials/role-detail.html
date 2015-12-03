@@ -155,7 +155,7 @@
                                     <div class="table-scroller">
                                         <table class="table ga-table-striped">
                                             <tbody>
-                                            <tr ng-repeat="dependency in role.summary_fields.dependencies">
+                                            <tr ng-repeat="dependency in role.dependencies">
                                                 <td><a href="/detail#/role/{{ dependency.id }}">{{ dependency.name }}</a></td>
                                             </tr>
                                             <tr ng-show="!role.summary_fields.dependencies.length">
