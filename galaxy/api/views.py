@@ -685,6 +685,9 @@ class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
         
         instance = self.get_object()
 
+        if source == 'travis':
+            secret = sha256(github_user + '/' + github_repo + secret).hexdigest()
+
         try:
             instance.source = source
             instance.secret = secret

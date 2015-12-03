@@ -173,7 +173,7 @@
                                             <tr ng-repeat="dependency in role.dependencies">
                                                 <td><a href="/detail#/role/{{ dependency.id }}">{{ dependency.name }}</a></td>
                                             </tr>
-                                            <tr ng-show="!role.summary_fields.dependencies.length">
+                                            <tr ng-show="!role.dependencies.length">
                                                 <td colspan="2">No dependencies.</td>
                                             </tr>
                                             </tbody>

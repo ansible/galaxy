@@ -137,7 +137,7 @@
                     secret: _repo.travis_token
                 }).$promise.then(function(response) {
                     _repo.travis_token = response.secret;
-                    _repo.show_integrations = true;
+                    _repo.show_integrations = false;
                     $timeout(function() {
                         $scope.$apply();
                     },300);

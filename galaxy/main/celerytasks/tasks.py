@@ -380,12 +380,15 @@ def import_role(task_id):
                         dep = dep['role']
                 elif not isinstance(dep, basestring):
                     raise Exception("role dependencies must either be a string or dictionary (was %s)" % type(dep))
-                (dep_user_name,dep_role_name) = dep.split(".",1)
+
+                names = dep.split(".",1)
+                if len(names) < 2:
+                    raise Exception("name format must match 'username.name'")
                 # strip out substrings from the dep role name, to account for 
                 # those that may have imported the role previously before this
                 # rule existed, that way we don't end up with broken/missing deps
                 #dep_role_name = name_regex.sub('', dep_role_name)
-                dep_role = Role.objects.get(name=dep_role_name, namespace=dep_user_name)
+                dep_role = Role.objects.get(name=name[0], namespace=name[1])
                 role.dependencies.add(dep_role)
                 dep_names.append(dep)
             except Exception, e:
