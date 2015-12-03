@@ -48,8 +48,8 @@ class Command(BaseCommand):
             time.sleep(60)
 
         elapsed = time.time() - started
-        hours = floor(elapsed / 3600) if elapsed > 3600 else 0
-        minutes = floor((elapsed - (hours * 3600)) / 60) if (elapsed - (hours * 3600)) > 60 else 0
+        hours = floor(elapsed / 3600) if elapsed >= 3600 else 0
+        minutes = floor((elapsed - (hours * 3600)) / 60) if (elapsed - (hours * 3600)) >= 60 else 0
         seconds =  elapsed - (hours * 3600) - (minutes * 60)
         print 'Elapsed time %02d.%02d.%02d' % (hours, minutes, seconds)
 
