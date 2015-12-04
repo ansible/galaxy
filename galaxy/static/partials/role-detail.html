@@ -26,13 +26,19 @@
             <div class="documentation">
                 <uib-tabset type="pills">
                     <uib-tab heading="Details">
-                        <div class="row" ng-show="role.travis_status_url">
+                        <div class="row">
                             <div class="col-lg-12">
-                                <img ng-src="{{ role.travis_status_url }}" class="travis-status-img" />
+                                <div class="badge-container">
+                                    <img ng-src="{{ role.travis_status_url }}" class="travis-status-img" tooltip-placement="top" uib-tooltip="Travis Build Status" ng-if="role.travis_status_url" />
+                                    <div class="download-badge" tooltip-placement="top" uib-tooltip="Galaxy Download Count">
+                                        <div class="title">Downloads</div>
+                                        <div class="count">{{ role.download_count }}</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="row button-row">
-                            <div class="col-lg-12">
+                            <div class="col-sm-8">
                                 <a class="btn btn-default btn-md" ng-href="{{ role.issue_tracker_url }}"
                                    ng-show="role.issue_tracker_url" target="_blank"><i class="fa fa-bug"></i> Issue Tracker</a>
                                 
@@ -55,55 +61,36 @@
                                     class="btn btn-default btn-md" ng-disabled="!is_authenticated">
                                     <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Unstar {{ role.stargazers_count }}
                                 </a>
-                                <div class="download-count">
-                                    <span class="badge">{{ role.download_count }}</span>
-                                    <span class="title">Galaxy Download Count</span>
-                                </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-sm-6">
-                                <div class="ansible-version">
-                                    <h3>Minimum Ansible Version</h3>
-                                    <span class="value">{{ role.min_ansible_version }}</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="installation">
-                                    <h3>Installation</h3>
-                                    <code>$ ansible-galaxy install {{role.username}}.{{role.name}}</code>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row" ng-show="role.tags && role.tags.length">
-                            <div class="col-lg-12">
-                                <div class="tags-container">
-                                    <div class="title">Tags</div>
-                                    <div ng-repeat="tag in role.tags" class="galaxy-tag">{{ tag }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row" ng-show="role.tags && role.tags.length">
-                            <div class="col-sm-6">
-                                <div class="date-container">
-                                    <div class="title">Created</div>
-                                    <div>{{ role.created | date:"short" }}</div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="date-container">
-                                    <div class="title">Last Imported</div>
-                                    <div>{{ role.imported | date:"short" }}</div>
-                                </div>
+                            <div class="col-sm-12">
+                                <table class="details">
+                                    <tr>
+                                        <td class="key">Minimum Ansible Version</td><td class="value">{{ role.min_ansible_version }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Installation</td><td class="value"><code>$ ansible-galaxy install {{role.username}}.{{role.name}}</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Tags</td><td class="value"><div ng-repeat="tag in role.tags" class="galaxy-tag">{{ tag }}</div></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Created</td><td class="value">{{ role.created | date:"short" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Imported</td>
+                                        <td class="value" ng-if="role.imported">{{ role.imported | date:"short" }}</td>
+                                        <td class="value na" ng-if="!role.imported">NA</td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
-
+                    
                         <div class="row">
-                            <div class="col-sm-6 col-md-6">
-                                <div class="versions">
+                            <div class="col-sm-12">
+                                <div class="versions section">
                                     <table class="table ga-table-striped">
                                         <caption>Version History</caption>
                                         <thead>
@@ -127,9 +114,7 @@
                                         </table>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6">
-                                <div class="platforms">
+                                <div class="platforms section">
                                     <table class="table ga-table-striped">
                                         <caption>Supported Platforms</caption>
                                         <thead>
@@ -139,7 +124,7 @@
                                             </tr>
                                         </thead>
                                     </table>
-                                    <div class="table-scroller">
+                                    <div class="table-scroller section">
                                         <table class="table ga-table-striped">
                                             <tbody>
                                             <tr ng-repeat="platform in role.platform_details">
@@ -153,12 +138,7 @@
                                         </table>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6">
-                                <div class="dependencies">
+                                <div class="dependencies section">
                                     <table class="table ga-table-striped">
                                         <caption>Dependencies</caption>
                                         <thead>

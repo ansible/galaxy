@@ -5,7 +5,7 @@
 
 [QA:vars]
 es_cluster_name="galaxy_qa_es_cluster"
-es_request_sources=["45.79.148.64","45.79.153.136","45.79.148.68"]
+es_request_sources=["45.79.141.31","45.79.147.227","45.79.129.142","45.79.137.58"]
 
 [PROD]
 45.33.94.220 linode_hostname="galaxy-pr-es-001"

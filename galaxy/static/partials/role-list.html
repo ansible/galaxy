@@ -55,8 +55,8 @@
                                 </table>
                             </div>
                             <div class="row footer">
-                                <div class="img-container">
-                                    <img ng-src="{{ role.travis_status_url }}" class="travis-status-img" />
+                                <div class="img-container" ng-if="role.travis_status_url">
+                                    <img ng-src="{{ role.travis_status_url }}" tooltip-placement="top" uib-tooltip="Travis Build Status" class="travis-status-img" />
                                 </div>
                                 <div class="counts">
                                     <div class="subscribe">

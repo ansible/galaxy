@@ -70,7 +70,7 @@
                             <div class="count watchers"><div class="icon"><i class="fa fa-eye"></i></div> Watchers {{ import_detail.watchers_count }}</div>
                         </div>
                     </div>
-                    <div class="message-list">
+                    <div class="message-list" ng-if="import_detail.summary_fields.task_messages.length">
                         <div class="message" ng-repeat="message in import_detail.summary_fields.task_messages track by message.id">
                             <span class="text {{ message.message_type | lowercase }}">{{ message.message_text }}</span>
                         </div>
