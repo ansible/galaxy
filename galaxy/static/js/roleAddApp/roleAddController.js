@@ -36,6 +36,7 @@
         repositories,
         notificationSecretService) {
 
+        $scope.page_title = 'My Roles';
         $scope.repositories = repositories;
         $scope.username = currentUserService.username;
         $scope.toggleRepository = _toggleRepository;

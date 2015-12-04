@@ -7,7 +7,7 @@
         <li><a {% if not use_menu_controller %} href="/accounts/login?next={{ request.path }}" {% endif %}
             {% if use_menu_controller %} href="" ng-click="redirectToSignin()" {% endif %}>Sign In</a></li>
     {% else %}
-        <li {% if url_items.1.0 == 'roleadd' %} class="active" {% endif %}><a type="button" href="{% url 'main:role-add-category' %}">Add a Role</a></li>
+        <li {% if url_items.1.0 == 'roleadd' %} class="active" {% endif %}><a type="button" href="{% url 'main:role-add-category' %}">My Roles</a></li>
         {% if url_items.1.0 == 'accounts' and url_items.2.0 == 'profile' or url_items.2.0 == 'email' %}
             <li class="dropdown active">
         {% else %}

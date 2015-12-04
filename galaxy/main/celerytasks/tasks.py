@@ -189,7 +189,7 @@ def import_role(task_id):
         add_messge(import_task, "ERROR", "Key galaxy_info not found in meta/main.yml")
         galaxy_info = {}
 
-    role.description         = strip_input(galaxy_info.get("description",""))
+    role.description         = strip_input(galaxy_info.get("description",repo.description))
     role.author              = strip_input(galaxy_info.get("author",""))
     role.company             = strip_input(galaxy_info.get("company",""))
     role.license             = strip_input(galaxy_info.get("license",""))
@@ -209,7 +209,7 @@ def import_role(task_id):
         role.company = role.company[:50]
     
     if role.description == "":
-        add_message(import_task, "ERROR", "galaxy_info.description missing value in meta/main.yml")
+        add_message(import_task, "ERROR", "missing description. Add a description to GitHub repo or meta/main.yml.")
     elif len(role.description) > 255:
         add_message(import_task, "WARNING", "galaxy_info.description exceeds max length of 255 in meta/main.yml")
         role.description = role.description[:255]
@@ -388,11 +388,15 @@ def import_role(task_id):
                 # those that may have imported the role previously before this
                 # rule existed, that way we don't end up with broken/missing deps
                 #dep_role_name = name_regex.sub('', dep_role_name)
+            except Exception, e:
+                add_message(import_task, "ERROR", "Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
+
+            try:
                 dep_role = Role.objects.get(name=name[0], namespace=name[1])
                 role.dependencies.add(dep_role)
                 dep_names.append(dep)
-            except Exception, e:
-                add_message(import_task, "ERROR", "Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
+            except:
+                add_message(import_task, "WARNING", "Role dependency not found: %s" % dep)
 
         # Remove deps that are no longer listed in the metadata
         for dep in role.dependencies.all():
