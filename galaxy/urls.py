@@ -36,7 +36,6 @@ urlpatterns = patterns('',
   url(r'^avatar/', include('avatar.urls')),
   url(r'^galaxy__admin/', include(admin.site.urls)),
   url(r'^robots\.txt$', TemplateView.as_view(template_name="robots.txt", content_type='text/plain')),
-  url(r'^9S66Rbmz\.html$', TemplateView.as_view(template_name="9S66Rbmz.html", content_type="text/plain")),
 )
 
 if settings.DEBUG:

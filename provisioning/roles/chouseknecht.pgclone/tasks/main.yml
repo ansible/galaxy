@@ -1,24 +1,22 @@
 ---
-# Inspired by http://www.rassoc.com/gregr/weblog/2013/02/16/zero-to-postgresql-streaming-replication-in-10-mins/
+- name: "Stop postgresql service"
+  service: name={{ pgbase_service_name }} state=stopped
 
-- name: Stop postgresql service
-  service:  name={{ pgbase_service_name }} state=stopped  
-
-- name: Check if the output directory exists 
+- name: "Check if the output directory exists"
   stat: path="{{ pgbase_output_dir }}/pg_hba.conf"
   register: p
 
-- name: Backup selected files
+- name: "Backup selected files"
   command: "cp {{ pgbase_output_dir }}/{{ item }} {{ pgbase_backup_dir }}"
   with_items: "{{ pgbase_save_files }}" 
   when: p.stat.exists
 
-- name: Remove pgbase_output_dir
+- name: "Remove pgbase_output_dir"
   file:
       path: "{{ pgbase_output_dir }}"
       state: absent 
 
-- name: Add password to .pgpass 
+- name: "Add password to .pgpass" 
   lineinfile:
       line: "*:*:*:{{ pgbase_connect_user }}:{{ pgbase_connect_pass }}"
       regexp: "{{ pgbase_connect_user }}"
@@ -29,18 +27,18 @@
 - name: "pg_basebackup from pgbase_host to pgbase_output_dir"
   command: pg_basebackup -h {{ pgbase_connect_host }} -D {{ pgbase_output_dir }} -U {{ pgbase_connect_user }} -v -P -X fetch
 
-- name: Restore backup files
+- name: "Restore backup files"
   command: "cp {{ pgbase_backup_dir }}/{{ item }} {{ pgbase_output_dir }}"
   with_items: "{{ pgbase_save_files }}"
 
-- name: Set file ownership
+- name: "Set file ownership"
   file:
       path: "{{ pgbase_output_dir }}"
       recurse: yes
       owner: postgres   
       group: postgres
 
-- name: Write recovery.conf file
+- name: "Write recovery.conf file"
   template:
       src: recovery.conf.j2
       dest: "{{ pgbase_output_dir }}/recovery.conf"
@@ -49,5 +47,5 @@
       mode: 0600 
   when: pgbase_create_recover_file
 
-- name: Restart postgresql
+- name: "Restart postgresql"
   service: name={{ pgbase_service_name }} state=started enabled=yes

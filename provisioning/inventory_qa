@@ -5,8 +5,8 @@
 69.164.223.190
 
 [web]
-45.79.148.64 linode_private_ip=192.168.221.153 es_rebuild_host=True django_migrate=True linode_hostname=galaxy-qa-web-001
-45.79.158.144 linode_private_ip=192.168.211.158 es_rebuild_host=False django_migrate=False linode_hostname=galaxy-qa-web-002 
+45.79.141.31 linode_private_ip=192.168.218.210 es_rebuild_host=True django_migrate=True linode_hostname=galaxy-qa-web-001
+45.79.147.227 linode_private_ip=192.168.217.208 es_rebuild_host=False django_migrate=False linode_hostname=galaxy-qa-web-002 
 
 [es_hosts]
 45.79.153.137 linode_hostname=galaxy-qa-es-001
@@ -14,8 +14,8 @@
 45.79.162.76 linode_hostname=galaxy-qa-es-003
 
 [db]
-45.79.153.136 postgres_master=True linode_hostname=galaxy-qa-db-001
-45.79.148.68 postgres_master=False linode_hostname=galaxy-qa-db-002
+45.79.129.142 postgres_master=True linode_hostname=galaxy-qa-db-001
+45.79.137.58 postgres_master=False linode_hostname=galaxy-qa-db-002
 
 [rabbitmq_host]
 45.79.153.136
