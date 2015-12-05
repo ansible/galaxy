@@ -56,6 +56,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     karma           = models.IntegerField(default = 0, db_index = True)
     github_avatar   = models.CharField(_('github avatar'), max_length=254, blank=True)
     github_user     = models.CharField(_('github user'), max_length=254, blank=True)
+    cache_refreshed = models.BooleanField(_('cache refreshed'), default=False)
 
     objects = UserManager()
 

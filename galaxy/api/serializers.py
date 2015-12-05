@@ -200,12 +200,12 @@ class UserListSerializer(BaseSerializer):
             'id',
             'username',
             'email',
-            'karma',
             'staff',
             'full_name',
             'date_joined',
             'github_avatar',
-            'github_user'
+            'github_user',
+            'cache_refreshed'
         )
 
     def get_related(self, obj):
@@ -265,7 +265,8 @@ class UserDetailSerializer(BaseSerializer):
             'full_name',
             'date_joined',
             'github_avatar',
-            'github_user'
+            'github_user',
+            'cache_refreshed'
         )
 
     def to_native(self, obj):
@@ -795,7 +796,7 @@ class RoleSearchSerializer(HaystackSerializer):
     class Meta:
         index_classes = [RoleIndex]
         fields = (
-            "role_id", 
+            "role_id",
             "username",
             "name", 
             "description", 
@@ -848,7 +849,7 @@ class RoleSearchSerializer(HaystackSerializer):
     def get_versions(self, instance):
         if instance is None:
             return []
-        return json.loads(instance.versions)
+        return [v for v in instance.versions]
 
     def get_dependencies(self, instance):
         if instance is None:

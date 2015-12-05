@@ -133,21 +133,30 @@
         }
     }
 
-    #results-container {
+    #results-outer-container {
         overflow-x: hidden;
         overflow-y: auto;
+    }
+
+    #results-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        //align-items: center;
+        //align-content: center;
 
         .result {
-            display: inline-block;
-            vertical-align: top;
+            //display: inline-block;
+            //vertical-align: top;
             width: 350px;
             height: 235px;
             padding: 10px;
             border: 1px solid #ccc; 
             border-radius: 2px;
             font-size: 12px;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            margin-right: 6px;
+            margin-bottom: 6px;
             cursor: pointer;
 
             -webkit-box-shadow: 2px 2px 2px 0 #ccc;

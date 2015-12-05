@@ -36,7 +36,9 @@
         repositories,
         notificationSecretService) {
 
+        
         $scope.page_title = 'My Roles';
+        $scope.loading = true;
         $scope.repositories = repositories;
         $scope.username = currentUserService.username;
         $scope.toggleRepository = _toggleRepository;
@@ -50,9 +52,39 @@
         $scope.clearGithub = _clearGithub;
         $scope.updateSecrets = _updateSecrets;
         
-        _setup();
-        
+        if (currentUserService.cache_refreshed) {
+            $scope.loading = false;
+            _setup();
+        } else {
+            _waitForRefresh();
+        }
+
         return;
+
+        
+        function _waitForRefresh() {
+            var stop = $interval(function() {
+                currentUserService.update().then(function(userData) {
+                    if (userData.cache_refreshed) {
+                        _kill();
+                    }
+                });
+            }, 5000);
+
+            function _kill() {
+                $interval.cancel(stop);
+                if ($scope.repositories.length == 0) {
+                    githubRepoService.get().$promise.then(function(response) {
+                        $scope.loading = false;
+                        $scope.repositories = response.results;
+                        _setup();
+                    });
+                } else {
+                    $scope.loading = false;
+                    _setup();
+                }
+            }
+        }
 
         function _setup() {
             $scope.repositories.forEach(function(repo) {
@@ -69,7 +101,6 @@
                         }
                     });
                 }
-                console.log(repo);
             });
         }
 
@@ -124,11 +155,6 @@
                     },300);
                 });
             }
-            /*if (_repo.github_id && !_repo.github_secret) {
-                _repo.github_id = null;
-                notificationSecretService.delete({id: _repo.github_id});
-            }*/
-            // modified secret
             if (_repo.travis_id && _repo.travis_token && !/^\*{6}/.test(_repo.travis_token)) {
                 notificationSecretService.put({
                     id: _repo.travis_id,
@@ -165,7 +191,7 @@
         function _refresh() {
             $scope.refreshing = true;
             githubRepoService.refresh().$promise.then(function(response) {
-                $scope.repositories = response.results;
+                $scope.repositories = response;
                 _setup();
                 $scope.refreshing = false;
                 $timeout(function() {

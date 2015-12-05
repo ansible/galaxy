@@ -34,14 +34,18 @@ from github import Github, AuthenticatedUser
 from galaxy.main.models import Role, RoleRating, Tag, ImportTask, Repository
 from galaxy.main.search_models import TagDoc, PlatformDoc
 from galaxy.main.celerytasks.elastic_tasks import update_tags, update_platforms, update_users
-from galaxy.main.celerytasks.tasks import manage_user_repos
+from galaxy.main.celerytasks.tasks import refresh_user_repos, refresh_user_stars
 
 User = get_user_model()
 
 
 @receiver(user_logged_in)
 def user_logged_in_handler(request, user, **kwargs):
-    manage_user_repos.delay(user)
+    user.cache_refreshed = False
+    user.save()
+    token = SocialToken.objects.get(account__user=user, account__provider='github')
+    refresh_user_repos.delay(user,token.token)
+    refresh_user_stars.delay(user,token.token)
 
 @receiver(post_save, sender=ImportTask)
 def import_task_post_save(sender, **kwargs):
@@ -52,7 +56,6 @@ def import_task_post_save(sender, **kwargs):
     for repo in Repository.objects.filter(github_user=instance.github_user,github_repo=instance.github_repo):
         repo.is_enabled = True
         repo.save()
-
 
 @receiver(pre_save, sender=Role)
 @receiver(pre_delete, sender=Role)

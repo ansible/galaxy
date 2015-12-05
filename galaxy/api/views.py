@@ -71,7 +71,7 @@ from galaxy.api.serializers import *
 from galaxy.main.models import *
 from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
-from galaxy.main.celerytasks.tasks import import_role, manage_user_repos
+from galaxy.main.celerytasks.tasks import import_role, refresh_user_repos
 
 
 #--------------------------------------------------------------------------------
@@ -1080,7 +1080,6 @@ class RefreshUserRepos(APIView):
     '''
     Return user GitHub repos directly from GitHub. Use to refresh cache for the authenticated user.
     '''
-
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -1104,37 +1103,19 @@ class RefreshUserRepos(APIView):
         except:
             raise ValidationError({"detail": "Failed to get Github authorized user."})
 
-        response = {}
-        response['results'] = []
+        request.user.repositories.all().delete()
         for r in ghu.get_repos():
             try:
-                # check if repo is a role
                 meta = r.get_file_contents("meta/main.yml")
                 name = r.full_name.split('/')
                 cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
-                role = {
-                    'github_user': name[0],
-                    'github_repo': name[1],
-                    'is_enabled': cnt > 0,
-                    'summary_fields': {
-                        'notification_secrets': [{
-                            'id': g.id,
-                            'github_user': g.github_user,
-                            'github_repo': g.github_repo,
-                            'source': g.source,
-                            'secret': '******' + g.secret[-4:]
-                        } for g in NotificationSecret.objects.filter(github_user=name[0],github_repo=name[1])]
-                    }
-                }
-                response['results'].append(role)
+                enabled = cnt > 0
+                request.user.repositories.create(github_user=name[0],github_repo=name[1],is_enabled=enabled)
             except:
                 pass
-        
-        # update the database    
-        manage_user_repos.delay(request.user)
-        
-        return Response(response, status=status.HTTP_200_OK)
-
+        qs = request.user.repositories.all()
+        serializer = RepositorySerializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TokenView(APIView):
     '''

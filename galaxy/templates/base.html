@@ -24,6 +24,8 @@
                 "created": ("{{ user.date_joined }}" == "") ? null : "{{ user.date_joined }}", 
                 "modified": ("{{ user.last_login }}" == "") ? null : "{{ user.last_login }}", 
                 "active": ("{{ user.is_active }}" == "True") ? true : false,
+                "connected_to_github": ("{{ connected_to_github }}" == "True") ? true : false,
+                "cache_refreshed": ("{{ user.cache_refreshed }}" == "True") ? true : false,
                 "subscriptions": [
                     {% for subscription in user.get_subscriptions %}
                         {
@@ -46,9 +48,11 @@
                 ],
                 "update": function() {
                     // refresh anything about the user that may change
-                    $resource('/api/v1/users/' + userData.id + '/').get().$promise.then(function(response) {
+                    return $resource('/api/v1/users/' + userData.id + '/').get().$promise.then(function(response) {
+                        userData.cache_refreshed = response.cache_refreshed;
                         userData.subscriptions = response.summary_fields.subscriptions;
                         userData.starred = response.summary_fields.starred;
+                        return userData;
                     });
                 }
             };

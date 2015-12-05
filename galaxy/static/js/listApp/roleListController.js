@@ -410,19 +410,7 @@
             var footerHeight = 40;
             var newHeight = windowHeight - 140 - searchHeight - footerHeight;
             $log.debug('searchHeight: ' + searchHeight + ' footerHeight: ' + footerHeight);
-            $('#results-container').height(newHeight);
-
-            var containerWidth = $('#results-column').width();
-            var resultWidth = $('#results-container .result').eq(0).outerWidth() + 10;
-            var cnt = Math.floor(containerWidth / resultWidth);
-            var newWidth = cnt * resultWidth;
-            var padding = Math.floor((containerWidth - newWidth) / 2)
-            $log.debug('containerWidth: ' + containerWidth + ' resultWidth: ' + resultWidth + ' cnt: ' + cnt + ' newWidth: ' + newWidth);
-            if (cnt && newWidth < containerWidth) {
-                $('#results-container').css({ 'padding-left': padding, 'padding-right': padding });
-            } else {
-                $('#results-container').css({ 'padding-left': 0, 'padding-right': 0 });
-            }
+            $('#results-outer-container').height(newHeight);
         }
 
         function _resizeSearchControls() {

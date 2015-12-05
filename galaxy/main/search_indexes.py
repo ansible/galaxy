@@ -17,7 +17,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     tags = indexes.MultiValueField(default='', faceted=True)
     platforms = indexes.MultiValueField(default='', faceted=True)
     platform_details = indexes.CharField(default='', indexed=False)
-    versions = indexes.CharField(default='', indexed=False)
+    versions = indexes.MultiValueField(default='', indexed=False)
     dependencies = indexes.CharField(default='', indexed=False)
     created = indexes.DateTimeField(model_attr='created', default='', indexed=False)
     modified = indexes.DateTimeField(model_attr='modified', default='', indexed=False)
@@ -54,23 +54,19 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     def prepare_average_score(self, obj):
         return round(obj.average_score,1)
 
-    #def prepare_sort_name(self, obj):
-    #    return re.sub(r'[-\.]','',obj.name)
-
     def prepare_platforms_autocomplete(self, obj):
         return "%s %s %s" % (
             ' '.join(obj.get_unique_platforms()), 
             ' '.join(obj.get_unique_platform_search_terms()),
             ' '.join(obj.get_unique_platform_versions())
-            )
+        )
     
     def prepare_tags_autocomplete(self, obj):
         return ' '.join(obj.get_tags())
 
     def prepare_versions(self, obj):
-        result = [{ 'name': version.name, 'release_date': version.release_date.strftime('%Y-%m-%dT%H:%M:%S')} for version in obj.versions.filter(active=True).order_by('-name')]
-        return json.dumps(result)
-
+        return [version.name for version in obj.versions.filter(active=True).order_by('name')]
+    
     def prepare_dependencies(self, obj):
         result = [{ 'name': dep.name, 'namespace': dep.namespace, 'id': dep.id } for dep in obj.dependencies.filter(active=True).order_by('namespace','name')]
         return json.dumps(result)

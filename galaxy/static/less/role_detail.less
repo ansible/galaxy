@@ -45,23 +45,21 @@
     .download-badge {
         display: inline-block;
         font-size: 11px;
-
         .title, .count {
             display: inline-block;
-            padding-top: 1px;
-            padding-bottom: 2px;
         }
         .title {
             border-top-left-radius: 3px;
             border-bottom-left-radius: 3px;
-            border-top: 1px solid @ansible-dark-grey;
-            border-bottom: 1px solid @ansible-dark-grey;
-            border-left: 1px solid @ansible-dark-grey;
-            border-right: 1px solid @ansible-dark-grey;
+            border-top: 0 solid @ansible-dark-grey;
+            border-bottom: 0 solid @ansible-dark-grey;
+            border-left: 0 solid @ansible-dark-grey;
+            border-right: 0 solid @ansible-dark-grey;
             padding-left: 5px;
-            padding-right: 3px;
-            background-color: @ansible-dark-grey;
+            padding-right: 5px;
+            background-color: #555;
             color: @white;
+            line-height: 20px;
         }
         .count {
             margin-left: -3px;
@@ -69,11 +67,15 @@
             padding-right: 5px;
             border-top-right-radius: 3px;
             border-bottom-right-radius: 3px;
-            border-top: 1px solid @ansible-dark-grey;
-            border-bottom: 1px solid @ansible-dark-grey;
-            border-right: 1px solid @ansible-dark-grey;
-            border-left: 1px solid @ansible-dark-grey;
-            background-color: #f6f6f6;
+            border-top: 0 solid @ansible-dark-grey;
+            border-bottom: 0 solid @ansible-dark-grey;
+            border-right: 0 solid @ansible-dark-grey;
+            border-left: 0 solid @ansible-dark-grey;
+            background-color: #4C1;
+            color: @white;
+            line-height: 20px;
+            min-width: 20px;
+            text-align: right;
         }
     }
 

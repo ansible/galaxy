@@ -46,7 +46,6 @@
         $scope.is_authenticated = currentUserService.authenticated;
 
         headerService.setTitle('Galaxy - ' + role.username + '.' + role.name);  // update the page title element
-
         $scope.role = role;
         $scope.display_user_info = 1;
         $scope.staffDeleteRole = _deleteRole;

@@ -22,7 +22,9 @@
                 return $resource('/api/v1/repos/list/?page_size=1000').get(params);
             },
             refresh: function(params) {
-                return $resource('/api/v1/repos/refresh/').get(params);
+                return $resource('/api/v1/repos/refresh/', null, {
+                    'get': { method: 'GET', isArray: true }
+                }).get(params);
             },
             subscribe: function(params) {
                 return $resource('/api/v1/repos/subscriptions/', {}, {

@@ -447,29 +447,36 @@ def import_role(task_id):
 # Login Task
 #----------------------------------------------------------------------
 
-@task(name="galaxy.main.celerytasks.tasks.manage_user_repos")
-def manage_user_repos(user):
+@task(name="galaxy.main.celerytasks.tasks.refresh_user")
+@transaction.atomic
+def refresh_user_repos(user, token):
     
-    token = SocialToken.objects.get(account__user=user, account__provider='github')
-    gh_api = Github(token.token)
+    gh_api = Github(token)
     ghu = gh_api.get_user()
 
-    user.github_avatar = ghu.avatar_url
-    user.github_user = ghu.login
-    user.save()
-    
-    # update user repos
     user.repositories.all().delete()
     for r in ghu.get_repos():
         try:
-            meta = r.get_file_contents("meta/main.yml")
-            name = r.full_name.split('/')
-            cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
-            print "count: %s" % cnt
-            enabled = cnt > 0
-            user.repositories.create(github_user=name[0],github_repo=name[1],is_enabled=enabled)
+            with transaction.atomic():
+                meta = r.get_file_contents("meta/main.yml")
+                name = r.full_name.split('/')
+                cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+                enabled = cnt > 0
+                user.repositories.create(github_user=name[0],github_repo=name[1],is_enabled=enabled)
         except:
             pass
+
+    user.github_avatar = ghu.avatar_url
+    user.github_user = ghu.login
+    user.cache_refreshed = True
+    user.save()
+
+@task(name="galaxy.main.celerytasks.tasks.refresh_user_stars")
+@transaction.atomic
+def refresh_user_stars(user, token):
+    
+    gh_api = Github(token)
+    ghu = gh_api.get_user()
 
     # Refresh user subscriptions class
     user.subscriptions.all().delete()

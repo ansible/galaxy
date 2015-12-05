@@ -15,6 +15,7 @@
                             search-type-options="searchTypeOptions" 
                             search-suggestions="searchSuggestions"></autocomplete>
                     </div>
+                    <div id="results-outer-container">
                     <div id="results-container">
                         <div class="result" ng-repeat="role in roles">
                             <a ng-href="/detail#/role/{{ role.role_id }}">
@@ -83,17 +84,15 @@
                             </div>
                             </a>
                         </div><!-- result -->
-                        
-                        <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
-                        
-                        <div id="galaxy-copyright-role-list" ng-show="!loading">
-                            <div class="copyright-txt">
-                                Copyright &copy; 2015 Ansible, Inc. | <a href="http://www.ansible.com/security" target="_blank">Security Disclosures</a> | <a href="http://www.ansible.com/privacy-policy" target="_blank">Privacy Policy</a>
-                                <div class="version">GALAXY {{ version }}</div>
-                            </div>
-                        </div>
-
                     </div><!-- results -->
+                    <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
+                    <div id="galaxy-copyright-role-list" ng-show="!loading">
+                        <div class="copyright-txt">
+                            Copyright &copy; 2015 Ansible, Inc. | <a href="http://www.ansible.com/security" target="_blank">Security Disclosures</a> | <a href="http://www.ansible.com/privacy-policy" target="_blank">Privacy Policy</a>
+                            <div class="version">GALAXY {{ version }}</div>
+                        </div>
+                    </div>
+                    </div><!-- results outer container -->
                 </div><!-- search-controls-container -->
             </div>
             <div class="col-lg-2 col-md-3 col-sm-3">
