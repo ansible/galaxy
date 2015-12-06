@@ -469,6 +469,8 @@ class NotificationSerializer(BaseSerializer):
             'source',
             'github_branch',
             'travis_build_url',
+            'travis_status_url',
+            'travis_status',
             'commit_message',
             'committed_at',
             'commit',
@@ -509,7 +511,8 @@ class NotificationSerializer(BaseSerializer):
         res = super(NotificationSerializer, self).get_related(obj)
         res.update(dict(
             roles = reverse('api:notification_roles_list', args=(obj.pk,)),
-            imports = reverse('api:notification_imports_list', args=(obj.pk,))
+            imports = reverse('api:notification_imports_list', args=(obj.pk,)),
+            owner = reverse('api:user_detail', args=(obj.owner.id,)),
         ))
         return res
 

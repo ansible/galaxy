@@ -15,7 +15,7 @@
             delete: function(params) {
                 var token = getCSRFToken(); 
                 return $resource('/api/v1/removerole/', {}, {
-                    'delete': { 'method': 'PUT', headers: { "X-CSRFToken": token }}
+                    'delete': { 'method': 'DELETE', headers: { "X-CSRFToken": token }}
                 }).delete(params);
             }
         };
