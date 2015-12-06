@@ -36,8 +36,9 @@
         $scope.checkAddRole = _checkAddRole;
         
         var params = $location.search();
-        if (Object.keys(params).length > 0) {
+        if (params.github_repo) {
             $scope.searchText = params.github_repo
+            $scope.selected_id = 0;
             imports.every(function(imp) {
                 if (imp.github_user == params.github_user && imp.github_repo == params.github_repo) {
                     $scope.selected_id = imp.id;
@@ -45,13 +46,13 @@
                 }
                 return true;
             });
+        } else {
+            if (imports.length && !$scope.selected_id) {
+                $scope.selected_id = imports[0].id;
+            }
         }
 
-        if (imports.length && !$scope.selected_id) {
-            $scope.selected_id = imports[0].id;
-        }
-
-        if ($scope.imports.length) {
+        if ($scope.imports.length && $scope.selected_id) {
             $scope.loading = true;
             _showDetail($scope.selected_id);
         }
@@ -70,6 +71,7 @@
         });
 
         return;
+
 
         function _checkAddRole() {
             return !($scope.addRoleUsername && $scope.addRoleRepo);
@@ -127,8 +129,14 @@
         }
 
         function _showDetail(_import_id) {
+            if (!$scope.selected_id)
+                return;
+
             importService.import.get({ import_id: _import_id }).$promise.then(function(data) {
                 $scope.import_detail = data;
+
+                //$scope.import_detail.travis_status_url = "https://travis-ci.org/ansible/tower-cli.svg?branch=master";
+                //$scope.import_detail.travis_build_url = "https://travis-ci.org/ansible/tower-cli/builds/94920028";
 
                 if ($scope.import_detail.state == 'PENDING') {
                      $scope.import_detail['last_run'] = "Waiting to start...";

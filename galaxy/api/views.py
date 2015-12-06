@@ -109,12 +109,14 @@ def annotate_role_queryset(qs):
                avg_wow_factor    = AvgWithZeroForNull('ratings__wow_factor'),
            )
 
-def create_import_task(github_user, github_repo, github_branch, role, user):
+def create_import_task(github_user, github_repo, github_branch, role, user, travis_status_url='', travis_build_url=''):
     task = ImportTask.objects.create(
         github_user         = github_user,
         github_repo         = github_repo,
         github_reference    = github_branch,
         alternate_role_name = '',
+        travis_status_url = travis_status_url,
+        travis_build_url = travis_build_url,
         role        = role,
         owner       = user,
         state       = 'PENDING'
@@ -745,6 +747,7 @@ class NotificationList(ListCreateAPIView):
                 source = 'travis',
                 github_branch = request_branch,
                 travis_build_url = payload['build_url'],
+                travis_status = payload['status_message'],
                 commit_message = payload['message'],
                 committed_at = parse_datetime(payload['committed_at']),
                 commit = payload['commit']
@@ -754,14 +757,22 @@ class NotificationList(ListCreateAPIView):
                 # multiple roles associated with github_user/github_repo
                 for role in Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True):    
                     notification.roles.add(role)
-                    if role.github_branch and role.github_branch != request_branch:
+                    if (not role.github_branch and request_branch == 'master') or role.github_branch == request_branch:
+                        role.travis_status_url = travis_status_url
+                        role.travis_build_url = payload['build_url']
+                        role.save()
+                        task = create_import_task(
+                            role.github_user,
+                            role.github_repo,
+                            None,
+                            role,
+                            ns.owner, 
+                            travis_status_url,
+                            payload['build_url'])
+                        notification.imports.add(task)
+                    else:
                         notification.messages.append('Skipping role %d - github_branch %s does not match requested branch.' %
                             (role.id, role.github_branch))
-                    else:
-                        role.travis_status_url = travis_status_url
-                        role.save()
-                        task = create_import_task(role.github_user, role.github_repo, request_branch, role, ns.owner)
-                        notification.imports.add(task)
             else:
                 role, created = Role.objects.get_or_create(github_user=ns.github_user,github_repo=ns.github_repo, active=True,
                     defaults={
@@ -770,26 +781,34 @@ class NotificationList(ListCreateAPIView):
                         'github_user': ns.github_user,
                         'github_repo': ns.github_repo,
                         'travis_status_url': travis_status_url,
+                        'travis_build_url': payload['build_url'],
                         'is_valid':    False,
                     }
                 )
                 notification.roles.add(role)
-                if not created and role.github_branch and role.github_branch != request_branch:
-                    notification.messages.append('Skipping role %d - github_branch %s does not match requested branch.' %
-                    (role.id, role.github_branch))
-                else:
-                    if not created:
-                        role.travis_status_url = travis_status_url
-                        role.save()
-                    task = create_import_task(role.github_user, role.github_repo, request_branch, role, ns.owner)
+                if (not role.github_branch and request_branch == 'master') or role.github_branch == request_branch:
+                    role.travis_status_url = travis_status_url
+                    role.travis_build_url = payload['build_url']
+                    role.save()
+                    task = create_import_task(
+                        role.github_user,
+                        role.github_repo,
+                        None,
+                        role,
+                        ns.owner,
+                        travis_status_url,
+                        payload['build_url'])
                     notification.imports.add(task)
-
+                else:
+                    notification.messages.append('Skipping role %d - github_branch %s does not match requested branch.' %
+                        (role.id, role.github_branch))
+            
             notification.save()
             serializer = self.get_serializer(instance=notification)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-        ValidationError("Invalid request. Expecting Travis or GitHub web hook request.")
+        ValidationError("Invalid request. Expecting Travis notifiation request.")
 
 
 class NotificationDetail(RetrieveAPIView):

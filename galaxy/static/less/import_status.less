@@ -108,6 +108,9 @@
             .marker.active {
                 background: @blue;
             }
+            .missing-text {
+                color: #ccc;
+            }
             .title {
                 display: inline-block;
                 float: right;
@@ -147,6 +150,10 @@
             cursor: pointer;
             background-color: #eee;
         }
+        .import.missing:hover {
+            background-color: @white;
+            cursor: default;
+        }
         .disabled {
             .import:hover {
                 cursor: not-allowed;
@@ -158,8 +165,11 @@
         h3 {
             margin-top: 0;
         }
-        h3.no-imports {
+        div.no-imports {
             color: #e1e1e1;
+            text-align:center; 
+            margin-top: 100px;
+            font-size: 24px;
         }
         .title-row {
             .title {
@@ -178,7 +188,7 @@
             margin-top: 22px;
             margin-bottom: 20px;
             background-color: #f0f0f0;
-            height: 90px;
+            min-height: 90px;
             padding: 10px;
             border: 1px solid #e1e1e1;
             border-radius: 2px;
@@ -224,6 +234,9 @@
                 a:hover {
                     color: @black;
                 }
+            }
+            .travis-status {
+                margin-top: 10px;
             }
         }
         .message-list {

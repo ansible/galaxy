@@ -325,6 +325,12 @@ class Role(CommonModelNameNotUnique):
         default      = '',
         verbose_name = "Travis Build Status"
     )
+    travis_build_url = models.CharField(
+        max_length   = 256,
+        blank        = True,
+        default      = '',
+        verbose_name = "Travis Build URL"
+    )
     imported         = models.DateTimeField(
         null         = True,
         verbose_name = "Last Import"
@@ -513,6 +519,9 @@ class ImportTask(PrimordialModel):
     github_reference = models.CharField(
         max_length   = 256,
         verbose_name = "Github Reference",
+        null         = True,
+        blank        = True,
+        default      = ''
     )
     role = models.ForeignKey(
         Role,
@@ -580,6 +589,18 @@ class ImportTask(PrimordialModel):
     commit_url       = models.CharField(
         max_length   = 256,
         blank        = True
+    )
+    travis_status_url = models.CharField(
+        max_length    = 256,
+        blank         = True,
+        default       = '',
+        verbose_name  = "Travis Build Status"
+    )
+    travis_build_url  = models.CharField(
+        max_length    = 256,
+        blank         = True,
+        default       = '',
+        verbose_name  = "Travis Build URL"
     )
 
     def __unicode__(self):
@@ -657,6 +678,10 @@ class Notification(PrimordialModel):
         editable      = False
     )
     travis_build_url = models.CharField(
+        max_length   = 256,
+        blank        = True
+    )
+    travis_status    = models.CharField(
         max_length   = 256,
         blank        = True
     )

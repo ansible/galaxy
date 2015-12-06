@@ -171,7 +171,7 @@ def import_role(task_id):
     elif repo.github_branch:
         branch = repo.github_branch
     else:
-        repo.default_branch
+        branch = repo.default_branch
     
     add_message(import_task, "INFO", "Accessing branch: %s" % branch)
         
@@ -262,7 +262,7 @@ def import_role(task_id):
     import_task.commit = last_commit.sha
     import_task.commit_message = last_commit.message
     import_task.commit_url = last_commit.html_url
-    import_task.github_branch = role.github_branch
+    import_task.github_branch = branch
     
     # Add tags / categories. Remove ':' and only allow alpha-numeric characters
     add_message(import_task, "INFO", "Parsing galaxy_tags")

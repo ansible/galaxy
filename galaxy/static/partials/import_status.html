@@ -21,7 +21,7 @@
                         <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
                     </div>
                     <div id="import-list-inner">
-                        <div class="import" ng-repeat="import in imports | filter:searchText track by import.id" ng-click="showDetail(import.id)">
+                        <div class="import" ng-repeat="import in filteredImports = (imports | filter:searchText) track by import.id" ng-click="showDetail(import.id)">
                             <div class="marker" ng-class="{ 'active': import.id == selected_id }"></div>
                             <div class="status {{ import.summary_fields.details.state | lowercase }}"><i class="{{ import.status_icon }}"></i></div>
                             <div class="title">
@@ -34,9 +34,12 @@
                             </div>
                             <hr />
                         </div>
-                        <div clas="import" ng-show="imports.length == 0" style="margin-top: 30px; color: #ccc">
-                            <div class="title">
-                                <div class="title-text">You have not imported any roles. Click <i class="fa fa-plus"></i> above to import a role.</div>
+                        <div class="import missing" ng-show="filteredImports == 0">
+                            <div class="missing-text">No roles match your search.</div>
+                        </div>
+                        <div class="import missing" ng-show="imports.length == 0">
+                            <div class="missing-text">
+                                You have not imported any roles. Click <i class="fa fa-plus"></i> above to import a role.
                             </div>
                         </div>
                     </div>
@@ -44,7 +47,8 @@
             </div>
             <div class="col-md-8" id="import-details-column">
                 <div class="import-details-container" ng-show="!loading">
-                    <div class="row title-row" ng-show="imports.length">
+
+                    <div class="row title-row" ng-show="imports.length && selected_id">
                         <div class="col-sm-8 title">
                             <a href="/detail#/role/{{ import_detail.role }}/" class="title-link" ng-if="import_detail.summary_fields.role.is_valid">{{ import_detail.github_user + '/' + import_detail.github_repo }}</a>
                             <span class="title-text" ng-if="!import_detail.summary_fields.role.is_valid">{{ import_detail.github_user + '/' + import_detail.github_repo }}</span>
@@ -54,13 +58,22 @@
                             <div class="loading-status"><i class="fa fa-lg fa-refresh" ng-class="{ 'fa-spin': checking }"></i></div>
                         </div>
                     </div>
-                    <h3 ng-show="!imports.length" class="no-imports">No imports found</h3>
-                    <div class="title-bar">
+
+                    <div ng-show="!imports.length" class="no-imports">No imports found</div>
+                    <div ng-show="imports.length && selected_id==0" class="no-imports">Select a role to view import details.</div>
+                    
+                    <div class="title-bar" ng-show="imports.length && selected_id">
                         <div class="branch">
                             <div class="commit">{{ import_detail.github_branch }} <span class="message">{{ import_detail.commit_message }}</span></div>
-                            <div ng-show="imports.length" class="last-run">{{ import_detail.last_run }}</div>
+                            <div class="last-run">{{ import_detail.last_run }}</div>
+                            
+                            <div class="travis-status" ng-if="import_detail.travis_status_url">
+                                <a ng-href="{{ import_detail.travis_build_url }}" target="_blank">
+                                    <img ng-src="{{ import_detail.travis_status_url }}" />
+                                </a>
+                            </div>
+                        
                         </div>
-                        <!-- div class="when">{{ import_notice.when }}</div -->
                         <div class="stats">
                             <div class="count commit">
                                 <a href="{{ import_detail.commit_url }}" target="_blank"><div class="icon"><i class="fa fa-github"></i></div> Commit {{ import_detail.commit.substring(0,7) }}</a>
@@ -70,7 +83,8 @@
                             <div class="count watchers"><div class="icon"><i class="fa fa-eye"></i></div> Watchers {{ import_detail.watchers_count }}</div>
                         </div>
                     </div>
-                    <div class="message-list" ng-if="import_detail.summary_fields.task_messages.length">
+
+                    <div class="message-list" ng-show="imports.length && selected_id && import_detail.summary_fields.task_messages">
                         <div class="message" ng-repeat="message in import_detail.summary_fields.task_messages track by message.id">
                             <span class="text {{ message.message_type | lowercase }}">{{ message.message_text }}</span>
                         </div>
