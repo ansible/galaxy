@@ -469,7 +469,6 @@ class NotificationSerializer(BaseSerializer):
             'source',
             'github_branch',
             'travis_build_url',
-            'travis_status_url',
             'travis_status',
             'commit_message',
             'committed_at',
@@ -542,6 +541,8 @@ class ImportTaskSerializer(BaseSerializer):
             'commit',
             'commit_message',
             'commit_url',
+            'travis_status_url',
+            'travis_build_url'
         )
 
     def to_native(self, obj):
@@ -566,8 +567,9 @@ class ImportTaskSerializer(BaseSerializer):
         if obj.notifications.count() > 0:
             key = obj.notifications.all()[0].id
             res.update(dict(
-                notification = reverse('api:notification_detail', args=(key,))
-            ))
+                owner = reverse('api:user_detail', args=(obj.owner.id,)),
+                role = reverse('api:role_detail', args=(obj.role.id,)),
+           ))
         return res 
 
     def get_summary_fields(self, obj):
