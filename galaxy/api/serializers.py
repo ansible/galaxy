@@ -378,7 +378,7 @@ class PlatformSerializer(BaseSerializer):
 class RoleVersionSerializer(BaseSerializer):
     class Meta:
         model = RoleVersion
-        fields = ('id','name','release_date',)
+        fields = ('id','name',)
 
 
 class RepositorySerializer(BaseSerializer):
@@ -651,12 +651,11 @@ class ImportTaskLatestSerializer(BaseSerializer):
 
 
 class RoleListSerializer(BaseSerializer):
-    # average_score        = serializers.SerializerMethodField()
     readme_html          = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('namespace','is_valid','github_user','github_repo','min_ansible_version',
+        fields = BASE_FIELDS + ('namespace','is_valid','github_user','github_repo','github_branch','min_ansible_version',
                                 'issue_tracker_url','license','company','description', 'readme_html','travis_status_url',
                                 'stargazers_count', 'watchers_count', 'forks_count', 'open_issues_count',
                                 'commit', 'commit_message','commit_url','download_count')
@@ -691,11 +690,8 @@ class RoleListSerializer(BaseSerializer):
         d['dependencies'] = [str(g) for g in obj.dependencies.all()]
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
         d['tags'] = [{'name':g.name} for g in obj.tags.all()]
-        d['versions'] = [{'name':g.name,'release_date':g.release_date} for g in obj.versions.all()]
+        d['versions'] = [{ 'id': g.id, 'name':g.name } for g in obj.versions.all()]
         return d
-
-    # def get_average_score(self, obj):
-    #     return round(obj.average_score, 1)
 
     def get_readme_html(self, obj):
         if obj is None:
@@ -776,7 +772,7 @@ class RoleDetailSerializer(BaseSerializer):
         # d['ratings'] = [{'id':g.id, 'score':g.score} for g in obj.ratings.filter(owner__is_active=True)]
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
         d['tags'] = [{'name':g.name} for g in obj.tags.all()]
-        d['versions'] = [{'name':g.name,'release_date':g.release_date} for g in obj.versions.all()]
+        d['versions'] = [{ 'id': g.id, 'name':g.name } for g in obj.versions.all()]
         return d
     
     def get_readme_html(self, obj):

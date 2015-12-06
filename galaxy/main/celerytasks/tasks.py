@@ -73,7 +73,7 @@ def add_message(import_task, msg_type, msg_text):
         print "Error adding message to import task for role %s: %s" % (import_task.role.name,str(e))
     print "Role %d: %s - %s" % (import_task.role.id, msg_type, msg_text)
 
-def get_readme(import_task, repo):
+def get_readme(import_task, repo, branch):
     """
     Retrieve README.md from the repo and sanitize by removing all markup. Should preserve unicode characters.
     """
@@ -82,7 +82,7 @@ def get_readme(import_task, repo):
     # load README.md
     try: 
         if import_task.github_reference:
-            readme = repo.get_file_contents("README.md",ref=import_task.github_reference)
+            readme = repo.get_file_contents("README.md",ref=branch)
         else:
             readme = repo.get_file_contents("README.md")    
     except:
@@ -165,7 +165,14 @@ def import_role(task_id):
     if repo is None:
         fail_import_task(import_task, logger, "Galaxy user %s does not have access to repo %s" % (user.username,repo_full_name))
 
-    branch = import_task.github_reference if import_task.github_reference else repo.default_branch
+    # determine which branch to use
+    if import_task.github_reference:
+        branch = import_task.github_reference
+    elif repo.github_branch:
+        branch = repo.github_branch
+    else:
+        repo.default_branch
+    
     add_message(import_task, "INFO", "Accessing branch: %s" % branch)
         
     # parse and validate meta/main.yml data
@@ -195,7 +202,7 @@ def import_role(task_id):
     role.license             = strip_input(galaxy_info.get("license",""))
     role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version",""))
     role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url",""))
-    role.github_branch       = strip_input(galaxy_info.get("github_branch",repo.default_branch))
+    role.github_branch       = strip_input(galaxy_info.get("github_branch", ""))
 
     if import_task.github_reference and role.github_branch != import_task.github_reference:
         fail_import_task(import_task, logger, "Requested branch %s does not match branch %s specified " +
@@ -404,7 +411,7 @@ def import_role(task_id):
             if dep_name not in dep_names:
                 role.dependencies.remove(dep)
 
-    role.readme = get_readme(import_task, repo)
+    role.readme = get_readme(import_task, repo, branch)
     
     # helper function to save repeating code:
     def add_role_version(category):
