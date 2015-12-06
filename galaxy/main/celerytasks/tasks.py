@@ -168,8 +168,8 @@ def import_role(task_id):
     # determine which branch to use
     if import_task.github_reference:
         branch = import_task.github_reference
-    elif repo.github_branch:
-        branch = repo.github_branch
+    elif role.github_branch:
+        branch = role.github_branch
     else:
         branch = repo.default_branch
     

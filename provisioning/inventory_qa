@@ -18,4 +18,4 @@
 45.79.137.58 postgres_master=False linode_hostname=galaxy-qa-db-002
 
 [rabbitmq_host]
-45.79.153.136
+45.79.129.142
