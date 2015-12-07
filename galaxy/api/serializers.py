@@ -378,7 +378,7 @@ class PlatformSerializer(BaseSerializer):
 class RoleVersionSerializer(BaseSerializer):
     class Meta:
         model = RoleVersion
-        fields = ('id','name',)
+        fields = ('id','name','release_date',)
 
 
 class RepositorySerializer(BaseSerializer):
@@ -695,7 +695,7 @@ class RoleListSerializer(BaseSerializer):
         d['dependencies'] = [str(g) for g in obj.dependencies.all()]
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
         d['tags'] = [{'name':g.name} for g in obj.tags.all()]
-        d['versions'] = [{ 'id': g.id, 'name':g.name } for g in obj.versions.all()]
+        d['versions'] = [{ 'id': g.id, 'name':g.name, 'release_date': g.release_date } for g in obj.versions.all()]
         return d
 
     def get_readme_html(self, obj):
@@ -777,7 +777,7 @@ class RoleDetailSerializer(BaseSerializer):
         # d['ratings'] = [{'id':g.id, 'score':g.score} for g in obj.ratings.filter(owner__is_active=True)]
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
         d['tags'] = [{'name':g.name} for g in obj.tags.all()]
-        d['versions'] = [{ 'id': g.id, 'name':g.name } for g in obj.versions.all()]
+        d['versions'] = [{ 'id': g.id, 'name':g.name, 'release_date': g.release_date } for g in obj.versions.all()]
         return d
     
     def get_readme_html(self, obj):
@@ -850,7 +850,7 @@ class RoleSearchSerializer(HaystackSerializer):
     def get_versions(self, instance):
         if instance is None:
             return []
-        return [v for v in instance.versions]
+        return json.loads(instance.versions)
 
     def get_dependencies(self, instance):
         if instance is None:

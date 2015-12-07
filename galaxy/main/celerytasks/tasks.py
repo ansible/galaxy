@@ -271,7 +271,7 @@ def import_role(task_id):
         add_message(import_task, "WARNING", "Found galaxy_info.categories. Update meta/main.yml to use galaxy_info.galaxy_tags.")
         cats = galaxy_info.get("categories")
         if isinstance(cats,basestring) or not hasattr(cats, '__iter__'):
-            add_message(import_task, "ERROR","In meta/main.yml galaxy_info.categories must be an iterable list.")
+            add_message(import_task, "ERROR", "In meta/main.yml galaxy_info.categories must be an iterable list.")
         else:
             for category in cats:
                 for cat in category.split(':'): 
@@ -290,7 +290,7 @@ def import_role(task_id):
                     if re.match('^[a-zA-Z0-9:]+$',t):
                         meta_tags.append(t)
                     else:
-                        add_message(import_task, "WARNING", "%s is not a valid tag" % cat)
+                        add_message(import_task, "WARNING", "'%s' is not a valid tag. Skipping." % t)
 
     # There are no tags?
     if len(meta_tags) == 0:
@@ -403,7 +403,7 @@ def import_role(task_id):
                 role.dependencies.add(dep_role)
                 dep_names.append(dep)
             except:
-                add_message(import_task, "WARNING", "Role dependency not found: %s" % dep)
+                add_message(import_task, "ERROR", "Role dependency not found: %s" % dep)
 
         # Remove deps that are no longer listed in the metadata
         for dep in role.dependencies.all():
@@ -414,9 +414,9 @@ def import_role(task_id):
     role.readme = get_readme(import_task, repo, branch)
     
     # helper function to save repeating code:
-    def add_role_version(category):
-        rv,created = RoleVersion.objects.get_or_create(name=category.name, role=role)
-        rv.release_date = category.commit.commit.author.date
+    def add_role_version(tag):
+        rv,created = RoleVersion.objects.get_or_create(name=tag.name, role=role)
+        rv.release_date = tag.commit.commit.author.date
         rv.save()
 
     # get the tags for the repo, and then loop through them

@@ -17,7 +17,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     tags = indexes.MultiValueField(default='', faceted=True)
     platforms = indexes.MultiValueField(default='', faceted=True)
     platform_details = indexes.CharField(default='', indexed=False)
-    versions = indexes.MultiValueField(default='', indexed=False)
+    versions = indexes.CharField(default='', indexed=False)
     dependencies = indexes.CharField(default='', indexed=False)
     created = indexes.DateTimeField(model_attr='created', default='', indexed=False)
     modified = indexes.DateTimeField(model_attr='modified', default='', indexed=False)
@@ -65,7 +65,14 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
         return ' '.join(obj.get_tags())
 
     def prepare_versions(self, obj):
-        return [version.name for version in obj.versions.filter(active=True).order_by('name')]
+        result = []
+        for version in obj.versions.filter(active=True).order_by('-loose_version'):
+            release_date = version.release_date.strftime('%Y-%m-%dT%H:%M:%SZ') if version.release_date else None
+            result.append({
+                'name': version.name,
+                'release_date': release_date
+            })
+        return json.dumps(result)
     
     def prepare_dependencies(self, obj):
         result = [{ 'name': dep.name, 'namespace': dep.namespace, 'id': dep.id } for dep in obj.dependencies.filter(active=True).order_by('namespace','name')]

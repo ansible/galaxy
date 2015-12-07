@@ -429,10 +429,16 @@ class RoleVersion(CommonModelNameNotUnique):
     #------------------------------------------------------------------------------
     # regular fields
     
+    release_date = models.DateTimeField(
+        blank      = True,
+        null       = True,
+    )
     loose_version = LooseVersionField(
         editable   = False,
         db_index   = True,
     )
+
+
 
     #------------------------------------------------------------------------------
     # other functions and properties

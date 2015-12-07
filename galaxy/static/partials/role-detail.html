@@ -96,6 +96,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Version</th>
+                                                <th>Release Date</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -104,9 +105,10 @@
                                             <tbody>
                                             <tr ng-repeat="version in role.versions">
                                                 <td>{{ version.name }}</td>
+                                                <td>{{ version.release_date | date:"short" }}</td>
                                             </tr>
                                             <tr ng-show="!role.versions.length">
-                                                <td>No version history available.</td>
+                                                <td colspan="2">No version history available.</td>
                                             </tr>
                                             </tbody>
                                         </table>
