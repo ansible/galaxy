@@ -179,10 +179,7 @@ def import_role(task_id):
     add_message(import_task, "INFO", "Parsing and validating meta/main.yml")
    
     try:
-        if import_task.github_reference:
-            meta_file = repo.get_file_contents("meta/main.yml", ref=import_task.github_reference)
-        else:
-            meta_file = repo.get_file_contents("meta/main.yml")    
+        meta_file = repo.get_file_contents("meta/main.yml", ref=branch)
     except:
         fail_import_task(import_task, logger, "Failed to find meta/main.yml. The role must include a meta/main.yml file.")
 
@@ -203,10 +200,6 @@ def import_role(task_id):
     role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version",""))
     role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url",""))
     role.github_branch       = strip_input(galaxy_info.get("github_branch", ""))
-
-    if import_task.github_reference and role.github_branch != import_task.github_reference:
-        fail_import_task(import_task, logger, "Requested branch %s does not match branch %s specified " +
-            "in meta/main.yml." % (import_task.github_reference,role.branch))
 
     if role.issue_tracker_url == "" and repo.has_issues:
         role.issue_tracker_url = repo.issues_url
