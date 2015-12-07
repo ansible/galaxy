@@ -42,6 +42,8 @@
             imports.every(function(imp) {
                 if (imp.github_user == params.github_user && imp.github_repo == params.github_repo) {
                     $scope.selected_id = imp.id;
+                    $scope.selected_github_user = imp.github_user;
+                    $scope.selected_github_repo = imp.github_repo;
                     return false;
                 }
                 return true;
@@ -49,6 +51,8 @@
         } else {
             if (imports.length && !$scope.selected_id) {
                 $scope.selected_id = imports[0].id;
+                $scope.selected_github_user = imports[0].github_user;
+                $scope.selected_github_repo = imports[0].github_repo;
             }
         }
 
@@ -102,9 +106,21 @@
         function _getImports() {
             // reload the data
             $scope.checking = true;
+            console.log('checking for ' + $scope.selected_github_user + ' ' + $scope.selected_github_repo);
             importService.imports.get({owner_id: currentUserService.id}).then(function(data) { 
                 $scope.checking = false; 
                 $scope.imports = data;
+
+                // get the latest import id for the selected repo
+                data.every(function(imp) {
+                    if (imp.github_user === $scope.selected_github_user &&
+                        imp.github_repo === $scope.selected_github_repo) {
+                        console.log('switching id to: ' + imp.id);
+                        $scope.selected_id = imp.id;
+                        return false;
+                    }
+                    return true;
+                });
                 _showDetail($scope.selected_id);
             });
         }

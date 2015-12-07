@@ -440,10 +440,9 @@ def import_role(task_id):
         import_task.state = import_state
         import_task.finished = datetime.datetime.now()
         import_task.save()
-        if import_state == "SUCCESS":
-            role.imported = datetime.datetime.now()   
-            role.is_valid = True
-            role.save()
+        role.imported = datetime.datetime.now()   
+        role.is_valid = True
+        role.save()
         transaction.commit()
     except Exception, e:
         fail_import_task(import_task, logger, "An error occurred while saving the role: %s" % str(e))
