@@ -106,7 +106,6 @@
         function _getImports() {
             // reload the data
             $scope.checking = true;
-            console.log('checking for ' + $scope.selected_github_user + ' ' + $scope.selected_github_repo);
             importService.imports.get({owner_id: currentUserService.id}).then(function(data) { 
                 $scope.checking = false; 
                 $scope.imports = data;
@@ -115,7 +114,6 @@
                 data.every(function(imp) {
                     if (imp.github_user === $scope.selected_github_user &&
                         imp.github_repo === $scope.selected_github_repo) {
-                        console.log('switching id to: ' + imp.id);
                         $scope.selected_id = imp.id;
                         return false;
                     }
@@ -140,6 +138,14 @@
             if (!$scope.loading) {
                 $scope.loading = true;
                 $scope.selected_id = _import_id;
+                $scope.imports.every(function(imp) {
+                    if (imp.id === _import_id) {
+                        $scope.selected_github_repo = imp.github_repo;
+                        $scope.selected_github_user = imp.github_user;
+                        return false;
+                    }
+                    return true;
+                });
                 _showDetail(_import_id);
             }
         }
