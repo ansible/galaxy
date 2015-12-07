@@ -54,7 +54,7 @@
                             <span class="title-text" ng-if="!import_detail.summary_fields.role.is_valid">{{ import_detail.github_user + '/' + import_detail.github_repo }}</span>
                         </div>
                         <div class="col-sm-4 text-right">
-                            <a href="" ng-click="reimportRole(import_detail.github_user, import_detail.github_repo, import_detail.github_branch)" class="btn btn-sm btn-default"><i class="fa fa-upload"></i> Re-Import</a>
+                            <a href="" ng-click="reimportRole(import_detail.github_user, import_detail.github_repo)" class="btn btn-sm btn-default"><i class="fa fa-upload"></i> Re-Import</a>
                             <div class="loading-status"><i class="fa fa-lg fa-refresh" ng-class="{ 'fa-spin': checking }"></i></div>
                         </div>
                     </div>

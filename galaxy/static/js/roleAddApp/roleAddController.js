@@ -110,7 +110,6 @@
             _repo.travis_token_type = "password";
             if (_repo.show_integrations) {
                 // reveal the form. keep a copy in case user clicks cancel.
-                console.log('set master');
                 $scope.master = {
                     travis_id: _repo.travis_id,
                     travis_token: _repo.travis_token,

@@ -175,24 +175,26 @@ def import_role(task_id):
     
     add_message(import_task, "INFO", "Accessing branch: %s" % branch)
         
-    # parse and validate meta/main.yml data
+    # parse meta/main.yml data
     add_message(import_task, "INFO", "Parsing and validating meta/main.yml")
    
     try:
-        meta_file = repo.get_file_contents("meta/main.yml")
+        meta_file = repo.get_file_contents("meta/main.yml", ref=branch)
     except:
         fail_import_task(import_task, logger, "Failed to find meta/main.yml. Must include a meta/main.yml file.")
 
     try:
-        mata_decoded = meta_file.content.decode('base64')
+        meta_decoded = meta_file.content.decode('base64')
     except:
         fail_import_task(import_task, logger, "Failed to decode meta/main.yml. Must have a valid meta/main.yml.")
 
     try:
         meta_data = yaml.safe_load(meta_decoded)
-    except Exception, e:
+    except yaml.YAMLError, e:
+        add_message(import_task, "ERROR", "yaml parse error: %s" % e)
         fail_import_task(import_task, logger, "Failed to parse meta/main.yml. Check the yaml syntax.")
     
+    # validate meta/main.yml
     galaxy_info = meta_data.get("galaxy_info", None)
     if galaxy_info is None:
         add_messge(import_task, "ERROR", "Key galaxy_info not found in meta/main.yml")
