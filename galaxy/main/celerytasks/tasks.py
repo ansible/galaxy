@@ -189,7 +189,7 @@ def import_role(task_id):
         fail_import_task(import_task, logger, "Failed to decode meta/main.yml. Must have a valid meta/main.yml.")
 
     try:
-        meta_data = yaml.safe_load(meeta_decoded)
+        meta_data = yaml.safe_load(meta_decoded)
     except Exception, e:
         fail_import_task(import_task, logger, "Failed to parse meta/main.yml. Check the yaml syntax.")
     
