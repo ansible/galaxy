@@ -379,6 +379,7 @@ def import_role(task_id):
     else:
         dep_names = []
         for dep in dependencies:
+            names = []
             try:
                 if isinstance(dep, dict):
                     if 'role' not in dep:
@@ -399,7 +400,7 @@ def import_role(task_id):
                 add_message(import_task, "ERROR", "Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
 
             try:
-                dep_role = Role.objects.get(name=name[0], namespace=name[1])
+                dep_role = Role.objects.get(namespace=names[0], name=names[1])
                 role.dependencies.add(dep_role)
                 dep_names.append(dep)
             except:
