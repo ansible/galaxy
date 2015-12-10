@@ -13,3 +13,4 @@ provisioning/ec2_inventory
 .vagrant
 /Vagrantfile
 /logs
+galaxy.min.css
