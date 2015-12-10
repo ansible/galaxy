@@ -266,10 +266,17 @@
     }
 
     h2 {
-        color: @ansible-color;
-        margin: 0;
-        font-size: 14px;
-        text-transform: uppercase;
+        a {
+            margin: 0;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        a, a:active, a:visited {
+            color: @ansible-color;
+        }
+        a:hover {
+            color: @blue;
+        }
     }
 
     section {
