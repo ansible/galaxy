@@ -153,6 +153,8 @@
             if (!$scope.selected_id)
                 return;
 
+            console.log('getting detail for import: ' + _import_id);
+
             importService.import.get({ import_id: _import_id }).$promise.then(function(data) {
                 $scope.import_detail = data;
 

@@ -414,7 +414,15 @@ class RepositorySerializer(BaseSerializer):
                 ('github_repo',s.github_repo),
                 ('source',s.source),
                 ('secret','******' + s.secret[-4:]),
-            ]) for s in NotificationSecret.objects.filter(github_user=obj.github_user,github_repo=obj.github_repo)]
+            ]) for s in NotificationSecret.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo)
+        ]
+        d['roles'] = [
+            OrderedDict([
+                ('id', r.id),
+                ('namespace', r.namespace),
+                ('name', r.name)
+            ]) for r in Role.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo)
+        ]
         return d
 
 class TopContributorsSerializer(serializers.BaseSerializer):

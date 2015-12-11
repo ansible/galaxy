@@ -19,15 +19,17 @@
                     <div class="col-sm-5 title">
                         {{ username }}
                     </div>
-                    <div class="col-sm-7 tools">
-                        <a href="" ng-click="refreshRepos()" ng-disabled="refreshing" class="refresh-link btn btn-sm btn-default" 
-                         tooltip-placement="top" uib-tooltip="Refresh Your Repositories from GitHub"><i class="fa fa-refresh"></i> Refresh</a>
-                        <div class="refreshing-icon"><i class="fa fa-spin fa-spinner" ng-show="refreshing"></i></div>
+                    <div class="col-sm-4 tools">
                         <div class="search-roles">
                             <input type="text" placeholder="Search Roles" class="form-control input-sm" ng-model="searchText" ng-disabled="!repositories.length">
                             <div class="search-icon"><i class="fa fa-search" ng-show="!searchText"></i></div>
                             <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
                         </div>
+                    </div>
+                    <div class="col-sm-3 tools">
+                        <a href="" ng-click="refreshRepos()" ng-disabled="refreshing" class="refresh-link btn btn-sm btn-default" 
+                         tooltip-placement="top" uib-tooltip="Refresh Your Repositories from GitHub"><i class="fa fa-refresh"></i></a>
+                         <div class="refreshing-icon"><i class="fa fa-spin fa-spinner" ng-if="refreshing"></i></div>
                     </div>
                 </div>
                 <div class="repository" ng-repeat="repo in repositories | filter:searchText">
@@ -41,10 +43,20 @@
                         ng-change="toggleRepository(repo)"
                         is-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING' || refreshing"></toggle-switch>
                     <div class="state"><i class="fa fa-spin fa-spinner" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'"></i></div>
-                    <div class="settings"><a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Configure Travis Notification"><i class="fa fa-large fa-gear"></i></a></div>
+                    <div class="settings"><a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Configure Travis Notification" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a></div>
                     <div class="name">
-                        <a ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" ng-if="repo.is_enabled" tooltip-placement="top" uib-tooltip="View Role Import Details">{{ repo.github_user + '/' + repo.github_repo }}</a>
+                        <a ng-href="/detail#/role/{{ repo.summary_fields.roles[0].id }}" ng-if="repo.is_enabled">{{ repo.github_user + '/' + repo.github_repo }}</a>
                         <span ng-if="!repo.is_enabled">{{ repo.github_user + '/' + repo.github_repo }}</span>
+                    </div>
+                    <div class="tools" ng-if="repo.is_enabled">
+                        <a class="btn btn-default btn-xs" ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" tooltip-placement="top" uib-tooltip="View Role Import Details"><i class="fa fa-list"></i></a>
+                        <button type="button"
+                            class="btn btn-default btn-xs"
+                            ng-click="reimport(repo)"
+                            tooltip-placement="top"
+                            uib-tooltip="Re-import Role"
+                            ng-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING' || refreshing"><i class="fa fa-upload"></i>
+                        </button>
                     </div>
                                     
                     <div uib-collapse="!repo.show_integrations" class="integration-container">

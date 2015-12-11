@@ -35,8 +35,6 @@
             }
             .search-roles {
                 position: relative;
-                display:inline-block;
-                width: 60%;
                 input {
                     padding-right: 15px;
                 }
@@ -57,15 +55,6 @@
         }
         
         .repository {
-            margin-bottom: 15px;
-            .toggle-switch {
-                border: 1px solid @ansible-dark-grey;
-                border-radius: 2px;
-            }
-            .toggle-switch .switch-left {
-                background-color: @green;
-            }
-            
             .ats-switch,
             .name,
             .state,
@@ -76,28 +65,33 @@
             }
             .settings {
                 margin-right: 10px;
-                a, a:active, a:visited {
+                .btn {
                     color: @ansible-dark-grey;
-                }
-                a:hover {
-                    color: @blue;
                 }
             }
             .name {
-                font-size: 18px;
                 color: @ansible-dark-grey;
-                width: 60%;
+                width: 45%;
                     a, a:active, a:visited {
                     color: @blue;
                 }
                 a:hover {
                     color: @ansible-color;
                 }
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             .state {
                 width: 22px;
                 text-align: center;
                 color: @ansible-dark-grey;
+            }
+
+            hr {
+                padding: 0;
+                margin-top: 8px;
+                margin-bottom: 8px;
             }
 
             .integration-container {
@@ -132,6 +126,13 @@
                 @media (max-width: 925px) {
                     width: 100%;
                     margin-left: 0;
+                }
+            }
+
+            .tools {
+                display: inline-block;
+                .btn {
+                    color: @ansible-dark-grey;
                 }
             }
 

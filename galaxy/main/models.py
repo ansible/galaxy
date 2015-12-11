@@ -284,6 +284,11 @@ class Role(CommonModelNameNotUnique):
         default = '',
         verbose_name = "Github Branch"
     )
+    github_default_branch = models.CharField(
+        max_length = 256,
+        default = 'master',
+        verbose_name = "Default Branch"
+    )
     readme = models.TextField(
         blank=True,
         default='',

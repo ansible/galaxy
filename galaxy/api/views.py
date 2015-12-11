@@ -757,7 +757,8 @@ class NotificationList(ListCreateAPIView):
                 # multiple roles associated with github_user/github_repo
                 for role in Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True):    
                     notification.roles.add(role)
-                    if (not role.github_branch and request_branch == 'master') or role.github_branch == request_branch:
+                    default_branch = role.github_default_branch if role.github_branch else 'master'
+                    if (not role.github_branch and request_branch == default_branch) or role.github_branch == request_branch:
                         role.travis_status_url = travis_status_url
                         role.travis_build_url = payload['build_url']
                         role.save()
@@ -780,13 +781,15 @@ class NotificationList(ListCreateAPIView):
                         'name':        ns.github_repo,
                         'github_user': ns.github_user,
                         'github_repo': ns.github_repo,
+                        'github_default_branch': 'master',
                         'travis_status_url': travis_status_url,
                         'travis_build_url': payload['build_url'],
                         'is_valid':    False,
                     }
                 )
+                default_branch = role.github_default_branch if role.github_default_branch else 'master'
                 notification.roles.add(role)
-                if (not role.github_branch and request_branch == 'master') or role.github_branch == request_branch:
+                if (not role.github_branch and request_branch == default_branch) or role.github_branch == request_branch:
                     role.travis_status_url = travis_status_url
                     role.travis_build_url = payload['build_url']
                     role.save()

@@ -207,6 +207,7 @@ def import_role(task_id):
     role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version",""))
     role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url",""))
     role.github_branch       = strip_input(galaxy_info.get("github_branch", ""))
+    role.github_default_branch = repo.default_branch
 
     if role.issue_tracker_url == "" and repo.has_issues:
         role.issue_tracker_url = repo.issues_url

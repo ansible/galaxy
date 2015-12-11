@@ -51,6 +51,7 @@
         $scope.clearTravis = _clearTravis;
         $scope.clearGithub = _clearGithub;
         $scope.updateSecrets = _updateSecrets;
+        $scope.reimport = _importRepository;
         
         if (currentUserService.cache_refreshed) {
             $scope.loading = false;
@@ -199,15 +200,20 @@
             });
         }
 
-        function _toggleRepository(_repo) {
+        function _importRepository(_repo) {
             if (_repo.is_enabled) {
                 _repo.state = 'PENDING';
                 importService.imports.save({
                     'github_user': _repo.github_user,
                     'github_repo': _repo.github_repo,
                 }).$promise.then(_checkStatus);
+            }
+        }
+
+        function _toggleRepository(_repo) {
+            if (_repo.is_enabled) {
+                _importRepository(_repo);
             } else {
-                _repo.state = 'PENDING';
                 roleRemoveService.delete({
                     'github_user': _repo.github_user,
                     'github_repo': _repo.github_repo

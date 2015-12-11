@@ -64,7 +64,7 @@
         $scope.list_data = {
             'num_pages'          : 1,
             'page'               : 1,
-            'page_size'          : 10,
+            'page_size'          : '10',
             'page_range'         : [],
             'tags'               : '',
             'platforms'          : '',

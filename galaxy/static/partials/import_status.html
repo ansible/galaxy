@@ -12,7 +12,7 @@
                             <span class="title">IMPORTS</span>
                         </div>
                         <div class="col-sm-5 text-right">
-                            <a href="/roleadd" class="btn btn-sm btn-success" tooltip-placement="left" uib-tooltip="Add an Import"><i class="fa fa-plus"></i> Add</a>
+                            <a href="/roleadd" class="btn btn-sm btn-success" tooltip-placement="left" uib-tooltip="Add a Role"><i class="fa fa-plus"></i> Add</a>
                         </div>
                     </div>
                     <div class="search-roles">
@@ -54,8 +54,8 @@
                             <span class="title-text" ng-if="!import_detail.summary_fields.role.is_valid">{{ import_detail.github_user + '/' + import_detail.github_repo }}</span>
                         </div>
                         <div class="col-sm-4 text-right">
-                            <a href="" ng-click="reimportRole(import_detail.github_user, import_detail.github_repo)" class="btn btn-sm btn-default"><i class="fa fa-upload"></i> Re-Import</a>
-                            <div class="loading-status"><i class="fa fa-lg fa-refresh" ng-class="{ 'fa-spin': checking }"></i></div>
+                            <a href="" ng-click="reimportRole(import_detail.github_user, import_detail.github_repo)" class="btn btn-sm btn-default" tooltip-placement="top"
+                            uib-tooltip="Re-import Role"><i class="fa fa-upload"></i></a>
                         </div>
                     </div>
 
@@ -65,7 +65,7 @@
                     <div class="title-bar" ng-show="imports.length && selected_id">
                         <div class="branch">
                             <div class="commit">{{ import_detail.github_branch }} <span class="message">{{ import_detail.commit_message }}</span></div>
-                            <div class="last-run">{{ import_detail.last_run }}</div>
+                            <div class="last-run">{{ import_detail.last_run }} <span class="loading-status"><i class="fa fa-lg fa-refresh" ng-class="{ 'fa-spin': checking }"></i></spin></div>
                             
                             <div class="travis-status" ng-if="import_detail.travis_status_url">
                                 <a ng-href="{{ import_detail.travis_build_url }}" target="_blank">
