@@ -29,7 +29,9 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="badge-container">
+                                    <a ng-href="{{ role.travis_build_url }}" target="_blank">
                                     <img ng-src="{{ role.travis_status_url }}" class="travis-status-img" tooltip-placement="top" uib-tooltip="Travis Build Status" ng-if="role.travis_status_url" />
+                                    </a>
                                     <div class="download-badge" tooltip-placement="top" uib-tooltip="Galaxy Download Count">
                                         <div class="title">Downloads</div>
                                         <div class="count">{{ role.download_count }}</div>

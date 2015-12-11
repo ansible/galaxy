@@ -28,6 +28,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     tags_autocomplete = indexes.EdgeNgramField(default='')
     username_autocomplete = indexes.EdgeNgramField(model_attr='namespace')
     travis_status_url = indexes.CharField(model_attr='travis_status_url', default='', indexed=False)
+    travis_build_url = indexes.CharField(model_attr='travis_build_url', default='', indexed=False)
     issue_tracker_url = indexes.CharField(model_attr='issue_tracker_url', default='', indexed=False)
     stargazers_count = indexes.IntegerField(model_attr='stargazers_count')
     watchers_count = indexes.IntegerField(model_attr='watchers_count')

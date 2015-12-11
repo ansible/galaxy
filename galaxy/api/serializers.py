@@ -826,6 +826,7 @@ class RoleSearchSerializer(HaystackSerializer):
             "tags_autocomplete",
             "username_autocomplete",
             "travis_status_url",
+            "travis_build_url",
             "issue_tracker_url",
             "stargazers_count",
             "watchers_count",

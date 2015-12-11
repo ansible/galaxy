@@ -57,7 +57,9 @@
                             </div>
                             <div class="row footer">
                                 <div class="img-container" ng-if="role.travis_status_url">
+                                    <a ng-href="{{ role.travis_build_url }}" target="_blank">
                                     <img ng-src="{{ role.travis_status_url }}" tooltip-placement="top" uib-tooltip="Travis Build Status" class="travis-status-img" />
+                                    </a>
                                 </div>
                                 <div class="counts">
                                     <div class="subscribe">
@@ -89,7 +91,7 @@
                     <div id="galaxy-copyright-role-list" ng-show="!loading">
                         <div class="copyright-txt">
                             Copyright &copy; 2015 Ansible, Inc. | <a href="http://www.ansible.com/security" target="_blank">Security Disclosures</a> | <a href="http://www.ansible.com/privacy-policy" target="_blank">Privacy Policy</a>
-                            <div class="version">GALAXY {{ version }}</div>
+                            <div class="version">GALAXY {{ version }} BETA</div>
                         </div>
                     </div>
                     </div><!-- results outer container -->
