@@ -14,3 +14,4 @@ provisioning/ec2_inventory
 /Vagrantfile
 /logs
 galaxy.min.css
+.DS_Store

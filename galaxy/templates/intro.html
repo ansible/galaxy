@@ -25,7 +25,7 @@
                     <li><a href="#download">Download Roles</a></li>
                     <li class="pad"><a href="#download-multiple">Download Multiple Roles</a></li>
                     <li class="pad"><a href="#download-advanced">Advanced Downloading</a></li>
-                    <li><a href="#review">Review</a></li>
+                    <li><a href="#review">Star, Watch and Count</a></li>
                     <li><a href="#share">Share</a></li>
                     <li class="pad"><a href="#create-role">Create a Role</a>
                         <ul class="nav">
@@ -36,9 +36,10 @@
                             <li class="pad"><a href="#variables">Variable Names</a></li>
                         </ul>
                     </li>
-                    <li class="pad"><a href="#role-test">Test</a></li>
+                    <li class="pad"><a href="#role-test">Try It</a></li>
                     <li class="pad"><a href="#role-github">Upload to Github</a></li>
                     <li class="pad"><a href="#role-galaxy">Upload to Galaxy</a></li>
+                    <li><a href="#travis">Automated Testing</a></li>
                     <li><a href="#questions">Questions</a></li>
                     <li class="back-to-top-link"><a href="#"><i class="fa fa-chevron-circle-up"></i> BACK TO TOP</a></li>
                 </ul>
@@ -59,7 +60,7 @@
                 <h3 id="download">Download Roles</h3>
 
                 <p>You can find the most popular roles and recently added roles on the <a href="/explore#/">Explore</a> page, or use <a href="/list#/roles">Browse Roles</a> to search all roles available on Galaxy.</p>
-                <p>Download a role onto your Ansible host using the <code>ansible-galaxy</code> command that comes bundled with Ansible.</p>
+                <p>Download a role onto your Ansible host using the <strong>ansible-galaxy</strong> command that comes bundled with Ansible.</p>
                 <p>For example:</p>
 
 <pre>
@@ -123,19 +124,14 @@ $ ansible-galaxy install -r roles.txt
 $ ansible-galaxy install -r install_roles.yml
 </pre>
 
-                <h3 id="review">Review Roles</h3>
+                <h3 id="review">Star, Watch and Count</h3>
 
-                <p>Once you’ve downloaded and used a role, let others know what you think by providing a review. A review includes a score and a comment.<p>
+                <p>There are mutliptle ways to gauge the goodness and popularity of a role, and you can use them all to let the community know what you think.</p>
 
-                <p>Picking a score is pretty simple. Just choose from one of the following options:</p>
-                <ol>
-                    <li>Needs work.</li>
-                    <li>OK, but could be improved some.</li>
-                    <li>Nice.</li>
-                    <li>Awesome!</li>
-                    <li>Dude, I owe you a beer!</li>
-                </ol>
-                <p>You can optionally provide a comment as well. Take the opportunity to write a line or two about your experience with the role and how it helped you. Let others know what to expect when they download and use the role.</p>
+                <p>Found a role you really like? Click the GitHub <a href="" class="btn btn-default btn-xs" disabled="disabled"><i class="fa fa-star"></i> Star</a> button. Your click increases the role's stargazer count, which appears on Galaxy and on GitHub.</p>
+                <p>In addition to starring a role, you can also watch a role. Click the <a href="" class="btn btn-default btn-xs" disabled="disabled"><i class="fa fa-eye"></i> Watch</a> button to become a
+                watcher and receive updates from GitHub whenever there is an update to the role. Your click increases the watchers count on Galaxy and on GitHub.</p>
+                <p>We're also tracking downloads. Each time a role is downloaded and installed with the <strong>ansible-galaxy</strong> command line tool the download count on Galaxy rises. The count is limited to one per IP address. It's not a perfect measurement, but it gives you a feel for how popular a role is.</p>  
 
                 <h3 id="share">Share Roles</h3>
                 <p>Share roles you create with the community. Roles can inlcude deploying popular applications, as well as automation around a product your company makes.</p>
@@ -147,7 +143,7 @@ $ ansible-galaxy install -r install_roles.yml
 $ git clone https://username@github.com/username/ansible-role-acme.git acme
 </pre>
 
-                <p>Next, use <code>ansible-galaxy</code> to create the role scaffolding:</p>
+                <p>Next, use <strong>ansible-galaxy</strong> to create the role scaffolding:</p>
 
 <pre>
 $ ansible-galaxy init acme --force
@@ -155,15 +151,17 @@ $ ansible-galaxy init acme --force
                 <p>This creates the directory structure needed for organizing your code:<p>
 <pre>
 acme/
+    .travis.yml
+    README.md
     defaults/
     files/
     handlers/
     meta/
     tasks/
     templates/
+    tests/
     vars/
-    README.md
-</pre>
+ </pre>
                 <p>For more about developing a role and what goes into each of the components refer to
                  <a href="http://docs.ansible.com/ansible/playbooks_roles.html#roles" target="_blank">Roles on the Ansible Docs site</a>.
                 </p>
@@ -175,7 +173,7 @@ acme/
                     <li>Give accurate information in meta/main.yml.</li>
                     <li>Include dependencies in meta/main.yml.</li>
                     <li>Prefix variable names with the role name.</li>
-                    <li>Test, test, test!</li>
+                    <li>Integrate your roles with Travis CI. <a href="#travis">See how</a>.</li>
                 </ul>
                 <p>Sticking to these practices will help you create great roles. The community will love you, and you'll be hero!</p>
 
@@ -273,8 +271,8 @@ dependencies:
                     prevents variable name collision between roles. For example, use <code>rolname_foo</code> rather than <code>foo</code>.</p>
                 </div>
 
-                <h4 id="role-test">Test</h4>
-                <p>Once you are happy with your role, test it in a playbook, and make sure it’s really ready to go.</p>
+                <h4 id="role-test">Try It</h4>
+                <p>Once you are happy with your role, run it in a playbook, and make sure it’s ready to go:</p>
 <pre>
 # test.yml
 # test playbook
@@ -285,6 +283,7 @@ dependencies:
 <pre>
 $ ansible-playbook test.yml
 </pre>
+                <p>Testing roles is a great practice, and a habbit we recommend. See the <a href="#travis">Automated Testing with Travis CI</a> section for how to use <a href="http://travic-ci.org" target="_blank">Travis CI</a> to apply continous integration to your roles.</p>
 
                 <h4 id="role-github">Upload to Github</h4>
                 <p>Before you can share the role on Galaxy it needs to exist on Github. Once you finish development and testing
@@ -295,28 +294,83 @@ $ git push
 </pre>
                 <h4 id="role-galaxy">Upload to Galaxy</h4>
 
-                <p>Log into Galaxy and click the <code>Add a Role</code> menu option. Provide your GitHub username and the name of the Github repository, and Galaxy will import your role, making it available to the Galaxy community.</p>
+                <p>Log into Galaxy and click on <strong>My Roles</strong>. You will see your GitHub repository listed. If it's not, click the refresh button:</p>
 
-                <h5>Role Name</h5>
-                <p>By default the role name is taken from the Github repository name. Use the Alternate Name field to provide a custom name.</p>
-                
-                <p>Galaxy strips <em>(ansible[-_.+]*)*(role[-_.+]*)*</em> from the beginning of the name. For example,  
-                <em>ansible-role-ansible</em> produces a role name of <em>ansible</em>. Both <em>ansible-ansible</em> and <em>ansible-role</em> result in an empty string and an error. The name <em>ansible</em> by itself, however, is allowed.</p>
+                <div class="screen-shot">
+                    <img src="/static/img/intro/my_roles_refresh.png">
+                </div>
 
-                <p>Galaxy also replaces &quot;.&quot; with &quot;_&quot;. For example, a Github repository named <em>ansible-ruby-2.1</em> will receive the role name <em>ruby-2_1</em>.</p>
+                <p>Next to the repository name toggle the switch on, so that you see a checkmark. This starts the import of your role.</p>
+
+                <div class="screen-shot">
+                    <img src="/static/img/intro/my_roles_import.png">
+                </div>
+
+                <p>To see the status and detail output from the import process click the <a href="" class="btn btn-xs btn-default" disabled="disabled"><i class="fa fa-list"></i></a> button to the right of the role name.</p>
+
+                <div class="screen-shot">
+                    <img src="/static/img/intro/my_roles_details.png">
+                </div>
 
                 <h5>Versions</h5>
                 <p>If you applied any tags to your repository, Galaxy will automatically display a “version” for each tag.  This means users can choose the version (tag) to download.</p>
 
                 <p>The default behavior, if there are no tags, is to make the “HEAD” version available. This means users downloading the role will always get the latest from the github repository.</p>
 
-                <p>To import new tags, trigger a re-import from the <em>My Roles</em> page anytime.</p>
+                <p>To import new tags, trigger a re-import from either <strong>My Roles</strong> or <strong>My Imports</strong> by clicking the <a href="" class="btn btn-xs btn-default" disabled="disabled"><i class="fa fa-upload"></i></a></p>
 
+                <h3 id="travis">Automated Testing</h3>
+
+                <p>Testing your roles is a great practice. Automating the testing is even better, and we've made it easy for you to add <a href="http://travis-ci.org" target="_blank">Travis CI</a> to your roles.</p>
+
+                <p>Add your <a href="https://blog.travis-ci.com/2013-01-28-token-token-token/" target="_blank">Travis token</a> to any role you want to integrate. Your token is not stored in Galaxy. It is used to calculate a hash as described in <a href="https://nimbus.everhelper.me/client/notes/share/348471/cV0BPMEabFS1tMQSVTk2wHuHDl0lAn6T/" target="_blank">the Travis documentation</a> and then discarded.</p>
+
+                <p>Add the token on <strong>My Roles</strong>:</p>
+
+                <div class="screen-shot">
+                    <img src="/static/img/intro/add-token.png">
+                </div>
+
+                <p>Enable the repo on your Travis profile page:</p>
+
+                <div class="screen-shot">
+                    <img src="/static/img/intro/enable-in-travis.png">
+                </div>
+
+                <p>Add a .travis.yml file to your repo that includes a notifications section with webhooks pointed to the beta server as pictured below:</p>
+<pre>
+notifications:
+    webhooks: https://galaxy-qa.ansible.com/api/v1/notifications/
+</pre>
+
+                <div class="alert alert-info">
+                    <p><strong>NOTE:</strong> For a full .travis.yml example run <code>ansible-galaxy init</code>. Starting in Ansible 2.0 the generated scaffolding includes a working .travis.yml file and related tests folder.</p>
+                </div>
+
+                <p>Push the changes to your GitHub repo, and see the Travis build icon appear on your role:</p>
+
+                <div class="screen-shot">
+                    <img src="/static/img/intro/travis-integrated.png">
+                </div>
+
+                <h4 id="specify-branch">Specify a Branch</h4>
+                Notifications from Travis will be accepted for the GitHub repo's default branch (usually master). If you want to set a specific branch that notifications will be accepted from, define <code>github_branch</code> in meta/main.yml:
+<pre>
+galaxy_info:
+    galaxy_info:
+    author: Me
+    description: Testing role imports.
+    ...
+
+    github_branch: release
+    
+    ...
+</pre>
                 <h3 id="questions">Questions?</h3>
 
-                <p>If you have unanswered Galaxy questions, feel free to ask on the <a href="https://groups.google.com/forum/#!forum/ansible-project" target="_blank">Ansible mailing list</a>.</p>
+                <p>If you have unanswered Galaxy questions, feel free to ask on the <a href="https://groups.google.com/forum/#!forum/ansible-project" target="_blank">Ansible mailing list</a>. Found a bug or have  a suggestion? Let us know at <a href="https://github.com/ansible/galaxy-issues" target="_blank">Galaxy Issues</a>.</p>
                 <div class="alert alert-info">
-                    <p><strong>Note:</strong> Contents, usage and bugs related to specific roles will not be supported on the mailing list. Contact the role author via GitHub. The role details provided in Galaxy include a link to the Github repository, and when available, the issue tracker.</p>
+                    <p><strong>NOTE:</strong> Contents, usage and bugs related to specific roles will not be supported on the mailing list. Contact the role author via GitHub. The role details provided in Galaxy include a link to the Github repository, and when available, the issue tracker.</p>
                 </div>
             </div><!-- intro-content -->
         </div><!-- col-lg-9 -->
