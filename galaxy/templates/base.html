@@ -16,10 +16,9 @@
          usePendoAgentAPI: false,
 
         visitor: {
-          id:              "{{ user.id }}",       // Required if user is logged in
-          email:           "{{ user.email }}",
-          github_user:     "{{ user.github_user }}"
-
+          id:              "{{ user.id }}",         // Required if user is logged in
+          session_id:      "{{ request.session.session_key }}"
+          
           // You can add any additional visitor level key-values here,
           // as long as it's not one of the above reserved names.
         },
@@ -27,7 +26,10 @@
         account: {
           id:              "{{ user.id }}",        // Highly recommended
           email:           "{{ user.email }}",
-          github_user:     "{{ user.github_user }}"
+          github_user:     "{{ user.github_user }}",
+          full_name:       "{[ user.full_name }}",
+          is_staff:        "{{ user.is_staff }}",
+          date_joined:     "{{ user.date_joined }}"
           // name:         // Optional
           // planLevel:    // Optional
           // planPrice:    // Optional
@@ -61,7 +63,7 @@
 
         function _factory($resource) {
             var userData = {
-                "id": ("{{ user.id }}" == "None") ? null : parseInt("{{ user.id }}"), 
+                "id": ("{{ user.id }}" == "None") ? null : parseInt("{{ user.id }}"),
                 "authenticated": ("{{ user.is_authenticated }}" == "True") ? true : false, 
                 "staff": ("{{ user.is_staff }}" == "True") ? true : false, 
                 "username": "{{ user.username }}", 
