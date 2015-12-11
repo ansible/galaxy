@@ -4,9 +4,9 @@
 <div class="main page-content">
 {% block general_content %}{% endblock %}
 </div>
-<!-- ##### Pendo.io bits #### -->
 
-{% if not debug %}
+{% if debug == "off" %}
+<!-- ##### Pendo.io bits #### -->
 <script>
     // Please use Strings, Numbers, or Bools for value types.
     window.pendo_options = {
