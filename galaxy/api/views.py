@@ -101,7 +101,7 @@ class ApiRootView(APIView):
             description = 'GALAXY REST API',
             current_version = current,
             available_versions = dict(
-                v1 = current
+                v1 = "v1"
             )
         )
         return Response(data)
