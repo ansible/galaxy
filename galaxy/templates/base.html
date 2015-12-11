@@ -16,7 +16,7 @@
          usePendoAgentAPI: false,
 
         visitor: {
-          id:              parseInt("{{ user.id }}"),   // Required if user is logged in
+          id:              "{{ user.id }}",       // Required if user is logged in
           email:           "{{ user.email }}",
           github_user:     "{{ user.github_user }}"
 
@@ -25,7 +25,9 @@
         },
 
         account: {
-          // id:           // Highly recommended
+          id:              "{{ user.id }}",        // Highly recommended
+          email:           "{{ user.email }}",
+          github_user:     "{{ user.github_user }}"
           // name:         // Optional
           // planLevel:    // Optional
           // planPrice:    // Optional
