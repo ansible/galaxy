@@ -99,9 +99,9 @@ class ApiRootView(APIView):
         current = reverse('api:api_v1_root_view', args=[])
         data = dict(
             description = 'GALAXY REST API',
-            current_version = current,
+            current_version = "v1",
             available_versions = dict(
-                v1 = "v1"
+                v1 = current
             )
         )
         return Response(data)
