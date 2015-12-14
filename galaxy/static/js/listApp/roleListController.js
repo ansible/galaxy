@@ -116,7 +116,7 @@
         $scope.unsubscribe = _unsubscribe;
         $scope.star = _star;
         $scope.unstar = _unstar;
-        $scope.is_authenticated = currentUserService.authenticated;
+        $scope.is_authenticated = currentUserService.authenticated && currentUserService.connected_to_github;
 
         PaginateInit({ scope: $scope });
 
@@ -429,7 +429,7 @@
         }
 
         function _subscribe(_role) {
-            if (currentUserService.authenticated) {
+            if (currentUserService.authenticated && currentUserService.connected_to_github) {
                 // Subscribe the user to the role repo
                 _role.subscribing = true;
                 githubRepoService.subscribe({
@@ -445,7 +445,7 @@
         }
 
         function _unsubscribe(_role) {
-            if (currentUserService.authenticated) {
+            if (currentUserService.authenticated && currentUserService.connected_to_github) {
                 // Find the user's subscription to the role repo and delete it
                 _role.subscribing = true;
                 var id;
@@ -472,7 +472,7 @@
         }
 
         function _star(_role) {
-            if (currentUserService.authenticated) {
+            if (currentUserService.authenticated && currentUserService.connected_to_github) {
                 // Subscribe the user to the role repo
                 _role.starring = true;
                 githubRepoService.star({
@@ -488,7 +488,7 @@
         }
 
         function _unstar(_role) {
-            if (currentUserService.authenticated) {
+            if (currentUserService.authenticated && currentUserService.connected_to_github) {
                 // Find the user's subscription to the role repo and delete it
                 _role.starring = true;
                 var id;

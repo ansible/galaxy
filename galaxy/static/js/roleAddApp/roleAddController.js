@@ -52,6 +52,13 @@
         $scope.clearGithub = _clearGithub;
         $scope.updateSecrets = _updateSecrets;
         $scope.reimport = _importRepository;
+        $scope.github_auth = true;
+
+        if (!(currentUserService.authenticated && currentUserService.connected_to_github)) {
+            $scope.github_auth = false;
+            $scope.loading = false;
+            return;
+        }
         
         if (currentUserService.cache_refreshed) {
             $scope.loading = false;
