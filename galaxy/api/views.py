@@ -877,7 +877,7 @@ class TopContributorsList(ListAPIView):
     serializer_class = TopContributorsSerializer
 
     def list(self, request, *args, **kwargs):
-        qs = Role.objects.values('github_user').annotate(count=Count('id')).order_by('-count','github_user')
+        qs = Role.objects.values('namespace').annotate(count=Count('id')).order_by('-count','namespace')
         page = self.paginate_queryset(qs)
         if page is not None:
             serializer = self.get_pagination_serializer(page)

@@ -429,7 +429,7 @@ class TopContributorsSerializer(serializers.BaseSerializer):
     
     def to_representation(self, obj):
         return {
-            'github_user': obj['github_user'],
+            'namespace': obj['namespace'],
             'role_count': obj['count']
         }
 

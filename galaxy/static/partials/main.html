@@ -150,7 +150,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="user in topContributors">
-                    <td class="col-sm-8"><a ng-href="/list#/roles?page=1&page_size=10&users={{ user.github_user }}">{{ user.github_user }}</a></td>
+                    <td class="col-sm-8"><a ng-href="/list#/roles?page=1&page_size=10&users={{ user.namespace }}">{{ user.namespace }}</a></td>
                     <td class="col-sm-4 text-right">{{ user.role_count }}</td>
                 </tr>
                 </tbody>
