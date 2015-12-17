@@ -16,10 +16,11 @@
         '$scope',
         '$interval',
         '$timeout',
+        '$analytics',
         'githubRepoService',
         'currentUserService',
         'importService',
-        'roleRemoveService',
+        'roleService',
         'repositories',
         'notificationSecretService',
         _controller
@@ -29,10 +30,11 @@
         $scope,
         $interval,
         $timeout,
+        $analytics,
         githubRepoService,
         currentUserService,
         importService,
-        roleRemoveService,
+        roleService,
         repositories,
         notificationSecretService) {
 
@@ -154,6 +156,9 @@
         function _updateSecrets(_repo) {
             // deleted secretn
             if (_repo.travis_id && !_repo.travis_token) {
+                $analytics.eventTrack('remove_travis', {
+                    category: _repo.github_user + '/' + _repo.github_repo
+                });
                 notificationSecretService.delete({id: _repo.travis_id}).$promise.then(function(repsonse) {
                     _repo.travis_id = null;
                     _repo.show_integrations = false;
@@ -163,6 +168,9 @@
                 });
             }
             if (_repo.travis_id && _repo.travis_token && !/^\*{6}/.test(_repo.travis_token)) {
+                $analytics.eventTrack('change_travis', {
+                    category: _repo.github_user + '/' + _repo.github_repo
+                });
                 notificationSecretService.put({
                     id: _repo.travis_id,
                     source: 'travis',
@@ -179,6 +187,9 @@
             }
             // new secret
             if (!_repo.travis_id && _repo.travis_token && !/^\*{6}/.test(_repo.travis_token)) {
+                $analytics.eventTrack('add_travis', {
+                    category: _repo.github_user + '/' + _repo.github_repo
+                });
                 notificationSecretService.save({
                     source: 'travis',
                     github_user: _repo.github_user,
@@ -221,7 +232,7 @@
             if (_repo.is_enabled) {
                 _importRepository(_repo);
             } else {
-                roleRemoveService.delete({
+                roleService.delete({
                     'github_user': _repo.github_user,
                     'github_repo': _repo.github_repo
                 }).$promise.then(function(response) {

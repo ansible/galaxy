@@ -179,40 +179,43 @@
                 page_size: $scope.list_data.page_size
             };
 
-            event_track = {};
-            
-            if ($scope.list_data.order) {
-                params.order = $scope.list_data.order;
-                event_track.order = $scope.list_data.order;
+            var event_track = {
+                category: ''
+            };
+
+            if ($scope.list_data.autocomplete) {
+                params.autocomplete = $scope.list_data.autocomplete;
+                event_track.category += '/Keywords:' + params.autocomplete; 
             }
 
             if ($scope.list_data.tags) {
                 params.tags_autocomplete = $scope.list_data.tags;
-                event_track.tags = $scope.list_data.tags;
+                event_track.category += '/Tags:' + params.tags_autocomplete;
             }
 
             if ($scope.list_data.platforms) {
                 params.platforms_autocomplete = $scope.list_data.platforms;
-                event_track.platforms = $scope.list_data.platforms;
+                event_track.category += '/Platforms:' + params.platforms_autocomplete;
             }
 
             if ($scope.list_data.users) {
                 params.username_autocomplete = $scope.list_data.users;
-                event_track.author = $scope.list_data.users; 
+                event_track.category += '/Authors:' + params.username_autocomplete;
             }
 
-            if ($scope.list_data.autocomplete) {
-                params.autocomplete = $scope.list_data.autocomplete;
-                event_track.keywords = $scope.list_data.autocomplete;
+            if ($scope.list_data.order) {
+                params.order = $scope.list_data.order;
+                event_track.category += '/Order:' + params.order;
             }
-
+            
             if (Object.keys(params).length == 2) {
                 // no parameters
                 params.order = 'role_id';
             }
 
+            event_track.category = event_track.category.replace(/^\//,'');
             $analytics.eventTrack('search', event_track);
-
+                
             // Update the query string
             queryStorageFactory.save_state(_queryParams($scope.list_data));
 

@@ -254,7 +254,6 @@ def role_add_view(request, category=None, page=1):
         context["extra_js"] = [
             '/static/js/roleAddApp/roleAddApp.js',
             '/static/js/roleAddApp/roleAddController.js',
-            '/static/js/roleAddApp/roleRemoveService.js',
             '/static/js/detailApp/menuController.js',
             '/static/js/roleAddApp/notificationSecretService.js',
         ] + common_services
@@ -315,7 +314,8 @@ def import_status_view(request):
     if request.session.has_key("transient"):
         context["transient"] = request.session["transient"]
         del request.session["transient"]
-
+    
+    context["load_angular"] = True
     return render_to_response('import_status.html',context)
 
 

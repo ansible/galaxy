@@ -41,6 +41,10 @@
                 },
                 save: function(params) {
                     var token = getCSRFToken();
+                    var event_track = {
+                        category: params.github_user + '/' + params.github_repo
+                    };
+                    $analytics.eventTrack('import', event_track);
                     return $resource('/api/v1/imports/',{}, {
                         'save': { 'method': 'POST', headers: { "X-CSRFToken": token }}
                     }).save(params);

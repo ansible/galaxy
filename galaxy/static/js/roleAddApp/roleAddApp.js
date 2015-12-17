@@ -22,8 +22,10 @@
       'currentUserService',
       'toggle-switch',
       'importService',
-      'roleRemoveSerivice',
-      'notificationSecretService'
+      'roleService',
+      'notificationSecretService',
+      'angulartics', 
+      'angulartics.google.analytics'
     ]);
 
     accountsApp.config(['$routeProvider','$logProvider', '$resourceProvider', _config]);

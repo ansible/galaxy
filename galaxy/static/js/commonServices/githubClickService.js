@@ -20,10 +20,10 @@
         };
 
         function _analytics(event, _role) {
+            console.log(_role);
             $analytics.eventTrack(event, {
-                github_user: _role.github_user,
-                github_repo: _role.github_repo,
-                github_name: _role.name
+                category: _role.username + '.' + _role.name,
+                label: _role.github_user + '/' + _role.github_repo
             });
         }
 
@@ -44,7 +44,7 @@
             }
         }
 
-        function _unsubscribe() {
+        function _unsubscribe(_role) {
             // Find the user's subscription to the role repo and delete it
             if (currentUserService.authenticated && currentUserService.connected_to_github) {
                 _role.subscribing = true;
@@ -72,7 +72,7 @@
             }
         }
 
-        function _star() {
+        function _star(_role) {
             // Subscribe the user to the role repo
             if (currentUserService.authenticated && currentUserService.connected_to_github) {
                 _role.starring = true;
@@ -89,7 +89,7 @@
             }
         }
 
-        function _unstar() {
+        function _unstar(_role) {
             // Find the user's subscription to the role repo and delete it
             if (currentUserService.authenticated && currentUserService.connected_to_github) {
                 _role.starring = true;
@@ -117,4 +117,4 @@
             }
         }
     }
-});
+})(angular);

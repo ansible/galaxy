@@ -24,6 +24,7 @@
         'commonDirectives',
         'galaxyUtilities',
         'githubRepoService',
+        'githubClickService',
         'userService',
         'angulartics', 
         'angulartics.google.analytics'

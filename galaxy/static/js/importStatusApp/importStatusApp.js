@@ -21,7 +21,7 @@
         'currentUserService',
         'importStatusController',
         'importService',
-        'angulartics', 
+        'angulartics',
         'angulartics.google.analytics'
     ]);
 

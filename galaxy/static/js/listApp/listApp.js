@@ -30,6 +30,7 @@
         'commonDirectives',
         'galaxyUtilities',
         'githubRepoService',
+        'githubClickService',
         'currentUserService',
         'angulartics', 
         'angulartics.google.analytics'

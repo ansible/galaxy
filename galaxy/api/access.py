@@ -266,6 +266,26 @@ class NotificationAccess(BaseAccess):
                    skip_sub_obj_read_check=False):
         return False
 
+class SubscriptionAccess(BaseAccess):
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, data):
+        return False
+
+    def can_delete(self,data):
+        return self.user.is_authenticated()
+
+class StargazerAccess(BaseAccess):
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, data):
+        return False
+
+    def can_delete(self,data):
+        return self.user.is_authenticated()
+
 register_access(User, UserAccess)
 register_access(Role, RoleAccess)
 register_access(RoleRating, RoleRatingAccess)
@@ -274,3 +294,5 @@ register_access(ImportTask, ImportTaskAccess)
 register_access(ImportTaskMessage, ImportTaskMessageAccess)
 register_access(NotificationSecret, NotificationSecretAccess)
 register_access(Notification, NotificationAccess)
+register_access(Subscription, SubscriptionAccess)
+register_access(Stargazer, StargazerAccess)
