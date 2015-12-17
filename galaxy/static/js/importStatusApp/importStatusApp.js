@@ -20,7 +20,9 @@
         'dotDotDotDirective',
         'currentUserService',
         'importStatusController',
-        'importService'
+        'importService',
+        'angulartics', 
+        'angulartics.google.analytics'
     ]);
 
     app.config(['$routeProvider', '$logProvider', '$resourceProvider', _config]);

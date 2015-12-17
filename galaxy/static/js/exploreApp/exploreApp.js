@@ -17,7 +17,9 @@
         'exploreController',
         'tagService',
         'roleSearchService',
-        'userService'
+        'userService',
+        'angulartics', 
+        'angulartics.google.analytics'
     ]);
 
     mod.config(['$routeProvider', '$logProvider', '$resourceProvider', _config]);

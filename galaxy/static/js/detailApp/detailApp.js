@@ -24,7 +24,9 @@
         'commonDirectives',
         'galaxyUtilities',
         'githubRepoService',
-        'userService'
+        'userService',
+        'angulartics', 
+        'angulartics.google.analytics'
     ]);
 
     roleApp.config(['$routeProvider', '$logProvider', '$resourceProvider', _config]);

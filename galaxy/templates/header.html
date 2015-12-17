@@ -39,6 +39,8 @@
     <script type="text/javascript" src="/static/vendorjs/ui-bootstrap-tpls.min.js"></script>
     <script type="text/javascript" src="/static/vendorjs/underscore-min.js"></script>
     <script type="text/javascript" src="/static/vendorjs/angular-toggle-switch.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/angulartics.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/angulartics-google-analytics"></script>
     
     <script>
         var GLOBAL_DEBUG = "{{ debug }}";
@@ -48,15 +50,5 @@
     {% for extra in extra_js %}<script type="text/javascript" src="{{ extra }}"></script>
     {% endfor %}
 
-    <!-- Google Tag Manager Data Layer -->
-    <script>
-        dataLayer = [];
-    </script>
-    <!-- End Google Tag Manager Data Layer -->
-
 </head>
 <body>
-
-    <!-- Google Tag Manager -->
-    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-PSB293" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-PSB293');</script>

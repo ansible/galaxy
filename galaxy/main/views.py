@@ -76,6 +76,7 @@ common_services = [
     '/static/js/commonServices/paginateService.js',
     '/static/js/commonServices/githubRepoService.js',
     '/static/js/commonServices/importService.js',
+    '/static/js/commonServices/githubClickService.js',
 ]
 
 #------------------------------------------------------------------------------
@@ -127,6 +128,7 @@ def build_standard_context(request):
     context["url_items_length"] = len(url_items)
     context["site_name"] = settings.SITE_NAME
     context["use_menu_controller"] = False
+    context["load_angular"] = False
 
     if request.user.is_authenticated():
         context["connected_to_github"] = False
@@ -189,6 +191,7 @@ def explore(request):
         context["extra_js"] = [
           '/static/dist/galaxy.exploreApp.min.js'
         ]
+    context['load_angular'] = True
     return render_to_response('explore.html', context)
 
 def intro(request):
@@ -218,6 +221,7 @@ def list_category(request, category=None, page=1):
           '/static/dist/galaxy.listApp.min.js'
         ]
     context["use_menu_controller"] = True
+    context["load_angular"] = True
     return render_to_response('list_category.html', context)
 
 def detail_category(request, category=None, page=1):
@@ -239,6 +243,7 @@ def detail_category(request, category=None, page=1):
             '/static/dist/galaxy.detailApp.min.js'
         ]
     context["use_menu_controller"] = True
+    context["load_angular"] = True
     return render_to_response('list_category.html', context)
 
 def role_add_view(request, category=None, page=1):
@@ -258,6 +263,7 @@ def role_add_view(request, category=None, page=1):
             '/static/dist/galaxy.roleAddApp.min.js'
         ]
     context["use_menu_controller"] = False
+    context["load_angular"] = True
     return render_to_response('list_category.html', context)
 
 def handle_404_view(request):

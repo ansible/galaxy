@@ -30,7 +30,9 @@
         'commonDirectives',
         'galaxyUtilities',
         'githubRepoService',
-        'currentUserService'
+        'currentUserService',
+        'angulartics', 
+        'angulartics.google.analytics'
     ]);
 
     roleApp.config(['$routeProvider', '$logProvider', '$resourceProvider', _config]);

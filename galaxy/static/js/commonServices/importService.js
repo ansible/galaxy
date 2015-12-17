@@ -11,9 +11,9 @@
 
     var mod = angular.module('importService', []);
     
-    mod.factory('importService', ['$resource', 'getCSRFToken', _factory]);
+    mod.factory('importService', ['$analytics', '$resource', 'getCSRFToken', _factory]);
 
-    function _factory($resource, getCSRFToken) {
+    function _factory($analytics, $resource, getCSRFToken) {
 
         var icons = {
             'FAILED': 'fa fa-exclamation-circle',
