@@ -211,6 +211,7 @@
             if (Object.keys(params).length == 2) {
                 // no parameters
                 params.order = 'role_id';
+                event_track.category += '/Order: role_id'
             }
 
             event_track.category = event_track.category.replace(/^\//,'');

@@ -1,4 +1,5 @@
 ---
+
 - name: Refresh role count
   hosts: db
   sudo: yes
@@ -8,6 +9,7 @@
       register: out
       when: postgres_master
     - debug: var=out.stdout_lines
+
 - name: Rebuild Indexes
   hosts: web
   sudo: yes
@@ -18,3 +20,9 @@
     - name: Rebuild Index
       shell: galaxy-manage rebuild_index --noinput
       when: es_rebuild_host
+
+- name: Notify slack
+  hosts: 127.0.0.1 
+  connection: local
+  roles:
+      - { role: notify_slack, notify_slack_message: "{{ galaxy_slack_message }}", when: galaxy_slack_message is defined }
