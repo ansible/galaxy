@@ -8,9 +8,13 @@
       register: out
       when: postgres_master
     - debug: var=out.stdout_lines
+- name: Rebuild Indexes
+  hosts: web
+  sudo: yes
+  tasks:  
     - name: Rebuild Custom Indexes
       shell: galaxy-manage rebuild_galaxy_indexes
-      when: postgres_master
+      when: es_rebuild_host
     - name: Rebuild Index
       shell: galaxy-manage rebuild_index --noinput
-      when: postgres_master
+      when: es_rebuild_host
