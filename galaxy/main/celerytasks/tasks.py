@@ -200,6 +200,10 @@ def import_role(task_id):
         add_messge(import_task, "ERROR", "Key galaxy_info not found in meta/main.yml")
         galaxy_info = {}
 
+    if import_task.alternate_role_name:
+        add_message(import_task, "INFO", "Setting role name to %s" % import_task.alternate_role_name)
+        role.name = import_task.alternate_role_name
+
     role.description         = strip_input(galaxy_info.get("description",repo.description))
     role.author              = strip_input(galaxy_info.get("author",""))
     role.company             = strip_input(galaxy_info.get("company",""))
