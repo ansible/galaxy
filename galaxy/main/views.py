@@ -136,23 +136,6 @@ def build_standard_context(request):
             if account.provider == 'github':
                 context["connected_to_github"] = True
 
-    # database operations for data that is available on every page
-    # categories
-    # categories = Category.objects.all()
-    # context["categories"] = categories
-    # number of roles per category
-    # context["roles_per_category"] = Category.objects.values('name').annotate(num_roles=Count('roles')).order_by('-num_roles','name')[0:10]
-    # top X roles
-    # context["top_roles"] = Role.objects.all().order_by('-bayesian_score')[0:10]
-    # top X users
-    # context["top_users"] = User.objects.all().order_by('-average_score')[0:10]
-    # top X reviewers
-    # context["top_reviewers"] = User.objects.all().order_by('-karma')[0:10]
-    # last X new roles
-    # context["new_roles"] = Role.objects.all().order_by('-date_added')[0:10]
-    # last X new users
-    # context["new_users"] = User.objects.all().order_by('-date_joined')[0:10]
-    # and we're done
     return context
 
 #------------------------------------------------------------------------------
@@ -353,6 +336,12 @@ def accounts_profile(request):
 @login_required
 def accounts_connect(request):
     context = build_standard_context(request)
+    return render_to_response('socialaccount/connections.html',context)
+
+@login_required
+def accounts_connect_success(request):
+    context = build_standard_context(request)
+    context["connected_to_github"] = True
     return render_to_response('socialaccount/connections.html',context)
 
 @login_required
