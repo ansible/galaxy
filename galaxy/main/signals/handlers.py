@@ -39,16 +39,16 @@ from galaxy.main.celerytasks.tasks import refresh_user_repos, refresh_user_stars
 User = get_user_model()
 
 
-@receiver(user_logged_in)
-def user_logged_in_handler(request, user, **kwargs):
-    user.cache_refreshed = False
-    user.save()
-    try:
-        token = SocialToken.objects.get(account__user=user, account__provider='github')
-        refresh_user_repos.delay(user,token.token)
-        refresh_user_stars.delay(user,token.token)
-    except:
-        pass
+# @receiver(user_logged_in)
+# def user_logged_in_handler(request, user, **kwargs):
+#     user.cache_refreshed = False
+#     user.save()
+#     try:
+#         token = SocialToken.objects.get(account__user=user, account__provider='github')
+#         refresh_user_repos.delay(user,token.token)
+#         refresh_user_stars.delay(user,token.token)
+#     except:
+#         pass
 
 @receiver(post_save, sender=ImportTask)
 def import_task_post_save(sender, **kwargs):

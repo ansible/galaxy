@@ -4,7 +4,7 @@
     <li {% if url_items.1.0 == 'explore' %} class="active" {% endif %}><a href="{% url 'main:explore' %}#/">Explore</a></li>
     <li id="nav-menu-browse-roles"><a href="{% url 'main:list-category' %}#/roles">Browse Roles</a></li>
     {% if not user.is_authenticated %}
-        <li><a {% if not use_menu_controller %} href="/accounts/login?next={{ request.path }}" {% endif %}
+        <li><a {% if not use_menu_controller %} href="/accounts/login/" {% endif %}
             {% if use_menu_controller %} href="" ng-click="redirectToSignin()" {% endif %}>Sign In</a></li>
     {% else %}
         <li {% if url_items.1.0 == 'roleadd' %} class="active" {% endif %}><a type="button" href="/roleadd#/">My Roles</a></li>

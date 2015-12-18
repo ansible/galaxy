@@ -32,8 +32,7 @@ urlpatterns = patterns('galaxy.main.views',
     
     # Logged in/secured URLs
     url(r'^accounts/connect/$', 'accounts_connect'),
-    url(r'^accounts/connect/success/$', 'accounts_connect'),
-    #url(r'^accounts/social/connections/$', TemplateView.as_view(template_name="custom404.html", content_type='text/html')),
+    url(r'^accounts/connect/success/$', 'accounts_connect_success', name='accounts-connect-success'),
     url(r'^accounts/profile/$', 'accounts_profile', name='accounts-profile'),
     url(r'^accounts/role/view/(?P<role>[\w\-\._:]+)$', 'accounts_role_view', name='accounts-role-view'),
     url(r'^accounts/role/refresh/(?P<id>[\w\-\._:]+)$', 'accounts_role_refresh', name='accounts-role-refresh'),
