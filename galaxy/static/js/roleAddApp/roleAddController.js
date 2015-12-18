@@ -17,6 +17,7 @@
         '$interval',
         '$timeout',
         '$analytics',
+        '$q',
         'githubRepoService',
         'currentUserService',
         'importService',
@@ -31,6 +32,7 @@
         $interval,
         $timeout,
         $analytics,
+        $q,
         githubRepoService,
         currentUserService,
         importService,
@@ -52,7 +54,7 @@
         $scope.revealTravis = _revealTravis;
         $scope.clearTravis = _clearTravis;
         $scope.clearGithub = _clearGithub;
-        $scope.updateSecrets = _updateSecrets;
+        $scope.updateSettings = _updateSettings;
         $scope.reimport = _importRepository;
         $scope.github_auth = true;
 
@@ -111,6 +113,33 @@
                         }
                     });
                 }
+                if (repo.summary_fields && repo.summary_fields.roles.length) {
+                    repo.role_id = repo.summary_fields.roles[0].id;
+                    repo.role_name = repo.summary_fields.roles[0].name;
+                    repo.master_role_name = repo.role_name
+                } else {
+                    var new_name;
+                    if (repo.github_repo === 'ansible') {
+                        new_name = repo.github_repo;
+                    } else {
+                        repo.github_repo.replace(/^(ansible[-_+.]*)*(role[-_+.]*)*/g, function(match, p1, p2, offset, str) {
+                            var result = str;
+                            if (p1) {
+                                result = result.replace(new RegExp(p1,'g'), '');
+                            }
+                            if (p2) {
+                                result = result.replace(new RegExp(p2,'g'), '');
+                            }
+                            result = result.replace(/^-/,'');
+                            new_name = result;
+                        });
+                        if (!new_name) {
+                            new_name = repo.github_repo;
+                        }
+                    }
+                    repo.role_name = new_name;
+                    repo.master_role_name = repo.role_name;
+                }
             });
         }
 
@@ -130,6 +159,7 @@
         }
 
         function _cancelIntegrations(_repo) {
+            _repo.role_name = _repo.master_role_name
             _repo.travis_id = $scope.master.travis_id;
             _repo.travis_token = $scope.master.travis_token;
             _repo.github_id = $scope.master.github_id;
@@ -153,20 +183,45 @@
             _repo.github_secret = null;
         }
 
+        function _updateSettings(_repo) {
+            _repo.show_integrations = false;
+            _updateRoleName(_repo).then(function() {
+                _updateSecrets(_repo);
+            });
+        }
+
+        function _updateRoleName(_repo) {
+            var deferred = $q.defer();
+            if (_repo.master_role_name !== _repo.role_name) {
+                _repo.is_enabled = true;
+                _repo.state = 'PENDING';
+                _repo.master_role_name = _repo.role_name;
+                importService.imports.save({
+                    'github_user': _repo.github_user,
+                    'github_repo': _repo.github_repo,
+                    'alternate_role_name': _repo.role_name
+                }).$promise.then(function(data) {
+                    _checkStatus(data, deferred);
+                });
+            } else {
+                $timeout(function() {
+                    deferred.resolve();
+                }, 300);
+            }
+            return deferred.promise;
+        }
+
         function _updateSecrets(_repo) {
-            // deleted secretn
+            // deleted secret
             if (_repo.travis_id && !_repo.travis_token) {
                 $analytics.eventTrack('remove_travis', {
                     category: _repo.github_user + '/' + _repo.github_repo
                 });
                 notificationSecretService.delete({id: _repo.travis_id}).$promise.then(function(repsonse) {
                     _repo.travis_id = null;
-                    _repo.show_integrations = false;
-                    $timeout(function() {
-                        $scope.$apply();
-                    },300);
                 });
             }
+            // changed secret
             if (_repo.travis_id && _repo.travis_token && !/^\*{6}/.test(_repo.travis_token)) {
                 $analytics.eventTrack('change_travis', {
                     category: _repo.github_user + '/' + _repo.github_repo
@@ -179,10 +234,6 @@
                     secret: _repo.travis_token
                 }).$promise.then(function(response) {
                     _repo.travis_token = response.secret;
-                    _repo.show_integrations = false;
-                    $timeout(function() {
-                        $scope.$apply();
-                    },300);
                 });
             }
             // new secret
@@ -198,10 +249,6 @@
                 }).$promise.then(function(response) {
                     _repo.travis_id = response.id;
                     _repo.travis_token = response.secret;
-                    _repo.show_integrations = false;
-                    $timeout(function() {
-                        $scope.$apply();
-                    },300);
                 });
             }
         }
@@ -224,6 +271,7 @@
                 importService.imports.save({
                     'github_user': _repo.github_user,
                     'github_repo': _repo.github_repo,
+                    'alternate_role_name': _repo.role_name
                 }).$promise.then(_checkStatus);
             }
         }
@@ -247,13 +295,14 @@
             }
         }
 
-        function _checkStatus(response) {
+        function _checkStatus(response, deferred) {
             var stop = $interval(function(_id) {
                 importService.imports.query({ id: _id}).$promise.then(function(response) {
                     $scope.repositories.every(function(repo) {
                         if (repo.github_user == response.results[0].github_user && 
                             repo.github_repo === response.results[0].github_repo) {
                             repo.state = response.results[0].state;
+                            repo.role_id = response.results[0].role;
                             return false;
                         }
                         return true;
@@ -266,6 +315,9 @@
 
             function _kill() {
                 $interval.cancel(stop);
+                if (deferred) {
+                    deferred.resolve();
+                }
             }
         }
     }

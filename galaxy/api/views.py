@@ -109,12 +109,12 @@ def annotate_role_queryset(qs):
                avg_wow_factor    = AvgWithZeroForNull('ratings__wow_factor'),
            )
 
-def create_import_task(github_user, github_repo, github_branch, role, user, travis_status_url='', travis_build_url=''):
+def create_import_task(github_user, github_repo, github_branch, role, user, travis_status_url='', travis_build_url='', alternate_role_name=None):
     task = ImportTask.objects.create(
         github_user         = github_user,
         github_repo         = github_repo,
         github_reference    = github_branch,
-        alternate_role_name = '',
+        alternate_role_name = alternate_role_name,
         travis_status_url = travis_status_url,
         travis_build_url = travis_build_url,
         role        = role,
@@ -306,6 +306,9 @@ class ImportTaskList(ListCreateAPIView):
         github_user = request.data.get('github_user', None)
         github_repo = request.data.get('github_repo', None)
         github_reference = request.data.get('github_reference', '')
+        alternate_role_name = request.data.get('alternate_role_name', None)
+
+        name = alternate_role_name if alternate_role_name else github_repo
         
         if not github_user or not github_repo:
             raise ValidationError({ "detail": "Invalid request. Expecting github_user and github_repo." })
@@ -315,7 +318,7 @@ class ImportTaskList(ListCreateAPIView):
         if Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True).count() > 1:
             # multiple roles match github_user/github_repo
             for role in Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True):
-                task = create_import_task(github_user, github_repo, github_reference, role, request.user)
+                task = create_import_task(github_user, github_repo, github_reference, role, request.user, '', '', alternate_role_name)
                 import_role.delay(task.id)
                 serializer = self.get_serializer(instance=task)
                 response['results'].append(serializer.data)
@@ -323,13 +326,13 @@ class ImportTaskList(ListCreateAPIView):
             role, created = Role.objects.get_or_create(github_user=github_user,github_repo=github_repo, active=True,
                 defaults={
                     'namespace':   github_user,
-                    'name':        github_repo,
+                    'name':        name,
                     'github_user': github_user,
                     'github_repo': github_repo,
                     'is_valid':    False,
                 }
             )
-            task = create_import_task(github_user, github_repo, github_reference, role, request.user)
+            task = create_import_task(github_user, github_repo, github_reference, role, request.user, '', '', alternate_role_name)
             serializer = self.get_serializer(instance=task)
             response['results'].append(serializer.data)
         return Response(response, status=status.HTTP_201_CREATED, headers=self.get_success_headers(response))

@@ -9,7 +9,7 @@
                 <h2>Import Your Roles from GitHub</h2>
                 <div class="text">
                     <p><strong></strong>
-                    Click the toggle next to the repository to reveal a check mark. This will add the role to Galaxy, making it visible on the Browse Roles page and allowing anyone to download it using the ansible-galaxy command line tool. Removing the check mark will delete the role from Galaxy.</p>
+                    Click the toggle next to the repository to reveal a check mark. This will add the role to Galaxy, making it visible on the Browse Roles page and allowing anyone to download it using the ansible-galaxy command line tool. Removing the check mark will delete the role from Galaxy. Use settings <a href="" disabled="disabled" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a> to enable Travis notifications and control the role name assigned to the repo.
                     <p><strong>NOTE:</strong> Only public repositories containing a meta/main.yml file can be imported.</p>
                 </div>
             </div>
@@ -47,10 +47,10 @@
                         ng-change="toggleRepository(repo)"
                         is-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING' || refreshing"></toggle-switch>
                     <div class="state"><i class="fa fa-spin fa-spinner" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'"></i></div>
-                    <div class="settings"><a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Configure Travis Notification" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a></div>
+                    <div class="settings"><a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Role Settings" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a></div>
                     <div class="name">
-                        <a ng-href="/detail#/role/{{ repo.summary_fields.roles[0].id }}" ng-if="repo.is_enabled">{{ repo.github_user + '/' + repo.github_repo }}</a>
-                        <span ng-if="!repo.is_enabled">{{ repo.github_user + '/' + repo.github_repo }}</span>
+                        <a ng-href="/detail#/role/{{ repo.role_id }}" ng-if="repo.is_enabled && repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</a>
+                        <span ng-if="!repo.is_enabled || !repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</span>
                     </div>
                     <div class="tools" ng-if="repo.is_enabled">
                         <a class="btn btn-default btn-xs" ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" tooltip-placement="top" uib-tooltip="View Role Import Details"><i class="fa fa-list"></i></a>
@@ -65,12 +65,18 @@
                                     
                     <div uib-collapse="!repo.show_integrations" class="integration-container">
                         <div class="form">
+                            <h3>SETTINGS</h3>
                             <div class="form-group">
                                 <label>Travis Token</label>
                                 <div class="input-container">
                                     <input type="{{ repo.travis_token_type }}" class="form-control input-sm" name="travis_token" ng-model="repo.travis_token" placeholder="Travis Token" autcomplete="off"/>
                                     <a href="" class="clear-link" ng-click="clearTravis(repo)" ng-show="repo.travis_token"><i class="fa fa-times"></i></a>
                                 </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Edit Role Name</label>
+                                <input type="text" class="form-control input-sm" name="alternate_name" ng-model="repo.role_name" autocomplete="off" />
+                                <div class="help-text">Name assigned to the role on import. NOTE: Changing the name will trigger an import.</div>
                             </div>
                             <!--div class="form-group">
                                 <label>GitHub Secret</label>
@@ -82,7 +88,7 @@
                             </div-->
                             <div class="form-group">
                                 <div class="form-button text-right">
-                                    <a href="" ng-click="updateSecrets(repo)" class="btn btn-sm btn-primary"><i class="fa fa-check"></i> Save</a>
+                                    <a href="" ng-click="updateSettings(repo)" class="btn btn-sm btn-primary"><i class="fa fa-check"></i> Save</a>
                                     <a href="" ng-click="cancelIntegrations(repo)" class="btn btn-sm btn-default"><i class="fa fa-times"></i> Cancel</a>
                                 </div>
                             </div>
