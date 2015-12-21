@@ -17,6 +17,7 @@
 
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
+from galaxy.main.views import AuthorListView, RoleDetailView
 
 
 urlpatterns = patterns('galaxy.main.views',
@@ -28,7 +29,7 @@ urlpatterns = patterns('galaxy.main.views',
     url(r'^list$', 'list_category', name='list-category'),
     url(r'^detail$', 'detail_category', name='detail-category'),
     url(r'^roleadd$', 'role_add_view', name='role-add-category'),
-    url(r'^imports$', 'import_status_view', name='import-status-view'),
+    url(r'^imports$', 'import_status_view', name='import-status'),
     
     # Logged in/secured URLs
     url(r'^accounts/connect/$', 'accounts_connect'),
@@ -42,4 +43,7 @@ urlpatterns = patterns('galaxy.main.views',
     url(r'^accounts/role/delete/(?P<id>[0-9]+)$', 'accounts_role_delete', name='accounts-role-delete'),
     url(r'^accounts/role/deactivate/(?P<id>[0-9]+)$', 'accounts_role_deactivate', name='accounts-role-deactivate'),
     url(r'^accounts/role/reactivate/(?P<id>[0-9]+)$', 'accounts_role_reactivate', name='accounts-role-reactivate'),
+
+    url(r'^([\w\-._+]+)/$', AuthorListView.as_view(), name='author-list'),
+    url(r'^([\w\-._+]+)/([\w\-._+]+)/$', RoleDetailView.as_view(), name='role-detail'),
 )

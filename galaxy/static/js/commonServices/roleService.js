@@ -28,7 +28,7 @@
             $analytics.eventTrack('delete', {
                 category: params.github_user + '/' + params.github_repo
             });
-            return $resource('api/v1/removerole/', null, {
+            return $resource('/api/v1/removerole/', null, {
                 "delete": { method: 'DELETE', headers: { "X-CSRFToken": token }}
             }).delete(params);
         }

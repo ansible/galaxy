@@ -41,16 +41,19 @@ from django.db import transaction
 from django.db import IntegrityError
 from django.db.models import Count, Avg
 from django.forms.models import modelformset_factory
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import timezone
 from django.utils.timezone import utc
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.views.generic import ListView
+from django.views.generic.detail import DetailView
 
 # local stuff
 import urls as main_urls
 
+from galaxy.api.utils import html_decode
 from models import *
 from forms import *
 from utils import db_common
@@ -253,6 +256,82 @@ def handle_404_view(request):
 
 def handle_400_view(request):
     return render_to_response('custom400.html')
+
+
+class AuthorListView(ListView):
+    template_name = 'role_list.html'
+    context_object_name = 'roles'
+
+    def get_queryset(self):
+        self.namespace = self.args[0]
+        if Role.objects.filter(namespace=self.args[0]).count() == 0:
+            raise Http404()
+        return Role.objects.filter(namespace=self.args[0])
+
+    def get_context_data(self, **kwargs):
+        context = super(AuthorListView, self).get_context_data(**kwargs)
+        context['namespace'] = self.namespace
+        return context
+
+class RoleDetailView(DetailView):
+    template_name = 'role_detail.html'
+    context_obj_name = 'role'
+
+    def get_object(self):
+        self.namespace = self.args[0]
+        self.name = self.args[1]
+        self.role = get_object_or_404(Role, namespace=self.namespace, name=self.name)
+        return self.role
+
+    def get_context_data(self, **kwargs):
+        context = super(RoleDetailView, self).get_context_data(**kwargs)
+        context['namespace'] = self.namespace
+        context['name'] = self.name 
+
+        try:
+            gh_user = User.objects.get(github_user=self.role.github_user)
+            context['avatar'] = gh_user.github_avatar
+        except:
+            context['avatar'] = "/static/img/avatar.png";
+
+        user = self.request.user
+        context['is_authenticated'] = True if user.is_authenticated() and user.is_connected_to_github() else False
+        context['is_staff'] = user.is_staff
+
+        context['is_subscriber'] = False
+        if user.is_authenticated():
+            sub = user.get_subscriber(self.role.github_user, self.role.github_repo)
+            if sub:
+                context['is_subscriber'] = True 
+                context['subscriber_id'] = sub.id
+
+        print "is_subscriber: %s" % context['is_subscriber']
+        
+        context['is_stargazer'] = False
+        if user.is_authenticated():
+             star = user.get_stargazer(self.role.github_user, self.role.github_repo)
+             if star:
+                context['is_stargazer'] = True
+                context['stargazer_id'] = star.id
+        
+        role = self.role
+        context['tags'] = role.tags.all()
+        context['platforms'] = role.platforms.all()
+        context['dependencies'] = role.dependencies.all()
+        
+        context['versions'] = []
+        for ver in role.versions.all():
+            context['versions'].append({
+                'loose_version': ver.loose_version,
+                'release_date':  ver.release_date.strftime('%m/%d/%Y %H:%M:%I %p') if ver.release_date else 'NA'
+            })
+
+        context['create_date'] = role.created.strftime('%m/%d/%Y %H:%M:%I %p')
+        context['import_date'] = role.imported.strftime('%m/%d/%Y %H:%M:%I %p') if role.imported else 'NA'
+        context['readme_html'] = markdown.markdown(html_decode(role.readme), extensions=['extra'])
+
+        return context
+
 
 #------------------------------------------------------------------------------
 # Non-secured Action URLs requiring a POST

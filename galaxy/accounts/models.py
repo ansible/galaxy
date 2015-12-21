@@ -94,21 +94,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
         "Returns the short name for the user."
         return self.short_name.strip()
 
-    def get_num_ratings(self):
-        return self.ratings.filter(active=True, role__active=True, role__is_valid=True).count()
-
-    def get_rating_average(self):
-        return self.ratings.filter(active=True, role__active=True, role__is_valid=True).aggregate(
-                   avg_rating = AvgWithZeroForNull('score'),
-               )['avg_rating'] or 0
-
     def get_num_roles(self):
         return self.roles.filter(active=True, is_valid=True).count()
-
-    def get_role_average(self):
-        return self.roles.filter(active=True, is_valid=True, average_score__gt=0).aggregate(
-                   avg = AvgWithZeroForNull('average_score'),
-               )['avg'] or 0
 
     def email_user(self, subject, message, from_email=None):
         """
@@ -132,3 +119,26 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
             'github_user': g.github_user,
             'github_repo': g.github_repo,
         } for g in self.starred.all()]
+
+    def get_subscriber(self, github_user, github_repo):
+        try:
+            sub = self.subscriptions.get(github_user=github_user, github_repo=github_repo)
+            return sub
+        except:
+            return None
+
+    def get_stargazer(self, github_user, github_repo):
+        try:
+            star = self.starred.get(github_user=github_user, github_repo=github_repo)
+            return star
+        except:
+            return None
+
+    def is_connected_to_github(self):
+        connected = False
+        for account in self.socialaccount_set.all():
+            if account.provider == 'github':
+                connected = True
+        return connected
+
+

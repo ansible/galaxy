@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% load galaxyhelpers %}
+
+{% block general_content %}
+
+<div id="galaxy-page-title">
+    <div class="container">
+        <div class="page-title">Browse Roles</div>
+    </div>
+</div>
+
+
+<div class="container" id="galaxy-author-page">
+    <table class="table ga-table-striped">
+        <caption>{{ namespace }}</caption>
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for role in roles %}
+            <tr>
+                <td><a href="/{{ role.namespace }}/{{ role.name }}/">{{ role.name }}</a></td>
+                <td>
+                    {{ role.description }}
+                </td>
+            </tr>
+            {% endfor %}
+            {% if roles.count == 0 %}
+            <tr>
+                <td colspan="5">No roles found for {{ namespace }}.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#galaxy-nav-items li').each(function() {
+            t = $(this).find('a').text();
+            if (t === 'Browse Roles') {
+                $(this).addClass('active');
+            } else {
+                $(this).removeClass('active');
+            }
+        });
+    });
+</script>
+
+{% endblock %}

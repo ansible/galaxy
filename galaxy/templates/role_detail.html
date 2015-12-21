@@ -1,0 +1,425 @@
+{% extends 'base.html' %}
+
+{% load galaxyhelpers %}
+
+{% block general_content %}
+
+<div id="galaxy-page-title">
+    <div class="container">
+        <div class="page-title">Role Detail</div>
+    </div>
+</div>
+
+
+<div class="container" id="galaxy-role-detail">
+    {% if is_staff %}
+    <div class="row" style="margin-bottom: 15px;">
+        <div class="col-xs-offset-6 col-xs-6 text-right">
+            <a class="btn btn-danger btn-sm" href="" id="delete-btn" data-user="{{ role.github_user}}" data-repo="{{ role.github_repo }}"><i class="fa fa-trash-o"></i> Delete Role</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-xs-6">
+            <h2 class="rolename">{{role.name}}</h2>
+            <div class="description">{{role.description}}</div>
+        </div>
+        {% if avatar %}
+        <div class="col-xs-6 text-right">
+            <div class="user-info">
+                <img src="{{ avatar }}" />
+                <p class="username"><a href="https://github.com/{{ role.github_user }}" target="_blank">{{ role.github_user }}</a></p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="documentation">
+                
+                <ul class="nav nav-pills" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#details" aria-controls="details" role="tab" data-toggle="tab">Details</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#readme" aria-controls="readme" role="tab" data-toggle="tab">README</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="details">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="badge-container">
+                                    {% if role.travis_build_url %}
+                                    <a href="{{ role.travis_build_url }}" target="_blank">
+                                    <img src="{{ role.travis_status_url }}" class="travis-status-img" data-toggle="tooltip" data-placement="top" title="Travis Build Status" />
+                                    </a>
+                                    {% endif %}
+                                    <div class="download-badge" data-toggle="tooltip" data-placement="top" title="Galaxy Download Count">
+                                        <div class="title">Downloads</div>
+                                        <div class="count">{{ role.download_count }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row button-row">
+                            <div class="col-sm-8">
+                                
+                                {% if role.issue_tracker_url %}
+                                <a class="btn btn-default btn-md" href="{{ role.issue_tracker_url }}"
+                                   ng-show="role.issue_tracker_url" target="_blank"><i class="fa fa-bug"></i> Issue Tracker</a>
+                                {% endif %}
+
+                                <a class="btn btn-default btn-md" href="https://github.com/{{role.github_user}}/{{role.github_repo}}" target="_blank"><i class="fa fa-github"></i> Github Repo</a>
+                                
+                                {% if is_authenticated %}   
+                                        <a href="" id="unsubscribe-btn"
+                                            class="btn btn-default btn-md"
+                                            data-id="{{ subscriber_id }}"
+                                            {% if not is_subscriber %}
+                                            style="display:none;"
+                                            {% endif %}
+                                            >
+                                            <i class="fa fa-eye"></i><i class="fa fa-spinner fa-spin" style="display: none;"></i> Unwatch &nbsp;
+                                            <span class="count">{{ role.watchers_count }}</span>
+                                        </a>
+                                        <a href="" id="subscribe-btn" 
+                                            data-user="{{ role.github_user }}" 
+                                            data-repo="{{ role.github_repo }}" 
+                                            class="btn btn-default btn-md"
+                                            {% if is_subscriber %}
+                                            style="display:none;"
+                                            {% endif %}
+                                            >
+                                            <i class="fa fa-eye"></i>
+                                            <i class="fa fa-spinner fa-spin" style="display: none;"></i> Watch &nbsp;
+                                            <span class="count">{{ role.watchers_count }}</span>
+                                        </a>
+                                    
+                                        <a href="" id="unstar-btn"
+                                            class="btn btn-default btn-md"
+                                            data-id="{{ stargazer_id }}"
+                                            {% if not is_stargazer %}
+                                            style="display:none;"
+                                            {% endif %}
+                                            >
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-spinner fa-spin" style="display: none;"></i> Unstar &nbsp;
+                                            <span class="count">{{ role.stargazers_count }}</span>
+                                        </a>
+                                        <a href="" id="star-btn"
+                                            class="btn btn-default btn-md"
+                                            data-user="{{ role.github_user }}" 
+                                            data-repo="{{ role.github_repo }}"
+                                            {% if is_stargazer %}
+                                            style="display:none;"
+                                            {% endif %}
+                                            >
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-spinner fa-spin" style="display: none;"></i> Star &nbsp;
+                                            <span class="count">{{ role.stargazers_count }}</span>
+                                        </a>
+                                {% else %}
+                                        <a href="" ng-click="subscribe(role)" class="btn btn-default btn-md" disabled="disabled">
+                                            <i class="fa fa-eye"></i> Watch &nbsp;{{ role.watchers_count }}
+                                        </a>
+                                        <a href="" class="btn btn-default btn-md" disabled="disabled">
+                                            <i class="fa fa-star"></i> Star &nbsp;{{ role.stargazers_count }}
+                                        </a>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table class="details">
+                                    <tr>
+                                        <td class="key">Minimum Ansible Version</td><td class="value">{{ role.min_ansible_version }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Installation</td><td class="value"><code>$ ansible-galaxy install {{role.namespace}}.{{role.name}}</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Tags</td><td class="value">
+                                            {% for tag in tags %}
+                                            <div class="galaxy-tag">{{ tag }}</div>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Created</td><td class="value">{{ create_date }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Imported</td>
+                                        <td class="value" >{{ import_date }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="versions section">
+                                    <table class="table ga-table-striped">
+                                        <caption>Version History</caption>
+                                        <thead>
+                                            <tr>
+                                                <th>Version</th>
+                                                <th>Release Date</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="table-scroller">
+                                        <table class="table ga-table-striped">
+                                            <tbody>
+                                            {% for version in versions %}
+                                            <tr>
+                                                <td>{{ version.loose_version }}</td>
+                                                <td>{{ version.release_date }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% if version.count == 0 %}
+                                            <tr>
+                                                <td colspan="2">No version history available.</td>
+                                            </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="platforms section">
+                                    <table class="table ga-table-striped">
+                                        <caption>Supported Platforms</caption>
+                                        <thead>
+                                            <tr>
+                                                <th>Platform</th>
+                                                <th>Version</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="table-scroller">
+                                        <table class="table ga-table-striped">
+                                            <tbody>
+                                            {% for platform in platforms %}
+                                            <tr>
+                                                <td>{{ platform.name }}</td>
+                                                <td>{{ platform.release }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% if platforms.count == 0 %}
+                                            <tr>
+                                                <td colspan="2">No platform information available.</td>
+                                            </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="dependencies section">
+                                    <table class="table ga-table-striped">
+                                        <caption>Dependencies</caption>
+                                        <thead>
+                                            <tr>
+                                                <th>Role</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="table-scroller">
+                                        <table class="table ga-table-striped">
+                                            <tbody>
+                                            {% for dependency in dependencies %}
+                                            <tr>
+                                                <td><a href="/{{ dependency.namespace }}/{{ dependency.name }}">{{ dependency.namespace }}.{{ dependency.name }}</a></td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% if dependencies.count == 0 %}
+                                            <tr ng-show="!role.dependencies.length">
+                                                <td colspan="2">No dependencies.</td>
+                                            </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div><!-- tabpanel -->
+
+                    <div role="tabpanel" class="tab-pane" id="readme">
+                        {{ readme_html | safe }}
+                    </div>
+
+                </div><!-- tab content -->
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('[data-toggle="tooltip"]').tooltip();
+
+        $('#galaxy-nav-items li').each(function() {
+            t = $(this).find('a').text();
+            if (t === 'Browse Roles') {
+                $(this).addClass('active');
+            } else {
+                $(this).removeClass('active');
+            }
+        });
+
+        $('#subscribe-btn').click(function(e) {
+            e.preventDefault();
+            subscribe();
+        });
+        $('#unsubscribe-btn').click(function(e) {
+            e.preventDefault();
+            unsubscribe();
+        });
+        $('#star-btn').click(function(e) {
+            e.preventDefault();
+            star();
+        });
+        $('#unstar-btn').click(function(e) {
+            e.preventDefault();
+            unstar();
+        });
+        $('#delete-btn').click(function(e) {
+            e.preventDefault();
+            delete_role();
+        });
+    });
+
+    function get_token() {
+        // Get the CSRF token
+        // https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
+        var name = 'csrftoken';
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function delete_role() {
+        github_user = $('#delete-btn').attr('data-user');
+        github_repo = $('#delete-btn').attr('data-repo');
+        $.ajax('/api/v1/removerole/?github_user=' + github_user + '&github_repo=' + github_repo, {
+            'method': 'DELETE',
+            'headers': { 'X-CSRFToken': get_token() },
+            success: function() {
+                window.location = '/{{ role.namespace }}/'
+            }
+        });
+    }
+
+    function star() {
+        elem = $('#star-btn');
+        user = elem.attr('data-user');
+        repo = elem.attr('data-repo');
+        elem.find('.fa-star').hide();
+        elem.find('.fa-spin').show();
+        count = parseInt(elem.find('.count').text());
+        $.ajax('/api/v1/repos/stargazers/', {
+            'method': 'POST',
+            'data': {
+                'github_user': user,
+                'github_repo': repo
+            },
+            'headers': { 'X-CSRFToken': get_token() },
+            'success': function(data) {
+                elem.find('.fa-star').show();
+                elem.find('.fa-spin').hide();
+                elem.find('.count').text(count + 1);
+                elem.hide();
+                u = $('#unstar-btn');
+                u.attr('data-id', data.result.id);
+                u.find('.count').text(count + 1);
+                u.show();
+            }
+        });
+    }
+
+    function unstar() {
+        elem = $('#unstar-btn');
+        id = elem.attr('data-id');
+        elem.find('.fa-star').hide();
+        elem.find('.fa-spin').show();
+        count = parseInt(elem.find('.count').text());
+        $.ajax('/api/v1/repos/stargazers/' + id + '/', {
+            'method': 'DELETE',
+            'headers': { 'X-CSRFToken': get_token() },
+            'success': function(data) {
+                elem.find('.fa-star').show();
+                elem.find('.fa-spin').hide();
+                elem.find('.count').text(count - 1);
+                elem.hide();
+                s = $('#star-btn');
+                s.find('.count').text(count - 1);
+                s.show();
+            }
+        });
+    }
+
+    function subscribe() {
+        elem = $('#subscribe-btn');
+        user = elem.attr('data-user');
+        repo = elem.attr('data-repo');
+        elem.find('.fa-eye').hide();
+        elem.find('.fa-spin').show();
+        count = parseInt(elem.find('.count').text());  
+        $.ajax('/api/v1/repos/subscriptions/', {
+            'method': 'POST',
+            'data': {
+                'github_user': user,
+                'github_repo': repo
+            },
+            'headers': { 'X-CSRFToken': get_token() },
+            'success': function(data) {
+                elem.find('.fa-eye').show();
+                elem.find('.fa-spin').hide();
+                elem.find('.count').text(count + 1);
+                elem.hide();
+                u = $('#unsubscribe-btn');
+                u.attr('data-id', data.result.id);
+                u.find('.count').text(count + 1);
+                u.show();
+            }
+        });
+    }
+
+    function unsubscribe() {
+        elem = $('#unsubscribe-btn');
+        id = elem.attr('data-id');
+        elem.find('.fa-eye').hide();
+        elem.find('.fa-spin').show();
+        count = parseInt(elem.find('.count').text());
+        $.ajax('/api/v1/repos/subscriptions/' + id + '/', {
+            'method': 'DELETE',
+            'headers': { 'X-CSRFToken': get_token() },
+            'success': function(data) {
+                elem.find('.fa-eye').show();
+                elem.find('.fa-spin').hide();
+                elem.find('.count').text(count - 1);
+                elem.hide();
+                s = $('#subscribe-btn');
+                s.find('.count').text(count - 1);
+                s.show();
+            }
+        });
+    }
+</script>
+
+{% endblock %}

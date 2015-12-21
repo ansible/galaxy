@@ -18,7 +18,7 @@
                     <div id="results-outer-container">
                     <div id="results-container">
                         <div class="result" ng-repeat="role in roles">
-                            <a ng-href="/detail#/role/{{ role.role_id }}">
+                            <a ng-href="/{{ role.username }}/{{ role.name }}/">
                             <div class="header">
                                 <div class="title">{{ role.name }}</div>
                                 <div class="badge" tooltip-placement="top" uib-tooltip="Galaxy Download Count">{{ role.download_count }}</div>
@@ -30,8 +30,7 @@
                                 <table class="stats-table">
                                     <tr class="stat-row">
                                         <td class="key">Author</td>
-                                        <td class="value" ng-if="role.username">{{ role.username }}</td>
-                                        <td class="value na" ng-if="!role.username">{{ role.username }}</td>    
+                                        <td class="value"><a ng-href="/{{ role.username }}/">{{ role.username }}</a></td>
                                     </tr>
                                     <tr class="stat-row">
                                         <td class="key">Platforms</td>
