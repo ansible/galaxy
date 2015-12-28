@@ -79,6 +79,10 @@
                                         <a href="" id="unsubscribe-btn"
                                             class="btn btn-default btn-md"
                                             data-id="{{ subscriber_id }}"
+                                            data-namespace="{{ role.namespace }}"
+                                            data-name="{{ role.name }}"
+                                            data-user="{{ role.github_user }}" 
+                                            data-repo="{{ role.github_repo }}" 
                                             {% if not is_subscriber %}
                                             style="display:none;"
                                             {% endif %}
@@ -87,6 +91,8 @@
                                             <span class="count">{{ role.watchers_count }}</span>
                                         </a>
                                         <a href="" id="subscribe-btn" 
+                                            data-namespace="{{ role.namespace }}"
+                                            data-name="{{ role.name }}"
                                             data-user="{{ role.github_user }}" 
                                             data-repo="{{ role.github_repo }}" 
                                             class="btn btn-default btn-md"
@@ -102,6 +108,10 @@
                                         <a href="" id="unstar-btn"
                                             class="btn btn-default btn-md"
                                             data-id="{{ stargazer_id }}"
+                                            data-namespace="{{ role.namespace }}"
+                                            data-name="{{ role.name }}"
+                                            data-user="{{ role.github_user }}" 
+                                            data-repo="{{ role.github_repo }}" 
                                             {% if not is_stargazer %}
                                             style="display:none;"
                                             {% endif %}
@@ -112,8 +122,10 @@
                                         </a>
                                         <a href="" id="star-btn"
                                             class="btn btn-default btn-md"
+                                            data-namespace="{{ role.namespace }}"
+                                            data-name="{{ role.name }}"
                                             data-user="{{ role.github_user }}" 
-                                            data-repo="{{ role.github_repo }}"
+                                            data-repo="{{ role.github_repo }}" 
                                             {% if is_stargazer %}
                                             style="display:none;"
                                             {% endif %}
@@ -314,8 +326,8 @@
     }
 
     function delete_role() {
-        github_user = $('#delete-btn').attr('data-user');
-        github_repo = $('#delete-btn').attr('data-repo');
+        var github_user = $('#delete-btn').attr('data-user');
+        var github_repo = $('#delete-btn').attr('data-repo');
         $.ajax('/api/v1/removerole/?github_user=' + github_user + '&github_repo=' + github_repo, {
             'method': 'DELETE',
             'headers': { 'X-CSRFToken': get_token() },
@@ -325,13 +337,40 @@
         });
     }
 
+    function _eventTrack(action, username, name, github_user, github_repo) {
+        if (window.ga) {
+            var eventOptions = {
+                eventCategory: username + '/' + name,
+                eventAction: action,
+                eventLabel: github_user + '/' + github_repo,
+                eventValue: null,
+                nonInteraction: false,
+                page: window.location.pathname,
+                userId: null
+            };
+            ga('send', 'event', eventOptions);
+        }
+    }
+    
+    /*$analytics.eventTrack(event, {
+                category: _role.username + '.' + _role.name,
+                label: _role.github_user + '/' + _role.github_repo
+            });
+    */
+
     function star() {
         elem = $('#star-btn');
-        user = elem.attr('data-user');
-        repo = elem.attr('data-repo');
+        var user = elem.attr('data-user');
+        var repo = elem.attr('data-repo');
+        var role_namespace = elem.attr('data-namespace');
+        var role_name = elem.attr('data-name'); 
+        
+        _eventTrack('star', role_namespace, role_name, user, repo);
+
         elem.find('.fa-star').hide();
         elem.find('.fa-spin').show();
-        count = parseInt(elem.find('.count').text());
+        var count = parseInt(elem.find('.count').text());
+
         $.ajax('/api/v1/repos/stargazers/', {
             'method': 'POST',
             'data': {
@@ -344,7 +383,7 @@
                 elem.find('.fa-spin').hide();
                 elem.find('.count').text(count + 1);
                 elem.hide();
-                u = $('#unstar-btn');
+                var u = $('#unstar-btn');
                 u.attr('data-id', data.result.id);
                 u.find('.count').text(count + 1);
                 u.show();
@@ -353,11 +392,19 @@
     }
 
     function unstar() {
-        elem = $('#unstar-btn');
-        id = elem.attr('data-id');
+        var elem = $('#unstar-btn');
+        var id = elem.attr('data-id');
+        var user = elem.attr('data-user');
+        var repo = elem.attr('data-repo');
+        var role_namespace = elem.attr('data-namespace');
+        var role_name = elem.attr('data-name');
+
+        _eventTrack('unstar', role_namespace, role_name, user, repo);
+
         elem.find('.fa-star').hide();
         elem.find('.fa-spin').show();
-        count = parseInt(elem.find('.count').text());
+        var count = parseInt(elem.find('.count').text());
+
         $.ajax('/api/v1/repos/stargazers/' + id + '/', {
             'method': 'DELETE',
             'headers': { 'X-CSRFToken': get_token() },
@@ -366,7 +413,7 @@
                 elem.find('.fa-spin').hide();
                 elem.find('.count').text(count - 1);
                 elem.hide();
-                s = $('#star-btn');
+                var s = $('#star-btn');
                 s.find('.count').text(count - 1);
                 s.show();
             }
@@ -374,12 +421,18 @@
     }
 
     function subscribe() {
-        elem = $('#subscribe-btn');
-        user = elem.attr('data-user');
-        repo = elem.attr('data-repo');
+        var elem = $('#subscribe-btn');
+        var user = elem.attr('data-user');
+        var repo = elem.attr('data-repo');
+        var role_namespace = elem.attr('data-namespace');
+        var role_name = elem.attr('data-name');
+
+        _eventTrack('watch', role_namespace, role_name, user, repo);
+
         elem.find('.fa-eye').hide();
         elem.find('.fa-spin').show();
-        count = parseInt(elem.find('.count').text());  
+        var count = parseInt(elem.find('.count').text());
+
         $.ajax('/api/v1/repos/subscriptions/', {
             'method': 'POST',
             'data': {
@@ -392,7 +445,7 @@
                 elem.find('.fa-spin').hide();
                 elem.find('.count').text(count + 1);
                 elem.hide();
-                u = $('#unsubscribe-btn');
+                var u = $('#unsubscribe-btn');
                 u.attr('data-id', data.result.id);
                 u.find('.count').text(count + 1);
                 u.show();
@@ -402,10 +455,18 @@
 
     function unsubscribe() {
         elem = $('#unsubscribe-btn');
-        id = elem.attr('data-id');
+        var id = elem.attr('data-id');
+        var user = elem.attr('data-user');
+        var repo = elem.attr('data-repo');
+        var role_namespace = elem.attr('data-namespace');
+        var role_name = elem.attr('data-name'); 
+
+        _eventTrack('unwatch', role_namespace, role_name, user, repo);
+
         elem.find('.fa-eye').hide();
         elem.find('.fa-spin').show();
-        count = parseInt(elem.find('.count').text());
+        var count = parseInt(elem.find('.count').text());
+        
         $.ajax('/api/v1/repos/subscriptions/' + id + '/', {
             'method': 'DELETE',
             'headers': { 'X-CSRFToken': get_token() },

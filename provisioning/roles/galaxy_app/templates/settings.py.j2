@@ -54,7 +54,20 @@ ACCOUNT_EMAIL_VERIFICATION="mandatory"
 ACCOUNT_EMAIL_SUBJECT_PREFIX="Ansible Galaxy "
 ACCOUNT_LOGIN_ON_VALIDATE=True
 ACCOUNT_USERNAME_MIN_LENGTH=3
-ACCOUNT_USERNAME_BLACKLIST=['admin','administrator']
+ACCOUNT_USERNAME_BLACKLIST=[
+    'admin',
+    'administrator',
+    'galaxy_admin',
+    'accounts',
+    'account',
+    'explore',
+    'intro',
+    'list',
+    'detail',
+    'roleadd',
+    'imports',
+    'authors'
+]
 ACCOUNT_PASSWORD_MIN_LENGTH=8
 SOCIALACCOUNT_PROVIDERS={
     'twitter': { 'SCOPE': ['r_emailaddress'] },

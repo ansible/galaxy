@@ -20,7 +20,6 @@
         };
 
         function _analytics(event, _role) {
-            console.log(_role);
             $analytics.eventTrack(event, {
                 category: _role.username + '.' + _role.name,
                 label: _role.github_user + '/' + _role.github_repo
