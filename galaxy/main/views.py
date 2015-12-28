@@ -275,6 +275,8 @@ class NamespaceListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(NamespaceListView, self).get_context_data(**kwargs)
         context['search_value'] = self.request.GET.get('author', '')
+        context["site_name"] = settings.SITE_NAME
+        context["load_angular"] = False       
         
         # the paginator includes 
         qs = self.get_queryset()
@@ -311,7 +313,9 @@ class RoleListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(RoleListView, self).get_context_data(**kwargs)
         context['namespace'] = self.namespace
-        context['search_value'] = self.request.GET.get('role', '')        
+        context['search_value'] = self.request.GET.get('role', '')
+        context["site_name"] = settings.SITE_NAME
+        context["load_angular"] = False       
         return context
 
 class RoleDetailView(DetailView):
@@ -328,7 +332,9 @@ class RoleDetailView(DetailView):
         context = super(RoleDetailView, self).get_context_data(**kwargs)
         context['namespace'] = self.namespace
         context['name'] = self.name 
-
+        context["site_name"] = settings.SITE_NAME
+        context["load_angular"] = False       
+        
         try:
             gh_user = User.objects.get(github_user=self.role.github_user)
             context['avatar'] = gh_user.github_avatar
