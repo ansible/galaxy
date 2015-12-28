@@ -17,7 +17,7 @@
 
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
-from galaxy.main.views import AuthorListView, RoleDetailView
+from galaxy.main.views import RoleListView, RoleDetailView, NamespaceListView
 
 
 urlpatterns = patterns('galaxy.main.views',
@@ -44,6 +44,7 @@ urlpatterns = patterns('galaxy.main.views',
     url(r'^accounts/role/deactivate/(?P<id>[0-9]+)$', 'accounts_role_deactivate', name='accounts-role-deactivate'),
     url(r'^accounts/role/reactivate/(?P<id>[0-9]+)$', 'accounts_role_reactivate', name='accounts-role-reactivate'),
 
-    url(r'^([\w\-._+]+)/$', AuthorListView.as_view(), name='author-list'),
+    url(r'^authors/$', NamespaceListView.as_view(), name='namespace-list'),
+    url(r'^([\w\-._+]+)/$', RoleListView.as_view(), name='role-list'),
     url(r'^([\w\-._+]+)/([\w\-._+]+)/$', RoleDetailView.as_view(), name='role-detail'),
 )

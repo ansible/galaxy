@@ -24,6 +24,7 @@ import smtplib
 import string
 import markdown
 from hashlib import sha256 as sha
+from math import ceil, floor
 
 from django.conf import settings
 from django.contrib.auth import login as authlogin
@@ -257,20 +258,60 @@ def handle_404_view(request):
 def handle_400_view(request):
     return render_to_response('custom400.html')
 
+class NamespaceListView(ListView):
+    model = 'Role'
+    template_name = 'namespace_list.html'
+    context_object_name = 'namespaces'
+    paginate_by = 20
 
-class AuthorListView(ListView):
+    def get_queryset(self):
+        author = self.request.GET.get('author')
+        if author:
+            qs = Role.objects.filter(namespace__icontains=author).order_by('namespace').distinct('namespace')
+        else:
+            qs = Role.objects.order_by('namespace').distinct('namespace')
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super(NamespaceListView, self).get_context_data(**kwargs)
+        context['search_value'] = self.request.GET.get('author', '')
+        
+        # the paginator includes 
+        qs = self.get_queryset()
+        context['count'] = qs.count()
+
+        # figure out the range of pages numbers to show in bootstrap paging widget
+        page_obj = context['page_obj']
+        paginator = context['paginator']
+        if page_obj.number % 10 == 0:
+            first = int(floor((page_obj.number - 1)/10.0) * 10 + 1)
+        else:
+            first = int(floor(page_obj.number/10.0) * 10 + 1)
+        first = 1 if first <= 0 else first
+        last = int(ceil(page_obj.number/10.0) * 10)
+        last = paginator.num_pages if last > paginator.num_pages else last
+        context['page_range'] = range(first, last + 1)
+        return context
+
+class RoleListView(ListView):
     template_name = 'role_list.html'
     context_object_name = 'roles'
 
     def get_queryset(self):
         self.namespace = self.args[0]
+        name = self.request.GET.get('role', None)
         if Role.objects.filter(namespace=self.args[0]).count() == 0:
             raise Http404()
-        return Role.objects.filter(namespace=self.args[0])
+        if name:
+            qs = Role.objects.filter(namespace=self.args[0],name__icontains=name)
+        else:
+            qs = Role.objects.filter(namespace=self.args[0])
+        return qs
 
     def get_context_data(self, **kwargs):
-        context = super(AuthorListView, self).get_context_data(**kwargs)
+        context = super(RoleListView, self).get_context_data(**kwargs)
         context['namespace'] = self.namespace
+        context['search_value'] = self.request.GET.get('role', '')        
         return context
 
 class RoleDetailView(DetailView):

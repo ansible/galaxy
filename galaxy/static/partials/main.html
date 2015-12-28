@@ -16,7 +16,7 @@
                <tr ng-repeat="role in mostStarred">
                    <td class="col-sm-9">
                        <div class="clip">
-                           <a href="/detail#/role/{{role.role_id}}" tooltip-placement="top" 
+                           <a ng-href="/{{ role.username }}/{{role.name}}/" tooltip-placement="top" 
                               uib-tooltip="{{role.username}}.{{role.name}}">{{role.username}}.{{role.name}}</a>
                        </div>
                    </td>
@@ -49,7 +49,7 @@
                <tbody>
                <tr ng-repeat="role in mostWatched">
                    <td class="col-sm-8"><div class="clip">
-                       <a href="/detail#/role/{{role.role_id}}" tooltip-placement="top" 
+                       <a href="/{{ role.username }}/{{role.name}}/" tooltip-placement="top" 
                          uib-tooltip="{{role.username}}.{{role.name}}">{{role.username}}.{{role.name}}</a></div>
                     </td>
                    <td class="col-sm-4 text-right">{{role.watchers_count}}</td>
@@ -81,7 +81,7 @@
                <tbody>
                <tr ng-repeat="role in mostDownloaded">
                    <td class="col-sm-8"><span class="clip">
-                       <a href="/detail#/role/{{role.role_id}}" tooltip-placement="top" 
+                       <a href="/{{ role.username }}/{{role.name}}/" tooltip-placement="top" 
                          uib-tooltip="{{role.username}}.{{role.name}}">{{role.username}}.{{role.name}}</a></span>
                     </td>
                    <td class="col-sm-4 text-right">{{role.download_count}}</td>
@@ -150,7 +150,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="user in topContributors">
-                    <td class="col-sm-8"><a ng-href="/list#/roles?page=1&page_size=10&users={{ user.namespace }}">{{ user.namespace }}</a></td>
+                    <td class="col-sm-8"><a ng-href="/{{ user.namespace }}/">{{ user.namespace }}</a></td>
                     <td class="col-sm-4 text-right">{{ user.role_count }}</td>
                 </tr>
                 </tbody>
@@ -181,7 +181,7 @@
                <tr ng-repeat="role in new_roles">
                    <td class="col-sm-8">
                       <div class="clip">
-                         <a href="/detail#/role/{{role.role_id}}" tooltip-placement="top" 
+                         <a href="/{{ role.username }}/{{role.name}}/" tooltip-placement="top" 
                               uib-tooltip="{{role.username}}.{{role.name}}">{{role.username}}.{{role.name}}</a>
                       </div>
                    </td>
