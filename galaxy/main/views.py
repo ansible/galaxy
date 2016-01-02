@@ -179,10 +179,12 @@ def explore(request):
           '/static/dist/galaxy.exploreApp.min.js'
         ]
     context['load_angular'] = True
+    context['page_title'] = 'Explore'
     return render_to_response('explore.html', context)
 
 def intro(request):
     context = build_standard_context(request)
+    context['page_title'] = 'About'
     return render_to_response('intro.html', context)
 
 def accounts_landing(request):
@@ -209,6 +211,7 @@ def list_category(request, category=None, page=1):
         ]
     context["use_menu_controller"] = True
     context["load_angular"] = True
+    context["page_title"] = "Browse Roles"
     return render_to_response('list_category.html', context)
 
 def detail_category(request, category=None, page=1):
@@ -231,6 +234,7 @@ def detail_category(request, category=None, page=1):
         ]
     context["use_menu_controller"] = True
     context["load_angular"] = True
+    context["page_title"] = "Role Details"
     return render_to_response('list_category.html', context)
 
 def role_add_view(request, category=None, page=1):
@@ -250,12 +254,15 @@ def role_add_view(request, category=None, page=1):
         ]
     context["use_menu_controller"] = False
     context["load_angular"] = True
+    context["page_title"] = "My Roles"
     return render_to_response('list_category.html', context)
 
 def handle_404_view(request):
+    context["page_title"] = "404 Error"
     return render_to_response('custom404.html')
 
 def handle_400_view(request):
+    context["page_title"] = "400 Error"
     return render_to_response('custom400.html')
 
 class NamespaceListView(ListView):
@@ -277,7 +284,7 @@ class NamespaceListView(ListView):
         context['search_value'] = self.request.GET.get('author', '')
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False       
-        
+        context["page_title"] = "Browse Authors"
         # the paginator includes 
         qs = self.get_queryset()
         context['count'] = qs.count()
@@ -315,7 +322,9 @@ class RoleListView(ListView):
         context['namespace'] = self.namespace
         context['search_value'] = self.request.GET.get('role', '')
         context["site_name"] = settings.SITE_NAME
-        context["load_angular"] = False       
+        context["load_angular"] = False
+        context["page_title"] = self.namespace
+        context["meta_description"] = "Roles contributed by %s." % self.namespace
         return context
 
 class RoleDetailView(DetailView):
@@ -333,7 +342,8 @@ class RoleDetailView(DetailView):
         context['namespace'] = self.namespace
         context['name'] = self.name 
         context["site_name"] = settings.SITE_NAME
-        context["load_angular"] = False       
+        context["load_angular"] = False
+        context["meta_description"] = "Role %s.%s - %s" % (self.role.namespace, self.role.name, self.role.description)
         
         try:
             gh_user = User.objects.get(github_user=self.role.github_user)
@@ -376,7 +386,7 @@ class RoleDetailView(DetailView):
         context['create_date'] = role.created.strftime('%m/%d/%Y %H:%M:%I %p')
         context['import_date'] = role.imported.strftime('%m/%d/%Y %H:%M:%I %p') if role.imported else 'NA'
         context['readme_html'] = markdown.markdown(html_decode(role.readme), extensions=['extra'])
-
+        context['page_title'] = "%s.%s" % (self.namespace, self.name)
         return context
 
 
@@ -425,6 +435,7 @@ def import_status_view(request):
         del request.session["transient"]
     
     context["load_angular"] = True
+    context["page_title"] = "My Imports"
     return render_to_response('import_status.html',context)
 
 
