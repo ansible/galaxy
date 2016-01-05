@@ -118,7 +118,7 @@ DATABASES = {
 {% else %}
 {% for host in groups['db'] %}
 {% if hostvars[host]['postgres_master'] %}
-        'HOST': "{{ host }}",
+        'HOST': "{{ hostvars[host]['private_ip'] }}",
 {% endif %}
 {% endfor %}
 {% endif %}
@@ -144,13 +144,13 @@ CACHES = {
 }
 
 ELASTICSEARCH = {
-    'hosts': [{% for host in groups['es_hosts'] %}"{{ host }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+    'hosts': [{% for host in groups['es_hosts'] %}"{{ hostvars[host]['private_ip'] }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 }
 
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': [{% for host in groups['es_hosts'] %}"{{ galaxy_es_transport }}://{{ host }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}],
+        'URL': [{% for host in groups['es_hosts'] %}"{{ galaxy_es_transport }}://{{ hostvars[host]['private_ip'] }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}],
         'INDEX_NAME': 'haystack',
     },
 }

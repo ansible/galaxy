@@ -13,7 +13,7 @@ NameVirtualHost *:8080
 NameVirtualHost *:443
 WSGISocketPrefix /var/run/wsgi
 ExtendedStatus On
-Listen {{ linode_private_ip }}:8080
+Listen {{ private_ip }}:8080
 
 <VirtualHost _default_:80>
   ServerName {% for host in groups['node_balancer'] %}{{ host }}{% endfor %} 
@@ -52,7 +52,7 @@ Listen {{ linode_private_ip }}:8080
     SetHandler server-status
     Order deny,allow
     Deny from all
-    Allow from {{ linode_private_ip }} 
+    Allow from {{ private_ip }} 
   </Location>
 </VirtualHost>
 
@@ -91,7 +91,7 @@ Listen {{ linode_private_ip }}:8080
     SetHandler server-status
     Order deny,allow
     Deny from all
-    Allow from {{ linode_private_ip }} 
+    Allow from {{ private_ip }} 
   </Location>
 </VirtualHost>
 
@@ -137,6 +137,6 @@ Listen {{ linode_private_ip }}:8080
      SetHandler server-status
      Order deny,allow
      Deny from all
-     Allow from {{ linode_private_ip }} 
+     Allow from {{ private_ip }} 
    </Location>
 </VirtualHost>
