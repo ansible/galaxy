@@ -15,8 +15,6 @@
       - { role: ntp }
       - { role: supervisorctl, sup_init_name: "supervisord", sup_conf_location: "/etc/supervisord.conf" }
       - { role: iptables_config, galaxy_host_type: 'db' }
-      # - { role: fail2ban }
       - { role: postgresql }
       - { role: memcached }
       - { role: rabbitmq }
-      # - { role: machine_init }
