@@ -2,20 +2,22 @@
 # QA Inventory file for jenkins jobs
 #
 [node_balancer]
-10.100.1.19
+192.168.218.210
+# 69.164.223.190
 
 [web]
-168.61.168.249 private_ip=10.100.1.16 es_rebuild_host=True django_migrate=True host_name=galaxy-qa-web-001
-168.61.154.143 private_ip=10.100.1.17 es_rebuild_host=False django_migrate=False host_name=galaxy-qa-web-002 
+45.79.148.64 private_ip=192.168.221.153 es_rebuild_host=True host_name=galaxy-qa-web-001
+45.79.158.144 private_ip=192.168.211.158 es_rebuild_host=False host_name=galaxy-qa-web-002 
 
 [es_hosts]
-104.43.172.91 private_ip=10.100.1.18 host_name=galaxy-qa-es-001
-104.43.231.19 private_ip=10.100.1.15 host_name=galaxy-qa-es-002
-168.61.154.229 private_ip=10.100.1.18 host_name=galaxy-qa-es-003
+45.79.153.137 private_ip=192.168.208.222 host_name=galaxy-qa-es-001
+45.79.130.17 private_ip=192.168.205.222 host_name=galaxy-qa-es-002
+45.79.162.76 private_ip=192.168.192.221 host_name=galaxy-qa-es-003
 
 [db]
-40.122.166.85 private_ip=10.100.1.6 postgres_master=True host_name=galaxy-qa-db-001
-40.122.164.29 private_ip=10.100.1.7 postgres_master=False host_name=galaxy-qa-db-002
+45.79.153.136 private_ip=192.168.223.243 postgres_master=True host_name=galaxy-qa-db-001
+45.79.148.68 private_ip=192.168.213.252 postgres_master=False host_name=galaxy-qa-db-002
 
 [rabbitmq_host]
-10.100.1.6
+192.168.223.243
+# 45.79.153.136

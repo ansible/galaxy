@@ -6,7 +6,7 @@
       line: "%wheel ALL=(ALL) NOPASSWD: ALL"
 
 - name: Set the hostname
-  hostname: name="{{ linode_hostname }}"
+  hostname: name="{{ host_name }}"
 
 - name: Disable ssh root login
   lineinfile:

@@ -18,3 +18,4 @@
       - { role: postgresql }
       - { role: memcached }
       - { role: rabbitmq }
+      - { role: machine_init }

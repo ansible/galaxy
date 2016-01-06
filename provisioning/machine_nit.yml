@@ -1,0 +1,6 @@
+---
+- name: Run machine_init role
+  hosts: all
+  sudo: yes
+  roles:
+      - { role: machine_init }

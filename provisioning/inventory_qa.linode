@@ -1,0 +1,21 @@
+#
+# QA Inventory file for jenkins jobs
+#
+[node_balancer]
+69.164.223.190
+
+[web]
+45.79.148.64 private_ip=192.168.221.153 es_rebuild_host=True host_name=galaxy-qa-web-001
+45.79.158.144 private_ip=192.168.211.158 es_rebuild_host=False host_name=galaxy-qa-web-002 
+
+[es_hosts]
+45.79.153.137 host_name=galaxy-qa-es-001
+45.79.130.17 host_name=galaxy-qa-es-002
+45.79.162.76 host_name=galaxy-qa-es-003
+
+[db]
+45.79.153.136 postgres_master=True host_name=galaxy-qa-db-001
+45.79.148.68 postgres_master=False host_name=galaxy-qa-db-002
+
+[rabbitmq_host]
+45.79.153.136
