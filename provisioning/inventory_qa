@@ -6,8 +6,8 @@
 # 69.164.223.190
 
 [web]
-45.79.141.31 private_ip=192.168.221.153 es_rebuild_host=True host_name=galaxy-qa-web-001
-45.79.147.227 private_ip=192.168.211.158 es_rebuild_host=False host_name=galaxy-qa-web-002 
+45.79.141.31 private_ip=192.168.221.153 django_migrate=True es_rebuild_host=True host_name=galaxy-qa-web-001
+45.79.147.227 private_ip=192.168.211.158 django_migrate=False es_rebuild_host=False host_name=galaxy-qa-web-002 
 
 [es_hosts]
 45.79.153.137 private_ip=192.168.208.222 host_name=galaxy-qa-es-001
