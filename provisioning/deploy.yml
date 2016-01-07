@@ -26,17 +26,17 @@
       - { role: galaxy_packages }
       - { role: galaxy_deploy }
 
-- name: Rebuild Search Indexes
-  hosts: es_rebuild_host
-  sudo: yes
-  tasks:
-      - shell: "echo 'y' | galaxy-manage rebuild_index"
+# - name: Rebuild Search Indexes
+#  hosts: es_rebuild_host
+#  sudo: yes
+#  tasks:
+#      - shell: "echo 'y' | galaxy-manage rebuild_index"
 
-- name: Rebuild custom search indexes
-  hosts: es_rebuild_host
-  sudo: yes
-  tasks:
-      - shell: "galaxy-manage rebuild_galaxy_indexes"
+#- name: Rebuild custom search indexes
+#  hosts: es_rebuild_host
+#  sudo: yes
+#  tasks:
+#      - shell: "galaxy-manage rebuild_galaxy_indexes"
 
 - name: Notify slack
   hosts: 127.0.0.1 
