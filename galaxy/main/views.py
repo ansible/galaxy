@@ -258,10 +258,12 @@ def role_add_view(request, category=None, page=1):
     return render_to_response('list_category.html', context)
 
 def handle_404_view(request):
+    context = {}
     context["page_title"] = "404 Error"
     return render_to_response('custom404.html')
 
 def handle_400_view(request):
+    context = {}
     context["page_title"] = "400 Error"
     return render_to_response('custom400.html')
 
