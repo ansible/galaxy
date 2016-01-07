@@ -466,6 +466,8 @@ def refresh_user_repos(user, token):
     gh_api = Github(token)
     ghu = gh_api.get_user()
 
+    print "Refreshing User Repo Cache for %s" % user.username
+    
     user.repositories.all().delete()
     for r in ghu.get_repos():
         try:
