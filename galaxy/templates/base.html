@@ -28,6 +28,7 @@
                 "active": ("{{ user.is_active }}" == "True") ? true : false,
                 "connected_to_github": ("{{ connected_to_github }}" == "True") ? true : false,
                 "cache_refreshed": ("{{ user.cache_refreshed }}" == "True") ? true : false,
+                "auth_orgs_url": "{{ auth_orgs_url }}",
                 "subscriptions": [
                     {% for subscription in user.get_subscriptions %}
                         {

@@ -45,6 +45,7 @@
         $scope.loading = true;
         $scope.repositories = repositories;
         $scope.username = currentUserService.username;
+        $scope.auth_orgs_url = currentUserService.auth_orgs_url;
         $scope.toggleRepository = _toggleRepository;
         $scope.refreshing = false;
         $scope.refreshRepos = _refresh;

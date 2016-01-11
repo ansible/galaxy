@@ -255,6 +255,14 @@ def role_add_view(request, category=None, page=1):
     context["use_menu_controller"] = False
     context["load_angular"] = True
     context["page_title"] = "My Roles"
+    app_id = ""
+    if settings.SITE_NAME == 'galaxy.ansible.com':
+        app_id = '3e92491593df34c92089'
+    if settings.SITE_NAME == 'galaxy-qa.ansible.com':
+        app_id = '2e6b1de3b2832a7cf974'
+    if settings.SITE_NAME == 'localhost':
+        app_id = '3232f7f9f6477dee707f'
+    context["auth_orgs_url"] = "https://github.com/settings/connections/applications/%s" % app_id
     return render_to_response('list_category.html', context)
 
 def handle_404_view(request):
