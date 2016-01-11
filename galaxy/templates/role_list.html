@@ -12,11 +12,8 @@
 
 
 <div class="container" id="galaxy-author-page">
-    {% if namespace and namespace.name %}
-    <h2><a href="{{ namespace.html_url }}" target="_blank">{{ namespace.name }}</a></h2>
-    {% else %}
+
     <h2>{{ namespace_name }}</h2>
-    {% endif %}
 
     {% if namespace %}
     <div class="row">
@@ -32,8 +29,11 @@
                     </a>
                 </div>
                 <div class="info-container">
+                    {% if namespace.name %}
+                        <div>{{ namespace.name }}</div>
+                    {% endif %}
                     {% if namespace.description %}
-                        <div><strong>{{ namespace.description }}</strong></div>
+                        <div>{{ namespace.description }}</div>
                     {% endif %}
                     {% if namespace.company %}
                         <div>{{ namespace.company }}</div>
