@@ -284,9 +284,9 @@ class NamespaceListView(ListView):
     def get_queryset(self):
         author = self.request.GET.get('author')
         if author:
-            qs = Role.objects.filter(namespace__icontains=author).order_by('namespace').distinct('namespace')
+            qs = Role.objects.filter(active=True,namespace__icontains=author).order_by('namespace').distinct('namespace')
         else:
-            qs = Role.objects.order_by('namespace').distinct('namespace')
+            qs = Role.objects.filter(active=True).order_by('namespace').distinct('namespace')
         return qs
 
     def get_context_data(self, **kwargs):
@@ -322,9 +322,9 @@ class RoleListView(ListView):
         if Role.objects.filter(namespace=self.args[0]).count() == 0:
             raise Http404()
         if name:
-            qs = Role.objects.filter(namespace=self.args[0],name__icontains=name)
+            qs = Role.objectsfilter(active=True,namespace=self.args[0],name__icontains=name)
         else:
-            qs = Role.objects.filter(namespace=self.args[0])
+            qs = Role.objects.filter(active=True,namespace=self.args[0])
         return qs
 
     def get_context_data(self, **kwargs):
@@ -358,7 +358,7 @@ class RoleDetailView(DetailView):
     def get_object(self):
         self.namespace = self.args[0]
         self.name = self.args[1]
-        self.role = get_object_or_404(Role, namespace=self.namespace, name=self.name)
+        self.role = get_object_or_404(Role, namespace=self.namespace, name=self.name, active=True)
         return self.role
 
     def get_context_data(self, **kwargs):
