@@ -36,6 +36,45 @@ from allauth.socialaccount.models import SocialToken
 
 from galaxy.main.models import *
 
+def update_namespace(repo):
+    # Use GitHub repo to update namespace attributes
+    if repo.owner.type == 'Organization':
+        namespace, created = Namespace.objects.get_or_create(namespace=repo.organization.login, defaults={
+                                                             'name': repo.organization.name,
+                                                             'avatar_url': repo.organization.avatar_url,
+                                                             'location': repo.organization.location,
+                                                             'company': repo.organization.company,
+                                                             'email': repo.organization.email,
+                                                             'html_url': repo.organization.html_url,
+                                                             'followers': repo.organization.followers})
+        if not created:
+            namespace.avatar_url = repo.organization.avatar_url
+            namespace.location = repo.organization.location
+            namespace.company = repo.organization.company
+            namespace.email = repo.organization.email
+            namespace.html_url = repo.organization.html_url
+            namespace.followers = repo.organization.followers
+            namespace.save()
+    else:
+        namespace, created = Namespace.objects.get_or_create(namespace=repo.owner.login, defaults={
+                                                             'name': repo.owner.name,
+                                                             'avatar_url': repo.owner.avatar_url,
+                                                             'location': repo.owner.location,
+                                                             'company': repo.owner.company,
+                                                             'email': repo.owner.email,
+                                                             'html_url': repo.owner.html_url,
+                                                             'followers': repo.owner.followers})
+        if not created:
+            namespace.avatar_url = repo.owner.avatar_url
+            namespace.location = repo.owner.location
+            namespace.company = repo.owner.company
+            namespace.email = repo.owner.email
+            namespace.html_url = repo.owner.html_url
+            namespace.followers = repo.owner.followers
+            namespace.save()
+    return True
+
+
 def fail_import_task(import_task, logger, msg):
     """
     Abort the import task ans raise an exception
@@ -171,41 +210,7 @@ def import_role(task_id):
         fail_import_task(import_task, logger, "Galaxy user %s does not have access to repo %s" %
                          (user.username, repo_full_name))
 
-    # Update namespace attributes
-    if repo.owner.type == 'Organization':
-        namespace, created = Namespace.objects.get_or_create(namespace=repo.organization.login, defaults={
-                                                             'name': repo.organization.name,
-                                                             'avatar_url': repo.organization.avatar_url,
-                                                             'location': repo.organization.location,
-                                                             'company': repo.organization.company,
-                                                             'email': repo.organization.email,
-                                                             'html_url': repo.organization.html_url,
-                                                             'followers': repo.organization.followers})
-        if not created:
-            namespace.avatar_url = repo.organization.avatar_url
-            namespace.location = repo.organization.location
-            namespace.company = repo.organization.company
-            namespace.email = repo.organization.email
-            namespace.html_url = repo.organization.html_url
-            namespace.followers = repo.organization.followers
-            namespace.save()
-    else:
-        namespace, created = Namespace.objects.get_or_create(namespace=repo.owner.login, defaults={
-                                                             'name': repo.owner.name,
-                                                             'avatar_url': repo.owner.avatar_url,
-                                                             'location': repo.owner.location,
-                                                             'company': repo.owner.company,
-                                                             'email': repo.owner.email,
-                                                             'html_url': repo.owner.html_url,
-                                                             'followers': repo.owner.followers})
-        if not created:
-            namespace.avatar_url = repo.owner.avatar_url
-            namespace.location = repo.owner.location
-            namespace.company = repo.owner.company
-            namespace.email = repo.owner.email
-            namespace.html_url = repo.owner.html_url
-            namespace.followers = repo.owner.followers
-            namespace.save()
+    update_namespace(repo)
 
     # determine which branch to use
     if import_task.github_reference:
@@ -500,9 +505,9 @@ def import_role(task_id):
     
     return True
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Login Task
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 @task(name="galaxy.main.celerytasks.tasks.refresh_user")
 @transaction.atomic
@@ -580,6 +585,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
         print "Updating repo: %s" % full_name
         try:
             gh_repo = gh_api.get_repo(full_name)
+            update_namespace(gh_repo)
             sub_count = 0
             for sub in gh_repo.get_subscribers():
                 sub_count += 1   # only way to get subscriber count via pygithub
@@ -596,9 +602,9 @@ def refresh_role_counts(start, end, gh_api, tracker):
     tracker.save()
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Periodic Tasks
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 @task(name="galaxy.main.celerytasks.tasks.clear_stuck_imports")
 def clear_stuck_imports():
