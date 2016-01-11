@@ -37,6 +37,9 @@ from allauth.socialaccount.models import SocialToken
 from galaxy.main.models import *
 
 def fail_import_task(import_task, logger, msg):
+    """
+    Abort the import task ans raise an exception
+    """
     transaction.rollback()
     try:
         if import_task:
@@ -141,15 +144,17 @@ def import_role(task_id):
     try:
         token = SocialToken.objects.get(account__user=user, account__provider='github')
     except:
-        fail_import_task(import_task, logger,"Failed to get Github account for Galaxy user %s. You must first " +
-            "authenticate with Github." % user.username)
+        fail_import_task(import_task, logger,"Failed to get Github account for Galaxy user %s. You must first "
+                         "authenticate with Github." % user.username)
 
     # create an API object and get the repo
     try:
         gh_api = Github(token.token)
         gh_api.get_api_status()
     except:
-        fail_import_task(import_task, logger, "Failed to connect to Github API. This is most likely a temporary error, please retry your import in a few minutes.")
+        fail_import_task(import_task, logger,
+                         'Failed to connect to Github API. This is most likely a temporary error, '
+                         'please retry your import in a few minutes.')
     
     try:
         gh_user = gh_api.get_user()
@@ -163,7 +168,44 @@ def import_role(task_id):
             repo = r
             continue
     if repo is None:
-        fail_import_task(import_task, logger, "Galaxy user %s does not have access to repo %s" % (user.username,repo_full_name))
+        fail_import_task(import_task, logger, "Galaxy user %s does not have access to repo %s" %
+                         (user.username, repo_full_name))
+
+    # Update namespace attributes
+    if repo.owner.type == 'Organization':
+        namespace, created = Namespace.objects.get_or_create(namespace=repo.organization.login, defaults={
+                                                             'name': repo.organization.name,
+                                                             'avatar_url': repo.organization.avatar_url,
+                                                             'location': repo.organization.location,
+                                                             'company': repo.organization.company,
+                                                             'email': repo.organization.email,
+                                                             'html_url': repo.organization.html_url,
+                                                             'followers': repo.organization.followers})
+        if not created:
+            namespace.avatar_url = repo.organization.avatar_url
+            namespace.location = repo.organization.location
+            namespace.company = repo.organization.company
+            namespace.email = repo.organization.email
+            namespace.html_url = repo.organization.html_url
+            namespace.followers = repo.organization.followers
+            namespace.save()
+    else:
+        namespace, created = Namespace.objects.get_or_create(namespace=repo.owner.login, defaults={
+                                                             'name': repo.owner.name,
+                                                             'avatar_url': repo.owner.avatar_url,
+                                                             'location': repo.owner.location,
+                                                             'company': repo.owner.company,
+                                                             'email': repo.owner.email,
+                                                             'html_url': repo.owner.html_url,
+                                                             'followers': repo.owner.followers})
+        if not created:
+            namespace.avatar_url = repo.owner.avatar_url
+            namespace.location = repo.owner.location
+            namespace.company = repo.owner.company
+            namespace.email = repo.owner.email
+            namespace.html_url = repo.owner.html_url
+            namespace.followers = repo.owner.followers
+            namespace.save()
 
     # determine which branch to use
     if import_task.github_reference:
@@ -233,15 +275,18 @@ def import_role(task_id):
         role.license = role.license[:50]
         
     if role.min_ansible_version == "":
-        add_message(import_task, "WARNING", "galaxy.min_ansible_version missing value in meta/main.yml. Defaulting to 1.2.")
+        add_message(import_task, "WARNING", "galaxy.min_ansible_version missing value in meta/main.yml. Defaulting to "
+                    "1.2.")
         role.min_ansible_version = '1.2'
     
     if role.issue_tracker_url == "":
-        add_message(import_task, "WARNING", "No issue tracker defined. Enable issue tracker in repo settings or define galaxy_info.issue_tracker_url in meta/main.yml.")
+        add_message(import_task, "WARNING", "No issue tracker defined. Enable issue tracker in repo settings or define "
+                    "galaxy_info.issue_tracker_url in meta/main.yml.")
     else:
         parsed_url = urlparse(role.issue_tracker_url)
         if parsed_url.scheme == '' or parsed_url.netloc == '' or parsed_url.path == '':
-            add_message(impor_task, "WARNING", "Invalid URL provided for galaxy_info.issue_tracker_url in meta/main.yml")
+            add_message(impor_task, "WARNING", "Invalid URL provided for galaxy_info.issue_tracker_url in "
+                        "meta/main.yml")
             role.issue_tracker_url = ""
 
     # Update role attributes from repo
@@ -549,6 +594,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
     tracker.passed = passed
     tracker.failed = failed
     tracker.save()
+
 
 #----------------------------------------------------------------------
 # Periodic Tasks

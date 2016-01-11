@@ -321,7 +321,21 @@ class RoleListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(RoleListView, self).get_context_data(**kwargs)
-        context['namespace'] = self.namespace
+        try:
+            ns = Namespace.objects.get(namespace=self.namespace)
+            context['namespace'] = dict(
+                avatar_url=ns.avatar_url,
+                location=ns.location,
+                company=ns.company,
+                name=ns.name,
+                email=ns.email,
+                html_url=ns.html_url,
+                followers=ns.followers,
+                description=ns.description
+            )
+        except:
+            context['namespace'] = None
+        context['namespace_name'] = self.namespace
         context['search_value'] = self.request.GET.get('role', '')
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False
@@ -341,7 +355,23 @@ class RoleDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(RoleDetailView, self).get_context_data(**kwargs)
-        context['namespace'] = self.namespace
+
+        try:
+            ns = Namespace.objects.get(namespace=self.namespace)
+            context['namespace'] = dict(
+                avatar_url=ns.avatar_url,
+                location=ns.location,
+                company=ns.company,
+                name=ns.name,
+                email=ns.email,
+                html_url=ns.html_url,
+                followers=ns.followers,
+                description=ns.description
+            )
+        except:
+            context['namespace'] = None
+
+        context['namespace_name'] = self.namespace
         context['name'] = self.name 
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False

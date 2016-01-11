@@ -50,7 +50,7 @@
 
                     <div class="row title-row" ng-show="imports.length && selected_id">
                         <div class="col-sm-8 title">
-                            <a href="/detail#/role/{{ import_detail.role }}/" class="title-link" ng-if="import_detail.summary_fields.role.is_valid">{{ import_detail.github_user + '/' + import_detail.github_repo }}</a>
+                            <a href="{{ import_detail.summary_fields.role.namespace }}/{{ import_detail.summary_fields.role.name }}" class="title-link" ng-if="import_detail.summary_fields.role.is_valid">{{ import_detail.github_user + '/' + import_detail.github_repo }}</a>
                             <span class="title-text" ng-if="!import_detail.summary_fields.role.is_valid">{{ import_detail.github_user + '/' + import_detail.github_repo }}</span>
                         </div>
                         <div class="col-sm-4 text-right">

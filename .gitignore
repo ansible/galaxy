@@ -1,5 +1,6 @@
 *.pyc
 *.swp
+.idea/
 build/
 dist/
 galaxy.egg-info/

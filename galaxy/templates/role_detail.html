@@ -22,14 +22,18 @@
 
     <div class="row">
         <div class="col-xs-6">
-            <h2 class="rolename">{{role.name}}</h2>
+            <h2 class="rolename"><a href="/{{ role.namespace }}">{{ role.namespace }}</a>.{{role.name}}</h2>
             <div class="description">{{role.description}}</div>
         </div>
-        {% if avatar %}
+        {% if namespace and namespace.avatar_url %}
         <div class="col-xs-6 text-right">
             <div class="user-info">
-                <img src="{{ avatar }}" />
-                <p class="username"><a href="https://github.com/{{ role.github_user }}" target="_blank">{{ role.github_user }}</a></p>
+                <img src="{{ namespace.avatar_url }}" />
+                {% if namespace.name %}
+                <p class="username"><a href="{{ namespace.html_url }}" target="_blank">{{ namespace.name }}</a></p>
+                {% else %}
+                <p class="username"><a href="{{ namespace.html_url }}" target="_blank">{{ namespace_name }}</a></p>
+                {% endif %}
             </div>
         </div>
         {% endif %}

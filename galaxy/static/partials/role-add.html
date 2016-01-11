@@ -49,7 +49,7 @@
                     <div class="state"><i class="fa fa-spin fa-spinner" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'"></i></div>
                     <div class="settings"><a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Role Settings" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a></div>
                     <div class="name">
-                        <a ng-href="/detail#/role/{{ repo.role_id }}" ng-if="repo.is_enabled && repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</a>
+                        <a ng-href="{{ repo.role_namespace }}/{{repo.role_name }}" ng-if="repo.is_enabled && repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</a>
                         <span ng-if="!repo.is_enabled || !repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</span>
                     </div>
                     <div class="tools" ng-if="repo.is_enabled">

@@ -116,7 +116,8 @@
                 if (repo.summary_fields && repo.summary_fields.roles.length) {
                     repo.role_id = repo.summary_fields.roles[0].id;
                     repo.role_name = repo.summary_fields.roles[0].name;
-                    repo.master_role_name = repo.role_name
+                    repo.role_namespace = repo.summary_fields.roles[0].namespace;
+                    repo.master_role_name = repo.role_name;
                 } else {
                     var new_name;
                     if (repo.github_repo === 'ansible') {
