@@ -138,6 +138,7 @@
                             new_name = repo.github_repo;
                         }
                     }
+                    repo.role_namespace = repo.github_user
                     repo.role_name = new_name;
                     repo.master_role_name = repo.role_name;
                 }
