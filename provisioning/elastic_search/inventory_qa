@@ -1,8 +1,11 @@
 [es]
-104.43.172.91 private_ip=10.100.1.8 host_name=galaxy-qa-es-001
-104.43.231.19 private_ip=10.100.1.15 host_name=galaxy-qa-es-002
-168.61.154.229 private_ip=10.100.1.18 host_name=galaxy-qa-es-003
+40.78.150.39 private_ip=10.1.100.8 host_name=galaxy-qa-es-001
+40.122.122.40 private_ip=10.1.100.9 host_name=galaxy-qa-es-002
+40.122.48.182 private_ip=10.1.100.10 host_name=galaxy-qa-es-003
 
 [es:vars]
 es_cluster_name="galaxy_qa_es_cluster"
-es_request_sources=["10.100.1.6","10.100.1.7","10.100.1.16","10.100.1.17"]
+es_request_sources=["10.1.100.6","10.1.100.7","10.1.100.11","10.1.100.12"]
+
+
+
