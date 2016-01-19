@@ -13,7 +13,7 @@
         .factory('platformService', ['$resource', '$q', _factory]);
 
     function _factory($resource, $q) {
-        var res = $resource('/api/v1/platforms');
+        var res = $resource('/api/v1/platforms/');
         var platforms = [];
         var releases = {};
         return {

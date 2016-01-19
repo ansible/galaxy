@@ -15,7 +15,7 @@ ExtendedStatus On
 Listen 81
 
 <VirtualHost _default_:80>
-  ServerName {% for host in groups['node_balancer'] %}{{ host }}{% endfor %} 
+  ServerName {{ private_ip }} 
   DocumentRoot /var/lib/galaxy/public
 
   # Redirect to https  
@@ -57,7 +57,7 @@ Listen 81
 
 # load balancer will send traffic here on internal IP address
 <VirtualHost _default_:81>
-  ServerName {% for host in groups['node_balancer'] %}{{ host }}{% endfor %} 
+  ServerName {{ private_ip }} 
   DocumentRoot /var/lib/galaxy/public
 
   RewriteCond $MAINTENANCE_FILE -f
