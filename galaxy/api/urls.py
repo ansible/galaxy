@@ -23,7 +23,7 @@ from rest_framework import routers
 from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView, \
     ApiV1ReposView, UserSearchView, TokenView, RemoveRole, RefreshUserRepos
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register('v1/search/roles', RoleSearchView, base_name="search-roles")
 
 def url(regex, view, kwargs=None, name=None, prefix=''):

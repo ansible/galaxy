@@ -26,7 +26,7 @@
 
     function _config($routeProvider, $logProvider, $resourceProvider) {
         var debug = (GLOBAL_DEBUG === 'on') ? true : false;
-        $resourceProvider.defaults.stripTrailingSlashes = false;
+        // $resourceProvider.defaults.stripTrailingSlashes = false;
         $logProvider.debugEnabled(debug);
         $routeProvider.
             when('/', {
