@@ -46,7 +46,7 @@
               }
           }).
           otherwise({
-              redirectTo: '/roles'
+              redirectTo: '/role/999999'
           });
     }
 

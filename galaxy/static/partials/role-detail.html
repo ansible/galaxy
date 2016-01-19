@@ -9,14 +9,17 @@
     </div>
 
     <div class="row">
-        <div class="col-xs-6">
+        <div class="col-xs-6" ng-if="role.name">
             <h2 class="rolename">{{role.name}}</h2>
             <div class="description">{{role.description}}</div>
+        </div>
+        <div class="col-xs-6" ng-if="!role.name">
+            <h2 class="rolename">Requested Role Not Found</h2>
         </div>
         <div class="col-xs-6 text-right">
             <div class="user-info" ng-show="avatar">
                 <img ng-src="{{ avatar }}" />
-                <p class="username"><a href="https://github.com/{{ role.username }}" target="_blank">{{ role.username }}</a></p>
+                <p class="username" ng-if="role.username"><a href="https://github.com/{{ role.username }}" target="_blank">{{ role.username }}</a></p>
             </div>
         </div>
     </div>

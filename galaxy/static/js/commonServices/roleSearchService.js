@@ -15,7 +15,7 @@
     mod.factory('roleSearchService', ['$resource', _factory]);
 
     function _factory($resource) {
-        return $resource('/api/v1/search/roles/', null, {
+        return $resource('/api/v1/search/roles', null, {
             get: {
                 method: 'GET',
                 isArray: false
