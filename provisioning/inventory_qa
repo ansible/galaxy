@@ -5,7 +5,7 @@
 10.100.1.5 public_ip=168.61.218.150
 
 [web]
-40.122.202.55 private_ip=10.1.100.11 es_rebuild_host=False django_migrate=True host_name=galaxy-qa-web-01
+40.122.202.55 private_ip=10.1.100.11 es_rebuild_host=True django_migrate=True host_name=galaxy-qa-web-01
 40.122.161.214 private_ip=10.1.100.12 es_rebuild_host=False django_migrate=False host_name=galaxy-qa-web-02 
 
 [es_hosts]
