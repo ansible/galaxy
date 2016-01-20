@@ -2,7 +2,7 @@
 # QA Inventory file for jenkins jobs
 #
 [node_balancer]
-10.100.1.5
+10.100.1.5 public_ip=168.61.218.150
 
 [web]
 40.122.202.55 private_ip=10.1.100.11 es_rebuild_host=False django_migrate=True host_name=galaxy-qa-web-01
@@ -18,4 +18,4 @@
 40.122.201.251 private_ip=10.1.100.7 postgres_master=False host_name=galaxy-qa-db-02
 
 [rabbitmq_host]
-10.100.1.6
+10.1.100.6

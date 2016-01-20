@@ -8,52 +8,16 @@
 #
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-NameVirtualHost *:80
 NameVirtualHost *:81
 WSGISocketPrefix /var/run/wsgi
 ExtendedStatus On
 Listen 81
 
-<VirtualHost _default_:80>
-  ServerName {{ private_ip }} 
-  DocumentRoot /var/lib/galaxy/public
-
-  # Redirect to https  
-  RewriteEngine on
-  RewriteCond %{HTTP:X-Forwarded-Proto} !https
-  RewriteRule !/api/v1/notifications https://%{HTTP_HOST}%{REQUEST_URI}
-  RewriteCond %{REQUEST_METHOD} !POST
-  RewriteRule /api/v1/notifications https://%{HTTP_HOST}%{REQUEST_URI}
-
-  CustomLog "/var/log/httpd/galaxy_access.log" common
-  ErrorLog "/var/log/httpd/galaxy_error.log"
-
-  WSGIScriptAlias / /var/lib/galaxy/wsgi.py
-  WSGIPassAuthorization On
-
-  WSGIDaemonProcess notify_http processes=2 threads=20 maximum-requests=1000 display-name="notify_http"
-  WSGIProcessGroup notify_http
-
-  Alias /favicon.ico /var/lib/galaxy/public/static/favicon.ico
-  Alias /static/ /var/lib/galaxy/public/static/
-
-  <Directory /var/lib/galaxy/>
-    <Files wsgi.py>
-      Require all granted
-    </Files>
-  </Directory>
-
-  <Directory /var/lib/galaxy/public/>
-    Require all granted
-  </Directory>
-  
-  <Location /server-status>
-    SetHandler server-status
-    Order deny,allow
-    Deny from all
-    Allow from {{ private_ip }} 
-  </Location>
-</VirtualHost>
+RemoteIPHeader X-Forwarded-For
+{% for host in groups['node_balancer'] %}
+RemoteIPInternalProxy {{ host }}/32
+{% endfor %}
+LogFormat "%a %l %u %t \"%r\" %>s %b" common
 
 # load balancer will send traffic here on internal IP address
 <VirtualHost _default_:81>
@@ -93,49 +57,3 @@ Listen 81
     Allow from {{ private_ip }} 
   </Location>
 </VirtualHost>
-
-#<VirtualHost _default_:443>
-# ServerName {% for host in groups['node_balancer'] %}{{ host }}{% endfor %}
-# 
-#  DocumentRoot /var/lib/galaxy/public
-# 
-#  RewriteEngine On
-#  RewriteCond $MAINTENANCE_FILE -f
-#  RewriteCond %{REQUEST_URI} !/$STATIC_URL/maintenance/under-maintenance.gif
-#  RewriteRule ^(.+) $MAINTENANCE_URL [R,L]
-# 
-#  SSLEngine on
-#  SSLCertificateFile {{ galaxy_ssl_cert }}
-#  SSLCertificateKeyFile {{ galaxy_ssl_key }}
-#  {% if galaxy_ssl_cachain is defined %}
-#  SSLCertificateChainFile {{ galaxy_ssl_cachain }}
-#  {% endif %}
-#  SSLVerifyClient none
-#  SSLProtocol all -SSLv2 -SSLv3
-# 
-#  WSGIScriptAlias / /var/lib/galaxy/wsgi.py
-#  WSGIPassAuthorization On
-# 
-#  WSGIDaemonProcess galaxy_https processes={{ galaxy_wsgi_processes }} threads=20 maximum-requests=1000 display-name="galaxy_https"
-#  WSGIProcessGroup galaxy_https
-# 
-#  Alias /favicon.ico /var/lib/galaxy/public/static/favicon.ico
-#  Alias /static/ /var/lib/galaxy/public/static/
-# 
-#  <Directory /var/lib/galaxy/>
-#    <Files wsgi.py>
-#      Require all granted
-#    </Files>
-#  </Directory>
-# 
-#  <Directory /var/lib/galaxy/public/>
-#    Require all granted
-#  </Directory>
-#
-#  <Location /server-status>
-#     SetHandler server-status
-#     Order deny,allow
-#     Deny from all
-#     Allow from {{ private_ip }} 
-#   </Location>
-#</VirtualHost>
