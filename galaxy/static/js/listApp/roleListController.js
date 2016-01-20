@@ -123,7 +123,7 @@
 
         PaginateInit({ scope: $scope });
 
-        var suggestions = $resource('/api/v1/search/:object/', { 'object': '@object', 'pagge': 1, 'page_size': 10 }, {
+        var suggestions = $resource('/api/v1/search/:object/', { 'object': '@object', 'page': 1, 'page_size': 10 }, {
             'tags': { method: 'GET', params:{ object: 'tags' }, isArray: false },
             'platforms': { method: 'GET', params:{ object: 'platforms' }, isArray: false },
             'users': { method: 'GET', params:{ object: 'users' }, isArray: false }
