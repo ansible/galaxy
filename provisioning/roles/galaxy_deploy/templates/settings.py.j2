@@ -201,13 +201,13 @@ TEMPLATES = [
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [SITE_NAME]
-ALLOWED_HOSTS.append('{{ inventory_hostname }}')
+ALLOWED_HOSTS.append("{{ inventory_hostname }}")
 {% if private_ip is defined %} 
-ALLOWED_HOSTS.append('{{ private_ip }}')
+ALLOWED_HOSTS.append("{{ private_ip }}")
 {% endif %}
 {% for host in groups['node_balancer'] %}
-ALLOWED_HOSTS.append('{{ host }}')
-ALLOWED_HOSTS.append('{{ host.public_ip }}')
+ALLOWED_HOSTS.append("{{ host }}")
+ALLOWED_HOSTS.append("{{ hostvars[host]['public_ip'] }}")
 {% endfor %}
 
 # Local time zone for this installation. Choices can be found here:
