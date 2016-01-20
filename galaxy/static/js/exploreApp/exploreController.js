@@ -88,7 +88,7 @@
         }
 
         function _getTopContributors() {
-            $resource('/api/v1/search/top_contributors').get().$promise.then(function(response) {
+            $resource('/api/v1/search/top_contributors/').get().$promise.then(function(response) {
                 $scope.topContributors = response.results;
                 $scope.loading.topContributors = false;
             });

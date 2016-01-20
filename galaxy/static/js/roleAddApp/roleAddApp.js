@@ -33,7 +33,7 @@
     function _config($routeProvider, $logProvider, $resourceProvider) {
         var debug = (GLOBAL_DEBUG === 'on') ? true : false;
         $logProvider.debugEnabled(debug);
-        // $resourceProvider.defaults.stripTrailingSlashes = false;
+        $resourceProvider.defaults.stripTrailingSlashes = false;
         $routeProvider.
             when('/', {
                 templateUrl: '/static/partials/role-add.html',
