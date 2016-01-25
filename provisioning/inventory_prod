@@ -2,7 +2,7 @@
 # Prod Inventory file for jenkins jobs
 #
 [node_balancer]
-172.26.3.12
+172.26.3.12 public_ip=40.118.209.130
 
 [web]
 40.112.141.159 private_ip=172.26.3.5 es_rebuild_host=True host_name=galaxy-pr-web-01
