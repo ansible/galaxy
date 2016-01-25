@@ -2,20 +2,20 @@
 # Prod Inventory file for jenkins jobs
 #
 [node_balancer]
-69.164.223.129
+172.26.3.12
 
 [web]
-45.79.135.126 linode_private_ip=192.168.218.159 es_rebuild_host=True linode_hostname=galaxy-pr-web-001
-45.79.143.148 linode_private_ip=192.168.199.158 es_rebuild_host=False linode_hostname=galaxy-pr-web-002
+40.112.141.159 private_ip=172.26.3.5 es_rebuild_host=True host_name=galaxy-pr-web-01
+40.112.151.241 private_ip=172.26.3.6 es_rebuild_host=False host_name=galaxy-pr-web-02
 
 [es_hosts]
-45.33.94.220 linode_hostname=galaxy-pr-es-001
-45.79.169.121 linode_hostname=galaxy-pr-es-002
-45.79.164.152 linode_hostname=galaxy-pr-es-003
+40.118.242.60 private_ip=172.26.3.9 host_name=galaxy-pr-es-01
+40.118.247.23 private_ip=172.26.3.10 host_name=galaxy-pr-es-02
+40.118.246.32 private_ip=172.26.3.11 host_name=galaxy-pr-es-03
 
 [db]
-45.79.128.80 postgres_master=True linode_hostname=galaxy-pr-db-001
-45.79.157.86 postgres_master=False linode_hostname=galaxy-pr-db-002
+40.78.103.115 private_ip=172.26.3.7 postgres_master=True host_name=galaxy-pr-db-01
+40.118.240.30 private_ip=172.26.3.8 postgres_master=False host_name=galaxy-pr-db-02
 
 [rabbitmq_host]
-45.79.128.80
+172.26.3.7
