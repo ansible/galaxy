@@ -1,0 +1,274 @@
+/*
+ * import_status.less
+ */
+
+#import-status-page {
+    
+    .main {
+        margin-bottom: 30px;
+    }
+    
+    .loading-status {
+        color: #e1e1e1;
+        padding-left: 10px;
+        .fa-spin {
+            color: @ansible-dark-grey;
+        }
+    }
+    
+    #import-details-column {
+        border-left: 1px solid #ccc;
+        position: relative;
+
+        #loader {
+            position: absolute;
+            left: 50%;
+            top: 100px;
+            margin-left: -50px;
+        }
+    }
+    
+    .import-list {
+        position: relative;
+
+        #import-list-inner {
+            overflow-y: auto;
+        }
+
+        .add-role-form {
+            h5 {
+                margin-top: 0;
+                color: @ansible-dark-grey;
+                font-weight: normal;
+            }
+            position: absolute;
+            top: 90px;
+            left: 0;
+            width: 100%;
+            font-size: 12px;
+            padding: 10px;
+            background-color: rgba(224,224,224,0.85);
+            z-index: +1;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+            .form-group:last-child {
+                margin-bottom: 0;
+            }
+            .cancel-form-link {
+                margin-left: 10px;
+            }
+        }
+        .search-roles {
+            position: relative;
+            margin-bottom: 30px;
+            input {
+                padding-right: 15px;
+            }
+            .search-icon {
+                display: inline-block;
+                position: absolute;
+                right: 6px;
+                top: 5px;
+                color: @ansible-dark-grey;
+                .fa-times:hover {
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .title-row {
+            margin-bottom: 20px;
+            .title {
+                font-size: 18px;
+                color: @ansible-dark-grey;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
+        .main {
+            margin-top: 20px;
+        }
+
+        .import {
+            position: relative;
+            height: 60px;
+            padding: 10px;
+            .marker {
+                width: 3px;
+                height: 60px;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+            .marker.active {
+                background: @blue;
+            }
+            .missing-text {
+                color: #ccc;
+            }
+            .title {
+                display: inline-block;
+                float: right;
+                width: 90%;
+                color: @ansible-dark-grey;
+                .title-text {
+                    font-size: 16px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .date-text {
+                    font-size: 12px;
+                    line-height: normal;
+                } 
+            }
+            .status {
+                line-height: normal;
+                display: inline-block;
+                width: 10%;
+                margin-top: 10px;
+            }
+            .failed {
+                color: @red;
+            }
+            .success {
+                color: @green;
+            }
+            .warning {
+                color:@warning;
+            }
+            .pending {
+                color: @ansible-dark-grey;
+            }
+        }
+        .import:hover {
+            cursor: pointer;
+            background-color: #eee;
+        }
+        .import.missing:hover {
+            background-color: @white;
+            cursor: default;
+        }
+        .disabled {
+            .import:hover {
+                cursor: not-allowed;
+            }
+        }
+    }
+
+    .import-details-container {
+        h3 {
+            margin-top: 0;
+        }
+        div.no-imports {
+            color: #e1e1e1;
+            text-align:center; 
+            margin-top: 100px;
+            font-size: 24px;
+        }
+        .title-row {
+            .title {
+                color: @ansible-dark-grey;
+                font-size: 20px;
+                a, a:active, a:visited {
+                    color: @blue;
+                }
+                a:hover {
+                    color: @ansible-color;
+                }
+            }
+        }
+        .title-bar {
+            position: relative;
+            margin-top: 22px;
+            margin-bottom: 20px;
+            background-color: #f0f0f0;
+            min-height: 90px;
+            padding: 10px;
+            border: 1px solid #e1e1e1;
+            border-radius: 2px;
+            .branch {
+                font-weight: bold;
+                color: @ansible-dark-grey;
+                .commit {
+                    width: 80%;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .message {
+                    font-size: 16px;
+                }
+                .last-run {
+                    font-size: 12px;
+                    font-weight: normal;
+                    padding-top: 15px;
+                }
+
+                @media (max-width: 650px) {
+                    .commit {
+                        width: 55%;
+                    }
+                }
+            }
+            .stats {
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                text-align: left; 
+                font-size: 12px;
+                color: @ansible-dark-grey;
+                .icon {
+                    display: inline-block;
+                    width: 20px;
+                    text-align: center;
+                }
+                a, a:active, a:visited {
+                    color: @ansible-dark-grey;
+                }
+                a:hover {
+                    color: @black;
+                }
+            }
+            .travis-status {
+                margin-top: 10px;
+            }
+        }
+        .message-list {
+            background-color: @black;
+            padding: 10px;
+            border: 1px solid @black;
+            border-radius: 2px;
+            color: @white;
+            line-height: 18px;
+
+            .message {
+                .error, .failed { color: @red }
+                .warning { color: @warning }
+                .success { color: @green }
+            }
+        }
+    }
+
+    @media (max-width: 990px) {
+        .loading-status {
+            margin-bottom: 20px;
+        }
+        .import-list {
+            padding-bottom: 20px;
+        //    max-height: 300px;
+        }
+        #import-details-column {
+            border-left: 0px;
+        }
+        #import-list-container {
+            border-bottom: 1px solid #e1e1e1;
+            margin-bottom: 40px;
+        }
+        .import-details-container {
+            margin-bottom: 40px;
+        }
+    }
+}

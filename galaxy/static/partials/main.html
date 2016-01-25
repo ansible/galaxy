@@ -3,25 +3,131 @@
 <div class="container" id="galaxy-explore-page">
 
     <div class="row table-row">
-        <div class="col-lg-4 load-container">
+        <div class="col-sm-4 load-container">
+            <table class="table ga-table-striped">
+               <caption>Most Starred</caption>
+               <thead>
+               <tr>
+                   <th class="col-sm-9">Role</th>
+                   <th class="col-sm-3 text-right nowrap">Stars</th>
+               </tr>
+               </thead>
+               <tbody>
+               <tr ng-repeat="role in mostStarred">
+                   <td class="col-sm-9">
+                       <div class="clip">
+                           <a ng-href="/{{ role.username }}/{{role.name}}/" tooltip-placement="top" 
+                              uib-tooltip="{{role.username}}.{{role.name}}">{{role.username}}.{{role.name}}</a>
+                       </div>
+                   </td>
+                   <td class="col-sm-3 text-right">{{role.stargazers_count}}</td>
+               </tr>
+               </tbody>
+            </table>
+            <div ng-show="!loading.mostStarred" class="view-more-container">
+                <a href="/list#/roles?page=1&page_size=10&order=-stargazers_count,name" class="btn btn-default btn-sm">View More</a>
+            </div>
+            <div ng-show="loading.mostStarred" class="loader">
+                <div class="loader-inner line-scale">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>    
+        </div>
+        <div class="col-sm-4 load-container">
+            <table class="table ga-table-striped">
+               <caption>Most Watched</caption>
+               <thead>
+               <tr>
+                   <th class="col-sm-8">Role</th>
+                   <th class="col-sm-4 text-right nowrap">Watchers</th>
+               </tr>
+               </thead>
+               <tbody>
+               <tr ng-repeat="role in mostWatched">
+                   <td class="col-sm-8"><div class="clip">
+                       <a href="/{{ role.username }}/{{role.name}}/" tooltip-placement="top" 
+                         uib-tooltip="{{role.username}}.{{role.name}}">{{role.username}}.{{role.name}}</a></div>
+                    </td>
+                   <td class="col-sm-4 text-right">{{role.watchers_count}}</td>
+               </tr>
+               </tbody>
+            </table>
+            <div ng-show="!loading.mostWatched" class="view-more-container">
+                <a href="/list#/roles?page=1&page_size=10&order=-watchers_count,name" class="btn btn-default btn-sm">View More</a>
+            </div>
+            <div ng-show="loading.mostWatched" class="loader">
+                <div class="loader-inner line-scale">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 load-container">
+            <table class="table ga-table-striped">
+               <caption>Most Downloaded</caption>
+               <thead>
+               <tr>
+                   <th class="col-sm-8">Role</th>
+                   <th class="col-sm-4 text-right nowrap">Downloads</th>
+               </tr>
+               </thead>
+               <tbody>
+               <tr ng-repeat="role in mostDownloaded">
+                   <td class="col-sm-8"><span class="clip">
+                       <a href="/{{ role.username }}/{{role.name}}/" tooltip-placement="top" 
+                         uib-tooltip="{{role.username}}.{{role.name}}">{{role.username}}.{{role.name}}</a></span>
+                    </td>
+                   <td class="col-sm-4 text-right">{{role.download_count}}</td>
+               </tr>
+               </tbody>
+            </table>
+            <div ng-show="!loading.mostDownloaded" class="view-more-container">
+                <a href="/list#/roles?page=1&page_size=10&order=-download_count,name" class="btn btn-default btn-sm">View More</a>
+            </div>
+            <div ng-show="loading.mostDownloaded" class="loader">
+                <div class="loader-inner line-scale">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>    
+        </div>
+    </div> <!-- row -->
+
+    <div class="button-row text-right">
+       <a class="btn btn-md btn-primary" href="/list#/roles">View All Roles</a>
+    </div>
+
+    <div class="row table-row">
+        <div class="col-md-4 load-container">
             <!-- Top Categories -->
             <table class="table ga-table-striped">
                <caption>Top Tags</caption>
                <thead>
                <tr>
-                   <th>Tag</th>
-                   <th class="text-right"># Roles</th>
+                   <th class="col-sm-9">Tag</th>
+                   <th class="col-sm-3 text-right"># Roles</th>
                </tr>
                </thead>
                <tbody>
-               <tr ng-repeat="tag in tags.data">
-                   <td><a href="list#/roles?page=1&per_page=10&order=username,name&tags={{ tag.tag }}">{{ tag.tag }}</a></td>
-                   <td class="text-right">{{tag.roles}}</td>
+               <tr ng-repeat="tag in tags">
+                   <td class="col-sm-9">
+                       <a href="list#/roles?page=1&per_page=10&order=username,name&tags={{ tag.tag }}">{{ tag.tag }}</a></td>
+                   <td class="col-sm-3 text-right">{{tag.roles}}</td>
                </tr>
                </tbody>
             </table>
             <div ng-show="!loading.tags" class="view-more-container">
-                <a ng-href="{{ tags.more_link }}" class="btn btn-default btn-sm">View More</a>
+                <a href="/list#/roles?page=1&page_size=10" class="btn btn-default btn-sm">View More</a>
             </div>
             <div ng-show="loading.tags" class="loader">
                 <div class="loader-inner line-scale">
@@ -33,28 +139,26 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 load-container">
+        <div class="col-md-4 load-container">
             <table class="table ga-table-striped">
-               <caption>Top Roles</caption>
-               <thead>
-               <tr>
-                   <th>Role</th>
-                   <th class="text-right nowrap"># Reviews</th>
-                   <th class="text-right nowrap">Score</th>
-               </tr>
-               </thead>
-               <tbody>
-               <tr ng-repeat="role in top_roles.data">
-                   <td><span class="clip"><a href="/detail#/role/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
-                   <td class="text-right">{{role.num_ratings | number:0}}</td>
-                   <td class="text-right">{{role.average_score | number:2}}</td>
-               </tr>
-               </tbody>
+                <caption>Top Contributors</caption>
+                <thead>
+                <tr>
+                    <th class="col-sm-8">User</th>
+                    <th class="col-sm-4 text-right"># Roles</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="user in topContributors">
+                    <td class="col-sm-8"><a ng-href="/{{ user.namespace }}/">{{ user.namespace }}</a></td>
+                    <td class="col-sm-4 text-right">{{ user.role_count }}</td>
+                </tr>
+                </tbody>
             </table>
-            <div ng-show="!loading.topRoles" class="view-more-container">
-                <a ng-href="{{top_roles.more_link}}" class="btn btn-default btn-sm">View More</a>
+            <div ng-show="!loading.topContributors" class="view-more-container">
+                <a href="/list#/roles" class="btn btn-default btn-sm">View More</a>
             </div>
-            <div ng-show="loading.topRoles" class="loader">
+            <div ng-show="loading.topContributors" class="loader">
                 <div class="loader-inner line-scale">
                     <div></div>
                     <div></div>
@@ -64,24 +168,29 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 load-container">
+        <div class="col-md-4 load-container">
             <table class="table ga-table-striped">
-               <caption>New Roles</caption>
+               <caption>Newest Roles</caption>
                <thead>
                <tr>
-                   <th>Role</th>
-                   <th class="text-right nowrap">Added On</th>
+                   <th class="col-sm-8">Role</th>
+                   <th class="col-sm-4 text-right nowrap">Added On</th>
                </tr>
                </thead>
                <tbody>
-               <tr ng-repeat="role in new_roles.data">
-                   <td><span class="clip"><a href="/detail#/role/{{role.id}}" title="{{role.summary_fields.owner.username}}.{{role.name}}">{{role.summary_fields.owner.username}}.{{role.name}}</a></span></td>
-                   <td class="text-right">{{role.created|date:'dd MMM, yyyy'}}</td>
+               <tr ng-repeat="role in new_roles">
+                   <td class="col-sm-8">
+                      <div class="clip">
+                         <a href="/{{ role.username }}/{{role.name}}/" tooltip-placement="top" 
+                              uib-tooltip="{{role.username}}.{{role.name}}">{{role.username}}.{{role.name}}</a>
+                      </div>
+                   </td>
+                   <td class="col-sm-4 text-right">{{role.created|date:'dd MMM'}}</td>
                </tr>
                </tbody>
             </table>
             <div ng-show="!loading.newRoles" class="view-more-container">
-                <a ng-href="{{new_roles.more_link}}" class="btn btn-default btn-sm">View More</a>
+                <a href="/list#/roles?page=1&page_size=10&order=-created,name" class="btn btn-default btn-sm">View More</a>
             </div>
             <div ng-show="loading.newRoles" class="loader">
                 <div class="loader-inner line-scale">
@@ -91,101 +200,7 @@
                     <div></div>
                     <div></div>
                 </div>
-            </div>
-        </div>
-    </div> <!-- row -->
-
-    <div class="button-row text-right">
-       <a class="btn btn-md btn-primary" href="/list#/roles">View All Roles</a>
-    </div>
-
-    <div class="row table-row">
-        <div class="col-lg-4 load-container">
-            <table class="table ga-table-striped">
-                <caption>Top Users</caption>
-                <thead>
-                <tr>
-                    <th>Username</th>
-                    <th class="text-right nowrap"># Roles</th>
-                 </tr>
-                 </thead>
-                 <tbody>
-                 <tr ng-repeat="user in top_users.data">
-                     <td><a href="/detail#/user/{{user.id}}">{{ user.username }}</a></td>
-                     <td class="text-right">{{ user.num_roles | number:0 }}</td>
-                 </tr>
-                 </tbody>
-            </table>
-            <div ng-show="!loading.topUsers" class="view-more-container">
-                <a ng-href="{{top_users.more_link}}" class="btn btn-default btn-sm">View More</a>
-            </div>
-            <div ng-show="loading.topUsers" class="loader">
-                <div class="loader-inner line-scale">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 load-container">
-            <table class="table ga-table-striped">
-                <caption>Top Reviewers</caption>
-                <thead>
-                <tr>
-                    <th>Username</th>
-                    <th class="text-right nowrap"># Reviews</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="user in top_reviewers.data">
-                    <td><a href="/detail#/user/{{user.id}}">{{ user.username }}</a></td>
-                    <td class="text-right">{{ user.num_ratings | number:0 }}</td>
-                </tr>
-                </tbody>
-            </table>
-            <div ng-show="!loading.topReviewers" class="view-more-container">
-                <a ng-href="{{top_reviewers.more_link}}" class="btn btn-default btn-sm">View More</a>
-            </div>
-            <div ng-show="loading.topReviewers" class="loader">
-                <div class="loader-inner line-scale">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 load-container">
-            <table class="table ga-table-striped">
-                <caption>New Users</caption>
-                <thead>
-                <tr>
-                    <th>Username</th>
-                    <th class="text-right">Joined On</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="user in new_users.data">
-                    <td><a href="/detail#/user/{{user.id}}">{{ user.username }}</a></td>
-                    <td class="text-right">{{ user.date_joined | date:'dd MMM, yyyy' }}</td>
-                </tr>
-                </tbody>
-            </table>
-            <div ng-show="!loading.newUsers" class="view-more-container">
-                <a ng-href="{{new_users.more_link}}" class="btn btn-default btn-sm">View More</a>
-            </div>
-            <div ng-show="loading.newUsers" class="loader">
-                <div class="loader-inner line-scale">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
+            </div>    
         </div>
     </div>
 

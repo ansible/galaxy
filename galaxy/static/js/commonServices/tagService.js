@@ -11,10 +11,10 @@
   
     var mod = angular.module('tagService', ['ngResource']);
  
-    mod.factory('tagFactory', ['$resource', _factory]);
+    mod.factory('tagService', ['$resource', _factory]);
   
     function _factory($resource) {
-        return $resource('/api/v1/search/tags', null, {
+        return $resource('/api/v1/search/tags/', null, {
             get: { method: 'GET', isArray: false },
             query: { method: 'GET', isArray: false }
         });

@@ -1,4 +1,4 @@
-- name: Install certs and private key on web servers
+- name: Install certs and private key on QA web servers
   hosts: web
   sudo: yes
   vars_files:

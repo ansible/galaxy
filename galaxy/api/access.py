@@ -205,14 +205,94 @@ class RoleVersionAccess(BaseAccess):
     def get_queryset(self):
         qs = self.model.objects.filter(active=True, role__active=True, role__owner__is_active=True).distinct()
 
-class RoleImportAccess(BaseAccess):
-    model = RoleImport
+class NotificationSecretAccess(BaseAccess):
+    model = NotificationSecret
 
+    def can_read(self, obj):
+        if self.user.is_authenticated() and obj.active and obj.owner.id == self.user.id:
+            return True
+        return False
+
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, obj, data):
+        if self.user.is_authenticated() and obj.active and obj.owner.id == self.user.id:
+            return True
+        return False
+
+    def can_delete(self, obj):
+        if self.user.is_authenticated() and obj.active and obj.owner.id == self.user.id:
+            return True
+
+class ImportTaskAccess(BaseAccess):
+    model = ImportTask
+    
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, obj, data):
+        return false
+
+    def can_attach(self, obj, sub_obj, relationship, data,
+                   skip_sub_obj_read_check=False):
+        return False
+    
+class ImportTaskMessageAccess(BaseAccess):
+    model = ImportTaskMessage
+
+    def can_add(self, data):
+        return False
+    
+    def can_change(self, obj, data):
+        return False
+
+    def can_attach(self, obj, sub_obj, relationship, data,
+                   skip_sub_obj_read_check=False):
+        return False
+    
     def get_queryset(self):
-        qs = self.model.objects.filter(active=True, role__active=True, role__owner__is_active=True).distinct()
+        return self.model.objects.filter(active=True, task__active=True).distinct()
+
+class NotificationAccess(BaseAccess):
+
+    def can_add(self,data):
+        return True
+
+    def can_change(self, obj, data):
+        return False
+
+    def can_attach(self, obj, sub_obj, relationship, data,
+                   skip_sub_obj_read_check=False):
+        return False
+
+class SubscriptionAccess(BaseAccess):
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, data):
+        return False
+
+    def can_delete(self,data):
+        return self.user.is_authenticated()
+
+class StargazerAccess(BaseAccess):
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, data):
+        return False
+
+    def can_delete(self,data):
+        return self.user.is_authenticated()
 
 register_access(User, UserAccess)
 register_access(Role, RoleAccess)
 register_access(RoleRating, RoleRatingAccess)
 register_access(RoleVersion, RoleVersionAccess)
-register_access(RoleImport, RoleImportAccess)
+register_access(ImportTask, ImportTaskAccess)
+register_access(ImportTaskMessage, ImportTaskMessageAccess)
+register_access(NotificationSecret, NotificationSecretAccess)
+register_access(Notification, NotificationAccess)
+register_access(Subscription, SubscriptionAccess)
+register_access(Stargazer, StargazerAccess)

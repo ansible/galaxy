@@ -15,6 +15,7 @@
     mod.factory('Stars', [_Stars]);
     mod.factory('queryParams', [_queryParams]);
     mod.factory('fromQueryParams', [_fromQueryParams]);
+    mod.factory('getCSRFToken', [_getToken]);
 
     // check if a scalar is empty
     function _Empty() {
@@ -89,6 +90,27 @@
                 result.cats = data.selected_categories;
             return result;
         };
+    }
+
+    function _getToken() {
+        return function() {
+            // Get the CSRF token
+            // https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
+            var name = 'csrftoken';
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     }   
 
 })(angular);

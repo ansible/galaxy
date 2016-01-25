@@ -24,6 +24,7 @@ import smtplib
 import string
 import markdown
 from hashlib import sha256 as sha
+from math import ceil, floor
 
 from django.conf import settings
 from django.contrib.auth import login as authlogin
@@ -41,22 +42,46 @@ from django.db import transaction
 from django.db import IntegrityError
 from django.db.models import Count, Avg
 from django.forms.models import modelformset_factory
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import timezone
 from django.utils.timezone import utc
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.views.generic import ListView
+from django.views.generic.detail import DetailView
 
 # local stuff
 import urls as main_urls
 
+from galaxy.api.utils import html_decode
 from models import *
 from forms import *
 from utils import db_common
 from celerytasks.tasks import import_role
 
 User = get_user_model()
+common_services = [
+    '/static/js/commonServices/tagService.js',
+    '/static/js/commonServices/meService.js',
+    '/static/js/commonServices/ratingService.js',
+    '/static/js/commonServices/roleService.js',
+    '/static/js/commonServices/roleSearchService.js',
+    '/static/js/commonServices/storageService.js',
+    '/static/js/commonServices/userService.js',
+    '/static/js/commonServices/platformService.js',
+    '/static/js/commonServices/galaxyUtilities.js',
+    '/static/js/commonServices/searchService.js',
+    '/static/js/commonDirectives/commonDirectives.js',
+    '/static/js/commonDirectives/autocompleteDirective.js',
+    '/static/js/commonDirectives/textCollapseDirective.js',
+    '/static/js/commonDirectives/dotDotDotDirective.js',
+    '/static/js/commonServices/relatedService.js',
+    '/static/js/commonServices/paginateService.js',
+    '/static/js/commonServices/githubRepoService.js',
+    '/static/js/commonServices/importService.js',
+    '/static/js/commonServices/githubClickService.js',
+]
 
 #------------------------------------------------------------------------------
 # Helpers
@@ -72,6 +97,8 @@ def get_settings():
 def build_standard_context(request):
     context = {}
 
+    context['version'] = settings.version
+    
     # everything gets the request user and a csrf token,
     # just in case it might need them
     context["request"] = request
@@ -105,6 +132,7 @@ def build_standard_context(request):
     context["url_items_length"] = len(url_items)
     context["site_name"] = settings.SITE_NAME
     context["use_menu_controller"] = False
+    context["load_angular"] = False
 
     if request.user.is_authenticated():
         context["connected_to_github"] = False
@@ -112,23 +140,6 @@ def build_standard_context(request):
             if account.provider == 'github':
                 context["connected_to_github"] = True
 
-    # database operations for data that is available on every page
-    # categories
-    # categories = Category.objects.all()
-    # context["categories"] = categories
-    # number of roles per category
-    # context["roles_per_category"] = Category.objects.values('name').annotate(num_roles=Count('roles')).order_by('-num_roles','name')[0:10]
-    # top X roles
-    # context["top_roles"] = Role.objects.all().order_by('-bayesian_score')[0:10]
-    # top X users
-    # context["top_users"] = User.objects.all().order_by('-average_score')[0:10]
-    # top X reviewers
-    # context["top_reviewers"] = User.objects.all().order_by('-karma')[0:10]
-    # last X new roles
-    # context["new_roles"] = Role.objects.all().order_by('-date_added')[0:10]
-    # last X new users
-    # context["new_users"] = User.objects.all().order_by('-date_joined')[0:10]
-    # and we're done
     return context
 
 #------------------------------------------------------------------------------
@@ -157,19 +168,23 @@ def explore(request):
         context["extra_js"] = [
           '/static/js/exploreApp/exploreApp.js',
           '/static/js/exploreApp/exploreController.js',
-          '/static/js/commonServices/roleService.js',
+          '/static/js/commonServices/roleSearchService.js',
           '/static/js/commonServices/tagService.js',
           '/static/js/commonServices/userService.js',
           '/static/js/commonServices/galaxyUtilities.js',
+          '/static/js/commonDirectives/dotDotDotDirective.js',
         ]
     else:
         context["extra_js"] = [
           '/static/dist/galaxy.exploreApp.min.js'
         ]
+    context['load_angular'] = True
+    context['page_title'] = 'Explore'
     return render_to_response('explore.html', context)
 
 def intro(request):
     context = build_standard_context(request)
+    context['page_title'] = 'About'
     return render_to_response('intro.html', context)
 
 def accounts_landing(request):
@@ -188,127 +203,232 @@ def list_category(request, category=None, page=1):
         context["extra_js"] = [
           '/static/js/listApp/listApp.js',
           '/static/js/listApp/roleListController.js',
-          '/static/js/listApp/userListController.js',
           '/static/js/listApp/menuController.js',
-          '/static/js/commonServices/tagService.js',
-          '/static/js/commonServices/meService.js',
-          '/static/js/commonServices/ratingService.js',
-          '/static/js/commonServices/roleService.js',
-          '/static/js/commonServices/roleSearchService.js',
-          '/static/js/commonServices/storageService.js',
-          '/static/js/commonServices/userService.js',
-          '/static/js/commonServices/platformService.js',
-          '/static/js/commonServices/galaxyUtilities.js',
-          '/static/js/commonServices/searchService.js',
-          '/static/js/commonDirectives/commonDirectives.js',
-          '/static/js/commonDirectives/autocompleteDirective.js',
-          '/static/js/commonDirectives/textCollapseDirective.js',
-          '/static/js/commonDirectives/dotDotDotDirective.js',
-          '/static/js/commonServices/relatedService.js',
-          '/static/js/commonServices/paginateService.js',
-        ]
+        ] + common_services
     else:
         context["extra_js"] = [
           '/static/dist/galaxy.listApp.min.js'
         ]
     context["use_menu_controller"] = True
+    context["load_angular"] = True
+    context["page_title"] = "Browse Roles"
     return render_to_response('list_category.html', context)
 
 def detail_category(request, category=None, page=1):
     context = build_standard_context(request)
     context["ng_app"] = "detailApp"
     context["ng_controller"] = "HeaderCtrl"
-    context["extra_css"] = [
-    ]
+    context["extra_css"] = []
     if settings.SITE_ENV == 'DEV':
         context["extra_js"] = [
-          # '/static/js/angular-slider.min.js',
-          '/static/js/detailApp/detailApp.js',
-          '/static/js/detailApp/roleDetailController.js',
-          '/static/js/detailApp/userDetailController.js',
-          '/static/js/detailApp/menuController.js',
-          '/static/js/detailApp/headerController.js',
-          '/static/js/detailApp/headerService.js',
-          '/static/js/commonServices/tagService.js',
-          '/static/js/commonServices/meService.js',
-          '/static/js/commonServices/ratingService.js',
-          '/static/js/commonServices/roleService.js',
-          '/static/js/commonServices/roleSearchService.js',
-          '/static/js/commonServices/storageService.js',
-          '/static/js/commonServices/userService.js',
-          '/static/js/commonServices/platformService.js',
-          '/static/js/commonServices/galaxyUtilities.js',
-          '/static/js/commonServices/searchService.js',
-          '/static/js/commonDirectives/commonDirectives.js',
-          '/static/js/commonDirectives/autocompleteDirective.js',
-          '/static/js/commonDirectives/textCollapseDirective.js',
-          '/static/js/commonDirectives/dotDotDotDirective.js',
-          '/static/js/commonServices/relatedService.js',
-          '/static/js/commonServices/paginateService.js',
-        ]
+            # '/static/js/angular-slider.min.js',
+            '/static/js/detailApp/detailApp.js',
+            '/static/js/detailApp/roleDetailController.js',
+            '/static/js/detailApp/menuController.js',
+            '/static/js/detailApp/headerController.js',
+            '/static/js/detailApp/headerService.js',
+        ] + common_services
     else:
         context["extra_js"] = [
-          '/static/dist/galaxy.detailApp.min.js'
+            '/static/dist/galaxy.detailApp.min.js'
         ]
     context["use_menu_controller"] = True
+    context["load_angular"] = True
+    context["page_title"] = "Role Details"
     return render_to_response('list_category.html', context)
 
-def role_view(request, user, role):
-    role = Role.objects.get(name=role, owner__username=user)
-    # awx_avg_scores = role.ratings.filter(voter__is_staff=True).values('role__name').annotate(
-    #     ease_of_use      = Avg('ease_of_use'),
-    #     documentation    = Avg('documentation'),
-    #     best_practices   = Avg('best_practices'),
-    #     repeatability    = Avg('repeatability'),
-    #     platform_support = Avg('platform_support'),
-    #     overall          = Avg('overall'),
-    #     avg_score        = Avg('score'),
-    # )
-    # other_avg_scores = role.ratings.values('role__name').annotate(
-    #     ease_of_use      = Avg('ease_of_use'),
-    #     documentation    = Avg('documentation'),
-    #     best_practices   = Avg('best_practices'),
-    #     repeatability    = Avg('repeatability'),
-    #     platform_support = Avg('platform_support'),
-    #     overall          = Avg('overall'),
-    #     avg_score        = Avg('score'),
-    # )
-    # awx_ratings = role.ratings.filter(voter__is_staff=True).order_by('-score')
-    # other_ratings = role.ratings.filter(voter__is_staff=False).order_by('-score')
-
+def role_add_view(request, category=None, page=1):
     context = build_standard_context(request)
-    context["role"]             = role
-    # context["awx_ratings"]      = awx_ratings
-    # context["other_ratings"]    = other_ratings
-    # if len(awx_avg_scores) > 0:
-    #    context["awx_avg_scores"] = awx_avg_scores[0]
-    # if len(other_avg_scores) > 0:
-    #    context["other_avg_scores"] = other_avg_scores[0]
-
-    return render_to_response('role_view.html', context)
-
-def role_search(request):
-    return HttpResponse("in role_search()")
-
-def user_view(request, user):
-    this_user = User.objects.get(username=user)
-    #all_avg_score = this_user.roles.values('owner').annotate(avg_score=Avg('ratings__score'))
-    #awx_avg_score = this_user.roles.filter(ratings__voter__is_staff=True).values('owner').annotate(avg_score=Avg('ratings__score'))
-
-    context = build_standard_context(request)
-    context["this_user"] = this_user
-    context["user_roles"] = this_user.roles.all() #.order_by('-toprole__bayesian_score')
-    # if len(all_avg_score) > 0:
-    #    context["all_avg_score"] = all_avg_score[0]
-    # if len(awx_avg_score) > 0:
-    #    context["awx_avg_score"] = awx_avg_score[0]
-    return render_to_response('user_view.html', context)
+    context["ng_app"] = "roleAddApp"
+    context["extra_css"] = []
+    if settings.SITE_ENV == 'DEV':
+        context["extra_js"] = [
+            '/static/js/roleAddApp/roleAddApp.js',
+            '/static/js/roleAddApp/roleAddController.js',
+            '/static/js/detailApp/menuController.js',
+            '/static/js/roleAddApp/notificationSecretService.js',
+        ] + common_services
+    else:
+        context["extra_js"] = [
+            '/static/dist/galaxy.roleAddApp.min.js'
+        ]
+    context["use_menu_controller"] = False
+    context["load_angular"] = True
+    context["page_title"] = "My Roles"
+    app_id = ""
+    if settings.SITE_NAME == 'galaxy.ansible.com':
+        app_id = '3e92491593df34c92089'
+    if settings.SITE_NAME == 'galaxy-qa.ansible.com':
+        app_id = '2e6b1de3b2832a7cf974'
+    if settings.SITE_NAME == 'localhost':
+        app_id = '3232f7f9f6477dee707f'
+    context["auth_orgs_url"] = "https://github.com/settings/connections/applications/%s" % app_id
+    return render_to_response('list_category.html', context)
 
 def handle_404_view(request):
+    context = {}
+    context["page_title"] = "404 Error"
     return render_to_response('custom404.html')
 
 def handle_400_view(request):
+    context = {}
+    context["page_title"] = "400 Error"
     return render_to_response('custom400.html')
+
+class NamespaceListView(ListView):
+    model = 'Role'
+    template_name = 'namespace_list.html'
+    context_object_name = 'namespaces'
+    paginate_by = 20
+
+    def get_queryset(self):
+        author = self.request.GET.get('author')
+        if author:
+            qs = Role.objects.filter(active=True,is_valid=True,namespace__icontains=author).order_by('namespace').distinct('namespace')
+        else:
+            qs = Role.objects.filter(active=True,is_valid=True).order_by('namespace').distinct('namespace')
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super(NamespaceListView, self).get_context_data(**kwargs)
+        context['search_value'] = self.request.GET.get('author', '')
+        context["site_name"] = settings.SITE_NAME
+        context["load_angular"] = False       
+        context["page_title"] = "Browse Authors"
+        # the paginator includes 
+        qs = self.get_queryset()
+        context['count'] = qs.count()
+
+        # figure out the range of pages numbers to show in bootstrap paging widget
+        page_obj = context['page_obj']
+        paginator = context['paginator']
+        if page_obj.number % 10 == 0:
+            first = int(floor((page_obj.number - 1)/10.0) * 10 + 1)
+        else:
+            first = int(floor(page_obj.number/10.0) * 10 + 1)
+        first = 1 if first <= 0 else first
+        last = int(ceil(page_obj.number/10.0) * 10)
+        last = paginator.num_pages if last > paginator.num_pages else last
+        context['page_range'] = range(first, last + 1)
+        return context
+
+class RoleListView(ListView):
+    template_name = 'role_list.html'
+    context_object_name = 'roles'
+
+    def get_queryset(self):
+        self.namespace = self.args[0]
+        name = self.request.GET.get('role', None)
+        if Role.objects.filter(namespace=self.args[0]).count() == 0:
+            raise Http404()
+        if name:
+            qs = Role.objectsfilter(active=True,is_valid=True,namespace=self.args[0],name__icontains=name)
+        else:
+            qs = Role.objects.filter(active=True,is_valid=True,namespace=self.args[0])
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super(RoleListView, self).get_context_data(**kwargs)
+        try:
+            ns = Namespace.objects.get(namespace=self.namespace)
+            context['namespace'] = dict(
+                avatar_url=ns.avatar_url,
+                location=ns.location,
+                company=ns.company,
+                name=ns.name,
+                email=ns.email,
+                html_url=ns.html_url,
+                followers=ns.followers,
+                description=ns.description
+            )
+        except:
+            context['namespace'] = None
+        context['namespace_name'] = self.namespace
+        context['search_value'] = self.request.GET.get('role', '')
+        context["site_name"] = settings.SITE_NAME
+        context["load_angular"] = False
+        context["page_title"] = self.namespace
+        context["meta_description"] = "Roles contributed by %s." % self.namespace
+        return context
+
+class RoleDetailView(DetailView):
+    template_name = 'role_detail.html'
+    context_obj_name = 'role'
+
+    def get_object(self):
+        self.namespace = self.args[0]
+        self.name = self.args[1]
+        self.role = get_object_or_404(Role, namespace=self.namespace, name=self.name, active=True, is_valid=True)
+        return self.role
+
+    def get_context_data(self, **kwargs):
+        context = super(RoleDetailView, self).get_context_data(**kwargs)
+
+        try:
+            ns = Namespace.objects.get(namespace=self.namespace)
+            context['namespace'] = dict(
+                avatar_url=ns.avatar_url,
+                location=ns.location,
+                company=ns.company,
+                name=ns.name,
+                email=ns.email,
+                html_url=ns.html_url,
+                followers=ns.followers,
+                description=ns.description
+            )
+        except:
+            context['namespace'] = None
+
+        context['namespace_name'] = self.namespace
+        context['name'] = self.name 
+        context["site_name"] = settings.SITE_NAME
+        context["load_angular"] = False
+        context["meta_description"] = "Role %s.%s - %s" % (self.role.namespace, self.role.name, self.role.description)
+        
+        try:
+            gh_user = User.objects.get(github_user=self.role.github_user)
+            context['avatar'] = gh_user.github_avatar
+        except:
+            context['avatar'] = "/static/img/avatar.png";
+
+        user = self.request.user
+        context['is_authenticated'] = True if user.is_authenticated() and user.is_connected_to_github() else False
+        context['is_staff'] = user.is_staff
+
+        context['is_subscriber'] = False
+        if user.is_authenticated():
+            sub = user.get_subscriber(self.role.github_user, self.role.github_repo)
+            if sub:
+                context['is_subscriber'] = True 
+                context['subscriber_id'] = sub.id
+
+        print "is_subscriber: %s" % context['is_subscriber']
+        
+        context['is_stargazer'] = False
+        if user.is_authenticated():
+             star = user.get_stargazer(self.role.github_user, self.role.github_repo)
+             if star:
+                context['is_stargazer'] = True
+                context['stargazer_id'] = star.id
+        
+        role = self.role
+        context['tags'] = role.tags.all()
+        context['platforms'] = role.platforms.all()
+        context['dependencies'] = role.dependencies.all()
+        
+        context['versions'] = []
+        for ver in role.versions.all():
+            context['versions'].append({
+                'loose_version': ver.loose_version,
+                'release_date':  ver.release_date.strftime('%m/%d/%Y %H:%M:%I %p') if ver.release_date else 'NA'
+            })
+
+        context['create_date'] = role.created.strftime('%m/%d/%Y %H:%M:%I %p')
+        context['import_date'] = role.imported.strftime('%m/%d/%Y %H:%M:%I %p') if role.imported else 'NA'
+        context['readme_html'] = markdown.markdown(html_decode(role.readme), extensions=['extra'])
+        context['page_title'] = "%s.%s" % (self.namespace, self.name)
+        return context
+
 
 #------------------------------------------------------------------------------
 # Non-secured Action URLs requiring a POST
@@ -329,6 +449,35 @@ def prefs_set_sort(request):
 #------------------------------------------------------------------------------
 # Logged in/secured URLs
 #------------------------------------------------------------------------------
+
+@login_required
+def import_status_view(request):
+    """
+    Allow logged in users to view the status of import requests.
+    """
+    context = build_standard_context(request)
+    context["ng_app"] = "importStatusApp"
+    context["extra_css"] = []
+
+    if settings.SITE_ENV == 'DEV':
+        context["extra_js"] = [
+            '/static/js/importStatusApp/importStatusApp.js',
+            '/static/js/importStatusApp/importStatusController.js',
+            '/static/js/commonServices/galaxyUtilities.js',
+        ] + common_services
+    else:
+        context["extra_js"] = [
+            '/static/dist/galaxy.importStatusApp.min.js'
+        ]
+
+    if request.session.has_key("transient"):
+        context["transient"] = request.session["transient"]
+        del request.session["transient"]
+    
+    context["load_angular"] = True
+    context["page_title"] = "My Imports"
+    return render_to_response('import_status.html',context)
+
 
 @login_required
 def accounts_profile(request):
@@ -366,55 +515,11 @@ def accounts_connect(request):
     context = build_standard_context(request)
     return render_to_response('socialaccount/connections.html',context)
 
-# @login_required
-# @transaction.non_atomic_requests
-# def accounts_role_save(request):
-#     regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
-#     if request.method == 'POST':
-#         try:
-#             with transaction.atomic():
-#                 form = RoleForm(request.POST)
-#                 if form.is_valid():
-#                     # create the role, committing manually so that
-#                     # we ensure the database is updated before we
-#                     # kick off the celery task to do the import
-#                     cd = form.cleaned_data
-#                     role = Role()
-#                     role.owner             = request.user
-#                     role.github_user       = cd['github_user']
-#                     role.github_repo       = cd['github_repo']
-#                     role.name              = cd.get('name',None) or cd['github_repo']
-#                     role.is_valid          = False
-
-#                     # strip out unwanted sub-strings from the name
-#                     role.name = regex.sub('', role.name)
-
-#                     role.save()
-#                     # commit the data to the database upon exiting the
-#                     # transaction.atomic() block, to make sure it's available
-#                     # for the celery task when it runs
-#                 else:
-#                     context = build_standard_context(request)
-#                     context["form"] = form
-#                     return render_to_response('account/role_add.html', context)
-#         except IntegrityError, e:
-#             request.session["transient"] = {"status":"info","msg":"You have already created a role with that name."}
-#         except Exception, e:
-#             request.session["transient"] = {"status":"info","msg":"Failed: %s" % e}
-#         else:
-#             with transaction.atomic():
-#                 # start the celery task to run the import and save
-#                 # its info back to the database for later reference
-#                 task = import_role.delay(role.id)
-#                 role_import = RoleImport()
-#                 role_import.celery_task_id = task.id
-#                 role_import.role = role
-#                 role_import.save()
-#             request.session["transient"] = {"status":"info","msg":"Role created successfully, import task started."}
-#     else:
-#         request.session["transient"] = {"status":"info","msg":"Invalid method."}
-#     # redirect back home no matter what
-#     return HttpResponseRedirect(reverse('main:accounts-profile'))
+@login_required
+def accounts_connect_success(request):
+    context = build_standard_context(request)
+    context["connected_to_github"] = True
+    return render_to_response('socialaccount/connections.html',context)
 
 @login_required
 @transaction.non_atomic_requests
@@ -493,46 +598,6 @@ def accounts_role_reactivate(request, id=None):
     # redirect back home
     return HttpResponseRedirect(reverse('main:accounts-profile'))
 
-@login_required
-def accounts_role_add(request):
-    context = build_standard_context(request)
-
-    if request.method == 'POST':
-        form = RoleForm(request.POST)
-        context["form"] = form
-        if form.is_valid():
-            try:
-                with transaction.atomic():
-                    
-                    # create the role, committing manually so that
-                    # we ensure the database is updated before we
-                    # kick off the celery task to do the import
-                    cd = form.cleaned_data
-                    role = Role()
-                    role.owner             = request.user
-                    role.github_user       = cd['github_user']
-                    role.github_repo       = cd['github_repo']
-                    role.name              = cd.get('name',None) or cd['github_repo']
-                    role.is_valid          = False
-                    role.save()
-            except IntegrityError, e:
-                print e
-                form.add_error(None,"You already created a role with that name.")
-            except Exception, e:
-                form.add_error(None,"Failed to add role: %s" % e)
-            else:
-                # start the celery task to run the import and save
-                # its info back to the database for later reference
-                task = import_role.delay(role.id)
-                role_import = RoleImport()
-                role_import.celery_task_id = task.id
-                role_import.role = role
-                role_import.save()
-                return HttpResponseRedirect(reverse('main:accounts-profile'))
-    else:   
-        form = RoleForm()
-        context["form"] = form
-    return render_to_response('account/role_add.html', context)
 
 @login_required
 def accounts_role_view(request, role=None):

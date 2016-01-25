@@ -9,72 +9,33 @@
 
 (function(angular) {
 
-    angular.module('roleService', [])
-        .factory('roleFactory', ['$http','$cookies', _factory]);
+    var mod = angular.module('roleService', ['ngResource','galaxyUtilities']);
+        
+    mod.factory('roleService', ['$resource','$analytics','getCSRFToken', _factory]);
 
-    function _factory($http, $cookies) {
-
-        $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
-
+    function _factory($resource, $analytics, getCSRFToken) {
+        var token = getCSRFToken();
         return {
-            getRoles: _getRoles,
-            getRolesTop: _getRolesTop,
-            getRole: _getRole,
-            getLatest: _getLatest,
-            deleteRole: _deleteRole,
+            "get": _getRole,
+            "delete": _deleteRole,
+            "getReadMe": _getReadMe
         };
 
-        function _getRoles(page, selected_categories, results_per_page, sort_order, filter, reverse, platform) {
-            var url = '/api/v1/roles/?page=' + page + '&page_size=' + results_per_page;
-            if (selected_categories.length > 0) {
-                for (var i in selected_categories) {
-                    url += '&chain__categories__name=' + selected_categories[i];
-                }
-            }
-            if (filter && filter != '')
-                url += '&name__icontains=' + filter;
-
-            if (platform)
-                url += '&platforms__name=' + platform;
-            
-            if (reverse) {
-                var parts = sort_order.split(',')
-                for (var part in parts) {
-                    parts[part] = '-' + parts[part];
-                }
-                sort_order = parts.join(',');
-            }
-            url += '&order_by=' + sort_order
-            return $http.get(url);
+        function _getRole(params) {
+            return $resource('/api/v1/search/roles/').get(params);
         }
-
-        function _getRolesTop(page, results_per_page, sort_order, reverse) {
-            var url = '/api/v1/roles/top/?page=' + page + '&page_size=' + results_per_page;
-            if (reverse) {
-                var parts = sort_order.split(',')
-                for (var part in parts) {
-                    parts[part] = '-' + parts[part];
-                }
-                sort_order = parts.join(',');
-            }
-            url += '&order_by=' + sort_order
-            return $http.get(url);
+        function _deleteRole(params) {
+            $analytics.eventTrack('delete', {
+                category: params.github_user + '/' + params.github_repo
+            });
+            return $resource('/api/v1/removerole/', null, {
+                "delete": { method: 'DELETE', headers: { "X-CSRFToken": token }}
+            }).delete(params);
         }
-
-        function _getRole(id) {
-            return $http.get('/api/v1/roles/' + id + '/');
-        }
-
-        function _getLatest(page, results_per_page, sort_order, reverse) {
-            if (reverse) {
-                sort_order = '-' + sort_order
-            }
-            return dataFactory.getRoles(page, [], results_per_page, sort_order);
-        }
-
-        function _deleteRole(id) {
-            var url = '/api/v1/roles/'+id+'/'
-            return $http.delete(url);
+        function _getReadMe(id) {
+            return $resource('/api/v1/roles/:id/', { 'id': id }).get().$promise.then(function(response) {
+                return response.readme_html;
+            });
         }
     }
 

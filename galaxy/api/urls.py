@@ -20,7 +20,8 @@
 
 from django.conf.urls import include, patterns, url as original_url
 from rest_framework import routers
-from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView, UserSearchView
+from .views import RoleSearchView, FacetedView, PlatformsSearchView, TagsSearchView, ApiV1SearchView, \
+    ApiV1ReposView, UserSearchView, TokenView, RemoveRole, RefreshUserRepos
 
 router = routers.DefaultRouter()
 router.register('v1/search/roles', RoleSearchView, base_name="search-roles")
@@ -32,34 +33,26 @@ def url(regex, view, kwargs=None, name=None, prefix=''):
     return original_url(regex, view, kwargs, name, prefix)
 
 user_urls = patterns('galaxy.api.views',
-    url(r'^$',                         'user_list'),
-    url(r'rolecontributors/$',         'user_role_contributors_list'),
-    url(r'ratingcontributors/$',       'user_rating_contributors_list'),
-    url(r'^(?P<pk>[0-9]+)/$',          'user_detail'),
-    url(r'^(?P<pk>[0-9]+)/roles/$',    'user_roles_list'),
-    url(r'^(?P<pk>[0-9]+)/ratings/$',  'user_ratings_list'),
+    url(r'^$',                              'user_list'),
+    url(r'^(?P<pk>[0-9]+)/$',               'user_detail'),
+    url(r'^(?P<pk>[0-9]+)/repos/$',         'user_repositories_list'),
+    url(r'^(?P<pk>[0-9]+)/subscriptions/$', 'user_subscription_list'),
+    url(r'^(?P<pk>[0-9]+)/starred/$',       'user_starred_list'),
+    url(r'^(?P<pk>[0-9]+)/secrets/$',       'user_notification_secret_list'),    
 )
 
 role_urls = patterns('galaxy.api.views',
     url(r'^$',                         'role_list'),
-    url(r'top/$',                      'role_top_list'),
     url(r'^(?P<pk>[0-9]+)/$',          'role_detail'),
     url(r'^(?P<pk>[0-9]+)/users/$',    'role_users_list'),
-    url(r'^(?P<pk>[0-9]+)/authors/$',  'role_authors_list'),
     url(r'^(?P<pk>[0-9]+)/dependencies/$', 'role_dependencies_list'),
-    url(r'^(?P<pk>[0-9]+)/imports/$',  'role_imports_list'),
-    url(r'^(?P<pk>[0-9]+)/ratings/$',  'role_ratings_list'),
+    url(r'^(?P<pk>[0-9]+)/imports/$',  'role_import_task_list'),
     url(r'^(?P<pk>[0-9]+)/versions/$', 'role_versions_list'),
 )
 
 platform_urls = patterns('galaxy.api.views',
     url(r'^$',                         'platform_list'),
     url(r'^(?P<pk>[0-9]+)/$',          'platform_detail'),
-)
-
-rating_urls = patterns('galaxy.api.views',
-    url(r'^$',                          'rating_list'),
-    url(r'^(?P<pk>[0-9]+)/$',           'rating_detail'),
 )
 
 category_urls = patterns('galaxy.api.views',
@@ -79,6 +72,36 @@ search_urls = patterns('galaxy.api.views',
     url(r'platforms/$',                  PlatformsSearchView.as_view(), name='platforms_search_view'),
     url(r'tags/$',                       TagsSearchView.as_view(), name='tags_search_view'),
     url(r'users/$',                      UserSearchView.as_view(), name='user_search_view'),
+    url(r'top_contributors/$',           'top_contributors_list', name='top_contributors_list'),
+)
+
+import_task_urls = patterns('galaxy.api.views',
+    url(r'^$',                         'import_task_list'),
+    url(r'latest/$',                   'import_task_latest_list'),
+    url(r'^(?P<pk>[0-9]+)/$',          'import_task_detail'),
+)
+
+notification_secret_urls = patterns('galaxy.api.views',
+    url(r'^$',                         'notification_secret_list'),
+    url(r'^(?P<pk>[0-9]+)/$',          'notification_secret_detail'),
+)
+
+notification_urls = patterns('galaxy.api.views',
+    url(r'^$',                         'notification_list'),
+    url(r'^(?P<pk>[0-9]+)/$',          'notification_detail'),
+    url(r'^(?P<pk>[0-9]+)/roles/$',    'notification_roles_list'),
+    url(r'^(?P<pk>[0-9]+)/imports/$',  'notification_imports_list'),    
+)
+
+repo_urls = patterns('galaxy.api.views',
+    url(r'^$',                             ApiV1ReposView.as_view(), name="repos_view"),
+    url(r'list/$',                         'repository_list'),
+    url(r'list/(?P<pk>[0-9]+)/$',          'repository_detail'),
+    url(r'refresh/$',                      RefreshUserRepos.as_view(), name='refresh_user_repos'),
+    url(r'stargazers/$',                   'stargazer_list'),
+    url(r'stargazers/(?P<pk>[0-9]+)/$',    'stargazer_detail'),
+    url(r'subscriptions/$',                'subscription_list'),
+    url(r'subscriptions/(?P<pk>[0-9]+)/$', 'subscription_detail'),
 )
 
 v1_urls = patterns('galaxy.api.views',
@@ -89,7 +112,12 @@ v1_urls = patterns('galaxy.api.views',
     url(r'^categories/',               include(category_urls)),
     url(r'^tags/',                     include(tag_urls)),
     url(r'^platforms/',                include(platform_urls)),
-    url(r'^ratings/',                  include(rating_urls)),
+    url(r'^imports/',                  include(import_task_urls)),
+    url(r'^tokens/',                   TokenView.as_view(), name='token'),
+    url(r'^removerole/',               RemoveRole.as_view(), name='remove_role'),
+    url(r'^notification_secrets/',     include(notification_secret_urls)),
+    url(r'^notifications/',            include(notification_urls)),
+    url(r'^repos/',                    include(repo_urls)),
     url(r'^search/',                   include(search_urls)),
 )
 

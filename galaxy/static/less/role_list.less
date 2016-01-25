@@ -133,74 +133,119 @@
         }
     }
 
-    #results-container {
+    #results-outer-container {
         overflow-x: hidden;
         overflow-y: auto;
+    }
+
+    #results-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        //align-items: center;
+        //align-content: center;
 
         .result {
-            display: inline-block;
-            vertical-align: top;
-            width: 260px;
-            height: 260px;
+            //display: inline-block;
+            //vertical-align: top;
+            width: 350px;
+            height: 235px;
             padding: 10px;
             border: 1px solid #ccc; 
             border-radius: 2px;
             font-size: 12px;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            cursor: pointer;
 
             -webkit-box-shadow: 2px 2px 2px 0 #ccc;
             -moz-box-shadow:    2px 2px 2px 0 #ccc;
             box-shadow:         2px 2px 3px 0 #ccc;
         
             .header {
-                position: relative;
                 .title {
-                    font-weight: bold;
+                    display:inline-block;
+                    width: 75%;
+                    font-size: 14px;
+                    color: @blue;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
-                .score-container {
-                    display: inline-block;
-                    position: relative; 
-                    float: right; 
-                    label {
-                        font-size: 10px;
-                        font-weight: normal;
-                        color: #ccc;
-                        padding-right: 5px;
-                    }
-                    .badge {
-                        font-weight: normal;
-                        font-size: 10px;
-                        background-color: @ansible-dark-grey;
-                    }
+                .badge {
+                    display:inline-block;
+                    float: right;
+                    background-color: #b7b7b7;
+                    font-weight: normal;
                 }
-                hr {
-                    margin-top: 10px;
-                    margin-bottom: 10px;
-                    border-color: #e1e1e1;
-                } 
             }
+
+            hr {
+                margin: 0 -10px 10px -10px;
+                border-color: #e1e1e1;
+            } 
             
             .body {
                 .description {
-                    height: 35px;
-                    overflow-y: hidden;
+                    height: 40px;
+                    overflow: hidden;
+                    color: @ansible-dark-grey;
                 }
-                .description, .result-group {
-                    height: auto;
-                    max-height: 40px;
-                    margin-bottom: 10px;
+                .description.na {
+                    color: @ansible-dark-grey;
                 }
-                .authors {
-                    height: 20px;
-                }
+                .stats-table {
+                    .key,.value {
+                        padding: 3px 0 3px 5px;
+                    }
+                    .key {
+                        width: 100px;
+                        //background-color: #f6f6f6;
+                        color: @ansible-dark-grey;
+                    }
+                    .value {
+                        display: block;
+                        width: 230px;
+                        // background-color: #f6f6f6;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        color: @black;
+                    }
+                    .value.na {
+                        color: @ansible-dark-grey;
+                    }
+                }              
                 .result-label {
                     color: @ansible-color;
                     padding-right: 6px;
                     font-weight: bold;
                 }
-                .platforms, .tags {
-                    color: #848992;
+            }
+            .footer {
+                margin-top: 5px;
+                .img-container {
+                    display: inline-block;
+                    margin-left: 15px;
+                    img {
+                        width: 90px;
+                    }
+                }
+                .counts {
+                    display: inline-block;
+                    float: right;
+                    margin-right: 15px;
+                    text-align: right;
+                    .stargaze, .subscribe {
+                        display: inline-block;
+                        btn {
+                            margin-right: 3px;
+                        }
+                    }
+                    .subscribe {
+                        margin-right: 5px;
+                    }
                 }
             }
         }

@@ -1,5 +1,6 @@
 *.pyc
 *.swp
+.idea/
 build/
 dist/
 galaxy.egg-info/
@@ -13,3 +14,5 @@ provisioning/ec2_inventory
 .vagrant
 /Vagrantfile
 /logs
+galaxy.min.css
+.DS_Store

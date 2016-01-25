@@ -56,7 +56,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 ACCOUNT_ADAPTER = 'galaxy.main.auth.AccountAdapter'
 ACCOUNT_AUTHENTICATION_METHOD="username_email"
 ACCOUNT_DEFAULT_HTTP_PROTOCOL="https"
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL="/accounts/profile/"
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL="/explore"
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL="/accounts/landing"
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS=1
 ACCOUNT_EMAIL_REQUIRED=True
@@ -64,10 +64,24 @@ ACCOUNT_EMAIL_VERIFICATION="mandatory"
 ACCOUNT_EMAIL_SUBJECT_PREFIX="Ansible Galaxy "
 ACCOUNT_LOGIN_ON_VALIDATE=True
 ACCOUNT_USERNAME_MIN_LENGTH=3
-ACCOUNT_USERNAME_BLACKLIST=['admin','administrator']
+ACCOUNT_USERNAME_BLACKLIST=[
+    'admin',
+    'administrator',
+    'galaxy_admin',
+    'accounts',
+    'account',
+    'explore',
+    'intro',
+    'list',
+    'detail',
+    'roleadd',
+    'imports',
+    'authors'
+]
 ACCOUNT_PASSWORD_MIN_LENGTH=8
 SOCIALACCOUNT_PROVIDERS={
     'twitter': { 'SCOPE': ['r_emailaddress'] },
+    'github': { 'SCOPE': ['user:email', 'public_repo', 'read:org'] },
 }
 SOCIALACCOUNT_AVATAR_SUPPORT=True
 
@@ -81,12 +95,12 @@ CELERY_IMPORTS=('galaxy.main.celerytasks.tasks',)
 CELERY_TRACK_STARTED=True
 CELERYBEAT_SCHEDULER='djcelery.schedulers.DatabaseScheduler'
 
-# Settings for Github API (pygithub)
-{#
-GITHUB_USERNAME='{{ galaxy_github_api_username }}'
-GITHUB_PASSWORD='{{ galaxy_github_api_password }}'
-#}
-GITHUB_API_TOKEN='{{ galaxy_github_api_token }}'
+GITHUB_TASK_USERS = [
+    { 'username': 'galaxytasks01', 'password': 'u5V4fGwoQz80F0YK' },
+    { 'username': 'galaxytasks02', 'password': 'u5V4fGwoQz80F0YK' },
+    { 'username': 'galaxytasks03', 'password': 'u5V4fGwoQz80F0YK' },
+    { 'username': 'galaxytasks04', 'password': 'u5V4fGwoQz80F0YK' }
+]
 
 # Custom settings
 GALAXY_COMMENTS_THRESHOLD=10.0
@@ -104,7 +118,7 @@ DATABASES = {
 {% else %}
 {% for host in groups['db'] %}
 {% if hostvars[host]['postgres_master'] %}
-        'HOST': "{{ host }}",
+        'HOST': "{{ hostvars[host]['private_ip'] }}",
 {% endif %}
 {% endfor %}
 {% endif %}
@@ -117,17 +131,26 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': '{{ galaxy_memcached_hostname }}:{{ galaxy_memcached_port }}',
+    },
+    'download_count': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'main_download_count_cache',
+        'TIMEOUT': None,
+        'OPTIONS': {
+            'MAX_ENTRIES': 100000,
+            'CULL_FREQUENCY': 0
+        }
     }
 }
 
 ELASTICSEARCH = {
-    'hosts': [{% for host in groups['es_hosts'] %}"{{ host }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+    'hosts': [{% for host in groups['es_hosts'] %}"{{ hostvars[host]['private_ip'] }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 }
 
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': [{% for host in groups['es_hosts'] %}"{{ galaxy_es_transport }}://{{ host }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}],
+        'URL': [{% for host in groups['es_hosts'] %}"{{ galaxy_es_transport }}://{{ hostvars[host]['private_ip'] }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}],
         'INDEX_NAME': 'haystack',
     },
 }
@@ -149,14 +172,12 @@ REST_FRAMEWORK = {
     'PAGINATE_BY': 10,
     'PAGINATE_BY_PARAM': 'page_size',
     'MAX_PAGINATE_BY': 100,
-    #'DEFAULT_THROTTLE_CLASSES': (
-    #    'rest_framework.throttling.AnonRateThrottle',
-    #    'rest_framework.throttling.UserRateThrottle'
-    #),
-    #'DEFAULT_THROTTLE_RATES': {
-    #    'anon': '60/hour',
-    #    'user': '600/hour'
-    #}
+    'DEFAULT_THROTTLE_CLASSES': (
+        'galaxy.api.throttling.RoleDownloadCountThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'download_count': '1/day',
+    }
 }
 
 TEMPLATES = [
@@ -180,11 +201,13 @@ TEMPLATES = [
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [SITE_NAME]
-{% if linode_private_ip is defined %} 
-ALLOWED_HOSTS.append('{{ linode_private_ip }}')
+ALLOWED_HOSTS.append("{{ inventory_hostname }}")
+{% if private_ip is defined %} 
+ALLOWED_HOSTS.append("{{ private_ip }}")
 {% endif %}
 {% for host in groups['node_balancer'] %}
-ALLOWED_HOSTS.append('{{ host }}')
+ALLOWED_HOSTS.append("{{ host }}")
+ALLOWED_HOSTS.append("{{ hostvars[host]['public_ip'] }}")
 {% endfor %}
 
 # Local time zone for this installation. Choices can be found here:
@@ -283,6 +306,7 @@ INSTALLED_APPS = (
     'djcelery',
     'maintenance',
     'rest_framework',
+    'rest_framework.authtoken',
     'haystack',
     # our apps
     'galaxy.accounts',

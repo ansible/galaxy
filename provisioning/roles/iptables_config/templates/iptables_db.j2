@@ -3,9 +3,9 @@
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 -A INPUT -p tcp --dport 5432 -s {% for ip in galaxy_office_ips %}{{ ip }}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
--A INPUT -p tcp --dport 5432 -s {% for host in groups['web'] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
--A INPUT -p tcp --dport 5432 -s {% for host in groups['db'] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
--A INPUT -p tcp --dport 5672 -s {% for host in groups['web'] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
+-A INPUT -p tcp --dport 5432 -s {% for host in groups['web'] %}{{ hostvars[host]['private_ip'] }}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
+-A INPUT -p tcp --dport 5432 -s {% for host in groups['db'] %}{{ hostvars[host]['private_ip'] }}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
+-A INPUT -p tcp --dport 5672 -s {% for host in groups['web'] %}{{ hostvars[host]['private_ip'] }}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
 -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -p icmp -j ACCEPT
 -A INPUT -i lo -j ACCEPT

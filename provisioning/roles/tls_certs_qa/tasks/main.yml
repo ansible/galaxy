@@ -1,0 +1,23 @@
+- name: Copy intermediate cert
+  copy:
+      src: gd_bundle-g2-g1.crt
+      dest: /etc/pki/tls/certs
+      owner: root
+      group: root
+      mode: 0644
+
+- name: Copy galaxy cert
+  copy:
+      src: 8f1b85a1cd1ba2b0.crt
+      dest: /etc/pki/tls/certs
+      owner: root
+      group: root
+      mode: 0644
+
+- name: Install private key 
+  copy:
+      content: "{{ galaxy_qa_private_key }}"
+      dest: /etc/pki/tls/private/galaxy-qa.ansible.key
+      owner: root
+      group: root
+      mode: 0600

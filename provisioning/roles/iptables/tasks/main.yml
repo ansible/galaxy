@@ -47,7 +47,7 @@
       regexp: "^.*INPUT.*tcp.*8000.*ACCEPT"
       insertafter: "^:OUTPUT "
       line: "-A INPUT -p tcp --dport 8000 -j ACCEPT"
-  when: iptables_installed.rc == 0 and iptables_exists.state != 'absent' and galaxy_host)type == 'Web' and galaxy_allow_port_8000
+  when: iptables_installed.rc == 0 and iptables_exists.state != 'absent' and galaxy_host_type == 'Web' and galaxy_allow_port_8000
   notify: restart iptables
   tags: iptables
 

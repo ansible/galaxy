@@ -18,6 +18,7 @@
 import hashlib
 import markdown
 import collections
+import json
 
 try:
     from urllib.parse import urljoin, urlencode
@@ -37,12 +38,12 @@ from django.db.models import Avg
 from django.utils import text, html
 from collections import OrderedDict
 
-from avatar.conf import settings
-from avatar.util import get_primary_avatar, get_default_avatar_url, force_bytes
-from avatar.models import Avatar
+# from avatar.conf import settings
+# from avatar.util import get_primary_avatar, get_default_avatar_url, force_bytes
+# from avatar.models import Avatar
 
 # haystack
-from drf_haystack.serializers import HaystackSerializer
+from drf_haystack.serializers import HaystackSerializer, HaystackSerializerMixin
 
 # galaxy
 from galaxy.main.search_indexes import RoleIndex
@@ -62,16 +63,6 @@ SUMMARIZABLE_FK_FIELDS = {
     'role'  : ('id','url','name',),
 }
 
-def get_user_avatar_url(obj):
-    size=96
-    params = {'s': str(size)}
-    if settings.AVATAR_GRAVATAR_DEFAULT:
-        params['d'] = settings.AVATAR_GRAVATAR_DEFAULT
-    path = "%s/?%s" % (
-        hashlib.md5(force_bytes(obj.email)).hexdigest(),
-        urlencode(params),
-    )
-    return urljoin('//www.gravatar.com/avatar/', path) #
 
 class BaseSerializer(serializers.ModelSerializer):
     # add the URL and related resources
@@ -87,9 +78,6 @@ class BaseSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super(BaseSerializer, self).__init__(*args, **kwargs)
         self.Meta.fields = ('url', 'related', 'summary_fields') + self.Meta.fields + ('created', 'modified', 'active')
-
-    #def to_representation(self, obj):
-    #    super(BaseSerializer, self).to_representation(obj)
 
     def get_fields(self):
         # opts = get_concrete_model(self.Meta.model)._meta
@@ -200,132 +188,35 @@ class MeSerializer(BaseSerializer):
         if obj is None or isinstance(obj, AnonymousUser):
             return {}
         d = super(MeSerializer, self).get_summary_fields(obj)
-        d['roles'] = [
-            OrderedDict([
-             ('id',g.id),
-             ('name',g.name),
-             ('original_name',g.original_name),
-             ('active',g.active),
-             ('is_valid',g.is_valid),
-             ('description',g.description),
-             ('github_user',g.github_user),
-             ('github_repo',g.github_repo),
-             ('platforms', [p.name for p in g.platforms.all()]),
-             #('dependencies',g.dependencies.all()),
-             ('versions', [version.name for version in g.versions.all()]),
-             ('min_ansible_version',g.min_ansible_version),
-             ('license',g.license),
-             ('company',g.company),
-             ('average_score',"%0.1f" % round(g.average_score,1)),
-             ('import',g.get_last_import()),
-            ]) for g in obj.roles.filter().order_by('pk')
-        ]
         return d
 
-class UserRoleContributorsSerializer(BaseSerializer):
-    avatar_url     = serializers.SerializerMethodField()
-    avg_role_score = serializers.SerializerMethodField()
-    email          = serializers.SerializerMethodField()
-    num_roles      = serializers.SerializerMethodField()
-    staff          = serializers.ReadOnlyField(source='is_staff')
-
-    class Meta:
-        model = User
-        fields = ('id','username','email','staff',
-                 'full_name','date_joined','avatar_url','avg_role_score',
-                 'num_roles')
-
-    def get_related(self, obj):
-        if obj is None or isinstance(obj, AnonymousUser):
-            return {}
-        res = super(UserRoleContributorsSerializer, self).get_related(obj)
-        res.update(dict(
-            roles   = reverse('api:user_roles_list', args=(obj.pk,)),
-            ratings = reverse('api:user_ratings_list', args=(obj.pk,)),
-        ))
-        return res
-
-    def get_avatar_url(self, obj):
-        return get_user_avatar_url(obj)
-
-    def get_email(self, obj):
-        if self.context['request'].user.is_staff:
-            return obj.email
-        else:
-            return ''
-
-    def get_num_roles(self, obj):
-        return obj.num_roles
-    
-    def get_avg_role_score(self, obj):
-        cnt = 0
-        total = 0
-        for role in obj.scored_roles:
-            if role.average_score > 0:
-                cnt += 1
-                total += role.average_score
-        return round(total / cnt,1) if cnt > 0 else 0
-
-class UserRatingContributorsSerializer(BaseSerializer):
-    avatar_url     = serializers.SerializerMethodField()
-    avg_rating     = serializers.SerializerMethodField()
-    num_ratings    = serializers.SerializerMethodField()
-    email          = serializers.SerializerMethodField()
-    staff          = serializers.ReadOnlyField(source='is_staff')
-
-    class Meta:
-        model = User
-        fields = ('id','url','username','email','staff',
-                 'full_name','date_joined','avatar_url','avg_rating',
-                 'num_ratings')
-
-    def get_related(self, obj):
-        if obj is None or isinstance(obj, AnonymousUser):
-            return {}
-        res = super(UserRatingContributorsSerializer, self).get_related(obj)
-        res.update(dict(
-            roles   = reverse('api:user_roles_list', args=(obj.pk,)),
-            ratings = reverse('api:user_ratings_list', args=(obj.pk,)),
-        ))
-        return res
-
-    def get_avatar_url(self, obj):
-        return get_user_avatar_url(obj)
-
-    def get_email(self, obj):
-        if self.context['request'].user.is_staff:
-            return obj.email
-        else:
-            return ''
-
-    def get_num_ratings(self, obj):
-        return obj.num_ratings
-    
-    def get_avg_rating(self, obj):
-        return round(obj.avg_rating,1)
-    
 class UserListSerializer(BaseSerializer):
-    avatar_url     = serializers.SerializerMethodField()
-    avg_rating     = serializers.SerializerMethodField()
-    avg_role_score = serializers.SerializerMethodField()
-    num_ratings    = serializers.SerializerMethodField()
-    num_roles      = serializers.SerializerMethodField()
     staff          = serializers.ReadOnlyField(source='is_staff')
     email          = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id','username','email','karma','staff',
-                 'full_name','date_joined','avatar_url','avg_rating','avg_role_score',
-                 'num_ratings','num_roles')
+        fields = (
+            'id',
+            'username',
+            'email',
+            'staff',
+            'full_name',
+            'date_joined',
+            'github_avatar',
+            'github_user',
+            'cache_refreshed'
+        )
 
     def get_related(self, obj):
         if obj is None or isinstance(obj, AnonymousUser):
             return {}
         res = super(UserListSerializer, self).get_related(obj)
         res.update(dict(
-            roles   = reverse('api:user_roles_list', args=(obj.pk,)),
-            ratings = reverse('api:user_ratings_list', args=(obj.pk,)),
+            subscriptions = reverse('api:user_subscription_list', args=(obj.pk,)),
+            starred = reverse('api:user_starred_list', args=(obj.pk,)),
+            repositories = reverse('api:user_repositories_list', args=(obj.pk,)),
+            secrets = reverse('api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
@@ -333,49 +224,19 @@ class UserListSerializer(BaseSerializer):
         if obj is None or isinstance(obj, AnonymousUser):
             return {}
         d = super(UserListSerializer, self).get_summary_fields(obj)
-        d['roles'] = [
-              OrderedDict([
-                  ('id', g.id),
-                  ('name', g.name),
-                  ('num_ratings', g.num_ratings),
-                  ('average_score', g.average_score),
-              ]) for g in obj.user_roles
-        ]
-        d['ratings'] = [
+        d['subscriptions'] = [
             OrderedDict([
                 ('id', g.id),
-                ('score', round(g.score,1)),
-                ('comment', g.comment),
-                ('created', g.created),
-                ('modified', g.modified),
-                ('role_id', g.role.id),
-                ('role_name', g.role.name),
-                ('role_owner_id', g.role.owner.id),
-                ('role_owner_username', g.role.owner.username),
-            ]) for g in obj.user_ratings
-        ]
+                ('github_user', g.github_user),
+                ('github_repo', g.github_repo)
+            ]) for g in obj.subscriptions.all()]
+        d['starred'] = [
+            OrderedDict([
+                ('id', g.id),
+                ('github_user', g.github_user),
+                ('github_repo', g.github_repo)
+            ]) for g in obj.starred.all()]
         return d
-
-    def get_avatar_url(self, obj):
-        return get_user_avatar_url(obj)
-
-    def get_num_ratings(self, obj):
-        return len(obj.user_ratings)
-
-    def get_avg_rating(self, obj):
-        return round(sum([rating.score for rating in obj.user_ratings]) / len(obj.user_ratings), 1) if len(obj.user_ratings) > 0 else 0
-    
-    def get_num_roles(self, obj):
-        return len(obj.user_roles)
-
-    def get_avg_role_score(self, obj):
-        cnt = 0
-        total_score = 0
-        for role in obj.user_roles:
-            if role.average_score > 0:
-                cnt += 1
-                total_score += role.average_score
-        return round(total_score / cnt,1) if cnt > 0 else 0
 
     def get_email(self, obj):
         if self.context['request'].user.is_staff:
@@ -390,18 +251,23 @@ class UserDetailSerializer(BaseSerializer):
         default='',
         help_text='Write-only field used to change the password.'
     )
-    avatar_url     = serializers.SerializerMethodField()
-    avg_rating     = serializers.SerializerMethodField()
-    avg_role_score = serializers.SerializerMethodField()
-    num_ratings    = serializers.SerializerMethodField()
-    num_roles      = serializers.SerializerMethodField()
     staff          = serializers.ReadOnlyField(source='is_staff')
     email          = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id','username','password','email','karma','staff',
-                 'full_name','date_joined','avatar_url','avg_rating','avg_role_score','num_ratings','num_roles')
+        fields = (
+            'id',
+            'username',
+            'password',
+            'email','karma',
+            'staff',
+            'full_name',
+            'date_joined',
+            'github_avatar',
+            'github_user',
+            'cache_refreshed'
+        )
 
     def to_native(self, obj):
         ret = super(UserDetailSerializer, self).to_native(obj)
@@ -433,8 +299,10 @@ class UserDetailSerializer(BaseSerializer):
             return {}
         res = super(UserDetailSerializer, self).get_related(obj)
         res.update(dict(
-            roles   = reverse('api:user_roles_list', args=(obj.pk,)),
-            ratings = reverse('api:user_ratings_list', args=(obj.pk,)),
+            repositories = reverse('api:user_repositories_list', args=(obj.pk,)),
+            subscriptions = reverse('api:user_subscription_list', args=(obj.pk,)),
+            starred = reverse('api:user_starred_list', args=(obj.pk,)),
+            secrets = reverse('api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
@@ -442,48 +310,55 @@ class UserDetailSerializer(BaseSerializer):
         if obj is None or isinstance(obj, AnonymousUser):
             return {}
         d = super(UserDetailSerializer, self).get_summary_fields(obj)
-        d['roles'] = [
+        d['subscriptions'] = [
             OrderedDict([
                 ('id', g.id),
-                ('name', g.name),
-                ('average_score', round(g.average_score, 1)),
-            ]) for g in obj.roles.filter(active=True, is_valid=True).order_by('pk')
-        ]
-        d['ratings'] = [
+                ('github_user', g.github_user),
+                ('github_repo', g.github_repo)
+            ]) for g in obj.subscriptions.all()]
+        d['starred'] = [
             OrderedDict([
                 ('id', g.id),
-                ('score', "%0.1f" % g.score),
-                ('comment', g.comment),
-                ('created', g.created),
-                ('modified', g.modified),
-                ('role_id', g.role.id),
-                ('role_name', g.role.name),
-                ('role_owner_id', g.role.owner.id),
-                ('role_owner_username', g.role.owner.username),
-            ]) for g in obj.ratings.filter(active=True, role__active=True, role__is_valid=True).order_by('-created')
-        ]
+                ('github_user', g.github_user),
+                ('github_repo', g.github_repo)
+            ]) for g in obj.starred.all()]
         return d
-
-    def get_avatar_url(self, obj):
-        return get_user_avatar_url(obj)
-
-    def get_num_ratings(self, obj):
-        return round(obj.get_num_ratings(),1)
-
-    def get_avg_rating(self, obj):
-        return round(obj.get_rating_average(),1)
-
-    def get_num_roles(self, obj):
-        return obj.get_num_roles()
-
-    def get_avg_role_score(self, obj):
-        return round(obj.get_role_average(),1)
 
     def get_email(self, obj):
         if self.context['request'].user.is_staff:
             return obj.email
         else:
             return ''
+
+class SubscriptionSerializer(BaseSerializer):
+    owner = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Subscription
+        fields = ('owner', 'github_user', 'github_repo')
+
+    def get_url(self, obj):
+        if obj is None:
+            return ''
+        elif isinstance(obj, Subscription):
+            return reverse('api:subscription_detail', args=(obj.pk,))
+        else:
+            return obj.get_absolute_url()
+
+class StargazerSerializer(BaseSerializer):
+    owner = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Stargazer
+        fields = ('owner', 'github_user', 'github_repo')
+
+    def get_url(self, obj):
+        if obj is None:
+            return ''
+        elif isinstance(obj, Stargazer):
+            return reverse('api:stargazer_detail', args=(obj.pk,))
+        else:
+            return obj.get_absolute_url()
 
 class CategorySerializer(BaseSerializer):
     class Meta:
@@ -505,62 +380,298 @@ class RoleVersionSerializer(BaseSerializer):
         model = RoleVersion
         fields = ('id','name','release_date',)
 
-class RoleImportSerializer(BaseSerializer):
-    class Meta:
-        model = RoleImport
-        fields = ('celery_task_id','released',)
 
-class RoleRatingSerializer(BaseSerializer):
-    
+class RepositorySerializer(BaseSerializer):
     class Meta:
-        model = RoleRating
-        fields = (
-            'id','url','role','comment','created','modified','score'
-        )
+        model = Repository
+        fields = ('id', 'owner', 'github_user', 'github_repo', 'is_enabled')
 
-    # 'staff_rating'
     def get_url(self, obj):
         if obj is None:
             return ''
-        elif isinstance(obj, Role):
-            return reverse('api:role_detail', args=(obj.pk,))
+        elif isinstance(obj, Repository):
+            return reverse('api:repository_detail', args=(obj.pk,))
         else:
             return obj.get_absolute_url()
 
     def get_related(self, obj):
         if obj is None:
             return {}
-        res = super(RoleRatingSerializer, self).get_related(obj)
+        res = super(RepositorySerializer, self).get_related(obj)
+        res.update(dict(
+            owner = reverse('api:user_detail', args=(obj.owner.id,)),
+        ))
         return res
 
     def get_summary_fields(self, obj):
         if obj is None:
             return {}
-        d = super(RoleRatingSerializer, self).get_summary_fields(obj)
-        d['role'] = {
-            'id': obj.role.id,
-            'name': obj.role.name,
-            'owner_id': obj.role.owner.id,
-            'owner_username': obj.role.owner.username
-        }
-        d['owner'] = {
-            'id': obj.owner.id,
-            'username': obj.owner.username,
-            'full_name': obj.owner.full_name,
-            'avatar_url': get_user_avatar_url(obj.owner),
-        }
-
+        d = super(RepositorySerializer, self).get_summary_fields(obj)
+        d['notification_secrets'] = [
+            OrderedDict([
+                ('id',s.id),
+                ('github_user',s.github_user),
+                ('github_repo',s.github_repo),
+                ('source',s.source),
+                ('secret','******' + s.secret[-4:]),
+            ]) for s in NotificationSecret.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo)
+        ]
+        d['roles'] = [
+            OrderedDict([
+                ('id', r.id),
+                ('namespace', r.namespace),
+                ('name', r.name)
+            ]) for r in Role.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo)
+        ]
         return d
 
+class TopContributorsSerializer(serializers.BaseSerializer):
+    
+    def to_representation(self, obj):
+        return {
+            'namespace': obj['namespace'],
+            'role_count': obj['count']
+        }
+
+class NotificationSecretSerializer(BaseSerializer):
+    secret = serializers.SerializerMethodField()
+
+    class Meta:
+        model = NotificationSecret
+        fields = (
+            'id',
+            'owner',
+            'github_user',
+            'github_repo',
+            'source',
+            'secret',
+            'created',
+            'modified',
+            'active'
+        )
+
+    def get_url(self, obj):
+        if obj is None:
+            return ''
+        elif isinstance(obj, NotificationSecret):
+            return reverse('api:notification_secret_detail', args=(obj.pk,))
+        else:
+            return obj.get_absolute_url()
+
+    def get_secret(self, obj):
+        # show only last 4 digits of secret
+        last = ''
+        try: 
+            last = obj.secret[-4:]
+        except:
+            pass
+        return '******' + last
+
+
+class NotificationSerializer(BaseSerializer):
+    class Meta:
+        model = Notification
+        fields = (
+            'id',
+            'owner',
+            'source',
+            'github_branch',
+            'travis_build_url',
+            'travis_status',
+            'commit_message',
+            'committed_at',
+            'commit',
+            'messages',
+            'created',
+            'modified'
+        )
+
+    def get_url(self, obj):
+        if obj is None:
+            return ''
+        elif isinstance(obj, Notification):
+            return reverse('api:notification_detail', args=(obj.pk,))
+        else:
+            return obj.get_absolute_url()
+
+    def get_summary_fields(self, obj):
+        if obj is None:
+            return {}
+        d = super(NotificationSerializer, self).get_summary_fields(obj)
+        d['owner'] = OrderedDict([
+            ('id', obj.owner.id),
+            ('username', obj.owner.username)
+        ])
+        d['roles'] = [OrderedDict([
+            ('id', r.id),
+            ('namespace', r.namespace),
+            ('name', r.name)
+        ]) for r in obj.roles.all() ]
+        d['imports'] = [OrderedDict([
+            ('id', t.id) 
+        ]) for t in obj.imports.all() ]
+        return d
+
+    def get_related(self, obj):
+        if obj is None:
+            return {}
+        res = super(NotificationSerializer, self).get_related(obj)
+        res.update(dict(
+            roles = reverse('api:notification_roles_list', args=(obj.pk,)),
+            imports = reverse('api:notification_imports_list', args=(obj.pk,)),
+            owner = reverse('api:user_detail', args=(obj.owner.id,)),
+        ))
+        return res
+
+class ImportTaskSerializer(BaseSerializer):
+    class Meta:
+        model = ImportTask
+        fields = (
+            'id',
+            'github_user',
+            'github_repo',
+            'github_reference',
+            'github_branch',
+            'role',
+            'owner',
+            'alternate_role_name',
+            'celery_task_id',
+            'state',
+            'started',
+            'finished',
+            'modified',
+            'created',
+            'active',
+            'stargazers_count', 
+            'watchers_count',
+            'forks_count',
+            'open_issues_count',
+            'commit',
+            'commit_message',
+            'commit_url',
+            'travis_status_url',
+            'travis_build_url'
+        )
+
+    def to_native(self, obj):
+        ret = super(ImportTaskSerializer, self).to_native(obj)
+        return ret
+
+    def get_url(self, obj):
+        if obj is None:
+            return ''
+        elif isinstance(obj, ImportTask):
+            return reverse('api:import_task_detail', args=(obj.pk,))
+        else:
+            return obj.get_absolute_url()
+
+    def get_related(self, obj):
+        if obj is None:
+            return {}
+        res = super(ImportTaskSerializer, self).get_related(obj)
+        res.update(dict(
+            role = reverse('api:role_detail', args=(obj.role_id,))
+        ))
+        if obj.notifications.count() > 0:
+            key = obj.notifications.all()[0].id
+            res.update(dict(
+                owner = reverse('api:user_detail', args=(obj.owner.id,)),
+                role = reverse('api:role_detail', args=(obj.role.id,)),
+           ))
+        return res 
+
+    def get_summary_fields(self, obj):
+        if obj is None:
+            return {}
+        d = super(ImportTaskSerializer, self).get_summary_fields(obj)
+        d['role'] = OrderedDict([
+            ('id',obj.role.id),
+            ('namespace',obj.role.namespace),
+            ('name',obj.role.name),
+            ('is_valid', obj.role.is_valid),
+            ('active', obj.role.active),
+        ])
+        
+        d['notifications'] = [OrderedDict([
+            ('id', n.id),
+            ('travis_build_url', n.travis_build_url),
+            ('commit_message', n.commit_message),
+            ('committed_at', n.committed_at),
+            ('commit', n.commit)
+        ]) for n in obj.notifications.all().order_by('id')]
+
+        d['task_messages'] = [OrderedDict([
+            ('id',g.id),
+            ('message_type',g.message_type),
+            ('message_text',g.message_text)
+        ]) for g in obj.messages.all().order_by('id')]
+        return d
+
+class ImportTaskLatestSerializer(BaseSerializer):
+    id = serializers.SerializerMethodField()
+    owner_id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ImportTask
+        fields = (
+            'id',
+            'owner_id',
+            'github_user',
+            'github_repo',
+        )
+
+    def get_summary_fields(self, obj):
+        if obj is None:
+            return {}
+        d = super(ImportTaskLatestSerializer, self).get_summary_fields(obj)
+        g = ImportTask.objects.get(id=obj['last_id'])
+        r = Role.objects.get(id=g.role.id)
+        d['details'] = OrderedDict([
+            ('id', g.id),
+            ('state', g.state),
+            ('github_user', g.github_user),
+            ('github_repo', g.github_repo),
+            ('github_reference', g.github_reference),
+            ('github_branch', g.github_branch),
+            ('role', g.role.id),
+            ('modified', g.modified),
+            ('created', g.created),
+            ('stargazers_count', g.stargazers_count),
+            ('watchers_count', g.watchers_count),
+            ('forks_count', g.forks_count),
+            ('open_issues_count', g.open_issues_count),
+            ('commit', g.commit),
+            ('commit_message', g.commit_message),
+            ('commit_url', g.commit_url)
+        ])
+        d['role'] = OrderedDict([
+            ('id',r.id),
+            ('is_valid', r.is_valid),
+        ])
+        return d
+        
+    def get_url(self, obj):
+        if obj is None:
+            return ''
+        else:
+            return reverse('api:import_task_detail', args=(obj['last_id'],))
+
+    def get_id(self, obj):
+        return obj['last_id']
+
+    def get_owner_id(self, obj):
+        return obj['owner_id']
+
+
 class RoleListSerializer(BaseSerializer):
-    average_score        = serializers.SerializerMethodField()
     readme_html          = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings',
-                                'github_user','github_repo','min_ansible_version','issue_tracker_url',
-                                'license','company','description', 'readme_html')
+        fields = BASE_FIELDS + ('namespace','is_valid','github_user','github_repo','github_branch','min_ansible_version',
+                                'issue_tracker_url','license','company','description', 'readme_html','travis_status_url',
+                                'stargazers_count', 'watchers_count', 'forks_count', 'open_issues_count',
+                                'commit', 'commit_message','commit_url','download_count')
 
     def to_native(self, obj):
         ret = super(RoleListSerializer, self).to_native(obj)
@@ -571,11 +682,8 @@ class RoleListSerializer(BaseSerializer):
             return {}
         res = super(RoleListSerializer, self).get_related(obj)
         res.update(dict(
-            owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        authors  = reverse('api:role_authors_list', args=(obj.pk,)),
             dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_imports_list', args=(obj.pk,)),
-            ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
+            imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
             versions = reverse('api:role_versions_list', args=(obj.pk,)),
         ))
         return res
@@ -592,23 +700,11 @@ class RoleListSerializer(BaseSerializer):
         if obj is None:
             return {}
         d = super(RoleListSerializer, self).get_summary_fields(obj)
-
         d['dependencies'] = [str(g) for g in obj.dependencies.all()]
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
         d['tags'] = [{'name':g.name} for g in obj.tags.all()]
-        d['versions'] = [{'name':g.name,'release_date':g.release_date} for g in obj.versions.all()]
-        d['owner'] = {
-            'id': obj.owner.id,
-            'username': obj.owner.username,
-            'full_name': obj.owner.full_name,
-            'staff': obj.owner.is_staff,
-            'avatar_url': get_user_avatar_url(obj.owner),
-        }
-
+        d['versions'] = [{ 'id': g.id, 'name':g.name, 'release_date': g.release_date } for g in obj.versions.all()]
         return d
-
-    def get_average_score(self, obj):
-        return round(obj.average_score, 1)
 
     def get_readme_html(self, obj):
         if obj is None:
@@ -616,26 +712,20 @@ class RoleListSerializer(BaseSerializer):
         return markdown.markdown(html_decode(obj.readme), extensions=['extra'])
 
 class RoleTopSerializer(BaseSerializer):
-    # num_ratings = serializers.Field(source='num_ratings')
-    average_score = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings',
+        fields = BASE_FIELDS + (
                                 'github_user','github_repo','min_ansible_version','issue_tracker_url',
                                 'license','company','description')
 
-    # 'num_aw_ratings','average_aw_score'
     def get_related(self, obj):
         if obj is None:
             return {}
         res = super(RoleTopSerializer, self).get_related(obj)
         res.update(dict(
-            owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        authors  = reverse('api:role_authors_list', args=(obj.pk,)),
             dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_imports_list', args=(obj.pk,)),
-            ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
+            imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
             versions = reverse('api:role_versions_list', args=(obj.pk,)),
         ))
         return res
@@ -648,19 +738,18 @@ class RoleTopSerializer(BaseSerializer):
         else:
             return obj.get_absolute_url()
 
-    def get_average_score(self, obj):
-        return round(obj.average_score, 1)
 
 class RoleDetailSerializer(BaseSerializer):
-    average_score        = serializers.SerializerMethodField()
     readme_html          = serializers.SerializerMethodField()
     tags                 = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('average_score','bayesian_score','num_ratings',
-                                'github_user','github_repo','min_ansible_version','issue_tracker_url',
-                                'license','company','description','readme_html', 'tags')
+        fields = BASE_FIELDS + ('namespace','is_valid','github_user','github_repo','github_branch','min_ansible_version',
+                                'issue_tracker_url', 'license','company','description','readme_html', 'tags',
+                                'travis_status_url', 'stargazers_count', 'watchers_count', 'forks_count',
+                                'open_issues_count', 'commit', 'commit_message','commit_url', 'created', 'modified',
+                                'download_count','imported')
 
     def to_native(self, obj):
         ret = super(RoleDetailSerializer, self).to_native(obj)
@@ -671,11 +760,8 @@ class RoleDetailSerializer(BaseSerializer):
             return {}
         res = super(RoleDetailSerializer, self).get_related(obj)
         res.update(dict(
-            owner    = reverse('api:user_detail', args=(obj.owner.pk,)),
-	        authors  = reverse('api:role_authors_list', args=(obj.pk,)),
             dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_imports_list', args=(obj.pk,)),
-            ratings  = reverse('api:role_ratings_list', args=(obj.pk,)),
+            imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
             versions = reverse('api:role_versions_list', args=(obj.pk,)),
         ))
         return res
@@ -695,60 +781,117 @@ class RoleDetailSerializer(BaseSerializer):
         if obj is None:
             return {}
         d = super(RoleDetailSerializer, self).get_summary_fields(obj)
-
         d['dependencies'] = [{ 'id': g.id, 'name': str(g) } for g in obj.dependencies.all()]
-        d['ratings'] = [{'id':g.id, 'score':g.score} for g in obj.ratings.filter(owner__is_active=True)]
+        # d['ratings'] = [{'id':g.id, 'score':g.score} for g in obj.ratings.filter(owner__is_active=True)]
         d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
         d['tags'] = [{'name':g.name} for g in obj.tags.all()]
-        d['versions'] = [{'name':g.name,'release_date':g.release_date} for g in obj.versions.all()]
-        d['owner'] = {
-            'id': obj.owner.id,
-            'username': obj.owner.username,
-            'full_name': obj.owner.full_name,
-            'staff': obj.owner.is_staff,
-            'avatar_url': get_user_avatar_url(obj.owner),
-        }
-
+        d['versions'] = [{ 'id': g.id, 'name':g.name, 'release_date': g.release_date } for g in obj.versions.all()]
         return d
     
-    def get_average_score(self, obj):
-        return "%0.1f" % obj.average_score
-
     def get_readme_html(self, obj):
         if obj is None:
             return ''
         return markdown.markdown(html_decode(obj.readme), extensions=['extra'])
 
 class RoleSearchSerializer(HaystackSerializer):
-    id = serializers.SerializerMethodField()
     platforms = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
-
+    versions = serializers.SerializerMethodField()
+    dependencies = serializers.SerializerMethodField()
+    platform_details = serializers.SerializerMethodField()
+    user_is_subscriber = serializers.SerializerMethodField()
+    user_is_stargazer = serializers.SerializerMethodField()
+    
     class Meta:
-        # The `index_classes` attribute is a list of which search indexes
-        # we want to include in the search.
         index_classes = [RoleIndex]
+        fields = (
+            "role_id",
+            "username",
+            "name", 
+            "description", 
+            "github_user",
+            "github_repo",
+            "github_branch",
+            "tags",
+            "platforms",
+            "platform_details", 
+            "versions",
+            "dependencies",
+            "created", 
+            "modified",
+            "imported",
+            "text",
+            "autocomplete",
+            "platforms_autocomplete",
+            "tags_autocomplete",
+            "username_autocomplete",
+            "travis_status_url",
+            "travis_build_url",
+            "issue_tracker_url",
+            "stargazers_count",
+            "watchers_count",
+            "forks_count",
+            "open_issues_count",
+            "min_ansible_version",
+            "user_is_stargazer",
+            "user_is_subscriber",
+            "download_count",
+        )
 
-        # The `fields` contains all the fields we want to include.
-        # NOTE: Make sure you don't confuse these with model attributes. These
-        # fields belong to the search index!
-        fields = [
-            "name", "description", "tags", "platforms", "username", "average_score", "num_ratings",
-            "created", "modified", "text", "autocomplete", "owner_id", "sort_name", "platforms_autocomplete",
-            "tags_autocomplete", "username_autocomplete"
-        ]
-
-    def get_average_score(self, instance):
-        return round(instance.average_score,1)
-
-    def get_id(self, instance):
-        return int(instance.pk)
+    def to_representation(self, instance):
+        ''' Show field in the order listed above. '''
+        rep = super(RoleSearchSerializer, self).to_representation(instance)
+        result = OrderedDict()
+        for fld in self.Meta.fields:
+            result[fld] = rep[fld]
+        return result
 
     def get_platforms(self, instance):
+        if instance is None:
+            return []
         return [p for p in instance.platforms]
 
     def get_tags(self, instance):
+        if instance is None:
+            return []
         return [t for t in instance.tags]
+
+    def get_versions(self, instance):
+        if instance is None:
+            return []
+        return json.loads(instance.versions)
+
+    def get_dependencies(self, instance):
+        if instance is None:
+            return []
+        return json.loads(instance.dependencies)
+
+    def get_platform_details(self, instance):
+        if instance is None:
+            return []
+        return json.loads(instance.platform_details)
+        
+    def get_user_is_subscriber(self, instance):
+        # override user_is_subscriber found in ES
+        request = self.context.get('request', None)
+        if request is not None and request.user.is_authenticated():
+            try:
+                Subscription.objects.get(owner=request.user,github_user=instance.github_user, github_repo=instance.github_repo)
+                return True
+            except:
+                pass
+        return False
+
+    def get_user_is_stargazer(self, instance):
+        # override user_is_stargazer found in ES
+        request = self.context.get('request', None)
+        if request is not None:
+            try:
+                Stargazer.objects.get(owner=request.user,github_user=instance.github_user, github_repo=instance.github_repo)
+                return True
+            except:
+                pass
+        return False
 
 class ElasticSearchDSLSerializer(serializers.BaseSerializer):
     def to_representation(self, obj):

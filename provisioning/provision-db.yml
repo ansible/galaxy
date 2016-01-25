@@ -4,7 +4,7 @@
   sudo: yes
   vars:
       galaxy_install_dev_tools: False
-      galaxy_install_selinux: False
+      galaxy_install_selinux: True
       galaxy_env: PROD
       galaxy_log_dir: '/var/log/galaxy'
   roles:
@@ -15,7 +15,6 @@
       - { role: ntp }
       - { role: supervisorctl, sup_init_name: "supervisord", sup_conf_location: "/etc/supervisord.conf" }
       - { role: iptables_config, galaxy_host_type: 'db' }
-      - { role: fail2ban }
       - { role: postgresql }
       - { role: memcached }
       - { role: rabbitmq }

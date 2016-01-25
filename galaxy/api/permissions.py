@@ -67,7 +67,9 @@ class ModelAccessPermission(permissions.BasePermission):
         else:
             if obj:
                 return True
-            return check_user_access(request.user, view.model, 'add', request.DATA)
+            if hasattr(view,'model'):
+                return check_user_access(request.user, view.model, 'add', request.DATA)
+            return True
 
     def check_put_permissions(self, request, view, obj=None):
         if not obj:
@@ -118,7 +120,7 @@ class ModelAccessPermission(permissions.BasePermission):
                                request.method.lower(), None)
         result = check_method and check_method(request, view, obj)
         if not result:
-            raise PermissionDenied("")
+            raise PermissionDenied("You do not have permission to perform this action.")
         return result
 
     def has_permission(self, request, view, obj=None):

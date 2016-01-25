@@ -13,232 +13,91 @@
     var mod = angular.module('roleDetailController', ['headerService']); 
 
     mod.controller('RoleDetailCtrl', [
-        '$q',
         '$scope',
         '$routeParams',
         '$location',
-        '$modal',
-        '$compile',
-        'roleFactory',
-        'userFactory',
-        'ratingFactory',
-        'meFactory',
-        'relatedFactory',
-        'my_info',
-        'Stars',
-        'PaginateInit',
-        'queryParams',
-        'fromQueryParams',
+        '$window',
+        'roleService',
+        'currentUserService',
         'role',
         'headerService',
+        'githubRepoService',
+        'userService',
+        'githubClickService',
         _roleDetailCtrl
     ]);
 
-    mod.controller('RoleRatingCtrl', [
-        '$scope',
-        '$modalInstance',
-        'role',
-        'ratingFactory',
-        'rating',
-        _roleRatingController
-    ]);
-
     function _roleDetailCtrl(
-        $q,
         $scope,
         $routeParams,
         $location,
-        $modal,
-        $compile,
-        roleFactory,
-        userFactory,
-        ratingFactory,
-        meFactory,
-        relatedFactory,
-        my_info,
-        Stars,
-        PaginateInit,
-        queryParams,
-        fromQueryParams,
+        $window,
+        roleService,
+        currentUserService,
         role,
-        headerService) {
+        headerService,
+        githubRepoService,
+        userService,
+        githubClickService) {
 
         $scope.page_title = 'Role Detail';
         $scope.showRoleName = false;
-        $scope.my_info = my_info;
+        $scope.my_info = currentUserService;
+        $scope.loadReadMe = _loadReadMe;
+        $scope.readMe = '';
+        $scope.is_authenticated = currentUserService.authenticated && currentUserService.connected_to_github;
 
-        $scope.list_data = {
-            'ratings' : {
-                'list_filter'        : '',
-                'num_pages'          : 1,
-                'page'               : 1,
-                'page_size'          : 10,
-                'reverse'            : false,
-                'selected_categories': [],
-                'sort_order'         : '-created',
-                'refresh'            : _refreshRatings
-            }
-        };
-
-        headerService.setTitle('Galaxy - ' + role.summary_fields.owner.username + '.' + role.name);  // update the page title element
-
+        headerService.setTitle('Galaxy - ' + role.username + '.' + role.name);  // update the page title element
         $scope.role = role;
-        $scope.ratings = [];
         $scope.display_user_info = 1;
-        $scope.getRole = _getRole;
-        $scope.showRatingDialog = _showRatingDialog;
-        $scope.staffDeleteRating = _deleteRating;
         $scope.staffDeleteRole = _deleteRole;
-        _refreshRatings();
-        PaginateInit({'scope': $scope});
+
+        $scope.subscribe = githubClickService.subscribe;
+        $scope.unsubscribe = githubClickService.unsubscribe;
+        $scope.star = githubClickService.star;
+        $scope.unstar = githubClickService.unstar;
+        
+        _getUserAvatar();
 
         return; 
 
-        function _refreshRatings() {
-            _getRelated('ratings', $scope.role.related.ratings);
-        }
-        
-        function _deleteRating(id) {
-            ratingFactory.deleteRating(id)
-                .success(function (data) {
-                    $scope.getRole();
-                })
-                .error(function (error) {
-                    alert("Failed to remove rating "+id+", reason: "+error);
-                });
-        }
 
-        function _deleteRole(id) {
-            roleFactory.deleteRole(id)
-                .success(function (data) {
-                    $location.path('/roles');
-                })
-                .error(function (error) {
-                    alert("Failed to remove role "+id+", reason: "+error);
-                });
-        }
+        function _getUserAvatar() {
+            userService.get({ "github_user": role.github_user },
+                _success, _error);
 
-        function _showRatingDialog() {
-            if (!my_info.authenticated) 
-                return;
-
-            var modalInstance = $modal.open ({
-                templateUrl: "/static/partials/add-rating.html",
-                controller: 'RoleRatingCtrl',
-                resolve: {
-                    role: function() { return $scope.role; },
-                    ratingFactory: function() { return ratingFactory; },
-                    rating: function() {
-                        var d = $q.defer();
-                        ratingFactory.getMyRatingForRole(my_info.id, $scope.role.id)
-                            .success(function (data) {
-                                if (data.count > 0) {
-                                    var res = data.results[0];
-                                    var rating = {
-                                        'id': res.id,
-                                        'score': res.score,
-                                        'comment': res.comment
-                                    };
-                                    d.resolve(rating);
-                                } else {
-                                    d.resolve(null);
-                                }
-                            })
-                            .error(function (error) {
-                                d.reject(error);
-                            });
-                        return d.promise;
-                        }
-                    }
-                });
-
-            modalInstance.result.then(function (result) {
-                if (result) {
-                    $scope.getRole();
-                    }
-                });
-        }
-
-        function _getRole() {
-            $scope.loading = 1;
-            roleFactory.getRole($routeParams.role_id)
-                .success( function(data) {
-                    $scope.role = data;
-                    $scope.loading = 0;
-                    _refreshRatings();
-                })
-                .error( function(error) {
-                    $scope.status = 'Unable to load role: ' + error.message;
-                });
-        }
-
-        function _getRelated(target, url) {
-            $scope.list_data[target].url = url;
-            $scope.loading = 1;
-            relatedFactory.getRelated($scope.list_data[target])
-                .success( function(data) {
-                    $scope.list_data[target].page = parseInt(data['cur_page']);
-                    $scope.list_data[target].num_pages = parseInt(data['num_pages']);
-                    $scope.list_data[target].count = parseInt(data['count']);
-                    $scope.list_data[target].page_range = [];
-                    $scope.setPageRange(target);
-                    $scope[target] = data['results'];
-                    $scope.loading = 0;
-                })
-                .error(function (error) {
-                    $scope.status = 'Unable to load related '+target+': ' + error.message;
-                });
-        }
-
-    }
-
-    function _roleRatingController ($scope, $modalInstance, role, ratingFactory, rating) {
-        $scope.alerts = [];
-        $scope.role = role;
-
-        if (rating) {
-            $scope.rating = rating;
-        } else {
-            $scope.rating = {
-                comment: null,
-                score: ''
-            };
-        }
-
-        $scope.closeAlert = function(index) {
-            $scope.alerts.splice(index, 1);
-        };
-
-        $scope.ok = function () {
-            var post_data = {
-                'pk': $scope.role.id,
+            function _success(response) {
+                if (response.results.length && response.results[0].github_avatar) {
+                    $scope.avatar = response.results[0].github_avatar;
+                } else {
+                    $scope.avatar = "/static/img/avatar.png";
+                }
             }
-            angular.extend(post_data, $scope.rating);
-            post_data.score = parseInt(post_data.score);
-            post_data.comment = (post_data.comment) ? post_data.comment : "";
-            ratingFactory.addRating(
-                role.related.ratings,
-                post_data)
-                .success(function(data) {
-                    $modalInstance.close(true);
-                })
-                .error(function(data, status) {
-                    var msg = '';
-                    console.error(status);
-                    if (status == 403) {
-                        msg = 'You do not have permission to add a rating to this role.';
-                    } else if(status == 409) {
-                        msg = 'You appear to have already rated this role. If your rating is not visible, it may mean that an administrator has removed it for violating our terms of service. If you believe this was done in error, please contact us.';
-                    } else {
-                        msg = 'An unknown error occurred while trying to add your rating. Please wait a while and try again.';
-                    }
-                    $scope.alerts = [{type: 'danger','msg':msg}]
-                });
-        };
 
-        $scope.cancel = function () {
-            $modalInstance.dismiss('cancel');
-        };
+            function _error(response) {
+                $scope.avatar = "/static/img/avatar.png";
+            }
+        }
+
+        function _deleteRole(_role) {
+            roleService.delete({ 
+                "github_user": _role.github_user,
+                "github_repo": _role.github_repo
+            }).$promise.then(function(response) {
+                $window.location = '/list#/roles';
+            });
+        }
+
+        function _loadReadMe() {
+            if (!$scope.readMe) {
+                $scope.loading = true;
+                roleService.getReadMe($scope.role.role_id).then(function(readme) {
+                    $scope.readMe = readme;
+                    $scope.loading = false;
+                });
+            }
+        }
+
     }
 
 })(angular);

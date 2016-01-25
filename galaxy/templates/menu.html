@@ -3,12 +3,12 @@
     <li {% if url_items.1.0 == 'intro' %} class="active" {% endif %}><a href="/intro">About</a></li>
     <li {% if url_items.1.0 == 'explore' %} class="active" {% endif %}><a href="{% url 'main:explore' %}#/">Explore</a></li>
     <li id="nav-menu-browse-roles"><a href="{% url 'main:list-category' %}#/roles">Browse Roles</a></li>
-    <li id="nav-menu-browse-users"><a href="{% url 'main:list-category' %}#/users">Browse Users</a></li>
+    <li id="nav-menu-browse-authors"><a href="/authors/">Browse Authors</a></li>
     {% if not user.is_authenticated %}
-        <li><a {% if not use_menu_controller %} href="/accounts/login?next={{ request.path }}" {% endif %}
+        <li><a {% if not use_menu_controller %} href="/accounts/login/" {% endif %}
             {% if use_menu_controller %} href="" ng-click="redirectToSignin()" {% endif %}>Sign In</a></li>
     {% else %}
-        <li {% if url_items.1.0 == 'accounts' and url_items.2.0 == 'role' and url_items.3.0 == 'add' %} class="active" {% endif %}><a type="button" href="{% url 'main:accounts-role-add' %}">Add a Role</a></li>
+        <li {% if url_items.1.0 == 'roleadd' %} class="active" {% endif %}><a type="button" href="/roleadd#/">My Roles</a></li>
         {% if url_items.1.0 == 'accounts' and url_items.2.0 == 'profile' or url_items.2.0 == 'email' %}
             <li class="dropdown active">
         {% else %}
@@ -17,8 +17,7 @@
             <a href class="dropdown-toggle" data-toggle="dropdown" >
                 <i class="fa fa-user"></i> <span class="username">{{ user.username }}</span> <span class="caret"></span></a>
             <ul class="dropdown-menu dropdown-menu-right user-menu">
-                <li><a href="{% url 'main:accounts-profile' %}">My Roles</a></li>
-                <li><a href="/detail#/user/{{ user.id }}">My User Page</a></li>
+                <li><a href="/imports#/">My Imports</a></li>
                 <li><a href="{% url 'account_email' %}">Manage E-mail</a></li>
                 {% url 'socialaccount_connections' as connections_url %}
                 {% if connections_url %}

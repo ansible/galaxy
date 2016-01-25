@@ -15,50 +15,85 @@
                             search-type-options="searchTypeOptions" 
                             search-suggestions="searchSuggestions"></autocomplete>
                     </div>
+                    <div id="results-outer-container">
                     <div id="results-container">
                         <div class="result" ng-repeat="role in roles">
+                            <a ng-href="/{{ role.username }}/{{ role.name }}/">
                             <div class="header">
-                                <a ng-href="/detail#/role/{{ role.id }}/" class="title">{{ role.name }}</a>
-                                <div class="score-container">
-                                    <label>Score</label>
-                                    <span class="badge" ng-if="role.average_score > 0">{{ role.average_score | number:1 }}</span>
-                                    <span class="badge" ng-if="role.average_score === 0">NA</span>
-                                </div>
-                                <hr />
+                                <div class="title">{{ role.name }}</div>
+                                <div class="badge" tooltip-placement="top" uib-tooltip="Galaxy Download Count">{{ role.download_count }}</div>
                             </div>   
+                            <hr />
                             <div class="body">
-                                <div class="description" dot-dot-dot>{{ role.description }}</div>
-                                <div class="result-group authors" dot-dot-dot>
-                                    <span class="result-label">Author</span>
-                                    <span class="value"><a href="/detail#/user/{{ role.owner_id }}">{{ role.username }}</a></span>
+                                <div class="description" dot-dot-dot ng-if="role.description">{{ role.description }}</div>
+                                <div class="description na" dot-dot-dot ng-if="!role.description">NA</div>
+                                <table class="stats-table">
+                                    <tr class="stat-row">
+                                        <td class="key">Author</td>
+                                        <td class="value"><a ng-href="/{{ role.username }}/">{{ role.username }}</a></td>
+                                    </tr>
+                                    <tr class="stat-row">
+                                        <td class="key">Platforms</td>
+                                        <td class="value" ng-if="role.platforms.length" ng-bind="role.platforms.join(', ')"></td>
+                                        <td class="value na" ng-if="!role.platforms.length">NA</td>
+                                    </tr>
+                                    <tr class="stat-row">
+                                        <td class="key">Tags</td>
+                                        <td class="value" ng-if="role.tags.length" ng-bind="role.tags.join(', ') + ' '"></td>
+                                        <td class="value na" ng-if="!role.tags.length">NA</td>
+                                    </tr>
+                                    <tr class="stat-row">
+                                        <td class="key">Created</td>
+                                        <td class="value" ng-if="role.created">{{ role.created | date:"short" }}</td>
+                                        <td class="value na" ng-if="!role.created">NA</td>
+                                    </tr>
+                                    <tr class="stat-row">
+                                        <td class="key">Last Imported</td>
+                                        <td class="value" ng-if="role.imported">{{ role.imported | date:"short" || "NA"}}</td>
+                                        <td class="value na" ng-if="!role.imported">NA</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="row footer">
+                                <div class="img-container" ng-if="role.travis_status_url">
+                                    <a ng-href="{{ role.travis_build_url }}" target="_blank">
+                                    <img ng-src="{{ role.travis_status_url }}" tooltip-placement="top" uib-tooltip="Travis Build Status" class="travis-status-img" />
+                                    </a>
                                 </div>
-                                <div class="result-group" dot-dot-dot>
-                                    <span class="result-label">Platforms</span>
-                                    <span class="platforms" ng-bind="role.platforms.join(', ')"></span>
-                                </div>
-                                <div class="result-group" dot-dot-dot>
-                                    <span class="result-label">Tags</span>
-                                    <span class="tags" ng-bind="role.tags.join(', ')"></span>
-                                </div>
-                                <div class="result-group">
-                                    <span class="result-label">Created</span>
-                                    <span class="tags">{{ role.created | date:"short" }}</span>
-                                </div>
-                                <div class="result-group">
-                                    <span class="result-label">Modified</span>
-                                    <span class="tags">{{ role.modified | date:"short" }}</span>
+                                <div class="counts">
+                                    <div class="subscribe">
+                                        <a href="" ng-if="!role.user_is_subscriber" ng-click="subscribe(role)"
+                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
+                                            <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Watch &nbsp;{{ role.watchers_count }}
+                                        </a>
+                                        <a href="" ng-if="role.user_is_subscriber" ng-click="unsubscribe(role)"
+                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
+                                            <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Unwatch &nbsp;{{ role.watchers_count }}
+                                        </a>
+                                    </div>
+                                    <div class="stargaze">
+                                        <a href="" ng-if="!role.user_is_stargazer" ng-click="star(role)"
+                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
+                                            <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Star {{ role.stargazers_count }}
+                                        </a>
+                                        <a href="" ng-if="role.user_is_stargazer" ng-click="unstar(role)"
+                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
+                                            <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Unstar {{ role.stargazers_count }}
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
+                            </a>
                         </div><!-- result -->
-                        <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
-                        
-                        <div id="galaxy-copyright-role-list" ng-show="!loading">
-                            <div class="copyright-txt">
-                                Copyright &copy; 2015 Ansible, Inc. | <a href="http://www.ansible.com/security" target="_blank">Security Disclosures</a> | <a href="http://www.ansible.com/privacy-policy" target="_blank">Privacy Policy</a>
-                            </div>
-                        </div>
-
                     </div><!-- results -->
+                    <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
+                    <div id="galaxy-copyright-role-list" ng-show="!loading">
+                        <div class="copyright-txt">
+                            Copyright &copy; 2015 Ansible, Inc. | <a href="http://www.ansible.com/security" target="_blank">Security Disclosures</a> | <a href="http://www.ansible.com/privacy-policy" target="_blank">Privacy Policy</a>
+                            <div class="version">GALAXY {{ version }} BETA</div>
+                        </div>
+                    </div>
+                    </div><!-- results outer container -->
                 </div><!-- search-controls-container -->
             </div>
             <div class="col-lg-2 col-md-3 col-sm-3">

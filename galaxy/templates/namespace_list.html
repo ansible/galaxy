@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% load galaxyhelpers %}
+
+{% block general_content %}
+
+<div id="galaxy-page-title">
+    <div class="container">
+        <div class="page-title">Browse Authors</div>
+    </div>
+</div>
+
+
+<div class="container" id="galaxy-namespace-page">
+    <h2>Galaxy Contributors</h2>     
+    <div class="row">
+        <div class="col-sm-offset-6 col-sm-6">
+            <form method="GET" id="search-form" action="/authors/">
+                <div class="form-group search-group">
+                    <input type="text" class="form-control" name="author" value="{{ search_value }}" id="author-field" placeholder="Search authors">
+                    <a href="" id="search-link"><i class="fa fa-search"></i></a>
+                    <a href="" id="search-clear-link"><i class="fa fa-times"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <table class="table">
+        <tbody>
+        {% for item in object_list %}
+        <tr>
+            <td><a href="/{{ item.namespace }}" class="namespace">{{ item.namespace }}</a></td>
+            <td class="text-right"><a href="https://github.com/{{ item.github_user }}" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-github"></i> View on GitHub</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="row page-row" id="galaxy-page-row" ng-show="!loading">
+        <div class="col-md-6" id="page-number-container">
+            {% if paginator.num_pages > 1 %}
+            <ul class="pagination">
+                {% if page_obj.number > 1 %}
+                <li >
+                    <a href="?author={{ search_value }}&page=1"><i class="fa fa-angle-double-left"></i></a>
+                </li>
+                {% endif %}
+                {% if page_obj.number > 1 %}
+                <li>
+                    <a href="?author={{ search_value }}&page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-left"></i></a>
+                </li>
+                {% endif %}
+                {% for page in page_range %}
+                <li {% if page_obj.number == page %}class="active"{% endif %}>
+                    <a href="?author={{ search_value }}&page={{ page }}">{{ page }}</a>
+                </li>
+                {% endfor %}
+                {% if page_obj.has_next %}
+                <li>
+                    <a href="?author={{ search_value }}&page={{ page_obj.next_page_number }}"><i class="fa fa-angle-right"></i></a>
+                </li>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <li>
+                    <a href="?author={{ search_value }}&page={{ paginator.num_pages }}"><i class="fa fa-angle-double-right"></i></a>
+                </li>
+                {% endif %}
+            </ul>
+            {% endif %}
+            <div id="page-number-label">PAGE {{ page_obj.number }} OF {{ paginator.num_pages }}</div>
+        </div>
+        <div class="col-md-6">
+            <div id="page-size-select">
+                <label >ITEMS {{ page_obj.start_index }} - {{ page_obj.end_index }} OF {{ count }}</label>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function() {
+        
+        $('#galaxy-nav-items li').each(function() {
+            t = $(this).find('a').text();
+            if (t === 'Browse Authors') {
+                $(this).addClass('active');
+            } else {
+                $(this).removeClass('active');
+            }
+        });
+
+        $('#search-clear-link').click(function(e) {
+            e.preventDefault();
+            window.location='/authors/'
+        });
+
+        $('#search-link').click(function(e) {
+            e.preventDefault();
+            $('#search-form').submit();
+        });
+
+        $('#author-field').change(function() {
+            _checkVal();
+        });
+
+        _checkVal();
+
+        function _checkVal() {
+            val = $('#author-field').val();
+            if (val) {
+                $('#search-clear-link').show();
+                $('#search-link').hide();
+            } else {
+                $('#search-clear-link').hide();
+                $('#search-link').show();
+            }
+        }
+    });
+</script>
+
+{% endblock %}

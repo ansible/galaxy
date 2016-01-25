@@ -24,7 +24,7 @@
                 $(element).dotdotdot({
                     ellipsis: '...',
                     wrap: 'word',
-                    watch: false,
+                    watch: true,
                     fallbackToLetter: true
                 });
             }, 500);

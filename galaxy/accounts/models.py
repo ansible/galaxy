@@ -43,19 +43,20 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
         validators=[
             validators.RegexValidator(re.compile('^[\w.@+-]+$'), _('Enter a valid username.'), 'invalid')
         ])
-    full_name = models.CharField(_('full name'), max_length=254, blank=True)
-    short_name = models.CharField(_('short name'), max_length=30, blank=True)
-    email = models.EmailField(_('email address'), max_length=254, unique=True)
-    is_staff = models.BooleanField(_('staff status'), default=False,
-        help_text=_('Designates whether the user can log into this admin '
-                    'site.'))
-    is_active = models.BooleanField(_('active'), default=True, db_index=True,
-        help_text=_('Designates whether this user should be treated as '
-                    'active. Unselect this instead of deleting accounts.'))
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    full_name       = models.CharField(_('full name'), max_length=254, blank=True)
+    short_name      = models.CharField(_('short name'), max_length=30, blank=True)
+    email           = models.EmailField(_('email address'), max_length=254, unique=True)
+    is_staff        = models.BooleanField(_('staff status'), default=False,
+                        help_text=_('Designates whether the user can log into this admin site.'))
+    is_active       = models.BooleanField(_('active'), default=True, db_index=True,
+                        help_text=_('Designates whether this user should be treated as '
+                            'active. Unselect this instead of deleting accounts.'))
+    date_joined     = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    # custom fields
-    karma = models.IntegerField(default = 0, db_index = True)
+    karma           = models.IntegerField(default = 0, db_index = True)
+    github_avatar   = models.CharField(_('github avatar'), max_length=254, blank=True)
+    github_user     = models.CharField(_('github user'), max_length=254, blank=True)
+    cache_refreshed = models.BooleanField(_('cache refreshed'), default=False)
 
     objects = UserManager()
 
@@ -93,21 +94,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
         "Returns the short name for the user."
         return self.short_name.strip()
 
-    def get_num_ratings(self):
-        return self.ratings.filter(active=True, role__active=True, role__is_valid=True).count()
-
-    def get_rating_average(self):
-        return self.ratings.filter(active=True, role__active=True, role__is_valid=True).aggregate(
-                   avg_rating = AvgWithZeroForNull('score'),
-               )['avg_rating'] or 0
-
     def get_num_roles(self):
         return self.roles.filter(active=True, is_valid=True).count()
-
-    def get_role_average(self):
-        return self.roles.filter(active=True, is_valid=True, average_score__gt=0).aggregate(
-                   avg = AvgWithZeroForNull('average_score'),
-               )['avg'] or 0
 
     def email_user(self, subject, message, from_email=None):
         """
@@ -117,3 +105,40 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
 
     def hasattr(self, attr):
         return hasattr(self, attr)
+
+    def get_subscriptions(self):
+        return [{
+            'id': g.id,
+            'github_user': g.github_user,
+            'github_repo': g.github_repo,
+        } for g in self.subscriptions.all()]
+
+    def get_starred(self):
+        return [{
+            'id': g.id,
+            'github_user': g.github_user,
+            'github_repo': g.github_repo,
+        } for g in self.starred.all()]
+
+    def get_subscriber(self, github_user, github_repo):
+        try:
+            sub = self.subscriptions.get(github_user=github_user, github_repo=github_repo)
+            return sub
+        except:
+            return None
+
+    def get_stargazer(self, github_user, github_repo):
+        try:
+            star = self.starred.get(github_user=github_user, github_repo=github_repo)
+            return star
+        except:
+            return None
+
+    def is_connected_to_github(self):
+        connected = False
+        for account in self.socialaccount_set.all():
+            if account.provider == 'github':
+                connected = True
+        return connected
+
+

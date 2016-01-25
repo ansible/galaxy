@@ -9,7 +9,5 @@
       - { role: elasticsearch_config }
       - { role: ntp }
       - { role: iptables }
-      - { role: fail2ban }
       - { role: auth_users }
       - { role: auth_keys }
-      - { role: machine_init }

@@ -20,15 +20,17 @@
         '$resource',
         '$window',
         '$log',
-        'roleFactory',
+        '$analytics',
         'roleSearchService',
         'queryStorageFactory',
-        'my_info',
         'Empty',
         'SearchInit',
         'PaginateInit',
         'platformService',
         'autocompleteService',
+        'githubRepoService',
+        'currentUserService',
+        'githubClickService',
         _RoleListCtrl
     ]);
 
@@ -40,31 +42,32 @@
         $resource,
         $window,
         $log,
-        roleFactory,
+        $analytics,
         roleSearchService,
         queryStorageFactory,
-        my_info,
         Empty,
         SearchInit,
         PaginateInit,
         platformService,
-        autocompleteService) {
+        autocompleteService,
+        githubRepoService,
+        currentUserService,
+        githubClickService) {
 
         $('#bs-example-navbar-collapse-1').removeClass('in');  //force collapse of mobile navbar
         $('#galaxy-navbar-container, #galaxy-page-title-container').removeClass('container').addClass('container-fluid');
         $('#galaxy-copyright').hide();
         $('#galaxy-footer-blue-line').hide();
         $('body').css({ 'overflow-y': 'hidden', 'height': 'auto' });
-
         
         $scope.galaxy_page_title_fluid = true;
         $scope.page_title = 'Browse Roles';
-        $scope.my_info = my_info;
-
+        $scope.version = GLOBAL_VERSION;
+        
         $scope.list_data = {
             'num_pages'          : 1,
             'page'               : 1,
-            'page_size'          : 10,
+            'page_size'          : '10',
             'page_range'         : [],
             'tags'               : '',
             'platforms'          : '',
@@ -75,10 +78,12 @@
         };
 
         $scope.orderOptions = [
-            { value:"-created", title: "Created" },
             { value:"name,username", title:"Name" },
             { value:"username,name", title:"Author" },
-            { value:"-average_score,sort_name,username", title:"Score" }
+            { value:"-created,name", title:"Created" },
+            { value:"-stargazers_count,name", title: "Stargazers" },
+            { value:"-watchers_count,name", title: "Watchers"},
+            { value:"-download_count,name", title: "Downloads"}
         ];
 
         $scope.searchTypeOptions = [
@@ -110,9 +115,15 @@
         
         $scope.$on('endlessScroll:next', _loadNextPage);
 
+        $scope.subscribe = githubClickService.subscribe;
+        $scope.unsubscribe = githubClickService.unsubscribe;
+        $scope.star = githubClickService.star;
+        $scope.unstar = githubClickService.unstar;
+        $scope.is_authenticated = currentUserService.authenticated && currentUserService.connected_to_github;
+
         PaginateInit({ scope: $scope });
 
-        var suggestions = $resource('/api/v1/search/:object/', { 'object': '@object', 'pagge': 1, 'page_size': 10 }, {
+        var suggestions = $resource('/api/v1/search/:object/', { 'object': '@object', 'page': 1, 'page_size': 10 }, {
             'tags': { method: 'GET', params:{ object: 'tags' }, isArray: false },
             'platforms': { method: 'GET', params:{ object: 'platforms' }, isArray: false },
             'users': { method: 'GET', params:{ object: 'users' }, isArray: false }
@@ -162,32 +173,50 @@
         function _refresh() {
             $scope.loading = 1;
             $scope.roles = [];
-            
+
             var params = {
                 page: $scope.list_data.page,
-                page_size: $scope.list_data.page_size,
+                page_size: $scope.list_data.page_size
             };
-            
-            if ($scope.list_data.order) {
-                params.order = $scope.list_data.order;
+
+            var event_track = {
+                category: ''
+            };
+
+            if ($scope.list_data.autocomplete) {
+                params.autocomplete = $scope.list_data.autocomplete;
+                event_track.category += '/Keywords:' + params.autocomplete; 
             }
 
             if ($scope.list_data.tags) {
                 params.tags_autocomplete = $scope.list_data.tags;
+                event_track.category += '/Tags:' + params.tags_autocomplete;
             }
 
             if ($scope.list_data.platforms) {
                 params.platforms_autocomplete = $scope.list_data.platforms;
+                event_track.category += '/Platforms:' + params.platforms_autocomplete;
             }
 
             if ($scope.list_data.users) {
                 params.username_autocomplete = $scope.list_data.users;
+                event_track.category += '/Authors:' + params.username_autocomplete;
             }
 
-            if ($scope.list_data.autocomplete) {
-                params.autocomplete = $scope.list_data.autocomplete;
+            if ($scope.list_data.order) {
+                params.order = $scope.list_data.order;
+                event_track.category += '/Order:' + params.order;
+            }
+            
+            if (Object.keys(params).length == 2) {
+                // no parameters
+                params.order = 'role_id';
+                event_track.category += '/Order: role_id'
             }
 
+            event_track.category = event_track.category.replace(/^\//,'');
+            $analytics.eventTrack('search', event_track);
+                
             // Update the query string
             queryStorageFactory.save_state(_queryParams($scope.list_data));
 
@@ -397,19 +426,7 @@
             var footerHeight = 40;
             var newHeight = windowHeight - 140 - searchHeight - footerHeight;
             $log.debug('searchHeight: ' + searchHeight + ' footerHeight: ' + footerHeight);
-            $('#results-container').height(newHeight);
-
-            var containerWidth = $('#results-column').width();
-            var resultWidth = $('#results-container .result').eq(0).outerWidth() + 10;
-            var cnt = Math.floor(containerWidth / resultWidth);
-            var newWidth = cnt * resultWidth;
-            var padding = Math.floor((containerWidth - newWidth) / 2)
-            $log.debug('containerWidth: ' + containerWidth + ' resultWidth: ' + resultWidth + ' cnt: ' + cnt + ' newWidth: ' + newWidth);
-            if (cnt && newWidth < containerWidth) {
-                $('#results-container').css({ 'padding-left': padding, 'padding-right': padding });
-            } else {
-                $('#results-container').css({ 'padding-left': 0, 'padding-right': 0 });
-            }
+            $('#results-outer-container').height(newHeight);
         }
 
         function _resizeSearchControls() {

@@ -17,7 +17,6 @@
     }
     .button-row {
         margin-bottom: 30px;
-    //    margin-right: 20px;
     }
     .load-container {
         position: relative;
@@ -35,5 +34,34 @@
     }
     .load-container {
         min-height: 500px;
+    }
+    .clip {
+        max-width: 270px;
+        max-height: 37px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    @media(max-width: 1199px) {
+        .clip {
+            max-width: 220px;
+        }
+    }
+    @media(max-width:991px) {
+        .clip {
+            max-width: 165px;
+        }
+    }
+    @media(max-width: 768px) {
+        .clip {
+            max-width: 440px;
+        }
+    }
+
+    @media(max-width: 585px) {
+        .clip {
+            max-width: 314px;
+        }
     }
 }

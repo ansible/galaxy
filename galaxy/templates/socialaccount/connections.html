@@ -8,17 +8,19 @@
 {% block account_content %}
 
 <div id="galaxy-github-connection">
-    <h2>Starting January 1, 2016 Galaxy will only support Github authentication.</h2>
-    <p >If you created a Galaxy account in the past but never associated it with your Github account, now is your chance. After January 1 you may not be able to access your account.</p>
+    <h2>GitHub and Galaxy - Better Together</h2>
+    <div class="message-text">
+        <p>Associate your GitHub account with Galaxy and take full advantage of our integration with GitHub's API. You'll be able to import role repos with a single mouse click, automate role imports from Travis CI notifications, and star and watch roles without leaving Galaxy. Just click the GitHub logo to make the association and enjoy the goodness.</p>
+    </div>
 
     {% if connected_to_github %}
         <div class="result success">
-            <h3>Good News!</h3>
-            <p>Your account is connected to Github. Next time you log into Galaxy just click the Github logo. <i class="fa fa-github-square fa-2x"></i><p>
+            <h2>Good News!</h2>
+            <p>Your account is connected to Github. Next time you log into Galaxy just click the GitHub logo. <i class="fa fa-github-square fa-2x"></i><p>
         </div>
     {% else %}
         <div class="result text-center">
-            <h3>Connect to Github</h3>
+            <h2>Connect to Github</h2>
             <div class="github-logo">
                 {% include "socialaccount/snippets/provider_list.html" with process="connect" %}
             </div>

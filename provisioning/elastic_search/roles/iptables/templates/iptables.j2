@@ -6,7 +6,7 @@
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 -A INPUT -p tcp --dport {{ es_http_port }} -s {% for source in es_request_sources  %}{{ source}}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
--A INPUT -p tcp --dport {{ es_transport_port }} -s {% for host in groups['all'] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
+-A INPUT -p tcp --dport {{ es_transport_port }} -s {% for host in groups['es'] %}{{ hostvars[host]['private_ip'] }}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
 -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -p icmp -j ACCEPT
 -A INPUT -i lo -j ACCEPT

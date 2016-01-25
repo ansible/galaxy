@@ -13,9 +13,9 @@
 
     mod.service('autocompleteService', [_service]);
 
-    mod.directive('autocomplete',['$resource', '$timeout', 'autocompleteService', _directive]);
+    mod.directive('autocomplete',['$resource', '$timeout', '$analytics', 'autocompleteService', _directive]);
 
-    function _directive($resource, $timeout, autocompleteService) {
+    function _directive($resource, $timeout, $analytics, autocompleteService) {
         return {
             restrict: 'E',
             templateUrl: '/static/partials/autocomplete.html',
@@ -187,6 +187,10 @@
                     }
                 });
                 if (!found) {
+                    var event_track = {
+                        category: _key.type + ': ' + _key.value
+                    };
+                    $analytics.eventTrack('search_key', event_track);
                     scope.searchKeys.push(_key);
                     scope.searchFunction(scope.searchKeys, scope.searchOrder);
                 }

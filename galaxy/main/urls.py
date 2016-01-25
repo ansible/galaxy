@@ -17,6 +17,7 @@
 
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
+from galaxy.main.views import RoleListView, RoleDetailView, NamespaceListView
 
 
 urlpatterns = patterns('galaxy.main.views',
@@ -27,18 +28,23 @@ urlpatterns = patterns('galaxy.main.views',
     url(r'^accounts/landing[/]?$', 'accounts_landing', name='accounts-landing'),
     url(r'^list$', 'list_category', name='list-category'),
     url(r'^detail$', 'detail_category', name='detail-category'),
+    url(r'^roleadd$', 'role_add_view', name='role-add-category'),
+    url(r'^imports$', 'import_status_view', name='import-status'),
     
     # Logged in/secured URLs
     url(r'^accounts/connect/$', 'accounts_connect'),
-    url(r'^accounts/connect/success/$', 'accounts_connect'),
-    #url(r'^accounts/social/connections/$', TemplateView.as_view(template_name="custom404.html", content_type='text/html')),
+    url(r'^accounts/connect/success/$', 'accounts_connect_success', name='accounts-connect-success'),
     url(r'^accounts/profile/$', 'accounts_profile', name='accounts-profile'),
-    url(r'^accounts/role/add$', 'accounts_role_add', name='accounts-role-add'),
     url(r'^accounts/role/view/(?P<role>[\w\-\._:]+)$', 'accounts_role_view', name='accounts-role-view'),
     url(r'^accounts/role/refresh/(?P<id>[\w\-\._:]+)$', 'accounts_role_refresh', name='accounts-role-refresh'),
+    
     # Secure Action URLs
     #url(r'^accounts/role/save$', 'accounts_role_save', name='accounts-role-save'),
     url(r'^accounts/role/delete/(?P<id>[0-9]+)$', 'accounts_role_delete', name='accounts-role-delete'),
     url(r'^accounts/role/deactivate/(?P<id>[0-9]+)$', 'accounts_role_deactivate', name='accounts-role-deactivate'),
     url(r'^accounts/role/reactivate/(?P<id>[0-9]+)$', 'accounts_role_reactivate', name='accounts-role-reactivate'),
+
+    url(r'^authors/$', NamespaceListView.as_view(), name='namespace-list'),
+    url(r'^([\w\-._+]+)/$', RoleListView.as_view(), name='role-list'),
+    url(r'^([\w\-._+]+)/([\w\-._+]+)/$', RoleDetailView.as_view(), name='role-detail'),
 )

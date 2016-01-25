@@ -37,7 +37,7 @@ cluster.name: {{ es_cluster_name }}
 # Node names are generated dynamically on startup, so you're relieved
 # from configuring them manually. You can tie this node to a specific name:
 #
-node.name: {{ hostvars[inventory_hostname]['linode_hostname'] }} 
+node.name: {{ hostvars[inventory_hostname]['host_name'] }} 
 
 # Every node can be configured to allow or deny being eligible as the master,
 # and to allow or deny to store the data.
@@ -209,7 +209,7 @@ index.number_of_replicas: 2
 
 # Set both 'bind_host' and 'publish_host':
 #
-network.host: {{ inventory_hostname }} 
+network.host: {{ private_ip }} 
 
 
 # Set a custom port for the node to node communication (9300 by default):
@@ -324,7 +324,7 @@ discovery.zen.ping.multicast.enabled: false
 # 2. Configure an initial list of master nodes in the cluster
 #    to perform discovery when new nodes (master or data) are started:
 #
-discovery.zen.ping.unicast.hosts: [{% for host in groups['all'] %}"{{ host }}"{% if not loop.last %},{% endif %}{% endfor %}] 
+discovery.zen.ping.unicast.hosts: [{% for host in groups['es'] %}"{{ hostvars[host]['private_ip'] }}"{% if not loop.last %},{% endif %}{% endfor %}] 
 
 # EC2 discovery allows to use AWS EC2 API in order to perform discovery.
 #

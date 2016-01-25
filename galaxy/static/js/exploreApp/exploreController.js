@@ -14,163 +14,83 @@
     mod.controller('ExploreCtrl', [
         '$scope',
         '$timeout',
-        'roleFactory',
-        'userFactory',
-        'tagFactory',
+        '$resource',
+        'roleSearchService',
+        'tagService',
         _controller
     ]);
 
-    function _controller($scope, $timeout, roleFactory, userFactory, tagFactory) {
+    function _controller($scope, $timeout, $resource, roleSearchService, tagService) {
 
         $scope.page_title = 'Explore';
         $scope.results_per_page = 10;
 
         $scope.loading = {
-            tags: 1,
-            topRoles: 1,
-            newRoles: 1,
-            topUsers: 1,
-            topReviewers: 1,
-            newUsers: 1
+            tags: true,
+            mostStarred: true,
+            mostWatched: true,
+            mostDownloaded: true,
+            newRoles: true,
+            topContributors: true
         };
 
-        $scope.toggle_item = function (item, sort_col) {
-            if (item.sort_col != sort_col) {
-                item.sort_col = sort_col;
-                item.data_function();
-            }
-        };
-
-        $timeout(function() {
-            // give the partial templates a chance to load before we do this...
-            _restoreState()
-            _getTags();
-            _getTopRoles();
-            _getNewRoles();
-            _getTopContributors()
-            _getTopReviewers();
-            _getNewUsers();
-        }, 100);
-
+        _getTags();
+        _getMostStarredRoles();
+        _getMostWatchedRoles();
+        _getNewRoles();
+        _getMostDownloaded();
+        _getTopContributors();
+        
         return;
 
 
-        function _restoreState() {
-            var data_names = ["tags","top_roles","new_roles","top_users","top_reviewers","new_users"];
-            data_names.forEach(function (entry) {
-                var default_sort_col = '';
-                var more_link = '';
-                var data_function = null;
-                if (entry === 'tags') {
-                    default_sort_col = '-num_roles';
-                    more_link = '/list#/roles/';
-                    data_function = _getTags;
-                }
-                else if (entry === 'top_roles') {
-                    default_sort_col = '-average_score,-num_ratings';
-                    more_link = '/list#/roles?page=1&per_page=10&order=-average_score,name';
-                    //more_link = '/list#/roles/sort/sort-by-community-score';
-                    data_function = _getTopRoles;
-                }
-                else if (entry === 'new_roles') {
-                    default_sort_col = '-created,owner__username,name';
-                    more_link = '/list#/roles?page=1&per_page=10&order=-created';
-                    data_function = _getNewRoles;
-                }
-                else if (entry === 'top_users') {
-                    default_sort_col = '-num_roles,username';
-                    //more_link = '/list#/users/sort/sort-by-community-score';
-                    more_link = '/list#/users?page=1&per_page=10&sort_order=num_roles,username&reverse';
-                    data_function = _getTopContributors;
-                }
-                else if (entry === 'top_reviewers') {
-                    default_sort_col = '-num_ratings,username';
-                    //more_link = '/list#/users';
-                    more_link = '/list#/users?page=1&per_page=10&sort_order=num_ratings,username&reverse';
-                    data_function = _getTopReviewers;
-                }
-                else if (entry === 'new_users') {
-                    default_sort_col = '-date_joined,username';
-                    //more_link = '/list#/users/sort/sort-by-joined-on-date';
-                    more_link = '/list#/users?page=1&per_page=10&sort_order=date_joined,username&reverse';
-                    data_function = _getNewUsers;
-                }
-
-                $scope[entry] = {
-                    'page': 1,
-                    'data': [],
-                    'reverse': false,
-                    'sort_col': default_sort_col,
-                    'more_link' : more_link,
-                    'data_function': data_function
-                };
-            });
-        }
-
         function _getTags() {
-            return tagFactory.get({ order: '-roles' }).$promise.then(function(data) {
-                $scope.tags.data = data.results.slice(0, $scope.results_per_page);
-                $scope.loading.tags = 0;
+            tagService.get({ order: '-roles' }).$promise.then(function(response) {
+                $scope.tags = response.results;
+                $scope.loading.tags = false;
             });
         }
 
-        function _getTopRoles() {
-            return roleFactory.getRolesTop(
-                $scope.top_roles.page,
-                $scope.results_per_page,
-                $scope.top_roles.sort_col,
-                $scope.top_roles.reverse
-            ).then(function (data) {
-                $scope.top_roles.data = data.data['results'];
-                $scope.loading.topRoles = 0;
+        function _getMostStarredRoles() {
+            roleSearchService.get({
+                'order_by': '-stargazers_count'
+            }).$promise.then(function(response) {
+                $scope.mostStarred = response.results;
+                $scope.loading.mostStarred = false;
+            });
+        }
+
+        function _getMostWatchedRoles() {
+            roleSearchService.get({
+                'order_by': '-watchers_count'
+            }).$promise.then(function(response) {
+                $scope.mostWatched = response.results;
+                $scope.loading.mostWatched = false;
             });
         }
 
         function _getNewRoles() {
-            return roleFactory.getRolesTop(
-                $scope.new_roles.page,
-                $scope.results_per_page,
-                $scope.new_roles.sort_col,
-                $scope.new_roles.reverse
-            ).then(function (data) {
-                $scope.new_roles.data = data.data['results'];
-                $scope.loading.newRoles = 0;
+            roleSearchService.get({
+                'order_by': '-created'
+            }).$promise.then(function(response) {
+                $scope.new_roles = response.results;
+                $scope.loading.newRoles = false;
+            });
+        }
+
+        function _getMostDownloaded() {
+            roleSearchService.get({
+                'order_by': '-download_count'
+            }).$promise.then(function(response) {
+                $scope.mostDownloaded = response.results;
+                $scope.loading.mostDownloaded = false;
             });
         }
 
         function _getTopContributors() {
-            return userFactory.getRoleContributors(
-                $scope.top_users.page,
-                $scope.results_per_page,
-                $scope.top_users.sort_col,
-                $scope.top_users.reverse
-            ).then(function (data) {
-                $scope.top_users.data = data.data['results'];
-                $scope.loading.topUsers = 0;
-            });
-        }
-
-        function _getTopReviewers() {
-            return userFactory.getRatingContributors(
-                $scope.top_reviewers.page,
-                $scope.results_per_page,
-                $scope.top_reviewers.sort_col,
-                $scope.top_reviewers.reverse
-            ).then(function (data) {
-                $scope.top_reviewers.data = data.data['results'];
-                $scope.loading.topReviewers = 0;
-            });
-        }
-
-        function _getNewUsers() {
-            return userFactory.getUsers(
-                $scope.new_users.page,
-                $scope.results_per_page,
-                $scope.new_users.sort_col,
-                $scope.new_users.reverse
-            ).then(function (data) {
-                $scope.new_users.data = data.data['results'];
-                $scope.loading.newUsers = 0;
+            $resource('/api/v1/search/top_contributors/').get({ page: 1 }).$promise.then(function(response) {
+                $scope.topContributors = response.results;
+                $scope.loading.topContributors = false;
             });
         }
     }

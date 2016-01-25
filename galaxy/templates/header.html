@@ -4,14 +4,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us"{% if ng_app %} ng-app="{{ ng_app }}"{% endif %}{% if ng_controller %} ng-controller="{{ ng_controller }}"{% endif %}>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Ansible, Inc" />
+    <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}Jump-start your automation project with great content from the Ansible community. Galaxy provides pre-packaged units of work known to Ansible as roles.{% endif %}" />
     <link rel="shortcut icon" href="/static/img/favicon.ico" />
 
     {% if ng_controller %}
     <title ng-bind="getTitle()"></title>
     {% else %}
-    <title>Ansible Galaxy | Find, reuse, and share the best Ansible content</title>
+    <title>Ansible Galaxy | {% if page_title %}{{ page_title }}{% else %}Find, reuse, and share the best Ansible content{% endif %}</title>
     {% endif %}
     
     {% block extra_head %}{% endblock %}
@@ -20,13 +21,11 @@
     <link rel="stylesheet" type="text/css" href="/static/css/jquery-ui.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/fontawesome/css/font-awesome.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/select2.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/select2-bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/loaders.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/galaxy.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/angular-toggle-switch-bootstrap-3.css" />
 
-    {% for extra in extra_css %}<link href='{{extra}}' rel='stylesheet' type='text/css' />
-    {% endfor %}
+    {% for extra in extra_css %}<link href='{{extra}}' rel='stylesheet' type='text/css' />{% endfor %}   
 
     <!-- JS -->
     <script type="text/javascript" src="/static/vendorjs/jquery.min.js"></script>
@@ -37,27 +36,20 @@
     <script type="text/javascript" src="/static/vendorjs/angular-route.min.js"></script>
     <script type="text/javascript" src="/static/vendorjs/angular-sanitize.min.js"></script>
     <script type="text/javascript" src="/static/vendorjs/angular-cookies.min.js"></script>
-    <script type="text/javascript" src="/static/vendorjs/ui-bootstrap-tpls-0.12.0.js"></script>
-    <script type="text/javascript" src="/static/vendorjs/select2.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/angular-animate.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/ui-bootstrap-tpls.min.js"></script>
     <script type="text/javascript" src="/static/vendorjs/underscore-min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/angular-toggle-switch.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/angulartics.min.js"></script>
+    <script type="text/javascript" src="/static/vendorjs/angulartics-google-analytics.min.js"></script>
     
     <script>
         var GLOBAL_DEBUG = "{{ debug }}";
+        var GLOBAL_VERSION = "{{ version }}"
     </script>
 
     {% for extra in extra_js %}<script type="text/javascript" src="{{ extra }}"></script>
     {% endfor %}
 
-    <!-- Google Tag Manager Data Layer -->
-    <script>
-        dataLayer = [];
-    </script>
-    <!-- End Google Tag Manager Data Layer -->
-
 </head>
 <body>
-
-    <!-- Google Tag Manager -->
-    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-PSB293" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-PSB293');</script>
-    <!-- End Google Tag Manager -->

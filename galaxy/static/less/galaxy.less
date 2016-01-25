@@ -81,6 +81,10 @@
 @import "tags.less";
 @import "pagination.less";
 @import "role_add.less";
+@import "import_status.less";
+@import "tooltips.less";
+@import "author.less";
+@import "namespace.less";
 
 /* Helper Classes */
 .pad-right-sm { padding-right: 10px; }
@@ -157,14 +161,6 @@ pre {
     }
 }
 
-/* Generic messages. Media query below handles small viewport sizing */
-.galaxy-message {
-    width: 80%;
-    margin: 0 auto;
-    .message-text {
-        padding: 20px 0 20px 0;
-    }
-}
 .github-logo-signup {
     text-align: center;
     a {
@@ -181,23 +177,6 @@ pre {
 }
 .content {
     padding-bottom: 71px;
-
-}
-
-/* General form styling */
-
-.field-help {
-    font-size: 12px;
-    padding-left: 3px;
-}
-.form-actions {
-    margin-top: 30px;
-}
-.form-group {
-    margin-bottom: 20px;
-}
-.form-intro {
-    margin-bottom: 40px;
 }
 
 .staff-marker {
@@ -206,86 +185,8 @@ pre {
     color: @red;
 }
 
-.tag-cloud {
-    padding: 5px;
-    border: 2px #ccc solid;
-
-    .cloud {
-        margin-top: 5px;
-        padding-left: 5px;
-        padding-right: 5px;
-        a { color: @grey; }
-        a:hover { color: #ddd; }
-        a:link, a:visited, a:active { color: @grey; }
-    }
-}
-
-.page-title {
-    margin: 5px 0 25px 0;
-    .txt {
-        display: inline-block;
-        float: left;
-        z-index: 1;
-        background-color: @white;
-        padding-right: 5px;
-        font-size: 16px;
-        font-weight: bold;
-        color: @charcoal;
-    }
-    .rule {
-        padding-top: 12px;
-        border-bottom: 1px solid @grey;
-    }
-}
-
-
-/* Display dates on roles and ratings lists the same way */
-.dates {
-    font-size: 12px;
-    color: @charcoal;
-    margin-top: 20px;
-    .date {
-        display: inline-block;
-        vertical-align: top;
-        .fld-label, .value {
-            display: inline-block;
-        }
-        .fld-label {
-            width: 85px;
-        }
-    }
-}
-
-/* In star ratigs, make the half star feel like it's not squished */
-.fa-star-half { padding-right: 3px; }
-
-
-/* Misc classes for overriding things */
-
-.alert {
-    .close {
-        padding-left: 5px;
-    }
-}
-
 .nowrap {
     white-space: nowrap;
-}
-
-.clip {
-    max-width: 185px;
-    overflow-x: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    display: block;
-}
-
-/* Media Querries to handle small screen sizes */
-
-@media (max-width: 768px) {
-    .galaxy-message {
-        width: 100%;
-    }
 }
 
 @media (max-width: 612px) {

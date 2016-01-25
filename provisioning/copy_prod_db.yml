@@ -2,10 +2,5 @@
 - name: Install a copy of the production database
   hosts: all
   sudo: yes
-  vars:
-    aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY') }}"
-    aws_secret_key: "{{ lookup('env','AWS_SECRET_KEY') }}"
-    galaxy_encryption_password: "{{ lookup('env', 'GALAXY_ENCRYPTION_PASSWORD') }}"
-    galaxy_postgresql_password: "{{ lookup('env', 'GALAXY_POSTGRESQL_PASSWORD') | default('galaxy', True) }}"
   roles:
     - { role: copy_prod_db }

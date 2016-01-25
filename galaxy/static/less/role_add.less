@@ -4,10 +4,166 @@
 
  #galaxy-role-add {
 
-    margin-bottom: 30px;
+    input[type=checkbox] {
+        margin-left: 0;
+        padding: 20px;
+    }
 
-    .help-block {
-        font-size: 12px;
-        padding: 5px;
+    .instructions .text {
+        line-height: normal;
+        padding: 15px 0;
+        font-size: 16px;
+    }
+
+    .ats-switch .fa-times {
+        color: @ansible-dark-grey;
+    }
+
+    .btn-default[disabled="disabled"]:hover {
+        background-color: #f2f2f2;
+    }
+
+    .repository-list {
+        padding-bottom: 60px;
+        
+        .title-container {
+            margin-bottom: 20px;
+            .title {
+                font-size: 32px;
+                color: @ansible-dark-grey;
+            }
+            .refreshing-icon {
+                display: inline-block;
+                width: 20px;
+                text-align: center;
+            }
+            .search-roles {
+                position: relative;
+                input {
+                    padding-right: 15px;
+                }
+                .search-icon {
+                    display: inline-block;
+                    position: absolute;
+                    right: 6px;
+                    top: 5px;
+                    color: @ansible-dark-grey;
+                    .fa-times:hover {
+                        cursor: pointer;
+                    }
+                }
+            }
+            .tools {
+                padding-top: 10px;
+            }
+        }
+        
+        .repository {
+            .ats-switch,
+            .name,
+            .state,
+            .settings {
+                display: inline-block;
+                vertical-align: middle;
+                line-height: normal;
+            }
+            .settings {
+                margin-right: 10px;
+                .btn {
+                    color: @ansible-dark-grey;
+                }
+            }
+            .name {
+                color: @ansible-dark-grey;
+                width: 45%;
+                    a, a:active, a:visited {
+                    color: @blue;
+                }
+                a:hover {
+                    color: @ansible-color;
+                }
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .state {
+                width: 22px;
+                text-align: center;
+                color: @ansible-dark-grey;
+            }
+
+            hr {
+                padding: 0;
+                margin-top: 8px;
+                margin-bottom: 8px;
+            }
+
+            .integration-container {
+                width: 600px;
+                padding: 10px;
+                margin-left: 120px;
+                margin-top: 10px;
+                border-radius: 2px; 
+                border: 1px solid #ccc;
+                background-color: #e1e1e1;
+                color: @ansible-dark-grey;
+                h3 {
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                    font-size: 16px;
+                }
+                label {
+                    font-weight: normal;
+                }
+                .help-text {
+                    margin-top: 5px;
+                    margin-bottom: 10px;
+                    font-size: 11px;
+                    padding-left: 3px;
+                }
+                .input-container {
+                    position: relative;
+                    input {
+                        padding-right: 30px;
+                    }
+                }
+                .clear-link {
+                    position: absolute;
+                    top: 6px;
+                    right: 8px;
+                }
+                .clear-link:hover {
+                    color: @ansible-color;
+                }
+                .form-group:last-of-type {
+                    margin-bottom: 0;
+                    .btn {
+                        margin-left: 10px;
+                    }
+                }
+                @media (max-width: 925px) {
+                    width: 100%;
+                    margin-left: 0;
+                }
+            }
+
+            .tools {
+                display: inline-block;
+                .btn {
+                    color: @ansible-dark-grey;
+                }
+            }
+
+            @media (min-width: 1024px) {
+                .name { 
+                    width: 80%;
+                }
+            }
+        }
+        .repository.loading {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
     }
  }
