@@ -2,7 +2,7 @@
 :INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
--A INPUT -p tcp -d {{ private_ip }} --dport 8080 -j ACCEPT
+-A INPUT -p tcp -d {{ private_ip }} --dport 81 -j ACCEPT
 -A INPUT -p tcp -d {{ private_ip }} --dport 80 -j ACCEPT
 -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -p icmp -j ACCEPT

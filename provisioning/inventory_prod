@@ -4,6 +4,12 @@
 [node_balancer]
 172.26.3.12 public_ip=40.118.209.130
 
+[node_balancer:vars]
+nginx_server_name=galaxy.ansible.com
+nginx_ssl_certificate_path=/etc/nginx/ssl/galaxy/galaxy.ansible.com.crt
+nginx_trusted_certificate_path=/etc/nginx/ssl/galaxy/GandiStandardSSLCA.cer
+ssl_certificate_key=/etc/nginx/ssl/galaxy/server.key
+
 [web]
 40.112.141.159 private_ip=172.26.3.5 es_rebuild_host=True django_migrate=True host_name=galaxy-pr-web-01
 40.112.151.241 private_ip=172.26.3.6 es_rebuild_host=False django_migrate=False host_name=galaxy-pr-web-02

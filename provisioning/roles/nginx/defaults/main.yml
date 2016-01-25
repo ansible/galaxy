@@ -1,0 +1,6 @@
+---
+# defaults file for nginx
+nginx_server_name: galaxy.ansible.com
+nginx_ssl_certificate_path: /etc/nginx/ssl/galaxy/galaxy.ansible.com.crt 
+nginx_trusted_certificate_path: /etc/nginx/ssl/galaxy/GandiStandardSSLCA.cer
+nginx_ssl_certificate_key: /etc/nginx/ssl/galaxy/server.key

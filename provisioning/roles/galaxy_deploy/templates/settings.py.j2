@@ -207,7 +207,6 @@ ALLOWED_HOSTS.append("{{ private_ip }}")
 {% endif %}
 {% for host in groups['node_balancer'] %}
 ALLOWED_HOSTS.append("{{ host }}")
-ALLOWED_HOSTS.append("{{ hostvars[host]['public_ip'] }}")
 {% endfor %}
 
 # Local time zone for this installation. Choices can be found here:
