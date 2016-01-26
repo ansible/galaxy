@@ -321,7 +321,7 @@ $ git push
 
                 <h3 id="travis">Automated Testing</h3>
 
-                <p>Testing your roles is a great practice. Automating the testing is even better, and we've made it easy for you to add <a href="http://travis-ci.org" target="_blank">Travis CI</a> to your roles.</p>
+                <p>Testing your roles is a great practice. Automated testing is even better, and we've made it easy for you to add <a href="http://travis-ci.org" target="_blank">Travis CI</a> to your roles.</p>
 
                 <p>Add your <a href="https://blog.travis-ci.com/2013-01-28-token-token-token/" target="_blank">Travis token</a> to any role you want to integrate. Your token is not stored in Galaxy. It is used to calculate a hash as described in <a href="https://nimbus.everhelper.me/client/notes/share/348471/cV0BPMEabFS1tMQSVTk2wHuHDl0lAn6T/" target="_blank">the Travis documentation</a> and then discarded.</p>
 
@@ -347,7 +347,7 @@ notifications:
                     <p><strong>NOTE:</strong> For a full .travis.yml example run <code>ansible-galaxy init</code>. Starting in Ansible 2.0 the generated scaffolding includes a working .travis.yml file and related tests folder.</p>
                 </div>
 
-                <p>Push the changes to your GitHub repo, and see the Travis build icon appear on your role:</p>
+                <p>Push the changes to your GitHub repo. This will kick-off a Travis build. When the build completes, Travis will notify Galaxy, and your role will be automatically imported into Galaxy with a Travis badge:</p>
 
                 <div class="screen-shot">
                     <img src="/static/img/intro/travis-integrated.png">
