@@ -14,7 +14,7 @@ gulp.task('accountApp', function() {
     ])
     .pipe(concat('galaxy.accountApp.js'))
     .pipe(uglify({ 'mangle': true, 'compress': true }))
-    .pipe(rename({extname: ".min.js"})) 
+    .pipe(rename({extname: ".2-0-0.min.js"})) 
     .pipe(gulp.dest('./galaxy/static/dist'));
 });
 
@@ -26,7 +26,7 @@ gulp.task('detailApp', function() {
     ])
     .pipe(concat('galaxy.detailApp.js'))
     .pipe(uglify({ 'mangle': true, 'compress': true }))
-    .pipe(rename({extname: ".min.js"})) 
+    .pipe(rename({extname: ".2-0-0.min.js"})) 
     .pipe(gulp.dest('./galaxy/static/dist'));
 });
 
@@ -38,7 +38,7 @@ gulp.task('listApp', function() {
     ])
     .pipe(concat('galaxy.listApp.js'))
     .pipe(uglify({ 'mangle': true, 'compress': true }))
-    .pipe(rename({extname: ".min.js"})) 
+    .pipe(rename({extname: ".2-0-0.min.js"})) 
     .pipe(gulp.dest('./galaxy/static/dist'));
 });
 
@@ -50,7 +50,7 @@ gulp.task('exploreApp', function() {
     ])
     .pipe(concat('galaxy.exploreApp.js'))
     .pipe(uglify({ 'mangle': true, 'compress': true }))
-    .pipe(rename({extname: ".min.js"})) 
+    .pipe(rename({extname: ".2-0-0.min.js"})) 
     .pipe(gulp.dest('./galaxy/static/dist'));
 });
 
@@ -62,7 +62,7 @@ gulp.task('importStatusApp', function() {
     ])
     .pipe(concat('galaxy.importStatusApp.js'))
     .pipe(uglify({ 'mangle': true, 'compress': true }))
-    .pipe(rename({extname: ".min.js"})) 
+    .pipe(rename({extname: ".2-0-0.min.js"})) 
     .pipe(gulp.dest('./galaxy/static/dist'));
 });
 
@@ -74,7 +74,7 @@ gulp.task('roleAddApp', function() {
     ])
     .pipe(concat('galaxy.roleAddApp.js'))
     .pipe(uglify({ 'mangle': true, 'compress': true }))
-    .pipe(rename({extname: ".min.js"})) 
+    .pipe(rename({extname: ".2-0-0.min.js"})) 
     .pipe(gulp.dest('./galaxy/static/dist'));
 });
 
@@ -83,7 +83,7 @@ gulp.task('less', function() {
         .pipe(less({
             compress: true
         }))
-        .pipe(dest('galaxy/static/css', {ext: '.min.css'}))
+        .pipe(dest('galaxy/static/css', {ext: '.2-0-0.min.css'}))
         .pipe(gulp.dest('./'));
 });
 
