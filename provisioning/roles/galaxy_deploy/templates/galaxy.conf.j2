@@ -16,7 +16,7 @@ Listen 81
 
 RemoteIPHeader X-Forwarded-For
 {% for host in groups['node_balancer'] %}
-RemoteIPInternalProxy {{ hostvars[host]['private_ip'] }}/32
+RemoteIPInternalProxy {{ host }}/32
 {% endfor %}
 LogFormat "%a %l %u %t \"%r\" %>s %b" common
 
