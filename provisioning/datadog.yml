@@ -16,7 +16,7 @@
           apache:
               init_config:
               instances:
-                  - apache_status_url: "http://{{ linode_private_ip }}:8080/server-status?auto"
+                  - apache_status_url: "http://{{ private_ip }}:81/server-status?auto"
   tags:
       - web
 
