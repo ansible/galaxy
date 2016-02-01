@@ -9,6 +9,7 @@
       register: out
       when: postgres_master
     - debug: var=out.stdout_lines
+    - service: name=supervisord state=restarted
 
 - name: Rebuild Indexes
   hosts: web
