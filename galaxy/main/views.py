@@ -176,7 +176,7 @@ def explore(request):
         ]
     else:
         context["extra_js"] = [
-          '/static/dist/galaxy.exploreApp.2-0-0.min.js'
+          '/static/dist/galaxy.exploreApp.min.js'
         ]
     context['load_angular'] = True
     context['page_title'] = 'Explore'
@@ -207,7 +207,7 @@ def list_category(request, category=None, page=1):
         ] + common_services
     else:
         context["extra_js"] = [
-          '/static/dist/galaxy.listApp.2-0-0.min.js'
+          '/static/dist/galaxy.listApp.min.js'
         ]
     context["use_menu_controller"] = True
     context["load_angular"] = True
@@ -221,7 +221,7 @@ def detail_category(request, category=None, page=1):
     context["extra_css"] = []
     if settings.SITE_ENV == 'DEV':
         context["extra_js"] = [
-            # '/static/js/angular-slider.2-0-0.min.js',
+            # '/static/js/angular-slider.min.js',
             '/static/js/detailApp/detailApp.js',
             '/static/js/detailApp/roleDetailController.js',
             '/static/js/detailApp/menuController.js',
@@ -230,7 +230,7 @@ def detail_category(request, category=None, page=1):
         ] + common_services
     else:
         context["extra_js"] = [
-            '/static/dist/galaxy.detailApp.2-0-0.min.js'
+            '/static/dist/galaxy.detailApp.min.js'
         ]
     context["use_menu_controller"] = True
     context["load_angular"] = True
@@ -250,7 +250,7 @@ def role_add_view(request, category=None, page=1):
         ] + common_services
     else:
         context["extra_js"] = [
-            '/static/dist/galaxy.roleAddApp.2-0-0.min.js'
+            '/static/dist/galaxy.roleAddApp.min.js'
         ]
     context["use_menu_controller"] = False
     context["load_angular"] = True
@@ -467,7 +467,7 @@ def import_status_view(request):
         ] + common_services
     else:
         context["extra_js"] = [
-            '/static/dist/galaxy.importStatusApp.2-0-0.min.js'
+            '/static/dist/galaxy.importStatusApp.min.js'
         ]
 
     if request.session.has_key("transient"):
@@ -501,7 +501,7 @@ def accounts_profile(request):
         ]
     else:
         context["extra_js"] = [
-          '/static/dist/galaxy.accountApp.2-0-0.min.js'
+          '/static/dist/galaxy.accountApp.min.js'
         ]
 
     if request.session.has_key("transient"):
