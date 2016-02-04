@@ -240,6 +240,11 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
+
+# Store file names by appending the MD5 hash of the file’s content to the filename.
+# Works with staticfiles static templating directive.
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = file('/etc/galaxy/SECRET_KEY', 'rb').read().strip()
 
