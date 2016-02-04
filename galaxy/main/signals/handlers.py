@@ -19,6 +19,7 @@ from django.conf import settings
 from django.dispatch import receiver
 from django.db.models.signals import m2m_changed, pre_save, pre_delete, post_save, post_delete
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 
 # elasticsearch
 from elasticsearch_dsl import Search, Q
@@ -36,6 +37,10 @@ from galaxy.main.search_models import TagDoc, PlatformDoc
 from galaxy.main.celerytasks.elastic_tasks import update_tags, update_platforms, update_users
 from galaxy.main.celerytasks.tasks import refresh_user_repos, refresh_user_stars
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 User = get_user_model()
 
 @receiver(user_logged_in)
@@ -46,8 +51,10 @@ def user_logged_in_handler(request, user, **kwargs):
         token = SocialToken.objects.get(account__user=user, account__provider='github')
         refresh_user_repos.delay(user,token.token)
         refresh_user_stars.delay(user,token.token)
-    except:
-        pass
+    except ObjectDoesNotExist:
+        logger.error('Failed to retrieve GitHub token form Galaxy user: %s, GitHub user: %s' % (user.username, user.github_user))
+        user.cache_refreshed = True
+        user.save()
 
 @receiver(post_save, sender=ImportTask)
 def import_task_post_save(sender, **kwargs):
