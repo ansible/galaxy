@@ -24,7 +24,7 @@ import bleach
 
 from celery import task
 from github import Github, AuthenticatedUser
-from github import GithubException
+from github import GithubException, BadCredentialsException
 from urlparse import urlparse
 
 from django.conf import settings
@@ -509,26 +509,45 @@ def import_role(task_id):
 # Login Task
 # ----------------------------------------------------------------------
 
-@task(name="galaxy.main.celerytasks.tasks.refresh_user")
+@task(name="galaxy.main.celerytasks.tasks.refresh_user",throws=(Exception,))
 @transaction.atomic
 def refresh_user_repos(user, token):
     
-    gh_api = Github(token)
-    ghu = gh_api.get_user()
+    try:
+        gh_api = Github(token)
+    except GithubException, e:
+        user.cache_refreshed = True
+        user.save()
+        print "User %s Repo Cache Refresh Error: %s - %s" % (user.username, e.status, e.data)
+        raise
+
+    try:
+        ghu = gh_api.get_user()
+    except GithubException, e:
+        user.cache_refreshed = True
+        user.save()
+        print "User %s Repo Cache Refresh Error: %s - %s" % (user.username, e.status, e.data)
+        raise
 
     print "Refreshing User Repo Cache for %s" % user.username
     
-    user.repositories.all().delete()
-    for r in ghu.get_repos():
-        try:
-            with transaction.atomic():
-                meta = r.get_file_contents("meta/main.yml")
-                name = r.full_name.split('/')
-                cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
-                enabled = cnt > 0
-                user.repositories.create(github_user=name[0],github_repo=name[1],is_enabled=enabled)
-        except:
-            pass
+    try:
+        user.repositories.all().delete()
+        for r in ghu.get_repos():
+            try:
+                with transaction.atomic():
+                    meta = r.get_file_contents("meta/main.yml")
+                    name = r.full_name.split('/')
+                    cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+                    enabled = cnt > 0
+                    user.repositories.create(github_user=name[0],github_repo=name[1],is_enabled=enabled)
+            except:
+                pass
+    except GithubException, e:
+        user.cache_refreshed = True
+        user.save()
+        print "User %s Repo Cache Refresh Error: %s - %s" % (user.username, e.status, e.data)
+        raise
 
     user.github_avatar = ghu.avatar_url
     user.github_user = ghu.login
