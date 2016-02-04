@@ -62,25 +62,25 @@ from celerytasks.tasks import import_role
 
 User = get_user_model()
 common_services = [
-    '/static/js/commonServices/tagService.js',
-    '/static/js/commonServices/meService.js',
-    '/static/js/commonServices/ratingService.js',
-    '/static/js/commonServices/roleService.js',
-    '/static/js/commonServices/roleSearchService.js',
-    '/static/js/commonServices/storageService.js',
-    '/static/js/commonServices/userService.js',
-    '/static/js/commonServices/platformService.js',
-    '/static/js/commonServices/galaxyUtilities.js',
-    '/static/js/commonServices/searchService.js',
-    '/static/js/commonDirectives/commonDirectives.js',
-    '/static/js/commonDirectives/autocompleteDirective.js',
-    '/static/js/commonDirectives/textCollapseDirective.js',
-    '/static/js/commonDirectives/dotDotDotDirective.js',
-    '/static/js/commonServices/relatedService.js',
-    '/static/js/commonServices/paginateService.js',
-    '/static/js/commonServices/githubRepoService.js',
-    '/static/js/commonServices/importService.js',
-    '/static/js/commonServices/githubClickService.js',
+    'js/commonServices/tagService.js',
+    'js/commonServices/meService.js',
+    'js/commonServices/ratingService.js',
+    'js/commonServices/roleService.js',
+    'js/commonServices/roleSearchService.js',
+    'js/commonServices/storageService.js',
+    'js/commonServices/userService.js',
+    'js/commonServices/platformService.js',
+    'js/commonServices/galaxyUtilities.js',
+    'js/commonServices/searchService.js',
+    'js/commonDirectives/commonDirectives.js',
+    'js/commonDirectives/autocompleteDirective.js',
+    'js/commonDirectives/textCollapseDirective.js',
+    'js/commonDirectives/dotDotDotDirective.js',
+    'js/commonServices/relatedService.js',
+    'js/commonServices/paginateService.js',
+    'js/commonServices/githubRepoService.js',
+    'js/commonServices/importService.js',
+    'js/commonServices/githubClickService.js',
 ]
 
 #------------------------------------------------------------------------------
@@ -149,11 +149,11 @@ def build_standard_context(request):
 #     context = build_standard_context(request)
 #     context["ng_app"] = "mainApp"
 #     context["extra_js"] = [
-#       '/static/js/apps/main_app.js',
-#       '/static/js/controllers/main.js',
-#       '/static/js/commonServices/roles.js',
-#       '/static/js/commonServices/categories.js',
-#       '/static/js/commonServices/users.js',
+#       'js/apps/main_app.js',
+#       'js/controllers/main.js',
+#       'js/commonServices/roles.js',
+#       'js/commonServices/categories.js',
+#       'js/commonServices/users.js',
 #     ]
 #     return render_to_response('home.html', context)
 
@@ -166,17 +166,17 @@ def explore(request):
     context["ng_app"] = "exploreApp"
     if settings.SITE_ENV == 'DEV':
         context["extra_js"] = [
-          '/static/js/exploreApp/exploreApp.js',
-          '/static/js/exploreApp/exploreController.js',
-          '/static/js/commonServices/roleSearchService.js',
-          '/static/js/commonServices/tagService.js',
-          '/static/js/commonServices/userService.js',
-          '/static/js/commonServices/galaxyUtilities.js',
-          '/static/js/commonDirectives/dotDotDotDirective.js',
+          'js/exploreApp/exploreApp.js',
+          'js/exploreApp/exploreController.js',
+          'js/commonServices/roleSearchService.js',
+          'js/commonServices/tagService.js',
+          'js/commonServices/userService.js',
+          'js/commonServices/galaxyUtilities.js',
+          'js/commonDirectives/dotDotDotDirective.js',
         ]
     else:
         context["extra_js"] = [
-          '/static/dist/galaxy.exploreApp.min.js'
+          'dist/galaxy.exploreApp.min.js'
         ]
     context['load_angular'] = True
     context['page_title'] = 'Explore'
@@ -201,13 +201,13 @@ def list_category(request, category=None, page=1):
     context["extra_css"] = []
     if settings.SITE_ENV == 'DEV':
         context["extra_js"] = [
-          '/static/js/listApp/listApp.js',
-          '/static/js/listApp/roleListController.js',
-          '/static/js/listApp/menuController.js',
+          'js/listApp/listApp.js',
+          'js/listApp/roleListController.js',
+          'js/listApp/menuController.js',
         ] + common_services
     else:
         context["extra_js"] = [
-          '/static/dist/galaxy.listApp.min.js'
+          'dist/galaxy.listApp.min.js'
         ]
     context["use_menu_controller"] = True
     context["load_angular"] = True
@@ -221,16 +221,16 @@ def detail_category(request, category=None, page=1):
     context["extra_css"] = []
     if settings.SITE_ENV == 'DEV':
         context["extra_js"] = [
-            # '/static/js/angular-slider.min.js',
-            '/static/js/detailApp/detailApp.js',
-            '/static/js/detailApp/roleDetailController.js',
-            '/static/js/detailApp/menuController.js',
-            '/static/js/detailApp/headerController.js',
-            '/static/js/detailApp/headerService.js',
+            # 'js/angular-slider.min.js',
+            'js/detailApp/detailApp.js',
+            'js/detailApp/roleDetailController.js',
+            'js/detailApp/menuController.js',
+            'js/detailApp/headerController.js',
+            'js/detailApp/headerService.js',
         ] + common_services
     else:
         context["extra_js"] = [
-            '/static/dist/galaxy.detailApp.min.js'
+            'dist/galaxy.detailApp.min.js'
         ]
     context["use_menu_controller"] = True
     context["load_angular"] = True
@@ -243,14 +243,14 @@ def role_add_view(request, category=None, page=1):
     context["extra_css"] = []
     if settings.SITE_ENV == 'DEV':
         context["extra_js"] = [
-            '/static/js/roleAddApp/roleAddApp.js',
-            '/static/js/roleAddApp/roleAddController.js',
-            '/static/js/detailApp/menuController.js',
-            '/static/js/roleAddApp/notificationSecretService.js',
+            'js/roleAddApp/roleAddApp.js',
+            'js/roleAddApp/roleAddController.js',
+            'js/detailApp/menuController.js',
+            'js/roleAddApp/notificationSecretService.js',
         ] + common_services
     else:
         context["extra_js"] = [
-            '/static/dist/galaxy.roleAddApp.min.js'
+            'dist/galaxy.roleAddApp.min.js'
         ]
     context["use_menu_controller"] = False
     context["load_angular"] = True
@@ -389,7 +389,7 @@ class RoleDetailView(DetailView):
             gh_user = User.objects.get(github_user=self.role.github_user)
             context['avatar'] = gh_user.github_avatar
         except:
-            context['avatar'] = "/static/img/avatar.png";
+            context['avatar'] = "img/avatar.png";
 
         user = self.request.user
         context['is_authenticated'] = True if user.is_authenticated() and user.is_connected_to_github() else False
@@ -461,13 +461,13 @@ def import_status_view(request):
 
     if settings.SITE_ENV == 'DEV':
         context["extra_js"] = [
-            '/static/js/importStatusApp/importStatusApp.js',
-            '/static/js/importStatusApp/importStatusController.js',
-            '/static/js/commonServices/galaxyUtilities.js',
+            'js/importStatusApp/importStatusApp.js',
+            'js/importStatusApp/importStatusController.js',
+            'js/commonServices/galaxyUtilities.js',
         ] + common_services
     else:
         context["extra_js"] = [
-            '/static/dist/galaxy.importStatusApp.min.js'
+            'dist/galaxy.importStatusApp.min.js'
         ]
 
     if request.session.has_key("transient"):
@@ -492,16 +492,16 @@ def accounts_profile(request):
     ]
     if settings.SITE_ENV == 'DEV':
         context["extra_js"] = [
-          '/static/js/commonServices/meService.js',
-          '/static/js/commonServices/storageService.js',
-          '/static/js/commonServices/relatedService.js',
-          '/static/js/commonServices/galaxyUtilities.js',
-          '/static/js/accountApp/myRolesController.js',
-          '/static/js/accountApp/accountApp.js',
+          'js/commonServices/meService.js',
+          'js/commonServices/storageService.js',
+          'js/commonServices/relatedService.js',
+          'js/commonServices/galaxyUtilities.js',
+          'js/accountApp/myRolesController.js',
+          'js/accountApp/accountApp.js',
         ]
     else:
         context["extra_js"] = [
-          '/static/dist/galaxy.accountApp.min.js'
+          'dist/galaxy.accountApp.min.js'
         ]
 
     if request.session.has_key("transient"):

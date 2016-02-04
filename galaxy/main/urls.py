@@ -18,7 +18,8 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from galaxy.main.views import RoleListView, RoleDetailView, NamespaceListView
-
+from django.conf import settings
+from django.contrib.staticfiles import views
 
 urlpatterns = patterns('galaxy.main.views',
     # Non-secure URLs
@@ -48,3 +49,8 @@ urlpatterns = patterns('galaxy.main.views',
     url(r'^([\w\-._+]+)/$', RoleListView.as_view(), name='role-list'),
     url(r'^([\w\-._+]+)/([\w\-._+]+)/$', RoleDetailView.as_view(), name='role-detail'),
 )
+
+if settings.DEBUG:
+    urlpatterns += [
+        url(r'^static/(?P<path>.*)$', views.serve),
+    ]
