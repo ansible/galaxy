@@ -7,7 +7,11 @@
   user: name=galaxy group=galaxy groups=apache,galaxy_manage system=yes createhome=no shell=/sbin/nologin
 
 - name: Add Galaxy Config to supervisord.conf with Beats
-  ini_file: dest={{sup_conf_location}} section="program:galaxy-celeryd" option="{{item.option}}" value="{{item.value}}"
+  ini_file: 
+    dest: "{{sup_conf_location}}"
+    section: "program:galaxy-celeryd"
+    option: "{{item.option}}"
+    value: "{{item.value}}"
   with_items:
     - option: command
       value: "/usr/bin/galaxy-manage celeryd -B -l info -Q {{ celery_queues }} --autoscale={{ celery_autoscale }}"
@@ -38,7 +42,11 @@
   tags: supervisor
 
 - name: Add Galaxy Config to supervisord.conf without Beats
-  ini_file: dest={{sup_conf_location}} section="program:galaxy-celeryd" option="{{item.option}}" value="{{item.value}}"
+  ini_file:
+    dest: "{{sup_conf_location}}"
+    section: "program:galaxy-celeryd"
+    option: "{{item.option}}"
+    value: "{{item.value}}"
   with_items:
     - option: command
       value: "/usr/bin/galaxy-manage celeryd -l info -Q {{ celery_queues }} --autoscale={{ celery_autoscale }}"
