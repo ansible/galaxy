@@ -29,7 +29,7 @@ from urlparse import urlparse
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.db import transaction, connection
+from django.db import transaction, connection, DatabaseError
 from django.utils import text, html, timezone
 
 from allauth.socialaccount.models import SocialToken
@@ -83,13 +83,13 @@ def fail_import_task(import_task, logger, msg):
     try:
         if import_task:
             import_task.state = "FAILED"
-            import_task.messages.create(message_type="ERROR", message_text=msg)
+            import_task.messages.create(message_type="ERROR", message_text=msg[:255])
             import_task.finished = datetime.datetime.now()        
             import_task.save()
             transaction.commit()
     except Exception, e:
         transaction.rollback()
-        print "Error updating import task state for role %s: %s" % (role,str(e))
+        print "Error updating import task state %s: %s" % (import_task.role.name, str(e))
     print msg
     raise Exception(msg)
 
@@ -107,12 +107,12 @@ def strip_input(input):
 
 def add_message(import_task, msg_type, msg_text):
     try:
-        import_task.messages.create(message_type=msg_type,message_text=msg_text)
+        import_task.messages.create(message_type=msg_type,message_text=msg_text[:255])
         import_task.save()
         transaction.commit()
     except Exception, e:
         transaction.rollback()
-        print "Error adding message to import task for role %s: %s" % (import_task.role.name,str(e))
+        print "Error adding message to import task for role %s: %s" % (import_task.role.name, e.message)
     print "Role %d: %s - %s" % (import_task.role.id, msg_type, msg_text)
 
 def get_readme(import_task, repo, branch):
@@ -305,7 +305,7 @@ def import_role(task_id):
 
     last_commit = repo.get_commits(sha=branch)[0].commit
     role.commit = last_commit.sha
-    role.commit_message = last_commit.message
+    role.commit_message = last_commit.message[:255]
     role.commit_url = last_commit.html_url
 
     # Update the import task in the event the role is left in an invalid state.
@@ -315,7 +315,7 @@ def import_role(task_id):
     import_task.open_issues_count = repo.open_issues_count 
 
     import_task.commit = last_commit.sha
-    import_task.commit_message = last_commit.message
+    import_task.commit_message = last_commit.message[:255]
     import_task.commit_url = last_commit.html_url
     import_task.github_branch = branch
     
@@ -485,6 +485,16 @@ def import_role(task_id):
     except Exception, e:
         add_message(import_task, "ERROR", "An error occurred while importing repo tags: %s" % str(e))
     
+    try:
+        role.validate_char_lengths()
+    except Exception, e:
+        add_message(import_task, "ERROR", e.message)
+
+    try:
+        import_task.validate_char_lengths()
+    except Exception, e:
+        add_message(import_task, "ERROR", e.message)
+
     # determine state of import task
     error_count = import_task.messages.filter(message_type="ERROR").count()
     warning_count = import_task.messages.filter(message_type="WARNING").count()
@@ -501,7 +511,7 @@ def import_role(task_id):
         role.save()
         transaction.commit()
     except Exception, e:
-        fail_import_task(import_task, logger, "An error occurred while saving the role: %s" % str(e))
+        fail_import_task(import_task, logger, "Error saving role: %s" % e.message)
     
     return True
 
