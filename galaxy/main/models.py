@@ -425,6 +425,14 @@ class Role(CommonModelNameNotUnique):
     def get_tags(self):
         return [tag.name for tag in self.tags.filter(active=True)]
 
+    def validate_char_lengths(self):
+        for field in self._meta.get_fields():
+            if not field.is_relation and field.get_internal_type() == 'CharField':
+                #print "%s %s" % (field.name, field.max_length)
+                if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
+                    raise Exception("Role %s value exceeeds max length of %s." % (field.name, field.max_length))
+
+
 
 class Namespace(PrimordialModel):
 
@@ -682,6 +690,13 @@ class ImportTask(PrimordialModel):
 
     def __unicode__(self):
         return "%d-%s" % (self.id,self.started.strftime("%Y%m%d-%H%M%S-%Z"))
+
+    def validate_char_lengths(self):
+        for field in self._meta.get_fields():
+            if not field.is_relation and field.get_internal_type() == 'CharField':
+                #print "%s %s" % (field.name, field.max_length)
+                if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
+                    raise Exception("Import Task %s value exceeeds max length of %s." % (field.name, field.max_length))
 
 
 class ImportTaskMessage(PrimordialModel):
