@@ -37,15 +37,6 @@
 - name: "Unarchive the backup file"
   shell: gunzip -c "/tmp/{{ data_list.s3_keys[-1] | basename }}" | openssl enc -aes-256-cbc -d -a -pass pass:{{ galaxy_encryption_password }} >>/tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}
 
-- name: "Stop apache"
-  service: name=httpd state=stopped
-
-- name: "Stop celeryd"
-  supervisorctl:
-    config: "/etc/supervisord.conf"
-    name: "galaxy-celeryd"
-    state: stopped
-
 # The following tasks assume the postgresql role was already applied
 - name: "Drop the galaxy database"
   postgresql_db:
@@ -76,10 +67,6 @@
 # Assume we're importing the schema and data into an empty database
 - name: "Import the backup"
   shell: pg_restore -Fc -U postgres -d galaxy /tmp/{{ data_list.s3_keys[-1] | basename | regex_replace('\.gz$','') }}
-  notify:
-      - restart postgres
-      - restart apache
-      - restart celeryd
 
 - name: "Remove backup archive"
   file:
