@@ -1,0 +1,14 @@
+- name: Backup database
+  hosts: db
+  become: yes
+  vars_files:
+    - galaxy-vault.yml
+  roles:
+    - { role: backup_database,
+        backup_username: galaxy,
+        backup_enc_password: "{{ galaxy_backup_enc_key }}",
+        backup_s3_bucket: galaxy.ansibleworks.com,
+        backup_aws_access_key: "{{ galaxy_aws_access_key }}",
+        backup_aws_secret_key: "{{ galaxy_aws_secret_key }}",
+        backup_tmp: /tmp,
+        when: postgres_master }

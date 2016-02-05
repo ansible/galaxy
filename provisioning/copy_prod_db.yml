@@ -2,5 +2,10 @@
 - name: Install a copy of the production database
   hosts: all
   sudo: yes
+  vars_files:
+    - galaxy-vault.yml
   roles:
-    - { role: copy_prod_db }
+    - { role: copy_prod_db,
+        aws_access_key: "{{ galaxy_aws_access_key }}", 
+        aws_secret_key: "{{ galaxy_aws_secret_key }}", 
+        galaxy_encryption_password: "{{ galaxy_backup_enc_key }}" }
