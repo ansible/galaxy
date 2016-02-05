@@ -15,11 +15,10 @@ host    replication replicator  {{ host }}/32       md5
 {% endif %}
 {% endfor %}
 {% for host in groups['web'] %}
-{% if hostvars[host]['private_ip'] is defined %}
 host   all         all          {{ hostvars[host]['private_ip'] }}/32      md5
-{% else %}
-host   all         all          {{ host }}/32      md5
-{% endif %}
+{% endfor %}
+{% for host in groups['celery'] %}
+host   all         all          {{ hostvars[host]['private_ip'] }}/32      md5
 {% endfor %}
 {% endif %}
 host    all         all         ::1/128               md5
