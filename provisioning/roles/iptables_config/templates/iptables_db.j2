@@ -16,6 +16,7 @@
 
 # web
 -A INPUT -p tcp --dport 5672 -s {% for host in groups['web'] %}{{ hostvars[host]['private_ip'] }}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
+
 # task
 -A INPUT -p tcp --dport 5672 -s {% for host in groups['celery'] %}{{ hostvars[host]['private_ip'] }}{% if not loop.last %},{% endif %}{% endfor %} -j ACCEPT
 

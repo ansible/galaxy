@@ -33,5 +33,9 @@ galaxy_server_email="galaxy-qa@ansible.com"
 [celery:vars]
 galaxy_memcached_hostname=192.168.223.243
 
+[celery]
+45.33.74.29 private_ip=192.168.214.20 host_name=galaxy-qa-task-001 celery_queues='import_tasks,celery' celery_beats=True celery_autoscale=20,5
+45.33.95.49 private_ip=192.168.194.35 host_name=galaxy-qa-task-002 celery_queues='login_tasks' celery_beats=False celery_autoscale=20,5
+
 [rabbitmq_host]
 192.168.223.243
