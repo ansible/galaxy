@@ -97,8 +97,8 @@ CELERYBEAT_SCHEDULER='djcelery.schedulers.DatabaseScheduler'
 
 CELERY_ROUTES = {
     'galaxy.main.celerytasks.tasks.refresh_user': {'queue': 'login_tasks'},
-    'galaxy.main.celerytasks.tasks.refresh_user_stars': {'queue': 'login_tasks'}
-    'galaxy.main.celerytasks.tasks.refresh_role_counts': {'queue': 'import_tasks'}
+    'galaxy.main.celerytasks.tasks.refresh_user_stars': {'queue': 'login_tasks'},
+    'galaxy.main.celerytasks.tasks.refresh_role_counts': {'queue': 'import_tasks'},
     'galaxy.main.celerytasks.tasks.import_role': {'queue': 'import_tasks'}
 }
 
