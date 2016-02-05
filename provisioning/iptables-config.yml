@@ -1,0 +1,5 @@
+- name: Update iptables config
+  hosts: all
+  sudo: yes
+  roles:
+    - { role: iptables_config, galaxy_host_type: "{{ host_type }}" }

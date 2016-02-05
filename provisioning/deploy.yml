@@ -2,7 +2,7 @@
 
 - name: Deploy Web Servers
   hosts: web
-  sudo: yes
+  become: yes
   vars:
       - galaxy_database_local: no
       - galaxy_deploy_web: yes
@@ -14,8 +14,8 @@
       - { role: galaxy_deploy }
 
 - name: Deploy Celery
-  hosts: db
-  sudo: yes
+  hosts: celery 
+  become: yes
   vars:
       - galaxy_database_local: yes
       - galaxy_deploy_web: no 
@@ -29,5 +29,9 @@
 - name: Notify slack
   hosts: 127.0.0.1 
   connection: local
+  vars:
+      slack_message: "{{ galaxy_slack_message | default('None') }}"
   roles:
-      - { role: notify_slack, notify_slack_message: "{{ galaxy_slack_message }}", when: galaxy_slack_message is defined }
+      - { role: notify_slack,
+          notify_slack_message: "{{ slack_message }}",
+          when: slack_message != 'None' }
