@@ -1,20 +1,19 @@
 ---
 
 - name: Restart Celery
-  hosts: db
+  hosts: celery 
   become: yes
   tasks:
     - service: name=supervisord state=restarted
-      when: postgres_master  
 
 - name: Refresh role count
-  hosts: db
+  hosts: celery 
   become: yes
   tasks:  
     - name: Start the refresh        
       shell: galaxy-manage refresh_role_counts
       register: out
-      when: postgres_master
+      when: celery_beats
     - debug: var=out.stdout_lines
 
 - name: Rebuild Indexes
@@ -31,5 +30,9 @@
 - name: Notify slack
   hosts: 127.0.0.1 
   connection: local
+  vars:
+      slack_messge: "{{ galaxy_slack_message | default('None') }}"
   roles:
-      - { role: notify_slack, notify_slack_message: "{{ galaxy_slack_message }}", when: galaxy_slack_message is defined }
+      - { role: notify_slack,
+          notify_slack_message: "{{ slack_message }}",
+          when: slack_message != 'None' }
