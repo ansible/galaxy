@@ -67,6 +67,7 @@
   - requests
   - requests-oauthlib
   - bleach
+  - rst2html5-tools
 
 # the avatars directory needs to be there, otherwise the library
 # will complain. It isn't used, as all the avatar info is stored

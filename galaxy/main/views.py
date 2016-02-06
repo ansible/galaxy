@@ -60,6 +60,10 @@ from forms import *
 from utils import db_common
 from celerytasks.tasks import import_role
 
+# rst2html5-tools
+from html5css3 import Writer
+from docutils.core import publish_string
+
 User = get_user_model()
 common_services = [
     'js/commonServices/tagService.js',
@@ -86,6 +90,21 @@ common_services = [
 #------------------------------------------------------------------------------
 # Helpers
 #------------------------------------------------------------------------------
+def readme_to_html(obj):
+    # Expects obj to be an instance of Role
+
+    if obj is None or obj.readme is None:
+        return ''
+    if obj.readme_type is None or obj.readme_type == 'md':
+        return markdown.markdown(obj.readme, extensions=['extra'])
+    if obj.readme_type == 'rst':
+        settings = {'input_encoding': 'utf8'}
+        return publish_string(
+            source=obj.readme,
+            writer=Writer(),
+            writer_name='html5css3',
+            settings_overrides=settings,
+        ).decode('utf8')
 
 def get_settings():
     settings = None
@@ -401,8 +420,6 @@ class RoleDetailView(DetailView):
             if sub:
                 context['is_subscriber'] = True 
                 context['subscriber_id'] = sub.id
-
-        print "is_subscriber: %s" % context['is_subscriber']
         
         context['is_stargazer'] = False
         if user.is_authenticated():
@@ -425,7 +442,7 @@ class RoleDetailView(DetailView):
 
         context['create_date'] = role.created.strftime('%m/%d/%Y %H:%M:%I %p')
         context['import_date'] = role.imported.strftime('%m/%d/%Y %H:%M:%I %p') if role.imported else 'NA'
-        context['readme_html'] = markdown.markdown(html_decode(role.readme), extensions=['extra'])
+        context['readme_html'] = readme_to_html(role)
         context['page_title'] = "%s.%s" % (self.namespace, self.name)
         return context
 

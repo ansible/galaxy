@@ -51,6 +51,10 @@ from galaxy.api.aggregators import *
 from galaxy.api.utils import html_decode
 from galaxy.main.models import *
 
+# rst2html5-tools
+from html5css3 import Writer
+from docutils.core import publish_string
+
 User = get_user_model()
 
 BASE_FIELDS = ('id', 'url', 'related', 'summary_fields', 'created', 'modified', 'name')
@@ -63,6 +67,19 @@ SUMMARIZABLE_FK_FIELDS = {
     'role'  : ('id','url','name',),
 }
 
+def readme_to_html(obj):
+    if obj is None or obj.readme is None:
+        return ''
+    if obj.readme_type is None or obj.readme_type == 'md':
+        return markdown.markdown(html_decode(obj.readme), extensions=['extra'])
+    if obj.readme_type == 'rst':
+        settings = {'input_encoding': 'utf8'}
+        return publish_string(
+            source=obj.readme,
+            writer=Writer(),
+            writer_name='html5css3',
+            settings_overrides=settings,
+        ).decode('utf8')
 
 class BaseSerializer(serializers.ModelSerializer):
     # add the URL and related resources
@@ -707,9 +724,7 @@ class RoleListSerializer(BaseSerializer):
         return d
 
     def get_readme_html(self, obj):
-        if obj is None:
-            return ''
-        return markdown.markdown(html_decode(obj.readme), extensions=['extra'])
+        return readme_to_html(obj)
 
 class RoleTopSerializer(BaseSerializer):
 
@@ -789,9 +804,7 @@ class RoleDetailSerializer(BaseSerializer):
         return d
     
     def get_readme_html(self, obj):
-        if obj is None:
-            return ''
-        return markdown.markdown(html_decode(obj.readme), extensions=['extra'])
+        return readme_to_html(obj)
 
 class RoleSearchSerializer(HaystackSerializer):
     platforms = serializers.SerializerMethodField()

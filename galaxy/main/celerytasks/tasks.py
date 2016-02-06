@@ -117,36 +117,38 @@ def add_message(import_task, msg_type, msg_text):
 
 def get_readme(import_task, repo, branch):
     """
-    Retrieve README.md from the repo and sanitize by removing all markup. Should preserve unicode characters.
+    Retrieve README from the repo and sanitize by removing all markup. Should preserve unicode characters.
     """
-    add_message(import_task, "INFO", "Parsing and validating README.md")
+    add_message(import_task, "INFO", "Parsing and validating README")
 
-    # load README.md
+    file_type = None
+    readme_content = None
+
     try: 
         if import_task.github_reference:
-            readme = repo.get_file_contents("README.md",ref=branch)
+            readme = repo.get_readme(ref=branch)
         else:
-            readme = repo.get_file_contents("README.md")    
+            readme = repo.get_readme()    
     except:
         readme = None
-        add_message(import_task, "ERROR", "Failed to find a README.md. All role repositories must include a README.md.")
+        add_message(import_task, "ERROR", "Failed to get preferred README. All role repositories must include a README.")
+
+    if readme is not None:
+        if readme.name == 'README.md':
+            file_type = 'md'
+        elif readme.name == 'README.rst':
+            file_type = 'rst'
+        else:
+            add_message(import_task, "ERROR", "Unable to determine README file type. Expecting file extension to be one of: .md, .rst")
     
-    if not readme is None:
-        # decode base64
-        try: 
-            readme = readme.content.decode('base64')
-        except:
-            readme = None
-            add_messge(import_task, "ERROR", "Failed to base64 decode README.md file.")
-    
-    if not readme is None:
-        # Remove all HTML tags while preserving any unicde chars
-        try:
-            readme = bleach.clean(readme, strip=True, tags=[])
-        except Exception, e:
-            add_message(import_task, "ERROR", "Failed to strip HTML tags in README.md: %s" % str(e))
-    
-    return readme
+        if file_type is not None:
+            # Remove all HTML tags while preserving any unicde chars
+            try:
+                readme_content = bleach.clean(readme.decoded_content, strip=True, tags=[])
+            except Exception, e:
+                add_message(import_task, "ERROR", "Failed to strip HTML tags from README: %s" % str(e))
+        
+    return readme_content, file_type
 
 
 @task(throws=(Exception,), name="galaxy.main.celerytasks.tasks.import_role")
@@ -467,7 +469,7 @@ def import_role(task_id):
             if dep_name not in dep_names:
                 role.dependencies.remove(dep)
 
-    role.readme = get_readme(import_task, repo, branch)
+    role.readme, role.readme_type = get_readme(import_task, repo, branch)
     
     # helper function to save repeating code:
     def add_role_version(tag):
