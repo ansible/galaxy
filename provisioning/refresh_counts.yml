@@ -31,7 +31,7 @@
   hosts: 127.0.0.1 
   connection: local
   vars:
-      slack_messge: "{{ galaxy_slack_message | default('None') }}"
+      slack_message: "{{ galaxy_slack_message | default('None') }}"
   roles:
       - { role: notify_slack,
           notify_slack_message: "{{ slack_message }}",
