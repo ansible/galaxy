@@ -36,6 +36,38 @@ from allauth.socialaccount.models import SocialToken
 
 from galaxy.main.models import *
 
+
+def update_user_repos(github_repos, user):
+    '''
+    Refresh user repositories. Used by refresh_user_repos task and galaxy.api.views.RefreshUserRepos.
+    Returns user.repositories.all() queryset.
+    '''
+    # Add/Update repos
+    repo_dict = dict()
+    for r in github_repos:
+        try:
+            meta = r.get_file_contents("meta/main.yml")
+            name = r.full_name.split('/')
+            cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+            enabled = cnt > 0
+            object, created = user.repositories.update_or_create(
+                github_user=name[0],
+                github_repo=name[1],
+                defaults={ 'github_user': name[0],
+                           'github_repo': name[1],
+                           'is_enabled': enabled })
+            repo_dict[r.full_name] = True
+        except:
+            pass
+        
+    # Remove any repos no longer present in GitHub
+    for r in user.repositories.all():
+        if not repo_dict.get(r.github_user + '/' + r.github_repo):
+            r.delete()
+
+    return user.repositories.all()
+
+
 def update_namespace(repo):
     # Use GitHub repo to update namespace attributes
     if repo.owner.type == 'Organization':
@@ -534,7 +566,7 @@ def refresh_user_repos(user, token):
         user.save()
         msg = "User %s Repo Cache Refresh Error: %s - %s" % (user.username, e.status, e.data)
         print msg
-        raise Exception("User %s Repo Cache Refresh Error: %s - %s" % (user.username, e.status, e.data))
+        raise Exception(msg)
 
     try:
         ghu = gh_api.get_user()
@@ -554,17 +586,7 @@ def refresh_user_repos(user, token):
         print msg
         raise Exception(msg)
 
-    user.repositories.all().delete()
-    for r in repos:
-        try:
-            with transaction.atomic():
-                meta = r.get_file_contents("meta/main.yml")
-                name = r.full_name.split('/')
-                cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
-                enabled = cnt > 0
-                user.repositories.create(github_user=name[0],github_repo=name[1],is_enabled=enabled)
-        except:
-            pass
+    update_user_repos(repos, user)
     
     user.github_avatar = ghu.avatar_url
     user.github_user = ghu.login
@@ -574,62 +596,62 @@ def refresh_user_repos(user, token):
 @task(name="galaxy.main.celerytasks.tasks.refresh_user_stars", throws=(Exception,))
 @transaction.atomic
 def refresh_user_stars(user, token):
+    pass
+    # try:
+    #     gh_api = Github(token)
+    # except GithubException, e:
+    #     msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
+    #     print msg
+    #     raise Exception(msg)
+
+    # try:
+    #     ghu = gh_api.get_user()
+    # except GithubException, e:
+    #     msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
+    #     print msg
+    #     raise Exception(msg)
+
+    # try:
+    #     subscriptions = ghu.get_subscriptions()
+    # except GithubException, e:
+    #     msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
+    #     print msg
+    #     raise Exception(msg)
+
+    # # Refresh user subscriptions class
+    # user.subscriptions.all().delete()
+    # for s in subscriptions:
+    #     name = s.full_name.split('/')
+    #     cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+    #     if cnt > 0:
+    #         user.subscriptions.get_or_create(
+    #             github_user=name[0],
+    #             github_repo=name[1],
+    #             defaults={
+    #                 'github_user': name[0],
+    #                 'github_repo': name[1]
+    #             })
     
-    try:
-        gh_api = Github(token)
-    except GithubException, e:
-        msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
-        print msg
-        raise Exception(msg)
+    # try:
+    #     starred = ghu.get_starred()
+    # except GithubException, e:
+    #     msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
+    #     print msg
+    #     raise Exception(msg)
 
-    try:
-        ghu = gh_api.get_user()
-    except GithubException, e:
-        msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
-        print msg
-        raise Exception(msg)
-
-    try:
-        subscriptions = ghu.get_subscriptions()
-    except GithubException, e:
-        msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
-        print msg
-        raise Exception(msg)
-
-    # Refresh user subscriptions class
-    user.subscriptions.all().delete()
-    for s in subscriptions:
-        name = s.full_name.split('/')
-        cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
-        if cnt > 0:
-            user.subscriptions.get_or_create(
-                github_user=name[0],
-                github_repo=name[1],
-                defaults={
-                    'github_user': name[0],
-                    'github_repo': name[1]
-                })
-    
-    try:
-        starred = ghu.get_starred()
-    except GithubException, e:
-        msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
-        print msg
-        raise Exception(msg)
-
-    # Refresh user starred cache
-    user.starred.all().delete()
-    for s in starred:
-        name = s.full_name.split('/')
-        cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
-        if cnt > 0:
-            user.starred.get_or_create(
-                github_user=name[0],
-                github_repo=name[1],
-                defaults={
-                    'github_user': name[0],
-                    'github_repo': name[1]    
-                })
+    # # Refresh user starred cache
+    # user.starred.all().delete()
+    # for s in starred:
+    #     name = s.full_name.split('/')
+    #     cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+    #     if cnt > 0:
+    #         user.starred.get_or_create(
+    #             github_user=name[0],
+    #             github_repo=name[1],
+    #             defaults={
+    #                 'github_user': name[0],
+    #                 'github_repo': name[1]    
+    #             })
 
 @task(name="galaxy.main.celerytasks.tasks.refresh_role_counts")
 def refresh_role_counts(start, end, gh_api, tracker):

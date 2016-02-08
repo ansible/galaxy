@@ -818,10 +818,7 @@ class Notification(PrimordialModel):
 
 class Repository (PrimordialModel):
     class Meta:
-        index_together = [
-            ['owner', 'github_user', 'github_repo', 'is_enabled'],
-            ['github_user', 'github_repo']
-        ]
+        unique_together = ('owner', 'github_user', 'github_repo')
         ordering = ('github_user','github_repo')
 
     owner = models.ForeignKey(

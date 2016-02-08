@@ -71,7 +71,7 @@ from galaxy.api.serializers import *
 from galaxy.main.models import *
 from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
-from galaxy.main.celerytasks.tasks import import_role, refresh_user_repos
+from galaxy.main.celerytasks.tasks import import_role, refresh_user_repos, update_user_repos
 
 
 #--------------------------------------------------------------------------------
@@ -1113,32 +1113,27 @@ class RefreshUserRepos(APIView):
         try:
             token = SocialToken.objects.get(account__user=request.user, account__provider='github')
         except:
-            raise ValidationError({"detail": "Failed to connect to Github account for Galaxy user %s. You must first " +
-                "authenticate with Github." % request.user.username })
+            raise ValidationError({"detail": "Failed to connect to GitHub account for Galaxy user %s. You must first " +
+                "authenticate with GitHub." % request.user.username })
 
         try:
             gh_api = Github(token.token)
             gh_api.get_api_status()
         except:
-            raise ValidationError({"detail": "Failed to connect to Github API. This is most likely a temporary " +
+            raise ValidationError({"detail": "Failed to connect to GitHub API. This is most likely a temporary " +
                 "error, please try again in a few minutes."})
     
         try:
             ghu = gh_api.get_user()
         except:
-            raise ValidationError({"detail": "Failed to get Github authorized user."})
+            raise ValidationError({"detail": "Failed to get GitHub authorized user."})
+        
+        try: 
+            user_repos = ghu.get_repos()
+        except:
+            raise ValidationError({"detail": "Failed to get user repositories from GitHub."})
 
-        request.user.repositories.all().delete()
-        for r in ghu.get_repos():
-            try:
-                meta = r.get_file_contents("meta/main.yml")
-                name = r.full_name.split('/')
-                cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
-                enabled = cnt > 0
-                request.user.repositories.create(github_user=name[0],github_repo=name[1],is_enabled=enabled)
-            except:
-                pass
-        qs = request.user.repositories.all()
+        qs = update_user_repos(user_repos, request.user)
         serializer = RepositorySerializer(qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
