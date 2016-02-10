@@ -43,10 +43,37 @@
             padding-left: 6px;
         }
     }
-    .thumbs-up-icon {
+    
+    #featured-section {
         background-color: @red;
-        border: 1px solid @red;
+        color: @white;
+
+        #title .title-text {
+            padding-left: 3px;
+            font-size: 24px;
+        }
+
+        .featured {
+            padding: 10px;
+            border-bottom: 1px solid @white;
+        }
+
+        .upcase {
+            text-transform: uppercase;
+        }
+
+        .controls {
+            a, a:active, a:visited {
+                color: @white;
+                padding-right: 3px;
+            }
+            a:hover {
+                color: #ddd;
+            }
+            font-size: 12px;
+        }
     }
+
     .content-txt {
         text-align: justify;
         padding: 15px 0 0 0;
