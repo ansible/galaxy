@@ -56,21 +56,51 @@
         .featured {
             padding: 10px;
             border-bottom: 1px solid @white;
+
+            .title {
+                padding-right: 10px;
+            }
+        }
+
+        #featured-role-body {
+            height: 60px;
+            width: 100%;
+        }
+
+        #featured-author-body {
+            height: 30px;
+            width: 100%;
         }
 
         .upcase {
             text-transform: uppercase;
         }
 
+        a, a:active, a:visited {
+            color: @white;
+        }
+        
+        a:hover {
+            color: #ccc;
+        }
+
         .controls {
-            a, a:active, a:visited {
-                color: @white;
+            margin-top: 10px;
+            text-align: right;
+            a {
                 padding-right: 3px;
             }
-            a:hover {
-                color: #ddd;
-            }
             font-size: 12px;
+        }
+
+        .inactive .fa-circle {
+            display: none;
+        }
+        .active .fa-circle {
+            display: normal;
+        }
+        .active .fa-circle-o {
+            display: none;
         }
     }
 
