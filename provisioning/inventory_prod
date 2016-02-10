@@ -23,5 +23,9 @@ ssl_certificate_key=/etc/nginx/ssl/galaxy/server.key
 40.78.103.115 private_ip=172.26.3.7 postgres_master=True host_name=galaxy-pr-db-01
 40.118.240.30 private_ip=172.26.3.8 postgres_master=False host_name=galaxy-pr-db-02
 
+[celery]
+23.99.54.249 private_ip=172.26.3.13 host_name=galaxy-pr-task-01 celery_queues='import_tasks,celery' celery_beats=True celery_autoscale="10,5"
+40.83.191.171 private_ip=172.26.3.14 host_name=galaxy-pr-task-02 celery_queues='login_tasks' celery_beats=False celery_autoscale="10,5"
+
 [rabbitmq_host]
 172.26.3.7
