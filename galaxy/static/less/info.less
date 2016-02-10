@@ -47,6 +47,7 @@
     #featured-section {
         background-color: @red;
         color: @white;
+        border-radius: 2px;
 
         #title .title-text {
             padding-left: 3px;
@@ -60,6 +61,11 @@
             .title {
                 padding-right: 10px;
             }
+        }
+
+        .featured:last-of-type {
+            border-bottom-right-radius: 2px;
+            border-bottom-left-radius: 2px;
         }
 
         #featured-role-body {
@@ -81,7 +87,7 @@
         }
         
         a:hover {
-            color: #ccc;
+            color: @blue;
         }
 
         .controls {
