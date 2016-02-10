@@ -5,6 +5,6 @@
 
 [es:vars]
 es_cluster_name="galaxy_pr_es_cluster"
-es_request_sources=["172.26.3.5", "172.26.3.6", "172.26.3.7", "172.26.3.8"]
+es_request_sources=["172.26.3.5", "172.26.3.6", "172.26.3.13", "172.26.3.14"]
 
 
