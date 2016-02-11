@@ -14,7 +14,7 @@
     value: "{{item.value}}"
   with_items:
     - option: command
-      value: "/usr/bin/galaxy-manage celeryd -B -l info -Q {{ celery_queues }} --autoscale={{ celery_autoscale }}"
+      value: "/usr/bin/galaxy-manage celeryd -B -l info -Q {{ celery_queues }} --autoscale=10,5"
     - option: directory
       value: "/var/lib/galaxy"
     - option: user
@@ -44,12 +44,12 @@
 - name: Add Galaxy Config to supervisord.conf without Beats
   ini_file:
     dest: "{{sup_conf_location}}"
-    section: "program:galaxy-celeryd"
+    section: "program:galaxy-user"
     option: "{{item.option}}"
     value: "{{item.value}}"
   with_items:
     - option: command
-      value: "/usr/bin/galaxy-manage celeryd -l info -Q {{ celery_queues }} --autoscale={{ celery_autoscale }}"
+      value: "/usr/bin/galaxy-manage celeryd -l info -Q user_tasks --autoscale=8,4"
     - option: directory
       value: "/var/lib/galaxy"
     - option: user
@@ -65,13 +65,48 @@
     - option: log_stderr
       value: "true"
     - option: stdout_logfile
-      value: "/var/log/galaxy/celeryd.log"
+      value: "/var/log/galaxy/celeryd_user.log"
     - option: stderr_logfile
-      value: "/var/log/galaxy/celeryd.log"
+      value: "/var/log/galaxy/celeryd_user.log"
     - option: logfile_maxbytes
       value: 50MB
     - option: logfile_backups
       value: 999
-  when: not celery_beats
+  when: celery_queues == login_tasks  
+  notify: restart supervisor
+  tags: supervisor
+
+- name: Add Galaxy Config to supervisord.conf without Beats
+  ini_file:
+    dest: "{{sup_conf_location}}"
+    section: "program:galaxy-celeryd"
+    option: "{{item.option}}"
+    value: "{{item.value}}"
+  with_items:
+    - option: command
+      value: "/usr/bin/galaxy-manage celeryd -l info -Q star_tasks --autoscale=8,4"
+    - option: directory
+      value: "/var/lib/galaxy"
+    - option: user
+      value: "galaxy"
+    - option: autostart
+      value: "true"
+    - option: autorestart
+      value: "true"
+    - option: stopwaitsecs
+      value: 600
+    - option: log_stdout
+      value: "true"
+    - option: log_stderr
+      value: "true"
+    - option: stdout_logfile
+      value: "/var/log/galaxy/celeryd_star.log"
+    - option: stderr_logfile
+      value: "/var/log/galaxy/celeryd_star.log"
+    - option: logfile_maxbytes
+      value: 50MB
+    - option: logfile_backups
+      value: 999
+  when: celery_queues == star_tasks  
   notify: restart supervisor
   tags: supervisor
