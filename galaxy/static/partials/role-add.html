@@ -30,8 +30,8 @@
                             <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
                         </div>
                     </div>
-                    <div class="col-sm-3 tools">
-                        <a href="" ng-click="refreshRepos()" ng-disabled="refreshing || loading" class="refresh-link btn btn-sm btn-default" 
+                    <div class="col-sm-3 tools" ng-if="!loading">
+                        <a href="" ng-click="refreshRepos()" ng-disabled="refreshing" class="refresh-link btn btn-sm btn-default" 
                          tooltip-placement="top" uib-tooltip="Refresh Your Repositories from GitHub"><i class="fa fa-refresh"></i></a>
                          <div class="refreshing-icon"><i class="fa fa-spin fa-spinner" ng-if="refreshing"></i></div>
                     </div>
