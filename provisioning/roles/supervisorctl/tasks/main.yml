@@ -72,7 +72,7 @@
       value: 50MB
     - option: logfile_backups
       value: 999
-  when: celery_queues == login_tasks  
+  when: not celery_beats
   notify: restart supervisor
   tags: supervisor
 
@@ -107,6 +107,6 @@
       value: 50MB
     - option: logfile_backups
       value: 999
-  when: celery_queues == star_tasks  
+  when: not celery_beats
   notify: restart supervisor
   tags: supervisor
