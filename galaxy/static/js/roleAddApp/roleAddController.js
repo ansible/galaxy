@@ -257,6 +257,9 @@
         }
         
         function _refresh() {
+            if ($scope.loading || $scope.refreshing) {
+                return 
+            }
             $scope.refreshing = true;
             githubRepoService.refresh().$promise.then(function(response) {
                 $scope.repositories = response;
