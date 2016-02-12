@@ -15,14 +15,16 @@ djcelery.setup_loader()
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-ADMINS = (
-)
+# Enable email on 500 server error
+ADMINS = [("chris", "chousekn@redhat.com")]
+SERVER_EMAIL="{{ galaxy_server_email }}"
 
 SITE_ENV="{{ galaxy_site_env }}"
 SITE_NAME="{{ galaxy_site_name }}"
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SEND_EMAIL={{ galaxy_send_email }}
+
 
 if SITE_ENV == "DEV":
     DEBUG = True

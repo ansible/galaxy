@@ -294,6 +294,11 @@ def handle_400_view(request):
     context["page_title"] = "400 Error"
     return render_to_response('custom400.html')
 
+def handle_500_view(request):
+    context = {}
+    context["page_title"] = "500 Error"
+    return render_to_response('custom500.html')
+
 class NamespaceListView(ListView):
     model = 'Role'
     template_name = 'namespace_list.html'

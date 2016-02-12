@@ -12,7 +12,10 @@ nginx_ssl_certificate_key=/etc/nginx/ssl/galaxy/server.key
 
 [web]
 45.79.141.31 private_ip=192.168.218.210 es_rebuild_host=True django_migrate=True host_name=galaxy-qa-web-001
-45.79.147.227 private_ip=192.168.217.208 es_rebuild_host=False django_migrate=False host_name=galaxy-qa-web-002 
+45.79.147.227 private_ip=192.168.217.208 es_rebuild_host=False django_migrate=False host_name=galaxy-qa-web-002
+
+[web:vars]
+galaxy_server_email="galaxy-qa@ansible.com"
 
 [es_hosts]
 45.79.153.137 private_ip=192.168.208.222  host_name=galaxy-qa-es-001

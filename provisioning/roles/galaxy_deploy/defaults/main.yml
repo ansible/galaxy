@@ -6,6 +6,9 @@ galaxy_send_email: True
 galaxy_log_dir: "/var/log/galaxy"
 galaxy_site_aliases: []
 
+# Server email settings for error handling
+galaxy_server_email: 'root@localhost.com'
+
 # Apache configuration settings
 galaxy_ssl_cert: "/etc/pki/tls/certs/localhost.crt"
 galaxy_ssl_key: "/etc/pki/tls/private/localhost.key"
