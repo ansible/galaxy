@@ -20,13 +20,11 @@
 import random
 
 # django libs
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
 # local stuff
-
-from galaxy.main.models import *
+from galaxy.main.models import Role, RoleVersion
 
 User = get_user_model()
 
@@ -135,11 +133,11 @@ if settings.SITE_ENV == 'DEV':
         }
     register(RoleVersion, RoleVersionAutoFixture)
 
-    class RoleRatingAutoFixture(AutoFixture):
-        field_values = {
-            'reliability': generators.IntegerGenerator(min_value=1, max_value=5),
-            'documentation': generators.IntegerGenerator(min_value=1, max_value=5),
-            'code_quality': generators.IntegerGenerator(min_value=1, max_value=5),
-            'wow_factor': generators.IntegerGenerator(min_value=1, max_value=5),
-        }
-    register(RoleRating, RoleRatingAutoFixture)
+    # class RoleRatingAutoFixture(AutoFixture):
+    #     field_values = {
+    #         'reliability': generators.IntegerGenerator(min_value=1, max_value=5),
+    #         'documentation': generators.IntegerGenerator(min_value=1, max_value=5),
+    #         'code_quality': generators.IntegerGenerator(min_value=1, max_value=5),
+    #         'wow_factor': generators.IntegerGenerator(min_value=1, max_value=5),
+    #     }
+    # register(RoleRating, RoleRatingAutoFixture)

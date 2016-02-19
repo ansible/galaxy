@@ -22,13 +22,16 @@ from django.conf import settings
 from django.contrib import messages
 from django.dispatch import receiver
 
+
 @receiver(password_changed)
 def password_change_callback(sender, request, user, **kwargs):
     messages.success(request, 'You have successfully changed your password.')
 
+
 @receiver(password_set)
 def password_set_callback(sender, request, user, **kwargs):
     messages.success(request, 'You have successfully set your password.')
+
 
 class AccountAdapter(DefaultAccountAdapter):
     def default_login_redirect_url(self, request):
@@ -39,7 +42,6 @@ class AccountAdapter(DefaultAccountAdapter):
 
     def get_login_redirect_url(self, request):
         if request.user.is_authenticated():
-            githubAccount = False
             for account in request.user.socialaccount_set.all():
                 if account.provider == 'github':
                     return self.default_login_redirect_url(request)

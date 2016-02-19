@@ -18,9 +18,7 @@
 from django.db import transaction
 from django.conf import settings
 from django.contrib import admin
-from django.contrib.auth.forms import (UserCreationForm, UserChangeForm,
-    AdminPasswordChangeForm)
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect, Http404
@@ -55,10 +53,8 @@ class CustomUserAdmin(admin.ModelAdmin):
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2')}
-        ),
+        (None, {'classes': ('wide',),
+                'fields': ('username', 'password1', 'password2')}),
     )
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
@@ -89,9 +85,9 @@ class CustomUserAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         from django.conf.urls import patterns
-        return patterns('',
-            (r'^(\d+)/password/$',
-             self.admin_site.admin_view(self.user_change_password))
+        return patterns(
+            '', (r'^(\d+)/password/$',
+                 self.admin_site.admin_view(self.user_change_password))
         ) + super(CustomUserAdmin, self).get_urls()
 
     def lookup_allowed(self, lookup, value):
@@ -129,7 +125,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         }
         extra_context.update(defaults)
         return super(CustomUserAdmin, self).add_view(request, form_url,
-                                               extra_context)
+                                                     extra_context)
 
     @sensitive_post_parameters_m
     def user_change_password(self, request, id, form_url=''):
@@ -165,10 +161,9 @@ class CustomUserAdmin(admin.ModelAdmin):
             'save_as': False,
             'show_save': True,
         }
-        return TemplateResponse(request,
-            self.change_user_password_template or
-            'admin/auth/user/change_password.html',
-            context, current_app=self.admin_site.name)
+        return TemplateResponse(request, self.change_user_password_template or
+                                'admin/auth/user/change_password.html',
+                                context, current_app=self.admin_site.name)
 
     def response_add(self, request, obj, post_url_continue=None):
         """
@@ -184,7 +179,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         if '_addanother' not in request.POST and '_popup' not in request.POST:
             request.POST['_continue'] = 1
         return super(CustomUserAdmin, self).response_add(request, obj,
-                                                   post_url_continue)
+                                                         post_url_continue)
 
 
 admin.site.register(CustomUser, CustomUserAdmin)

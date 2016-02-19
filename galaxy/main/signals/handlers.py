@@ -17,11 +17,10 @@
 
 import logging
 
-from django.conf import settings
 from django.dispatch import receiver
-from django.db.models.signals import m2m_changed, pre_save, pre_delete, post_save, post_delete
+from django.db.models.signals import post_save
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 # allauth
 from allauth.account.signals import user_logged_in

@@ -1,5 +1,4 @@
-from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 # elasticsearch
 from elasticsearch_dsl import Index

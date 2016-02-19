@@ -49,16 +49,18 @@ def memcache_lock(key, attempts=1, expires=120):
         if got_lock:
             _release_lock(key)
  
+
 def _acquire_lock(key, attempts, expires):
     for i in xrange(0, attempts):
         stored = django_cache.add(key, 1, expires)
         if stored:
             return True
-        if i != attempts-1:
-            sleep_time = (((i+1)*random.random()) + 2**i) / 2.5
+        if i != attempts - 1:
+            sleep_time = (((i + 1) * random.random()) + 2**i) / 2.5
             logging.debug('Sleeping for %s while trying to acquire key %s', sleep_time, key)
             time.sleep(sleep_time)
     raise MemcacheLockException('Could not acquire lock for %s' % key)
- 
+
+
 def _release_lock(key):
     django_cache.delete(key)

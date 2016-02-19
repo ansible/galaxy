@@ -3,9 +3,13 @@
 # Copyright (c) 2013 AnsibleWorks, Inc.
 # All Rights Reserved.
 
-import os, datetime, glob, sys
+import os
+import datetime
+import glob
+import sys
+
 from distutils import log
-from setuptools import setup, find_packages
+from setuptools import setup
 from setuptools.command.sdist import sdist as _sdist
 
 
@@ -137,16 +141,11 @@ setup(
         'Topic :: System :: Systems Administration',
     ],
     entry_points = {
-        'console_scripts': [
-            'galaxy-manage = galaxy:manage',
-        ],
+        'console_scripts': ['galaxy-manage = galaxy:manage'],
     },
     data_files = proc_data_files([
-            ("%s" % homedir,        ["config/wsgi.py",
-                                     "galaxy/static/favicon.ico",
-                                    ]
-            )
-        ]
+        ("%s" % homedir, ["config/wsgi.py",
+                          "galaxy/static/favicon.ico"])]
     ),
     options = {
         'egg_info': {

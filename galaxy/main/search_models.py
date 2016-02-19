@@ -4,12 +4,13 @@
 #
 
 from datetime import datetime
-from elasticsearch_dsl import DocType, String, Long, Date, Nested, Boolean, MetaField, analyzer, token_filter
+from elasticsearch_dsl import DocType, String, Long, Date, MetaField, analyzer, token_filter
 
 __all__ = ["TagDoc", "PlatformDoc", "UserDoc"]
 
 
-autocomplete = analyzer('autocomplete',
+autocomplete = analyzer(
+    'autocomplete',
     tokenizer = 'standard',
     filter = ["lowercase", token_filter('autocomplete_filter', 'edgeNGram', min_gram=2, max_gram=20)]
 )

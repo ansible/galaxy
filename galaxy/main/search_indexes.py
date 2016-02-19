@@ -1,9 +1,7 @@
-import datetime
-import re
-import json 
+import json
 
 from haystack import indexes
-from galaxy.main.models import Role, Platform
+from galaxy.main.models import Role
 
 
 class RoleIndex(indexes.SearchIndex, indexes.Indexable):
@@ -43,11 +41,14 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
         return Role
 
     def index_queryset(self, using=None):
-        """Used when the entire index for model is updated."""
+        # Used when the entire index for model is updated
         return self.get_model().objects.filter(active=True, is_valid=True)
 
     def prepare_platforms(self, obj):
-        return [platform.name for platform in obj.platforms.filter(active=True).order_by('name').distinct('name')]
+        return [
+            platform.name
+            for platform in obj.platforms.filter(active=True).order_by('name').distinct('name')
+        ]
 
     def prepare_tags(self, obj):
         return obj.get_tags()
@@ -61,7 +62,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
             ' '.join(obj.get_unique_platform_search_terms()),
             ' '.join(obj.get_unique_platform_versions())
         )
-    
+
     def prepare_tags_autocomplete(self, obj):
         return ' '.join(obj.get_tags())
 
@@ -74,12 +75,17 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
                 'release_date': release_date
             })
         return json.dumps(result)
-    
+
     def prepare_dependencies(self, obj):
-        result = [{ 'name': dep.name, 'namespace': dep.namespace, 'id': dep.id } for dep in obj.dependencies.filter(active=True).order_by('namespace','name')]
+        result = [
+            dict(name=dep.name, namespace=dep.namespace, id=dep.id)
+            for dep in obj.dependencies.filter(active=True).order_by('namespace', 'name')
+        ]
         return json.dumps(result)
 
     def prepare_platform_details(self, obj):
-        result = [{ 'name': plat.name, 'release': plat.release } for plat in obj.platforms.filter(active=True).order_by('name','release')]
+        result = [
+            dict(name=plat.name, release=plat.release)
+            for plat in obj.platforms.filter(active=True).order_by('name', 'release')
+        ]
         return json.dumps(result)
-

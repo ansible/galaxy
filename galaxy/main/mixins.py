@@ -29,7 +29,6 @@ class DirtyMixin(object):
     @property
     def is_dirty(self):
         missing = object()
-        result = {}
         for key, value in self._original_state.iteritems():
             if value != self.__dict__.get(key, missing):
                 return True

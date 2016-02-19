@@ -6,10 +6,9 @@
 import logging
 
 from celery import task
-from django.conf import settings
 
 # local
-from galaxy.main.models import Tag, Role
+from galaxy.main.models import Platform, Role, Tag
 from galaxy.main.search_models import TagDoc, PlatformDoc, UserDoc
 from galaxy.main.utils.memcache_lock import memcache_lock, MemcacheLockException
 
@@ -69,7 +68,8 @@ def update_platforms(platforms):
         try:
             with memcache_lock("platform_%s" % platform):      
                 cnt = Role.objects.filter(active=True, is_valid=True, platforms__name=platform) \
-                      .order_by('namespace','name').distinct('namespace','name').count()
+                    .order_by('namespace','name') \
+                    .distinct('namespace', 'name').count()
                 es_platforms = PlatformDoc.search().query('match', name=platform).execute()
                 updated = False
                 
@@ -133,12 +133,11 @@ def update_users(user):
 @task(throws=(Exception,), name="galaxy.main.celerytasks.elastic_tasks.update_custom_indexes")
 def update_custom_indexes(username=None, tags=[], platforms=[]):
     
-    if length(tags) > 0:
+    if len(tags) > 0:
         update_tags(tags)
     
-    if length(platforms) > 0:
+    if len(platforms) > 0:
         update_platforms(platforms)
     
     if username is not None:
         update_users(username)
-    

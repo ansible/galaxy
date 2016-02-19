@@ -6,7 +6,7 @@ from github import Github
 
 from django.conf import settings
 from django.db.models import Max, Q
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from galaxy.main.models import Role, RefreshRoleCount
 from galaxy.main.celerytasks.tasks import refresh_role_counts
@@ -50,6 +50,6 @@ class Command(BaseCommand):
         elapsed = time.time() - started
         hours = floor(elapsed / 3600) if elapsed >= 3600 else 0
         minutes = floor((elapsed - (hours * 3600)) / 60) if (elapsed - (hours * 3600)) >= 60 else 0
-        seconds =  elapsed - (hours * 3600) - (minutes * 60)
+        seconds = elapsed - (hours * 3600) - (minutes * 60)
         print 'Elapsed time %02d.%02d.%02d' % (hours, minutes, seconds)
 

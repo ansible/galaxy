@@ -15,13 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
-# django libs
-
 from django.contrib import admin
-
-# local stuff
-
-from galaxy.main.models import *
+from galaxy.main.models import Platform, Role, RoleVersion
 
 ###################################################################################
 # Admin Models
@@ -42,14 +37,14 @@ admin.site.register(RoleVersion, RoleVersionAdmin)
 #    pass
 #admin.site.register(RoleImport, RoleImportAdmin)
 
-class RoleRatingAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(RoleRating, RoleRatingAdmin)
+#class RoleRatingAdmin(admin.ModelAdmin):
+#    pass
+#admin.site.register(RoleRating, RoleRatingAdmin)
 
-class CategoryAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(Category, CategoryAdmin)
+#class CategoryAdmin(admin.ModelAdmin):
+#    pass
+#admin.site.register(Category, CategoryAdmin)
 
-class UserAliasAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(UserAlias, UserAliasAdmin)
+#class UserAliasAdmin(admin.ModelAdmin):
+#    pass
+#admin.site.register(UserAlias, UserAliasAdmin)

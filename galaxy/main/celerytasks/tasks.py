@@ -16,25 +16,27 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import os.path
-import time
 import yaml
 import datetime
 import bleach
 
 from celery import task
-from github import Github, AuthenticatedUser
-from github import GithubException, BadCredentialsException
+from github import Github
+from github import GithubException
 from urlparse import urlparse
 
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.db import transaction, connection, DatabaseError
-from django.utils import text, html, timezone
+from django.db import transaction
+from django.utils import timezone
 
 from allauth.socialaccount.models import SocialToken
 
-from galaxy.main.models import *
+from galaxy.main.models import (Platform,
+                                Tag,
+                                Role,
+                                ImportTask,
+                                RoleVersion,
+                                Namespace)
+
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 
 
@@ -47,16 +49,16 @@ def update_user_repos(github_repos, user):
     repo_dict = dict()
     for r in github_repos:
         try:
-            meta = r.get_file_contents("meta/main.yml")
+            r.get_file_contents("meta/main.yml")
             name = r.full_name.split('/')
             cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
             enabled = cnt > 0
-            object, created = user.repositories.update_or_create(
+            user.repositories.update_or_create(
                 github_user=name[0],
                 github_repo=name[1],
-                defaults={ 'github_user': name[0],
-                           'github_repo': name[1],
-                           'is_enabled': enabled })
+                defaults={'github_user': name[0],
+                          'github_repo': name[1],
+                          'is_enabled': enabled})
             repo_dict[r.full_name] = True
         except:
             pass
@@ -126,17 +128,19 @@ def fail_import_task(import_task, logger, msg):
     print msg
     raise Exception(msg)
 
+
 def strip_input(input):
     """
     A simple helper to strip input strings while checking
     to make sure they're not None.
     """
-    if input == None:
+    if input is None:
         return ""
     elif isinstance(input, basestring):
         return input.strip()
     else:
         return input
+
 
 def add_message(import_task, msg_type, msg_text):
     try:
@@ -147,6 +151,7 @@ def add_message(import_task, msg_type, msg_text):
         transaction.rollback()
         print "Error adding message to import task for role %s: %s" % (import_task.role.name, e.message)
     print "Role %d: %s - %s" % (import_task.role.id, msg_type, msg_text)
+
 
 def get_readme(import_task, repo, branch):
     """
@@ -186,11 +191,6 @@ def get_readme(import_task, repo, branch):
 
 @task(throws=(Exception,), name="galaxy.main.celerytasks.tasks.import_role")
 def import_role(task_id):
-    
-    # regex used to strip unwanted substrings from the 
-    # role name or from any deps
-    name_regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
-
     # standard task logger
     logger = import_role.get_logger()
 
@@ -213,7 +213,7 @@ def import_role(task_id):
     user = import_task.owner
     repo_full_name = role.github_user + "/" + role.github_repo
     add_message(import_task, "INFO", "Starting import %d: role_name=%s repo=%s ref=%s" % 
-        (import_task.id,role.name,repo_full_name,import_task.github_reference))
+                (import_task.id,role.name,repo_full_name,import_task.github_reference))
 
     try:
         token = SocialToken.objects.get(account__user=user, account__provider='github')
@@ -279,7 +279,7 @@ def import_role(task_id):
     # validate meta/main.yml
     galaxy_info = meta_data.get("galaxy_info", None)
     if galaxy_info is None:
-        add_messge(import_task, "ERROR", "Key galaxy_info not found in meta/main.yml")
+        add_message(import_task, "ERROR", "Key galaxy_info not found in meta/main.yml")
         galaxy_info = {}
 
     if import_task.alternate_role_name:
@@ -325,7 +325,7 @@ def import_role(task_id):
     else:
         parsed_url = urlparse(role.issue_tracker_url)
         if parsed_url.scheme == '' or parsed_url.netloc == '' or parsed_url.path == '':
-            add_message(impor_task, "WARNING", "Invalid URL provided for galaxy_info.issue_tracker_url in "
+            add_message(import_task, "WARNING", "Invalid URL provided for galaxy_info.issue_tracker_url in "
                         "meta/main.yml")
             role.issue_tracker_url = ""
 
@@ -482,10 +482,6 @@ def import_role(task_id):
                 names = dep.split(".",1)
                 if len(names) < 2:
                     raise Exception("name format must match 'username.name'")
-                # strip out substrings from the dep role name, to account for 
-                # those that may have imported the role previously before this
-                # rule existed, that way we don't end up with broken/missing deps
-                #dep_role_name = name_regex.sub('', dep_role_name)
             except Exception, e:
                 add_message(import_task, "ERROR", "Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
 
@@ -662,26 +658,25 @@ def refresh_role_counts(start, end, gh_api, tracker):
     '''
     Update each role with latest counts from GitHub
     '''
-    cursor = connection.cursor()
     tracker.state = 'RUNNING'
     tracker.save()
     passed = 0
     failed = 0
-    for role in Role.objects.filter(is_valid=True,active=True,id__gt=start,id__lte=end):
+    for role in Role.objects.filter(is_valid=True, active=True, id__gt=start, id__lte=end):
         full_name = "%s/%s" % (role.github_user,role.github_repo)
         print "Updating repo: %s" % full_name
         try:
             gh_repo = gh_api.get_repo(full_name)
             update_namespace(gh_repo)
-            sub_count = 0
-            for sub in gh_repo.get_subscribers():
-                sub_count += 1
-            # use raw SQL in order to NOT trigger Role signals that update elastic search indexes
-            cursor.execute("UPDATE main_role SET watchers_count=%s, stargazers_count=%s, forks_count=%s, open_issues_count=%s WHERE id=%s",
-                [sub_count, gh_repo.stargazers_count, gh_repo.forks_count, gh_repo.open_issues_count, role.id])
+            sub_count = len(gh_repo.get_subscribers())
+            role.watchers_count = sub_count
+            role.stargazers_count = gh_repo.stargazers_count
+            role.forks_count = gh_repo.forks_count
+            role.open_issues_count = gh_repo.open_issues_count
+            role.save()
             passed += 1
-        except:
-            print "Failed to update %s" % full_name
+        except Exception, e:
+            print "FAILED %s: %s" % (full_name, str(e.args))
             failed += 1
     tracker.state = 'FINISHED'
     tracker.passed = passed

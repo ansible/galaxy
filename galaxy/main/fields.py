@@ -60,7 +60,7 @@ class TruncatingCharField(models.CharField):
     def get_prep_value(self, value):
         value = super(TruncatingCharField,self).get_prep_value(value)
         if value and len(value) > self.max_length:
-            return value[:self.max_length-3] + '...'
+            return value[:self.max_length - 3] + '...'
         return value
 
 add_introspection_rules([], ["^galaxy\.main\.fields\.TruncatingCharField"])

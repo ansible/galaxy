@@ -17,31 +17,19 @@
 
 # standard python libs
 
-import random
-
 # django libs
-
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models import Avg
-from django.dispatch import receiver
 from django.forms.models import model_to_dict
-from django.utils.timezone import now, make_aware, get_default_timezone
+from django.utils.timezone import now
 
 # postgresql specific
 from django.contrib.postgres.fields import ArrayField
 
-# celery/djcelery
-
-from djcelery.models import TaskMeta
-
 # local stuff
-
-#from galaxy.api.access import *
-from galaxy.api.aggregators import *
-from galaxy.main.fields import *
-from galaxy.main.mixins import *
+from galaxy.main.fields import LooseVersionField, TruncatingCharField
+from galaxy.main.mixins import DirtyMixin
 
 __all__ = [
     'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 
@@ -99,8 +87,8 @@ class PrimordialModel(BaseModel):
     class Meta:
         abstract = True
 
-    description   = TruncatingCharField(max_length=255, blank=True, default='')
-    active        = models.BooleanField(default=True, db_index=True)
+    description = TruncatingCharField(max_length=255, blank=True, default='')
+    active      = models.BooleanField(default=True, db_index=True)
 
     def mark_inactive(self, save=True):
         '''Use instead of delete to rename and mark inactive.'''
@@ -277,10 +265,10 @@ class Role(CommonModelNameNotUnique):
     # ------------------------------------------------------------------------------
     # regular fields
     namespace = models.CharField(
-       max_length = 256,
-       verbose_name = "Namespace",
-       blank = True,
-       null = True
+        max_length   = 256,
+        verbose_name = "Namespace",
+        blank        = True,
+        null         = True
     )
     github_user = models.CharField(
         max_length   = 256,
@@ -413,9 +401,9 @@ class Role(CommonModelNameNotUnique):
 
     def get_last_import(self):
         try:
-            return model_to_dict(self.import_tasks.latest(), fields=('id','state'))
-        except Exception, e:
-            return {}
+            return model_to_dict(self.import_tasks.latest(), fields=('id', 'state'))
+        except:
+            return dict()
 
     def get_unique_platforms(self):
         return [platform.name for platform in self.platforms.filter(active=True).order_by('name').distinct('name')]
@@ -424,9 +412,7 @@ class Role(CommonModelNameNotUnique):
         return [platform.release for platform in self.platforms.filter(active=True).order_by('release').distinct('release')]
     
     def get_unique_platform_search_terms(self):
-        '''
-        Fetch the unique set of aliases
-        '''
+        # Fetch the unique set of aliases
         terms = []
         for platform in self.platforms.filter(active=True).exclude(alias__isnull=True).exclude(alias__exact='').all():
             terms += platform.alias.split(' ')
@@ -441,7 +427,6 @@ class Role(CommonModelNameNotUnique):
     def validate_char_lengths(self):
         for field in self._meta.get_fields():
             if not field.is_relation and field.get_internal_type() == 'CharField':
-                #print "%s %s" % (field.name, field.max_length)
                 if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
                     raise Exception("Role %s value exceeeds max length of %s." % (field.name, field.max_length))
 
