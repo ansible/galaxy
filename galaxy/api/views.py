@@ -72,6 +72,7 @@ from galaxy.main.models import *
 from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
 from galaxy.main.celerytasks.tasks import import_role, refresh_user_repos, update_user_repos
+from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 
 
 #--------------------------------------------------------------------------------
@@ -1074,8 +1075,14 @@ class RemoveRole(APIView):
                 "github_user": role.github_user,
                 "github_repo": role.github_repo
             })
+            
             for notification in role.notifications.all():
                 notification.delete()
+
+            # update ES indexes
+            update_custom_indexes.delay(username=role.namespace,
+                                        tags=role.get_tags(),
+                                        platforms=role.get_unique_platforms())
                 
         # Update the repository cache
         for repo in Repository.objects.filter(github_user=gh_user,github_repo=gh_repo):

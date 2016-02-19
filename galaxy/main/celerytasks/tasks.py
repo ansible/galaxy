@@ -35,6 +35,7 @@ from django.utils import text, html, timezone
 from allauth.socialaccount.models import SocialToken
 
 from galaxy.main.models import *
+from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 
 
 def update_user_repos(github_repos, user):
@@ -546,7 +547,11 @@ def import_role(task_id):
         transaction.commit()
     except Exception, e:
         fail_import_task(import_task, logger, "Error saving role: %s" % e.message)
-    
+
+    # Update ES indexes
+    update_custom_indexes.delay(username=role.namespace,
+                                tags=role.get_tags(),
+                                platforms=role.get_unique_platforms())
     return True
 
 # ----------------------------------------------------------------------
@@ -670,8 +675,8 @@ def refresh_role_counts(start, end, gh_api, tracker):
             update_namespace(gh_repo)
             sub_count = 0
             for sub in gh_repo.get_subscribers():
-                sub_count += 1   # only way to get subscriber count via pygithub
-            ''' use raw SQL in order to NOT trigger Role signals that update elastic search indexes '''
+                sub_count += 1
+            # use raw SQL in order to NOT trigger Role signals that update elastic search indexes
             cursor.execute("UPDATE main_role SET watchers_count=%s, stargazers_count=%s, forks_count=%s, open_issues_count=%s WHERE id=%s",
                 [sub_count, gh_repo.stargazers_count, gh_repo.forks_count, gh_repo.open_issues_count, role.id])
             passed += 1

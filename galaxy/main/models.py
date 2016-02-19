@@ -59,22 +59,16 @@ __all__ = [
 # Abstract models that form a base for all real models
 
 
-class PrimordialModel(models.Model, DirtyMixin):
+class BaseModel(models.Model, DirtyMixin):
     '''
-    common model for all object types that have these standard fields
-    must use a subclass CommonModel or CommonModelNameNotUnique though
-    as this lacks a name field.
+    common model for objects not needing name, description, active attributes
     '''
 
     class Meta:
         abstract = True
 
-    description   = TruncatingCharField(max_length=255, blank=True, default='')
     created       = models.DateTimeField(auto_now_add=True)
     modified      = models.DateTimeField(auto_now=True)
-    active        = models.BooleanField(default=True, db_index=True)
-
-    # tags = TaggableManager(blank=True)
 
     def __unicode__(self):
         if hasattr(self, 'name'):
@@ -92,6 +86,21 @@ class PrimordialModel(models.Model, DirtyMixin):
                 raise
             kwargs.pop('update_fields')
             super(PrimordialModel, self).save(*args, **kwargs)
+
+    def hasattr(self, attr):
+        return hasattr(self, attr)
+
+
+class PrimordialModel(BaseModel):
+    '''
+    base model for CommonModel and CommonModelNameNotUnique
+    '''
+
+    class Meta:
+        abstract = True
+
+    description   = TruncatingCharField(max_length=255, blank=True, default='')
+    active        = models.BooleanField(default=True, db_index=True)
 
     def mark_inactive(self, save=True):
         '''Use instead of delete to rename and mark inactive.'''
@@ -118,8 +127,6 @@ class PrimordialModel(models.Model, DirtyMixin):
             if save:
                 self.save()
 
-    def hasattr(self, attr):
-        return hasattr(self, attr)
 
 class CommonModel(PrimordialModel):
     # a base model where the name is unique '''

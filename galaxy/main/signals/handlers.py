@@ -15,33 +15,27 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 from django.conf import settings
 from django.dispatch import receiver
 from django.db.models.signals import m2m_changed, pre_save, pre_delete, post_save, post_delete
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 
-# elasticsearch
-from elasticsearch_dsl import Search, Q
-
 # allauth
 from allauth.account.signals import user_logged_in
 from allauth.socialaccount.models import SocialToken
 
-# github
-from github import Github, AuthenticatedUser
-
 # local
-from galaxy.main.models import Role, RoleRating, Tag, ImportTask, Repository
-from galaxy.main.search_models import TagDoc, PlatformDoc
-from galaxy.main.celerytasks.elastic_tasks import update_tags, update_platforms, update_users
+from galaxy.main.models import ImportTask, Repository
 from galaxy.main.celerytasks.tasks import refresh_user_repos, refresh_user_stars
 
-import logging
 
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
+
 
 @receiver(user_logged_in)
 def user_logged_in_handler(request, user, **kwargs):
@@ -52,54 +46,59 @@ def user_logged_in_handler(request, user, **kwargs):
         refresh_user_repos.delay(user,token.token)
         refresh_user_stars.delay(user,token.token)
     except ObjectDoesNotExist:
-        logger.error('Failed to retrieve GitHub token form Galaxy user: %s, GitHub user: %s' % (user.username, user.github_user))
+        logger.error('Failed to retrieve GitHub token for Galaxy user: %s, GitHub user: %s' % (user.username, user.github_user))
         user.cache_refreshed = True
         user.save()
+    except MultipleObjectsReturned:
+        logger.error('Found multiple GitHub tokens for user: %s' % user.username)
+        user.cache_refreshed = True
+        user.save()
+
 
 @receiver(post_save, sender=ImportTask)
 def import_task_post_save(sender, **kwargs):
     ''' 
-    Update user repository cache
+    When a role is imported enable the role in the user's repository cache
     '''
     instance = kwargs['instance']
     for repo in Repository.objects.filter(github_user=instance.github_user,github_repo=instance.github_repo):
         repo.is_enabled = True
         repo.save()
 
-@receiver(pre_save, sender=Role)
-@receiver(pre_delete, sender=Role)
-def role_pre_save(sender, **kwargs):
-    '''
-    Before changes are made to a role grab the list of associated tags. The list will be used on post save 
-    to signal celery to update elasticsearch indexes.
-    '''
-    instance = kwargs['instance']
-    tags = instance.get_tags() if instance.id else []
-    platforms = instance.get_unique_platforms() if instance.id else []
-    username = instance.namespace if instance.id else ''
-    instance._saved_tag_names = tags
-    instance._saved_username = username
-    instance._saved_platforms = platforms
+# @receiver(pre_save, sender=Role)
+# @receiver(pre_delete, sender=Role)
+# def role_pre_save(sender, **kwargs):
+#     '''
+#     Before changes are made to a role grab the list of associated tags. The list will be used on post save 
+#     to signal celery to update elasticsearch indexes.
+#     '''
+#     instance = kwargs['instance']
+#     tags = instance.get_tags() if instance.id else []
+#     platforms = instance.get_unique_platforms() if instance.id else []
+#     username = instance.namespace if instance.id else ''
+#     instance._saved_tag_names = tags
+#     instance._saved_username = username
+#     instance._saved_platforms = platforms
 
 
-@receiver(post_save, sender=Role)
-@receiver(post_delete, sender=Role)
-def role_post_save(sender, **kwargs):
-    '''
-    Signal celery to update the indexes.
-    '''
-    instance = kwargs['instance']
-    tags = getattr(instance, '_saved_tag_names', None)
-    if tags:
-        for tag in tags:
-            update_tags.delay(tag)
+# @receiver(post_save, sender=Role)
+# @receiver(post_delete, sender=Role)
+# def role_post_save(sender, **kwargs):
+#     '''
+#     Signal celery to update the indexes.
+#     '''
+#     instance = kwargs['instance']
+#     tags = getattr(instance, '_saved_tag_names', None)
+#     if tags:
+#         for tag in tags:
+#             update_tags.delay(tag)
 
-    username = getattr(instance, '_saved_username', None)
-    if username:
-        update_users.delay(username)
+#     username = getattr(instance, '_saved_username', None)
+#     if username:
+#         update_users.delay(username)
 
-    platforms = getattr(instance, '_saved_platforms', None)
-    if platforms:
-        for platform in platforms:
-            update_platforms.delay(platform)
+#     platforms = getattr(instance, '_saved_platforms', None)
+#     if platforms:
+#         for platform in platforms:
+#             update_platforms.delay(platform)
 
