@@ -99,6 +99,7 @@ CELERY_ROUTES = {
     'galaxy.main.celerytasks.tasks.refresh_user_stars': {'queue': 'star_tasks'},
     'galaxy.main.celerytasks.tasks.refresh_role_counts': {'queue': 'import_tasks'},
     'galaxy.main.celerytasks.tasks.import_role': {'queue': 'import_tasks'}
+    'galaxy.main.celerytasks.elastic_tasks.update_custom_indexes': {'queue': 'admin_tasks'},
 }
 
 GITHUB_TASK_USERS = [
