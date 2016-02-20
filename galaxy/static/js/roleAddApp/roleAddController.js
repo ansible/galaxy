@@ -58,6 +58,7 @@
         $scope.updateSettings = _updateSettings;
         $scope.reimport = _importRepository;
         $scope.github_auth = true;
+        $scope.validateName = _validateName;
 
         if (!(currentUserService.authenticated && currentUserService.connected_to_github)) {
             $scope.github_auth = false;
@@ -103,6 +104,7 @@
             $scope.repositories.forEach(function(repo) {
                 repo.github_secret_type = "password";
                 repo.travis_token_type = "password";
+                repo.name_pattern_error = false;
                 if (repo.summary_fields) {
                     repo.summary_fields.notification_secrets.forEach(function(secret) {
                         if (secret.source == 'travis') {
@@ -167,7 +169,8 @@
             _repo.travis_token = $scope.master.travis_token;
             _repo.github_id = $scope.master.github_id;
             _repo.github_secret = $scope.github_secret;
-            _repo.show_integrations = !_repo.show_integrations; 
+            _repo.show_integrations = !_repo.show_integrations;
+            _repo.name_pattern_error = false;
         }
 
         function _revealGithub(_repo) {
@@ -187,10 +190,14 @@
         }
 
         function _updateSettings(_repo) {
-            _repo.show_integrations = false;
-            _updateRoleName(_repo).then(function() {
-                _updateSecrets(_repo);
-            });
+            _validateName(_repo);
+            if (!_repo.name_pattern_error) {
+                $scope.name_pattern_error = false;
+                _repo.show_integrations = false;
+                _updateRoleName(_repo).then(function() {
+                    _updateSecrets(_repo);
+                });
+            }
         }
 
         function _updateRoleName(_repo) {
@@ -324,6 +331,14 @@
                 if (deferred) {
                     deferred.resolve();
                 }
+            }
+        }
+
+        function _validateName(_repo) {
+            if (/^[A-Za-z0-9\-_]+$/.test(_repo.role_name)) {
+                _repo.name_pattern_error = false;
+            } else {
+                _repo.name_pattern_error = true;
             }
         }
     }

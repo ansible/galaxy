@@ -7,11 +7,12 @@
         <div class="inner-container">
             <div class="instructions">
                 <h2>Import Your Roles from GitHub</h2>
-                <div class="text">
+                <div class="text" ng-show="!loading">
                     <p><strong></strong>
                     Click the toggle next to the repository to reveal a check mark. This will add the role to Galaxy, making it visible on the Browse Roles page and allowing anyone to download it using the ansible-galaxy command line tool. Removing the check mark will delete the role from Galaxy. Use settings <a href="" disabled="disabled" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a> to enable Travis notifications and control the role name assigned to the repo.
                     <p>If you don't see all of your roles, <a ng-href="{{ auth_orgs_url}}">review and add</a> your authorized organizations.</p>
                 </div>
+                <div class="text" style="margin-top: 20px;" ng-show="loading"></div>
             </div>
 
             <div class="no-github-auth" ng-if="!github_auth">
@@ -75,7 +76,8 @@
                             </div>
                             <div class="form-group">
                                 <label>Edit Role Name</label>
-                                <input type="text" class="form-control input-sm" name="alternate_name" ng-model="repo.role_name" autocomplete="off" />
+                                <input type="text" class="form-control input-sm" name="alternate_name" ng-model="repo.role_name" ng-keyup="validateName(repo)" autocomplete="off" />
+                                <div class="error-text" ng-show="repo.name_pattern_error">Name may contain word characters (A-Z a-z 0-9 - _) only</div>
                                 <div class="help-text">Name assigned to the role on import. NOTE: Changing the name will trigger an import.</div>
                             </div>
                             <!--div class="form-group">
@@ -97,8 +99,11 @@
                     
                     <hr />
                 </div>
-                <div class="repository loading" ng-show="!refreshing && repositories.length == 0">
+                <div class="repository loading" ng-show="!loading && !refreshing && repositories.length == 0">
                     No roles found in your public GitHub repositories.
+                </div>
+                <div class="repository loading" ng-show="loading || refreshing && repository.length == 0">
+                    Loading your role repositories from GitHub...
                 </div>
             </div>
         </div>
