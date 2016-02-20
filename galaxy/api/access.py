@@ -17,22 +17,13 @@
 
 # standard python libraries
 
-import sys
 import logging
 
-# django stuff
-
 from django.contrib.auth import get_user_model
-from django.db.models import Count
-
-# rest framework stuff
-
-from rest_framework.exceptions import ParseError, PermissionDenied
-
-# local stuff
-
-from galaxy.accounts.models import CustomUser
-from galaxy.main.models import *
+from galaxy.main.models import (Role, RoleRating, ImportTask,
+                                ImportTaskMessage, RoleVersion,
+                                NotificationSecret, Notification,
+                                Subscription, Stargazer)
 
 logger = logging.getLogger('galaxy.api.access')
 
@@ -45,9 +36,11 @@ access_registry = {
     # ...
 }
 
+
 def register_access(model_class, access_class):
     access_classes = access_registry.setdefault(model_class, [])
     access_classes.append(access_class)
+
 
 def check_user_access(user, model_class, action, *args, **kwargs):
     '''
@@ -67,6 +60,7 @@ def check_user_access(user, model_class, action, *args, **kwargs):
     logger.debug('check_user_access: %s %s %s returned %s', user, model_class, action, False)
     return False
 
+
 def get_pk_from_dict(_dict, key):
     '''
     Helper for obtaining a pk from user data dict or None if not present.
@@ -75,6 +69,7 @@ def get_pk_from_dict(_dict, key):
         return int(_dict[key])
     except (TypeError, KeyError, ValueError):
         return None
+
 
 class BaseAccess(object):
     '''
@@ -135,6 +130,7 @@ class BaseAccess(object):
     def can_unattach(self, obj, sub_obj, relationship):
         return self.can_change(obj, None)
 
+
 class UserAccess(BaseAccess):
     '''
     I can see user records when:
@@ -161,6 +157,7 @@ class UserAccess(BaseAccess):
             return False
         return self.user.is_staff
 
+
 class RoleAccess(BaseAccess):
     model = Role
 
@@ -181,29 +178,15 @@ class RoleAccess(BaseAccess):
         return False
 
     def get_queryset(self):
-        qs = self.model.objects.filter(active=True, owner__is_active=True).distinct()
+        return self.model.objects.filter(active=True).distinct()
 
-class RoleRatingAccess(BaseAccess):
-    model = RoleRating
-
-    def can_add(self, data):
-        return self.user.is_authenticated
-
-    def can_change(self, obj, data):
-        if not self.user.is_authenticated:
-            return False
-        if not hasattr(obj, "owner"):
-            return False
-        return bool(obj.owner.id == self.user.id or self.user.is_staff)
-
-    def get_queryset(self):
-        qs = self.model.objects.filter(active=True, role__active=True, role__owner__is_active=True).distinct()
 
 class RoleVersionAccess(BaseAccess):
     model = RoleVersion
 
     def get_queryset(self):
-        qs = self.model.objects.filter(active=True, role__active=True, role__owner__is_active=True).distinct()
+        return self.model.objects.filter(active=True, role__active=True).distinct()
+
 
 class NotificationSecretAccess(BaseAccess):
     model = NotificationSecret
@@ -225,6 +208,7 @@ class NotificationSecretAccess(BaseAccess):
         if self.user.is_authenticated() and obj.active and obj.owner.id == self.user.id:
             return True
 
+
 class ImportTaskAccess(BaseAccess):
     model = ImportTask
     
@@ -232,12 +216,13 @@ class ImportTaskAccess(BaseAccess):
         return self.user.is_authenticated()
 
     def can_change(self, obj, data):
-        return false
+        return False
 
     def can_attach(self, obj, sub_obj, relationship, data,
                    skip_sub_obj_read_check=False):
         return False
-    
+
+
 class ImportTaskMessageAccess(BaseAccess):
     model = ImportTaskMessage
 
@@ -254,6 +239,7 @@ class ImportTaskMessageAccess(BaseAccess):
     def get_queryset(self):
         return self.model.objects.filter(active=True, task__active=True).distinct()
 
+
 class NotificationAccess(BaseAccess):
 
     def can_add(self,data):
@@ -266,6 +252,7 @@ class NotificationAccess(BaseAccess):
                    skip_sub_obj_read_check=False):
         return False
 
+
 class SubscriptionAccess(BaseAccess):
     def can_add(self, data):
         return self.user.is_authenticated()
@@ -275,6 +262,7 @@ class SubscriptionAccess(BaseAccess):
 
     def can_delete(self,data):
         return self.user.is_authenticated()
+
 
 class StargazerAccess(BaseAccess):
     def can_add(self, data):
@@ -288,7 +276,6 @@ class StargazerAccess(BaseAccess):
 
 register_access(User, UserAccess)
 register_access(Role, RoleAccess)
-register_access(RoleRating, RoleRatingAccess)
 register_access(RoleVersion, RoleVersionAccess)
 register_access(ImportTask, ImportTaskAccess)
 register_access(ImportTaskMessage, ImportTaskMessageAccess)

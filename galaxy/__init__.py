@@ -46,7 +46,7 @@ def prepare_env():
     from django.conf import settings
     if not settings.DEBUG:
         warnings.simplefilter('ignore', DeprecationWarning)
-    import django.utils
+    # import django.utils
     settings.version = __version__
 
 def manage():

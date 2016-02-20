@@ -51,7 +51,7 @@ def update_user_repos(github_repos, user):
         try:
             r.get_file_contents("meta/main.yml")
             name = r.full_name.split('/')
-            cnt = Role.objects.filter(github_user=name[0],github_repo=name[1]).count()
+            cnt = Role.objects.filter(github_user=name[0], github_repo=name[1]).count()
             enabled = cnt > 0
             user.repositories.update_or_create(
                 github_user=name[0],

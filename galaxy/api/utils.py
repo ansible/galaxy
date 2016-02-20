@@ -19,13 +19,11 @@
 # All Rights Reserved.
 
 # Python
-import base64
 import hashlib
 import logging
 import re
 import subprocess
 import sys
-import urlparse
 
 # Django REST Framework
 from rest_framework.exceptions import ParseError, PermissionDenied
@@ -34,7 +32,8 @@ from rest_framework.exceptions import ParseError, PermissionDenied
 #from Crypto.Cipher import AES
 
 __all__ = ['get_object_or_400', 'get_object_or_403', 'camelcase_to_underscore',
-           'get_ansible_version', 'get_awx_version', 'update_scm_url', 'html_decode']
+           'get_ansible_version', 'get_version', 'html_decode']
+
 
 def get_object_or_400(klass, *args, **kwargs):
     '''
@@ -50,6 +49,7 @@ def get_object_or_400(klass, *args, **kwargs):
     except queryset.model.MultipleObjectsReturned, e:
         raise ParseError(*e.args)
 
+
 def get_object_or_403(klass, *args, **kwargs):
     '''
     Return a single object from the given model or queryset based on the query
@@ -64,12 +64,14 @@ def get_object_or_403(klass, *args, **kwargs):
     except queryset.model.MultipleObjectsReturned, e:
         raise PermissionDenied(*e.args)
 
+
 def camelcase_to_underscore(s):
     '''
     Convert CamelCase names to lowercase_with_underscore.
     '''
     s = re.sub(r'(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', '_\\1', s)
     return s.lower().strip('_')
+
 
 class RequireDebugTrueOrTest(logging.Filter):
     '''
@@ -79,6 +81,7 @@ class RequireDebugTrueOrTest(logging.Filter):
     def filter(self, record):
         from django.conf import settings
         return settings.DEBUG or 'test' in sys.argv
+
 
 def get_ansible_version():
     '''
@@ -92,6 +95,7 @@ def get_ansible_version():
     except:
         return 'unknown'
 
+
 def get_version():
     '''
     Return galaxy version as reported by setuptools.
@@ -102,6 +106,7 @@ def get_version():
         return pkg_resources.require('galaxy')[0].version
     except:
         return __version__
+
 
 def get_encryption_key(instance, field_name):
     '''
@@ -145,6 +150,7 @@ def get_encryption_key(instance, field_name):
 #    value = cipher.decrypt(encrypted)
 #    return value.rstrip('\x00')
 
+
 def html_decode(s):
     """
     Returns the ASCII decoded version of the given HTML string. This does
@@ -156,6 +162,6 @@ def html_decode(s):
         ('>', '&gt;'),
         ('<', '&lt;'),
         ('&', '&amp;')
-        ):
-        s = s.replace(code[1], code[0])
+        ):                                 # noqa
+        s = s.replace(code[1], code[0])    # noqa
     return s

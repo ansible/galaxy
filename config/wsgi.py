@@ -1,1 +1,1 @@
-from galaxy.wsgi import application
+from galaxy.wsgi import application  # noqa

@@ -279,9 +279,10 @@ class RoleListView(ListView):
         if Role.objects.filter(namespace=self.args[0]).count() == 0:
             raise Http404()
         if name:
-            qs = Role.objects.filter(active=True,is_valid=True,namespace=self.args[0],name__icontains=name)
+            qs = Role.objects.filter(active=True, is_valid=True, namespace=self.args[0],
+                                     name__icontains=name)
         else:
-            qs = Role.objects.filter(active=True,is_valid=True,namespace=self.args[0])
+            qs = Role.objects.filter(active=True, is_valid=True, namespace=self.args[0])
         return qs
 
     def get_context_data(self, **kwargs):

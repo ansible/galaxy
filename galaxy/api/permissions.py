@@ -30,9 +30,8 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework import permissions
 
 # AWX
-from galaxy.api.access import *
+from galaxy.api.access import *  # noqa
 from galaxy.api.utils import get_object_or_400
-from galaxy.main.models import *
 
 logger = logging.getLogger('galaxy.api.permissions')
 
@@ -62,19 +61,21 @@ class ModelAccessPermission(permissions.BasePermission):
 
     def check_post_permissions(self, request, view, obj=None):
         if hasattr(view, 'parent_model'):
-            parent_obj = get_object_or_400(view.parent_model, pk=view.kwargs['pk'])
+            get_object_or_400(view.parent_model, pk=view.kwargs['pk'])
             return True
         else:
             if obj:
                 return True
-            if hasattr(view,'model'):
+            if hasattr(view, 'model'):
                 return check_user_access(request.user, view.model, 'add', request.DATA)
             return True
 
     def check_put_permissions(self, request, view, obj=None):
         if not obj:
-            return True # FIXME: For some reason this needs to return True
-                        # because it is first called with obj=None?
+            # FIXME: For some reason this needs to return True
+            # because it is first called with obj=None?
+            return True
+
         if getattr(view, 'is_variable_data', False):
             return check_user_access(request.user, view.model, 'change', obj,
                                      dict(variables=request.DATA))
@@ -87,8 +88,9 @@ class ModelAccessPermission(permissions.BasePermission):
 
     def check_delete_permissions(self, request, view, obj=None):
         if not obj:
-            return True # FIXME: For some reason this needs to return True
-                        # because it is first called with obj=None?
+            # FIXME: For some reason this needs to return True
+            # because it is first called with obj=None?
+            return True
         return check_user_access(request.user, view.model, 'delete', obj)
 
     def check_permissions(self, request, view, obj=None):
@@ -116,8 +118,7 @@ class ModelAccessPermission(permissions.BasePermission):
 
         # Check permissions for the given view and object, based on the request
         # method used.
-        check_method = getattr(self, 'check_%s_permissions' % \
-                               request.method.lower(), None)
+        check_method = getattr(self, 'check_%s_permissions' % request.method.lower(), None)
         result = check_method and check_method(request, view, obj)
         if not result:
             raise PermissionDenied("You do not have permission to perform this action.")

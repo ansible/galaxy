@@ -15,41 +15,35 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
-import hashlib
 import markdown
-import collections
 import json
 
-try:
-    from urllib.parse import urljoin, urlencode
-except ImportError:
-    from urlparse import urljoin
-    from urllib import urlencode
-
-from rest_framework import fields
 from rest_framework import serializers
-#from rest_framework.compat import get_concrete_model
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.db.models import Avg
-from django.utils import text, html
 from collections import OrderedDict
 
-# from avatar.conf import settings
-# from avatar.util import get_primary_avatar, get_default_avatar_url, force_bytes
-# from avatar.models import Avatar
 
 # haystack
-from drf_haystack.serializers import HaystackSerializer, HaystackSerializerMixin
+from drf_haystack.serializers import HaystackSerializer
 
 # galaxy
 from galaxy.main.search_indexes import RoleIndex
-from galaxy.api.aggregators import *
 from galaxy.api.utils import html_decode
-from galaxy.main.models import *
+from galaxy.main.models import (Platform,
+                                Category,
+                                Tag,
+                                Role,
+                                ImportTask,
+                                RoleVersion,
+                                NotificationSecret,
+                                Notification,
+                                Repository,
+                                Subscription,
+                                Stargazer)
 
 # rst2html5-tools
 from html5css3 import Writer
@@ -67,6 +61,7 @@ SUMMARIZABLE_FK_FIELDS = {
     'role'  : ('id','url','name',),
 }
 
+
 def readme_to_html(obj):
     if obj is None or obj.readme is None:
         return ''
@@ -80,6 +75,7 @@ def readme_to_html(obj):
             writer_name='html5css3',
             settings_overrides=settings,
         ).decode('utf8')
+
 
 class BaseSerializer(serializers.ModelSerializer):
     # add the URL and related resources
@@ -193,6 +189,7 @@ class BaseSerializer(serializers.ModelSerializer):
         attrs[source] = attrs.get(source, None) or ''
         return attrs
 
+
 class MeSerializer(BaseSerializer):
     authenticated = serializers.ReadOnlyField(source='is_authenticated')
     staff = serializers.ReadOnlyField(source='is_staff')
@@ -206,6 +203,7 @@ class MeSerializer(BaseSerializer):
             return {}
         d = super(MeSerializer, self).get_summary_fields(obj)
         return d
+
 
 class UserListSerializer(BaseSerializer):
     staff          = serializers.ReadOnlyField(source='is_staff')
@@ -261,6 +259,7 @@ class UserListSerializer(BaseSerializer):
         else:
             return ''
 
+
 class UserDetailSerializer(BaseSerializer):
     password = serializers.CharField(
         required=False,
@@ -299,7 +298,7 @@ class UserDetailSerializer(BaseSerializer):
 
     def restore_object(self, attrs, instance=None):
         new_password = attrs.pop('password', None)
-        instance = super(UserSerializer, self).restore_object(attrs, instance)
+        instance = super(UserDetailSerializer, self).restore_object(attrs, instance)
         instance._new_password = new_password
         return instance
 
@@ -347,6 +346,7 @@ class UserDetailSerializer(BaseSerializer):
         else:
             return ''
 
+
 class SubscriptionSerializer(BaseSerializer):
     owner = serializers.CharField(read_only=True)
 
@@ -361,6 +361,7 @@ class SubscriptionSerializer(BaseSerializer):
             return reverse('api:subscription_detail', args=(obj.pk,))
         else:
             return obj.get_absolute_url()
+
 
 class StargazerSerializer(BaseSerializer):
     owner = serializers.CharField(read_only=True)
@@ -377,20 +378,24 @@ class StargazerSerializer(BaseSerializer):
         else:
             return obj.get_absolute_url()
 
+
 class CategorySerializer(BaseSerializer):
     class Meta:
         model = Category
         fields = BASE_FIELDS
 
+
 class TagSerializer(BaseSerializer):
     class Meta:
         model = Tag
         fields = BASE_FIELDS
-    
+
+
 class PlatformSerializer(BaseSerializer):
     class Meta:
         model = Platform
         fields = BASE_FIELDS + ('release',)
+
 
 class RoleVersionSerializer(BaseSerializer):
     class Meta:
@@ -442,6 +447,7 @@ class RepositorySerializer(BaseSerializer):
         ]
         return d
 
+
 class TopContributorsSerializer(serializers.BaseSerializer):
     
     def to_representation(self, obj):
@@ -449,6 +455,7 @@ class TopContributorsSerializer(serializers.BaseSerializer):
             'namespace': obj['namespace'],
             'role_count': obj['count']
         }
+
 
 class NotificationSecretSerializer(BaseSerializer):
     secret = serializers.SerializerMethodField()
@@ -523,10 +530,10 @@ class NotificationSerializer(BaseSerializer):
             ('id', r.id),
             ('namespace', r.namespace),
             ('name', r.name)
-        ]) for r in obj.roles.all() ]
+        ]) for r in obj.roles.all()]
         d['imports'] = [OrderedDict([
             ('id', t.id) 
-        ]) for t in obj.imports.all() ]
+        ]) for t in obj.imports.all()]
         return d
 
     def get_related(self, obj):
@@ -539,6 +546,7 @@ class NotificationSerializer(BaseSerializer):
             owner = reverse('api:user_detail', args=(obj.owner.id,)),
         ))
         return res
+
 
 class ImportTaskSerializer(BaseSerializer):
     class Meta:
@@ -587,15 +595,10 @@ class ImportTaskSerializer(BaseSerializer):
             return {}
         res = super(ImportTaskSerializer, self).get_related(obj)
         res.update(dict(
-            role = reverse('api:role_detail', args=(obj.role_id,))
+            role=reverse('api:role_detail', args=(obj.role_id,)),
+            notifications=reverse('api:import_task_notification_list', args=(obj.pk,)),
         ))
-        if obj.notifications.count() > 0:
-            key = obj.notifications.all()[0].id
-            res.update(dict(
-                owner = reverse('api:user_detail', args=(obj.owner.id,)),
-                role = reverse('api:role_detail', args=(obj.role.id,)),
-           ))
-        return res 
+        return res
 
     def get_summary_fields(self, obj):
         if obj is None:
@@ -623,6 +626,7 @@ class ImportTaskSerializer(BaseSerializer):
             ('message_text',g.message_text)
         ]) for g in obj.messages.all().order_by('id')]
         return d
+
 
 class ImportTaskLatestSerializer(BaseSerializer):
     id = serializers.SerializerMethodField()
@@ -681,14 +685,16 @@ class ImportTaskLatestSerializer(BaseSerializer):
 
 
 class RoleListSerializer(BaseSerializer):
-    readme_html          = serializers.SerializerMethodField()
+    readme_html = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('namespace','is_valid','github_user','github_repo','github_branch','min_ansible_version',
-                                'issue_tracker_url','license','company','description', 'readme_html','travis_status_url',
-                                'stargazers_count', 'watchers_count', 'forks_count', 'open_issues_count',
-                                'commit', 'commit_message','commit_url','download_count')
+        fields = BASE_FIELDS + ('namespace', 'is_valid','github_user', 'github_repo',
+                                'github_branch', 'min_ansible_version', 'issue_tracker_url',
+                                'license','company', 'description', 'readme_html',
+                                'travis_status_url', 'stargazers_count', 'watchers_count',
+                                'forks_count', 'open_issues_count', 'commit', 'commit_message',
+                                'commit_url', 'download_count')
 
     def to_native(self, obj):
         ret = super(RoleListSerializer, self).to_native(obj)
@@ -699,9 +705,10 @@ class RoleListSerializer(BaseSerializer):
             return {}
         res = super(RoleListSerializer, self).get_related(obj)
         res.update(dict(
-            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
-            versions = reverse('api:role_versions_list', args=(obj.pk,)),
+            dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
+            imports=reverse('api:role_import_task_list', args=(obj.pk,)),
+            versions=reverse('api:role_versions_list', args=(obj.pk,)),
+            notifications=reverse('api:role_notification_list', args=(obj.pk,)),
         ))
         return res
 
@@ -718,21 +725,31 @@ class RoleListSerializer(BaseSerializer):
             return {}
         d = super(RoleListSerializer, self).get_summary_fields(obj)
         d['dependencies'] = [str(g) for g in obj.dependencies.all()]
-        d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
-        d['tags'] = [{'name':g.name} for g in obj.tags.all()]
-        d['versions'] = [{ 'id': g.id, 'name':g.name, 'release_date': g.release_date } for g in obj.versions.all()]
+        d['platforms'] = [
+            dict(name=g.name, release=g.release) for g in obj.platforms.all()]
+        d['tags'] = [
+            dict(name=g.name) for g in obj.tags.all()]
+        d['versions'] = [
+            dict(id=g.id,
+                 name=g.name,
+                 release_date=g.release_date) for g in obj.versions.all()]
         return d
 
     def get_readme_html(self, obj):
         return readme_to_html(obj)
 
+
 class RoleTopSerializer(BaseSerializer):
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + (
-                                'github_user','github_repo','min_ansible_version','issue_tracker_url',
-                                'license','company','description')
+        fields = BASE_FIELDS + ('github_user',
+                                'github_repo',
+                                'min_ansible_version',
+                                'issue_tracker_url',
+                                'license',
+                                'company',
+                                'description')
 
     def get_related(self, obj):
         if obj is None:
@@ -796,15 +813,19 @@ class RoleDetailSerializer(BaseSerializer):
         if obj is None:
             return {}
         d = super(RoleDetailSerializer, self).get_summary_fields(obj)
-        d['dependencies'] = [{ 'id': g.id, 'name': str(g) } for g in obj.dependencies.all()]
-        # d['ratings'] = [{'id':g.id, 'score':g.score} for g in obj.ratings.filter(owner__is_active=True)]
-        d['platforms'] = [{'name':g.name,'release':g.release} for g in obj.platforms.all()]
-        d['tags'] = [{'name':g.name} for g in obj.tags.all()]
-        d['versions'] = [{ 'id': g.id, 'name':g.name, 'release_date': g.release_date } for g in obj.versions.all()]
+        d['dependencies'] = [
+            dict(id=g.id, name=str(g)) for g in obj.dependencies.all()]
+        d['platforms'] = [
+            dict(name=g.name, release=g.release) for g in obj.platforms.all()]
+        d['tags'] = [
+            dict(name=g.name) for g in obj.tags.all()]
+        d['versions'] = [
+            dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
         return d
     
     def get_readme_html(self, obj):
         return readme_to_html(obj)
+
 
 class RoleSearchSerializer(HaystackSerializer):
     platforms = serializers.SerializerMethodField()
@@ -905,6 +926,7 @@ class RoleSearchSerializer(HaystackSerializer):
             except:
                 pass
         return False
+
 
 class ElasticSearchDSLSerializer(serializers.BaseSerializer):
     def to_representation(self, obj):

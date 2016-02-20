@@ -143,7 +143,7 @@ class FieldLookupBackend(BaseFilterBackend):
         if 'owner__username' in request.GET:
             try:
                 # try and lookup the user first, to see if it exists
-                user_obj = GalaxyUser.objects.get(username=request.GET['owner__username'])
+                GalaxyUser.objects.get(username=request.GET['owner__username'])
             except ObjectDoesNotExist, e:
                 # if not, check to see if there's an alias for it
                 try:

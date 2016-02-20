@@ -22,11 +22,12 @@
 WSGI config for Galaxy project.
 """
 
-# Prepare the galaxy environment.
 from galaxy import prepare_env
+from django.core.wsgi import get_wsgi_application
+
+# Prepare the galaxy environment.
 prepare_env()
 
 # Return the default Django WSGI application.
-from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 

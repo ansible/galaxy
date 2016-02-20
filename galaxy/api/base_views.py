@@ -20,19 +20,16 @@
 
 # Python
 import inspect
-import json
 import warnings
 import logging
 
 # Django
-from django.http import HttpResponse, Http404
-from django.contrib.auth.models import User
-from django.core.paginator import Paginator, InvalidPage
+from django.http import Http404
+from django.core.paginator import InvalidPage
 from django.db import transaction, IntegrityError
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-from django.utils.timezone import now
 
 # Django REST Framework
 from rest_framework.authentication import get_authorization_header
@@ -44,9 +41,9 @@ from rest_framework import status
 from rest_framework import views
 
 # local
-from galaxy.api.access import *
+from galaxy.api.access import *   # noqa
 from galaxy.api.utils import get_object_or_400
-from galaxy.main.models import *
+from galaxy.main.models import RoleRating
 
 # FIXME: machinery for auto-adding audit trail logs to all CREATE/EDITS
 
@@ -186,10 +183,8 @@ class GenericAPIView(generics.GenericAPIView, APIView):
                         # outer "else" clause of the try-except-else block
                         # will be executed.
                         pass
-            #except (exceptions.APIException, PermissionDenied):
-            #    pass
             except:
-                 pass
+                pass
             else:
                 # If user has appropriate permissions for the view, include
                 # appropriate metadata about the fields that should be supplied.
@@ -253,8 +248,8 @@ class GenericAPIView(generics.GenericAPIView, APIView):
                     page = paginator.page(1)
             except:
                 raise Http404('Invalid page (%(page_number)s): %(message)s' % {
-                                'page_number': page_number,
-                                'message': str(e)
+                    'page_number': page_number,
+                    'message': str(e)
                 })
 
         if deprecated_style:
@@ -386,7 +381,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         # Verify we have permission to add the object as given.
         if not check_user_access(request.user, self.model, 'add', serializer.validated_data):
             logger.debug('SubListCreateAPIView.create: permission denied user=%s model=%s action=add',
-                request.user, self.model._meta.verbose_name)
+                         request.user, self.model._meta.verbose_name)
             raise PermissionDenied()
 
 

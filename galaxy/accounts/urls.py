@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import include, patters, url
+from django.conf.urls import patterns, url
 from . import views
 
 
