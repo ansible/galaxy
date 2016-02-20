@@ -182,7 +182,7 @@
                     } else if (hours) {
                         when = 'Finished about ' + hours + ' hour' + ((hours > 1) ? 's' : '') + ' ago'; 
                     } else if (minutes) {
-                        when = 'Finished about ' + minutes + ' minutes' + ((minutes > 1) ? 's' : '') + ' ago';
+                        when = 'Finished about ' + minutes + ' minute' + ((minutes > 1) ? 's' : '') + ' ago';
                     } else {
                         when = 'Finished about ' + seconds + ' second' + ((seconds > 1) ? 's' : '') + ' ago';
                     }
