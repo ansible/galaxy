@@ -296,7 +296,7 @@ def import_role(task_id):
     role.github_default_branch = repo.default_branch
 
     if role.issue_tracker_url == "" and repo.has_issues:
-        role.issue_tracker_url = repo.issues_url
+        role.issue_tracker_url = repo.html_url + '/issues'
     
     if role.company != "" and len(role.company) > 50:
         add_message(import_task, "WARNING", "galaxy_info.company exceeds max length of 50 in meta/main.yml")
