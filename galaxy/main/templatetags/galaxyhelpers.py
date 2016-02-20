@@ -17,6 +17,7 @@
 
 import markdown as md
 
+from django.conf import settings
 from django import template
 from django.utils import timezone
 from django.template.defaultfilters import stringfilter
@@ -75,6 +76,7 @@ def urlname(value):
         return ''
 
 
+@register.filter
 def check_title(value):
     if value == 'Password Change':
         return 'Change Password'
@@ -98,3 +100,8 @@ def check_title(value):
         return 'Confirm Email'
     else:
         return value
+
+
+@register.assignment_tag
+def get_galaxy_version():
+    return settings.version

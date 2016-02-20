@@ -105,7 +105,6 @@ def build_standard_context(request):
     url_items = get_url_parts(request.path)
     debug = 'on' if settings.DEBUG else 'off'
     context = dict(
-        version=settings.version,
         request=request,
         user=request.user,
         debug=debug,
