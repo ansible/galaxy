@@ -68,12 +68,12 @@ class BaseModel(models.Model, DirtyMixin):
         # For compatibility with Django 1.4.x, attempt to handle any calls to
         # save that pass update_fields.
         try:
-            super(PrimordialModel, self).save(*args, **kwargs)
+            super(BaseModel, self).save(*args, **kwargs)
         except TypeError:
             if 'update_fields' not in kwargs:
                 raise
             kwargs.pop('update_fields')
-            super(PrimordialModel, self).save(*args, **kwargs)
+            super(BaseModel, self).save(*args, **kwargs)
 
     def hasattr(self, attr):
         return hasattr(self, attr)
