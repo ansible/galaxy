@@ -3,8 +3,6 @@
 #  Tasks for maintaining non-haystack elasticsearch indexes
 #
 
-import logging
-
 from celery import task
 
 # local
@@ -13,10 +11,7 @@ from galaxy.main.search_models import TagDoc, PlatformDoc, UserDoc
 from galaxy.main.utils.memcache_lock import memcache_lock, MemcacheLockException
 
 
-logger = logging.getLogger(__name__)
-
-
-def update_tags(tags):
+def update_tags(tags, logger):
     for tag in tags:
         logger.info("TAG: %s" % tag)
         try:
@@ -62,7 +57,7 @@ def update_tags(tags):
             logger.info("TAG: %s unable to get lock %s" % (tag, str(e.args)))
 
 
-def update_platforms(platforms):
+def update_platforms(platforms, logger):
     for platform in platforms:
         logger.info("PLATFORM: %s" % platform)
         try:
@@ -105,7 +100,7 @@ def update_platforms(platforms):
             logger.info("PLATFORM: %s failed to get lock %s" % (platform, str(e.args)))
 
 
-def update_users(user):
+def update_users(user, logger):
     logger.info("USER: %s" % user)
     try:
         with memcache_lock("user_%s" % user):      
@@ -132,12 +127,14 @@ def update_users(user):
 
 @task(throws=(Exception,), name="galaxy.main.celerytasks.elastic_tasks.update_custom_indexes")
 def update_custom_indexes(username=None, tags=[], platforms=[]):
-    
+
+    logger = update_custom_indexes.get_logger()
+
     if len(tags) > 0:
-        update_tags(tags)
+        update_tags(tags, logger)
     
     if len(platforms) > 0:
-        update_platforms(platforms)
+        update_platforms(platforms, logger)
     
     if username is not None:
-        update_users(username)
+        update_users(username, logger)
