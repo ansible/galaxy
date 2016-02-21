@@ -111,11 +111,10 @@ def update_namespace(repo):
     return True
 
 
-def fail_import_task(import_task, msg):
+def fail_import_task(import_task, logger, msg):
     """
     Abort the import task ans raise an exception
     """
-    logger = import_task.get_logger()
     transaction.rollback()
     try:
         if import_task:
@@ -144,8 +143,7 @@ def strip_input(input):
         return input
 
 
-def add_message(import_task, msg_type, msg_text):
-    logger = import_task.get_logger()
+def add_message(import_task, logger, msg_type, msg_text):
     try:
         import_task.messages.create(message_type=msg_type,message_text=msg_text[:255])
         import_task.save()
@@ -156,14 +154,14 @@ def add_message(import_task, msg_type, msg_text):
     logger.info("Role %d: %s - %s" % (import_task.role.id, msg_type, msg_text))
 
 
-def get_readme(import_task, repo, branch):
+def get_readme(import_task, logger, repo, branch):
     """
     Retrieve README from the repo and sanitize by removing all markup. Should preserve unicode characters.
     """
     file_type = None
     readme_content = None
 
-    add_message(import_task, "INFO", "Parsing and validating README")
+    add_message(import_task, logger, "INFO", "Parsing and validating README")
 
     try: 
         if import_task.github_reference:
@@ -172,7 +170,8 @@ def get_readme(import_task, repo, branch):
             readme = repo.get_readme()    
     except:
         readme = None
-        add_message(import_task, "ERROR", "Failed to get preferred README. All role repositories must include a README.")
+        add_message(import_task, logger, "ERROR",
+                    "Failed to get preferred README. All role repositories must include a README.")
 
     if readme is not None:
         if readme.name == 'README.md':
@@ -180,14 +179,15 @@ def get_readme(import_task, repo, branch):
         elif readme.name == 'README.rst':
             file_type = 'rst'
         else:
-            add_message(import_task, "ERROR", "Unable to determine README file type. Expecting file extension to be one of: .md, .rst")
+            add_message(import_task, logger, "ERROR",
+                        "Unable to determine README file type. Expecting file extension to be one of: .md, .rst")
     
         if file_type is not None:
             # Remove all HTML tags while preserving any unicde chars
             try:
                 readme_content = bleach.clean(readme.decoded_content, strip=True, tags=[])
             except Exception, e:
-                add_message(import_task, "ERROR", "Failed to strip HTML tags from README: %s" % str(e))
+                add_message(import_task, logger, "ERROR", "Failed to strip HTML tags from README: %s" % str(e))
         
     return readme_content, file_type
 
@@ -204,22 +204,23 @@ def import_role(task_id):
         import_task.save()
         transaction.commit()
     except:
-        fail_import_task(None,"Failed to get task id: %d" % int(task_id))
+        fail_import_task(None, logger, "Failed to get task id: %d" % int(task_id))
 
     try:
         role = Role.objects.get(id=import_task.role.id)
     except:
-        fail_import_task(import_task, "Failed to get role for task id: %d" % int(task_id))
+        fail_import_task(import_task, logger, "Failed to get role for task id: %d" % int(task_id))
 
     user = import_task.owner
     repo_full_name = role.github_user + "/" + role.github_repo
-    add_message(import_task, "INFO", "Starting import %d: role_name=%s repo=%s ref=%s" % 
+    add_message(import_task, logger, "INFO", "Starting import %d: role_name=%s repo=%s ref=%s" %
                 (import_task.id,role.name,repo_full_name,import_task.github_reference))
 
     try:
         token = SocialToken.objects.get(account__user=user, account__provider='github')
     except:
         fail_import_task(import_task,
+                         logger,
                          "Failed to get Github account for Galaxy user %s. You must first "
                          "authenticate with Github." % user.username)
 
@@ -229,22 +230,23 @@ def import_role(task_id):
         gh_api.get_api_status()
     except:
         fail_import_task(import_task,
+                         logger,
                          'Failed to connect to Github API. This is most likely a temporary error, '
                          'please retry your import in a few minutes.')
     
     try:
         gh_user = gh_api.get_user()
     except:
-        fail_import_task(import_task, "Failed to get Github authorized user.")
+        fail_import_task(import_task, logger, "Failed to get Github authorized user.")
 
     repo = None
-    add_message(import_task, "INFO", "Retrieving Github repo %s" % repo_full_name)
+    add_message(import_task, logger, "INFO", "Retrieving Github repo %s" % repo_full_name)
     for r in gh_user.get_repos():
         if r.full_name == repo_full_name:
             repo = r
             continue
     if repo is None:
-        fail_import_task(import_task,
+        fail_import_task(import_task, logger,
                          "Galaxy user %s does not have access to repo %s" % (user.username,
                                                                              repo_full_name))
 
@@ -258,35 +260,35 @@ def import_role(task_id):
     else:
         branch = repo.default_branch
     
-    add_message(import_task, "INFO", "Accessing branch: %s" % branch)
+    add_message(import_task, logger, "INFO", "Accessing branch: %s" % branch)
         
     # parse meta/main.yml data
-    add_message(import_task, "INFO", "Parsing and validating meta/main.yml")
+    add_message(import_task, logger, "INFO", "Parsing and validating meta/main.yml")
    
     try:
         meta_file = repo.get_file_contents("meta/main.yml", ref=branch)
     except:
-        fail_import_task(import_task, "Failed to find meta/main.yml. Must include a meta/main.yml file.")
+        fail_import_task(import_task, logger, "Failed to find meta/main.yml. Must include a meta/main.yml file.")
 
     try:
         meta_decoded = meta_file.content.decode('base64')
     except:
-        fail_import_task(import_task, "Failed to decode meta/main.yml. Must have a valid meta/main.yml.")
+        fail_import_task(import_task, logger, "Failed to decode meta/main.yml. Must have a valid meta/main.yml.")
 
     try:
         meta_data = yaml.safe_load(meta_decoded)
     except yaml.YAMLError, e:
-        add_message(import_task, "ERROR", "yaml parse error: %s" % e)
-        fail_import_task(import_task, "Failed to parse meta/main.yml. Check the yaml syntax.")
+        add_message(import_task, logger, "ERROR", "yaml parse error: %s" % e)
+        fail_import_task(import_task, logger, "Failed to parse meta/main.yml. Check the yaml syntax.")
     
     # validate meta/main.yml
     galaxy_info = meta_data.get("galaxy_info", None)
     if galaxy_info is None:
-        add_message(import_task, "ERROR", "Key galaxy_info not found in meta/main.yml")
+        add_message(import_task, logger, "ERROR", "Key galaxy_info not found in meta/main.yml")
         galaxy_info = {}
 
     if import_task.alternate_role_name:
-        add_message(import_task, "INFO", "Setting role name to %s" % import_task.alternate_role_name)
+        add_message(import_task, logger, "INFO", "Setting role name to %s" % import_task.alternate_role_name)
         role.name = import_task.alternate_role_name
 
     role.description         = strip_input(galaxy_info.get("description",repo.description))
@@ -302,33 +304,37 @@ def import_role(task_id):
         role.issue_tracker_url = repo.html_url + '/issues'
     
     if role.company != "" and len(role.company) > 50:
-        add_message(import_task, "WARNING", "galaxy_info.company exceeds max length of 50 in meta/main.yml")
+        add_message(import_task, logger, "WARNING", "galaxy_info.company exceeds max length of 50 in meta/main.yml")
         role.company = role.company[:50]
     
     if role.description == "":
-        add_message(import_task, "ERROR", "missing description. Add a description to GitHub repo or meta/main.yml.")
+        add_message(import_task, logger, "ERROR",
+                    "missing description. Add a description to GitHub repo or meta/main.yml.")
     elif len(role.description) > 255:
-        add_message(import_task, "WARNING", "galaxy_info.description exceeds max length of 255 in meta/main.yml")
+        add_message(import_task, logger, "WARNING",
+                    "galaxy_info.description exceeds max length of 255 in meta/main.yml")
         role.description = role.description[:255]
     
     if role.license == "":
-        add_message(import_task, "ERROR", "galaxy_info.license missing value in meta/main.yml")
+        add_message(import_task, logger, "ERROR", "galaxy_info.license missing value in meta/main.yml")
     elif len(role.license) > 50:
-        add_message(import_task, "WARNING", "galaxy_info.license exceeds max length of 50 in meta/main.yml")
+        add_message(import_task, logger, "WARNING", "galaxy_info.license exceeds max length of 50 in meta/main.yml")
         role.license = role.license[:50]
         
     if role.min_ansible_version == "":
-        add_message(import_task, "WARNING", "galaxy.min_ansible_version missing value in meta/main.yml. Defaulting to "
-                    "1.2.")
+        add_message(import_task, logger, "WARNING",
+                    "galaxy.min_ansible_version missing value in meta/main.yml. Defaulting to 1.2.")
         role.min_ansible_version = '1.2'
     
     if role.issue_tracker_url == "":
-        add_message(import_task, "WARNING", "No issue tracker defined. Enable issue tracker in repo settings or define "
+        add_message(import_task, logger, "WARNING",
+                    "No issue tracker defined. Enable issue tracker in repo settings or define "
                     "galaxy_info.issue_tracker_url in meta/main.yml.")
     else:
         parsed_url = urlparse(role.issue_tracker_url)
         if parsed_url.scheme == '' or parsed_url.netloc == '' or parsed_url.path == '':
-            add_message(import_task, "WARNING", "Invalid URL provided for galaxy_info.issue_tracker_url in "
+            add_message(import_task, logger, "WARNING",
+                        "Invalid URL provided for galaxy_info.issue_tracker_url in "
                         "meta/main.yml")
             role.issue_tracker_url = ""
 
@@ -358,32 +364,32 @@ def import_role(task_id):
     import_task.github_branch = branch
     
     # Add tags / categories. Remove ':' and only allow alpha-numeric characters
-    add_message(import_task, "INFO", "Parsing galaxy_tags")
+    add_message(import_task, logger, "INFO", "Parsing galaxy_tags")
     meta_tags = []
     if galaxy_info.get("categories", None):
-        add_message(import_task, "WARNING", "Found galaxy_info.categories. Update meta/main.yml to use galaxy_info.galaxy_tags.")
+        add_message(import_task, logger, "WARNING", "Found galaxy_info.categories. Update meta/main.yml to use galaxy_info.galaxy_tags.")
         cats = galaxy_info.get("categories")
         if isinstance(cats,basestring) or not hasattr(cats, '__iter__'):
-            add_message(import_task, "ERROR", "In meta/main.yml galaxy_info.categories must be an iterable list.")
+            add_message(import_task, logger, "ERROR", "In meta/main.yml galaxy_info.categories must be an iterable list.")
         else:
             for category in cats:
                 for cat in category.split(':'): 
                     if re.match('^[a-zA-Z0-9]+$',cat):
                         meta_tags.append(cat)
                     else:
-                        add_message(import_task, "WARNING", "%s is not a valid tag" % cat)
+                        add_message(import_task, logger, "WARNING", "%s is not a valid tag" % cat)
     
     if galaxy_info.get("galaxy_tags", None):
         tags = galaxy_info.get("galaxy_tags")
         if isinstance(tags,basestring) or not hasattr(tags, '__iter__'):
-            add_message(import_task,"ERROR","In meta/main.yml galaxy_info.galaxy_tags must be an iterable list.")
+            add_message(import_task, logger, "ERROR","In meta/main.yml galaxy_info.galaxy_tags must be an iterable list.")
         else:
             for tag in tags:
                 for t in tag.split(':'):
                     if re.match('^[a-zA-Z0-9:]+$',t):
                         meta_tags.append(t)
                     else:
-                        add_message(import_task, "WARNING", "'%s' is not a valid tag. Skipping." % t)
+                        add_message(import_task, logger, "WARNING", "'%s' is not a valid tag. Skipping." % t)
 
     # There are no tags?
     if len(meta_tags) == 0:
@@ -411,17 +417,20 @@ def import_role(task_id):
             role.tags.remove(tag)
 
     # Add in the platforms and versions
-    add_message(import_task, "INFO", "Parsing platforms")
+    add_message(import_task, logger, "INFO", "Parsing platforms")
     meta_platforms = galaxy_info.get("platforms", None)
     if meta_platforms is None:
-        add_message(import_task, "ERROR", "galaxy_info.platforms not defined in meta.main.yml. Must be an iterable list.")
+        add_message(import_task, "ERROR",
+                    "galaxy_info.platforms not defined in meta.main.yml. Must be an iterable list.")
     elif isinstance(meta_platforms,basestring) or not hasattr(meta_platforms, '__iter__'):
-        add_message(import_task, "ERROR", "Failed to iterate platforms. galaxy_info.platforms must be an iterable list in meta/main.yml.")
+        add_message(import_task, "ERROR",
+                    "Failed to iterate platforms. galaxy_info.platforms must be an iterable list in meta/main.yml.")
     else:
         platform_list = []
         for platform in meta_platforms:
             if not isinstance(platform, dict):
-                add_message(import_task, "ERROR", "The platform '%s' does not appear to be a dictionary, skipping" % str(platform))
+                add_message(import_task, "ERROR",
+                            "The platform '%s' does not appear to be a dictionary, skipping" % str(platform))
                 continue
             try:
                 name     = platform.get("name")
@@ -462,13 +471,15 @@ def import_role(task_id):
                 role.platforms.remove(platform)
 
     # Add in dependencies (if there are any):
-    add_message(import_task, "INFO", "Adding dependencies")
+    add_message(import_task, logger, "INFO", "Adding dependencies")
     dependencies = meta_data.get("dependencies", None)
 
     if dependencies is None:
-        add_message(import_task, "ERROR", "meta/main.yml missing definition for dependencies. Define dependencies as [] or an iterable list.")
+        add_message(import_task, "ERROR",
+                    "meta/main.yml missing definition for dependencies. Define dependencies as [] or an iterable list.")
     elif isinstance(dependencies,basestring) or not hasattr(dependencies, '__iter__'):
-        add_message(import_task, "ERROR", "Failed to iterate dependencies. Define dependencies in meta/main.yml as [] or an iterable list.")
+        add_message(import_task, "ERROR",
+                    "Failed to iterate dependencies. Define dependencies in meta/main.yml as [] or an iterable list.")
     else:
         dep_names = []
         for dep in dependencies:
@@ -501,7 +512,7 @@ def import_role(task_id):
             if dep_name not in dep_names:
                 role.dependencies.remove(dep)
 
-    role.readme, role.readme_type = get_readme(import_task, repo, branch)
+    role.readme, role.readme_type = get_readme(import_task, logger, repo, branch)
     
     # helper function to save repeating code:
     def add_role_version(tag):
@@ -511,30 +522,30 @@ def import_role(task_id):
 
     # get the tags for the repo, and then loop through them
     # so we can create version objects for the role
-    add_message(import_task, "INFO", "Adding repo tags as role versions")
+    add_message(import_task, logger, "INFO", "Adding repo tags as role versions")
     try:
         git_tag_list = repo.get_tags()
         for git_tag in git_tag_list:
             add_role_version(git_tag)
     except Exception, e:
-        add_message(import_task, "ERROR", "An error occurred while importing repo tags: %s" % str(e))
+        add_message(import_task, logger, "ERROR", "An error occurred while importing repo tags: %s" % str(e))
     
     try:
         role.validate_char_lengths()
     except Exception, e:
-        add_message(import_task, "ERROR", e.message)
+        add_message(import_task, logger, "ERROR", e.message)
 
     try:
         import_task.validate_char_lengths()
     except Exception, e:
-        add_message(import_task, "ERROR", e.message)
+        add_message(import_task, logger, "ERROR", e.message)
 
     # determine state of import task
     error_count = import_task.messages.filter(message_type="ERROR").count()
     warning_count = import_task.messages.filter(message_type="WARNING").count()
     import_state = "SUCCESS" if error_count == 0 else "FAILED"
-    add_message(import_task, "INFO", "Import completed")
-    add_message(import_task, import_state, "Status %s : warnings=%d errors=%d" % (import_state,warning_count,error_count))
+    add_message(import_task, logger, "INFO", "Import completed")
+    add_message(import_task, logger, import_state, "Status %s : warnings=%d errors=%d" % (import_state,warning_count,error_count))
     
     try:
         import_task.state = import_state
@@ -545,7 +556,7 @@ def import_role(task_id):
         role.save()
         transaction.commit()
     except Exception, e:
-        fail_import_task(import_task, "Error saving role: %s" % e.message)
+        fail_import_task(import_task, logger, "Error saving role: %s" % e.message)
 
     # Update ES indexes
     update_custom_indexes.delay(username=role.namespace,

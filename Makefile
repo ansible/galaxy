@@ -121,7 +121,7 @@ runserver:
 
 # Run to start the background celery worker for development. Listens to all queues.
 celeryd:
-	$(PYTHON) manage.py celeryd -l DEBUG -B --autoreload -Q celery,import_tasks,user_tasks,star_tasks,admin_tasks
+	$(PYTHON) manage.py celeryd -l DEBUG -B --autoreload
 
 # Run all API unit tests.
 test:
