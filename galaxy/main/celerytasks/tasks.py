@@ -20,11 +20,13 @@ import yaml
 import datetime
 import bleach
 
+
 from celery import task
 from github import Github
 from github import GithubException
 from urlparse import urlparse
 
+from django.utils import timezone
 from django.db import transaction
 
 from allauth.socialaccount.models import SocialToken
@@ -696,7 +698,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
 @task(name="galaxy.main.celerytasks.tasks.clear_stuck_imports")
 def clear_stuck_imports():
     logger = clear_stuck_imports.get_logger()
-    two_hours_ago = datetime.datetime.now() - datetime.timedelta(seconds=7200)
+    two_hours_ago = timezone.now() - datetime.timedelta(seconds=7200)
     logger.info("Clear Stuck Imports: %s" % two_hours_ago.strftime("%m-%d-%Y %H:%M:%S"))
     try:
         for ri in ImportTask.objects.filter(created__lte=two_hours_ago, state='PENDING'):
