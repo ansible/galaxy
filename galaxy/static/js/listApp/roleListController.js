@@ -174,6 +174,16 @@
             $scope.loading = 1;
             $scope.roles = [];
 
+            var page_size = parseInt($scope.list_data.page_size,10);
+            if (page_size <= 0)
+                $scope.list_data.page_size = 10;
+            if (page_size > 100)
+                $scope.list_data.page_size = 100;
+
+            var page = parseInt($scope.list_data.page,10);
+            if (page <= 0)
+                $scope.list_data.page = 1;
+
             var params = {
                 page: $scope.list_data.page,
                 page_size: $scope.list_data.page_size

@@ -1035,10 +1035,11 @@ class UserSearchView(APIView):
                 page_size = int(value)
             if key in ('order','order_by'):
                 order_fields = value.split(',')
+        if page_size > 1000:
+            page_size = 1000
         s = Search(index='galaxy_users')
         s = s.query(q) if q else s
         s = s.sort(*order_fields) if len(order_fields) > 0 else s
-        print ('get from: %d to %d' % (page * page_size, page * page_size + page_size))
         s = s[page * page_size:page * page_size + page_size]
         result = s.execute()
         serializer = ElasticSearchDSLSerializer(result.hits, many=True)
@@ -1066,6 +1067,8 @@ class PlatformsSearchView(APIView):
                 page_size = int(value)
             if key in ('order','order_by'):
                 order_fields = value.split(',')
+        if page_size > 1000:
+            page_size = 1000
         s = Search(index='galaxy_platforms')
         s = s.query(q) if q else s
         s = s.sort(*order_fields) if len(order_fields) > 0 else s
@@ -1092,6 +1095,8 @@ class TagsSearchView(APIView):
                 page_size = int(value)
             if key in ('order', 'orderby'):
                 order_fields = value.split(',')
+        if page_size > 1000:
+            page_size = 1000
         s = Search(index='galaxy_tags')
         s = s.query(q) if q else s
         s = s.sort(*order_fields) if len(order_fields) > 0 else s
@@ -1309,7 +1314,6 @@ def get_response(*args, **kwargs):
             page = int(value) - 1 if int(value) > 0 else 0
         if key == 'page_size':
             page_size = int(value)
-    
     if result:
         num_pages = int(math.ceil(result.hits.total / float(page_size)))
         cur_page = page + 1

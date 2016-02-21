@@ -246,7 +246,6 @@ class OrderByBackend(BaseFilterBackend):
             order_by = None
             for key, value in request.GET.items():
                 if key in ('order', 'order_by'):
-                    order_by = value
                     if ',' in value:
                         order_by = value.split(',')
                     else:
@@ -271,7 +270,6 @@ class HaystackFilter(HaystackFilter):
             order_by = None
             for key, value in request.GET.items():
                 if key in ('order', 'order_by'):
-                    order_by = value
                     if ',' in value:
                         order_by = value.split(',')
                     else:
