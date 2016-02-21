@@ -70,3 +70,4 @@ class GalaxyElasticSearchBackend(ElasticsearchSearchBackend):
 class ElasticsearchSearchEngine(BaseEngine):
     backend = GalaxyElasticSearchBackend
     query = ElasticsearchSearchQuery
+
