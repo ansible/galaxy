@@ -110,10 +110,11 @@ def update_namespace(repo):
     return True
 
 
-def fail_import_task(import_task, logger, msg):
+def fail_import_task(import_task, msg):
     """
     Abort the import task ans raise an exception
     """
+    logger = import_role.get_logger()
     transaction.rollback()
     try:
         if import_task:
@@ -124,8 +125,8 @@ def fail_import_task(import_task, logger, msg):
             transaction.commit()
     except Exception, e:
         transaction.rollback()
-        print "Error updating import task state %s: %s" % (import_task.role.name, str(e))
-    print msg
+        logger.error("Error updating import task state %s: %s" % (import_task.role.name, str(e)))
+    logger.error(msg)
     raise Exception(msg)
 
 
@@ -143,24 +144,25 @@ def strip_input(input):
 
 
 def add_message(import_task, msg_type, msg_text):
+    logger = import_role.get_logger()
     try:
         import_task.messages.create(message_type=msg_type,message_text=msg_text[:255])
         import_task.save()
         transaction.commit()
     except Exception, e:
         transaction.rollback()
-        print "Error adding message to import task for role %s: %s" % (import_task.role.name, e.message)
-    print "Role %d: %s - %s" % (import_task.role.id, msg_type, msg_text)
+        logger.error("Error adding message to import task for role %s: %s" % (import_task.role.name, e.message))
+    logger.info("Role %d: %s - %s" % (import_task.role.id, msg_type, msg_text))
 
 
 def get_readme(import_task, repo, branch):
     """
     Retrieve README from the repo and sanitize by removing all markup. Should preserve unicode characters.
     """
-    add_message(import_task, "INFO", "Parsing and validating README")
-
     file_type = None
     readme_content = None
+
+    add_message(import_task, "INFO", "Parsing and validating README")
 
     try: 
         if import_task.github_reference:
@@ -191,19 +193,17 @@ def get_readme(import_task, repo, branch):
 
 @task(throws=(Exception,), name="galaxy.main.celerytasks.tasks.import_role")
 def import_role(task_id):
-    # standard task logger
-    logger = import_role.get_logger()
 
     # get the role from the database
     try:
-        print "Starting task: %d" % int(task_id)
+        logger.info("Starting task: %d" % int(task_id)
         import_task = ImportTask.objects.get(id=task_id)
         import_task.state = "RUNNING"
         import_task.started = datetime.datetime.now()
         import_task.save()
         transaction.commit()
     except:
-        fail_import_task(None, logger, "Failed to get task id: %d" % int(task_id))
+        fail_import_task(None,"Failed to get task id: %d" % int(task_id))
 
     try:
         role = Role.objects.get(id=import_task.role.id)
@@ -218,7 +218,8 @@ def import_role(task_id):
     try:
         token = SocialToken.objects.get(account__user=user, account__provider='github')
     except:
-        fail_import_task(import_task, logger,"Failed to get Github account for Galaxy user %s. You must first "
+        fail_import_task(import_task,
+                         "Failed to get Github account for Galaxy user %s. You must first "
                          "authenticate with Github." % user.username)
 
     # create an API object and get the repo
@@ -226,14 +227,14 @@ def import_role(task_id):
         gh_api = Github(token.token)
         gh_api.get_api_status()
     except:
-        fail_import_task(import_task, logger,
+        fail_import_task(import_task,
                          'Failed to connect to Github API. This is most likely a temporary error, '
                          'please retry your import in a few minutes.')
     
     try:
         gh_user = gh_api.get_user()
     except:
-        fail_import_task(import_task, logger, "Failed to get Github authorized user.")
+        fail_import_task(import_task, "Failed to get Github authorized user.")
 
     repo = None
     add_message(import_task, "INFO", "Retrieving Github repo %s" % repo_full_name)
@@ -242,8 +243,9 @@ def import_role(task_id):
             repo = r
             continue
     if repo is None:
-        fail_import_task(import_task, logger, "Galaxy user %s does not have access to repo %s" %
-                         (user.username, repo_full_name))
+        fail_import_task(import_task,
+                         "Galaxy user %s does not have access to repo %s" % (user.username,
+                                                                             repo_full_name))
 
     update_namespace(repo)
 
@@ -263,18 +265,18 @@ def import_role(task_id):
     try:
         meta_file = repo.get_file_contents("meta/main.yml", ref=branch)
     except:
-        fail_import_task(import_task, logger, "Failed to find meta/main.yml. Must include a meta/main.yml file.")
+        fail_import_task(import_task, "Failed to find meta/main.yml. Must include a meta/main.yml file.")
 
     try:
         meta_decoded = meta_file.content.decode('base64')
     except:
-        fail_import_task(import_task, logger, "Failed to decode meta/main.yml. Must have a valid meta/main.yml.")
+        fail_import_task(import_task, "Failed to decode meta/main.yml. Must have a valid meta/main.yml.")
 
     try:
         meta_data = yaml.safe_load(meta_decoded)
     except yaml.YAMLError, e:
         add_message(import_task, "ERROR", "yaml parse error: %s" % e)
-        fail_import_task(import_task, logger, "Failed to parse meta/main.yml. Check the yaml syntax.")
+        fail_import_task(import_task, "Failed to parse meta/main.yml. Check the yaml syntax.")
     
     # validate meta/main.yml
     galaxy_info = meta_data.get("galaxy_info", None)
@@ -542,7 +544,7 @@ def import_role(task_id):
         role.save()
         transaction.commit()
     except Exception, e:
-        fail_import_task(import_task, logger, "Error saving role: %s" % e.message)
+        fail_import_task(import_task, "Error saving role: %s" % e.message)
 
     # Update ES indexes
     update_custom_indexes.delay(username=role.namespace,
@@ -557,8 +559,8 @@ def import_role(task_id):
 @task(name="galaxy.main.celerytasks.tasks.refresh_user", throws=(Exception,))
 @transaction.atomic
 def refresh_user_repos(user, token):
-    
-    print "Refreshing User Repo Cache for %s" % user.username
+    logger = refresh_user_repos.get_logger()
+    logger.info("Refreshing User Repo Cache for %s" % user.username)
     
     try:
         gh_api = Github(token)
@@ -566,7 +568,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = "User %s Repo Cache Refresh Error: %s - %s" % (user.username, e.status, e.data)
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     try:
@@ -575,7 +577,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = "User %s Repo Cache Refresh Error: %s - %s" % (user.username, e.status, e.data)
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     try:
@@ -584,7 +586,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = "User %s Repo Cache Refresh Error: %s - %s" % (user.username, e.status, e.data)
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     update_user_repos(repos, user)
@@ -597,25 +599,28 @@ def refresh_user_repos(user, token):
 @task(name="galaxy.main.celerytasks.tasks.refresh_user_stars", throws=(Exception,))
 @transaction.atomic
 def refresh_user_stars(user, token):
+    logger = refresh_user_stars.get_logger()
+    logger.info("Refreshing User Stars for %s" % user.username)
+
     try:
         gh_api = Github(token)
     except GithubException, e:
         msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     try:
         ghu = gh_api.get_user()
     except GithubException, e:
         msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     try:
         subscriptions = ghu.get_subscriptions()
     except GithubException, e:
         msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     # Refresh user subscriptions class
@@ -636,7 +641,7 @@ def refresh_user_stars(user, token):
         starred = ghu.get_starred()
     except GithubException, e:
         msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     # Refresh user starred cache
@@ -655,16 +660,17 @@ def refresh_user_stars(user, token):
 
 @task(name="galaxy.main.celerytasks.tasks.refresh_role_counts")
 def refresh_role_counts(start, end, gh_api, tracker):
-    '''
-    Update each role with latest counts from GitHub
-    '''
+
+    # Update each role with latest counts from GitHub
+
+    logger = refresh_role_counts.get_logger()
     tracker.state = 'RUNNING'
     tracker.save()
     passed = 0
     failed = 0
     for role in Role.objects.filter(is_valid=True, active=True, id__gt=start, id__lte=end):
         full_name = "%s/%s" % (role.github_user,role.github_repo)
-        print "Updating repo: %s" % full_name
+        logger.info("Updating repo: %s" % full_name)
         try:
             gh_repo = gh_api.get_repo(full_name)
             update_namespace(gh_repo)
@@ -676,7 +682,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
             role.save()
             passed += 1
         except Exception, e:
-            print "FAILED %s: %s" % (full_name, str(e.args))
+            logger.error("FAILED %s: %s" % (full_name, str(e.args)))
             failed += 1
     tracker.state = 'FINISHED'
     tracker.passed = passed
@@ -690,10 +696,12 @@ def refresh_role_counts(start, end, gh_api, tracker):
 
 @task(name="galaxy.main.celerytasks.tasks.clear_stuck_imports")
 def clear_stuck_imports():
-    two_hours_ago = timezone.now() - datetime.timedelta(seconds=7200)
+    logger = clear_stuck_imports.get_logger()
+    two_hours_ago = datetime.datetime.now() - datetime.timedelta(seconds=7200)
+    logger.info("Clear Stuck Imports: %s" % two_hours_ago.strftime("%m-%d-%Y %H:%M:%S"))
     try:
         for ri in ImportTask.objects.filter(created__lte=two_hours_ago, state='PENDING'):
-            print "Removing stuck import %s for role %s" % (ri, ri.role)
+            logger.info("Clear Stuck Imports: %d - %s.%s" % (ri.id, ri.role.namespace, ri.role.name))
             ri.state = "FAILED"
             ri.messages.create(
                 message_type="ERROR",
@@ -703,5 +711,5 @@ def clear_stuck_imports():
             ri.save()
             transaction.commit()
     except Exception, e:
-        print "Exception while clearing stuck imports: %s" % str(e)
-    return True
+        logger.error("Clear Stuck Imports ERROR: %s" % str(e.args))
+        raise
