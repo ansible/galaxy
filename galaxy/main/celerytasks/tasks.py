@@ -120,7 +120,7 @@ def fail_import_task(import_task, logger, msg):
         if import_task:
             import_task.state = "FAILED"
             import_task.messages.create(message_type="ERROR", message_text=msg[:255])
-            import_task.finished = datetime.datetime.now()        
+            import_task.finished = timezone.now()
             import_task.save()
             transaction.commit()
     except Exception, e:
@@ -200,7 +200,7 @@ def import_role(task_id):
         logger.info("Starting task: %d" % int(task_id))
         import_task = ImportTask.objects.get(id=task_id)
         import_task.state = "RUNNING"
-        import_task.started = datetime.datetime.now()
+        import_task.started = timezone.now()
         import_task.save()
         transaction.commit()
     except:
@@ -549,9 +549,9 @@ def import_role(task_id):
     
     try:
         import_task.state = import_state
-        import_task.finished = datetime.datetime.now()
+        import_task.finished = timezone.now()
         import_task.save()
-        role.imported = datetime.datetime.now()   
+        role.imported = timezone.now()
         role.is_valid = True
         role.save()
         transaction.commit()
@@ -567,6 +567,7 @@ def import_role(task_id):
 # ----------------------------------------------------------------------
 # Login Task
 # ----------------------------------------------------------------------
+
 
 @task(name="galaxy.main.celerytasks.tasks.refresh_user", throws=(Exception,))
 @transaction.atomic
@@ -607,6 +608,7 @@ def refresh_user_repos(user, token):
     user.github_user = ghu.login
     user.cache_refreshed = True
     user.save()
+
 
 @task(name="galaxy.main.celerytasks.tasks.refresh_user_stars", throws=(Exception,))
 @transaction.atomic
@@ -670,11 +672,12 @@ def refresh_user_stars(user, token):
                     'github_repo': name[1]    
                 })
 
+
 @task(name="galaxy.main.celerytasks.tasks.refresh_role_counts")
 def refresh_role_counts(start, end, gh_api, tracker):
-
-    # Update each role with latest counts from GitHub
-
+    '''
+    Update each role with latest counts from GitHub
+    '''
     logger = refresh_role_counts.get_logger()
     tracker.state = 'RUNNING'
     tracker.save()
