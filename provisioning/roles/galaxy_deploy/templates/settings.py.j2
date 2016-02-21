@@ -156,7 +156,7 @@ ELASTICSEARCH = {
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'ENGINE': 'galaxy.main.elasticsearch_backend.ElasticsearchSearchEngine',
         'URL': [{% for host in groups['es_hosts'] %}"{{ galaxy_es_transport }}://{{ hostvars[host]['private_ip'] }}:{{ galaxy_es_port }}"{% if not loop.last %},{% endif %}{% endfor %}],
         'INDEX_NAME': 'haystack',
     },
