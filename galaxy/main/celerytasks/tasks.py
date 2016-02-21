@@ -26,7 +26,6 @@ from github import GithubException
 from urlparse import urlparse
 
 from django.db import transaction
-from django.utils import timezone
 
 from allauth.socialaccount.models import SocialToken
 
@@ -114,7 +113,7 @@ def fail_import_task(import_task, msg):
     """
     Abort the import task ans raise an exception
     """
-    logger = import_role.get_logger()
+    logger = import_task.get_logger()
     transaction.rollback()
     try:
         if import_task:
@@ -144,7 +143,7 @@ def strip_input(input):
 
 
 def add_message(import_task, msg_type, msg_text):
-    logger = import_role.get_logger()
+    logger = import_task.get_logger()
     try:
         import_task.messages.create(message_type=msg_type,message_text=msg_text[:255])
         import_task.save()
@@ -193,10 +192,10 @@ def get_readme(import_task, repo, branch):
 
 @task(throws=(Exception,), name="galaxy.main.celerytasks.tasks.import_role")
 def import_role(task_id):
+    logger = import_role.get_logger()
 
-    # get the role from the database
     try:
-        logger.info("Starting task: %d" % int(task_id)
+        logger.info("Starting task: %d" % int(task_id))
         import_task = ImportTask.objects.get(id=task_id)
         import_task.state = "RUNNING"
         import_task.started = datetime.datetime.now()
