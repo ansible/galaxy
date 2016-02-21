@@ -852,9 +852,10 @@ class NotificationList(ListCreateAPIView):
                             payload['build_url'])
                         notification.imports.add(task)
                     else:
-                        msg = 'Skipping role {0} - github_branch {1} does not match requested branch.'.format(
+                        msg = 'Skipping role {0} - {1} does not match requested branch {2}.'.format(
                             role.id,
-                            role.github_branch)
+                            role.github_branch,
+                            request.branch)
                         notification.messages.append(msg)
             else:
                 role, created = Role.objects.get_or_create(
@@ -888,9 +889,11 @@ class NotificationList(ListCreateAPIView):
                         payload['build_url'])
                     notification.imports.add(task)
                 else:
-                    msg = 'Skipping role {0} - github_branch {1} does not match requested branch.'.format(
+                    msg = 'Skipping role {0} - github_branch {1}, default branch {2}, requested branch {3}'.format(
                         role.id,
-                        role.github_branch)
+                        role.github_branch,
+                        default_branch,
+                        request_branch)
                     notification.messages.append(msg)
             
             notification.save()
