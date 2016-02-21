@@ -837,26 +837,18 @@ class NotificationList(ListCreateAPIView):
                 # multiple roles associated with github_user/github_repo
                 for role in Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True):    
                     notification.roles.add(role)
-                    default_branch = role.github_default_branch if role.github_branch else 'master'
-                    if (not role.github_branch and request_branch == default_branch) or role.github_branch == request_branch:
-                        role.travis_status_url = travis_status_url
-                        role.travis_build_url = payload['build_url']
-                        role.save()
-                        task = create_import_task(
-                            role.github_user,
-                            role.github_repo,
-                            None,
-                            role,
-                            ns.owner, 
-                            travis_status_url,
-                            payload['build_url'])
-                        notification.imports.add(task)
-                    else:
-                        msg = 'Skipping role {0} - {1} does not match requested branch {2}.'.format(
-                            role.id,
-                            role.github_branch,
-                            request.branch)
-                        notification.messages.append(msg)
+                    role.travis_status_url = travis_status_url
+                    role.travis_build_url = payload['build_url']
+                    role.save()
+                    task = create_import_task(
+                        role.github_user,
+                        role.github_repo,
+                        None,
+                        role,
+                        ns.owner,
+                        travis_status_url,
+                        payload['build_url'])
+                    notification.imports.add(task)
             else:
                 role, created = Role.objects.get_or_create(
                     github_user=ns.github_user,
@@ -873,29 +865,20 @@ class NotificationList(ListCreateAPIView):
                         'is_valid':    False,
                     }
                 )
-                default_branch = role.github_default_branch if role.github_default_branch else 'master'
                 notification.roles.add(role)
-                if (not role.github_branch and request_branch == default_branch) or role.github_branch == request_branch:
-                    role.travis_status_url = travis_status_url
-                    role.travis_build_url = payload['build_url']
-                    role.save()
-                    task = create_import_task(
-                        role.github_user,
-                        role.github_repo,
-                        None,
-                        role,
-                        ns.owner,
-                        travis_status_url,
-                        payload['build_url'])
-                    notification.imports.add(task)
-                else:
-                    msg = 'Skipping role {0} - github_branch {1}, default branch {2}, requested branch {3}'.format(
-                        role.id,
-                        role.github_branch,
-                        default_branch,
-                        request_branch)
-                    notification.messages.append(msg)
-            
+                role.travis_status_url = travis_status_url
+                role.travis_build_url = payload['build_url']
+                role.save()
+                task = create_import_task(
+                    role.github_user,
+                    role.github_repo,
+                    None,
+                    role,
+                    ns.owner,
+                    travis_status_url,
+                    payload['build_url'])
+                notification.imports.add(task)
+
             notification.save()
             serializer = self.get_serializer(instance=notification)
             headers = self.get_success_headers(serializer.data)
