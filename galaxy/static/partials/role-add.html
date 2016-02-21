@@ -7,12 +7,13 @@
         <div class="inner-container">
             <div class="instructions">
                 <h2>Import Your Roles from GitHub</h2>
-                <div class="text" ng-show="!loading">
-                    <p><strong></strong>
-                    Click the toggle next to the repository to reveal a check mark. This will add the role to Galaxy, making it visible on the Browse Roles page and allowing anyone to download it using the ansible-galaxy command line tool. Removing the check mark will delete the role from Galaxy. Use settings <a href="" disabled="disabled" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a> to enable Travis notifications and control the role name assigned to the repo.
+                <div class="text">
+                    <p>Click the toggle next to the repository to reveal a check mark. This will add the role to Galaxy, making it visible on
+                        the Browse Roles page and allowing anyone to download it. Removing the check mark will delete the role from Galaxy.
+                        Use settings <a href="" disabled="disabled" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a> to enable
+                        Travis notifications and control the role name.</p>
                     <p>If you don't see all of your roles, <a ng-href="{{ auth_orgs_url}}">review and add</a> your authorized organizations.</p>
                 </div>
-                <div class="text" style="margin-top: 20px;" ng-show="loading"></div>
             </div>
 
             <div class="no-github-auth" ng-if="!github_auth">
@@ -50,7 +51,7 @@
                     <div class="state"><i class="fa fa-spin fa-spinner" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'"></i></div>
                     <div class="settings"><a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Role Settings" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a></div>
                     <div class="name">
-                        <a ng-href="{{ repo.role_namespace }}/{{repo.role_name }}" ng-if="repo.is_enabled && repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</a>
+                        <a ng-href="{{ repo.role_namespace }}/{{repo.role_name }}" ng-if="repo.is_enabled && repo.role_id" tooltip-placement="top" uib-tooltip="{{ 'Role: ' + repo.role_namespace + '.' + repo.role_name }}">{{ repo.github_user + '/' + repo.github_repo }}</a>
                         <span ng-if="!repo.is_enabled || !repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</span>
                     </div>
                     <div class="tools" ng-if="repo.is_enabled">

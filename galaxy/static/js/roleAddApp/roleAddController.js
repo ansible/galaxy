@@ -148,6 +148,16 @@
             });
         }
 
+        function _resetRepo(_repo) {
+            // Restore repo values
+            _repo.role_name = _repo.master_role_name
+            _repo.travis_id = $scope.master.travis_id;
+            _repo.travis_token = $scope.master.travis_token;
+            _repo.github_id = $scope.master.github_id;
+            _repo.github_secret = $scope.github_secret;
+            _repo.name_pattern_error = false;
+        }
+
         function _showIntegrations(_repo) {
             _repo.show_integrations = !_repo.show_integrations; 
             _repo.github_secret_type = "password";
@@ -160,17 +170,15 @@
                     github_id: _repo.github_id,
                     github_secret: _repo.github_secret
                 };
+            } else {
+                // hide the form
+                _resetRepo(_repo);
             }
         }
 
         function _cancelIntegrations(_repo) {
-            _repo.role_name = _repo.master_role_name
-            _repo.travis_id = $scope.master.travis_id;
-            _repo.travis_token = $scope.master.travis_token;
-            _repo.github_id = $scope.master.github_id;
-            _repo.github_secret = $scope.github_secret;
+            _resetRepo(_repo);
             _repo.show_integrations = !_repo.show_integrations;
-            _repo.name_pattern_error = false;
         }
 
         function _revealGithub(_repo) {
