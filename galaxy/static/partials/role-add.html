@@ -32,11 +32,10 @@
                             <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
                         </div>
                         <div class="refresh-roles" ng-if="!loading">
-                            <a href="" ng-click="refreshRepos()" ng-if="!refreshing" class="refresh-link btn btn-sm btn-default"
+                            <a href="" ng-click="refreshRepos()" ng-disabled="refreshing" class="refresh-link btn btn-sm btn-default"
                                tooltip-placement="top"
                                uib-tooltip="Refresh Your Repositories from GitHub"
-                               tooltip-append-to-body="true"><i class="fa fa-refresh"></i></a>
-                            <i class="fa fa-spin fa-spinner" ng-if="refreshing"></i>
+                               tooltip-append-to-body="true"><i class="fa fa-refresh" ng-show="!refreshing"></i><i class="fa fa-spin fa-spinner" ng-show="refreshing"></i></a>
                         </div>
                     </div>
                 </div>
@@ -57,6 +56,15 @@
                         <div class="name">
                             <a ng-href="{{ repo.role_namespace }}/{{repo.role_name }}" ng-if="repo.is_enabled && repo.role_id" tooltip-placement="top" uib-tooltip="{{ 'Role: ' + repo.role_namespace + '.' + repo.role_name }}">{{ repo.github_user + '/' + repo.github_repo }}</a>
                             <span ng-if="!repo.is_enabled || !repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</span>
+                        </div>
+                        <div uib-collapse="!repo.show_delete_warning" class="delete-container">
+                            <p>Are you sure you want to delete this role?</p><p>Download count and other statistics will be lost.</p>
+                            <div class="form-group">
+                                <div class="form-button text-right">
+                                    <a href="" ng-click="delete(repo)" class="btn btn-xs btn-danger">DELETE</a>
+                                    <a href="" ng-click="deleteCancel(repo)" class="btn btn-xs btn-default">CANCEL</a>
+                                </div>
+                            </div>
                         </div>
                         <div uib-collapse="!repo.show_integrations" class="integration-container">
                             <div class="form">
@@ -84,8 +92,8 @@
                                 </div-->
                                 <div class="form-group">
                                     <div class="form-button text-right">
-                                        <a href="" ng-click="updateSettings(repo)" class="btn btn-sm btn-primary"><i class="fa fa-check"></i> Save</a>
-                                        <a href="" ng-click="cancelIntegrations(repo)" class="btn btn-sm btn-default"><i class="fa fa-times"></i> Cancel</a>
+                                        <a href="" ng-click="updateSettings(repo)" class="btn btn-xs btn-success">SAVE</a>
+                                        <a href="" ng-click="cancelIntegrations(repo)" class="btn btn-xs btn-default">CANCEL</a>
                                     </div>
                                 </div>
                             </div>
@@ -117,7 +125,7 @@
                 <div class="repository loading" ng-show="!loading && !refreshing && repositories.length == 0">
                     No roles found in your public GitHub repositories.
                 </div>
-                <div class="repository loading" ng-show="loading || refreshing && repository.length == 0">
+                <div class="repository loading" ng-show="(loading || refreshing) && repositories.length == 0">
                     Loading your role repositories from GitHub...
                 </div>
             </div>

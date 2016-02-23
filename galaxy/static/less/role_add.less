@@ -35,16 +35,13 @@
             .tools {
                 text-align: right;
             }
-            .refresh-roles {
-                display: inline-block;
-                padding-top: 10px;
-            }
             .search-roles {
                 display: inline-block;
-                width: 80%;
+                width: 75%;
                 margin-right: 10px;
-                padding-top: 10px;
                 position: relative;
+                left: 0;
+                top: 0;
                 input {
                     padding-right: 15px;
                 }
@@ -52,14 +49,17 @@
                     display: inline-block;
                     position: absolute;
                     right: 6px;
-                    top: 15px;
+                    top: 5px;
                     color: @ansible-dark-grey;
                     .fa-times:hover {
                         cursor: pointer;
                     }
                 }
             }
-
+            .refresh-roles {
+                display: inline-block;
+                vertical-align: top;
+            }
             @media(max-width: 768px) {
                 .tools {
                     text-align: left;
@@ -101,14 +101,31 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
+            .delete-container {
+                width: 400px;
+                padding: 10px;
+                margin-left: 0;
+                margin-top: 10px;
+                border-radius: 2px;
+                border: 1px solid #ccc;
+                background-color: #f6f6f6;
+                color: @ansible-dark-grey;
+
+                .form-group:last-of-type {
+                    margin-bottom: 0;
+                    .btn {
+                        margin-left: 10px;
+                    }
+                }
+            }
             .integration-container {
                 width: 600px;
                 padding: 10px;
-                margin-left: 110px;
+                margin-left: 95px;
                 margin-top: 10px;
                 border-radius: 2px; 
                 border: 1px solid #ccc;
-                background-color: #e1e1e1;
+                background-color: #f6f6f6;
                 color: @ansible-dark-grey;
                 h3 {
                     margin-top: 0;

@@ -59,6 +59,9 @@
         $scope.reimport = _importRepository;
         $scope.github_auth = true;
         $scope.validateName = _validateName;
+        $scope.deleteCancel = _deleteCancel;
+        $scope.delete = _delete;
+
 
         if (!(currentUserService.authenticated && currentUserService.connected_to_github)) {
             $scope.github_auth = false;
@@ -284,10 +287,10 @@
             githubRepoService.refresh().$promise.then(function(response) {
                 $scope.repositories = response;
                 _setup();
-                $scope.refreshing = false;
                 $timeout(function() {
+                    $scope.refreshing = false;
                     $scope.$apply();
-                },300);
+                },1000);
             });
         }
 
@@ -306,19 +309,30 @@
             if (_repo.is_enabled) {
                 _importRepository(_repo);
             } else {
-                roleService.delete({
-                    'github_user': _repo.github_user,
-                    'github_repo': _repo.github_repo
-                }).$promise.then(function(response) {
-                    $scope.repositories.forEach(function(repo) {
-                        response.deleted_roles.forEach(function(deleted) {
-                            if (deleted.github_user === repo.github_user && deleted.github_repo === repo.github_repo) {
-                                repo.state = null;
-                            }
-                        });
+                _repo.show_delete_warning = true;
+            }
+        }
+
+        function _delete(_repo) {
+            roleService.delete({
+                'github_user': _repo.github_user,
+                'github_repo': _repo.github_repo
+            }).$promise.then(function(response) {
+                $scope.repositories.forEach(function(repo) {
+                    response.deleted_roles.forEach(function(deleted) {
+                        if (deleted.github_user === repo.github_user && deleted.github_repo === repo.github_repo) {
+                            repo.state = null;
+                            repo.show_delete_warning = false;
+                        }
                     });
                 });
-            }
+            });
+
+        }
+
+        function _deleteCancel(_repo) {
+            _repo.show_delete_warning = false;
+            _repo.is_enabled = true;
         }
 
         function _checkStatus(response, deferred) {
