@@ -83,7 +83,7 @@
             }
             .settings {
                 margin-right: 5px;
-                margin-left: 5px;
+                margin-left: 20px;
                 .btn {
                     color: @ansible-dark-grey;
                 }
@@ -156,14 +156,16 @@
                     margin-left: 0;
                 }
             }
-
+            .tools-container {
+                text-align: right;
+            }
             .tools {
                 display: inline-block;
                 .state {
                     text-align: left;
                     display: inline-block;
                     width: 86px;
-                    margin-right: 10px;
+                    margin-right: 20px;
 
                     a.succeeded, a.succeeded:active, a.succeeded:visited {
                        i { color: @green }
@@ -189,8 +191,10 @@
             }
 
             @media (max-width: 446px) {
-                .tools {
-                    margin-top: 10px;
+                .tools-container {
+                    text-align: left;
+                    padding-top: 10px;
+                    padding-left: 115px;
                 }
             }
 

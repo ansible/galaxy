@@ -92,7 +92,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-3 text-right">
+                    <div class="col-sm-3 tools-container">
                         <div class="tools" ng-if="repo.is_enabled">
                             <div class="state">
                                 <a ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'">
@@ -104,7 +104,7 @@
 
                                 <a ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" class="failed"
                                    ng-show="repo.state == 'FAILED'" tooltip-placement="top" uib-tooltip="Last Import Failed">
-                                    <i class="fa fa-circle"></i> <span class="text">Failed</span></a>
+                                    <i class="fa fa-exclamation-circle"></i> <span class="text">Failed</span></a>
                             </div>
                             <button type="button"
                                 class="btn btn-default btn-xs"

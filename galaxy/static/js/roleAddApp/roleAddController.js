@@ -312,7 +312,7 @@
                 }).$promise.then(function(response) {
                     $scope.repositories.forEach(function(repo) {
                         response.deleted_roles.forEach(function(deleted) {
-                            if (deleted.github_user === repo.github_user && deleted.github_repo === _repo.github_repo) {
+                            if (deleted.github_user === repo.github_user && deleted.github_repo === repo.github_repo) {
                                 repo.state = null;
                             }
                         });
