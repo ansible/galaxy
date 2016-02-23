@@ -32,12 +32,18 @@
                 font-size: 32px;
                 color: @ansible-dark-grey;
             }
-            .refreshing-icon {
+            .tools {
+                text-align: right;
+            }
+            .refresh-roles {
                 display: inline-block;
-                width: 20px;
-                text-align: center;
+                padding-top: 10px;
             }
             .search-roles {
+                display: inline-block;
+                width: 80%;
+                margin-right: 10px;
+                padding-top: 10px;
                 position: relative;
                 input {
                     padding-right: 15px;
@@ -46,19 +52,27 @@
                     display: inline-block;
                     position: absolute;
                     right: 6px;
-                    top: 5px;
+                    top: 15px;
                     color: @ansible-dark-grey;
                     .fa-times:hover {
                         cursor: pointer;
                     }
                 }
             }
-            .tools {
-                padding-top: 10px;
+
+            @media(max-width: 768px) {
+                .tools {
+                    text-align: left;
+                    margin-top: 10px;
+                }
             }
         }
         
         .repository {
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e1e1e1;
+
             .ats-switch,
             .name,
             .state,
@@ -77,7 +91,7 @@
             .name {
                 color: @ansible-dark-grey;
                 width: 45%;
-                    a, a:active, a:visited {
+                a, a:active, a:visited {
                     color: @blue;
                 }
                 a:hover {
@@ -87,17 +101,10 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
-
-            hr {
-                padding: 0;
-                margin-top: 8px;
-                margin-bottom: 8px;
-            }
-
             .integration-container {
                 width: 600px;
                 padding: 10px;
-                margin-left: 120px;
+                margin-left: 110px;
                 margin-top: 10px;
                 border-radius: 2px; 
                 border: 1px solid #ccc;
@@ -153,15 +160,27 @@
             .tools {
                 display: inline-block;
                 .state {
+                    text-align: left;
                     display: inline-block;
-                    width: 22px;
-                    text-align: center;
-                    color: @ansible-dark-grey;
-                    .succeeded {
-                        color: @green;
+                    width: 86px;
+                    margin-right: 10px;
+
+                    a.succeeded, a.succeeded:active, a.succeeded:visited {
+                       i { color: @green }
+                       .text { color: @blue }
                     }
-                    .failed {
-                        color: @red;
+                    a.succeeded:hover {
+                       i { color: @green }
+                       .text { color: #23527c; }
+                    }
+
+                    a.failed, a.failed:active, a.failed:visited {
+                       i { color: @red }
+                       .text { color: @blue }
+                    }
+                    a.failed:hover {
+                       i { color: @red }
+                       .text { color: #23527c; }
                     }
                 }
                 .btn {
@@ -169,14 +188,14 @@
                 }
             }
 
-            @media (min-width: 650px) {
-                .name {
-                    width: 70%;
+            @media (max-width: 446px) {
+                .tools {
+                    margin-top: 10px;
                 }
             }
 
-            @media (min-width: 1024px) {
-                .name { 
+            @media (min-width: 990px) {
+                .name {
                     width: 80%;
                 }
             }

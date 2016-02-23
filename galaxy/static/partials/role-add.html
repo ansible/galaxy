@@ -22,87 +22,97 @@
 
             <div class="repository-list" ng-if="github_auth">
                 <div class="row title-container">
-                    <div class="col-sm-5 title">
+                    <div class="col-sm-6 title">
                         {{ username }}
                     </div>
-                    <div class="col-sm-4 tools">
+                    <div class="col-sm-6 tools">
                         <div class="search-roles">
                             <input type="text" placeholder="Search Roles" class="form-control input-sm" ng-model="searchText" ng-disabled="!repositories.length">
                             <div class="search-icon"><i class="fa fa-search" ng-show="!searchText"></i></div>
                             <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
                         </div>
-                    </div>
-                    <div class="col-sm-3 tools" ng-if="!loading">
-                        <a href="" ng-click="refreshRepos()" ng-disabled="refreshing" class="refresh-link btn btn-sm btn-default" 
-                         tooltip-placement="top" uib-tooltip="Refresh Your Repositories from GitHub"><i class="fa fa-refresh"></i></a>
-                         <div class="refreshing-icon"><i class="fa fa-spin fa-spinner" ng-if="refreshing"></i></div>
+                        <div class="refresh-roles" ng-if="!loading">
+                            <a href="" ng-click="refreshRepos()" ng-if="!refreshing" class="refresh-link btn btn-sm btn-default"
+                               tooltip-placement="top"
+                               uib-tooltip="Refresh Your Repositories from GitHub"
+                               tooltip-append-to-body="true"><i class="fa fa-refresh"></i></a>
+                            <i class="fa fa-spin fa-spinner" ng-if="refreshing"></i>
+                        </div>
                     </div>
                 </div>
-                <div class="repository" ng-repeat="repo in repositories | filter:searchText">
+                <div class="row repository" ng-repeat="repo in repositories | filter:searchText">
                     <!-- http://jumplink.github.io/angular-toggle-switch/ -->
-                    <toggle-switch 
-                        class="switch-success switch-mini"
-                        html="true" 
-                        ng-model="repo.is_enabled"
-                        on-label='<i class="fa fa-check"></i>'
-                        off-label='<i class="fa fa-times"></i>'
-                        ng-change="toggleRepository(repo)"
-                        is-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING' || refreshing"></toggle-switch>
-                    <div class="settings"><a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Role Settings" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a></div>
-                    <div class="name">
-                        <a ng-href="{{ repo.role_namespace }}/{{repo.role_name }}" ng-if="repo.is_enabled && repo.role_id" tooltip-placement="top" uib-tooltip="{{ 'Role: ' + repo.role_namespace + '.' + repo.role_name }}">{{ repo.github_user + '/' + repo.github_repo }}</a>
-                        <span ng-if="!repo.is_enabled || !repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</span>
-                    </div>
-                    <div class="tools" ng-if="repo.is_enabled">
-                        <div class="state">
-                            <i class="fa fa-spin fa-spinner" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'"></i>
-                            <i class="fa fa-circle succeeded" tooltip-placement="top" uib-tooltip="Last Import Succeeded" ng-show="repo.state == 'SUCCESS'"></i>
-                            <i class="fa fa-circle failed" tooltip-placement="top" uib-tooltip="Last Import Failed" ng-show="repo.state == 'FAILED'"></i>
+                    <div class="col-sm-9">
+                        <toggle-switch
+                            class="switch-success switch-mini"
+                            html="true"
+                            ng-model="repo.is_enabled"
+                            on-label='<i class="fa fa-check"></i>'
+                            off-label='<i class="fa fa-times"></i>'
+                            ng-change="toggleRepository(repo)"
+                            is-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING' || refreshing"></toggle-switch>
+                        <div class="settings">
+                            <a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Role Settings" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a>
                         </div>
-                        <a class="btn btn-default btn-xs" ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" tooltip-placement="top" uib-tooltip="View Role Import Details"><i class="fa fa-list"></i></a>
-                        <button type="button"
-                            class="btn btn-default btn-xs"
-                            ng-click="reimport(repo)"
-                            tooltip-placement="top"
-                            uib-tooltip="Re-import Role"
-                            ng-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING' || refreshing"><i class="fa fa-upload"></i>
-                        </button>
-                    </div>
-                                    
-                    <div uib-collapse="!repo.show_integrations" class="integration-container">
-                        <div class="form">
-                            <h3>SETTINGS</h3>
-                            <div class="form-group">
-                                <label>Travis Token</label>
-                                <div class="input-container">
-                                    <input type="{{ repo.travis_token_type }}" class="form-control input-sm" name="travis_token" ng-model="repo.travis_token" placeholder="Travis Token" autcomplete="off"/>
-                                    <a href="" class="clear-link" ng-click="clearTravis(repo)" ng-show="repo.travis_token"><i class="fa fa-times"></i></a>
+                        <div class="name">
+                            <a ng-href="{{ repo.role_namespace }}/{{repo.role_name }}" ng-if="repo.is_enabled && repo.role_id" tooltip-placement="top" uib-tooltip="{{ 'Role: ' + repo.role_namespace + '.' + repo.role_name }}">{{ repo.github_user + '/' + repo.github_repo }}</a>
+                            <span ng-if="!repo.is_enabled || !repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</span>
+                        </div>
+                        <div uib-collapse="!repo.show_integrations" class="integration-container">
+                            <div class="form">
+                                <h3>SETTINGS</h3>
+                                <div class="form-group">
+                                    <label>Travis Token</label>
+                                    <div class="input-container">
+                                        <input type="{{ repo.travis_token_type }}" class="form-control input-sm" name="travis_token" ng-model="repo.travis_token" placeholder="Travis Token" autcomplete="off"/>
+                                        <a href="" class="clear-link" ng-click="clearTravis(repo)" ng-show="repo.travis_token"><i class="fa fa-times"></i></a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Edit Role Name</label>
-                                <input type="text" class="form-control input-sm" name="alternate_name" ng-model="repo.role_name" ng-keyup="validateName(repo)" autocomplete="off" />
-                                <div class="error-text" ng-show="repo.name_pattern_error">Name may contain word characters (A-Z a-z 0-9 - _) only</div>
-                                <div class="help-text">Name assigned to the role on import. NOTE: Changing the name will trigger an import.</div>
-                            </div>
-                            <!--div class="form-group">
-                                <label>GitHub Secret</label>
-                                <div class="input-container">
-                                    <input type="{{ repo.github_secret_type }}" class="form-control input-sm" name="github_secret" ng-model="repo.github_secret" placeholder="GitHub Secret" autcomplete="off"/>
-                                    <a href="" class="reveal-link" ng-click="revealGithub(repo)" ng-show="repo.github_secret"><i class="fa fa-eye"></i></a>
-                                    <a href="" class="clear-link" ng-click="clearGithub(repo)" ng-show="repo.github_secret"><i class="fa fa-times"></i></a>
+                                <div class="form-group">
+                                    <label>Edit Role Name</label>
+                                    <input type="text" class="form-control input-sm" name="alternate_name" ng-model="repo.role_name" ng-keyup="validateName(repo)" autocomplete="off" />
+                                    <div class="error-text" ng-show="repo.name_pattern_error">Name may contain word characters (A-Z a-z 0-9 - _) only</div>
+                                    <div class="help-text">Name assigned to the role on import. NOTE: Changing the name will trigger an import.</div>
                                 </div>
-                            </div-->
-                            <div class="form-group">
-                                <div class="form-button text-right">
-                                    <a href="" ng-click="updateSettings(repo)" class="btn btn-sm btn-primary"><i class="fa fa-check"></i> Save</a>
-                                    <a href="" ng-click="cancelIntegrations(repo)" class="btn btn-sm btn-default"><i class="fa fa-times"></i> Cancel</a>
+                                <!--div class="form-group">
+                                    <label>GitHub Secret</label>
+                                    <div class="input-container">
+                                        <input type="{{ repo.github_secret_type }}" class="form-control input-sm" name="github_secret" ng-model="repo.github_secret" placeholder="GitHub Secret" autcomplete="off"/>
+                                        <a href="" class="reveal-link" ng-click="revealGithub(repo)" ng-show="repo.github_secret"><i class="fa fa-eye"></i></a>
+                                        <a href="" class="clear-link" ng-click="clearGithub(repo)" ng-show="repo.github_secret"><i class="fa fa-times"></i></a>
+                                    </div>
+                                </div-->
+                                <div class="form-group">
+                                    <div class="form-button text-right">
+                                        <a href="" ng-click="updateSettings(repo)" class="btn btn-sm btn-primary"><i class="fa fa-check"></i> Save</a>
+                                        <a href="" ng-click="cancelIntegrations(repo)" class="btn btn-sm btn-default"><i class="fa fa-times"></i> Cancel</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <hr />
+
+                    <div class="col-sm-3 text-right">
+                        <div class="tools" ng-if="repo.is_enabled">
+                            <div class="state">
+                                <a ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'">
+                                    <i class="fa fa-spin fa-spinner"></i> Running</a>
+
+                                <a ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" class="succeeded"
+                                   ng-show="repo.state == 'SUCCESS'" tooltip-placement="top" uib-tooltip="Last Import Succeeded">
+                                    <i class="fa fa-circle"></i> <span class="text">Succeeded</span></a>
+
+                                <a ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" class="failed"
+                                   ng-show="repo.state == 'FAILED'" tooltip-placement="top" uib-tooltip="Last Import Failed">
+                                    <i class="fa fa-circle"></i> <span class="text">Failed</span></a>
+                            </div>
+                            <button type="button"
+                                class="btn btn-default btn-xs"
+                                ng-click="reimport(repo)" tooltip-placement="top" uib-tooltip="Import Role" tooltip-append-to-body="true"
+                                ng-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING' || refreshing"><i class="fa fa-upload"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="repository loading" ng-show="!loading && !refreshing && repositories.length == 0">
                     No roles found in your public GitHub repositories.

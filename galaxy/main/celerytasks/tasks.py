@@ -393,10 +393,14 @@ def import_role(task_id):
 
     # There are no tags?
     if len(meta_tags) == 0:
-        add_message(import_task, "ERROR", "No values found for galaxy_tags. galaxy_info.galaxy_tags must be an iterable list in meta/main.yml")
+        add_message(
+            import_task, logger, "ERROR",
+            "No values found for galaxy_tags. galaxy_info.galaxy_tags must be an iterable list in meta/main.yml")
 
     if len(meta_tags) > 20:
-        add_message(import_task, "WARNING", "Found more than 20 values for galaxy_info.galaxy_tags in meta/main.yml. Only the first 20 will be used.")
+        add_message(
+            import_task, logger, "WARNING",
+            "Found more than 20 values for galaxy_info.galaxy_tags in meta/main.yml. Only the first 20 will be used.")
         meta_tags = meta_tags[0:20]
 
     meta_tags = list(set(meta_tags))
@@ -420,26 +424,26 @@ def import_role(task_id):
     add_message(import_task, logger, "INFO", "Parsing platforms")
     meta_platforms = galaxy_info.get("platforms", None)
     if meta_platforms is None:
-        add_message(import_task, "ERROR",
+        add_message(import_task, logger, "ERROR",
                     "galaxy_info.platforms not defined in meta.main.yml. Must be an iterable list.")
     elif isinstance(meta_platforms,basestring) or not hasattr(meta_platforms, '__iter__'):
-        add_message(import_task, "ERROR",
+        add_message(import_task, logger, "ERROR",
                     "Failed to iterate platforms. galaxy_info.platforms must be an iterable list in meta/main.yml.")
     else:
         platform_list = []
         for platform in meta_platforms:
             if not isinstance(platform, dict):
-                add_message(import_task, "ERROR",
+                add_message(import_task, logger, "ERROR",
                             "The platform '%s' does not appear to be a dictionary, skipping" % str(platform))
                 continue
             try:
                 name     = platform.get("name")
                 versions = platform.get("versions", ["all"])
                 if not name:
-                    add_message(import_task, "ERROR", "No name specified for platform, skipping")
+                    add_message(import_task, logger, "ERROR", "No name specified for platform, skipping")
                     continue
                 elif not isinstance(versions, list):
-                    add_message(import_task, "ERROR", "No name specified for platform %s, skipping" % name)
+                    add_message(import_task, logger, "ERROR", "No name specified for platform %s, skipping" % name)
                     continue
 
                 if len(versions) == 1 and versions == ["all"] or 'all' in versions:
@@ -451,7 +455,7 @@ def import_role(task_id):
                             role.platforms.add(p)
                             platform_list.append("%s-%s" % (name, p.release))
                     except:
-                        add_message(import_task, "ERROR", "Invalid platform: %s-all (skipping)" % name)
+                        add_message(import_task, logger, "ERROR", "Invalid platform: %s-all (skipping)" % name)
                 else:
                     # just loop through the versions and add them
                     for version in versions:
@@ -460,9 +464,9 @@ def import_role(task_id):
                             role.platforms.add(p)
                             platform_list.append("%s-%s" % (name, p.release))
                         except:
-                            add_message(import_task, "ERROR", "Invalid platform: %s-%s (skipping)" % (name,version))
+                            add_message(import_task, logger, "ERROR", "Invalid platform: %s-%s (skipping)" % (name,version))
             except Exception, e:
-                add_message(import_task, "ERROR", "An unknown error occurred while adding platform: %s" % str(e))
+                add_message(import_task, logger, "ERROR", "An unknown error occurred while adding platform: %s" % str(e))
             
         # Remove platforms/versions that are no longer listed in the metadata
         for platform in role.platforms.all():
@@ -475,10 +479,10 @@ def import_role(task_id):
     dependencies = meta_data.get("dependencies", None)
 
     if dependencies is None:
-        add_message(import_task, "ERROR",
+        add_message(import_task, logger, "ERROR",
                     "meta/main.yml missing definition for dependencies. Define dependencies as [] or an iterable list.")
     elif isinstance(dependencies,basestring) or not hasattr(dependencies, '__iter__'):
-        add_message(import_task, "ERROR",
+        add_message(import_task, logger, "ERROR",
                     "Failed to iterate dependencies. Define dependencies in meta/main.yml as [] or an iterable list.")
     else:
         dep_names = []
@@ -497,14 +501,15 @@ def import_role(task_id):
                 if len(names) < 2:
                     raise Exception("name format must match 'username.name'")
             except Exception, e:
-                add_message(import_task, "ERROR", "Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
+                add_message(import_task, logger, "ERROR",
+                            "Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
 
             try:
                 dep_role = Role.objects.get(namespace=names[0], name=names[1])
                 role.dependencies.add(dep_role)
                 dep_names.append(dep)
             except:
-                add_message(import_task, "ERROR", "Role dependency not found: %s" % dep)
+                add_message(import_task, logger, "ERROR", "Role dependency not found: %s" % dep)
 
         # Remove deps that are no longer listed in the metadata
         for dep in role.dependencies.all():
