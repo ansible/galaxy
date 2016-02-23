@@ -48,13 +48,17 @@
                         off-label='<i class="fa fa-times"></i>'
                         ng-change="toggleRepository(repo)"
                         is-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING' || refreshing"></toggle-switch>
-                    <div class="state"><i class="fa fa-spin fa-spinner" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'"></i></div>
                     <div class="settings"><a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Role Settings" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a></div>
                     <div class="name">
                         <a ng-href="{{ repo.role_namespace }}/{{repo.role_name }}" ng-if="repo.is_enabled && repo.role_id" tooltip-placement="top" uib-tooltip="{{ 'Role: ' + repo.role_namespace + '.' + repo.role_name }}">{{ repo.github_user + '/' + repo.github_repo }}</a>
                         <span ng-if="!repo.is_enabled || !repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</span>
                     </div>
                     <div class="tools" ng-if="repo.is_enabled">
+                        <div class="state">
+                            <i class="fa fa-spin fa-spinner" ng-show="repo.state == 'PENDING' || repo.state == 'RUNNING'"></i>
+                            <i class="fa fa-circle succeeded" tooltip-placement="top" uib-tooltip="Last Import Succeeded" ng-show="repo.state == 'SUCCESS'"></i>
+                            <i class="fa fa-circle failed" tooltip-placement="top" uib-tooltip="Last Import Failed" ng-show="repo.state == 'FAILED'"></i>
+                        </div>
                         <a class="btn btn-default btn-xs" ng-href="imports#/?github_user={{repo.github_user}}&github_repo={{repo.github_repo}}" tooltip-placement="top" uib-tooltip="View Role Import Details"><i class="fa fa-list"></i></a>
                         <button type="button"
                             class="btn btn-default btn-xs"

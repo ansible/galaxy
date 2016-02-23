@@ -120,6 +120,11 @@
                     repo.role_id = repo.summary_fields.roles[0].id;
                     repo.role_name = repo.summary_fields.roles[0].name;
                     repo.role_namespace = repo.summary_fields.roles[0].namespace;
+                    if (repo.summary_fields.roles[0].last_import['state']) {
+                        repo.state = repo.summary_fields.roles[0].last_import.state;
+                    } else {
+                        repo.state = repo.summary_fields.roles[0].last_import.state = null;
+                    }
                     repo.master_role_name = repo.role_name;
                 } else {
                     var new_name;

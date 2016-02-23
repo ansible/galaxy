@@ -68,7 +68,8 @@
                 line-height: normal;
             }
             .settings {
-                margin-right: 10px;
+                margin-right: 5px;
+                margin-left: 5px;
                 .btn {
                     color: @ansible-dark-grey;
                 }
@@ -85,11 +86,6 @@
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-            }
-            .state {
-                width: 22px;
-                text-align: center;
-                color: @ansible-dark-grey;
             }
 
             hr {
@@ -156,8 +152,26 @@
 
             .tools {
                 display: inline-block;
+                .state {
+                    display: inline-block;
+                    width: 22px;
+                    text-align: center;
+                    color: @ansible-dark-grey;
+                    .succeeded {
+                        color: @green;
+                    }
+                    .failed {
+                        color: @red;
+                    }
+                }
                 .btn {
                     color: @ansible-dark-grey;
+                }
+            }
+
+            @media (min-width: 650px) {
+                .name {
+                    width: 70%;
                 }
             }
 

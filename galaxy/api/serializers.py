@@ -442,9 +442,15 @@ class RepositorySerializer(BaseSerializer):
             OrderedDict([
                 ('id', r.id),
                 ('namespace', r.namespace),
-                ('name', r.name)
+                ('name', r.name),
+                ('last_import', dict())
             ]) for r in Role.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo)
         ]
+        for role in d['roles']:
+            tasks = list(ImportTask.objects.filter(role__id=role['id']).order_by('-id'))
+            if len(tasks) > 0:
+                role['last_import']['id'] = tasks[0].id
+                role['last_import']['state'] = tasks[0].state
         return d
 
 
