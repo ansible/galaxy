@@ -214,17 +214,17 @@ def detail_category(request, category=None, page=1):
     return render_to_response('list_category.html', context)
 
 
-def handle_404_view():
+def handle_404_view(request):
     context = dict(page_title="404 Error")
     return render_to_response('custom404.html', context)
 
 
-def handle_400_view():
+def handle_400_view(request):
     context = dict(page_title="400 Error")
     return render_to_response('custom400.html', context)
 
 
-def handle_500_view():
+def handle_500_view(request):
     context = dict(page_title="500 Error")
     return render_to_response('custom500.html', context)
 
