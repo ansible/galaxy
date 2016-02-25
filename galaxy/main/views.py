@@ -286,8 +286,19 @@ class RoleListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(RoleListView, self).get_context_data(**kwargs)
-        try:
+
+        ns = None
+        context['namespace'] = None
+        if Namespace.objects.filter(namespace=self.namespace).count() > 0:
             ns = Namespace.objects.get(namespace=self.namespace)
+        else:
+            try:
+                roles = list(self.get_queryset())
+                ns = Namespace.objects.get(namespace=roles[0].github_user)
+            except:
+                pass
+
+        if ns is not None:
             context['namespace'] = dict(
                 avatar_url=ns.avatar_url,
                 location=ns.location,
@@ -298,8 +309,7 @@ class RoleListView(ListView):
                 followers=ns.followers,
                 description=ns.description
             )
-        except:
-            context['namespace'] = None
+
         context['namespace_name'] = self.namespace
         context['search_value'] = self.request.GET.get('role', '')
         context["site_name"] = settings.SITE_NAME

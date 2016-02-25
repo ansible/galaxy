@@ -440,7 +440,6 @@ class Namespace(PrimordialModel):
     namespace = models.CharField(
         max_length   = 256,
         unique       = True,
-        db_index     = True,
         verbose_name = "GitHub namespace"
     )
     name = models.CharField(
