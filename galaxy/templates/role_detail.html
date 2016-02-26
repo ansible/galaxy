@@ -193,7 +193,8 @@
                                                 <td>{{ version.release_date }}</td>
                                             </tr>
                                             {% endfor %}
-                                            {% if version.count == 0 %}
+                                            {{ versions.count }}
+                                            {% if versions|length == 0 %}
                                             <tr>
                                                 <td colspan="2">No version history available.</td>
                                             </tr>

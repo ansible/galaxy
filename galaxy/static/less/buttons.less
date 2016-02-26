@@ -6,19 +6,24 @@
  /*
   * bootstrap button overrides
   */
- .btn-success {
+ .btn-success,
+ .btn-success:focus {
      background-color: @ansible-color;
      color: @white;
      border: none;
      border-radius: 2px;
  }
- .btn-success:active {
+ .btn-success:active,
+ .btn-success:active:focus,
+ .btn-success.active,
+ .btn-success.active:focus {
      background-color: @ansible-color-hover;
      color: @white;
      border-radius: 2px;
      border: none;
  }
- .btn-success:hover {
+ .btn-success:hover,
+ .btn-success:active:hover {
      background-color: @ansible-color-hover;
      border-radius: 2px;
      border: none;
@@ -37,9 +42,10 @@
      border: none;
      border-radius: 2px;
      border: 1px solid #e1e1e1;
+     color: #848992
  }
  .btn-default:hover {
-     background: #e1e1e1;
+     background: #fafafa;
      border: none;
      border-radius: 2px;
      border: 1px solid #e1e1e1;

@@ -3,6 +3,8 @@
  */
 
  #galaxy-intro-page {
+     @border-color: #e1e1e1;
+
      margin-top: 30px;
      margin-bottom: 30px;
 
@@ -24,29 +26,48 @@
          z-index: +1;
          width: 234px;
          background-color: #f2f2f2;
-         padding: 20px 15px;
          border-radius: 2px;
-         border: 1px solid #ccc;
+         border: 1px solid @border-color;
+
+         .galaxy-nav-title {
+            i { color: #b7b7b7; }
+            color: #848992;
+            border-bottom: 1px solid @border-color;
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 10px;
+         }
+
          .nav > li > a:hover {
              background-color: @white;
              border-radius: 2px;
          }
          .nav > li > a {
-            padding-top: 5px;
-            padding-bottom: 5px;
+            padding: 5px 10px 5px 10px;
          }
          .nav > li > ul > li a {
-            padding-top: 3px;
-            padding-bottom: 3px;
+            padding: 3px 10px 3px 10px;
          }
-         .pad {
-             padding-left: 20px;
+         .nav >li >a.pad {
+             padding-left: 40px;
          }
-         .back-to-top-link > a,
-         .back-to-top-link > a:hover,
-         .back-to-top-link > a:active,
-         .back-to-top-link > a:visited {
-             color: #848992;
+         .back-to-top-link {
+             text-align: center;
+             padding: 15px;
+             a {
+                 color: #848992;
+                 i {
+                     color: #b7b7b7;
+                 }
+             }
+             a:active,
+             a:visited,
+             a:hover {
+                 color: #848992;
+                 i {
+                     color: #b7b7b7;
+                 }
+             }
          }
      }
 

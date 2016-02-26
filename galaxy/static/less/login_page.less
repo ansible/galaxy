@@ -11,6 +11,11 @@
      h2 {
          margin-top: 0;
      }
+     h4 {
+        color: #848992;
+        font-size: 14px;
+        margin-bottom: 0;
+     }
      .login-intro {
          width: 80%;
          margin: 0 auto;
@@ -18,6 +23,15 @@
      .login-dialog {
          width: 50%;
          margin: 0 auto;
+
+         .alert-container {
+             text-align: center;
+         }
+         .alert {
+             margin: 20px auto;
+             width: 80%;
+             text-align: left;
+         }
      }
 
     .login-social {
@@ -42,25 +56,32 @@
          margin-top: 25px;
      }
      .form-fields {
-         width: 95%;
+         width: 80%;
          margin: 0 auto;
          text-align: left;
      }
-     .remember, .reset {
-         margin-top: 5px;
-         font-size: 12px;
-         display: inline-block;
-         vertical-align: middle;
-     }
-     .remember {
-         margin-right: 20px;
-     }
-     .reset {
-         padding-top: 3px;
+     .form-group {
+        margin-left: 0;
+        margin-right: 0;
      }
      .alert {
          margin-bottom: 0;
          margin-top: 20px;
+     }
+     .button-group {
+         .remember,
+         .reset,
+         .btn-container {
+            display: inline-block;
+         }
+         .btn-container {
+            float: right;
+         }
+         .remember, .reset {
+             font-size: 12px;
+             margin-right: 20px;
+             margin-top: 15px;
+         }
      }
  }
 

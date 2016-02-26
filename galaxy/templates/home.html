@@ -95,7 +95,7 @@ $ ansible-galaxy install username.rolename
                     </div>
                     <div id="featured-blog" class="featured">
                         <div id="featured-blog-body" class="featured-body">
-                            <span class="upcase title">blog:</span><a href="http://www.ansible.com/blog/ansible-galaxy-2-release" class="blog-link">Ansible Galaxy 2.0 Launches. The BETA sticker is off.</a>
+                            <span class="upcase title">blog:</span><a href="https://www.ansible.com/blog/ansiblefest-london-2016-presentations" target="_blank" class="blog-link">AnsibleFest London 2016 Presentations</a>
                         </div>
                     </div>
                 </div>
@@ -175,7 +175,14 @@ $ ansible-galaxy install username.rolename
         active: 1,
         index: 0
     };
-    
+
+    $.fn.extend({animateCss: function (animationName) {
+        var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+        $(this).addClass('animated ' + animationName).one(animationEnd, function() {
+            $(this).removeClass('animated ' + animationName);
+        });
+    }});
+
     $(document).ready(function() {
         _loadMostStarred();
         _loadTopAuthors();
@@ -216,7 +223,7 @@ $ ansible-galaxy install username.rolename
                     url: '/' + role.username + '/' + role.name
                 });
             });
-            _showCurrentRole();
+            _showCurrentRole('fade');
             $('#featured-role-body').dotdotdot();
         });
     }
@@ -231,14 +238,21 @@ $ ansible-galaxy install username.rolename
                     url: '/' + auth.namespace + '/'
                 });
             });
-            _showCurrentAuthor();
+            _showCurrentAuthor('fade');
             $('#featured-author-body').dotdotdot();
         });
     }
 
-    function _showCurrentRole() {
+    function _showCurrentRole(direction) {
         if (current_role.index >= 0 && current_role.index < featured_roles.length) {
             $('#featured-role-body').trigger('destroy');
+            if (direction == 'left') {
+                $('#featured-role-body').animateCss('slideInLeft');
+            } else if (direction == 'fade') {
+                $('#featured-role-body').animateCss('fadeIn');
+            } else {
+                $('#featured-role-body').animateCss('slideInRight');
+            }
             $('#featured-role .role-link').attr('href', featured_roles[current_role.index].url);
             $('#featured-role .role-name').text(featured_roles[current_role.index].name);
             $('#featured-role .role-descr').text(featured_roles[current_role.index].description);
@@ -257,9 +271,16 @@ $ ansible-galaxy install username.rolename
         }
     }
 
-    function _showCurrentAuthor() {
+    function _showCurrentAuthor(direction) {
         if (current_author.index >= 0 && current_author.index < featured_authors.length) {
             $('#featured-author-body').trigger('destroy');
+            if (direction == 'left') {
+                $('#featured-author-body').animateCss('slideInLeft');
+            } else if (direction == 'fade') {
+                $('#featured-author-body').animateCss('fadeIn');
+            } else {
+                $('#featured-author-body').animateCss('slideInRight');
+            }
             $('#featured-author .author-link').attr('href', featured_authors[current_author.index].url);
             $('#featured-author .author-name').text(featured_authors[current_author.index].name);
             $('#featured-author .author-descr').text(featured_authors[current_author.index].description);
@@ -287,7 +308,7 @@ $ ansible-galaxy install username.rolename
             } else {
                 current.active = 1;
             }
-            showCurrent();
+            showCurrent('left');
         }
     }
 
@@ -300,7 +321,7 @@ $ ansible-galaxy install username.rolename
             } else {
                 current.active = 3;
             }
-            showCurrent();
+            showCurrent('right');
        }
     }
 

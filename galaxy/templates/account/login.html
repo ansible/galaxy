@@ -37,17 +37,19 @@
                     <li><a href="/accounts/github/login/?process="><i class="fa fa-github fa-2x"></i></a></li>
                     -->
                 </ul>
-                <h4>or</h4>
+                <h4>OR</h4>
             </div>
 
 
 
 
             {% if form.non_field_errors %}
-            <div class="alert alert-danger alert-dismissable">
-              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-              <strong>Errors:</strong><br />
-              {% for error in form.non_field_errors %}{{error}}<br />{% endfor %}
+            <div class="alert-container">
+                <div class="alert alert-danger alert-dismissable">
+                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                  <strong>Errors:</strong><br />
+                  {% for error in form.non_field_errors %}{{error}}<br />{% endfor %}
+                </div>
             </div>
             {% endif %}
             <form class="form form-horizontal login" method="POST" action="{% url 'account_login' %}">
@@ -57,20 +59,20 @@
                 {% endif %}
                 <div class="form-fields">
                     <div class="form-group">
-                        <input type="text" class="form-control" id="login" name="login" placeholder="Username/Email" autocomplete="off">
+                        <input type="text" class="form-control" id="login" name="login" placeholder="Username/Email" tabindex="1" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" autocomplete="off">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" tabindex="2" autocomplete="off">
                     </div>
-                    <div class="form-group">
-                        <input type="submit" class="btn btn-primary btn-block" value="Sign In" />
-                        <div>
-                            <div class="remember">
-                                <input type="checkbox" id="remember" name="remember" /> Remember me?
-                            </div>
-                            <div class="reset">
-                                <a href="{% url 'account_reset_password' %}">Forgot password</a>
-                            </div>
+                    <div class="button-group">
+                        <div class="remember">
+                            <input type="checkbox" id="remember" name="remember" tabindex="4" /> Remember me?
+                        </div>
+                        <div class="reset">
+                            <a href="{% url 'account_reset_password' %}" tabindex="5" >Forgot password</a>
+                        </div>
+                        <div class="btn-container">
+                            <input type="submit" class="btn btn-success btn-md" tabindex="3" value="Sign In" />
                         </div>
                     </div>
                 </div>
