@@ -45,6 +45,15 @@
      }
  }
 
+ .table>tbody>tr>td,
+ .table>tbody>tr>th,
+ .table>tfoot>tr>td,
+ .table>tfoot>tr>th,
+ .table>thead>tr>td,
+ .table>thead>tr>th {
+    border-top-width: 0;
+ }
+
  table caption {
      font-weight: normal;
      font-size: 16px;
@@ -54,10 +63,10 @@
  /* Galaxy table striping and padding. Use in place of TB table-striped
     to fix FF disappearing border issue. */
  .ga-table-striped {
-     tbody>tr:nth-child(odd) {
+     tbody>tr:nth-child(even) {
              background-color: #fafafa;
      }
-     tbody>tr:nth-child(even) {
+     tbody>tr:nth-child(odd) {
              background-color: @white;
      }
  }

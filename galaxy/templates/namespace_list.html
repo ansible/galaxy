@@ -24,7 +24,12 @@
             </form>
         </div>
     </div>
-    <table class="table" {% if object_list.count == 0 %} style="border-bottom-color: #fff;" {% endif %}>
+    <table class="table ga-table-striped" {% if object_list.count == 0 %} style="border-bottom-color: #fff;" {% endif %}>
+        <thead>
+            <tr>
+                <th colspan="2">Author</th>
+            </tr>
+        </thead>
         <tbody>
         {% for item in object_list %}
         <tr>

@@ -246,13 +246,7 @@ $ ansible-galaxy install username.rolename
     function _showCurrentRole(direction) {
         if (current_role.index >= 0 && current_role.index < featured_roles.length) {
             $('#featured-role-body').trigger('destroy');
-            if (direction == 'left') {
-                $('#featured-role-body').animateCss('slideInLeft');
-            } else if (direction == 'fade') {
-                $('#featured-role-body').animateCss('fadeIn');
-            } else {
-                $('#featured-role-body').animateCss('slideInRight');
-            }
+            $('#featured-role-body').animateCss('fadeIn');
             $('#featured-role .role-link').attr('href', featured_roles[current_role.index].url);
             $('#featured-role .role-name').text(featured_roles[current_role.index].name);
             $('#featured-role .role-descr').text(featured_roles[current_role.index].description);
@@ -274,13 +268,7 @@ $ ansible-galaxy install username.rolename
     function _showCurrentAuthor(direction) {
         if (current_author.index >= 0 && current_author.index < featured_authors.length) {
             $('#featured-author-body').trigger('destroy');
-            if (direction == 'left') {
-                $('#featured-author-body').animateCss('slideInLeft');
-            } else if (direction == 'fade') {
-                $('#featured-author-body').animateCss('fadeIn');
-            } else {
-                $('#featured-author-body').animateCss('slideInRight');
-            }
+            $('#featured-author-body').animateCss('fadeIn');
             $('#featured-author .author-link').attr('href', featured_authors[current_author.index].url);
             $('#featured-author .author-name').text(featured_authors[current_author.index].name);
             $('#featured-author .author-descr').text(featured_authors[current_author.index].description);
