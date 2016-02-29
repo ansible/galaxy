@@ -32,6 +32,8 @@ class NextPageField(pagination.NextPageField):
         page = value.next_page_number()
         request = self.context.get('request')
         url = request and request.get_full_path() or ''
+        # remove /api/v1 so ansible-galaxy pagination works
+        url = url.replace('/api/v1', '')
         return replace_query_param(url, self.page_field, page)
 
 
@@ -44,17 +46,41 @@ class PreviousPageField(pagination.NextPageField):
         page = value.previous_page_number()
         request = self.context.get('request')
         url = request and request.get_full_path() or ''
+        # remove /api/v1 so ansible-galaxy pagination works
+        url = url.replace('/api/v1', '')
         return replace_query_param(url, self.page_field, page)
 
 
+class NextLinkField(pagination.NextPageField):
+    '''Pagination field to output URL path.'''
+
+    def to_representation(self, value):
+        if not value.has_next():
+            return None
+        page = value.next_page_number()
+        request = self.context.get('request')
+        url = request and request.get_full_path() or ''
+        return replace_query_param(url, self.page_field, page)
+
+
+class PreviousLinkField(pagination.NextPageField):
+    '''Pagination field to output URL path.'''
+
+    def to_representation(self, value):
+        if not value.has_previous():
+            return None
+        page = value.previous_page_number()
+        request = self.context.get('request')
+        url = request and request.get_full_path() or ''
+        return replace_query_param(url, self.page_field, page)
+
 class PaginationSerializer(pagination.BasePaginationSerializer):
-    '''
-    Custom pagination serializer to output only URL path (without host/port).
-    '''
+    '''Custom pagination serializer to output only URL path (without host/port).'''
 
     count = serializers.ReadOnlyField(source='paginator.count')
     cur_page = serializers.ReadOnlyField(source='number')
     num_pages = serializers.ReadOnlyField(source='paginator.num_pages')
+    next_link = NextLinkField(source='*')
+    previous_link = PreviousLinkField(source='*')
     next = NextPageField(source='*')
     previous = PreviousPageField(source='*')
-
