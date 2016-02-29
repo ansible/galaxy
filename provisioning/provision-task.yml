@@ -1,7 +1,7 @@
 ---
 - name: Provision Task Server
   hosts: celery
-  # become: yes
+  become: yes
   vars:
       galaxy_install_dev_tools: False
       galaxy_install_selinux: "{{ selinux | default(False) }}"

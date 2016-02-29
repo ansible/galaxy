@@ -1,5 +1,5 @@
 ---
-- name: Install bobo
+- name: Install boto
   pip: name=boto
 
 - name: Get Timestamp
