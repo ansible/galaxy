@@ -85,26 +85,6 @@ def filter_rating_queryset(qs):
     )
 
 
-def annotate_user_queryset(qs):
-    return qs.annotate(
-        num_ratings = Count('ratings', distinct=True),
-        # num_roles = Count('roles', distinct=True),
-        avg_rating = AvgWithZeroForNull('ratings__score'),
-        # avg_role_score = AvgWithZeroForNull('roles__average_score'),
-    )
-
-
-def annotate_role_queryset(qs):
-    return qs.annotate(
-        num_ratings = Count('ratings', distinct=True),
-        average_score = AvgWithZeroForNull('ratings__score'),
-        avg_reliability   = AvgWithZeroForNull('ratings__reliability'),
-        avg_documentation = AvgWithZeroForNull('ratings__documentation'),
-        avg_code_quality  = AvgWithZeroForNull('ratings__code_quality'),
-        avg_wow_factor    = AvgWithZeroForNull('ratings__wow_factor'),
-    )
-
-
 def create_import_task(github_user, github_repo, github_branch, role, user, travis_status_url='', travis_build_url='', alternate_role_name=None):
     task = ImportTask.objects.create(
         github_user         = github_user,
@@ -249,7 +229,7 @@ class RoleUsersList(SubListAPIView):
 
     def get_queryset(self):
         qs = super(RoleUsersList, self).get_queryset()
-        return annotate_user_queryset(filter_user_queryset(qs))
+        return filter_user_queryset(qs)
 
 
 class RoleNotificationList(SubListAPIView):
@@ -947,7 +927,7 @@ class UserList(ListAPIView):
 
     def get_queryset(self):
         qs = super(UserList, self).get_queryset()
-        return annotate_user_queryset(filter_user_queryset(qs))
+        return filter_user_queryset(qs)
 
 
 class TopContributorsList(ListAPIView):
