@@ -183,9 +183,9 @@ def get_readme(import_task, logger, repo, branch):
                         "Unable to determine README file type. Expecting file extension to be one of: .md, .rst")
     
         if file_type is not None:
-            # Remove all HTML tags while preserving any unicde chars
+            # Remove all HTML tags while preserving any unicode chars. Allow > for markdown blockquote.
             try:
-                readme_content = bleach.clean(readme.decoded_content, strip=True, tags=[])
+                readme_content = bleach.clean(readme.decoded_content, strip=True, tags=[]).replace('&gt;', '>')
             except Exception, e:
                 add_message(import_task, logger, "ERROR", "Failed to strip HTML tags from README: %s" % str(e))
         
