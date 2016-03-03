@@ -13,7 +13,7 @@
     - name: Start the refresh        
       shell: galaxy-manage refresh_role_counts
       register: out
-      when: celery_beats
+      when: celery_type == "imports"
     - debug: var=out.stdout_lines
 
 - name: Rebuild Indexes
