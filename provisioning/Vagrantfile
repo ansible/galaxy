@@ -10,12 +10,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "lamudi/centos-7.0"
+  config.vm.box = "albertux/centos7"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
   # config.vm.box_check_update = false
+  
+  # set auto_update to false, if you do NOT want to check the correct
+  # additions version when booting this machine
+  config.vbguest.auto_update = false
+
+  # do NOT download the iso file from a webserver
+  config.vbguest.no_remote = true 
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
@@ -43,6 +50,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   config.vm.synced_folder "..", "/galaxy_devel", owner: 'vagrant'
+
+  #config.vm.synced_folder "..", "/galaxy_devel", type: "rsync",
+  #rsync__exclude: ".vagrant/",
+  #rsync__args: ["--verbose", "--rsync-path='sudo rsync'", "--archive", "--delete", "-z"]
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
