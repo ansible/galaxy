@@ -497,19 +497,32 @@ def import_role(task_id):
                 elif not isinstance(dep, basestring):
                     raise Exception("role dependencies must either be a string or dictionary (was %s)" % type(dep))
 
-                names = dep.split(".",1)
+                names = dep.split(".")
                 if len(names) < 2:
                     raise Exception("name format must match 'username.name'")
             except Exception, e:
                 add_message(import_task, logger, "ERROR",
                             "Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
-
-            try:
-                dep_role = Role.objects.get(namespace=names[0], name=names[1])
-                role.dependencies.add(dep_role)
-                dep_names.append(dep)
-            except:
-                add_message(import_task, logger, "ERROR", "Role dependency not found: %s" % dep)
+            if len(names) > 2:
+                # the username contains .
+                name = names[len(names) - 1]
+                names.pop()
+                namespace = '.'.join(names)
+                try:
+                    dep_role = Role.objects.get(namespace=namespace, name=name)
+                    role.dependencies.add(dep_role)
+                    dep_names.append(dep)
+                except:
+                    add_message(import_task, logger, "ERROR",
+                                "Role dependency not found name: %s namespace: %s" % (name, namespace))
+            else:
+                # standard foramt namespace.role_name
+                try:
+                    dep_role = Role.objects.get(namespace=names[0], name=names[1])
+                    role.dependencies.add(dep_role)
+                    dep_names.append(dep)
+                except:
+                    add_message(import_task, logger, "ERROR", "Role dependency not found: %s" % dep)
 
         # Remove deps that are no longer listed in the metadata
         for dep in role.dependencies.all():
