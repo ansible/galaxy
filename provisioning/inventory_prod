@@ -2,7 +2,7 @@
 # Prod Inventory file for jenkins jobs
 #
 [node_balancer]
-172.26.3.12 public_ip=40.118.209.130
+172.26.3.12 public_ip=40.118.209.130 ansible_host=40.118.209.130
 
 [node_balancer:vars]
 nginx_server_name=galaxy.ansible.com

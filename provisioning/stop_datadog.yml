@@ -1,0 +1,9 @@
+- name: Stop datadog monitoring web
+  hosts: 
+    - web
+    - db
+    - celery
+    - es_hosts
+  become: yes
+  tasks:
+    - service: name=datadog-agent state=stopped enabled=no

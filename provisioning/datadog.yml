@@ -1,7 +1,7 @@
 ---
 - name: Install Datadog Monitoring - Web
   hosts: web
-  sudo: yes
+  become: yes
   roles:
       - { role: Datadog.datadog }
   vars_files:
@@ -22,7 +22,7 @@
 
 - name: Install Datadog Monitoring - DB
   hosts: db     
-  sudo: yes
+  become: yes
   tasks:
      - name: Start rabbitmq
        service: name=rabbitmq-server state=started
@@ -67,7 +67,7 @@
 
 - name: Install Datadog Monitoring - ES 
   hosts: es_hosts
-  sudo: yes
+  become: yes
   roles:
       - { role: Datadog.datadog }
   vars_files:
@@ -77,10 +77,34 @@
           elastic:
               init_config:
               instances:
-                  - url: http://{{ inventory_hostname }}:9200
+                  - url: http://{{ private_ip }}:9200
                     cluster_stats: true
                     pshard_stats: true
   tags:
       - elasticsearch
       - elastic
       - es
+
+- name: Install Datadog Monitoring - Celery
+  hosts: celery
+  become: yes
+  roles:
+      - { role: Datadog.datadog }
+  vars_files:
+      - galaxy-vault.yml
+
+- name: Install Datadog Monitoring - Nodebalancer 
+  hosts: node_balancer 
+  become: yes
+  roles:
+      - { role: Datadog.datadog }
+  vars_files:
+      - galaxy-vault.yml
+  vars:
+      datadog_checks:
+          nginx:
+              init_config:
+              instances:
+                  - nginx_status_url: http://{{ nginx_server_name }}/nginx_status/
+                    tags:
+                        - instance: load_balancer
