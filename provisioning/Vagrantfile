@@ -19,10 +19,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   # set auto_update to false, if you do NOT want to check the correct
   # additions version when booting this machine
-  config.vbguest.auto_update = false
+  #config.vbguest.auto_update = false
 
   # do NOT download the iso file from a webserver
-  config.vbguest.no_remote = true 
+  #config.vbguest.no_remote = true 
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
