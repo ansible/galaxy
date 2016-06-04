@@ -1,0 +1,22 @@
+django==1.8.3
+djangorestframework==3.0.5
+pexpect
+decorator
+django-allauth
+django-autofixture
+django-avatar
+django-bootstrap-form
+django-celery
+django-filter
+django-site-maintenance
+django-debug-toolbar
+django-haystack
+drf-haystack
+elsasticsearch==1.7.0  # Latest version not compatible with django-haystack
+elasticsearch-dsl
+PyGithub
+markdown==2.4.1        # 2.5 currently has a python 2.6.x incompatibility
+requests
+requests-oauthlib
+bleach
+rst2html5-tools

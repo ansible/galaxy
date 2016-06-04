@@ -48,20 +48,20 @@ push:
 requirements:
 	@if [ "$(VIRTUAL_ENV)" ]; then \
 	    pip install distribute==0.7.3; \
-	    pip install -r requirements/dev.txt; \
+	    pip install -r requirements.txt; \
 	    $(PYTHON) fix_virtualenv_setuptools.py; \
         else \
-	    sudo pip install -r requirements/dev.txt; \
+	    sudo pip install -r requirements.txt; \
         fi
 
 # Install third-party requirements needed for development environment
 # (downloading from PyPI if necessary).
 requirements_pypi:
 	@if [ "$(VIRTUAL_ENV)" ]; then \
-	    pip install -r requirements/dev.txt; \
+	    pip install -r requirements.txt; \
 	    $(PYTHON) fix_virtualenv_setuptools.py; \
 	else \
-	    sudo pip install -r requirements/dev.txt; \
+	    sudo pip install -r requirements.txt; \
 	fi
 
 # "Install" galaxy package in development mode.  Creates link to working
