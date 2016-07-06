@@ -707,8 +707,8 @@ def refresh_role_counts(start, end, gh_api, tracker):
         try:
             gh_repo = gh_api.get_repo(full_name)
             update_namespace(gh_repo)
-            sub_count = len(gh_repo.get_subscribers())
-            role.watchers_count = sub_count
+            # sub_count = len(gh_repo.get_subscribers())
+            role.watchers_count = gh_repo.watchers
             role.stargazers_count = gh_repo.stargazers_count
             role.forks_count = gh_repo.forks_count
             role.open_issues_count = gh_repo.open_issues_count
