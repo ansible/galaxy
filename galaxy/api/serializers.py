@@ -697,7 +697,7 @@ class RoleListSerializer(BaseSerializer):
         model = Role
         fields = BASE_FIELDS + ('namespace', 'is_valid','github_user', 'github_repo',
                                 'github_branch', 'min_ansible_version', 'issue_tracker_url',
-                                'license','company', 'description', 'readme_html',
+                                'license','company', 'description',
                                 'travis_status_url', 'stargazers_count', 'watchers_count',
                                 'forks_count', 'open_issues_count', 'commit', 'commit_message',
                                 'commit_url', 'download_count')
