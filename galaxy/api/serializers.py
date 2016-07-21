@@ -691,7 +691,7 @@ class ImportTaskLatestSerializer(BaseSerializer):
 
 
 class RoleListSerializer(BaseSerializer):
-    readme_html = serializers.SerializerMethodField()
+    # readme_html = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
@@ -741,8 +741,8 @@ class RoleListSerializer(BaseSerializer):
                  release_date=g.release_date) for g in obj.versions.all()]
         return d
 
-    def get_readme_html(self, obj):
-        return readme_to_html(obj)
+    # def get_readme_html(self, obj):
+    #    return readme_to_html(obj)
 
 
 class RoleTopSerializer(BaseSerializer):
