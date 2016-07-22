@@ -79,6 +79,35 @@ def readme_to_html(obj):
             settings_overrides=settings,
         ).decode('utf8')
 
+def readme_to_html(obj):
+    if obj is None:
+        return ''
+    if obj.readme_html:
+        return obj.readme_html
+    if not obj.readme:
+        return ''
+    content = ''
+    if obj.readme_type is None or obj.readme_type == 'md':
+        try:
+            content = markdown.markdown(obj.readme, extensions=['extra'])
+        except:
+            content = "Failed to convert README to HTML. Galaxy now stores the GitHub generated HTML for your " \
+                      "README. If you re-import this role, the HTML will show up, and this message will go away."
+
+    if obj.readme_type == 'rst':
+        settings = {'input_encoding': 'utf8'}
+        try:
+            content = publish_string(
+                source=obj.readme,
+                writer=Writer(),
+                writer_name='html5css3',
+                settings_overrides=settings,
+            ).decode('utf8')
+        except:
+            content = "Failed to convert README to HTML. Galaxy now stores the GitHub generated HTML for your " \
+                      "README. If you re-import this role, the HTML will show up, and this message will go away."
+
+    return content
 
 def get_url_parts(path):
     # create URLs for breadcrumbs displayed in page headers

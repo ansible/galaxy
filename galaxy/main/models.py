@@ -292,12 +292,17 @@ class Role(CommonModelNameNotUnique):
     readme = models.TextField(
         blank=True,
         default='',
-        verbose_name = 'README content'
+        verbose_name = 'README raw content'
     )
     readme_type = models.CharField(
         max_length = 5,
         null=True,
         verbose_name = 'README type'
+    )
+    readme_html = models.TextField(
+        blank=True,
+        default='',
+        verbose_name = 'README HTML'
     )
     min_ansible_version = models.CharField(
         max_length   = 10,

@@ -26,7 +26,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
-from galaxy.api.aggregators import *  # noqa
 from galaxy.main.mixins import *      # noqa
 
 class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):

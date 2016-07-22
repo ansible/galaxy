@@ -65,17 +65,28 @@ SUMMARIZABLE_FK_FIELDS = {
 def readme_to_html(obj):
     if obj is None or obj.readme is None:
         return ''
+    content = ''
     if obj.readme_type is None or obj.readme_type == 'md':
-        return markdown.markdown(html_decode(obj.readme), extensions=['extra'])
+        try:
+            content = markdown.markdown(html_decode(obj.readme), extensions=['extra'])
+        except:
+            content = "Failed to convert README to HTML. Galaxy now stores the GitHub generated HTML for your " \
+                      "README. If you re-import this role, the HTML will show up, and this message will go away."
+
     if obj.readme_type == 'rst':
         settings = {'input_encoding': 'utf8'}
-        return publish_string(
-            source=obj.readme,
-            writer=Writer(),
-            writer_name='html5css3',
-            settings_overrides=settings,
-        ).decode('utf8')
+        try:
+            content = publish_string(
+                source=obj.readme,
+                writer=Writer(),
+                writer_name='html5css3',
+                settings_overrides=settings,
+            ).decode('utf8')
+        except:
+            content = "Failed to convert README to HTML. Galaxy now stores the GitHub generated HTML for your " \
+                      "README. If you re-import this role, the HTML will show up, and this message will go away."
 
+    return content
 
 class BaseSerializer(serializers.ModelSerializer):
     # add the URL and related resources
@@ -691,13 +702,13 @@ class ImportTaskLatestSerializer(BaseSerializer):
 
 
 class RoleListSerializer(BaseSerializer):
-    # readme_html = serializers.SerializerMethodField()
+    readme_html = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
         fields = BASE_FIELDS + ('namespace', 'is_valid','github_user', 'github_repo',
                                 'github_branch', 'min_ansible_version', 'issue_tracker_url',
-                                'license','company', 'description',
+                                'license','company', 'description', 'readme', 'readme_html',
                                 'travis_status_url', 'stargazers_count', 'watchers_count',
                                 'forks_count', 'open_issues_count', 'commit', 'commit_message',
                                 'commit_url', 'download_count')
@@ -741,8 +752,10 @@ class RoleListSerializer(BaseSerializer):
                  release_date=g.release_date) for g in obj.versions.all()]
         return d
 
-    # def get_readme_html(self, obj):
-    #    return readme_to_html(obj)
+    def get_readme_html(self, obj):
+        if obj.readme_html:
+            return obj.readme_html
+        return readme_to_html(obj)
 
 
 class RoleTopSerializer(BaseSerializer):
@@ -778,13 +791,13 @@ class RoleTopSerializer(BaseSerializer):
 
 
 class RoleDetailSerializer(BaseSerializer):
-    readme_html          = serializers.SerializerMethodField()
-    tags                 = serializers.SerializerMethodField()
+    readme_html = serializers.SerializerMethodField()
+    tags        = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
         fields = BASE_FIELDS + ('namespace','is_valid','github_user','github_repo','github_branch','min_ansible_version',
-                                'issue_tracker_url', 'license','company','description','readme_html', 'tags',
+                                'issue_tracker_url', 'license','company','description', 'readme', 'readme_html', 'tags',
                                 'travis_status_url', 'stargazers_count', 'watchers_count', 'forks_count',
                                 'open_issues_count', 'commit', 'commit_message','commit_url', 'created', 'modified',
                                 'download_count','imported')
@@ -830,6 +843,8 @@ class RoleDetailSerializer(BaseSerializer):
         return d
     
     def get_readme_html(self, obj):
+        if obj.readme_html:
+            return obj.readme_html
         return readme_to_html(obj)
 
 

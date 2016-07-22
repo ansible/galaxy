@@ -20,3 +20,4 @@ requests
 requests-oauthlib
 bleach
 rst2html5-tools
+requests

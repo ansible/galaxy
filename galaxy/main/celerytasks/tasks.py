@@ -18,8 +18,8 @@
 import re
 import yaml
 import datetime
-import bleach
-
+import requests
+import logging
 
 from celery import task
 from github import Github
@@ -154,24 +154,39 @@ def add_message(import_task, logger, msg_type, msg_text):
     logger.info("Role %d: %s - %s" % (import_task.role.id, msg_type, msg_text))
 
 
-def get_readme(import_task, logger, repo, branch):
+def get_readme(import_task, logger, repo, branch, token, gh_user):
     """
     Retrieve README from the repo and sanitize by removing all markup. Should preserve unicode characters.
     """
     file_type = None
-    readme_content = None
 
     add_message(import_task, logger, "INFO", "Parsing and validating README")
 
-    try: 
+    readme_html = None
+    readme_raw = None
+    headers = {'Authorization': 'token %s' % token, 'Accept': 'application/vnd.github.VERSION.html'}
+    url = "https://api.github.com/repos/%s/readme" % repo.full_name
+    data = None
+    if import_task.github_reference:
+        data = {'ref': branch}
+    try:
+        response = requests.get(url, headers=headers, data=data)
+        response.raise_for_status()
+        readme_html = response.text
+        logger.info("readme_html: %s" % readme_html)
+    except Exception as exc:
+        logger.error("ERROR Getting readme HTML: %s" % str(exc))
+        add_message(import_task, logger, "ERROR", "Failed to get HTML version of README: %s" % str(exc))
+
+    try:
         if import_task.github_reference:
             readme = repo.get_readme(ref=branch)
         else:
-            readme = repo.get_readme()    
+            readme = repo.get_readme()
     except:
         readme = None
         add_message(import_task, logger, "ERROR",
-                    "Failed to get preferred README. All role repositories must include a README.")
+                    "Failed to get README. All role repositories must include a README.")
 
     if readme is not None:
         if readme.name == 'README.md':
@@ -179,22 +194,25 @@ def get_readme(import_task, logger, repo, branch):
         elif readme.name == 'README.rst':
             file_type = 'rst'
         else:
-            add_message(import_task, logger, "ERROR",
-                        "Unable to determine README file type. Expecting file extension to be one of: .md, .rst")
+            add_message(import_task, logger, "ERROR", "Unable to determine README file type. Expecting file "
+                        "extension to be one of: .md, .rst")
+
+        readme_raw = readme.decoded_content
     
-        if file_type is not None:
-            # Remove all HTML tags while preserving any unicode chars. Allow > for markdown blockquote.
-            try:
-                readme_content = bleach.clean(readme.decoded_content, strip=True, tags=[]).replace('&gt;', '>')
-            except Exception, e:
-                add_message(import_task, logger, "ERROR", "Failed to strip HTML tags from README: %s" % str(e))
-        
-    return readme_content, file_type
+        # if file_type is not None:
+        #     # Remove all HTML tags while preserving any unicode chars. Allow > for markdown blockquote.
+        #     try:
+        #         readme_content = bleach.clean(readme.decoded_content, strip=True, tags=[]).replace('&gt;', '>')
+        #     except Exception, e:
+        #         add_message(import_task, logger, "ERROR", "Failed to strip HTML tags from README: %s" % str(e))
+        #
+    return readme_raw, readme_html, file_type
 
 
 @task(throws=(Exception,), name="galaxy.main.celerytasks.tasks.import_role")
 def import_role(task_id):
     logger = import_role.get_logger()
+    logger.setLevel(logging.ERROR)
 
     try:
         logger.info("Starting task: %d" % int(task_id))
@@ -367,7 +385,8 @@ def import_role(task_id):
     add_message(import_task, logger, "INFO", "Parsing galaxy_tags")
     meta_tags = []
     if galaxy_info.get("categories", None):
-        add_message(import_task, logger, "WARNING", "Found galaxy_info.categories. Update meta/main.yml to use galaxy_info.galaxy_tags.")
+        add_message(import_task, logger, "WARNING", "Found galaxy_info.categories. Update meta/main.yml to use "
+                    "galaxy_info.galaxy_tags.")
         cats = galaxy_info.get("categories")
         if isinstance(cats,basestring) or not hasattr(cats, '__iter__'):
             add_message(import_task, logger, "ERROR", "In meta/main.yml galaxy_info.categories must be an iterable list.")
@@ -530,7 +549,7 @@ def import_role(task_id):
             if dep_name not in dep_names:
                 role.dependencies.remove(dep)
 
-    role.readme, role.readme_type = get_readme(import_task, logger, repo, branch)
+    role.readme, role.readme_html, role.readme_type = get_readme(import_task, logger, repo, branch, token, gh_user)
     
     # helper function to save repeating code:
     def add_role_version(tag):
@@ -563,7 +582,9 @@ def import_role(task_id):
     warning_count = import_task.messages.filter(message_type="WARNING").count()
     import_state = "SUCCESS" if error_count == 0 else "FAILED"
     add_message(import_task, logger, "INFO", "Import completed")
-    add_message(import_task, logger, import_state, "Status %s : warnings=%d errors=%d" % (import_state,warning_count,error_count))
+    add_message(import_task, logger, import_state, "Status %s : warnings=%d errors=%d" % (import_state,
+                                                                                          warning_count,
+                                                                                          error_count))
     
     try:
         import_task.state = import_state
