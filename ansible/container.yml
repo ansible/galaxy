@@ -1,0 +1,58 @@
+version: "1"
+defaults:
+  foo: {{ lookup('env', 'foo') }}
+  ansible_container_version: {{ lookup('version') }}
+  bob: {{ 'blah' | test_filter }}
+services:
+  django:
+    image: python:2.7
+    working_dir: /galaxy
+    volumes:
+      - ${PWD}:/galaxy
+      - {{ galaxy_log_dir }}:/galaxy_logs
+      - {{ galaxy_config_path }}:/etc/galaxy
+    links:
+      - postgres
+      - elastic
+      - memcache
+      - rabbit
+    env_file:
+      POSTGRES_USER={{ postgres_user }}
+      POSTGRES_PASSWORD={{ postgres_password }}
+      POSTGRES_DB={{ postgres_db }}
+      RABBITMQ_DEFAULT_USER={{ rabbitmq_default_user }}
+      RABBITMQ_DEFAULT_PASS={{ rabbitmq_default_pass }}
+      RABBITMQ_DEFAULT_VHOST={{ rabbitmq_default_vhost }}
+    ports:
+      - "8000:8000"
+    command: ['/usr/bin/dumb-init', '/galaxy/ansible/start_development.sh']
+    user: django
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - ${PWD}/ansible/galaxy.env
+
+  elastic:
+    image: elasticsearch:latest
+
+  memcache:
+    image: memcached:latest
+
+  rabbit:
+    image: rabbitmq
+    hostname: rabbit
+    env_file:
+      - ${PWD}/ansible/galaxy.env
+
+  gulp:
+    image: centos:7
+    volumes:
+      - ${PWD}:/galaxy
+    command: ["/bin/true"]
+    dev_overrides:
+      working_dir: /galaxy
+      command: ["gulp"]
+
+
+registries: {}

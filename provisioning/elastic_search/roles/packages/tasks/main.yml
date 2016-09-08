@@ -8,8 +8,6 @@
   with_items:
   - gcc
   - git
-  - iptables-services
   - python-pip
   - make
   - ntp
-  - fail2ban

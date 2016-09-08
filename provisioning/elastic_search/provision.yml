@@ -8,6 +8,3 @@
       - { role: geerlingguy.elasticsearch }
       - { role: elasticsearch_config }
       - { role: ntp }
-      - { role: iptables }
-      - { role: auth_users }
-      - { role: auth_keys }

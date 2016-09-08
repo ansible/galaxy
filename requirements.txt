@@ -21,3 +21,7 @@ requests-oauthlib
 bleach
 rst2html5-tools
 requests
+psycopg2
+setuptools
+PyYAML
+python-memcached

@@ -1,4 +1,0 @@
-- name: Restart and enable supervisord
-  service: name=supervisord state=restarted enabled=yes
-  tags:
-      - celery

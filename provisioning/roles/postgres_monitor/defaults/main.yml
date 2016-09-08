@@ -1,4 +1,0 @@
----
-datadog_postgres_user: "datadog"
-datadog_postgres_pass: "password"
-pgmonitor_tmp: "/tmp"

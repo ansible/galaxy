@@ -1,7 +1,0 @@
-- name: Install authorized_keys
-  authorized_key:
-    state: 'present'
-    user: "{{ item | basename | regex_replace('.keys$','') }}"
-    key: "{{ lookup('file', item) }}"
-  with_fileglob:
-    - '*.keys'

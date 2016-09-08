@@ -1,8 +1,8 @@
 #
-# Intended for provisioning a vagrant host
+# Use to provision a vagrant host
 #
-- name: provision hosts
-  hosts: all
+- name: Provision hosts
+  hosts: all 
   sudo: yes
   roles:
   - { role: galaxy_app }

@@ -1,2 +1,0 @@
-- name: create robots.txt file
-  template: src=robots.j2 dest={{ searchbots_path }}/robots.txt

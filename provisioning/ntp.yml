@@ -1,5 +1,0 @@
-- name: Deploy ntp service
-  hosts: all
-  become: yes
-  roles:
-    - ntp

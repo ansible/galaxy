@@ -1,6 +1,0 @@
----
-- apt_key: id=C7A7DA52 keyserver=keyserver.ubuntu.com state=present
-
-- apt_repository: repo='deb http://apt.datadoghq.com/ stable main' state=present update_cache=yes
-
-- apt: name=datadog-agent state=latest

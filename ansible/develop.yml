@@ -1,0 +1,37 @@
+---
+# develop.yml
+# environment settings, passwords, etc. to use during development
+
+galaxy_log_dir: {{ lookup('env', 'HOME' ) }}/.galaxy/logs
+galaxy_config_path: {{ lookup('env', 'HOME') }}/.galaxy/config
+galaxy_env: "DEV"
+galaxy_project_dir: "/galaxy"
+galaxy_configure_supervisor: False
+galaxy_create_superuser: True
+
+postgres_user: galaxy
+postgres_password: galaxy
+postgres_db: galaxy
+rabbitmq_default_user: galaxy
+rabbitmq_default_pass: galaxy
+rabbitmq_default_vhost: galaxy
+
+# general Django settings
+
+galaxy_site_env: "DEV"
+galaxy_site_name: "localhost"
+galaxy_site_aliases: ['localhost', '127.0.0.1', '0.0.0.0']
+galaxy_send_email: False
+
+# Outbound SMTP settings
+
+galaxy_email_hostname: ""
+galaxy_email_port: {{ foo }}
+galaxy_email_username: ""
+galaxy_email_password: ""
+
+# logging handlers
+galaxy_accounts_handler: console
+galaxy_main_handler: console
+galaxy_allauth_handler: console
+galaxy_django_handler: django_logfile

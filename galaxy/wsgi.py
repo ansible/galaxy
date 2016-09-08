@@ -24,6 +24,31 @@ WSGI config for Galaxy project.
 
 from galaxy import prepare_env
 from django.core.wsgi import get_wsgi_application
+from galaxy.settings import WAIT_FOR
+
+import socket
+import time
+import logging
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+logger = logging.getLogger('galaxy.main')
+
+for service in WAIT_FOR:
+    is_alive = False
+    count = 0
+    while not is_alive and count < 10:
+        count += 1
+        logger.info("Waiting on %s:%s" % (service['host'], service['port']))
+        try:
+            s.connect((service['host'], service['port']))
+        except socket.error as exc:
+            if "endpoint is already connected" in str(exc):
+                is_alive = True
+            else:
+                time.sleep(1)
+        else:
+            is_alive = True
 
 # Prepare the galaxy environment.
 prepare_env()

@@ -2,6 +2,7 @@
 *.swp
 *.retry
 .idea/
+.develop/
 build/
 dist/
 galaxy.egg-info/

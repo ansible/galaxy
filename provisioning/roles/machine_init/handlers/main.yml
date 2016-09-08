@@ -1,2 +1,0 @@
-- name: restart_ssh
-  service: name=sshd state=restarted enabled=yes

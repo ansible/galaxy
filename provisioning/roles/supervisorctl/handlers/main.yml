@@ -1,5 +1,0 @@
----
-# Handlers for common notifications.
-
-- name: restart supervisor
-  service: name={{sup_init_name}} state=restarted enabled=yes

@@ -1,2 +1,0 @@
-dependencies:
- - { role: terminate_ec2, skip_delete: 'not {{delete_on_start}}' }

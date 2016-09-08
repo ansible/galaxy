@@ -8,15 +8,9 @@
   with_items:
   - gcc
   - git
-  - httpd
-  - iptables-services
   - libjpeg
-  - libselinux-python
-  - libsemanage-python
   - make
   - memcached
-  - mod_wsgi
-  - mod_ssl
   - python-devel
   - python-pip
   - python-psycopg2
@@ -39,14 +33,11 @@
   yum: name={{item}}
   with_items:
   - npm
-  when: galaxy_install_dev_tools
-
-- name: install pip packages required for galaxy
-  pip: name=django version=1.8.3
 
 - name: install pip packages required for galaxy
   pip: name={{item}}
   with_items:
+  - django==1.8.3
   - pexpect
   - decorator
   - django-allauth
@@ -81,28 +72,6 @@
 
 - name: add vagrant to galaxy_manage group
   user: name=vagrant append=yes groups=galaxy_manage
-  when: galaxy_env == "DEV"
-
-#- name: add centos to galaxy_manage group
-#  user: name=centos append=yes groups=galaxy_manage
-#  when: galaxy_env == "PROD"
-
-- name: add apache to galaxy_manage group
-  user: name=apache append=yes groups=galaxy_manage
-  when: galaxy_env == "PROD"
-
-# semanage fcontext -a -t httpd_log_t "/var/log/galaxy(/.*)?"
-# restorecon -R -v /var/log/galaxy
-
-# the galaxy log directory will be handled by packaging in the future
-- name: create galaxy log directory - production
-  file:
-      path: "{{ galaxy_log_dir }}"
-      state: directory
-      mode: 0770
-      owner: root
-      group: galaxy_manage
-  when: galaxy_env == "PROD"
 
 - name: create galaxy log directory - development
   file:
@@ -111,26 +80,3 @@
       mode: 0775
       owner: vagrant
       group: vagrant
-  when: galaxy_env == "DEV"
-
-- name: set galaxy log directory selinux permissions
-  file:
-      path: "{{ galaxy_log_dir }}"
-      state: directory
-      owner: root
-      group: galaxy_manage
-      recurse: yes
-      seuser: system_u
-      serole: object_r
-      setype: httpd_log_t
-  when: galaxy_env == "PROD" and galaxy_install_selinux
-
-- name: set galaxy log directory default acl
-  acl:
-      name: "{{ galaxy_log_dir }}"
-      default: yes
-      etype: group
-      entity: galaxy_manage
-      permissions: rw
-      state: present
-  when: galaxy_env == "PROD"

@@ -7,6 +7,14 @@ DATE := $(shell date -u +%Y%m%d%H%M)
 
 VERSION=$(shell $(PYTHON) -c "from galaxy import __version__; print(__version__.split('-')[0])")
 RELEASE=$(shell $(PYTHON) -c "from galaxy import __version__; print(__version__.split('-')[1])")
+
+#ansible-container options
+ifeq ($(DETACHED),yes)
+  detach_option="-d"
+else
+  detach_option=""
+endif
+
 ifneq ($(OFFICIAL),yes)
 BUILD=dev$(DATE)
 SDIST_TAR_FILE=galaxy-$(VERSION)-$(BUILD).tar.gz
@@ -25,8 +33,8 @@ endif
 
 .PHONY: clean rebase push requirements requirements_pypi develop refresh \
 	adduser syncdb migrate dbchange dbshell runserver celeryd test \
-	test_coverage coverage_html test_ui test_jenkins dev_build \
-	release_build release_clean sdist rpm ui_build
+	test_coverage coverage_html test_ui test_jenkins build_dev \
+	release_build release_clean sdist rpm ui_build honcho
 
 # Remove temporary build files, compiled Python files.
 clean:
@@ -88,20 +96,23 @@ adduser:
 
 # Create initial database tables (excluding migrations).
 syncdb:
-	$(PYTHON) manage.py makemigration --noinput
-	$(PYTHON) manage.py migrate --noinput
+	$(PYTHON) manage.py makemigration --noinput; \
+	$(PYTHON) manage.py migrate --noinput --fake-initial
 
 # Create database tables and apply any new migrations.
-migrate: syncdb
+migrate:
 	$(PYTHON) manage.py migrate --noinput
 
 # Run after making changes to the models to create a new migration.
 dbchange:
-	$(PYTHON) manage.py schemamigration main v14_changes --auto
+	$(PYTHON) manage.py makemigrate 
 
 # access database shell, asks for password
 dbshell:
 	sudo -u postgres psql -d galaxy
+
+honcho:
+	honcho start
 
 server_noattach:
 	tmux new-session -d -s galaxy 'exec make runserver'
@@ -151,9 +162,17 @@ test_jenkins:
 ui_build:
 	node node_modules/gulp/bin/gulp.js build	
 
-# Build a pip-installable package into dist/ with a timestamped version number.
-dev_build: 
-	$(PYTHON) setup.py dev_build
+# Build Galaxy images 
+build: 
+	ansible-container --var-file ~/my_develop.yml --debug build --from-scratch -- -e"@/ansible-container/ansible/develop.yml"
+
+# Start Galaxy containers
+run: 
+	ansible-container run -d memcache; \
+	ansible-container run -d rabbit; \
+	ansible-container run -d postgres; \
+	ansible-container run -d elastic; \
+	ansible-container run django gulp
 
 # Build a pip-installable package into dist/ with the release version number.
 release_build:

@@ -1,9 +1,0 @@
----
-- name: Update iptables config on ES hosts 
-  hosts: all
-  sudo: yes
-  vars:
-    es_transport_port: 9300
-    es_http_port: 9200
-  roles:
-      - { role: iptables }
