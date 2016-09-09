@@ -164,15 +164,15 @@ ui_build:
 
 # Build Galaxy images 
 build: 
-	ansible-container --var-file ~/my_develop.yml --debug build --from-scratch -- -e"@/ansible-container/ansible/develop.yml"
+	ansible-container --var-file ansible/develop.yml --debug build --from-scratch -- -e"@/ansible-container/ansible/develop.yml"
 
 # Start Galaxy containers
 run: 
-	ansible-container run -d memcache; \
-	ansible-container run -d rabbit; \
-	ansible-container run -d postgres; \
-	ansible-container run -d elastic; \
-	ansible-container run django gulp
+	ansible-container --var-file ansible/develop.yml run -d memcache; \
+	ansible-container --var-file ansible/develop.yml run -d rabbit; \
+	ansible-container --var-file ansible/develop.yml run -d postgres; \
+	ansible-container --var-file ansible/develop.yml run -d elastic; \
+	ansible-container --var-file ansible/develop.yml run django gulp
 
 # Build a pip-installable package into dist/ with the release version number.
 release_build:

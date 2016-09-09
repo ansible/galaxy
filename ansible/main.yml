@@ -2,8 +2,8 @@
 - hosts: django
   gather_facts: no
   tasks:
-    #- name: Update all packages
-    #  apt: upgrade=dist
+    - name: Update all packages
+      apt: upgrade=dist
 
     - name: Install apt-get packages required for galaxy
       apt: name="{{ item }}" update_cache=yes
@@ -11,6 +11,9 @@
       - tmux
       - make
       - vim
+   
+    - name: Create user django
+      user: name=django uid=1000 group=root uid=1000 createuser=no
 
     - name: Download dumb-init
       get_url:
@@ -31,14 +34,11 @@
     - name: Install honcho
       pip: name=honcho
 
-    - name: Add django user
-      user: name=django uid=1000 groups=root createhome=no
+    - name: Create the /etc/galaxy directory
+      file: path=/etc/galaxy owner=root group=root mode=2770 state=directory
 
-    #- name: Create the /etc/galaxy directory
-    #  file: path=/etc/galaxy owner=root group=root mode=2770 state=directory
-
-    #- name: Create /galaxy_logs directory
-    #  file: path=/galaxy_logs owner=django group=root mode=0775 state=directory
+    - name: Create /galaxy_logs directory
+      file: path=/galaxy_logs owner=django group=root mode=0775 state=directory
 
     - name: Intall galaxy
       command: python ./setup.py develop

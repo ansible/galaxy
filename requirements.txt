@@ -25,3 +25,4 @@ psycopg2
 setuptools
 PyYAML
 python-memcached
+mock

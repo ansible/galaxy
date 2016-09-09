@@ -17,8 +17,7 @@ WAIT_FOR = [
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-ADMINS = (
-)
+ADMINS = ()
 
 SITE_ENV="{{ galaxy_site_env }}"
 SITE_NAME="{{ galaxy_site_name }}"
@@ -48,7 +47,7 @@ if SEND_EMAIL:
     EMAIL_USE_TLS=True
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = '{{ galaxy_log_dir }}/email'
+    EMAIL_FILE_PATH = '/galaxy_logs/email'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -86,19 +85,13 @@ SOCIALACCOUNT_PROVIDERS={
 SOCIALACCOUNT_AVATAR_SUPPORT=True
 
 # Settings for celery/rabbitmq
-BROKER_URL="amqp://%s:%s@rabbit:5672/%s" % (os.environ.get('RABBITMQ_DEFAULT_USER'),
-                                            os.environ.get('RABBITMQ_DEFAULT_PASS'),
-                                            os.environ.get('RABBITMQ_DEFAULT_PASS'))
+BROKER_URL="amqp://{{ galaxy_rabbitmq_user }}:{{ galaxy_rabbitmq_pass }}@rabbit:5672/{{ galaxy_rabbitmq_vhost }}"
+
 CELERY_IMPORTS=('galaxy.main.celerytasks.tasks',)
 CELERY_TRACK_STARTED=True
 CELERYBEAT_SCHEDULER='djcelery.schedulers.DatabaseScheduler'
 
-GITHUB_TASK_USERS = [
-    { 'username': 'galaxytasks01', 'password': 'u5V4fGwoQz80F0YK' },
-    { 'username': 'galaxytasks02', 'password': 'u5V4fGwoQz80F0YK' },
-    { 'username': 'galaxytasks03', 'password': 'u5V4fGwoQz80F0YK' },
-    { 'username': 'galaxytasks04', 'password': 'u5V4fGwoQz80F0YK' }
-]
+GITHUB_TASK_USERS = [] 
 
 # Custom settings
 GALAXY_COMMENTS_THRESHOLD=10.0
@@ -108,9 +101,9 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'NAME': '{{ galaxy_postgres_db }}',
+        'USER': '{{ galaxy_postgres_user }}',
+        'PASSWORD': '{{ galaxy_postgres_password }}',
         'HOST': 'postgres',
         'PORT': '5432',
         'CONN_MAX_AGE': None,
@@ -354,7 +347,7 @@ LOGGING = {
         'allauth_logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': "{{ galaxy_log_dir }}/allauth.log",
+            'filename': "/galaxy_logs/allauth.log",
             'maxBytes': 500000,
             'backupCount': 4,
             'formatter': 'verbose',
@@ -362,7 +355,7 @@ LOGGING = {
         'django_logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': "{{ galaxy_log_dir }}/django.log",
+            'filename': "/galaxy_logs/django.log",
             'maxBytes': 500000,
             'backupCount': 4,
             'formatter': 'verbose',
@@ -370,7 +363,7 @@ LOGGING = {
         'galaxy_logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': "{{ galaxy_log_dir }}/galaxy.log",
+            'filename': "/galaxy_logs/galaxy.log",
             'maxBytes': 500000,
             'backupCount': 4,
             'formatter': 'verbose',
