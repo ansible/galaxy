@@ -4,6 +4,7 @@
 
 galaxy_log_dir: "{{ lookup('env', 'HOME') }}/.galaxy/logs"
 galaxy_config_path: "{{ lookup('env', 'HOME') }}/.galaxy/config"
+
 galaxy_env: "DEV"
 galaxy_project_dir: "/galaxy"
 galaxy_configure_supervisor: False
@@ -12,9 +13,13 @@ galaxy_create_superuser: True
 galaxy_postgres_user: galaxy
 galaxy_postgres_password: galaxy
 galaxy_postgres_db: galaxy
+
 galaxy_rabbitmq_user: galaxy
 galaxy_rabbitmq_pass: galaxy
 galaxy_rabbitmq_vhost: galaxy
+
+galaxy_admin_username: admin
+galaxy_admin_password: admin
 
 # general Django settings
 

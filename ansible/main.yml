@@ -3,64 +3,102 @@
   gather_facts: no
   tasks:
     - name: Update all packages
-      apt: upgrade=dist
+      yum: name=* state=latest
 
-    - name: Install apt-get packages required for galaxy
-      apt: name="{{ item }}" update_cache=yes
+    - name: Install epel
+      yum: name=epel-release state=present
+
+    - name: Install yum packages required for galaxy
+      yum: name="{{ item }}" update_cache=yes
       with_items:
-      - tmux
+      - "@Development tools"
       - make
       - vim
+      - postgresql
+      - python-pip
+      - python-devel
+      - postgresql-devel
    
+    - name: Create group django
+      group: name=django gid=1000 
+
     - name: Create user django
-      user: name=django uid=1000 group=root uid=1000 createuser=no
+      user: name=django uid=1000 group=django createhome=no
 
     - name: Download dumb-init
       get_url:
-        url: https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64.deb
-        dest: /dumb-init_1.1.3_amd64.deb
+        url: https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64
+        dest: /usr/local/bin/dumb-init
+        owner: root
+        group: root
+        mode: 755
 
-    - name: Install dumb-init
-      command: dpkg -i dumb-init_1.1.3_amd64.deb
-      args:
-        chdir: /
-
-    - name: Remove package dumb-init
-      file: path=/dumb-init_1.1.3_amd64.deb state=absent
+    - name: Clear yum cache
+      command: yum clean all
 
     - name: Install python packages
-      pip: requirements="/galaxy/requirements.txt"
+      pip: requirements=/galaxy/requirements.txt
 
-    - name: Install honcho
-      pip: name=honcho
+    - name: Clear pip cache
+      file: path=/root/.cache/pip state=absent
 
     - name: Create the /etc/galaxy directory
-      file: path=/etc/galaxy owner=root group=root mode=2770 state=directory
+      file: path=/etc/galaxy owner=root group=django mode=2775 state=directory
 
     - name: Create /galaxy_logs directory
-      file: path=/galaxy_logs owner=django group=root mode=0775 state=directory
+      file: path=/galaxy_logs owner=django group=django mode=0775 state=directory
 
-    - name: Intall galaxy
+    - name: Install galaxy
       command: python ./setup.py develop
       args:
         chdir: /galaxy
 
     - name: Deploy settings file
-      template: src=settings.py.j2 dest=/etc/galaxy/settings.py owner=root group=root mode=0660
+      template: src=../settings/settings_develop.py.j2 dest=/etc/galaxy/settings.py owner=root group=django mode=0660
 
     - name: Create the SECRET_KEY file
       command: /usr/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)" creates=/etc/galaxy/SECRET_KEY
 
     - name: Adjust SECRET_KEY permissions
-      file: path=/etc/galaxy/SECRET_KEY state=file owner=root group=root mode=0660
+      file: path=/etc/galaxy/SECRET_KEY state=file owner=root group=django mode=0660
 
     - name: Wait for postgresql
       wait_for: host=postgres port=5432 connect_timeout=10
 
     - name: Perform initial migrations 
       command: galaxy-manage migrate --noinput --fake-initial
+
+    - name: Disable triggers
+      command: psql -h postgres -d galaxy -U galaxy -f /galaxy/test-data/disable_triggers.sql
+
+    - name: Import testing data
+      shell: cat /galaxy/test-data/role_data.dmp.gz | gunzip | psql -h postgres -d "{{ galaxy_postgres_db }}" -U "{{ galaxy_postgres_user }}"
+
+    - name: Enable triggers
+      command: psql -h postgres -d galaxy -U galaxy -f /galaxy/test-data/enable_triggers.sql
+
+    - name: Remove test data file
+      file: path=/role_data.dmp.gz state=absent
+
+    - name: Create galaxy admin user
+      expect:
+        command: galaxy-manage createsuperuser
+        responses:
+          Username: "{{ galaxy_admin_username }}"
+          "Email address": "admin@galaxy.com"
+          Password: "{{ galaxy_admin_password }}"
+          "Password (again)": "{{ galaxy_admin_password }}"
+ 
+    - name: Rebuild Galaxy index
+      command: python ./manage.py rebuild_index --noinput
       args:
         chdir: /galaxy
+
+    - name: Rebuild custom indexes
+      command: python ./manage.py rebuild_galaxy_indexes
+      args:
+        chdir: /galaxy
+
     - name: Remove any log files
       command: rm -f *.log
       args:

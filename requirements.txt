@@ -4,7 +4,7 @@ pexpect
 decorator
 django-allauth
 django-autofixture
-django-avatar
+# django-avatar
 django-bootstrap-form
 django-celery
 django-filter
@@ -12,17 +12,17 @@ django-site-maintenance
 django-debug-toolbar
 django-haystack
 drf-haystack
-elasticsearch==1.7.0  # Latest version not compatible with django-haystack
+elasticsearch==1.7.0
 elasticsearch-dsl
 PyGithub
-markdown==2.4.1        # 2.5 currently has a python 2.6.x incompatibility
+markdown==2.4.1
 requests
 requests-oauthlib
 bleach
 rst2html5-tools
-requests
 psycopg2
 setuptools
 PyYAML
 python-memcached
 mock
+honcho

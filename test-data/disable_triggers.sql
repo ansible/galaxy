@@ -1,0 +1,2 @@
+ALTER TABLE main_role DISABLE TRIGGER all;
+ALTER TABLE main_repository DISABLE TRIGGER all;

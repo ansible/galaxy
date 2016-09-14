@@ -19,9 +19,6 @@ ifneq ($(OFFICIAL),yes)
 BUILD=dev$(DATE)
 SDIST_TAR_FILE=galaxy-$(VERSION)-$(BUILD).tar.gz
 SETUP_TAR_NAME=galaxy-setup-$(VERSION)-$(BUILD)
-RPM_PKG_RELEASE=$(BUILD)
-DEB_BUILD_DIR=deb-build/galaxy-$(VERSION)-$(BUILD)
-DEB_PKG_RELEASE=$(VERSION)-$(BUILD)
 else
 BUILD=
 SDIST_TAR_FILE=galaxy-$(VERSION).tar.gz
@@ -36,131 +33,19 @@ endif
 	test_coverage coverage_html test_ui test_jenkins build_dev \
 	release_build release_clean sdist rpm ui_build honcho
 
-# Remove temporary build files, compiled Python files.
+# Remove containers, images and ~/.galaxy
 clean:
-	rm -rf dist/*
-	rm -rf build rpm-build *.egg-info
-	rm -rf debian deb-build
-	rm -f galaxy/static/dist/*.js
-	find . -type f -regex ".*\.py[co]$$" -delete
-
-# Fetch from origin, rebase local commits on top of origin commits.
-rebase:
-	git pull --rebase origin master
-
-# Push changes to origin.
-push:
-	git push origin master
-
-# Install third-party requirements needed for development environment 
-requirements:
-	@if [ "$(VIRTUAL_ENV)" ]; then \
-	    pip install distribute==0.7.3; \
-	    pip install -r requirements.txt; \
-	    $(PYTHON) fix_virtualenv_setuptools.py; \
-        else \
-	    sudo pip install -r requirements.txt; \
-        fi
-
-# Install third-party requirements needed for development environment
-# (downloading from PyPI if necessary).
-requirements_pypi:
-	@if [ "$(VIRTUAL_ENV)" ]; then \
-	    pip install -r requirements.txt; \
-	    $(PYTHON) fix_virtualenv_setuptools.py; \
-	else \
-	    sudo pip install -r requirements.txt; \
-	fi
-
-# "Install" galaxy package in development mode.  Creates link to working
-# copy in site-packages and installs galaxy-manage command.
-develop:
-	@if [ "$(VIRTUAL_ENV)" ]; then \
-	    $(PYTHON) setup.py develop; \
-	else \
-	    sudo $(PYTHON) setup.py develop; \
-	fi
+	-docker ps -a --format "{{.Names}}" | grep -e django -e elastic -e postgres -e rabbit -e memcache -e gulp
+	-docker rmi --force $(docker images -a --format "{{.Repository}}:{{.Tag}}" | grep galaxy)
+	-rm -rf ~/.galaxy
 
 # Refresh development environment after pulling new code.
-refresh: clean requirements develop migrate
+refresh: clean build run 
 
-Vagrantfile:
-	cp provisioning/development/$@ $@
-
-start_vm: Vagrantfile
-	vagrant up
-
-# Create Django superuser.
-adduser:
-	$(PYTHON) manage.py createsuperuser
-
-# Create initial database tables (excluding migrations).
-syncdb:
-	$(PYTHON) manage.py makemigration --noinput; \
-	$(PYTHON) manage.py migrate --noinput --fake-initial
-
-# Create database tables and apply any new migrations.
+# Create and execute database migrations
 migrate:
-	$(PYTHON) manage.py migrate --noinput
-
-# Run after making changes to the models to create a new migration.
-dbchange:
-	$(PYTHON) manage.py makemigrate 
-
-# access database shell, asks for password
-dbshell:
-	sudo -u postgres psql -d galaxy
-
-honcho:
-	honcho start
-
-server_noattach:
-	tmux new-session -d -s galaxy 'exec make runserver'
-	tmux rename-window 'Galaxy'
-	tmux select-window -t galaxy:0
-	tmux split-window -v 'exec make celeryd'
-
-server: server_noattach
-	tmux -2 attach-session -t galaxy
-
-servercc: server_noattach
-	tmux -2 -CC attach-session -t galaxy
-
-# Run the built-in development webserver (by default on http://localhost:8013).
-runserver:
-	$(PYTHON) manage.py runserver 0.0.0.0:8000
-
-# Run to start the background celery worker for development. Listens to all queues.
-celeryd:
-	$(PYTHON) manage.py celeryd -l DEBUG -B --autoreload -Q celery,import_tasks,login_tasks
-
-# Run all API unit tests.
-test:
-	$(PYTHON) manage.py test -v2 main
-
-# Run all API unit tests with coverage enabled.
-test_coverage:
-	coverage run manage.py test -v2 main
-
-# Output test coverage as HTML (into htmlcov directory).
-coverage_html:
-	coverage html
-
-# Run UI unit tests using Selenium.
-test_ui:
-	$(PYTHON) manage.py test -v2 ui
-
-# Run API unit tests across multiple Python/Django versions with Tox.
-test_tox:
-	tox -v
-
-# Run unit tests to produce output for Jenkins.
-test_jenkins:
-	$(PYTHON) manage.py jenkins -v2
-
-# Build minified JS/CSS.
-ui_build:
-	node node_modules/gulp/bin/gulp.js build	
+        docker run galaxy-django -v ${PWD}:/galaxy galaxy-manage makemigrations --noinput
+        docker run galaxy-django -v ${PWD}:/galaxy galaxy-manage migrate --noinput
 
 # Build Galaxy images 
 build: 
@@ -172,21 +57,7 @@ run:
 	ansible-container --var-file ansible/develop.yml run -d rabbit; \
 	ansible-container --var-file ansible/develop.yml run -d postgres; \
 	ansible-container --var-file ansible/develop.yml run -d elastic; \
-	ansible-container --var-file ansible/develop.yml run django gulp
-
-# Build a pip-installable package into dist/ with the release version number.
-release_build:
-	$(PYTHON) setup.py release_build
-
-# Build AWX setup tarball.
-setup_tarball:
-	@cp -a setup $(SETUP_TAR_NAME)
-	@tar czf $(SETUP_TAR_NAME).tar.gz $(SETUP_TAR_NAME)/
-	@rm -rf $(SETUP_TAR_NAME)
-
-release_clean:
-	-(rm *.tar)
-	-(rm -rf ($RELEASE))
+	ansible-container --var-file ansible/develop.yml --debug run django gulp
 
 sdist: clean ui_build
 	if [ "$(OFFICIAL)" = "yes" ] ; then \
@@ -195,35 +66,3 @@ sdist: clean ui_build
 	   BUILD=$(BUILD) $(PYTHON) setup.py sdist_galaxy; \
 	fi
 
-rpmtar: sdist
-	if [ "$(OFFICIAL)" != "yes" ] ; then \
-	   (cd dist/ && tar zxf $(SDIST_TAR_FILE)) ; \
-	   (cd dist/ && mv galaxy-$(VERSION)-$(BUILD) galaxy-$(VERSION)) ; \
-	   (cd dist/ && tar czf galaxy-$(VERSION).tar.gz galaxy-$(VERSION)) ; \
-	fi
-
-rpm: rpmtar
-	@mkdir -p rpm-build
-	@cp dist/galaxy-$(VERSION).tar.gz rpm-build/
-	@rpmbuild --define "_topdir %(pwd)/rpm-build" \
-	--define "_builddir %{_topdir}" \
-	--define "_rpmdir %{_topdir}" \
-	--define "_srcrpmdir %{_topdir}" \
-	--define "_specdir %{_topdir}" \
-	--define '_rpmfilename %%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm' \
-	--define "_sourcedir  %{_topdir}" \
-	--define "_pkgrelease  $(RPM_PKG_RELEASE)" \
-	-ba packaging/rpm/galaxy.spec
-
-deb: sdist
-	@mkdir -p deb-build
-	@cp dist/$(SDIST_TAR_FILE) deb-build/
-	(cd deb-build && tar zxf $(SDIST_TAR_FILE))
-	(cd $(DEB_BUILD_DIR) && dh_make --indep --yes -f ../$(SDIST_TAR_FILE) -p galaxy-$(VERSION))
-	@rm -rf $(DEB_BUILD_DIR)/debian
-	@cp -a packaging/debian $(DEB_BUILD_DIR)/
-	@echo "galaxy_$(DEB_PKG_RELEASE).deb admin optional" > $(DEB_BUILD_DIR)/debian/realfiles
-	(cd $(DEB_BUILD_DIR) && PKG_RELEASE=$(DEB_PKG_RELEASE) dpkg-buildpackage -nc -us -uc -b --changes-option="-fdebian/realfiles")
-
-install:
-	$(PYTHON) setup.py install egg_info -b ""
