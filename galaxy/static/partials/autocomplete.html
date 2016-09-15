@@ -8,13 +8,14 @@
                         <li ng-repeat="type in searchTypeOptions" ng-show="searchType !== type"><a href="" ng-click="setSearchType(type)">{{ type }}</a></li>
                     </ul>
                 </div><!-- /btn-group -->
-                <input type="text" class="form-control" name="autocomplete" id="autocomplete-text-input" 
+                <input type="text" class="form-control" name="autocomplete" id="autocomplete-text-input"
                     ng-model="searchValue" 
                     ng-keyup="searchKeyup($event)" 
                     placeholder="{{ searchPlaceholder }}" 
                     ng-keydown="searchKeydown($event)" 
                     ng-focus="searchFocus($event)"
                     ng-blur="searchBlur($event)"
+                    ng-hide="searchType == 'role_type'"
                     tabindex="2">
                 <div class="search-icon" ng-show="showSearchIcon" ng-click="searchAddKey()"><i class="fa fa-search"></i></div>
                     <ul class="dropdown-menu" id="autocomplete-suggestions" ng-show="searchSuggestions.length">

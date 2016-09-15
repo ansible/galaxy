@@ -133,6 +133,7 @@ v1_urls = patterns(
     url(r'^me/$',                      'user_me_list'),
     url(r'^users/',                    include(user_urls)),
     url(r'^roles/',                    include(role_urls)),
+    url(r'^role_types/',               'role_types'),
     url(r'^categories/',               include(category_urls)),
     url(r'^tags/',                     include(tag_urls)),
     url(r'^platforms/',                include(platform_urls)),

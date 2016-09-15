@@ -28,36 +28,50 @@ DEB_BUILD_DIR=deb-build/galaxy-$(VERSION)
 DEB_PKG_RELEASE=$(VERSION)-$(RELEASE)
 endif
 
-.PHONY: clean rebase push requirements requirements_pypi develop refresh \
-	adduser syncdb migrate dbchange dbshell runserver celeryd test \
-	test_coverage coverage_html test_ui test_jenkins build_dev \
-	release_build release_clean sdist rpm ui_build honcho
+.PHONY: clean refresh migrate migrate_empty build_from_scratch build run sdist stop
 
 # Remove containers, images and ~/.galaxy
 clean:
-	-docker ps -a --format "{{.Names}}" | grep -e django -e elastic -e postgres -e rabbit -e memcache -e gulp
-	-docker rmi --force $(docker images -a --format "{{.Repository}}:{{.Tag}}" | grep galaxy)
-	-rm -rf ~/.galaxy
+	@./ansible/clean.sh
 
 # Refresh development environment after pulling new code.
 refresh: clean build run 
 
 # Create and execute database migrations
 migrate:
-        docker run galaxy-django -v ${PWD}:/galaxy galaxy-manage makemigrations --noinput
-        docker run galaxy-django -v ${PWD}:/galaxy galaxy-manage migrate --noinput
+	@docker exec -i -t ansible_django_1 galaxy-manage makemigrations --noinput
+	@docker exec -i -t ansible_django_1 galaxy-manage migrate --noinput
+
+# Create an empty migration
+migrate_empty:
+	@docker exec -i -t ansible_django_1 galaxy-manage makemigrations --empty main
+
+psql:
+	@docker exec -i -t ansible_django_1 psql -h postgres -d galaxy -U galaxy
 
 # Build Galaxy images 
-build: 
+build_from_scratch:
 	ansible-container --var-file ansible/develop.yml --debug build --from-scratch -- -e"@/ansible-container/ansible/develop.yml"
 
+build:
+	ansible-container --var-file ansible/develop.yml --debug build -- -e"@/ansible-container/ansible/develop.yml"
+
+build_indexes:
+	@echo "Rebuild Search Index"
+	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_index --noinput
+	@echo "Rebuild Custom Indexes"
+	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_galaxy_indexes
+
 # Start Galaxy containers
-run: 
+run:
 	ansible-container --var-file ansible/develop.yml run -d memcache; \
 	ansible-container --var-file ansible/develop.yml run -d rabbit; \
 	ansible-container --var-file ansible/develop.yml run -d postgres; \
 	ansible-container --var-file ansible/develop.yml run -d elastic; \
 	ansible-container --var-file ansible/develop.yml --debug run django gulp
+
+stop:
+	@ansible-container stop --force
 
 sdist: clean ui_build
 	if [ "$(OFFICIAL)" = "yes" ] ; then \
@@ -65,4 +79,5 @@ sdist: clean ui_build
 	else \
 	   BUILD=$(BUILD) $(PYTHON) setup.py sdist_galaxy; \
 	fi
+
 

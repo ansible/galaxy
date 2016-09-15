@@ -706,7 +706,7 @@ class RoleListSerializer(BaseSerializer):
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('namespace', 'is_valid','github_user', 'github_repo',
+        fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid','github_user', 'github_repo',
                                 'github_branch', 'min_ansible_version', 'issue_tracker_url',
                                 'license','company', 'description', 'readme', 'readme_html',
                                 'travis_status_url', 'stargazers_count', 'watchers_count',
@@ -796,11 +796,11 @@ class RoleDetailSerializer(BaseSerializer):
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('namespace','is_valid','github_user','github_repo','github_branch','min_ansible_version',
-                                'issue_tracker_url', 'license','company','description', 'readme', 'readme_html', 'tags',
-                                'travis_status_url', 'stargazers_count', 'watchers_count', 'forks_count',
-                                'open_issues_count', 'commit', 'commit_message','commit_url', 'created', 'modified',
-                                'download_count','imported')
+        fields = BASE_FIELDS + ('role_type', 'namespace','is_valid','github_user','github_repo','github_branch',
+                                'min_ansible_version', 'issue_tracker_url', 'license','company','description',
+                                'readme', 'readme_html', 'tags', 'travis_status_url', 'stargazers_count',
+                                'watchers_count', 'forks_count', 'open_issues_count', 'commit', 'commit_message',
+                                'commit_url', 'created', 'modified', 'download_count','imported')
 
     def to_native(self, obj):
         ret = super(RoleDetailSerializer, self).to_native(obj)
@@ -861,6 +861,7 @@ class RoleSearchSerializer(HaystackSerializer):
         index_classes = [RoleIndex]
         fields = (
             "role_id",
+            "role_type",
             "username",
             "name", 
             "description", 

@@ -169,7 +169,13 @@
 
             function _setSearchType(type) {
                 scope.searchType = type;
-                $('#autocomplete-text-input').focus();
+                if (type != 'role_type') {
+                    scope.showSearchIcon = true;
+                    $('#autocomplete-text-input').focus();
+                } else {
+                    scope.searchSuggestions = [];
+                    scope.showSearchIcon = false;
+                }
             }
 
             function _searchAddKey() {

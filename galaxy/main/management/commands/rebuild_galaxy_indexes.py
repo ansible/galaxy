@@ -5,7 +5,7 @@ from elasticsearch_dsl import Index
 
 # local
 from galaxy.main.models import Platform, Tag, Role
-from galaxy.main.search_models import TagDoc, PlatformDoc, UserDoc
+from galaxy.main.search_models import *
 
 
 class Command(BaseCommand):
@@ -56,7 +56,7 @@ class Command(BaseCommand):
                 autocomplete="%s %s %s" % (platform.name, ' '.join(release_list), ' '.join(alias_list))
             )
             doc.save()
-        
+
     def get_platform_search_terms(self, name):
         '''
         Fetch the unique set of aliases for a given platform

@@ -6,6 +6,7 @@ from galaxy.main.models import Role
 
 class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     role_id = indexes.IntegerField(model_attr='id')
+    role_type = indexes.CharField(model_attr='role_type')
     username = indexes.CharField(model_attr='namespace')
     name = indexes.CharField(model_attr='name', faceted=True)
     description = indexes.CharField(model_attr='description')

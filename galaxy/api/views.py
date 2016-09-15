@@ -129,6 +129,7 @@ class ApiV1RootView(APIView):
         data = SortedDict()
         data['users']       = reverse('api:user_list')
         data['roles']       = reverse('api:role_list')
+        data['role_types']  = reverse('api:role_types')
         data['categories']  = reverse('api:category_list')
         data['tags']        = reverse('api:tag_list')
         data['platforms']   = reverse('api:platform_list')
@@ -142,6 +143,12 @@ class ApiV1RootView(APIView):
         data['remove role']          = reverse('api:remove_role')
         return Response(data)
 
+class RoleTypes(APIView):
+    permission_classes = (AllowAny,)
+    view_name = 'Role Types'
+
+    def get(self, request, format=None):
+        return Response(Role.ROLE_TYPE_CHOICES)
 
 class ApiV1SearchView(APIView):
     permission_classes = (AllowAny,)

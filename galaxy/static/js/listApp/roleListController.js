@@ -72,6 +72,7 @@
             'tags'               : '',
             'platforms'          : '',
             'users'              : '',
+            'role_types'         : '',
             'autocomplete'       : '',
             'order'              : '',
             'refresh'            : _refresh
@@ -90,7 +91,8 @@
             'Author',
             'Keyword',
             'Platform',
-            'Tag'
+            'Tag',
+            'Role Type'
         ];
 
         $scope.page_range = [1];
@@ -102,7 +104,6 @@
         $scope.loading = 1;
         $scope.viewing_roles = 1;
         $scope.display_user_info = 1;
-        $scope.searchSuggestions = [];
         $scope.topTags = [];
         
         // autocomplete functions
@@ -352,6 +353,8 @@
                         });
                     });
                 });
+            } else if (type === 'Role Type' && value) {
+
             }
         }
 

@@ -264,6 +264,21 @@ class Role(CommonModelNameNotUnique):
     #
     # ------------------------------------------------------------------------------
     # regular fields
+    ANSIBLE = 'ANS'
+    CONTAINER = 'CON'
+    CONTAINER_APP = 'APP'
+    ROLE_TYPE_CHOICES = (
+        (ANSIBLE, 'Ansible'),
+        (CONTAINER, 'Container Role'),
+        (CONTAINER_APP, 'Container App')
+    )
+    role_type = models.CharField(
+        max_length=3,
+        choices=ROLE_TYPE_CHOICES,
+        default=ANSIBLE,
+        blank=False,
+        editable=False,
+    )
     namespace = models.CharField(
         max_length   = 256,
         verbose_name = "Namespace",
