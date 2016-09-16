@@ -25,7 +25,10 @@
                 searchOrderOptions: '=',
                 searchTypeOptions: '=',
                 searchSuggestions: '=',
-                searchPlaceholder: '@'
+                searchPlaceholder: '@',
+                searchRoleTypes: '=',
+                searchRefreshRoleTypes: '=',
+                searchClearRoleTypes: '='
             },
             link: _link
         };
@@ -56,6 +59,8 @@
             scope.searchFocus = _searchFocus;
             scope.searchBlur = _searchBlur;
             autocompleteService.setScope(scope);
+
+            var originalPlaceholder = scope.searchPlaceholder;
             
             var _lazySuggestions = (scope.searchSuggestionFunction) ? _.debounce(function() {
                 scope.searchSuggestions = [];
@@ -139,6 +144,9 @@
             function _searchFocus(e) {
                 // When the search field gets focus, make sure the search type dropdown closes
                 $('.autocomplete-search-group .input-group-btn').eq(0).removeClass('open');
+                if (scope.searchType == 'Role Type') {
+                    scope.searchRefreshRoleTypes(scope.searchValue);
+                }
             }
 
             function _searchBlur(e) {
@@ -169,13 +177,15 @@
 
             function _setSearchType(type) {
                 scope.searchType = type;
-                if (type != 'role_type') {
-                    scope.showSearchIcon = true;
-                    $('#autocomplete-text-input').focus();
-                } else {
-                    scope.searchSuggestions = [];
+                if (type == 'Role Type') {
+                    scope.searchPlaceholder = 'Choose from option list'
+                    scope.searchRefreshRoleTypes(scope.searchValue);
                     scope.showSearchIcon = false;
+                } else {
+                    scope.showSearchIcon = true;
+                    scope.searchPlaceholder = originalPlaceholder;
                 }
+                $('#autocomplete-text-input').focus();
             }
 
             function _searchAddKey() {

@@ -95,6 +95,12 @@
             'Role Type'
         ];
 
+        $scope.searchRoleTypes = [
+            { value: "ANS", title: "Ansible Role" },
+            { value: "CON", title: "Container Role" },
+            { value: "APP", title: "Container App" }
+        ];
+
         $scope.page_range = [1];
         $scope.categories = [];
         $scope.roles = [];
@@ -121,6 +127,9 @@
         $scope.star = githubClickService.star;
         $scope.unstar = githubClickService.unstar;
         $scope.is_authenticated = currentUserService.authenticated && currentUserService.connected_to_github;
+
+        $scope.refreshRoleTypes = _refreshRoleTypes;
+        $scope.clearRoleTypes = _clearRoleTypes;
 
         PaginateInit({ scope: $scope });
 
@@ -214,6 +223,11 @@
                 event_track.category += '/Authors:' + params.username_autocomplete;
             }
 
+            if ($scope.list_data.role_types) {
+                params.role_type = $scope.list_data.role_types;
+                event_track.category += '/RoleType:' + params.role_type;
+            }
+
             if ($scope.list_data.order) {
                 params.order = $scope.list_data.order;
                 event_track.category += '/Order:' + params.order;
@@ -274,7 +288,7 @@
         function _search(_keywords, _orderby) {
             $scope.list_data.page = 1;
             $scope.roles = [];
-            var tags = [], platforms = [], keywords = [], users = [], params = {};
+            var tags = [], platforms = [], keywords = [], users = [], role_types = [], params = {};
             angular.forEach(_keywords, function(keyword) {
                 if (keyword.type === 'Tag') {
                     tags.push(keyword.value);
@@ -282,6 +296,12 @@
                     platforms.push(keyword.value);
                 } else if (keyword.type === 'Author') {
                     users.push(keyword.value);
+                } else if (keyword.type === 'Role Type') {
+                    angular.forEach($scope.searchRoleTypes, function(role_type) {
+                        if (role_type.title == keyword.value) {
+                            role_types.push(role_type.value);
+                        }
+                    });
                 } else {
                     keywords.push(keyword.value);
                 }
@@ -291,6 +311,7 @@
             $scope.list_data.order = '';
             $scope.list_data.tags = '';
             $scope.list_data.users = '';
+            $scope.list_data.role_types = '';
             if (tags.length) {
                 $scope.list_data.tags = tags.join(' ');
             }
@@ -302,6 +323,9 @@
             }
             if (users.length) {
                 $scope.list_data.users = users.join(' ');
+            }
+            if (role_types.length) {
+                $scope.list_data.role_types = role_types.join(',');
             }
             if (_orderby) {
                 $scope.list_data.order = _orderby.value;
@@ -354,7 +378,14 @@
                     });
                 });
             } else if (type === 'Role Type' && value) {
-
+                angular.forEach($scope.searchRoleTypes, function(role_type) {
+                    if (role_type.title.toLowerCase().includes(value.toLowerCase())) {
+                        $scope.searchSuggestions.push({
+                            type: 'Role Type',
+                            name: role_type.title
+                        });
+                    }
+                });
             }
         }
 
@@ -431,6 +462,29 @@
                     value: key
                 });
             });
+        }
+
+        function _refreshRoleTypes(value) {
+            $scope.searchSuggestions = [];
+            angular.forEach($scope.searchRoleTypes, function(role_type) {
+                if (value) {
+                    if (role_type.title.toLowerCase().includes(value.toLowerCase())) {
+                        $scope.searchSuggestions.push({
+                            type: 'Role Type',
+                            name: role_type.title
+                        });
+                    }
+                } else {
+                    $scope.searchSuggestions.push({
+                        type: 'Role Type',
+                        name: role_type.title
+                    });
+                }
+            });
+        }
+
+        function _clearRoleTypes() {
+            $scope.searchSuggestions = [];
         }
 
         function _windowResize() {            
