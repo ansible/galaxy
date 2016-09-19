@@ -1,5 +1,0 @@
-dependencies:
-- { role: galaxy_packages }
-- { role: ntp }
-- { role: postgresql }
-- { role: rabbitmq }
