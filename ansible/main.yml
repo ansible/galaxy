@@ -76,6 +76,9 @@
 
     - name: Enable triggers
       command: psql -h postgres -d galaxy -U galaxy -f /galaxy/test-data/enable_triggers.sql
+    
+    - name: Update django site name
+      command: psql -h postgres -d galaxy -U galaxy -f /galaxy/ansible/update_site.sql
 
     - name: Remove test data file
       file: path=/role_data.dmp.gz state=absent

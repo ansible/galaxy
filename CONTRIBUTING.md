@@ -1,28 +1,15 @@
 Contributing
 ============
 
-Start here if you're contributing to the development of Galaxy.
+To setup a local development environment and begin working with the Galaxy code, you will need to do have the following 
+installed locally:
 
-Galaxy relies on the following core technologies and frameworks, along with numerous other smaller libraries and utilities. Consult the documentation for each of these projects to better understand how it all works:
-
-* Python 2.7 (http://docs.python.org/2/)
-* Django 1.8.3 https://docs.djangoproject.com/en/1.5/)
-* Django REST Framework 2.3.x (http://django-rest-framework.org/)
-* Django Celery 3.0 (http://docs.celeryproject.org/en/latest/index.html)
-* AngularJS 1.x (http://angularjs.org/)
+* Ansible Container 0.2.0+
+* Ansible 2.1.1.0+
 
 
-Prerequisites
-=============
-Contributing to Galaxy relies on the creation of VM using Vagrant, Virtualbox and Ansible. Refer to the product sites of each for downloads and instructions:
-
-[Ansible](http://docs.ansible.com/ansible/intro_installation.html)
-[Virtualbox](https://www.virtualbox.org/wiki/Downloads)
-[Vagrant](http://www.vagrantup.com)
-
-
-Project Checkout
-================
+Checkout the Project and Start a Feature
+========================================
 
 Clone the [Galaxy repo](https://github.com/ansible/galaxy) to your local projects folder:
 
@@ -34,56 +21,53 @@ git clone git@github.com:ansible/galaxy.git
 Configure git with your name and email so that your commits are correctly associated with your GitHub account:
 
 ```
-cd ~/projects/galxy/
+cd ~/projects/galaxy/
 git config user.name "Joe Developer"
 git config user.email "joe@ansibleworks.com"
 ```
 
-All development is done in the 'develop' branch. To checkout the 'develop' branch:
+All development is done on feature branches, and the simplest way to get started is by using Git Flow to start a new 
+feature: 
 
 ```
 cd ~/projects/galaxy
-git checkout develop
+git flow feature start mynewfeature
 ```
 
-Environment Setup
-=================
+Build and Start the Galaxy Services
+===================================
 
-The following sections provide the steps to creating a new development VM. Refer to the "Develop, Test and Build" section for commands you'll run on a regular basis.
-
-
-Vagrant
--------
-
-To get up and running quickly the `provisioning` folder provides a Vagrant configuration to quickly spin up a VM.
-
-Make sure you have [Virtualbox](https://www.virtualbox.org/wiki/Downloads), [Vagrant](http://www.vagrantup.com), and [Ansible](http://docs.ansible.com) installed. Then provision the VM from within the project 'provisioning' folder. The following assumes galaxy was cloned to ~/projects/galaxy:
+You should already have Docker running and Ansible Container installed. To build the Galaxy images run the following
+from the root directory of your Galaxy clone:
 
 ```
-cd ~/projects/galaxy/provisioning
-vagrant box add chef/centos-7.0
-vagrant up
+$ make build
 ```
 
-To start the server ssh into the VM and run the following:
+After the build completes, you will see the following images in Docker:
 
 ```
-cd ~/projets/galaxy/provisioning
-vagrant ssh
-cd /galaxy_devel
-make servercc
+$ docker images
+REPOSITORY                          TAG                 IMAGE ID            CREATED             SIZE
+galaxy-django                       20160919015153      cb4deac13890        15 hours ago        619.5 MB
+galaxy-django                       latest              cb4deac13890        15 hours ago        619.5 MB
+galaxy-gulp                         20160919015153      a9c8919e1a05        16 hours ago        482 MB
+galaxy-gulp                         latest              a9c8919e1a05        16 hours ago        482 MB
+ansible/ansible-container-builder   0.2                 0e13266a8f4a        31 hours ago        831.3 MB
+centos                              7                   980e0e4c79ec        12 days ago         196.8 MB
+elasticsearch                       latest              31347bae83b8        2 weeks ago         344.9 MB
+python                              2.7                 4c5f5839b372        2 weeks ago         675.3 MB
+postgres                            9.4                 7ba4f6e9e5fe        2 weeks ago         264.9 MB
+postgres                            latest              6f86882e145d        2 weeks ago         265.9 MB
+memcached                           latest              228303902e2e        2 weeks ago         128.2 MB
+rabbitmq                            latest              0463354ada4d        3 weeks ago         180.8 MB
 ```
-> *NOTE*: If you're not using iTerm2 on a MacBook, replace `servercc` with `server`.
 
-> *NOTE*: If you're using the `vagrant-kvm` driver and have trouble accessing `http://localhost:8000` then you can run `python manage.py runserver 0.0.0.0:8000` in the guest VM, and on the host use `vagrant ssh-config` to see the IP address of the VM. Browse to that IP on port 8000 to access the site.
+Start the services by running the following:
 
-On your local computer browse to <http://localhost:8000>, and you will see a running Galaxy.
-
-The Vagrantfile mounts the root of the galaxy directory as a share in the VM accessible as /galaxy_devel. This means that you can continue to edit code on your local machine like you normally would and changes will reflect in the VM.
-
-All dependencies are installed and the database is setup via the Ansible provisioner. It uses the play.yml playbook found in the provisioning folder.
-
-Refer to the [Develop, Test and Build](#Develop,_Test_and_Build) section for further instructions on running with Vagrant.
+```
+$ make run
+```
 
 
 Develop, Test and Build

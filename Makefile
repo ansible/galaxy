@@ -28,7 +28,8 @@ DEB_BUILD_DIR=deb-build/galaxy-$(VERSION)
 DEB_PKG_RELEASE=$(VERSION)-$(RELEASE)
 endif
 
-.PHONY: clean refresh migrate migrate_empty build_from_scratch build run sdist stop
+.PHONY: clean clean_dist refresh migrate migrate_empty makemigrations build_from_scratch build \
+        run sdist stop requirements
 
 # Remove containers, images and ~/.galaxy
 clean:
@@ -39,12 +40,15 @@ refresh: clean build run
 
 # Create and execute database migrations
 migrate:
-	@docker exec -i -t ansible_django_1 galaxy-manage makemigrations --noinput
+	@docker exec -i -t ansible_django_1 galaxy-manage makemigrations main --noinput
 	@docker exec -i -t ansible_django_1 galaxy-manage migrate --noinput
 
 # Create an empty migration
 migrate_empty:
 	@docker exec -i -t ansible_django_1 galaxy-manage makemigrations --empty main
+
+makemigrations:
+	@docker exec -i -t ansible_django_1 galaxy-manage makemigrations main
 
 psql:
 	@docker exec -i -t ansible_django_1 psql -h postgres -d galaxy -U galaxy
@@ -80,4 +84,18 @@ sdist: clean ui_build
 	   BUILD=$(BUILD) $(PYTHON) setup.py sdist_galaxy; \
 	fi
 
+requirements:
+	@if [ "$(VIRTUAL_ENV)" ]; then \
+	    pip install distribute==0.7.3; \
+	    pip install -r requirements.txt; \
+	    $(PYTHON) fix_virtualenv_setuptools.py; \
+	else \
+	    sudo pip install -r requirements.txt; \
+	fi
 
+clean_dist:
+	rm -rf dist/*
+	rm -rf build rpm-build *.egg-info
+	rm -rf debian deb-build
+	rm -f galaxy/static/dist/*.js
+	find . -type f -regex ".*\.py[co]$$" -delete
