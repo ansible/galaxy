@@ -322,7 +322,7 @@ class SubListAPIView(ListAPIView):
         else:
             args = (parent_access, parent, None)
         if not check_user_access(self.request.user, self.parent_model, *args):
-            logger.debug('check_parent_access: parent_access=%s parent=%s', parent_access, parent.__class__.__name__)
+            # logger.debug('check_parent_access: parent_access=%s parent=%s', parent_access, parent.__class__.__name__)
             raise PermissionDenied()
 
     def get_queryset(self):
@@ -363,25 +363,25 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         
         # add the parent key to the post data using the pk from the URL
         parent_key = getattr(self, 'parent_key', None)
-        logger.debug('SubListCreateAPIView.create: parent_key=%s', parent_key)
+        # logger.debug('SubListCreateAPIView.create: parent_key=%s', parent_key)
         if parent_key:
             data[parent_key] = self.kwargs['pk']
-        logger.debug('SubListCreateAPIView.create: data.parent_key=%s', data[parent_key])
+        # logger.debug('SubListCreateAPIView.create: data.parent_key=%s', data[parent_key])
         
         # attempt to deserialize the object
         try:
             serializer = self.serializer_class(data=data)
             if not serializer.is_valid():
-                logger.debug('SubListCreateAPIView.create: serializer failed validation')
+                # logger.debug('SubListCreateAPIView.create: serializer failed validation')
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception, e:
-            logger.debug('SubListCreateAPIView.create: serializer threw an error')
+            # logger.debug('SubListCreateAPIView.create: serializer threw an error')
             return Response("serializer errors", status=status.HTTP_400_BAD_REQUEST)
 
         # Verify we have permission to add the object as given.
         if not check_user_access(request.user, self.model, 'add', serializer.validated_data):
-            logger.debug('SubListCreateAPIView.create: permission denied user=%s model=%s action=add',
-                         request.user, self.model._meta.verbose_name)
+            # logger.debug('SubListCreateAPIView.create: permission denied user=%s model=%s action=add',
+            #             request.user, self.model._meta.verbose_name)
             raise PermissionDenied()
 
 
@@ -413,7 +413,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         #        which would probably be better moved into 
         #        a new class and overridden completely
         is_role_rating = isinstance(parent, RoleRating)
-        logger.debug('SubListCreateAPIView.attach: parent=%s', parent.__class__.__name__)
+        #logger.debug('SubListCreateAPIView.attach: parent=%s', parent.__class__.__name__)
 
         # Create the sub object if an ID is not provided.
         # We never create objects when attaching to a RoleRating
@@ -430,7 +430,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
                     location = None
                 created = True
             except:
-                logger.debug('SubListCreateAPIView.attach: not sub_id and not is_role_rating threw Permission Denied')
+                # logger.debug('SubListCreateAPIView.attach: not sub_id and not is_role_rating threw Permission Denied')
                 raise PermissionDenied()
 
         # Retrive the sub object (whether created or by ID).

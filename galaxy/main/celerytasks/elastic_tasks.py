@@ -13,7 +13,7 @@ from galaxy.main.utils.memcache_lock import memcache_lock, MemcacheLockException
 
 def update_tags(tags, logger):
     for tag in tags:
-        logger.info("TAG: %s" % tag)
+        logger.info(u"TAG: {}".format(tag))
         try:
             with memcache_lock("tag_%s" % tag):
                 pg_tag = Tag.objects.get(name=tag)
@@ -26,40 +26,43 @@ def update_tags(tags, logger):
                         updated = True
                         if cnt > 0:
                             if es_tag.roles != cnt:
-                                logger.info("TAG: %s update count %d" % (tag, cnt))
+                                logger.info(u"TAG: {0} update count {1}".format(tag, cnt))
                                 try:
                                     es_tag.update(roles=cnt)
-                                except Exception, e:
-                                    logger.error("TAG: %s failed to update %s" % (tag, str(e.args)))
+                                except Exception as exc:
+                                    logger.error(u"TAG: {0} failed to update {1}"
+                                                 .format(tag, str(exc)).encode('utf-8').strip())
                                     raise
                             else:
-                                logger.info("TAG: %s no update required" % tag)
+                                logger.info(u"TAG: {0} no update required".format(tag).encode('utf-8').strip())
                         else:
-                            logger.info("TAG: %s delete" % tag)
+                            logger.info("TAG: {} delete".format(tag).encode('utf-8').strip())
                             try:
                                 es_tag.delete()
-                            except Exception, e:
-                                logger.error("TAG: %s failed to delete %s" % (tag, str(e.args)))
+                            except Exception as exc:
+                                logger.error(u"TAG: {0} failed to delete {1}"
+                                             .format(tag, str(exc))
+                                             .encode('utf-8').strip())
                                 raise
 
                 if not updated:
                     # new tag
                     try:
-                        logger.info("TAG: %s add" % tag)
+                        logger.info(u"TAG: {} add".format(tag).encode('utf-8').strip())
                         doc = TagDoc(tag=pg_tag.name, roles=cnt)
                         doc.meta.id = pg_tag.id
                         doc.save()
-                    except Exception, e:
-                        logger.error("TAG: %s failed to add %s" % (tag, str(e.args)))
+                    except Exception as exc:
+                        logger.error(u"TAG: {0} failed to add {1}".format(tag, str(exc)).encode('utf-8').strip())
                         raise
 
-        except MemcacheLockException, e:
-            logger.info("TAG: %s unable to get lock %s" % (tag, str(e.args)))
+        except MemcacheLockException as exc:
+            logger.info(u"TAG: %s unable to get lock %s".format(tag, str(exc)).encode('utf-8').strip())
 
 
 def update_platforms(platforms, logger):
     for platform in platforms:
-        logger.info("PLATFORM: %s" % platform)
+        logger.info(u"PLATFORM: {}".format(platform).encode('utf-8').strip())
         try:
             with memcache_lock("platform_%s" % platform):      
                 cnt = Role.objects.filter(active=True, is_valid=True, platforms__name=platform) \
@@ -72,19 +75,21 @@ def update_platforms(platforms, logger):
                     if es_platform.name == platform:
                         updated = True
                         if es_platform.roles != cnt:
-                            logger.info("PLATFORM: %s update count %s" % (platform, cnt))
+                            logger.info(u"PLATFORM: {0} update count {1}".format(platform, cnt).encode('utf-8').strip())
                             try:
                                 es_platform.update(roles=cnt)
-                            except Exception, e:
-                                logger.error("PLATFORM: %s failed to update %s" % (platform, str(e.args)))
+                            except Exception as exc:
+                                logger.error("PLATFORM: {0} failed to update {1}"
+                                             .format(platform, str(exc))
+                                             .encode('utf-8').strip())
                                 raise
                         else:
-                            logger.info("PLATFORM: no update required %s" % platform)
+                            logger.info(u"PLATFORM: no update required {0}".format(platform).encode('utf-8').strip())
 
                 if not updated:
                     # new platform
                     try:
-                        logger.info("PLATFORM: %s add" % platform)
+                        logger.info(u"PLATFORM: {0} add".format(platform).encode('utf-8').strip())
                         releases = [p.release for p in Platform.objects.filter(active=True, name=platform)
                                     .order_by('release').distinct('release').all()]
                         doc = PlatformDoc(
@@ -93,15 +98,15 @@ def update_platforms(platforms, logger):
                             roles=cnt,
                         )
                         doc.save()
-                    except Exception, e:
-                        logger.error("PLATFORM: %s failed to add %s" % (platform, str(e.args)))
+                    except Exception as exc:
+                        logger.error(u"PLATFORM:{0} failed to add {1}".format(platform, str(exc)))
                         raise
-        except MemcacheLockException:
-            logger.info("PLATFORM: %s failed to get lock %s" % (platform, str(e.args)))
+        except MemcacheLockException as exc:
+            logger.info(u"PLATFORM: %s failed to get lock %s".format(platform, str(exc)).encode('utf-8').strip())
 
 
 def update_users(user, logger):
-    logger.info("USER: %s" % user)
+    logger.info(u"USER: {0}".format(user).encode('utf-8').strip())
     try:
         with memcache_lock("user_%s" % user):      
             es_users = UserDoc.search().query('match', username=user).execute()
@@ -109,20 +114,20 @@ def update_users(user, logger):
             
             for es_user in es_users:
                 if es_user.username == user:
-                    logger.info("USER: %s already exists" % user)
+                    logger.info(u"USER: {0} already exists".format(user).encode('utf-8').strip())
                     updated = True
             
             if not updated:
                 # new tag
                 try:
-                    logger.info("USER: %s add" % user)
+                    logger.info(u"USER: {} add".format(user).encode('utf-8').strip())
                     doc = UserDoc(uername=user)
                     doc.save()
-                except Exception, e:
-                    logger.error("USER: %s failed to add %s" % (user, str(e.args)))
+                except Exception as exc:
+                    logger.error(u"USER: {0} failed to add {1}".format(user, str(exc)).encode('utf-8').strip())
                     raise
-    except MemcacheLockException, e:
-        logger.info("USER: %s failed to get lock for %s" % (user, str(e.args)))
+    except MemcacheLockException as exc:
+        logger.info(u"USER: {0} failed to get lock {1}".format(user, str(exc)).encode('utf-8').strip())
 
 
 @task(throws=(Exception,), name="galaxy.main.celerytasks.elastic_tasks.update_custom_indexes")

@@ -1,15 +1,16 @@
-Contributing
-============
+# Contributing
 
-To setup a local development environment and begin working with the Galaxy code, you will need to do have the following 
+To setup a local development environment you will need to do have the following 
 installed locally:
 
 * Ansible Container 0.2.0+
 * Ansible 2.1.1.0+
 
+We recommend using Git Flow, although it's not strictly required. Any development should be done in feature branches and
+compared to the `develop` branch.
 
-Checkout the Project and Start a Feature
-========================================
+
+## Checkout the Project and Start a Feature
 
 Clone the [Galaxy repo](https://github.com/ansible/galaxy) to your local projects folder:
 
@@ -26,16 +27,14 @@ git config user.name "Joe Developer"
 git config user.email "joe@ansibleworks.com"
 ```
 
-All development is done on feature branches, and the simplest way to get started is by using Git Flow to start a new 
-feature: 
+Start developing by first creating a feature branch. The simplest way is by using Git Flow to start a feature: 
 
 ```
 cd ~/projects/galaxy
 git flow feature start mynewfeature
 ```
 
-Build and Start the Galaxy Services
-===================================
+## Build and Start the Galaxy Services
 
 You should already have Docker running and Ansible Container installed. To build the Galaxy images run the following
 from the root directory of your Galaxy clone:
@@ -69,89 +68,44 @@ Start the services by running the following:
 $ make run
 ```
 
+The postgres, memcache, elasticsearch, and rabbitmq services will run in the background, while django and gulp 
+execute in the foreground, displaying the web server, celery and gulp logs in real time. 
 
-Develop, Test and Build
-=======================
+Access the application from a browser using the URL: http://localhost:8000. If you are running Docker Machine, replace 
+localhost with the IP address of the Virtual Box host.
+ 
 
-The following sections describe routine procedures you'll use for developing, testing and building Galaxy.
+## Connect to GitHub
 
-Vagrant
--------
+To log into the development site, you first have to authorize it as a GitHub Oauth Application. You can do this by logging 
+into GitHub, going to Personal Settings, choosing `Oauth Applications`, and then doing the following to create a new app:
 
-If you're using Vagrant, you can follow the instructions below as written, but be sure to SSH into the VM with `vagrant ssh` before running any commands that need python or other app dependencies (you can still run git commands from your local machine assuming you have git setup there already). Also, the Vagrant VM installs all dependencies globally, so you can exclude any virtualenv-specific instructions.
+- Click `Register New Application`
+- Set the *Homepage URL* to `http://localhost:8000`. If you're using Docker Machine, replace *localhost* with the IP address 
+of the Virtualbox host.
+- Set the *Authorization Callback URL* to `http://localhost:8000/accounts/github/login/callback/`. And again, if you're using 
+Docker Machine, replace *localhost* with the IP address of the Virtualbox host.
 
-Contributing Code
------------------
+After you save the new application, go back to your Galaxy site, and in the browser enter the address 
+`http://localhost:8000/admin`, replacing *localhost* with the IP address of the Virtualbox host, if you're using Docker 
+Machine.
 
-Always remember to:
+Log into the admin site using `admin` as the both the username and password, click on `Social Applications`, and then click 
+`Add social application`. Set the *provider* to `GitHub`, and enter `GitHub` as the *name*. From the new GitHub Oauth 
+application you just created, copy the *ClientID* value into *Client id*, and opy the *Client Secret* value into *Secret key*. 
+Under *Sites*, add `localhost` to *Chosen sites*. Save the changes.
 
-* Use rebase instead of merge (http://git-scm.com/book/en/Git-Branching-Rebasing).
-* Use the develop branch for development (unless pushing a hotfix).
-* Write unit tests for any non-trivial changes.
-* Make sure unit tests pass before pushing your changes.
+Log out of the *admin* account, and go back to `http://localhost:8000`. Click the GitHub logo under `Log into Galaxy with GitHub`.
+You should see the message `Verify Your Email Address`.
 
-All original source code files should contain the following header, commented
-as appropriate for the given language and immediately following the shebang
-line (if present):
-
-    # Copyright (c) 2015 Ansible, Inc.
-    # All Rights Reserved.
-
-Basic Development Workflow
----------------------------
-
-Once you have your development environment setup, your normal development workflow should consist of the following steps.
-
-To begin, update the code in your working directory, then refresh your installed third-party dependencies and database schema:
-
-    make rebase
-    make refresh
-
-> *NOTE*: `refresh` is a shortcut for `clean`, `requirements`, `develop` and `migrate` targets, and should generally be used anytime you pull new code from the repository.
-
-Restart the servers in the background
-
-    cd ~/projects/galaxy/provisioning
-    vagrant ssh
-    cd /galaxy_devel
-    make servercc
-
-Make your code changes and test them locally, using the API/UI as needed and ensure all unit tests pass:
-
-    make test
-
-Update the list of files to be committed, then make your local commit:
-
-    git add/rm ...
-    git commit ...
-
-Finally, rebase your commits on top of any changes made upstream:
-
-    make rebase
-
-Resolve any conflicts and run tests again if upstream changes may have broken
-anything.  Finally, push your changes back to the repository.
-
-    make push
+Look in ~/.galaxy/logs/email. There should be a new file with a `.log` extension. Open it, retrieve the verification URL, and
+paste it into your browser. And finally, click the `Confirm` button.
 
 
-Github Authentication
-=====================
-You can turn on Github authentication for your local environment. Start by creating a superuser account:
+## Submitting Code
 
-    cd ~/projects/galaxy
-    python ./manage.py createsuperuser
+* Rebase instead of merge (http://git-scm.com/book/en/Git-Branching-Rebasing).
+* Develop in a feature branch
+* Submit code via pull request
+* Before embarking on a large feature, open an issue and submit the feature for review by the community
 
-Log into the administration site at http://localhost:8000/galaxy__admin using the superuser account.
-
-Before changing anything on the administration site, first login into you Github account. Under account settings, choose Applications and click
-on the Developer Applications tab.  Provide an application name, set the Homepage URL to `http:\\localhost:8000`, and the Authentication Callback URL to `http://127.0.0.1:8000/accounts/github/login/callback/`. Save your changes.
-
-In your local Galaxy admin site under Social Applications choose Github. Provide the Client Id and Secret Key displayed on your Github account for the
-application you created in the step above.
-
-Also, in your local Galaxy admin site click on Sites. There should only be 1 site listed. Click on it and set the Domain Name to `localhost:8000`.
-
-Finally, in /etc/galaxy/settings.py set `ACCOUNT_DEFAULT_HTTP_PROTOCOL="http"`.
-
-Restart the local Galaxy server. 

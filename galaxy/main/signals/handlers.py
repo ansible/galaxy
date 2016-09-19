@@ -52,11 +52,12 @@ def user_logged_in_handler(request, user, **kwargs):
         refresh_user_repos.delay(user,token.token)
         refresh_user_stars.delay(user,token.token)
     except ObjectDoesNotExist:
-        logger.error('Failed to retrieve GitHub token for Galaxy user: %s, GitHub user: %s' % (user.username, user.github_user))
+        logger.error(u'Failed to retrieve GitHub token for Galaxy user: {0}, GitHub user: {1}'
+                     .format(user.username, user.github_user).encode('utf-8').strip())
         user.cache_refreshed = True
         user.save()
     except MultipleObjectsReturned:
-        logger.error('Found multiple GitHub tokens for user: %s' % user.username)
+        logger.error(u'Found multiple GitHub tokens for user: {}'.format(user.username).encode('utf-8').strip())
         user.cache_refreshed = True
         user.save()
 

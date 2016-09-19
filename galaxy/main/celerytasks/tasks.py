@@ -616,32 +616,32 @@ def import_role(task_id):
 @task(name="galaxy.main.celerytasks.tasks.refresh_user", throws=(Exception,))
 @transaction.atomic
 def refresh_user_repos(user, token):
-    logger.info("Refreshing User Repo Cache for %s" % user.username)
+    logger.info(u"Refreshing User Repo Cache for {}".format(user.username).encode('utf-8').strip())
     
     try:
         gh_api = Github(token)
-    except GithubException, e:
+    except GithubException as exc:
         user.cache_refreshed = True
         user.save()
-        msg = u"User %s Repo Cache Refresh Error: %s - %s" % (user.username, e.status, e.data)
+        msg = u"User {0} Repo Cache Refresh Error: {1}".format(user.username, str(exc).encode('utf-8').strip())
         logger.error(msg)
         raise Exception(msg)
 
     try:
         ghu = gh_api.get_user()
-    except GithubException, e:
+    except GithubException as exc:
         user.cache_refreshed = True
         user.save()
-        msg = u"User %s Repo Cache Refresh Error: %s - %s" % (user.username, e.status, e.data)
+        msg = u"User {0} Repo Cache Refresh Error: {1}".format(user.username, str(exc)).encode('utf-8').strip()
         logger.error(msg)
         raise Exception(msg)
 
     try:
         repos = ghu.get_repos()
-    except GithubException, e:
+    except GithubException as exc:
         user.cache_refreshed = True
         user.save()
-        msg = u"User %s Repo Cache Refresh Error: %s - %s" % (user.username, e.status, e.data)
+        msg = u"User {0} Repo Cache Refresh Error: {1}".foramt(user.username, str(exc)).encode('utf-8').strip()
         logger.error(msg)
         raise Exception(msg)
 
@@ -656,26 +656,26 @@ def refresh_user_repos(user, token):
 @task(name="galaxy.main.celerytasks.tasks.refresh_user_stars", throws=(Exception,))
 @transaction.atomic
 def refresh_user_stars(user, token):
-    logger.info(u"Refreshing User Stars for %s" % user.username)
+    logger.info(u"Refreshing User Stars for {}".format(user.username).encode('utf-8').strip())
 
     try:
         gh_api = Github(token)
-    except GithubException, e:
-        msg = u"User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
+    except GithubException as exc:
+        msg = u"User {0} Refresh Stars: {1}".format(user.username, str(exc)).encode('utf-8').strip()
         logger.error(msg)
         raise Exception(msg)
 
     try:
         ghu = gh_api.get_user()
-    except GithubException, e:
-        msg = u"User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
+    except GithubException as exc:
+        msg = u"User {0} Refresh Stars: {1}" % (user.username, str(exc)).encode('utf-8').strip()
         logger.error(msg)
         raise Exception(msg)
 
     try:
         subscriptions = ghu.get_subscriptions()
-    except GithubException, e:
-        msg = u"User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
+    except GithubException as exc:
+        msg = u"User {0} Refresh Stars: {1]" % (user.username, str(exc)).encode('utf-8').strip()
         logger.error(msg)
         raise Exception(msg)
 
@@ -695,8 +695,8 @@ def refresh_user_stars(user, token):
     
     try:
         starred = ghu.get_starred()
-    except GithubException, e:
-        msg = "User %s Refresh Stars: %s - %s" % (user.username, e.status, e.data)
+    except GithubException as exc:
+        msg = u"User {0} Refresh Stars: {1}".format(user.username, str(exc)).encode('utf-8').strip()
         logger.error(msg)
         raise Exception(msg)
 
@@ -726,7 +726,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
     failed = 0
     for role in Role.objects.filter(is_valid=True, active=True, id__gt=start, id__lte=end):
         full_name = "%s/%s" % (role.github_user,role.github_repo)
-        logger.info(u"Updating repo: %s" % full_name)
+        logger.info(u"Updating repo: {0}".format(full_name).encode('utf-8').strip())
         try:
             gh_repo = gh_api.get_repo(full_name)
             update_namespace(gh_repo)
@@ -737,8 +737,8 @@ def refresh_role_counts(start, end, gh_api, tracker):
             role.open_issues_count = gh_repo.open_issues_count
             role.save()
             passed += 1
-        except Exception as e:
-            logger.error(u"FAILED %s: %s" % (full_name, str(e)))
+        except Exception as exc:
+            logger.error(u"FAILED %s: %s" % (full_name, str(exc)).encode('utf-8').strip())
             failed += 1
     tracker.state = 'FINISHED'
     tracker.passed = passed
@@ -753,18 +753,20 @@ def refresh_role_counts(start, end, gh_api, tracker):
 @task(name="galaxy.main.celerytasks.tasks.clear_stuck_imports")
 def clear_stuck_imports():
     two_hours_ago = timezone.now() - datetime.timedelta(seconds=7200)
-    logger.info(u"Clear Stuck Imports: %s" % two_hours_ago.strftime("%m-%d-%Y %H:%M:%S"))
+    logger.info(u"Clear Stuck Imports: {}".format(two_hours_ago.strftime("%m-%d-%Y %H:%M:%S")).encode('utf-8').strip())
     try:
         for ri in ImportTask.objects.filter(created__lte=two_hours_ago, state='PENDING'):
-            logger.info("Clear Stuck Imports: %d - %s.%s" % (ri.id, ri.role.namespace, ri.role.name))
-            ri.state = "FAILED"
+            logger.info(u"Clear Stuck Imports: {0} - {1}.{2}"
+                        .format(ri.id, ri.role.namespace, ri.role.name)
+                        .encode('utf-8').strip())
+            ri.state = u"FAILED"
             ri.messages.create(
                 message_type=u"ERROR",
-                message_text=u"Import timed out, please try again. If you continue seeing this message you may have a " +
-                "syntax error in your meta/main.yml file."
+                message_text=(u"Import timed out, please try again. If you continue seeing this message you may "
+                              u"have a syntax error in your meta/main.yml file.")
             )
             ri.save()
             transaction.commit()
-    except Exception as e:
-        logger.error(u"Clear Stuck Imports ERROR: %s" % str(e))
+    except Exception as exc:
+        logger.error(u"Clear Stuck Imports ERROR: {}".format(str(exc)).encode('utf-8').strip())
         raise

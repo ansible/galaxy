@@ -57,7 +57,7 @@ def check_user_access(user, model_class, action, *args, **kwargs):
                      access_method.__name__, args, result)
         if result:
             return result
-    logger.debug('check_user_access: %s %s %s returned %s', user, model_class, action, False)
+    # logger.debug('check_user_access: %s %s %s returned %s', user, model_class, action, False)
     return False
 
 
