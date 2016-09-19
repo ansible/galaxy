@@ -85,7 +85,12 @@
                                         <td class="key">Created</td><td class="value">{{ role.created | date:"short" }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="key">Imported</td>
+                                        <td class="key">Last Commit</td>
+                                        <td class="value" ng-if="role.last_commit_date">{{ role.last_commit_date | date:"short" }}</td>
+                                        <td class="value na" ng-if="!role.last_commit_date">NA</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Last Import</td>
                                         <td class="value" ng-if="role.imported">{{ role.imported | date:"short" }}</td>
                                         <td class="value na" ng-if="!role.imported">NA</td>
                                     </tr>

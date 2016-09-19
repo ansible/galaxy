@@ -21,6 +21,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     created = indexes.DateTimeField(model_attr='created', default='', indexed=False)
     modified = indexes.DateTimeField(model_attr='modified', default='', indexed=False)
     imported = indexes.DateTimeField(model_attr='imported', default=None, null=True, indexed=False)
+    last_commit_date = indexes.DateTimeField(model_attr='commit_created', default=None, null=True, indexed=False)
     text = indexes.CharField(document=True, use_template=True)
     autocomplete = indexes.EdgeNgramField(use_template=True)
     platforms_autocomplete = indexes.EdgeNgramField(default='')

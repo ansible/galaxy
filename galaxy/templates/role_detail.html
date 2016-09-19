@@ -149,10 +149,18 @@
                             <div class="col-sm-12">
                                 <table class="details">
                                     <tr>
-                                        <td class="key">Minimum Ansible Version</td><td class="value">{{ role.min_ansible_version }}</td>
+                                        <td class="key">Type</td>
+                                        <td class="value">{{ role_type }}</td>
                                     </tr>
+                                    {%if role_type == 'Ansible' %}
                                     <tr>
-                                        <td class="key">Installation</td><td class="value"><code>$ ansible-galaxy install {{role.namespace}}.{{role.name}}</code></td>
+                                        <td class="key">Minimum Ansible Version</td>
+                                        <td class="value">{{ role.min_ansible_version }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td class="key">Installation</td>
+                                        <td class="value"><code>$ {{ install_command }} {{role.namespace}}.{{role.name}}</code></td>
                                     </tr>
                                     <tr>
                                         <td class="key">Tags</td><td class="value">
@@ -162,10 +170,11 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="key">Created</td><td class="value">{{ create_date }}</td>
+                                        <td class="key">Last Commit</td>
+                                        <td class="value" >{{ last_commit_date }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="key">Imported</td>
+                                        <td class="key">Last Imported</td>
                                         <td class="value" >{{ import_date }}</td>
                                     </tr>
                                 </table>

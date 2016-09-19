@@ -38,9 +38,16 @@ User = get_user_model()
 
 @receiver(user_logged_in)
 def user_logged_in_handler(request, user, **kwargs):
-    user.cache_refreshed = False
-    user.save()
+    if user.repositories.count() > 1:
+        # User has entries in cache already, so no need to delay the login process.
+        user.cache_refreshed = True
+        user.save()
+    else:
+        # No entries found in cache, wait for a refresh to happen.
+        user.cache_refreshed = False
+        user.save()
     try:
+        # Kick off a refresh
         token = SocialToken.objects.get(account__user=user, account__provider='github')
         refresh_user_repos.delay(user,token.token)
         refresh_user_stars.delay(user,token.token)
@@ -63,41 +70,3 @@ def import_task_post_save(sender, **kwargs):
     for repo in Repository.objects.filter(github_user=instance.github_user,github_repo=instance.github_repo):
         repo.is_enabled = True
         repo.save()
-
-# @receiver(pre_save, sender=Role)
-# @receiver(pre_delete, sender=Role)
-# def role_pre_save(sender, **kwargs):
-#     '''
-#     Before changes are made to a role grab the list of associated tags. The list will be used on post save 
-#     to signal celery to update elasticsearch indexes.
-#     '''
-#     instance = kwargs['instance']
-#     tags = instance.get_tags() if instance.id else []
-#     platforms = instance.get_unique_platforms() if instance.id else []
-#     username = instance.namespace if instance.id else ''
-#     instance._saved_tag_names = tags
-#     instance._saved_username = username
-#     instance._saved_platforms = platforms
-
-
-# @receiver(post_save, sender=Role)
-# @receiver(post_delete, sender=Role)
-# def role_post_save(sender, **kwargs):
-#     '''
-#     Signal celery to update the indexes.
-#     '''
-#     instance = kwargs['instance']
-#     tags = getattr(instance, '_saved_tag_names', None)
-#     if tags:
-#         for tag in tags:
-#             update_tags.delay(tag)
-
-#     username = getattr(instance, '_saved_username', None)
-#     if username:
-#         update_users.delay(username)
-
-#     platforms = getattr(instance, '_saved_platforms', None)
-#     if platforms:
-#         for platform in platforms:
-#             update_platforms.delay(platform)
-

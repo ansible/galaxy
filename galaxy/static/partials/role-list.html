@@ -32,6 +32,10 @@
                                 <div class="description na" dot-dot-dot ng-if="!role.description">NA</div>
                                 <table class="stats-table">
                                     <tr class="stat-row">
+                                        <td class="key">Type</td>
+                                        <td class="value">{{ role.display_type_title }}</td>
+                                    </tr>
+                                    <tr class="stat-row">
                                         <td class="key">Author</td>
                                         <td class="value"><a ng-href="/{{ role.username }}/">{{ role.username }}</a></td>
                                     </tr>
@@ -46,12 +50,12 @@
                                         <td class="value na" ng-if="!role.tags.length">NA</td>
                                     </tr>
                                     <tr class="stat-row">
-                                        <td class="key">Created</td>
-                                        <td class="value" ng-if="role.created">{{ role.created | date:"short" }}</td>
-                                        <td class="value na" ng-if="!role.created">NA</td>
+                                        <td class="key">Last Commit</td>
+                                        <td class="value" ng-if="role.last_commit_date">{{ role.last_commit_date | date:"short" }}</td>
+                                        <td class="value na" ng-if="!role.last_commit_date">NA</td>
                                     </tr>
                                     <tr class="stat-row">
-                                        <td class="key">Last Imported</td>
+                                        <td class="key">Last Import</td>
                                         <td class="value" ng-if="role.imported">{{ role.imported | date:"short" || "NA"}}</td>
                                         <td class="value na" ng-if="!role.imported">NA</td>
                                     </tr>

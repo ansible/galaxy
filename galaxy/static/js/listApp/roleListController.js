@@ -247,6 +247,18 @@
 
             return roleSearchService.get(params)
                 .$promise.then(function(data) {
+                    angular.forEach(data.results, function(row) {
+                        if (row.role_type == 'ANS') {
+                            row.display_type = 'AN';
+                            row.display_type_title = 'Ansible Role';
+                        } else if (row.role_type == 'CON') {
+                            row.display_type = 'CR';
+                            row.display_type_title = 'Container Role';
+                        } else if (row.role_type == 'APP') {
+                            row.display_type = 'CA';
+                            row.display_type_title = 'Container App';
+                        }
+                    });
                     $scope.roles = data.results;
                     $scope.status = "";
                     $scope.loading = 0;

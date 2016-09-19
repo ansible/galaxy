@@ -281,9 +281,9 @@ class Role(CommonModelNameNotUnique):
     )
     namespace = models.CharField(
         max_length   = 256,
-        verbose_name = "Namespace",
         blank        = True,
-        null         = True
+        null         = True,
+        verbose_name = "Namespace",
     )
     github_user = models.CharField(
         max_length   = 256,
@@ -294,30 +294,35 @@ class Role(CommonModelNameNotUnique):
         verbose_name = "Github Repository",
     )
     github_branch = models.CharField(
-        max_length = 256,
-        blank = True,
-        default = '',
+        max_length   = 256,
+        blank        = True,
+        default      = '',
         verbose_name = "Github Branch"
     )
     github_default_branch = models.CharField(
-        max_length = 256,
-        default = 'master',
+        max_length   = 256,
+        default      = 'master',
         verbose_name = "Default Branch"
     )
     readme = models.TextField(
-        blank=True,
-        default='',
+        blank        = True,
+        default      = '',
         verbose_name = 'README raw content'
     )
     readme_type = models.CharField(
-        max_length = 5,
-        null=True,
+        max_length   = 5,
+        null         = True,
         verbose_name = 'README type'
     )
     readme_html = models.TextField(
-        blank=True,
-        default='',
+        blank        = True,
+        default      = '',
         verbose_name = 'README HTML'
+    )
+    container_yml = models.TextField(
+        blank        = True,
+        null         = True,
+        verbose_name = 'container.yml'
     )
     min_ansible_version = models.CharField(
         max_length   = 10,
@@ -394,6 +399,10 @@ class Role(CommonModelNameNotUnique):
     commit_url       = models.CharField(
         max_length   = 256,
         blank        = True
+    )
+    commit_created = models.DateTimeField(
+        null         = True,
+        verbose_name = "Laste Commit DateTime"
     )
     
     #

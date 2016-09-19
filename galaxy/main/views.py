@@ -410,16 +410,24 @@ class RoleDetailView(DetailView):
         context['tags'] = role.tags.all()
         context['platforms'] = role.platforms.all()
         context['dependencies'] = role.dependencies.all()
-        
+        for type in Role.ROLE_TYPE_CHOICES:
+            if type[0] == role.role_type:
+                context['role_type'] = type[1]
+        if role.role_type == Role.ANSIBLE:
+            context['install_command'] = 'ansible-galaxy install'
+        elif role.role_type == Role.CONTAINER:
+            context['install_command'] = 'ansible-container install'
+        elif role.role_type == Role.CONTAINER_APP:
+            context['install_command'] = 'ansible-container init'
         context['versions'] = []
         for ver in role.versions.all():
             context['versions'].append({
                 'loose_version': ver.loose_version,
                 'release_date':  ver.release_date.strftime('%m/%d/%Y %H:%M:%I %p') if ver.release_date else 'NA'
             })
-
         context['create_date'] = role.created.strftime('%m/%d/%Y %H:%M:%I %p')
         context['import_date'] = role.imported.strftime('%m/%d/%Y %H:%M:%I %p') if role.imported else 'NA'
+        context['last_commit_date'] = role.commit_created.strftime('%m/%d/%Y %H:%M:%I %p') if role.commit_created else 'NA'
         context['readme_html'] = readme_to_html(role)
         context['page_title'] = "%s.%s" % (self.namespace, self.name)
         return context

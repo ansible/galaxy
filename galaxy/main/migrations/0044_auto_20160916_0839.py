@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0042_auto_20160721_2318'),
+        ('main', '0043_role_role_type'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='role',
-            name='role_type',
-            field=models.CharField(default=b'ANS', max_length=3, editable=False, choices=[(b'ANS', b'Ansible'), (b'CON', b'Container Role'), (b'APP', b'Container App')]),
-        ),
+            name='container_yml',
+            field=models.TextField(null=True, verbose_name=b'container.yml', blank=True),
+        )
     ]

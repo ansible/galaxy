@@ -856,7 +856,7 @@ class RoleSearchSerializer(HaystackSerializer):
     platform_details = serializers.SerializerMethodField()
     user_is_subscriber = serializers.SerializerMethodField()
     user_is_stargazer = serializers.SerializerMethodField()
-    
+
     class Meta:
         index_classes = [RoleIndex]
         fields = (
@@ -876,6 +876,7 @@ class RoleSearchSerializer(HaystackSerializer):
             "created", 
             "modified",
             "imported",
+            "last_commit_date",
             "text",
             "autocomplete",
             "platforms_autocomplete",
@@ -926,7 +927,7 @@ class RoleSearchSerializer(HaystackSerializer):
         if instance is None:
             return []
         return json.loads(instance.platform_details)
-        
+
     def get_user_is_subscriber(self, instance):
         # override user_is_subscriber found in ES
         request = self.context.get('request', None)

@@ -6,7 +6,7 @@
 from datetime import datetime
 from elasticsearch_dsl import DocType, String, Long, Date, MetaField, analyzer, token_filter
 
-__all__ = ["TagDoc", "PlatformDoc", "UserDoc", "RoleTypeDoc"]
+__all__ = ["TagDoc", "PlatformDoc", "UserDoc"]
 
 
 autocomplete = analyzer(
