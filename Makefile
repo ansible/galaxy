@@ -29,7 +29,7 @@ DEB_PKG_RELEASE=$(VERSION)-$(RELEASE)
 endif
 
 .PHONY: clean clean_dist refresh migrate migrate_empty makemigrations build_from_scratch build \
-        run sdist stop requirements
+        run sdist stop requirements ui_build
 
 # Remove containers, images and ~/.galaxy
 clean:
@@ -99,3 +99,6 @@ clean_dist:
 	rm -rf debian deb-build
 	rm -f galaxy/static/dist/*.js
 	find . -type f -regex ".*\.py[co]$$" -delete
+
+ui_build:
+	node node_modules/gulp/bin/gulp.js build
