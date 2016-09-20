@@ -38,7 +38,7 @@ while log_entries:
 user_scores = user_scores.items()
 sorted_user_scores = sorted(user_scores, key=lambda tpl: tpl[1], reverse=True)
 
-with open('AUTHORS.md','w') as f:
+with open('AUTHORS','w') as f:
     f.write(u"Ansible Container has been contribued to by the following authors:\n")
     f.write(u"(This list is automatically generated - please file an issue for corrections)\n")
     f.write(u"\n")

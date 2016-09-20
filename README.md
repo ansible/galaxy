@@ -15,6 +15,6 @@ If you're interested in contributing, please see [CONTRIBUTING.md](./CONTRIBUTIN
 
 ## Authors
 
-View [AUTHORS](./AUTHORS.md) for a list contributors to Ansible Galaxy. Thanks everyone!
+View [AUTHORS](./AUTHORS) for a list contributors to Ansible Galaxy. Thanks everyone!
 
 Ansible Galaxy is an [Ansible by Red Hat](https://ansible.com) sponsored project.
