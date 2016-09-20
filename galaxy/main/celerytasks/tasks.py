@@ -115,7 +115,7 @@ def update_namespace(repo):
 
 def fail_import_task(import_task, msg):
     """
-    Abort the import task ans raise an exception
+    Abort the import task and raise an exception
     """
     transaction.rollback()
     try:
@@ -203,6 +203,7 @@ def get_readme(import_task, repo, branch, token):
 
 def decode_yaml_file(import_task, repo, branch, file_name, required=False):
     file_contents = None
+    raw_file = None
     try:
         file_contents = repo.get_file_contents(file_name, ref=branch)
     except Exception as exc:
@@ -212,15 +213,15 @@ def decode_yaml_file(import_task, repo, branch, file_name, required=False):
             fail_import_task(import_task, u"Failed to find %s - %s" % (file_name, str(exc)))
     if file_contents:
         try:
-            file_contents = file_contents.content.decode('base64')
+            raw_file = file_contents.content.decode('base64')
         except Exception as exc:
             fail_import_task(import_task, u"Failed to decode %s - %s" % (file_name, str(exc)))
         try:
-            file_contents = yaml.safe_load(file_contents)
+            file_contents = yaml.safe_load(raw_file)
         except yaml.YAMLError as exc:
             add_message(import_task, u"ERROR", u"YAML parse error: %s" % str(exc))
             fail_import_task(import_task, u"Failed to parse %s. Check YAML syntax." % file_name)
-    return file_contents
+    return file_contents, raw_file
 
 
 @task(throws=(Exception,), name="galaxy.main.celerytasks.tasks.import_role")
@@ -256,7 +257,7 @@ def import_role(task_id):
         gh_api = Github(token.token)
         gh_api.get_api_status()
     except:
-        fail_import_task(import_task, (u'Failed to connect to Github API. This is most likely a temporary error, '
+        fail_import_task(import_task, (u'Failed to cfonnect to Github API. This is most likely a temporary error, '
                                        u'please retry your import in a few minutes.'))
     
     try:
@@ -288,7 +289,7 @@ def import_role(task_id):
         
     # parse meta/main.yml data
     add_message(import_task, u"INFO", u"Parsing and validating meta/main.yml")
-    meta_data = decode_yaml_file(import_task, repo, branch, 'meta/main.yml', required=True)
+    meta_data, _ = decode_yaml_file(import_task, repo, branch, 'meta/main.yml', required=True)
 
     # validate meta/main.yml
     galaxy_info = meta_data.get("galaxy_info", None)
@@ -310,8 +311,8 @@ def import_role(task_id):
     role.github_default_branch = repo.default_branch
 
     # check if meta/container.yml exists
-    container_yml = decode_yaml_file(import_task, repo, branch, 'meta/container.yml', required=False)
-    ansible_container_yml = decode_yaml_file(import_task, repo, branch, 'ansible/container.yml', required=False)
+    container_yml, raw_container_yml = decode_yaml_file(import_task, repo, branch, 'meta/container.yml', required=False)
+    ansible_container_yml, raw_ansible_yml = decode_yaml_file(import_task, repo, branch, 'ansible/container.yml', required=False)
     if container_yml and ansible_container_yml:
         add_message(import_task, u"ERROR", (u"Found ansible/container.yml and meta/container.yml. "
                                             u"A role can only have only one container.yml file."))
@@ -319,12 +320,15 @@ def import_role(task_id):
         add_message(import_task, u"INFO", u"Found meta/container.yml")
         add_message(import_task, u"INFO", u"Setting role type to Container")
         role.role_type = Role.CONTAINER
-        role.container_yml = container_yml
+        role.container_yml = raw_container_yml
     elif ansible_container_yml:
         add_message(import_task, u"INFO", u"Found ansible/container.yml")
         add_message(import_task, u"INFO", u"Setting role type to Container App")
         role.role_type = Role.CONTAINER_APP
-        role.container_yml = ansible_container_yml
+        role.container_yml = raw_ansible_yml
+    else:
+        role.type = role.ANSIBLE
+        role.container_yml = None
 
     if role.issue_tracker_url == "" and repo.has_issues:
         role.issue_tracker_url = repo.html_url + '/issues'
