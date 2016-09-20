@@ -77,7 +77,7 @@ run:
 stop:
 	@ansible-container stop --force
 
-sdist: clean ui_build
+sdist: clean_dist ui_build
 	if [ "$(OFFICIAL)" = "yes" ] ; then \
 	   $(PYTHON) setup.py release_build; \
 	else \
