@@ -11,7 +11,7 @@ If you're interested in contributing, please see [CONTRIBUTING.md](./CONTRIBUTIN
  * The *develop* branch is the release actively under development.
  * The *master* branch corresponds to the latest stable release.
  * Submit pull requests for bug fixes and new features to *develop*.
- * Contributors welcome! Get started by reviewing [CONTRIBUTORS.md](./CONTRIBUTING.md).
+ * Contributors welcome! Get started by reviewing [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## Authors
 
