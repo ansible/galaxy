@@ -3,11 +3,11 @@
 To setup a local development environment you will need to do have the following 
 installed locally:
 
-* Ansible Container 0.2.0+
-* Ansible 2.1.1.0+
+* [Ansible Container 0.2.0+](https://github.com/ansible/ansible-container)
+* [Ansible 2.1.1.0+](https://github.com/ansible/ansible)
 
-We recommend using Git Flow, although it's not strictly required. Any development should be done in feature branches and
-compared to the `develop` branch.
+We recommend using [Git Flow](https://github.com/nvie/gitflow), although it's not strictly required. Any development 
+should be done in feature branches and compared to the `develop` branch.
 
 
 ## Checkout the Project and Start a Feature
@@ -27,7 +27,7 @@ git config user.name "Joe Developer"
 git config user.email "joe@ansibleworks.com"
 ```
 
-Start developing by first creating a feature branch. The simplest way is by using Git Flow to start a feature: 
+Start developing by first creating a feature branch. The simplest way is by using Git Flow: 
 
 ```
 cd ~/projects/galaxy
@@ -101,11 +101,35 @@ You should see the message `Verify Your Email Address`.
 Look in ~/.galaxy/logs/email. There should be a new file with a `.log` extension. Open it, retrieve the verification URL, and
 paste it into your browser. And finally, click the `Confirm` button.
 
+## Stop Services and Other Commands
+
+Ctrl-C or closing the terminal session window stops the containers running in the foreground. To stop all containers 
+run `make stop` from another terminal session. Use `docker ps` to check the state of the services.
+
+Review the Makefile for additional commands. Examples include:
+
+- `make psql` to access the database command line tool 
+- `make migrate` to generate and apply Django migrations
+- `make refresh` to remove all galaxy images, containers, logging data, rebuild images, and restart the containers 
+- `make clean` to remove all galaxy images, containers and logging data
 
 ## Submitting Code
 
+Code submissions are accepted via pull requests (PR), and they are always welcome! We may not accept them all, but we are 
+always happy to review and discuss them with you.
+
+Before submitting a large pull request for a new feature, we suggest opening an issue to discuss the feature prior to 
+submission.
+
+We reserve the right to reject submissions that are not a good fit for the project or not in keeping with the intended 
+direction of the project. If you are unsure as to whether a feature is a good fit, take the time to open an issue.
+
+Please observe the following when submitting a PR:
+
 * Rebase instead of merge (http://git-scm.com/book/en/Git-Branching-Rebasing).
-* Develop in a feature branch
-* Submit code via pull request
+* Follow the Git Flow branching model and develop in a feature branch
+* Limit the scope of a submission to a single feature or bug fix.
 * Before embarking on a large feature, open an issue and submit the feature for review by the community
+
+
 
