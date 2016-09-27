@@ -41,7 +41,7 @@
                     <li><a href="#travis">Automated Testing</a></li>
                     <li><a href="#role-types">NEW: Role Types</a>
                         <ul class="nav">
-                            <li><a href="#container-role" class="pad">Container Role</a></li>
+                            <li><a href="#container-role" class="pad">Container Enabled</a></li>
                             <li><a href="#container-app" class="pad">Container App</a></li>
                         </ul>
                     </li>
@@ -52,6 +52,9 @@
                 </div>
             </nav>
         </div>
+
+        </div>
+
         <div class="col-lg-8 col-md-8">
             <div class="intro-content">
                 <h2 id="welcome">Welcome to Ansible Galaxy</h2>
@@ -380,48 +383,48 @@ galaxy_info:
 </pre>
                 <h3 id="role-types">NEW: Role Types</h3>
                 <p>With the role out of Galaxy 2.1.0 we introduced two new role types that work in conjunction with <a href="https://github.com/ansible/ansible-container" target="_blank">Ansible Container</a> to
-                    bring the power of Ansible and Ansible Roles to managing and distributing container applications.</p>
+                        bring the power of Ansible and Ansible Roles to managing and distributing container applications.</p>
 
-                <h4 id="container-role">Container Role</h4>
-                <p>Container roles provide building blocks for Ansible Container projects. A project typically defines multiple services that work together to form an application. For example, a project
-                    might include a web server and a database service. Rather than starting from scratch to define each of these services, now you can simply download a container role that does it for you. Install
-                    the role into your project, and adjust it to fit your needs.</p>
-                <p>It's similar to pulling a Docker image, but better! When you install the role, it updates your orchestration document <code>container.yml</code> with settings and defaults, and adds any build
-                    tasks to your <code>main.yml</code>. No more lost time sifting through the README or the Dockerfile. Just install it, and the work is done for you. Want to see how the service works or change
-                    settings? No problem. Open your <code>contianer.yml</code>, and everything you need is there.</p>
+                <h4 id="container-role">Container Enabled</h4>
+                <p>Container enabled roles provide building blocks for Ansible Container projects. A project typically defines multiple services that work together to form an application. For example, a project
+                        might include a web server and a database service. Rather than starting from scratch to define each of these services, now you can simply download a container role that does it for you. Install
+                        the role into your project, and adjust it to fit your needs.</p>
+                 <p>It's similar to pulling a Docker image, but better! When you install the role, it updates your orchestration document <code>container.yml</code> with settings and defaults, and adds any build
+                        tasks to your <code>main.yml</code>. No more lost time sifting through the README or the Dockerfile. Just install it, and the work is done for you. Want to see how the service works or change
+                        settings? No problem. Open your <code>contianer.yml</code>, and everything you need is there.</p>
 
-                <p>The role contains a service definition in <code>meta/container.yml</code>, along with defaults for the service's container settings in <code>defaults/main.yml</code>, and a list of tasks for
-                    building the service's image in <code>tasks/main.yml</code>. It's everything needed to build an image and launch a container. All you have to do is run
-                    <code>ansible-container install</code> to plug it into your project.
+                 <p>The role contains a service definition in <code>meta/container.yml</code>, along with defaults for the service's container settings in <code>defaults/main.yml</code>, and a list of tasks for
+                        building the service's image in <code>tasks/main.yml</code>. It's everything needed to build an image and launch a container. All you have to do is run
+                        <code>ansible-container install</code> to plug it into your project.
 
-                <p>When the role is installed, the following tasks are performed by Ansible Container:<p>
+                 <p>When the role is installed, the following tasks are performed by Ansible Container:<p>
 
-                <ul>
-                    <li><code>meta/container.yml</code> will be added to <code>ansible/container.yml</code> along with any defaults found in <code>defaults/main.yml</code></li>
-                    <li>a new play will be added to <code>ansible/main.yml</code> with <em>hosts</em> set to the service name</li>
-                    <li>any tasks defined in <code>tasks/main.yml</code> will be added to the play</li>
-                </ul>
+                 <ul>
+                     <li><code>meta/container.yml</code> will be added to <code>ansible/container.yml</code> along with any defaults found in <code>defaults/main.yml</code></li>
+                     <li>a new play will be added to <code>ansible/main.yml</code> with <em>hosts</em> set to the service name</li>
+                        <li>any tasks defined in <code>tasks/main.yml</code> will be added to the play</li>
+                 </ul>
 
-                <h4 id="container-app">Container App</h4>
+                 <h4 id="container-app">Container App</h4>
 
-                <p>A Container App is designed to distribute a complete applications that's been defined in Ansible Container. It contains one or more services ready to run. Just download and go. Use it as
-                defined, or use it as the starting point for a new project. Either way, it has everything you need to be up and running in moments.</p>
+                 <p>A Container App is designed to distribute a complete applications that's been defined in Ansible Container. It contains one or more services ready to run. Just download and go. Use it as
+                    defined, or use it as the starting point for a new project. Either way, it has everything you need to be up and running in moments.</p>
 
-                <p>The role contains a complete Ansible Container project. Everything needed to launch the application from the <code>ansible</code> directory to application sourcecode is included. Download
-                it by running the <code>ansible-container init</code> command.</p>
+                 <p>The role contains a complete Ansible Container project. Everything needed to launch the application from the <code>ansible</code> directory to application sourcecode is included. Download
+                    it by running the <code>ansible-container init</code> command.</p>
 
-                <p>For example:</p>
-<pre>
-$ mkdir example
-$ cd example
-$ ansible-container init &lt;role name&gt;
-$ ansible-container build
-$ ansible-container run
-</pre>
-                <p>That's it! With a Conatainer App it's now easier than ever to distribute applications, jump-start projects, and get work done. We can't wait to see what you create!</p>
+                 <p>For example:</p>
+    <pre>
+    $ mkdir example
+    $ cd example
+    $ ansible-container init &lt;role name&gt;
+    $ ansible-container build
+    $ ansible-container run
+    </pre>
+                 <p>That's it! With a Conatainer App it's now easier than ever to distribute applications, jump-start projects, and get work done. We can't wait to see what you create!</p>
 
-                <p>For more information about Ansible Container, visit the <a href="https://github.com/ansible/ansible-container" target="_blank">project repo</a>, or check out the
-                    <a href="https://docs.ansible.com/ansible-container" target="_blank">doc site</a>.</p>
+                 <p>For more information about Ansible Container, visit the <a href="https://github.com/ansible/ansible-container" target="_blank">project repo</a>, or check out the
+                        <a href="https://docs.ansible.com/ansible-container" target="_blank">doc site</a>.</p>
 
                 <h3 id="questions">Questions?</h3>
 
