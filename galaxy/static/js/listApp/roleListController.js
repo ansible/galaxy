@@ -96,7 +96,7 @@
         ];
 
         $scope.searchRoleTypes = [
-            { value: "ANS", title: "Ansible Role" },
+            // { value: "ANS", title: "Ansible Role" },
             { value: "CON", title: "Container Role" },
             { value: "APP", title: "Container App" }
         ];
