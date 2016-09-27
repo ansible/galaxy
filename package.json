@@ -21,14 +21,14 @@
     "url": "https://github.com/ansible/galaxy/issues"
   },
   "devDependencies": {
-    "less": "~2.5.1",
-    "gulp": "~3.9.0",
-    "gulp-less": "~3.0.3",
-    "gulp-dest": "~0.2.2",
-    "gulp-watch": "~4.3.4",
-    "gulp-batch": "~1.0.5",
-    "gulp-uglify": "~1.4.1",
-    "gulp-concat": "~2.6.0",
-    "gulp-rename": "~1.2.2"
+    "less": "latest",
+    "gulp": "latest",
+    "gulp-less": "latest",
+    "gulp-dest": "latest",
+    "gulp-watch": "latest",
+    "gulp-batch": "latest",
+    "gulp-uglify": "latest",
+    "gulp-concat": "latest",
+    "gulp-rename": "latest"
   }
 }
