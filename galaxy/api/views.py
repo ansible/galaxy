@@ -266,11 +266,15 @@ class RoleList(ListAPIView):
     throttle_scope = 'download_count'
 
     def list(self, request, *args, **kwargs):
-        if request.query_params.get('owner__username', None) and request.query_params.get('name', None):
-            req_namespace = request.query_params['owner__username']
-            req_name = request.query_params['name']
+        if request.query_params.get('owner__username', None):
+            params = {}
+            for key, vaue in request.query_params.iteritems():
+                if key == 'owner__username':
+                    params['namespace'] = value
+                else:
+                    params[key] = value
             qs = self.get_queryset()
-            qs = qs.filter(namespace=req_namespace,name=req_name)
+            qs = qs.filter(**params)
             page = self.paginate_queryset(qs)
             if page is not None:
                 serializer = self.get_pagination_serializer(page)
