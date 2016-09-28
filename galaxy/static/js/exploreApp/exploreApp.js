@@ -30,7 +30,7 @@
         $logProvider.debugEnabled(debug);
         $routeProvider.
             when('/', {
-                templateUrl: '/static/partials/main.html',
+                templateUrl: '/static/partials/explore.html',
                 controller: 'ExploreCtrl'
         }).
         otherwise({

@@ -4,8 +4,6 @@ You are receiving this email because someone (hopefully you) created an account 
 
 If you believe you have received this email in error, please disregard it.
 
-If you have any questions regarding this email, or if you have trouble with the link provided above, please contact us at support@ansible.com.
+If you have any questions regarding this email, or if you have trouble with the link provided above, please contact support.
 
 Thanks!
-
-The Ansible Team

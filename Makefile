@@ -55,7 +55,7 @@ psql:
 
 # Build Galaxy images 
 build_from_scratch:
-	ansible-container --var-file ansible/develop.yml --from-scratch -- -e"@/ansible-container/ansible/develop.yml"
+	ansible-container --var-file ansible/develop.yml build --from-scratch -- -e"@/ansible-container/ansible/develop.yml"
 
 build:
 	ansible-container --var-file ansible/develop.yml build -- -e"@/ansible-container/ansible/develop.yml"

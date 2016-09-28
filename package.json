@@ -29,6 +29,7 @@
     "gulp-batch": "latest",
     "gulp-uglify": "latest",
     "gulp-concat": "latest",
-    "gulp-rename": "latest"
+    "gulp-rename": "latest",
+    "gulp-util": ">=0.10"
   }
 }

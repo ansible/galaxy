@@ -42,10 +42,10 @@ html body .navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle {
   background-color: #074979;
 }
 html body .navbar-inverse .brand {
-  font-size: 1.2em;
-  color: #fff;
-  padding-top: 6px;
-  padding-left: 4px;
+    position: relative;
+    top: 7px;
+    font-size: 2.2em;
+    color: #fff;
 }
 html body .navbar-inverse .nav.pull-right {
   margin-top: 8px;
@@ -120,7 +120,7 @@ html body #push {
 {% endblock %}
 
 {% block branding %}
-  <a class="brand" href="/api/"><img class="logo" src="/static/img/galaxy-logo.png"></a>
+  <a class="brand" href="/api/">GALAXY</a>
 {% endblock %}
 
 {% block userlinks %}

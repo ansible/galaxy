@@ -5,7 +5,8 @@ var watch = require('gulp-watch');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var rename = require('gulp-rename');
- 
+var gutil = require('gulp-util');
+
 gulp.task('accountApp', function() {
     return gulp.src([
         './galaxy/static/js/accountApp/*.js',
@@ -83,6 +84,7 @@ gulp.task('less', function() {
         .pipe(less({
             compress: true
         }))
+        .on('error', gutil.log)
         .pipe(dest('galaxy/static/css', {ext: '.min.css'}))
         .pipe(gulp.dest('./'));
 });

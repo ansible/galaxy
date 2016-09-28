@@ -6,13 +6,12 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Ansible, Inc" />
-    <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}Jump-start your automation project with great content from the Ansible community. Galaxy provides pre-packaged units of work known to Ansible as roles.{% endif %}" />
     <link rel="shortcut icon" href="/static/img/favicon.ico" />
 
     {% if ng_controller %}
     <title ng-bind="getTitle()"></title>
     {% else %}
-    <title>Ansible Galaxy | {% if page_title %}{{ page_title }}{% else %}Find, reuse, and share the best Ansible content{% endif %}</title>
+    <title>Galaxy{% if page_title %} | {{ page_title }}{% endif %}</title>
     {% endif %}
     
     {% block extra_head %}{% endblock %}

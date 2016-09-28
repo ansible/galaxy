@@ -119,8 +119,8 @@
         - nodejs
         - npm
 
-    - name: Install development tools
-      npm: path=/galaxy
+    - name: Install node packages 
+      npm: path=/galaxy state=latest
 
     - name: Install gulp globally
       npm: name=gulp global=yes
