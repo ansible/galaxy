@@ -26,12 +26,11 @@ from celery import task
 from github import Github
 from github import GithubException
 from urlparse import urlparse
-
 from django.utils import timezone
 from django.db import transaction
-
 from allauth.socialaccount.models import SocialToken
-
+from ansible.playbook.role.requirement import RoleRequirement
+from ansible.errors import AnsibleError
 from galaxy.main.models import (Platform,
                                 Tag,
                                 Role,
@@ -502,89 +501,72 @@ def import_role(task_id):
             if platform_key not in platform_list:
                 role.platforms.remove(platform)
 
-    # Add in dependencies (if there are any):
-    add_message(import_task, u"INFO", u"Adding dependencies")
-    dependencies = meta_data.get("dependencies", None)
-
-    if dependencies is None:
-        add_message(import_task, u"ERROR",
-                    u"meta/main.yml missing definition for dependencies. Define dependencies as [] or an iterable list.")
-    elif isinstance(dependencies,basestring) or not hasattr(dependencies, '__iter__'):
-        add_message(import_task, u"ERROR",
-                    u"Failed to iterate dependencies. Define dependencies in meta/main.yml as [] or an iterable list.")
-    else:
-        dep_names = []
-        for dep in dependencies:
-            names = []
-            try:
-                if isinstance(dep, dict):
-                    if 'role' not in dep:
-                        raise Exception(u"'role' keyword was not found in the role dictionary")
+    # Add any dependencies
+    dependencies = meta_data.get('dependencies')
+    if dependencies:
+        add_message(import_task, u"INFO", u"Adding dependencies")
+        if isinstance(dependencies, list):
+            dep_names = []
+            for dep in dependencies:
+                try:
+                    dep_parsed = RoleRequirement.role_yaml_parse(dep)
+                    if not dep_parsed.get('name'):
+                        raise Exception(u"Unable to determine name for dependency")
+                    names = dep_parsed['name'].split(".")
+                    if len(names) < 2:
+                        raise Exception(u"Expecting dependency name format to match 'username.role_name', "
+                                        u"instead got %s" % dep_parsed['name'])
+                    if len(names) > 2:
+                        # the username contains .
+                        name = names.pop()
+                        namespace = '.'.join(names)
                     else:
-                        dep = dep['role']
-                elif not isinstance(dep, basestring):
-                    raise Exception(u"role dependencies must either be a string or dictionary (was %s)" % type(dep))
+                        namespace = names[0]
+                        name = names[1]
+                    try:
+                        dep_role = Role.objects.get(namespace=namespace, name=name)
+                        role.dependencies.add(dep_role)
+                        dep_names.append(dep_parsed['name'])
+                    except Exception as exc:
+                        logger.error("Error loading dependencies %s" % unicode(exc))
+                        raise Exception(u"Role dependency not found: %s.%s" % (namespace, name))
 
-                names = dep.split(".")
-                if len(names) < 2:
-                    raise Exception(u"name format must match 'username.name'")
-            except Exception, e:
-                add_message(import_task, u"ERROR",
-                            u"Invalid role dependency: %s (skipping) (error: %s)" % (str(dep),e))
-            if len(names) > 2:
-                # the username contains .
-                name = names[len(names) - 1]
-                names.pop()
-                namespace = '.'.join(names)
-                try:
-                    dep_role = Role.objects.get(namespace=namespace, name=name)
-                    role.dependencies.add(dep_role)
-                    dep_names.append(dep)
-                except:
-                    add_message(import_task, u"ERROR",
-                                u"Role dependency not found name: %s namespace: %s" % (name, namespace))
-            else:
-                # standard foramt namespace.role_name
-                try:
-                    dep_role = Role.objects.get(namespace=names[0], name=names[1])
-                    role.dependencies.add(dep_role)
-                    dep_names.append(dep)
-                except:
-                    add_message(import_task, u"ERROR", u"Role dependency not found: %s" % dep)
+                except AnsibleError as exc:
+                    add_message(import_task, u'ERROR', u'Error parsing dependency %s' % unicode(exc))
+                except Exception as exc:
+                    add_message(import_task, u'ERROR', unicode(exc))
 
-        # Remove deps that are no longer listed in the metadata
-        for dep in role.dependencies.all():
-            dep_name = dep.__unicode__()
-            if dep_name not in dep_names:
-                role.dependencies.remove(dep)
+            # Remove deps that are no longer listed in the metadata
+            for dep in role.dependencies.all():
+                dep_name = dep.__unicode__()
+                if dep_name not in dep_names:
+                    role.dependencies.remove(dep)
+        else:
+            add_message(import_task, "ERROR", "Expected dependencies to be a list, instead got %s" %
+                        type(dependencies).__name__)
 
     role.readme, role.readme_html, role.readme_type = get_readme(import_task, repo, branch, token)
     
-    # helper function to save repeating code:
-    def add_role_version(tag):
-        rv,created = RoleVersion.objects.get_or_create(name=tag.name, role=role)
-        rv.release_date = tag.commit.commit.author.date
-        rv.save()
-
-    # get the tags for the repo, and then loop through them
-    # so we can create version objects for the role
+    # iterate over repo tags and create version objects
     add_message(import_task, u"INFO", u"Adding repo tags as role versions")
     try:
         git_tag_list = repo.get_tags()
-        for git_tag in git_tag_list:
-            add_role_version(git_tag)
-    except Exception, e:
-        add_message(import_task, u"ERROR", u"An error occurred while importing repo tags: %s" % str(e))
+        for tag in git_tag_list:
+            rv,created = RoleVersion.objects.get_or_create(name=tag.name, role=role)
+            rv.release_date = tag.commit.commit.author.date
+            rv.save()
+    except Exception as exc:
+        add_message(import_task, u"ERROR", u"An error occurred while importing repo tags: %s" % unicode(exc))
     
     try:
         role.validate_char_lengths()
-    except Exception, e:
-        add_message(import_task, u"ERROR", e.message)
+    except Exception as exc:
+        add_message(import_task, u"ERROR", unicode(exc))
 
     try:
         import_task.validate_char_lengths()
-    except Exception, e:
-        add_message(import_task, u"ERROR", e.message)
+    except Exception as exc:
+        add_message(import_task, u"ERROR", unicode(exc))
 
     # determine state of import task
     error_count = import_task.messages.filter(message_type="ERROR").count()
@@ -594,7 +576,7 @@ def import_role(task_id):
     add_message(import_task, import_state, u"Status %s : warnings=%d errors=%d" % (import_state,
                                                                                    warning_count,
                                                                                    error_count))
-    
+
     try:
         import_task.state = import_state
         import_task.finished = timezone.now()
