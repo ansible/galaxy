@@ -25,7 +25,7 @@
       group: name=django gid=1000 
 
     - name: Create user django
-      user: name=django uid=1000 group=django createhome=no
+      user: name=django uid=1000 group=django createhome=yes home=/home/django shell=/bin/bash
 
     - name: Download dumb-init
       get_url:
