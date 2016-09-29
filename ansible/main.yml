@@ -18,6 +18,8 @@
       - python-pip
       - python-devel
       - postgresql-devel
+      - libffi-devel
+      - openssl-devel
    
     - name: Create group django
       group: name=django gid=1000 
