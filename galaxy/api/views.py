@@ -41,6 +41,7 @@ from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.apps import apps
 from django.utils.dateparse import parse_datetime
+from django.utils import timezone
 
 #allauth
 from allauth.socialaccount.models import SocialAccount
@@ -817,10 +818,10 @@ class NotificationList(ListCreateAPIView):
                 owner = ns.owner,
                 source = 'travis',
                 github_branch = request_branch,
-                travis_build_url = payload['build_url'],
-                travis_status = payload['status_message'],
-                commit_message = payload['message'],
-                committed_at = parse_datetime(payload['committed_at']),
+                travis_build_url = payload.get('build_url'),
+                travis_status = payload.get('status_message'),
+                commit_message = payload.get('message'),
+                committed_at = parse_datetime(payload['committed_at']) if payload.get('committed_at') else timezone.now(),
                 commit = payload['commit']
             )
 
