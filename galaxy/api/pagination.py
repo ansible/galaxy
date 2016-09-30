@@ -1,22 +1,19 @@
-# (c) 2012-2014, Ansible, Inc. <support@ansible.com>
+# (c) 2012-2016, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
 # Ansible Galaxy is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# it under the terms of the Apache License as published by
+# the Apache Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #
 # Ansible Galaxy is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# Apache License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
-
-# Copyright (c) 2013 AnsibleWorks, Inc.
-# All Rights Reserved.
+# You should have received a copy of the Apache License
+# along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 # Django REST Framework
 from rest_framework import serializers, pagination
