@@ -328,7 +328,13 @@ class Role(CommonModelNameNotUnique):
         max_length   = 10,
         blank        = True,
         null         = True,
-        verbose_name = "Minimum Ansible Version Required",
+        verbose_name = "Min Ansible Version",
+    )
+    min_ansible_container_version = models.CharField(
+        max_length   = 10,
+        blank        = True,
+        null         = True,
+        verbose_name = "Min Ansible Container Version",
     )
     issue_tracker_url = models.CharField(
         max_length   = 256,
