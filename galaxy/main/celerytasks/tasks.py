@@ -463,14 +463,14 @@ def import_role(task_id):
         role.name = import_task.alternate_role_name
 
     role.description         = strip_input(galaxy_info.get("description",repo.description))
-    role.author              = strip_input(galaxy_info.get("author",""))
-    role.company             = strip_input(galaxy_info.get("company",""))
-    role.license             = strip_input(galaxy_info.get("license",""))
+    role.author              = strip_input(galaxy_info.get("author", ""))
+    role.company             = strip_input(galaxy_info.get("company", ""))
+    role.license             = strip_input(galaxy_info.get("license", ""))
     if galaxy_info.get('min_ansible_version'):
-        role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version",""))
+        role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version", ""))
     if galaxy_info.get('min_ansible_container_version'):
-        role.min_ansible_container_version = strip_input(galaxy_info.get("min_ansible_container_version",""))
-    role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url",""))
+        role.min_ansible_container_version = strip_input(galaxy_info.get("min_ansible_container_version", ""))
+    role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url", ""))
     role.github_branch       = strip_input(galaxy_info.get("github_branch", ""))
     role.github_default_branch = repo.default_branch
 
@@ -489,12 +489,10 @@ def import_role(task_id):
         add_message(import_task, u"INFO", u"Found ansible/container.yml")
         add_message(import_task, u"INFO", u"Setting role type to Container App")
         role.role_type = Role.CONTAINER_APP
-        #role.container_yml = ansible_container_yml
+        role.container_yml = ansible_container_yml
     else:
         role.type = role.ANSIBLE
         role.container_yml = None
-
-    logger.info("HERE 1")
 
     if role.issue_tracker_url == "" and repo.has_issues:
         role.issue_tracker_url = repo.html_url + '/issues'
@@ -503,15 +501,11 @@ def import_role(task_id):
         add_message(import_task, u"WARNING", u"galaxy_info.company exceeds max length of 50 in meta data")
         role.company = role.company[:50]
 
-    logger.info("HERE 2")
-
     if not role.description:
         add_message(import_task, u"ERROR", u"missing description. Add a description to GitHub repo or meta data.")
     elif len(role.description) > 255:
         add_message(import_task, u"WARNING", u"galaxy_info.description exceeds max length of 255 in meta data")
         role.description = role.description[:255]
-
-    logger.info("HERE 3")
 
     if not role.license:
         add_message(import_task, u"ERROR", u"galaxy_info.license missing value in meta data")
@@ -519,18 +513,15 @@ def import_role(task_id):
         add_message(import_task, u"WARNING", u"galaxy_info.license exceeds max length of 50 in meta data")
         role.license = role.license[:50]
 
-    logger.info("HERE 4")
     if role.role_type in (role.CONTAINER, role.ANSIBLE) and not role.min_ansible_version:
         add_message(import_task, u"WARNING", u"Minimum Ansible version missing in meta data. Defaulting to 1.9.")
         role.min_ansible_version = u'1.9'
 
-    logger.info("HERE 5")
     if role.role_type == role.CONTAINER_APP and not role.min_ansible_container_version:
         add_message(import_task, u"WARNING", u"Minimum Ansible Container version missing in meta data. "
                                              u"Defaulting to 0.2.0")
         role.min_ansible_container_version = u'0.2.0'
 
-    logger.info("HERE 6")
     if not role.issue_tracker_url:
         add_message(import_task, u"WARNING", (u"No issue tracker defined. Enable issue tracker in repo settings, "
                                               u"or provide an issue tracker in meta data."))
@@ -567,7 +558,6 @@ def import_role(task_id):
     import_task.github_branch = branch
     
     add_tags(import_task, galaxy_info, role)
-    logger.info("HERE 7")
     if role.role_type in (role.CONTAINER, role.ANSIBLE):
         if not galaxy_info.get('platforms'):
             add_message(import_task, u"ERROR", u"No platforms found in meta data")
