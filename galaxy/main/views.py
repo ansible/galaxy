@@ -425,9 +425,9 @@ class RoleDetailView(DetailView):
                 'loose_version': ver.loose_version,
                 'release_date':  ver.release_date.strftime('%m/%d/%Y %H:%M:%I %p') if ver.release_date else 'NA'
             })
-        context['create_date'] = role.created.strftime('%m/%d/%Y %H:%M:%I %p')
-        context['import_date'] = role.imported.strftime('%m/%d/%Y %H:%M:%I %p') if role.imported else 'NA'
-        context['last_commit_date'] = role.commit_created.strftime('%m/%d/%Y %H:%M:%I %p') if role.commit_created else 'NA'
+        context['import_date'] = role.imported.strftime('%m/%d/%Y %H:%M:%I %p %Z') if role.imported else 'NA'
+        context['last_commit_date'] = role.commit_created.strftime('%m/%d/%Y %H:%M:%I %p %Z') if role.commit_created \
+            else 'NA'
         context['readme_html'] = readme_to_html(role)
         context['page_title'] = "%s.%s" % (self.namespace, self.name)
         return context

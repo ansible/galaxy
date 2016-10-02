@@ -69,12 +69,12 @@
                                     </tr>
                                     <tr class="stat-row">
                                         <td class="key">Last Commit</td>
-                                        <td class="value" ng-if="role.last_commit_date">{{ role.last_commit_date | date:"short" }}</td>
+                                        <td class="value" ng-if="role.last_commit_date">{{ role.last_commit_date | date : 'MM-dd-yyyy hh:mm a UTC' }}</td>
                                         <td class="value na" ng-if="!role.last_commit_date">NA</td>
                                     </tr>
                                     <tr class="stat-row">
                                         <td class="key">Last Import</td>
-                                        <td class="value" ng-if="role.imported">{{ role.imported | date:"short" || "NA"}}</td>
+                                        <td class="value" ng-if="role.imported">{{ role.imported | date : 'MM-dd-yyyy hh:mm a UTC' }}</td>
                                         <td class="value na" ng-if="!role.imported">NA</td>
                                     </tr>
                                 </table>

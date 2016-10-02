@@ -157,16 +157,23 @@
                                         <td class="key">Type</td>
                                         <td class="value">{{ role_type }}</td>
                                     </tr>
-                                    {%if role_type == 'Ansible' %}
+                                    {%if role.min_ansible_version %}
                                     <tr>
                                         <td class="key">Minimum Ansible Version</td>
                                         <td class="value">{{ role.min_ansible_version }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {%if role.min_ansible_container_version %}
+                                    <tr>
+                                        <td class="key">Minimum Ansible Container Version</td>
+                                        <td class="value">{{ role.min_ansible_container_version }}</td>
                                     </tr>
                                     {% endif %}
                                     <tr>
                                         <td class="key">Installation</td>
                                         <td class="value"><code>$ {{ install_command }} {{role.namespace}}.{{role.name}}</code></td>
                                     </tr>
+                                    {% if tags %}
                                     <tr>
                                         <td class="key">Tags</td><td class="value">
                                             {% for tag in tags %}
@@ -174,6 +181,7 @@
                                             {% endfor %}
                                         </td>
                                     </tr>
+                                    {% endif %}
                                     <tr>
                                         <td class="key">Last Commit</td>
                                         <td class="value" >{{ last_commit_date }}</td>
@@ -188,6 +196,7 @@
                     
                         <div class="row">
                             <div class="col-sm-12">
+                                {% if versions %}
                                 <div class="versions section">
                                     <table class="table ga-table-striped">
                                         <caption>Version History</caption>
@@ -217,6 +226,8 @@
                                         </table>
                                     </div>
                                 </div>
+                                {% endif %}
+                                {% if platforms %}
                                 <div class="platforms section">
                                     <table class="table ga-table-striped">
                                         <caption>Supported Platforms</caption>
@@ -245,6 +256,8 @@
                                         </table>
                                     </div>
                                 </div>
+                                {% endif %}
+                                {% if dependencies %}
                                 <div class="dependencies section">
                                     <table class="table ga-table-striped">
                                         <caption>Dependencies</caption>
@@ -271,6 +284,7 @@
                                         </table>
                                     </div>
                                 </div>
+                                {% endif %}
                             </div> 
                         </div>
                     </div><!-- tabpanel -->

@@ -82,7 +82,7 @@
             'tags'               : '',
             'platforms'          : '',
             'users'              : '',
-            'role_types'         : '',
+            'role_type'          : '',
             'autocomplete'       : '',
             'order'              : '',
             'refresh'            : _refresh
@@ -233,8 +233,8 @@
                 event_track.category += '/Authors:' + params.username_autocomplete;
             }
 
-            if ($scope.list_data.role_types) {
-                params.role_type = $scope.list_data.role_types;
+            if ($scope.list_data.role_type) {
+                params.role_type = $scope.list_data.role_type;
                 event_track.category += '/RoleType:' + params.role_type;
             }
 
@@ -310,7 +310,7 @@
         function _search(_keywords, _orderby) {
             $scope.list_data.page = 1;
             $scope.roles = [];
-            var tags = [], platforms = [], keywords = [], users = [], role_types = [], params = {};
+            var tags = [], platforms = [], keywords = [], users = [], role_type = [], params = {};
             angular.forEach(_keywords, function(keyword) {
                 if (keyword.type === 'Tag') {
                     tags.push(keyword.value);
@@ -319,9 +319,9 @@
                 } else if (keyword.type === 'Author') {
                     users.push(keyword.value);
                 } else if (keyword.type === 'Role Type') {
-                    angular.forEach($scope.searchRoleTypes, function(role_type) {
-                        if (role_type.title == keyword.value) {
-                            role_types.push(role_type.value);
+                    angular.forEach($scope.searchRoleTypes, function(rt) {
+                        if (rt.title == keyword.value) {
+                            role_type.push(rt.value);
                         }
                     });
                 } else {
@@ -333,7 +333,7 @@
             $scope.list_data.order = '';
             $scope.list_data.tags = '';
             $scope.list_data.users = '';
-            $scope.list_data.role_types = '';
+            $scope.list_data.role_type = '';
             if (tags.length) {
                 $scope.list_data.tags = tags.join(' ');
             }
@@ -346,8 +346,8 @@
             if (users.length) {
                 $scope.list_data.users = users.join(' ');
             }
-            if (role_types.length) {
-                $scope.list_data.role_types = role_types.join(',');
+            if (role_type.length) {
+                $scope.list_data.role_type = role_type.join(',');
             }
             if (_orderby) {
                 $scope.list_data.order = _orderby.value;
@@ -434,6 +434,9 @@
             if ($scope.list_data.order) {
                 result.order = $scope.list_data.order;
             }
+            if ($scope.list_data.role_type) {
+                result.role_type = $scope.list_data.role_type;
+            }
             return result;
         }
 
@@ -446,6 +449,7 @@
             result.users = data.users || '';
             result.autocomplete = data.autocomplete || '';
             result.order = data.order || '';
+            result.role_type = data.role_type || '';
             return result;
         }
 
@@ -462,6 +466,9 @@
             }
             if (data.users) {
                 _getKeys('Author', data.users, keys);
+            }
+            if (data.role_type) {
+                _getKeys('Role Type', data.role_type, keys);
             }
             var uniqKeys = _.uniq(keys, false, function(val) { return val.type + ':' + val.value; });
             autocompleteService.setKeywords(uniqKeys);
