@@ -64,13 +64,17 @@ class Command(BaseCommand):
         for platform in Platform.objects.filter(active=True).distinct('name').all():
             alias_list = [alias for alias in self.get_platform_search_terms(platform.name)]
             alias_list = '' if len(alias_list) == 0 else alias_list
-            release_list = [p.release for p in Platform.objects.filter(active=True, name=platform.name).order_by('release').distinct('release').all()]
+            release_list = [p.release for p in Platform.objects.filter(active=True, name=platform.name)
+                            .order_by('release').distinct('release').all()]
+            search_name = 'Enterprise_Linux' if platform.name == 'EL' else platform.name
             doc = PlatformDoc(
-                name=platform.name,
+                name=search_name,
                 releases= release_list,
-                roles=Role.objects.filter(active=True, is_valid=True, platforms__name=platform.name).order_by('namespace','name').distinct('namespace','name').count(),
+                roles=Role.objects.filter(active=True, is_valid=True, platforms__name=platform.name)
+                                  .order_by('namespace','name')
+                                  .distinct('namespace','name').count(),
                 alias=alias_list,
-                autocomplete="%s %s %s" % (platform.name, ' '.join(release_list), ' '.join(alias_list))
+                autocomplete="%s %s %s" % (search_name, ' '.join(release_list), ' '.join(alias_list))
             )
             doc.save()
 

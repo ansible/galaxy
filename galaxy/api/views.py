@@ -19,6 +19,7 @@
 import sys
 import math
 import requests
+import logging
 from hashlib import sha256
 
 # Github
@@ -65,6 +66,7 @@ from galaxy.api.permissions import ModelAccessPermission
 from galaxy.main.celerytasks.tasks import import_role, update_user_repos
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 
+logger = logging.getLogger(__name__)
 
 #--------------------------------------------------------------------------------
 # Helper functions
@@ -161,8 +163,8 @@ class ApiV1SearchView(APIView):
         data['roles'] = reverse('api:search-roles-list')
         data['tags'] = reverse('api:tags_search_view')
         data['users'] = reverse('api:user_search_view')
-        data['faceted_platforms'] = reverse('api:faceted_platforms_view')
-        data['faceted_tags'] = reverse('api:faceted_tags_view')
+        #data['faceted_platforms'] = reverse('api:faceted_platforms_view')
+        #data['faceted_tags'] = reverse('api:faceted_tags_view')
         data['top_contributors'] = reverse('api:top_contributors_list')
         return Response(data)
 
@@ -978,22 +980,20 @@ class RoleSearchView(HaystackViewSet):
 
 
 class FacetedView(APIView):
+
     def get(self, request, *agrs, **kwargs):
         facet_key = kwargs.get('facet_key')
-        fkwargs = {}
         models = [apps.get_model(app_label='main', model_name=kwargs.get('model'))]
         qs = SearchQuerySet().models(*models)
-        order = 'count'
-        size = 20
-        for key, value in request.GET.items():
-            if key  == 'order':
-                order = value
+        fkwargs = {
+            u'order': u'count',
+            u'size': 20
+        }
+        for key, val in request.GET.items():
+            if key == 'order':
+                fkwargs['order'] = val
             if key == 'size':
-                size = value
-        if size:
-            fkwargs['size'] = size
-        if order:
-            fkwargs['order'] = order
+                fkwargs['size'] = val
         qs = qs.facet(facet_key, **fkwargs)
         return Response(qs.facet_counts())
 

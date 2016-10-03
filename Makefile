@@ -60,11 +60,13 @@ build_from_scratch:
 build:
 	ansible-container --var-file ansible/develop.yml build -- -e"@/ansible-container/ansible/develop.yml"
 
-build_indexes:
-	@echo "Rebuild Search Index"
-	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_index --noinput
+custom_indexes:
 	@echo "Rebuild Custom Indexes"
 	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_galaxy_indexes
+
+all_indexes: custom_indexes
+	@echo "Rebuild Search Index"
+	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_index --noinput
 
 # Start Galaxy containers
 run:

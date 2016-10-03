@@ -65,7 +65,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_platforms(self, obj):
         return [
-            platform.name
+            'Enterprise_Linux' if platform.name == 'EL' else platform.name
             for platform in obj.platforms.filter(active=True).order_by('name').distinct('name')
         ]
 
@@ -77,7 +77,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_platforms_autocomplete(self, obj):
         return "%s %s %s" % (
-            ' '.join(obj.get_unique_platforms()), 
+            ' '.join(['Enterprise_Linux' if n == 'EL' else n for n in obj.get_unique_platforms()]),
             ' '.join(obj.get_unique_platform_search_terms()),
             ' '.join(obj.get_unique_platform_versions())
         )
@@ -103,8 +103,10 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
         return json.dumps(result)
 
     def prepare_platform_details(self, obj):
-        result = [
-            dict(name=plat.name, release=plat.release)
-            for plat in obj.platforms.filter(active=True).order_by('name', 'release')
-        ]
-        return json.dumps(result)
+        results = []
+        for plat in obj.platforms.filter(active=True).order_by('name', 'release'):
+            name = 'Enterprise_Linux' if plat.name == 'EL' else plat.name
+            results.append(
+                dict(name=name, release=plat.release)
+            )
+        return json.dumps(results)

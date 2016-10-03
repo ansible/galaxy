@@ -75,19 +75,21 @@ def update_tags(tags, logger):
 def update_platforms(platforms, logger):
     for platform in platforms:
         logger.info(u"PLATFORM: {}".format(platform).encode('utf-8').strip())
+        platform_name = 'Enterprise_Linux' if platform == 'EL' else platform
         try:
-            with memcache_lock("platform_%s" % platform):      
+            with memcache_lock("platform_%s" % platform):
                 cnt = Role.objects.filter(active=True, is_valid=True, platforms__name=platform) \
                     .order_by('namespace','name') \
                     .distinct('namespace', 'name').count()
-                es_platforms = PlatformDoc.search().query('match', name=platform).execute()
+                es_platforms = PlatformDoc.search().query('match', name=platform_name).execute()
                 updated = False
                 
                 for es_platform in es_platforms:
-                    if es_platform.name == platform:
+                    if es_platform.name == platform_name:
                         updated = True
                         if es_platform.roles != cnt:
-                            logger.info(u"PLATFORM: {0} update count {1}".format(platform, cnt).encode('utf-8').strip())
+                            logger.info(u"PLATFORM: {0} update count {1}".format(platform, cnt)
+                                        .encode('utf-8').strip())
                             try:
                                 es_platform.update(roles=cnt)
                             except Exception as exc:
@@ -105,7 +107,7 @@ def update_platforms(platforms, logger):
                         releases = [p.release for p in Platform.objects.filter(active=True, name=platform)
                                     .order_by('release').distinct('release').all()]
                         doc = PlatformDoc(
-                            name=platform,
+                            name=platform_name,
                             releases=releases,
                             roles=cnt,
                         )

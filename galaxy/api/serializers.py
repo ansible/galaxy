@@ -870,7 +870,7 @@ class RoleSearchSerializer(HaystackSerializer):
             "github_branch",
             "tags",
             "platforms",
-            "platform_details", 
+            "platform_details",
             "versions",
             "dependencies",
             "created", 
