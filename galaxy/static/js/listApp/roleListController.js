@@ -106,7 +106,6 @@
         ];
 
         $scope.searchRoleTypes = [
-            // { value: "ANS", title: "Ansible Role" },
             { value: "CON", title: "Container Enabled" },
             { value: "APP", title: "Container App" }
         ];
@@ -260,10 +259,10 @@
                     angular.forEach(data.results, function(row) {
                         if (row.role_type == 'ANS') {
                             row.display_type = 'AN';
-                            row.display_type_title = 'Ansible Role';
+                            row.display_type_title = 'Ansible';
                         } else if (row.role_type == 'CON') {
                             row.display_type = 'CR';
-                            row.display_type_title = 'Container Role';
+                            row.display_type_title = 'Container Enabled';
                         } else if (row.role_type == 'APP') {
                             row.display_type = 'CA';
                             row.display_type_title = 'Container App';
