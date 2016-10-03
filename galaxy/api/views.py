@@ -269,9 +269,9 @@ class RoleList(ListAPIView):
     throttle_scope = 'download_count'
 
     def list(self, request, *args, **kwargs):
-        if request.query_params.get('owner__username', None):
+        if request.query_params.get('owner__username'):
             params = {}
-            for key, vaue in request.query_params.iteritems():
+            for key, value in request.query_params.items():
                 if key == 'owner__username':
                     params['namespace'] = value
                 else:
@@ -1095,7 +1095,6 @@ class RemoveRole(APIView):
         gh_user = request.query_params.get('github_user',None)
         gh_repo = request.query_params.get('github_repo', None)
         
-        
         if not gh_user or not gh_repo:
             raise ValidationError(dict(detail="Invalid request."))
 
@@ -1135,7 +1134,7 @@ class RemoveRole(APIView):
         # User has access. Delete requested role and associated bits.
         response = OrderedDict([
             ('deleted_roles', []),
-            ('status','')
+            ('status', '')
         ])
         
         roles = Role.objects.filter(github_user=gh_user,github_repo=gh_repo)
@@ -1166,12 +1165,12 @@ class RemoveRole(APIView):
                                         platforms=role.get_unique_platforms())
                 
         # Update the repository cache
-        for repo in Repository.objects.filter(github_user=gh_user,github_repo=gh_repo):
+        for repo in Repository.objects.filter(github_user=gh_user, github_repo=gh_repo):
             repo.is_enabled = False
             repo.save()
 
-        Role.objects.filter(github_user=gh_user,github_repo=gh_repo).delete()
-        ImportTask.objects.filter(github_user=gh_user,github_repo=gh_repo).delete()
+        Role.objects.filter(github_user=gh_user, github_repo=gh_repo).delete()
+        ImportTask.objects.filter(github_user=gh_user, github_repo=gh_repo).delete()
 
         return Response(response)
 
