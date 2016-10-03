@@ -258,13 +258,13 @@
                 .$promise.then(function(data) {
                     angular.forEach(data.results, function(row) {
                         if (row.role_type == 'ANS') {
-                            row.display_type = 'AN';
+                            row.display_type = 'ANS';
                             row.display_type_title = 'Ansible';
                         } else if (row.role_type == 'CON') {
-                            row.display_type = 'CR';
+                            row.display_type = 'CON';
                             row.display_type_title = 'Container Enabled';
                         } else if (row.role_type == 'APP') {
-                            row.display_type = 'CA';
+                            row.display_type = 'APP';
                             row.display_type_title = 'Container App';
                         }
                     });
@@ -485,10 +485,21 @@
 
         function _getKeys(type, data, results) {
             data.split(' ').forEach(function(key) {
-                results.push({
-                    type: type,
-                    value: key
-                });
+                if (type == 'Role Type') {
+                    angular.forEach($scope.searchRoleTypes, function(rt) {
+                        if (rt.value == key) {
+                            results.push({
+                                type: type,
+                                value: rt.title
+                            });
+                        }
+                    });
+                } else {
+                    results.push({
+                        type: type,
+                        value: key
+                    });
+                }
             });
         }
 
