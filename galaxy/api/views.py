@@ -271,11 +271,11 @@ class RoleList(ListAPIView):
     def list(self, request, *args, **kwargs):
         if request.query_params.get('owner__username'):
             params = {}
-            for key, value in request.query_params.items():
+            for key, val in request.query_params.items():
                 if key == 'owner__username':
-                    params['namespace'] = value
+                    params['namespace'] = val
                 else:
-                    params[key] = value
+                    params[key] = val
             qs = self.get_queryset()
             qs = qs.filter(**params)
             page = self.paginate_queryset(qs)
