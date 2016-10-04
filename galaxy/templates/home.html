@@ -21,7 +21,7 @@
             <div class="row">
                 <div class="col-sm-6">  
                     <div class="title-text">
-                        <h1><span class="ansible-color">Galaxy</span> is your hub for finding, reusing and sharing Ansible content</h1>
+                        {% include 'home_title.html' %}
                     </div>
                 </div>
                 {% if not user.is_authenticated %}
