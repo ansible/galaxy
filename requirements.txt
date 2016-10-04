@@ -20,7 +20,7 @@ requests
 requests-oauthlib
 bleach
 rst2html5-tools
-psycopg2
+# psycopg2
 setuptools
 PyYAML
 python-memcached

@@ -2,11 +2,26 @@
 - hosts: django
   gather_facts: no
   tasks:
-    - name: Update all packages
-      yum: name=* state=latest
+    - name: Download postgres repo package 
+      get_url: 
+        url: https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-7-x86_64/pgdg-centos95-9.5-3.noarch.rpm
+        dest: /tmp/pgdg-centos95-9.5-3.noarch.rpm
+
+    - name: Install postgres repo 
+      yum:
+        name: /tmp/pgdg-centos95-9.5-3.noarch.rpm
+        state: present
+
+    - name: Remove RPMs from /tmp 
+      file: path="{{ item }}" state=absent
+      with_fileglob:
+        - /tmp/*.rpm
 
     - name: Install epel
       yum: name=epel-release state=present
+
+    - name: Update all packages
+      yum: name=* state=latest
 
     - name: Install yum packages required for galaxy
       yum: name="{{ item }}" update_cache=yes
@@ -14,13 +29,14 @@
       - "@Development tools"
       - make
       - vim
-      - postgresql
       - python-pip
       - python-devel
-      - postgresql-devel
       - libffi-devel
       - openssl-devel
-   
+      - postgresql95
+      - postgresql95-devel
+      - python-psycopg2
+
     - name: Create group django
       group: name=django gid=1000 
 

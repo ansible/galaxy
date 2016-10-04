@@ -21,7 +21,7 @@ services:
       user: django
 
   postgres:
-    image: postgres:latest
+    image: postgres:9.5.4
     environment:
       - POSTGRES_PASSWORD={{ galaxy_postgres_password }}
       - POSTGRES_USER={{ galaxy_postgres_user }}

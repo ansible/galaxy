@@ -29,7 +29,7 @@ DEB_PKG_RELEASE=$(VERSION)-$(RELEASE)
 endif
 
 .PHONY: clean clean_dist refresh migrate migrate_empty makemigrations build_from_scratch build \
-        run sdist stop requirements ui_build
+        run sdist stop requirements ui_build export_test_data
 
 # Remove containers, images and ~/.galaxy
 clean:
@@ -104,3 +104,7 @@ clean_dist:
 
 ui_build:
 	node node_modules/gulp/bin/gulp.js build
+
+export_test_data:
+	@echo Export data to test-data/role_data.dmp.gz
+	@docker exec -i -t ansible_django_1 /galaxy/test-data/export.sh
