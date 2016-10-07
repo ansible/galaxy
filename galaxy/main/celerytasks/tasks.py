@@ -748,7 +748,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
             role.save()
             passed += 1
         except Exception as exc:
-            logger.error(u"FAILED %s: %s" % (full_name, str(exc)).encode('utf-8').strip())
+            logger.error(u"FAILED %s: %s".format(full_name, str(exc)).encode('utf-8').strip())
             failed += 1
     tracker.state = 'FINISHED'
     tracker.passed = passed
