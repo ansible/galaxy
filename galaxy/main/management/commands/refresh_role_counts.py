@@ -55,11 +55,15 @@ class Command(BaseCommand):
         started = time.time()
         while not finished:
             finished = True
-            for obj in RefreshRoleCount.objects.filter(Q(pk__in=in_list),~Q(state='COMPLETED')):
+            for obj in RefreshRoleCount.objects.filter(Q(pk__in=in_list), ~Q(state='COMPLETED')):
                 if not obj.state == 'FINISHED':
                     finished = False
                 else:
-                    print '%s Total: %s Passed: %s Failed: %s' % (obj.description, obj.failed + obj.passed, obj.passed, obj.failed)
+                    print '%s Total: %s Passed: %s Failed: %s Deleted: %s' % (obj.description,
+                                                                              obj.failed + obj.passed + obj.deleted,
+                                                                              obj.passed,
+                                                                              obj.failed,
+                                                                              obj.deleted)
                     obj.state = 'COMPLETED'
                     obj.save()
             time.sleep(60)

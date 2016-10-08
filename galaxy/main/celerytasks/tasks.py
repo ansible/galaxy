@@ -24,7 +24,7 @@ import pytz
 
 from celery import task
 from github import Github
-from github import GithubException
+from github import GithubException, UnknownObjectException
 from urlparse import urlparse
 from django.utils import timezone
 from django.db import transaction
@@ -734,25 +734,30 @@ def refresh_role_counts(start, end, gh_api, tracker):
     tracker.save()
     passed = 0
     failed = 0
+    deleted = 0
     for role in Role.objects.filter(is_valid=True, active=True, id__gt=start, id__lte=end):
-        full_name = "%s/%s" % (role.github_user,role.github_repo)
-        logger.info(u"Updating repo: {0}".format(full_name).encode('utf-8').strip())
+        full_name = "%s/%s" % (role.github_user, role.github_repo)
+        logger.info(u"Updating repo: {0}".format(full_name))
         try:
             gh_repo = gh_api.get_repo(full_name)
             update_namespace(gh_repo)
-            # sub_count = len(gh_repo.get_subscribers())
             role.watchers_count = gh_repo.watchers
             role.stargazers_count = gh_repo.stargazers_count
             role.forks_count = gh_repo.forks_count
             role.open_issues_count = gh_repo.open_issues_count
             role.save()
             passed += 1
+        except UnknownObjectException:
+            logger.info(u"NOT FOUND: {0}".format(full_name))
+            role.delete()
+            deleted += 1
         except Exception as exc:
-            logger.error(u"FAILED {0}: {1}".format(full_name, str(exc)).encode('utf-8').strip())
+            logger.error(u"FAILED {0}: {1}".format(full_name, str(exc)))
             failed += 1
     tracker.state = 'FINISHED'
     tracker.passed = passed
     tracker.failed = failed
+    tracker.deleted = failed
     tracker.save()
 
 
