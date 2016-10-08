@@ -402,6 +402,7 @@ def import_role(task_id):
     add_message(import_task, u"INFO", u"Starting import %d: role_name=%s repo=%s" % (import_task.id,
                                                                                      role.name,
                                                                                      repo_full_name))
+    user = import_task.owner
     try:
         token = SocialToken.objects.get(account__user=user, account__provider='github')
     except:
@@ -491,7 +492,7 @@ def import_role(task_id):
         role.role_type = Role.CONTAINER_APP
         role.container_yml = ansible_container_yml
     else:
-        role.type = role.ANSIBLE
+        role.role_type = role.ANSIBLE
         role.container_yml = None
 
     if role.issue_tracker_url == "" and repo.has_issues:
