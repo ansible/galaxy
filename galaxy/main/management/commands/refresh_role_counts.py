@@ -36,6 +36,7 @@ class Command(BaseCommand):
         max_id = agg['id__max']
         size = ceil(max_id / float(len(settings.GITHUB_TASK_USERS)))
         in_list = []
+
         print 'Refresh Role Counts'
         for i in range(len(settings.GITHUB_TASK_USERS)):
             start = size * i
@@ -47,10 +48,10 @@ class Command(BaseCommand):
                 description='User: %s Range: %s-%s' % (settings.GITHUB_TASK_USERS[i]['username'], start, end)
             )
             in_list.append(r.id)
-            gh_api = Github(settings.GITHUB_TASK_USERS[i]['username'],settings.GITHUB_TASK_USERS[i]['password'])
+            gh_api = Github(settings.GITHUB_TASK_USERS[i]['token'])
             refresh_role_counts.delay(start, end, gh_api, r)
-        print "Request submitted to Celery."
 
+        print "Request submitted to Celery."
         finished = False
         started = time.time()
         while not finished:
