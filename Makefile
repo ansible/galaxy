@@ -29,7 +29,8 @@ DEB_PKG_RELEASE=$(VERSION)-$(RELEASE)
 endif
 
 .PHONY: clean clean_dist refresh migrate migrate_empty makemigrations build_from_scratch build \
-        run sdist stop requirements ui_build export_test_data
+        run sdist stop requirements ui_build export_test_data import_test_data createsuperuser \
+        refresh_role_counts
 
 # Remove containers, images and ~/.galaxy
 clean:
@@ -67,6 +68,10 @@ custom_indexes:
 all_indexes: custom_indexes
 	@echo "Rebuild Search Index"
 	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_index --noinput
+
+create_superuser: 
+	@echo "Create Superuser"
+	@docker exec -i -t ansible_django_1 galaxy-manage createsuperuser
 
 # Start Galaxy containers
 run:
@@ -108,3 +113,12 @@ ui_build:
 export_test_data:
 	@echo Export data to test-data/role_data.dmp.gz
 	@docker exec -i -t ansible_django_1 /galaxy/test-data/export.sh
+
+import_test_data:
+	@echo Import data from test-data/role_data.dmp.gz
+	@docker exec -i -t ansible_django_1 /galaxy/test-data/import.sh
+
+refresh_role_counts:
+	@echo Refresh role counts
+	@docker exec -i -t ansible_django_1 galaxy-manage refresh_role_counts
+
