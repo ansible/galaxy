@@ -36,7 +36,8 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = u"Update each role's GitHub stargazer and watcher counts, and remove any roles not found."
+    help = (u"Update each role's GitHub stargazer and watcher counts, and remove any roles "
+            u"that no longer exist on GitHub.")
     
     def handle(self, *args, **options):
 
@@ -55,7 +56,7 @@ class Command(BaseCommand):
                 continue
             task_users.append({
                 u'username': task_user,
-                u'token': token
+                u'token': token.token
             })
 
         if len(task_users) == 0:

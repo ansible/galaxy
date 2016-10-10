@@ -106,6 +106,7 @@ def update_namespace(repo):
             namespace.html_url = repo.organization.html_url
             namespace.followers = repo.organization.followers
             namespace.save()
+
     else:
         namespace, created = Namespace.objects.get_or_create(namespace=repo.owner.login, defaults={
                                                              'name': repo.owner.name,
@@ -741,7 +742,6 @@ def refresh_role_counts(start, end, gh_api, tracker):
         logger.info(u"Updating repo: {0}".format(full_name))
         try:
             gh_repo = gh_api.get_repo(full_name)
-            update_namespace(gh_repo)
             role.watchers_count = gh_repo.watchers
             role.stargazers_count = gh_repo.stargazers_count
             role.forks_count = gh_repo.forks_count
