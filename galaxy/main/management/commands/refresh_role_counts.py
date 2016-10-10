@@ -90,12 +90,14 @@ class Command(BaseCommand):
                 if not obj.state == 'FINISHED':
                     finished = False
                 else:
-                    logger.info(u"{0} Total: {1} Passed: {2} Failed: {3} Deleted: {4}".format(
+                    logger.info(u"{0} Total: {1} Passed: {2} Failed: {3} Deleted: {4} Skipped: {5}".format(
                         obj.description,
-                        obj.failed + obj.passed + obj.deleted,
+                        obj.failed + obj.passed + obj.deleted + obj.skipped,
                         obj.passed,
                         obj.failed,
-                        obj.deleted))
+                        obj.deleted,
+                        obj.skipped
+                    ))
                     obj.state = 'COMPLETED'
                     obj.save()
             time.sleep(60)

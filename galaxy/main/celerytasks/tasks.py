@@ -737,17 +737,22 @@ def refresh_role_counts(start, end, gh_api, tracker):
     passed = 0
     failed = 0
     deleted = 0
+    skipped = 0
     for role in Role.objects.filter(is_valid=True, active=True, id__gt=start, id__lte=end):
         full_name = "%s/%s" % (role.github_user, role.github_repo)
         logger.info(u"Updating repo: {0}".format(full_name))
         try:
             gh_repo = gh_api.get_repo(full_name)
-            role.watchers_count = gh_repo.watchers
-            role.stargazers_count = gh_repo.stargazers_count
-            role.forks_count = gh_repo.forks_count
-            role.open_issues_count = gh_repo.open_issues_count
-            role.save()
-            passed += 1
+            if gh_repo and gh_repo.full_name == full_name:
+                role.watchers_count = gh_repo.watchers
+                role.stargazers_count = gh_repo.stargazers_count
+                role.forks_count = gh_repo.forks_count
+                role.open_issues_count = gh_repo.open_issues_count
+                role.save()
+                passed += 1
+            else:
+                logger.info(u"SKIPPED: {0}".format(full_name))
+                skipped += 1
         except UnknownObjectException:
             logger.info(u"NOT FOUND: {0}".format(full_name))
             role.delete()
@@ -759,6 +764,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
     tracker.passed = passed
     tracker.failed = failed
     tracker.deleted = failed
+    tracker.skipped = skipped
     tracker.save()
 
 

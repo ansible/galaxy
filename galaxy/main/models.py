@@ -918,6 +918,9 @@ class RefreshRoleCount (PrimordialModel):
         default      = 0,
         null         = True
     )
-
+    skipped = models.IntegerField(
+        default      = 0,
+        null         = True
+    )
 
 
