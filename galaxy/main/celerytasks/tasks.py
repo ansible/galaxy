@@ -753,7 +753,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
             else:
                 # The repo name or namespace no longer matches. This seems to happen
                 # when the user renames either.
-                raise UnknownObjectException
+                raise UnknownObjectException(404, {'Status': 'Namespace or repository appears to have been renamed.'})
         except UnknownObjectException:
             logger.info(u"NOT FOUND: {0}".format(full_name))
             role.delete()
