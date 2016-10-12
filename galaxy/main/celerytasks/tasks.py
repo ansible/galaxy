@@ -743,7 +743,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
         logger.info(u"Updating repo: {0}".format(full_name))
         try:
             gh_repo = gh_api.get_repo(full_name)
-            if gh_repo and gh_repo.full_name.lowercase() == full_name.lower():
+            if gh_repo and gh_repo.full_name.lower() == full_name.lower():
                 role.watchers_count = gh_repo.watchers
                 role.stargazers_count = gh_repo.stargazers_count
                 role.forks_count = gh_repo.forks_count
