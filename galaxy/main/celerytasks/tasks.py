@@ -743,7 +743,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
         logger.info(u"Updating repo: {0}".format(full_name))
         try:
             gh_repo = gh_api.get_repo(full_name)
-            if gh_repo and gh_repo.full_name == full_name:
+            if gh_repo and gh_repo.full_name.lowercase() == full_name.lower():
                 role.watchers_count = gh_repo.watchers
                 role.stargazers_count = gh_repo.stargazers_count
                 role.forks_count = gh_repo.forks_count
@@ -752,7 +752,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
                 passed += 1
             else:
                 # The repo name or namespace no longer matches. This seems to happen
-                # when the user renames either.
+                # when an object is renamed in GitHub.
                 raise UnknownObjectException(404, {u'Status': u'Namespace or repository appears to have been renamed.'})
         except UnknownObjectException:
             logger.info(u"NOT FOUND: {0}".format(full_name))
