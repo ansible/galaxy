@@ -764,7 +764,7 @@ def refresh_role_counts(start, end, gh_api, tracker):
     tracker.state = 'FINISHED'
     tracker.passed = passed
     tracker.failed = failed
-    tracker.deleted = failed
+    tracker.deleted = deleted
     tracker.skipped = skipped
     tracker.save()
 
