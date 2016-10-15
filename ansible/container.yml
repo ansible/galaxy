@@ -6,7 +6,7 @@ services:
     environment:
       - PGPASSWORD={{ galaxy_postgres_password }}
     volumes:
-      - ${PWD}:/galaxy
+      - ${PWD}:/galaxy:z
       - {{ galaxy_log_dir }}:/galaxy_logs
       - {{ galaxy_config_path }}:/etc/galaxy
     links:
@@ -25,7 +25,7 @@ services:
     environment:
       - POSTGRES_PASSWORD={{ galaxy_postgres_password }}
       - POSTGRES_USER={{ galaxy_postgres_user }}
-      - POSTGRES_DB={{ galaxy_postgres_db }} 
+      - POSTGRES_DB={{ galaxy_postgres_db }}
 
   elastic:
     image: elasticsearch:latest
