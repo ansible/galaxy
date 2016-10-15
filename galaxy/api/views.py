@@ -63,8 +63,9 @@ from galaxy.api.serializers import *            # noqa
 from galaxy.main.models import *                # noqa
 from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
-from galaxy.main.celerytasks.tasks import import_role, update_user_repos
+from galaxy.main.celerytasks.tasks import import_role, update_user_repos, refresh_existing_user_repos
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
+from galaxy.settings import GITHUB_SERVER
 
 logger = logging.getLogger(__name__)
 
@@ -1126,6 +1127,7 @@ class RemoveRole(APIView):
                 if r.full_name == repo_full_name:
                     allowed = True
                     continue
+
             if not allowed:
                 msg = "Galaxy user {0} does not have access to repo {1}".format(
                     request.user.username, repo_full_name)
@@ -1136,33 +1138,34 @@ class RemoveRole(APIView):
             ('deleted_roles', []),
             ('status', '')
         ])
-        
-        roles = Role.objects.filter(github_user=gh_user,github_repo=gh_repo)
-        cnt = len(roles)
-        if cnt == 0: 
-            response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user,gh_repo)
-            return Response(response)
-        elif cnt == 1:
-            response['status'] = "Role %s.%s deleted" % (gh_user,gh_repo)
-        else:
-            response['status'] = "Deleted %d roles associated with %s/%s" % (len(roles),gh_user,gh_repo)
 
-        for role in roles:
-            response['deleted_roles'].append({
-                "id": role.id,
-                "namespace": role.namespace,
-                "name": role.name,
-                "github_user": role.github_user,
-                "github_repo": role.github_repo
-            })
-            
-            for notification in role.notifications.all():
-                notification.delete()
+        if allowed:
+            roles = Role.objects.filter(github_user=gh_user,github_repo=gh_repo)
+            cnt = len(roles)
+            if cnt == 0:
+                response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user,gh_repo)
+                return Response(response)
+            elif cnt == 1:
+                response['status'] = "Role %s.%s deleted" % (gh_user,gh_repo)
+            else:
+                response['status'] = "Deleted %d roles associated with %s/%s" % (len(roles),gh_user,gh_repo)
 
-            # update ES indexes
-            update_custom_indexes.delay(username=role.namespace,
-                                        tags=role.get_tags(),
-                                        platforms=role.get_unique_platforms())
+            for role in roles:
+                response['deleted_roles'].append({
+                    "id": role.id,
+                    "namespace": role.namespace,
+                    "name": role.name,
+                    "github_user": role.github_user,
+                    "github_repo": role.github_repo
+                })
+
+                for notification in role.notifications.all():
+                    notification.delete()
+
+                # update ES indexes
+                update_custom_indexes.delay(username=role.namespace,
+                                            tags=role.get_tags(),
+                                            platforms=role.get_unique_platforms())
                 
         # Update the repository cache
         for repo in Repository.objects.filter(github_user=gh_user, github_repo=gh_repo):
@@ -1218,11 +1221,15 @@ class RefreshUserRepos(APIView):
             ghu = gh_api.get_user()
         except:
             raise ValidationError(dict(detail="Failed to get GitHub authorized user."))
-        
-        try: 
+        try:
             user_repos = ghu.get_repos()
         except:
             raise ValidationError(dict(detail="Failed to get user repositories from GitHub."))
+
+        try:
+            refresh_existing_user_repos(token.token, ghu)
+        except:
+            pass
 
         qs = update_user_repos(user_repos, request.user)
         serializer = RepositorySerializer(qs, many=True)
@@ -1244,14 +1251,14 @@ class TokenView(APIView):
             raise ValidationError(dict(detail="Invalid request."))
         
         try:
-            git_status = requests.get('https://api.github.com')
+            git_status = requests.get(GITHUB_SERVER)
             git_status.raise_for_status()
         except:
             raise ValidationError(dict(detail="Error accessing GitHub API. Please try again later."))
         
         try:
             header = dict(Authorization='token ' + github_token)
-            gh_user = requests.get('https://api.github.com/user', headers=header)
+            gh_user = requests.get(GITHUB_SERVER + '/user', headers=header)
             gh_user.raise_for_status()
             gh_user = gh_user.json()
             if hasattr(gh_user,'message'):
@@ -1259,8 +1266,8 @@ class TokenView(APIView):
         except:
             raise ValidationError(dict(detail="Error accessing GitHub with provided token."))
             
-        if SocialAccount.objects.filter(provider='github',uid=gh_user['id']).count() > 0:
-            user = SocialAccount.objects.get(provider='github',uid=gh_user['id']).user
+        if SocialAccount.objects.filter(provider='github', uid=gh_user['id']).count() > 0:
+            user = SocialAccount.objects.get(provider='github', uid=gh_user['id']).user
         else:
             msg = "Galaxy user not found. You must first log into Galaxy using your GitHub account."
             raise ValidationError(dict(detail=msg))

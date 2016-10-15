@@ -336,8 +336,16 @@
                         }
                     });
                 });
+            }, function(error) {
+                /* An error occurred. Likely the repo was renamed or deleted on the GitHub side */
+                $scope.repositories.forEach(function(repo) {
+                    repo.show_delete_warning = false;
+                    if (_repo.github_user === repo.github_user && _repo.github_repo === repo.github_repo) {
+                        repo.state = null;
+                        repo.show_delete_failed = true;
+                    }
+                });
             });
-
         }
 
         function _deleteCancel(_repo) {

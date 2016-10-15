@@ -20,8 +20,6 @@ import logging
 
 from math import ceil, floor
 
-from github import Github
-
 from django.conf import settings
 from django.db.models import Max, Q
 from django.core.management.base import BaseCommand
@@ -78,8 +76,7 @@ class Command(BaseCommand):
                 description='User: %s Range: %s-%s' % (task_users[i]['username'], start, end)
             )
             in_list.append(role_count.id)
-            gh_api = Github(task_users[i]['token'])
-            refresh_role_counts.delay(start, end, gh_api, role_count)
+            refresh_role_counts.delay(start, end, task_users[i]['token'], role_count)
 
         logger.info(u"Requests submitted to Celery. Waiting for task completion...")
         finished = False
@@ -90,13 +87,13 @@ class Command(BaseCommand):
                 if not obj.state == 'FINISHED':
                     finished = False
                 else:
-                    print u"{0} Total: {1} Passed: {2} Failed: {3} Deleted: {4} Skipped: {5}".format(
+                    print u"{0} Total: {1} Passed: {2} Failed: {3} Deleted: {4} Updated: {5}".format(
                         obj.description,
-                        obj.failed + obj.passed + obj.deleted + obj.skipped,
+                        obj.failed + obj.passed + obj.deleted + obj.updated,
                         obj.passed,
                         obj.failed,
                         obj.deleted,
-                        obj.skipped
+                        obj.updated
                     )
                     obj.state = 'COMPLETED'
                     obj.save()

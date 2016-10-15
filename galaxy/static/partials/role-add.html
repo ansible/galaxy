@@ -49,10 +49,14 @@
                             <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
                         </div>
                         <div class="refresh-roles" ng-if="!loading">
-                            <a href="" ng-click="refreshRepos()" ng-disabled="refreshing" class="refresh-link btn btn-sm btn-default"
+                            <a href="" ng-click="refreshRepos()" ng-show="!refreshing" class="refresh-link btn btn-sm btn-default"
                                tooltip-placement="top"
                                uib-tooltip="Refresh Your Repositories from GitHub"
-                               tooltip-append-to-body="true"><i class="fa fa-refresh" ng-show="!refreshing"></i><i class="fa fa-spin fa-spinner" ng-show="refreshing"></i></a>
+                               tooltip-append-to-body="true"><i class="fa fa-refresh"></i></a>
+                            <a href="" disabled="disabled" ng-show="refreshing" class="refresh-link btn btn-sm btn-default"
+                               tooltip-placement="top"
+                               uib-tooltip="Refresh Your Repositories from GitHub"
+                               tooltip-append-to-body="true"><i class="fa fa-spin fa-spinner" ng-show="refreshing"></i></a>
                         </div>
                     </div>
                 </div>
@@ -80,6 +84,16 @@
                                 <div class="form-button text-right">
                                     <a href="" ng-click="delete(repo)" class="btn btn-xs btn-danger">DELETE</a>
                                     <a href="" ng-click="deleteCancel(repo)" class="btn btn-xs btn-default">CANCEL</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div uib-collapse="!repo.show_delete_failed" class="delete-container">
+                            <p>The delete operation failed. If you previously deleted or renamed the GitHub repo,
+                                click the refresh button <a href="" disabled="disabled" class="btn btn-xs btn-default"><i class="fa fa-refresh"></i></a>
+                                near the top of the page to reload your list of repositories from GitHub.</p>
+                            <div class="form-group">
+                                <div class="form-button text-right">
+                                    <a href="" ng-click="repo.show_delete_failed=false" class="btn btn-xs btn-default">OK</a>
                                 </div>
                             </div>
                         </div>

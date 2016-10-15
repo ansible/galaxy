@@ -26,21 +26,51 @@ from celery import task
 from github import Github
 from github import GithubException, UnknownObjectException
 from urlparse import urlparse
+from requests import HTTPError
 from django.utils import timezone
 from django.db import transaction
 from allauth.socialaccount.models import SocialToken
+
 from ansible.playbook.role.requirement import RoleRequirement
 from ansible.errors import AnsibleError
+
 from galaxy.main.models import (Platform,
                                 Tag,
                                 Role,
                                 ImportTask,
                                 RoleVersion,
                                 Namespace)
-
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
+from galaxy.settings import GITHUB_SERVER
 
 logger = logging.getLogger(__name__)
+
+
+def get_repo_raw(token, repo_name):
+    '''
+    Access the API directly. Works around PyGitHub's inability to handle repositories that have
+    been renamed. When the API redirects to the correct repo, PyGithub returns an incomplete object.
+
+    :param token: Auth token
+    :param repo_name: String containing the full repository name, i.e. namespace/repo_name
+
+    :return: dict of repository attributes
+    '''
+    auth_header = {u'Authorization': u'token ' + token}
+    try:
+        url = u"{0}/repos/{1}".format(GITHUB_SERVER, repo_name)
+        response = requests.get(url, headers=auth_header)
+        response.raise_for_status()
+        repo = response.json()
+        if repo.get('message'):
+            raise Exception(repo['message'])
+    except HTTPError as exc:
+        if re.match('404', exc.message):
+            raise UnknownObjectException('404', {u'detail': u"Object not found"})
+        raise Exception(exc.message)
+    except Exception as exc:
+        raise Exception(u"Failed to access GitHub API - {0}".format(unicode(exc)))
+    return repo
 
 
 def get_meta_data(repo):
@@ -63,10 +93,10 @@ def update_user_repos(github_repos, user):
     Returns user.repositories.all() queryset.
     '''
     repo_dict = dict()
-    for r in github_repos:
-        meta_data = get_meta_data(r)
+    for repo in github_repos:
+        meta_data = get_meta_data(repo)
         if meta_data:
-            name = r.full_name.split('/')
+            name = repo.full_name.split('/')
             cnt = Role.objects.filter(github_user=name[0], github_repo=name[1]).count()
             enabled = cnt > 0
             user.repositories.update_or_create(
@@ -77,14 +107,46 @@ def update_user_repos(github_repos, user):
                     u'github_repo': name[1],
                     u'is_enabled': enabled
                 })
-            repo_dict[r.full_name] = True
+            repo_dict[repo.full_name] = True
 
     # Remove any that are no longer present in GitHub
-    for r in user.repositories.all():
-        if not repo_dict.get(r.github_user + '/' + r.github_repo):
-            r.delete()
+    for repo in user.repositories.all():
+        full_name = "{0}/{1}".format(repo.github_user, repo.github_repo)
+        if not repo_dict.get(full_name):
+            repo.delete()
 
     return user.repositories.all()
+
+
+def refresh_existing_user_repos(token, github_user):
+    '''
+    Remove repos belonging to the user that are no longer accessible in GitHub,
+    or update github_user, github_repo, if it has changed.
+    '''
+    for role in Role.objects.filter(github_user=github_user.login):
+        full_name = "{0}/{1}".format(role.github_user, role.github_repo)
+        try:
+            repo = get_repo_raw(token, full_name)
+            if not repo:
+                raise Exception("Object is empty or NoneType")
+            if not repo.get('name') or not repo.get('owner'):
+                raise Exception("Object missing name and/or owner attributes")
+            repo_name = repo['name']
+            repo_owner = repo['owner']['login']
+            if role.github_repo.lower() != repo_name.lower() or role.github_user.lower() != repo_owner.lower():
+                logger.info(u'UPDATED: {0} to {1}/{2}'.format(
+                    full_name,
+                    repo_owner,
+                    repo_name
+                ))
+                role.github_user = repo_owner
+                role.github_repo = repo_name
+                role.save()
+        except UnknownObjectException:
+            logger.info(u"NOT FOUND: {0}".format(full_name))
+            role.delete()
+        except Exception:
+            pass
 
 
 def update_namespace(repo):
@@ -629,7 +691,7 @@ def import_role(task_id):
 @transaction.atomic
 def refresh_user_repos(user, token):
     logger.info(u"Refreshing User Repo Cache for {}".format(user.username).encode('utf-8').strip())
-    
+
     try:
         gh_api = Github(token)
     except GithubException as exc:
@@ -657,8 +719,9 @@ def refresh_user_repos(user, token):
         logger.error(msg)
         raise Exception(msg)
 
+    refresh_existing_user_repos(token, ghu)
+
     update_user_repos(repos, user)
-    
     user.github_avatar = ghu.avatar_url
     user.github_user = ghu.login
     user.cache_refreshed = True
@@ -728,7 +791,7 @@ def refresh_user_stars(user, token):
 
 
 @task(name="galaxy.main.celerytasks.tasks.refresh_role_counts")
-def refresh_role_counts(start, end, gh_api, tracker):
+def refresh_role_counts(start, end, token, tracker):
     '''
     Update each role with latest counts from GitHub
     '''
@@ -737,35 +800,42 @@ def refresh_role_counts(start, end, gh_api, tracker):
     passed = 0
     failed = 0
     deleted = 0
-    skipped = 0
+    updated = 0
     for role in Role.objects.filter(is_valid=True, active=True, id__gt=start, id__lte=end):
         full_name = "%s/%s" % (role.github_user, role.github_repo)
-        logger.info(u"Updating repo: {0}".format(full_name))
         try:
-            gh_repo = gh_api.get_repo(full_name)
-            if gh_repo and gh_repo.full_name.lower() == full_name.lower():
-                role.watchers_count = gh_repo.watchers
-                role.stargazers_count = gh_repo.stargazers_count
-                role.forks_count = gh_repo.forks_count
-                role.open_issues_count = gh_repo.open_issues_count
+            repo = get_repo_raw(token, full_name)
+            if not repo:
+                raise Exception("Object is empty or NoneType")
+            if not repo.get('name') or not repo.get('owner'):
+                raise Exception("Object missing name and/or owner attributes")
+            repo_name = repo['name']
+            repo_owner = repo['owner']['login']
+            if role.github_repo.lower() != repo_name.lower() or role.github_user.lower() != repo_owner.lower():
+                updated += 1
+                logger.info(u'UPDATED: {0} to {1}/{2}'.format(
+                    full_name,
+                    repo_owner,
+                    repo_name
+                ))
+                role.github_user = repo_owner
+                role.github_repo = repo_name
                 role.save()
-                passed += 1
             else:
-                # The repo name or namespace no longer matches. This seems to happen
-                # when an object is renamed in GitHub.
-                raise UnknownObjectException(404, {u'Status': u'Namespace or repository appears to have been renamed.'})
+                passed += 1
         except UnknownObjectException:
             logger.info(u"NOT FOUND: {0}".format(full_name))
             role.delete()
             deleted += 1
         except Exception as exc:
-            logger.error(u"FAILED {0}: {1}".format(full_name, str(exc)))
+            logger.error(u"FAILED: {0} - {1}".format(full_name, unicode(exc)))
             failed += 1
+
     tracker.state = 'FINISHED'
     tracker.passed = passed
     tracker.failed = failed
     tracker.deleted = deleted
-    tracker.skipped = skipped
+    tracker.updated = updated
     tracker.save()
 
 

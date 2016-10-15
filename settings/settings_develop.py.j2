@@ -108,7 +108,9 @@ CELERY_IMPORTS=('galaxy.main.celerytasks.tasks',)
 CELERY_TRACK_STARTED=True
 CELERYBEAT_SCHEDULER='djcelery.schedulers.DatabaseScheduler'
 
-GITHUB_TASK_USERS = [] 
+GITHUB_TASK_USERS = []
+
+GITHUB_SERVER = "https://api.github.com"
 
 # Custom settings
 GALAXY_COMMENTS_THRESHOLD=10.0

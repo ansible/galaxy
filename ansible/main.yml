@@ -98,9 +98,6 @@
     - name: Update django site name
       command: psql -h postgres -d galaxy -U galaxy -f /galaxy/ansible/update_site.sql
 
-    - name: Remove test data file
-      file: path=/role_data.dmp.gz state=absent
-
     - name: Create galaxy admin user
       expect:
         command: galaxy-manage createsuperuser

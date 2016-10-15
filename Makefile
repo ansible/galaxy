@@ -30,7 +30,7 @@ endif
 
 .PHONY: clean clean_dist refresh migrate migrate_empty makemigrations build_from_scratch build \
         run sdist stop requirements ui_build export_test_data import_test_data createsuperuser \
-        refresh_role_counts
+        refresh_role_counts shell
 
 # Remove containers, images and ~/.galaxy
 clean:
@@ -69,7 +69,7 @@ all_indexes: custom_indexes
 	@echo "Rebuild Search Index"
 	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_index --noinput
 
-create_superuser: 
+createsuperuser: 
 	@echo "Create Superuser"
 	@docker exec -i -t ansible_django_1 galaxy-manage createsuperuser
 
@@ -121,4 +121,7 @@ import_test_data:
 refresh_role_counts:
 	@echo Refresh role counts
 	@docker exec -i -t ansible_django_1 galaxy-manage refresh_role_counts
+shell:
+	@echo Starting shell on ansible_django_1
+	@docker exec -i -t ansible_django_1 /bin/bash
 
