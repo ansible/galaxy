@@ -6,9 +6,9 @@ services:
     environment:
       - PGPASSWORD={{ galaxy_postgres_password }}
     volumes:
-      - ${PWD}:/galaxy
-      - {{ galaxy_log_dir }}:/galaxy_logs
-      - {{ galaxy_config_path }}:/etc/galaxy
+      - ${PWD}:/galaxy:Z
+      - {{ galaxy_log_dir }}:/galaxy_logs:Z
+      - {{ galaxy_config_path }}:/etc/galaxy:Z
     links:
       - postgres
       - elastic
@@ -44,7 +44,7 @@ services:
   gulp:
     image: centos:7
     volumes:
-      - ${PWD}:/galaxy
+      - ${PWD}:/galaxy:Z
     command: ["/bin/true"]
     dev_overrides:
       working_dir: /galaxy
