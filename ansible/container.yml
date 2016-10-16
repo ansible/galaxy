@@ -44,7 +44,7 @@ services:
   gulp:
     image: centos:7
     volumes:
-      - ${PWD}:/galaxy:Z
+      - ${PWD}:/galaxy
     command: ["/bin/true"]
     dev_overrides:
       working_dir: /galaxy
