@@ -420,7 +420,7 @@ class RoleDetailView(DetailView):
         elif role.role_type == Role.CONTAINER_APP:
             context['install_command'] = 'ansible-container init'
         context['versions'] = []
-        for ver in role.versions.all():
+        for ver in role.versions.all().order_by('-release_date'):
             context['versions'].append({
                 'loose_version': ver.loose_version,
                 'release_date':  ver.release_date.strftime('%m/%d/%Y %H:%M:%I %p') if ver.release_date else 'NA'
