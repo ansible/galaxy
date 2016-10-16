@@ -1139,33 +1139,32 @@ class RemoveRole(APIView):
             ('status', '')
         ])
 
-        if allowed:
-            roles = Role.objects.filter(github_user=gh_user,github_repo=gh_repo)
-            cnt = len(roles)
-            if cnt == 0:
-                response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user,gh_repo)
-                return Response(response)
-            elif cnt == 1:
-                response['status'] = "Role %s.%s deleted" % (gh_user,gh_repo)
-            else:
-                response['status'] = "Deleted %d roles associated with %s/%s" % (len(roles),gh_user,gh_repo)
+        roles = Role.objects.filter(github_user=gh_user,github_repo=gh_repo)
+        cnt = len(roles)
+        if cnt == 0:
+            response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user,gh_repo)
+            return Response(response)
+        elif cnt == 1:
+            response['status'] = "Role %s.%s deleted" % (gh_user,gh_repo)
+        else:
+            response['status'] = "Deleted %d roles associated with %s/%s" % (len(roles),gh_user,gh_repo)
 
-            for role in roles:
-                response['deleted_roles'].append({
-                    "id": role.id,
-                    "namespace": role.namespace,
-                    "name": role.name,
-                    "github_user": role.github_user,
-                    "github_repo": role.github_repo
-                })
+        for role in roles:
+            response['deleted_roles'].append({
+                "id": role.id,
+                "namespace": role.namespace,
+                "name": role.name,
+                "github_user": role.github_user,
+                "github_repo": role.github_repo
+            })
 
-                for notification in role.notifications.all():
-                    notification.delete()
+            for notification in role.notifications.all():
+                notification.delete()
 
-                # update ES indexes
-                update_custom_indexes.delay(username=role.namespace,
-                                            tags=role.get_tags(),
-                                            platforms=role.get_unique_platforms())
+            # update ES indexes
+            update_custom_indexes.delay(username=role.namespace,
+                                        tags=role.get_tags(),
+                                        platforms=role.get_unique_platforms())
                 
         # Update the repository cache
         for repo in Repository.objects.filter(github_user=gh_user, github_repo=gh_repo):
