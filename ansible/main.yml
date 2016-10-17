@@ -20,9 +20,6 @@
     - name: Install epel
       yum: name=epel-release state=present
 
-    - name: Update all packages
-      yum: name=* state=latest
-
     - name: Install yum packages required for galaxy
       yum: name="{{ item }}" update_cache=yes
       with_items:
