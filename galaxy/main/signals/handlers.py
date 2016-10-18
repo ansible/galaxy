@@ -42,22 +42,27 @@ def user_logged_in_handler(request, user, **kwargs):
         # User has entries in cache already, so no need to delay the login process.
         user.cache_refreshed = True
         user.save()
+        try:
+            token = SocialToken.objects.get(account__user=user, account__provider='github')
+            refresh_user_stars.delay(user, token.token)
+        except ObjectDoesNotExist:
+            logger.error(u'GitHub token not found for user: {}'.format(user.username))
+        except MultipleObjectsReturned:
+            logger.error(u'Found multiple GitHub tokens for user: {}'.format(user.username))
     else:
         # No entries found in cache, wait for a refresh to happen.
         user.cache_refreshed = False
         user.save()
-    try:
-        # Kick off a refresh
-        token = SocialToken.objects.get(account__user=user, account__provider='github')
-        refresh_user_repos.delay(user,token.token)
-        refresh_user_stars.delay(user,token.token)
-    except ObjectDoesNotExist:
-        user.cache_refreshed = True
-        user.save()
-    except MultipleObjectsReturned:
-        logger.error(u'Found multiple GitHub tokens for user: {}'.format(user.username).encode('utf-8').strip())
-        user.cache_refreshed = True
-        user.save()
+        try:
+            # Kick off a refresh
+            token = SocialToken.objects.get(account__user=user, account__provider='github')
+        except ObjectDoesNotExist:
+            logger.error(u'GitHub token not found for user: {}'.format(user.username))
+        except MultipleObjectsReturned:
+            logger.error(u'Found multiple GitHub tokens for user: {}'.format(user.username))
+        finally:
+            refresh_user_repos.delay(user, token.token)
+            refresh_user_stars.delay(user, token.token)
 
 
 @receiver(post_save, sender=ImportTask)
