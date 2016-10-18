@@ -135,16 +135,16 @@ def refresh_existing_user_repos(token, github_user):
             repo_name = repo['name']
             repo_owner = repo['owner']['login']
             if role.github_repo.lower() != repo_name.lower() or role.github_user.lower() != repo_owner.lower():
-                print u'UPDATED: {0} to {1}/{2}'.format(
+                logger.info(u'UPDATED: {0} to {1}/{2}'.format(
                     full_name,
                     repo_owner,
                     repo_name
-                )
+                ))
                 role.github_user = repo_owner
                 role.github_repo = repo_name
                 role.save()
         except UnknownObjectException:
-            print u"NOT FOUND: {0}".format(full_name)
+            logger.error(u"NOT FOUND: {0}".format(full_name))
             role.delete()
         except Exception:
             pass
@@ -691,7 +691,7 @@ def import_role(task_id):
 @task(name="galaxy.main.celerytasks.tasks.refresh_user_repos", throws=(Exception,))
 @transaction.atomic
 def refresh_user_repos(user, token):
-    print u"Refreshing User Repo Cache for {}".format(user.username)
+    logger.info(u"Refreshing User Repo Cache for {}".format(user.username))
 
     try:
         gh_api = Github(token)
@@ -699,7 +699,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = u"User {0} Repo Cache Refresh Error: {1}".format(user.username, unicode(exc))
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     try:
@@ -708,7 +708,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = u"User {0} Repo Cache Refresh Error: {1}".format(user.username, unicode(exc))
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     try:
@@ -717,7 +717,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = u"User {0} Repo Cache Refresh Error: {1}".foramt(user.username, unicode(exc))
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     refresh_existing_user_repos(token, ghu)
@@ -732,27 +732,27 @@ def refresh_user_repos(user, token):
 @task(name="galaxy.main.celerytasks.tasks.refresh_user_stars", throws=(Exception,))
 @transaction.atomic
 def refresh_user_stars(user, token):
-    print u"Refreshing User Stars for {}".format(user.username)
+    logger.info(u"Refreshing User Stars for {}".format(user.username))
 
     try:
         gh_api = Github(token)
     except GithubException as exc:
         msg = u"User {0} Refresh Stars: {1}".format(user.username, unicode(exc))
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     try:
         ghu = gh_api.get_user()
     except GithubException as exc:
         msg = u"User {0} Refresh Stars: {1}" % (user.username, unicode(exc))
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     try:
         subscriptions = ghu.get_subscriptions()
     except GithubException as exc:
         msg = u"User {0} Refresh Stars: {1]" % (user.username, unicode(exc))
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     # Refresh user subscriptions class
@@ -773,7 +773,7 @@ def refresh_user_stars(user, token):
         starred = ghu.get_starred()
     except GithubException as exc:
         msg = u"User {0} Refresh Stars: {1}".format(user.username, unicode(exc))
-        print msg
+        logger.error(msg)
         raise Exception(msg)
 
     # Refresh user starred cache
@@ -814,22 +814,22 @@ def refresh_role_counts(start, end, token, tracker):
             repo_owner = repo['owner']['login']
             if role.github_repo.lower() != repo_name.lower() or role.github_user.lower() != repo_owner.lower():
                 updated += 1
-                print u'UPDATED: {0} to {1}/{2}'.format(
+                logger.info(u'UPDATED: {0} to {1}/{2}'.format(
                     full_name,
                     repo_owner,
                     repo_name
-                )
+                ))
                 role.github_user = repo_owner
                 role.github_repo = repo_name
                 role.save()
             else:
                 passed += 1
         except UnknownObjectException:
-            print u"NOT FOUND: {0}".format(full_name)
+            logger.error(u"NOT FOUND: {0}".format(full_name))
             role.delete()
             deleted += 1
         except Exception as exc:
-            print u"FAILED: {0} - {1}".format(full_name, unicode(exc))
+            logger.error(u"FAILED: {0} - {1}".format(full_name, unicode(exc)))
             failed += 1
 
     tracker.state = 'FINISHED'
