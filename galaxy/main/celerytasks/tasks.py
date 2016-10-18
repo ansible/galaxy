@@ -94,20 +94,21 @@ def update_user_repos(github_repos, user):
     '''
     repo_dict = dict()
     for repo in github_repos:
-        meta_data = get_meta_data(repo)
-        if meta_data:
-            name = repo.full_name.split('/')
-            cnt = Role.objects.filter(github_user=name[0], github_repo=name[1]).count()
-            enabled = cnt > 0
-            user.repositories.update_or_create(
-                github_user=name[0],
-                github_repo=name[1],
-                defaults={
-                    u'github_user': name[0],
-                    u'github_repo': name[1],
-                    u'is_enabled': enabled
-                })
-            repo_dict[repo.full_name] = True
+        if not repo.private:
+            meta_data = get_meta_data(repo)
+            if meta_data:
+                name = repo.full_name.split('/')
+                cnt = Role.objects.filter(github_user=name[0], github_repo=name[1]).count()
+                enabled = cnt > 0
+                user.repositories.update_or_create(
+                    github_user=name[0],
+                    github_repo=name[1],
+                    defaults={
+                        u'github_user': name[0],
+                        u'github_repo': name[1],
+                        u'is_enabled': enabled
+                    })
+                repo_dict[repo.full_name] = True
 
     # Remove any that are no longer present in GitHub
     for repo in user.repositories.all():
