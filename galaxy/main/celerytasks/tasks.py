@@ -688,7 +688,7 @@ def import_role(task_id):
     return True
 
 
-@task(name="galaxy.main.celerytasks.tasks.refresh_user", throws=(Exception,))
+@task(name="galaxy.main.celerytasks.tasks.refresh_user_repos", throws=(Exception,))
 @transaction.atomic
 def refresh_user_repos(user, token):
     logger.info(u"Refreshing User Repo Cache for {}".format(user.username).encode('utf-8').strip())
