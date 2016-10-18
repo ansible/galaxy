@@ -56,14 +56,15 @@ def user_logged_in_handler(request, user, **kwargs):
         try:
             # Kick off a refresh
             token = SocialToken.objects.get(account__user=user, account__provider='github')
+            refresh_user_repos.delay(user, token.token)
+            refresh_user_stars.delay(user, token.token)
         except ObjectDoesNotExist:
             logger.error(u'GitHub token not found for user: {}'.format(user.username))
         except MultipleObjectsReturned:
             logger.error(u'Found multiple GitHub tokens for user: {}'.format(user.username))
         finally:
-            refresh_user_repos.delay(user, token.token)
-            refresh_user_stars.delay(user, token.token)
-
+            user.cache_refreshed = True
+            user.save()
 
 @receiver(post_save, sender=ImportTask)
 def import_task_post_save(sender, **kwargs):
