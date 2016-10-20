@@ -1,5 +1,11 @@
 # Contributing
 
+## Opening Issues
+
+The issue log is at [galaxy-issues](https://github.com/ansible/galaxy-issues). Eventually it will be merged into the Galaxy repo, but for now please continue to open issues there.
+
+## Development
+
 To setup a local development environment you will need to do have the following 
 installed locally:
 
@@ -10,7 +16,7 @@ We recommend using [Git Flow](https://github.com/nvie/gitflow), although it's no
 should be done in feature branches and compared to the `develop` branch.
 
 
-## Checkout the Project and Start a Feature
+### Checkout the Project and Start a Feature
 
 Clone the [Galaxy repo](https://github.com/ansible/galaxy) to your local projects folder:
 
@@ -34,7 +40,7 @@ cd ~/projects/galaxy
 git flow feature start mynewfeature
 ```
 
-## Build and Start the Galaxy Services
+### Build and Start the Galaxy Services
 
 You should already have Docker running and Ansible Container installed. To build the Galaxy images run the following
 from the root directory of your Galaxy clone:
@@ -75,7 +81,7 @@ Access the application from a browser using the URL: http://localhost:8000. If y
 localhost with the IP address of the Virtual Box host.
  
 
-## Connect to GitHub
+### Connect to GitHub
 
 To log into the development site, you first have to authorize it as a GitHub Oauth Application. You can do this by logging 
 into GitHub, going to Personal Settings, choosing `Oauth Applications`, and then doing the following to create a new app:
@@ -101,7 +107,7 @@ You should see the message `Verify Your Email Address`.
 Look in ~/.galaxy/logs/email. There should be a new file with a `.log` extension. Open it, retrieve the verification URL, and
 paste it into your browser. And finally, click the `Confirm` button.
 
-## Stop Services and Other Commands
+### Stop Services and Other Commands
 
 Ctrl-C or closing the terminal session window stops the containers running in the foreground. To stop all containers 
 run `make stop` from another terminal session. Use `docker ps` to check the state of the services.
@@ -113,7 +119,7 @@ Review the Makefile for additional commands. Examples include:
 - `make refresh` to remove all galaxy images, containers, logging data, rebuild images, and restart the containers 
 - `make clean` to remove all galaxy images, containers and logging data
 
-## Submitting Code
+### Submitting Code
 
 Code submissions are accepted via pull requests (PR), and they are always welcome! We may not accept them all, but we are 
 always happy to review and discuss them with you.
