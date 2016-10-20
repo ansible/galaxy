@@ -6,8 +6,7 @@ The issue log is at [galaxy-issues](https://github.com/ansible/galaxy-issues). E
 
 ## Development
 
-To setup a local development environment you will need to do have the following 
-installed locally:
+To setup a local development environment you will need to install the following:
 
 * [Ansible Container 0.2.0+](https://github.com/ansible/ansible-container)
 * [Ansible 2.1.1.0+](https://github.com/ansible/ansible)
