@@ -1230,7 +1230,12 @@ class RefreshUserRepos(APIView):
         except:
             pass
 
-        qs = update_user_repos(user_repos, request.user)
+        try:
+            update_user_repos(user_repos, request.user)
+        except:
+            pass
+
+        qs = request.user.repositories.all()
         serializer = RepositorySerializer(qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

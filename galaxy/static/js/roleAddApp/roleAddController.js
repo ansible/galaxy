@@ -295,12 +295,12 @@
             }
             $scope.refreshing = true;
             githubRepoService.refresh().$promise.then(function(response) {
-                $scope.repositories = response;
-                _setup();
                 $timeout(function() {
                     $scope.refreshing = false;
                     $scope.$apply();
                 },1000);
+                $scope.repositories = response;
+                _setup();
             });
         }
 
