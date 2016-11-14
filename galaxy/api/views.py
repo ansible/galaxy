@@ -788,49 +788,41 @@ class NotificationList(ListCreateAPIView):
     serializer_class = NotificationSerializer
 
     def post(self, request):
-        if request.META.get('HTTP_TRAVIS_REPO_SLUG', None) or request.META.get('Travis-Repo-Slug', None):
-            # travis
-            secret = None
-            if request.META.get('HTTP_AUTHORIZATION', None):
-                secret = request.META['HTTP_AUTHORIZATION']
-            if request.META.get('Authorization', None):
-                secret = request.META['Authorization']
-            
+
+        if request.META.get('HTTP_TRAVIS_REPO_SLUG', None):
+            repo = request.META.get('HTTP_TRAVIS_REPO_SLUG', None)
+            secret = request.META.get('HTTP_AUTHORIZATION', None)
+
+            logger.info("Received Travis notification repo: %s secret: %s" % (repo, secret))
+
             if not secret:
+                logger.info("Invalid Request. Expected Authorization header.")
                 raise ValidationError('Invalid Request. Expected Authorization header.')
             
             try:
-                ns = NotificationSecret.objects.get(secret=secret,active=True)
+                ns = NotificationSecret.objects.get(secret=secret, active=True)
             except:
+                logger.info("Travis secret *****%s not found." % secret[-4:])
                 raise ValidationError("Travis secret *****%s not found." % secret[-4:])
 
-            repo = None
-            if request.META.get('HTTP_TRAVIS_REPO_SLUG', None):
-                repo = request.META['HTTP_TRAVIS_REPO_SLUG']
-            if request.META.get('Travis-Repo-Slug'):
-                repo = request.META['Travis-Repo-Slug']
-
-            if not repo or repo != ns.repo_full_name():
-                raise ValidationError('Invalid Request. Expected %s to match %s' % (repo, ns.repo_full_name()))
-            
             payload = json.loads(request.data['payload'])
             request_branch = payload['branch']
             travis_status_url = "https://travis-ci.org/%s/%s.svg?branch=%s" % (ns.github_user,ns.github_repo,request_branch)
             
             notification = Notification.objects.create(
-                owner = ns.owner,
-                source = 'travis',
-                github_branch = request_branch,
-                travis_build_url = payload.get('build_url'),
-                travis_status = payload.get('status_message'),
-                commit_message = payload.get('message'),
-                committed_at = parse_datetime(payload['committed_at']) if payload.get('committed_at') else timezone.now(),
-                commit = payload['commit']
+                owner=ns.owner,
+                source='travis',
+                github_branch=request_branch,
+                travis_build_url=payload.get('build_url'),
+                travis_status=payload.get('status_message'),
+                commit_message=payload.get('message'),
+                committed_at=parse_datetime(payload['committed_at']) if payload.get('committed_at') else timezone.now(),
+                commit=payload['commit']
             )
 
-            if Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True).count() > 1:
+            if Role.objects.filter(github_user=ns.github_user, github_repo=ns.github_repo, active=True).count() > 1:
                 # multiple roles associated with github_user/github_repo
-                for role in Role.objects.filter(github_user=ns.github_user,github_repo=ns.github_repo,active=True):    
+                for role in Role.objects.filter(github_user=ns.github_user, github_repo=ns.github_repo, active=True):
                     notification.roles.add(role)
                     role.travis_status_url = travis_status_url
                     role.travis_build_url = payload['build_url']
@@ -878,7 +870,7 @@ class NotificationList(ListCreateAPIView):
             serializer = self.get_serializer(instance=notification)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
+        logger.error("Received invalid Travis notification request.")
         ValidationError(dict(detail="Invalid request. Expecting Travis notification request."))
 
 
