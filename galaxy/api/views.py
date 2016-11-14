@@ -796,14 +796,16 @@ class NotificationList(ListCreateAPIView):
             logger.info("Received Travis notification repo: %s secret: %s" % (repo, secret))
 
             if not secret:
-                logger.info("Invalid Request. Expected Authorization header.")
-                raise ValidationError('Invalid Request. Expected Authorization header.')
+                msg = "Notification error: Received invalid Request. Expected Authorization header."
+                logger.info(msg)
+                raise ValidationError(dict(detail=msg))
             
             try:
                 ns = NotificationSecret.objects.get(secret=secret, active=True)
             except:
-                logger.info("Travis secret *****%s not found." % secret[-4:])
-                raise ValidationError("Travis secret *****%s not found." % secret[-4:])
+                msg = "Notification error: Travis secret *****%s not found." % secret[-4:]
+                logger.info(msg)
+                raise ValidationError(dict(detail=msg))
 
             payload = json.loads(request.data['payload'])
             request_branch = payload['branch']
@@ -870,8 +872,9 @@ class NotificationList(ListCreateAPIView):
             serializer = self.get_serializer(instance=notification)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        logger.error("Received invalid Travis notification request.")
-        ValidationError(dict(detail="Invalid request. Expecting Travis notification request."))
+
+        msg = "Notification error: Received invalid request. Expected HTTP_TRAVIS_REPO_SLUG header."
+        ValidationError(dict(detail=msg))
 
 
 class NotificationDetail(RetrieveAPIView):
