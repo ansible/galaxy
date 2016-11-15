@@ -28,7 +28,7 @@ services:
       - POSTGRES_DB={{ galaxy_postgres_db }} 
 
   elastic:
-    image: elasticsearch:latest
+    image: elasticsearch:2.4.1
 
   memcache:
     image: memcached:latest

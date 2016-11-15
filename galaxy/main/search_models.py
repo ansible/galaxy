@@ -16,7 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from datetime import datetime
-from elasticsearch_dsl import DocType, Text, Long, Date, MetaField, analyzer, token_filter
+from elasticsearch_dsl import DocType, String, Long, Date, MetaField, analyzer, token_filter
 
 __all__ = ["TagDoc", "PlatformDoc", "UserDoc"]
 
@@ -40,7 +40,7 @@ class BaseSearchModel(DocType):
 
 
 class TagDoc(BaseSearchModel):
-    tag = Text(analyzer=autocomplete, search_analyzer='standard')
+    tag = String(analyzer=autocomplete, search_analyzer='standard')
     roles = Long(include_in_all=False)
     
     class Meta:
@@ -50,11 +50,11 @@ class TagDoc(BaseSearchModel):
 
 
 class PlatformDoc(BaseSearchModel):
-    name = Text()
-    releases = Text()
-    alias = Text()
+    name = String()
+    releases = String()
+    alias = String()
     roles = Long(include_in_all=False)
-    autocomplete = Text(analyzer=autocomplete, search_analyzer='standard')
+    autocomplete = String(analyzer=autocomplete, search_analyzer='standard')
 
     class Meta:
         index = 'galaxy_platforms'
@@ -63,7 +63,7 @@ class PlatformDoc(BaseSearchModel):
 
 
 class UserDoc(BaseSearchModel):
-    username = Text(analyzer=autocomplete, search_analyzer='standard')
+    username = String(analyzer=autocomplete, search_analyzer='standard')
      
     class Meta:
         index = 'galaxy_users'
