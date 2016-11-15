@@ -5,6 +5,7 @@ decorator
 django-allauth
 django-autofixture
 # django-avatar
+celery==3.1.24
 django-bootstrap-form
 django-celery
 django-filter
