@@ -28,3 +28,4 @@ mock
 honcho
 ansible
 pyinotify
+pyOpenSSL

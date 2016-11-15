@@ -20,6 +20,9 @@ import sys
 import math
 import requests
 import logging
+import base64
+
+from urlparse import parse_qs
 from hashlib import sha256
 
 # Github
@@ -38,7 +41,7 @@ from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import AnonymousUser
 from django.db import IntegrityError
 from django.db.models import Count, Max
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest, JsonResponse
 from django.utils.datastructures import SortedDict
 from django.apps import apps
 from django.utils.dateparse import parse_datetime
@@ -56,6 +59,10 @@ from haystack.query import SearchQuerySet
 # elasticsearch dsl
 from elasticsearch_dsl import Search, Q
 
+# OpenSSL
+from OpenSSL.crypto import verify, load_publickey, FILETYPE_PEM, X509
+from OpenSSL.crypto import Error as SignatureError
+
 # local stuff
 from galaxy.api.access import *                 # noqa
 from galaxy.api.base_views import *             # noqa
@@ -65,7 +72,7 @@ from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
 from galaxy.main.celerytasks.tasks import import_role, update_user_repos, refresh_existing_user_repos
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
-from galaxy.settings import GITHUB_SERVER
+from galaxy.settings import GITHUB_SERVER, TRAVIS_CONFIG_URL, GALAXY_TASK_USERS
 
 logger = logging.getLogger(__name__)
 
@@ -787,73 +794,56 @@ class NotificationList(ListCreateAPIView):
     model = Notification
     serializer_class = NotificationSerializer
 
-    def post(self, request):
+    settings.TRAVIS_CONFIG_URL
 
-        if request.META.get('HTTP_TRAVIS_REPO_SLUG', None):
-            repo = request.META.get('HTTP_TRAVIS_REPO_SLUG', None)
-            secret = request.META.get('HTTP_AUTHORIZATION', None)
+    def post(self, request, *args, **kwargs):
 
-            logger.info("Received Travis notification repo: %s secret: %s" % (repo, secret))
+        signature = self._get_signature(request)
+        json_payload = parse_qs(request.body)['payload'][0]
 
-            if not secret:
-                msg = "Notification error: Received invalid Request. Expected Authorization header."
-                logger.info(msg)
-                raise ValidationError(dict(detail=msg))
-            
-            try:
-                ns = NotificationSecret.objects.get(secret=secret, active=True)
-            except:
-                msg = "Notification error: Travis secret *****%s not found." % secret[-4:]
-                logger.info(msg)
-                raise ValidationError(dict(detail=msg))
+        slug = request.META.get('HTTP_TRAVIS_REPO_SLUG')
+        if not slug:
+            msg = "Notification error: expected TRAVIS_REPO_SLUG header"
+            logger.error(msg)
+            return HttpResponseBadRequest({'detail': msg})
+        github_user, github_repo = slug.split('/', 1)
+        owner = self._get_owner(github_user)
 
-            payload = json.loads(request.data['payload'])
-            request_branch = payload['branch']
-            travis_status_url = "https://travis-ci.org/%s/%s.svg?branch=%s" % (ns.github_user,ns.github_repo,request_branch)
-            
-            notification = Notification.objects.create(
-                owner=ns.owner,
-                source='travis',
-                github_branch=request_branch,
-                travis_build_url=payload.get('build_url'),
-                travis_status=payload.get('status_message'),
-                commit_message=payload.get('message'),
-                committed_at=parse_datetime(payload['committed_at']) if payload.get('committed_at') else timezone.now(),
-                commit=payload['commit']
-            )
+        try:
+            public_key = self._get_travis_public_key()
+        except requests.Timeout:
+            msg = "Notification error: Timeout attempting to retrieve Travis CI public key"
+            logger.error(msg)
+            return HttpResponseBadRequest({'detail': msg})
+        except requests.RequestException as e:
+            msg = "Notification error: Failed to retrieve Travis CI public key. %s" % e.message
+            logger.error(msg)
+            return HttpResponseBadRequest({'detail': msg})
+        try:
+            self._check_authorized(signature, public_key, json_payload)
+        except SignatureError:
+            msg = "Notification error: Authorization failed"
+            logger.error(msg)
+            return HttpResponseBadRequest({'detail': msg})
 
-            if Role.objects.filter(github_user=ns.github_user, github_repo=ns.github_repo, active=True).count() > 1:
-                # multiple roles associated with github_user/github_repo
-                for role in Role.objects.filter(github_user=ns.github_user, github_repo=ns.github_repo, active=True):
-                    notification.roles.add(role)
-                    role.travis_status_url = travis_status_url
-                    role.travis_build_url = payload['build_url']
-                    role.save()
-                    task = create_import_task(
-                        role.github_user,
-                        role.github_repo,
-                        None,
-                        role,
-                        ns.owner,
-                        travis_status_url,
-                        payload['build_url'])
-                    notification.imports.add(task)
-            else:
-                role, created = Role.objects.get_or_create(
-                    github_user=ns.github_user,
-                    github_repo=ns.github_repo,
-                    active=True,
-                    defaults={
-                        'namespace':   ns.github_user,
-                        'name':        ns.github_repo,
-                        'github_user': ns.github_user,
-                        'github_repo': ns.github_repo,
-                        'github_default_branch': 'master',
-                        'travis_status_url': travis_status_url,
-                        'travis_build_url': payload['build_url'],
-                        'is_valid':    False,
-                    }
-                )
+        payload = json.loads(json_payload)
+        request_branch = payload['branch']
+        travis_status_url = "https://travis-ci.org/%s/%s.svg?branch=%s" % (github_user, github_repo, request_branch)
+
+        notification = Notification.objects.create(
+            owner=owner,
+            source='travis',
+            github_branch=request_branch,
+            travis_build_url=payload.get('build_url'),
+            travis_status=payload.get('status_message'),
+            commit_message=payload.get('message'),
+            committed_at=parse_datetime(payload['committed_at']) if payload.get('committed_at') else timezone.now(),
+            commit=payload['commit']
+        )
+
+        if Role.objects.filter(github_user=github_user, github_repo=github_repo, active=True).count() > 1:
+            # multiple roles associated with github_user/github_repo
+            for role in Role.objects.filter(github_user=github_user, github_repo=github_repo, active=True):
                 notification.roles.add(role)
                 role.travis_status_url = travis_status_url
                 role.travis_build_url = payload['build_url']
@@ -863,18 +853,84 @@ class NotificationList(ListCreateAPIView):
                     role.github_repo,
                     None,
                     role,
-                    ns.owner,
+                    owner,
                     travis_status_url,
                     payload['build_url'])
                 notification.imports.add(task)
+        else:
+            role, created = Role.objects.get_or_create(
+                github_user=github_user,
+                github_repo=github_repo,
+                active=True,
+                defaults={
+                    'namespace':   github_user,
+                    'name':        github_repo,
+                    'github_user': github_user,
+                    'github_repo': github_repo,
+                    'github_default_branch': 'master',
+                    'travis_status_url': travis_status_url,
+                    'travis_build_url': payload['build_url'],
+                    'is_valid':    False,
+                }
+            )
+            notification.roles.add(role)
+            role.travis_status_url = travis_status_url
+            role.travis_build_url = payload['build_url']
+            role.save()
+            task = create_import_task(
+                role.github_user,
+                role.github_repo,
+                None,
+                role,
+                owner,
+                travis_status_url,
+                payload['build_url'])
+            notification.imports.add(task)
 
-            notification.save()
-            serializer = self.get_serializer(instance=notification)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        notification.save()
+        serializer = self.get_serializer(instance=notification)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-        msg = "Notification error: Received invalid request. Expected HTTP_TRAVIS_REPO_SLUG header."
-        ValidationError(dict(detail=msg))
+    def _check_authorized(self, signature, public_key, payload):
+        """
+        Convert the PEM encoded public key to a format palatable for pyOpenSSL,
+        then verify the signature
+        """
+        pkey_public_key = load_publickey(FILETYPE_PEM, public_key)
+        certificate = X509()
+        certificate.set_pubkey(pkey_public_key)
+        verify(certificate, signature, payload, str('sha1'))
+
+    def _get_signature(self, request):
+        """
+        Extract the raw bytes of the request signature provided by travis
+        """
+        signature = request.META['HTTP_SIGNATURE']
+        return base64.b64decode(signature)
+
+    def _get_travis_public_key(self):
+        """
+        Returns the PEM encoded public key from the Travis CI /config endpoint
+        """
+        response = requests.get(self.TRAVIS_CONFIG_URL, timeout=10.0)
+        response.raise_for_status()
+        return response.json()['config']['notifications']['webhook']['public_key']
+
+    def _get_owner(self, github_user):
+        owner = None
+        try:
+            owner = User.objects.get(github_user=github_user)
+        except User.DoesNotExist:
+            pass
+        if not owner:
+            try:
+                owner = User.objects.get(username=GALAXY_TASK_USERS[0])
+            except User.DoesNotExist:
+                msg = "Notification error: Galaxy task user not found"
+                logger.error(msg)
+                return HttpResponseBadRequest({'detail': msg})
+        return owner
 
 
 class NotificationDetail(RetrieveAPIView):

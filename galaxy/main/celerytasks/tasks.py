@@ -461,7 +461,6 @@ def import_role(task_id):
     except:
         fail_import_task(import_task, u"Failed to get role for task id: %d" % int(task_id))
 
-    user = import_task.owner
     repo_full_name = role.github_user + "/" + role.github_repo
     add_message(import_task, u"INFO", u"Starting import %d: role_name=%s repo=%s" % (import_task.id,
                                                                                      role.name,
@@ -470,31 +469,23 @@ def import_role(task_id):
     try:
         token = SocialToken.objects.get(account__user=user, account__provider='github')
     except:
-        fail_import_task(import_task, (u"Failed to get Github account for Galaxy user %s. You must first "
-                                       u"authenticate with Github." % user.username))
-
+        fail_import_task(import_task, (u"Failed to get GitHub account for Galaxy user %s. You must first "
+                                       u"authenticate with GitHub." % user.username))
     # create an API object and get the repo
     try:
         gh_api = Github(token.token)
         gh_api.get_api_status()
     except:
-        fail_import_task(import_task, (u'Failed to cfonnect to Github API. This is most likely a temporary error, '
+        fail_import_task(import_task, (u'Failed to connect to the GitHub API. This is most likely a temporary error, '
                                        u'please retry your import in a few minutes.'))
-    
-    try:
-        gh_user = gh_api.get_user()
-    except:
-        fail_import_task(import_task, u"Failed to get Github authorized user.")
 
-    repo = None
-    add_message(import_task, u"INFO", u"Retrieving Github repo %s" % repo_full_name)
-    for r in gh_user.get_repos():
-        if r.full_name == repo_full_name:
-            repo = r
-            continue
-    if repo is None:
-        fail_import_task(import_task, u"Galaxy user %s does not have access to repo %s" % (user.username,
-                                                                                           repo_full_name))
+    try:
+        repo = gh_api.get_repo(repo_full_name)
+    except Exception as exc:
+        fail_import_task(import_task, u"Failed to get repo: %s - %s" % (repo_full_name, exc.message))
+
+    if not repo:
+        fail_import_task(import_task, u"Failed to find repo: %s" % repo_full_name)
 
     update_namespace(repo)
 

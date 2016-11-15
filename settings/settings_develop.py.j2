@@ -329,6 +329,8 @@ AUTHENTICATION_BACKENDS = (
 
 MAINTENANCE_FILE = '/var/lib/galaxy/.maintenance'
 
+TRAVIS_CONFIG_URL = 'https://api.travis-ci.org/config'
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
@@ -401,7 +403,12 @@ LOGGING = {
         },
         'django': {
             'handlers': ['{{ galaxy_django_handler }}'],
-            'level': 'INFO',
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'galaxy.api': {
+            'handlers': ['{{ galaxy_main_handler }}'],
+            'level': 'DEBUG',
             'propagate': True,
         },
         'galaxy.accounts': {
@@ -411,7 +418,7 @@ LOGGING = {
         },
         'galaxy.main': {
             'handlers': ['{{ galaxy_main_handler }}'],
-            'level': 'DEBUG',
+            'level': 'DEBUF',
             'propagate': True,
         },
 	'allauth': {
