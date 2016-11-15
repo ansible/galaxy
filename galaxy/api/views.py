@@ -72,7 +72,7 @@ from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
 from galaxy.main.celerytasks.tasks import import_role, update_user_repos, refresh_existing_user_repos
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
-from galaxy.settings import GITHUB_SERVER, TRAVIS_CONFIG_URL, GALAXY_TASK_USERS
+from galaxy.settings import GITHUB_SERVER, TRAVIS_CONFIG_URL, GITHUB_TASK_USERS, TRAVIS_CONFIG_URL
 
 logger = logging.getLogger(__name__)
 
@@ -794,8 +794,6 @@ class NotificationList(ListCreateAPIView):
     model = Notification
     serializer_class = NotificationSerializer
 
-    settings.TRAVIS_CONFIG_URL
-
     def post(self, request, *args, **kwargs):
 
         signature = self._get_signature(request)
@@ -913,7 +911,7 @@ class NotificationList(ListCreateAPIView):
         """
         Returns the PEM encoded public key from the Travis CI /config endpoint
         """
-        response = requests.get(self.TRAVIS_CONFIG_URL, timeout=10.0)
+        response = requests.get(TRAVIS_CONFIG_URL, timeout=10.0)
         response.raise_for_status()
         return response.json()['config']['notifications']['webhook']['public_key']
 
@@ -925,7 +923,7 @@ class NotificationList(ListCreateAPIView):
             pass
         if not owner:
             try:
-                owner = User.objects.get(username=GALAXY_TASK_USERS[0])
+                owner = User.objects.get(username=GITHUB_TASK_USERS[0])
             except User.DoesNotExist:
                 msg = "Notification error: Galaxy task user not found"
                 logger.error(msg)
