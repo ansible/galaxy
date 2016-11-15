@@ -101,13 +101,6 @@
                             <div class="form">
                                 <h3>SETTINGS</h3>
                                 <div class="form-group">
-                                    <label>Travis Token</label>
-                                    <div class="input-container">
-                                        <input type="{{ repo.travis_token_type }}" class="form-control input-sm" name="travis_token" ng-model="repo.travis_token" placeholder="Travis Token" autcomplete="off"/>
-                                        <a href="" class="clear-link" ng-click="clearTravis(repo)" ng-show="repo.travis_token"><i class="fa fa-times"></i></a>
-                                    </div>
-                                </div>
-                                <div class="form-group">
                                     <label>Edit Role Name</label>
                                     <input type="text" class="form-control input-sm" name="alternate_name" ng-model="repo.role_name" ng-keyup="validateName(repo)" autocomplete="off" />
                                     <div class="error-text" ng-show="repo.name_pattern_error">Name may contain word characters (A-Z a-z 0-9 - _) only</div>

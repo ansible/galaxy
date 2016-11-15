@@ -405,11 +405,19 @@ class RoleDetailView(DetailView):
             if star:
                 context['is_stargazer'] = True
                 context['stargazer_id'] = star.id
-        
+
         role = self.role
         context['tags'] = role.tags.all()
         context['platforms'] = role.platforms.all()
         context['dependencies'] = role.dependencies.all()
+
+        context['imports'] = []
+        for imp_task in role.import_tasks.all().order_by('-id')[:10]:
+            context['imports'].append({
+                'finished': imp_task.finished.strftime('%m/%d/%Y %H:%M:%I %p %Z') if imp_task.finished else 'NA',
+                'state': imp_task.state
+            })
+
         for type in Role.ROLE_TYPE_CHOICES:
             if type[0] == role.role_type:
                 context['role_type'] = type[1]

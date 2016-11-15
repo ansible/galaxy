@@ -276,8 +276,38 @@
                                             </tr>
                                             {% endfor %}
                                             {% if dependencies.count == 0 %}
-                                            <tr ng-show="!role.dependencies.length">
+                                            <tr>
                                                 <td colspan="2">No dependencies.</td>
+                                            </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if imports %}
+                                <div class="imports section">
+                                    <table class="table ga-table-striped">
+                                        <caption>Last 10 Imports</caption>
+                                        <thead>
+                                            <tr>
+                                                <th>Completed</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="table-scroller">
+                                        <table class="table ga-table-striped">
+                                            <tbody>
+                                            {% for import in imports %}
+                                            <tr>
+                                                <td>{{ import.finished }}</td>
+                                                <td>{{ import.state }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% if imports.count == 0 %}
+                                            <tr >
+                                                <td colspan="2">No imports.</td>
                                             </tr>
                                             {% endif %}
                                             </tbody>
