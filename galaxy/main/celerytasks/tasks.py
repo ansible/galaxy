@@ -127,7 +127,7 @@ def refresh_existing_user_repos(token, github_user):
     Remove repos belonging to the user that are no longer accessible in GitHub,
     or update github_user, github_repo, if it has changed.
     '''
-    logger.info("Starting refresh_existing_user_repos for GitHub user {0}".format(github_user))
+    logger.info("Starting refresh_existing_user_repos for GitHub user {0}".format(github_user.login))
     remove_roles = []
     for role in Role.objects.filter(github_user=github_user.login):
         full_name = "{0}/{1}".format(role.github_user, role.github_repo)
@@ -160,7 +160,7 @@ def refresh_existing_user_repos(token, github_user):
         except Exception as exc:
             logger.error(u"Error: refresh_existing_user_repos - {0}".format(exc.message))
 
-    logger.info("Finished refresh_existing_user_repos for GitHub user {0}".format(github_user))
+    logger.info("Finished refresh_existing_user_repos for GitHub user {0}".format(github_user.login))
 
 
 def update_namespace(repo):
