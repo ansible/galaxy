@@ -1281,9 +1281,7 @@ class RefreshUserRepos(APIView):
             raise HttpResponseBadRequest({'detail': msg})
 
         try:
-            logger.info("Starting update_user_repos for {0}".format(request.user.username))
             update_user_repos(user_repos, request.user)
-            logger.info("Completed update_user_repos for {0}".format(request.user.username))
         except Exception as exc:
             logger.error("Error: update_user_repos - {0}".format(exc.message))
 
