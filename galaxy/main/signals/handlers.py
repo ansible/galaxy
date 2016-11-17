@@ -45,7 +45,6 @@ def user_logged_in_handler(request, user, **kwargs):
         try:
             token = SocialToken.objects.get(account__user=user, account__provider='github')
             refresh_user_stars.delay(user, token.token)
-            refresh_user_repos.delay(user, token.token)
         except ObjectDoesNotExist:
             logger.error(u'GitHub token not found for user: {}'.format(user.username))
         except MultipleObjectsReturned:
