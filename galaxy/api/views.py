@@ -1255,7 +1255,8 @@ class RefreshUserRepos(APIView):
         except:
             msg = "Failed to connect to GitHub account for Galaxy user {0} ".format(request.user.username) + \
                   "You must first authenticate with GitHub."
-            raise ValidationError(dict(detail=msg))
+            logger.error(msg)
+            raise HttpResponseBadRequest({'detail': msg})
 
         try:
             gh_api = Github(token.token)
@@ -1263,26 +1264,28 @@ class RefreshUserRepos(APIView):
         except GithubException, e:
             msg = "Failed to connect to GitHub API. This is most likely a temporary error, " + \
                   "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
-            raise ValidationError(dict(detail=msg))
+            logger.error(msg)
+            raise HttpResponseBadRequest({'detail': msg})
     
         try:
             ghu = gh_api.get_user()
         except:
-            raise ValidationError(dict(detail="Failed to get GitHub authorized user."))
+            msg = "Failed to get GitHub authorized user."
+            logger.error(msg)
+            raise HttpResponseBadRequest({'detail': msg})
         try:
             user_repos = ghu.get_repos()
         except:
-            raise ValidationError(dict(detail="Failed to get user repositories from GitHub."))
+            msg = "Failed to get user repositories from GitHub."
+            logger.error(msg)
+            raise HttpResponseBadRequest({'detail': msg})
 
         try:
-            refresh_existing_user_repos(token.token, ghu)
-        except Exception as exc:
-            logger.error("Error: Refresh existing user repos - {0}".format(exc.message))
-
-        try:
+            logger.info("Starting update_user_repos for {0}".format(request.user.username))
             update_user_repos(user_repos, request.user)
+            logger.info("Completed update_user_repos for {0}".format(request.user.username))
         except Exception as exc:
-            logger.error("Error: Update user repos - {0}".format(exc.message))
+            logger.error("Error: update_user_repos - {0}".format(exc.message))
 
         qs = request.user.repositories.all()
         serializer = RepositorySerializer(qs, many=True)

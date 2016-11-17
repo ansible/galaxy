@@ -147,11 +147,13 @@ def refresh_existing_user_repos(token, github_user):
             remove_roles.append(role.id)
         except Exception as exc:
             logger.error(u"Exception accessing role {0} - {1}".format(full_name, exc.message))
-            pass
 
     for role_id in remove_roles:
-        role = Role.objects.get(id=role_id)
-        role.delete()
+        try:
+            role = Role.objects.get(id=role_id)
+            role.delete()
+        except Exception as exc:
+            logger.error(u"Error: refresh existing user repos - {0}".format(exc.message))
 
 def update_namespace(repo):
     # Use GitHub repo to update namespace attributes
