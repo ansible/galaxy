@@ -69,7 +69,7 @@ def get_repo_raw(token, repo_name):
             raise UnknownObjectException('404', {u'detail': u"Object not found"})
         raise Exception(exc.message)
     except Exception as exc:
-        raise Exception(u"Failed to access GitHub API - {0}".format(unicode(exc)))
+        raise Exception(u"Failed to access GitHub API - {0}".format(exc.message))
     return repo
 
 
@@ -124,14 +124,13 @@ def refresh_existing_user_repos(token, github_user):
     Remove repos belonging to the user that are no longer accessible in GitHub,
     or update github_user, github_repo, if it has changed.
     '''
+    remove_roles = []
     for role in Role.objects.filter(github_user=github_user.login):
         full_name = "{0}/{1}".format(role.github_user, role.github_repo)
         try:
             repo = get_repo_raw(token, full_name)
-            if not repo:
-                raise Exception("Object is empty or NoneType")
-            if not repo.get('name') or not repo.get('owner'):
-                raise Exception("Object missing name and/or owner attributes")
+            if not repo or not repo.get('name') or not repo.get('owner'):
+                continue
             repo_name = repo['name']
             repo_owner = repo['owner']['login']
             if role.github_repo.lower() != repo_name.lower() or role.github_user.lower() != repo_owner.lower():
@@ -145,10 +144,14 @@ def refresh_existing_user_repos(token, github_user):
                 role.save()
         except UnknownObjectException:
             logger.error(u"NOT FOUND: {0}".format(full_name))
-            role.delete()
-        except Exception:
+            remove_roles.append(role.id)
+        except Exception as exc:
+            logger.error(u"Exception accessing role {0} - {1}".format(full_name, exc.message))
             pass
 
+    for role_id in remove_roles:
+        role = Role.objects.get(id=role_id)
+        role.delete()
 
 def update_namespace(repo):
     # Use GitHub repo to update namespace attributes

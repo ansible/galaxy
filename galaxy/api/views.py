@@ -1276,13 +1276,13 @@ class RefreshUserRepos(APIView):
 
         try:
             refresh_existing_user_repos(token.token, ghu)
-        except:
-            pass
+        except Exception as exc:
+            logger.error("Error: Refresh existing user repos - {0}".format(exc.message))
 
         try:
             update_user_repos(user_repos, request.user)
-        except:
-            pass
+        except Exception as exc:
+            logger.error("Error: Update user repos - {0}".format(exc.message))
 
         qs = request.user.repositories.all()
         serializer = RepositorySerializer(qs, many=True)
