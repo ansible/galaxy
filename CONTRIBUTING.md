@@ -48,7 +48,7 @@ from the root directory of your Galaxy clone:
 $ make build
 ```
 
-After the build completes, you will see the following images in Docker:
+After the build completes (this can take over an hour), you will see the following images in Docker:
 
 ```
 $ docker images
