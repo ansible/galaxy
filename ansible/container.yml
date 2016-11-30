@@ -3,6 +3,7 @@ services:
   django:
     image: centos:7
     working_dir: /galaxy
+    privileged: yes
     environment:
       - PGPASSWORD={{ galaxy_postgres_password }}
     volumes:
@@ -25,7 +26,7 @@ services:
     environment:
       - POSTGRES_PASSWORD={{ galaxy_postgres_password }}
       - POSTGRES_USER={{ galaxy_postgres_user }}
-      - POSTGRES_DB={{ galaxy_postgres_db }} 
+      - POSTGRES_DB={{ galaxy_postgres_db }}
 
   elastic:
     image: elasticsearch:2.4.1
