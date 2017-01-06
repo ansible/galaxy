@@ -74,16 +74,24 @@ def get_repo_raw(token, repo_name):
 
 
 def get_meta_data(repo):
+    '''
+    Try to load the meta file from the repo.
+
+    :param repo: Repo object
+
+    :return: Meta file content
+    '''
     meta = None
-    try:
-        meta = repo.get_file_contents("meta/main.yml")
-    except Exception:
-        pass
-    if not meta:
+
+    for meta_file in ["meta/main.yml", "ansible/meta.yml", "meta/main.yaml", "ansible/meta.yaml"]:
         try:
-            meta = repo.get_file_contents("ansible/meta.yml")
+            meta = repo.get_file_contents(meta_file)
         except Exception:
             pass
+
+        if meta:
+            break
+
     return meta
 
 
@@ -514,9 +522,13 @@ def import_role(task_id):
         
     # parse meta data
     add_message(import_task, u"INFO", u"Parsing and validating meta data.")
-    meta_data = decode_file(import_task, repo, branch, 'meta/main.yml', return_yaml=True)
-    if not meta_data:
-        meta_data = decode_file(import_task, repo, branch, 'ansible/meta.yml', return_yaml=True)
+
+    for meta_file in ["meta/main.yml", "ansible/meta.yml", "meta/main.yaml", "ansible/meta.yaml"]:
+        meta_data = decode_file(import_task, repo, branch, meta_file, return_yaml=True)
+
+        if meta_data:
+            break
+
     if not meta_data:
         fail_import_task(import_task, u"Failed to get meta data. Did you forget to add meta/main.yml or "
                                       u"ansible/meta.yml?")
