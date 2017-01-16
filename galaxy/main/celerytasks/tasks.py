@@ -862,10 +862,10 @@ def refresh_role_counts(start, end, token, tracker):
 
 @task(name="galaxy.main.celerytasks.tasks.clear_stuck_imports")
 def clear_stuck_imports():
-    two_hours_ago = timezone.now() - datetime.timedelta(seconds=7200)
-    logger.info(u"Clear Stuck Imports: {}".format(two_hours_ago.strftime("%m-%d-%Y %H:%M:%S")).encode('utf-8').strip())
+    one_hours_ago = timezone.now() - datetime.timedelta(seconds=3600)
+    logger.info(u"Clear Stuck Imports: {}".format(one_hours_ago.strftime("%Y-%m-%d %H:%M:%S")).encode('utf-8').strip())
     try:
-        for ri in ImportTask.objects.filter(created__lte=two_hours_ago, state='PENDING'):
+        for ri in ImportTask.objects.filter(created__lte=one_hours_ago, state__in=['PENDING', 'RUNNING']):
             logger.info(u"Clear Stuck Imports: {0} - {1}.{2}"
                         .format(ri.id, ri.role.namespace, ri.role.name))
             ri.state = u"FAILED"
