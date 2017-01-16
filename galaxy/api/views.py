@@ -856,13 +856,19 @@ class NotificationList(ListCreateAPIView):
                     payload['build_url'])
                 notification.imports.add(task)
         else:
+            regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
+            name = github_repo.strip().replace(".", "_")
+            if name in ['ansible', 'Ansible']:
+                # Remove ansible-, ansible-role, role-. from repo name
+                name = regex.sub('', name)
+
             role, created = Role.objects.get_or_create(
                 github_user=github_user,
                 github_repo=github_repo,
                 active=True,
                 defaults={
                     'namespace':   github_user,
-                    'name':        github_repo,
+                    'name':        name,
                     'github_user': github_user,
                     'github_repo': github_repo,
                     'github_default_branch': 'master',
