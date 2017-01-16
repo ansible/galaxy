@@ -35,7 +35,6 @@ services:
 
   rabbit:
     image: rabbitmq
-    hostname: rabbit
     environment:
       - RABBITMQ_DEFAULT_USER={{ galaxy_rabbitmq_user }}
       - RABBITMQ_DEFAULT_PASS={{ galaxy_rabbitmq_pass }}
