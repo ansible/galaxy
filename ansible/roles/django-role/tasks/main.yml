@@ -30,6 +30,7 @@
   - postgresql95-devel
   - python-psycopg2
   - ansible 
+  - flake8
 
 - name: Create group django
   group:
