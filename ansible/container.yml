@@ -1,4 +1,4 @@
-version: "1"
+version: "2"
 services:
   django:
     image: centos:7
@@ -14,11 +14,11 @@ services:
       - elastic
       - memcache
       - rabbit
+    user: django
     dev_overrides:
-      command: ['/usr/local/bin/dumb-init', '/galaxy/ansible/start_development.sh']
+      command: [/usr/local/bin/dumb-init, /galaxy/ansible/start_development.sh]
       ports:
         - "8000:8000"
-      user: django
 
   postgres:
     image: postgres:9.5.4
@@ -47,6 +47,6 @@ services:
     command: ["/bin/true"]
     dev_overrides:
       working_dir: /galaxy
-      command: ["gulp"]
+      command: [/usr/local/bin/dumb-init, /usr/bin/gulp]
 
 registries: {}

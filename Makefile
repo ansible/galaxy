@@ -28,7 +28,8 @@ DEB_BUILD_DIR=deb-build/galaxy-$(VERSION)
 DEB_PKG_RELEASE=$(VERSION)-$(RELEASE)
 endif
 
-.PHONY: clean clean_dist refresh migrate migrate_empty makemigrations build_from_scratch build \
+.PHONY: clean clean_dist refresh migrate migrate_empty makemigrations build_from_scratch \
+        build build_debug \
         run sdist stop requirements ui_build export_test_data import_test_data createsuperuser \
         refresh_role_counts shell
 
@@ -61,6 +62,9 @@ build_from_scratch:
 build:
 	ansible-container --var-file ansible/develop.yml build -- -e"@/ansible-container/ansible/develop.yml"
 
+build_debug:
+	ansible-container --var-file ansible/develop.yml --debug build -- -e"@/ansible-container/ansible/develop.yml"
+
 custom_indexes:
 	@echo "Rebuild Custom Indexes"
 	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_galaxy_indexes
@@ -75,10 +79,7 @@ createsuperuser:
 
 # Start Galaxy containers
 run:
-	ansible-container --var-file ansible/develop.yml run -d memcache; \
-	ansible-container --var-file ansible/develop.yml run -d rabbit; \
-	ansible-container --var-file ansible/develop.yml run -d postgres; \
-	ansible-container --var-file ansible/develop.yml run -d elastic; \
+	ansible-container --var-file ansible/develop.yml run -d memcache rabbit postgres elastic; \
 	ansible-container --var-file ansible/develop.yml --debug run django gulp
 
 stop:

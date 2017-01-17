@@ -1,0 +1,131 @@
+
+- name: Download postgres repo package 
+  get_url: 
+    url: https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-7-x86_64/pgdg-centos95-9.5-3.noarch.rpm
+    dest: /tmp/pgdg-centos95-9.5-3.noarch.rpm
+
+- name: Install postgres repo 
+  yum:
+    name: /tmp/pgdg-centos95-9.5-3.noarch.rpm
+    state: present
+
+- name: Remove RPMs from /tmp 
+  file: path="{{ item }}" state=absent
+  with_fileglob:
+  - /tmp/*.rpm
+
+- name: Install epel
+  yum: name=epel-release state=present
+
+- name: Install yum packages required for galaxy
+  yum: name="{{ item }}" update_cache=yes
+  with_items:
+  - "@Development tools"
+  - make
+  - python-pip
+  - python-devel
+  - libffi-devel
+  - openssl-devel
+  - postgresql95
+  - postgresql95-devel
+  - python-psycopg2
+  - ansible 
+
+- name: Create group django
+  group:
+    name: django
+    gid: 1000 
+
+- name: Create user django
+  user:
+    name: django
+    uid: 1000
+    group: django
+    createhome: yes
+    home: /home/django
+    shell: /bin/bash
+
+- name: Download dumb-init
+  get_url:
+    url: https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64
+    dest: /usr/local/bin/dumb-init
+    owner: root
+    group: root
+    mode: 755
+
+- name: Clear yum cache
+  command: yum clean all
+
+- name: Install python packages
+  pip:
+    requirements: /galaxy/requirements.txt
+
+- name: Clear pip cache
+  file: 
+    path: /root/.cache/pip
+    state: absent
+
+- name: Create the /etc/galaxy directory
+  file: 
+    path: /etc/galaxy
+    owner: root
+    group: django
+    mode: 2775 
+    state: directory
+
+- name: Create /galaxy_logs directory
+  file:
+    path: /galaxy_logs
+    owner: django
+    group: django
+    mode: 0775
+    state: directory
+
+- name: Install galaxy
+  command: python ./setup.py develop
+  args:
+    chdir: /galaxy
+
+- name: Deploy settings file
+  template:
+    src: ../settings/settings_develop.py.j2
+    dest: /etc/galaxy/settings.py
+    owner: root 
+    group: django
+    mode: 0660
+
+- name: Create the SECRET_KEY file
+  command: /usr/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)" creates=/etc/galaxy/SECRET_KEY
+
+- name: Adjust SECRET_KEY permissions
+  file:
+    path: /etc/galaxy/SECRET_KEY
+    state: file
+    owner: root
+    group: django
+    mode: 0660
+
+- name: Create setup directory 
+  file:
+    path: /setup
+    state: directory
+    owner: django
+    group: django 
+    mode: 0775
+
+- name: Copy dbinit.yml
+  template:
+    src: dbinit.yml.j2
+    dest: /setup/dbinit.yml
+    owner: django
+    group: django
+    mode: 0664
+
+- name: Copy inventory 
+  copy:
+    src: inventory
+    dest: /setup/inventory
+    owner: django
+    group: django
+    mode: 0664
+
