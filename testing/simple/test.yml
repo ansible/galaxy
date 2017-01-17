@@ -11,7 +11,8 @@
       wait_for:
         host: "{{ host }}"
         port: "{{ port }}"
-        delay: 10
+        delay: 60
+        timeout: 120
  
     - name: Access the home page
       uri: 
