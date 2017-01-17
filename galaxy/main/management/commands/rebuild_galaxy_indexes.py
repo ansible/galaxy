@@ -22,7 +22,7 @@ from elasticsearch_dsl import Index
 
 # local
 from galaxy.main.models import Platform, Tag, Role
-from galaxy.main.search_models import *
+from galaxy.main.search_models import TagDoc, PlatformDoc, UserDoc
 
 
 class Command(BaseCommand):

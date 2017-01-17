@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
-
 import logging
+import subprocess
 
 logger = logging.getLogger(__name__)
-
-import subprocess
 
 user_scores = {}
 

@@ -7,18 +7,29 @@ before_install:
 - sudo apt-add-repository 'deb http://archive.ubuntu.com/ubuntu trusty-backports universe'
 - sudo apt-get update -qq
 install:
-- pip install ansible
+- pip install ansible flake8
 - pip install -e git+https://github.com/ansible/ansible-container.git@develop#egg=ansible_container
 script:
+- flake8
+
+# Log Doker info
 - docker version
 - docker-compose version
 - docker info
+
+# build images
 - make build 
+
+# start the application
 - make run_background 
 - docker ps -a
 - docker images
-- cd test
+
+# Run simple web server test
+- cd testing/simple
 - ansible-playbook -i inventory test.yml
+
+# Stop the application
 - cd ..
 - make stop 
 

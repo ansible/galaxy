@@ -18,7 +18,6 @@
 from django.conf.urls import include, patterns, url as original_url
 from rest_framework import routers
 from .views import (RoleSearchView,
-                    FacetedView,
                     PlatformsSearchView,
                     TagsSearchView,
                     ApiV1SearchView,

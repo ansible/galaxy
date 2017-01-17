@@ -41,7 +41,7 @@ from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import AnonymousUser
 from django.db import IntegrityError
 from django.db.models import Count, Max
-from django.http import Http404, HttpResponseBadRequest, JsonResponse
+from django.http import Http404, HttpResponseBadRequest
 from django.utils.datastructures import SortedDict
 from django.apps import apps
 from django.utils.dateparse import parse_datetime
@@ -70,9 +70,9 @@ from galaxy.api.serializers import *            # noqa
 from galaxy.main.models import *                # noqa
 from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
-from galaxy.main.celerytasks.tasks import import_role, update_user_repos, refresh_existing_user_repos
+from galaxy.main.celerytasks.tasks import import_role, update_user_repos
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
-from galaxy.settings import GITHUB_SERVER, TRAVIS_CONFIG_URL, GITHUB_TASK_USERS, TRAVIS_CONFIG_URL
+from galaxy.settings import GITHUB_SERVER, GITHUB_TASK_USERS, TRAVIS_CONFIG_URL
 
 logger = logging.getLogger(__name__)
 

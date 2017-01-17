@@ -1,0 +1,28 @@
+- name: Confirm the web server up 
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  vars: 
+    host: 127.0.0.1
+    port: 8000
+
+  tasks:
+    - name: Wait for server to start  
+      wait_for:
+        host: "{{ host }}"
+        port: "{{ port }}"
+        delay: 10
+ 
+    - name: Access the home page
+      uri: 
+        url: "http://{{ host }}:{{ port }}"
+        return_content: yes
+      register: homeout 
+       
+    - debug: var=homeout 
+
+    - name: Assert expected output found
+      assert:
+        that:
+          - "'Jump-start your automation project' in homeout.content"
+

@@ -62,23 +62,6 @@ common_services = [
 # Helpers
 #------------------------------------------------------------------------------
 
-
-def readme_to_html(obj):
-    # Expects obj to be an instance of Role
-
-    if obj is None or obj.readme is None:
-        return ''
-    if obj.readme_type is None or obj.readme_type == 'md':
-        return markdown.markdown(obj.readme, extensions=['extra'])
-    if obj.readme_type == 'rst':
-        settings = {'input_encoding': 'utf8'}
-        return publish_string(
-            source=obj.readme,
-            writer=Writer(),
-            writer_name='html5css3',
-            settings_overrides=settings,
-        ).decode('utf8')
-
 def readme_to_html(obj):
     if obj is None:
         return ''
