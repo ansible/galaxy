@@ -14,7 +14,6 @@ To setup a local development environment you will need to install the following:
 We recommend using [Git Flow](https://github.com/nvie/gitflow), although it's not strictly required. Any development 
 should be done in feature branches and compared to the `develop` branch.
 
-
 ### Checkout the Project and Start a Feature
 
 Clone the [Galaxy repo](https://github.com/ansible/galaxy) to your local projects folder:
@@ -41,14 +40,15 @@ git flow feature start mynewfeature
 
 ### Build and Start the Galaxy Services
 
-You should already have Docker running and Ansible Container installed. To build the Galaxy images run the following
-from the root directory of your Galaxy clone:
+You should already have Docker running and Ansible Container installed. To build the Galaxy images run the following from the root directory of your Galaxy clone:
 
 ```
 $ make build
 ```
 
-After the build completes (this can take over an hour), you will see the following images in Docker:
+**NOTE**: The build process downloads images from Docker Hub for most services, excluding *django* and *gulp*. The *django* and *gulp* services are built from a *centos:7* base image, and the build involves downloading and installing both *yum* and *pip* packages. The build will run from 10 minutes up to an hour depending on the speed of your internet connection, and the amount of CPU and memory available on your platform.
+
+After the build completes, you will see the following images in Docker:
 
 ```
 $ docker images
@@ -73,11 +73,48 @@ Start the services by running the following:
 $ make run
 ```
 
-The postgres, memcache, elasticsearch, and rabbitmq services will run in the background, while django and gulp 
-execute in the foreground, displaying the web server, celery and gulp logs in real time. 
+The first time you start the application, the *django* container will perform migrations, load test data, and rebuild the Elasticsearch indexes. The index rebuild can take several minutes. As the container starts, you will see output from */setup/dbinit.yml* that looks like the following:
 
-Access the application from a browser using the URL: http://localhost:8000. If you are running Docker Machine, replace 
-localhost with the IP address of the Virtual Box host.
+```
+Attaching to ansible_gulp_1, ansible_django_1
+django_1             |
+django_1             | PLAY [Database init] ***********************************************************
+django_1             |
+django_1             | TASK [Wait for postgresql] *****************************************************
+django_1             | ok: [localhost]
+django_1             |
+django_1             | TASK [Perform initial migrations] **********************************************
+gulp_1               | [16:08:04] Using gulpfile /galaxy/gulpfile.js
+gulp_1               | [16:08:04] Starting 'less'...
+gulp_1               | [16:08:04] Starting 'watch'...
+gulp_1               | [16:08:05] Finished 'watch' after 1.01 s
+gulp_1               | [16:08:06] Finished 'less' after 1.76 s
+gulp_1               | [16:08:06] Starting 'default'...
+gulp_1               | [16:08:06] Finished 'default' after 34 μs
+django_1             | changed: [localhost]
+django_1             |
+django_1             | TASK [Disable triggers] ********************************************************
+django_1             | changed: [localhost]
+django_1             |
+django_1             | TASK [Import testing data] *****************************************************
+django_1             | changed: [localhost]
+django_1             |
+django_1             | TASK [Enable triggers] *********************************************************
+django_1             | changed: [localhost]
+django_1             |
+django_1             | TASK [Update django site name] *************************************************
+django_1             | changed: [localhost]
+django_1             |
+django_1             | TASK [Create galaxy admin user] ************************************************
+django_1             | changed: [localhost]
+django_1             |
+django_1             | TASK [Rebuild Galaxy index] ****************************************************
+```
+
+
+The *postgres*, *memcache*, *elasticsearch*, and *rabbitmq* services will run in the background, while *django* and *gulp* execute in the foreground. The logs for the web server, celery and gulp in will be displaybed in real time. Once */setup/dbinit.yml* completes, you can access the web server using the URL: [http://localhost:8000](http://localhost:8000).
+
+**NOTE**: If you're running Docker Machine, replace *localhost* with the IP address of the Virtual Machine. User `docker-machine ip default` to get the IP, replacing *default* with the name of your VM.
  
 
 ### Connect to GitHub

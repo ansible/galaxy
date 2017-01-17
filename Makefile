@@ -28,7 +28,8 @@ DEB_BUILD_DIR=deb-build/galaxy-$(VERSION)
 DEB_PKG_RELEASE=$(VERSION)-$(RELEASE)
 endif
 
-.PHONY: clean clean_dist refresh migrate migrate_empty makemigrations build_from_scratch \
+.PHONY: clean clean_dist clean_images clean_containers \
+        refresh migrate migrate_empty makemigrations build_from_scratch \
         build build_debug \
         run sdist stop requirements ui_build export_test_data import_test_data createsuperuser \
         refresh_role_counts shell
@@ -39,6 +40,14 @@ clean:
 
 # Refresh development environment after pulling new code.
 refresh: clean build run 
+
+# Remove containers
+clean_containers:
+	ansible/clean.sh containers
+
+# Remove images
+clean_images:
+	ansible/clean.sh images
 
 # Create and execute database migrations
 migrate:
