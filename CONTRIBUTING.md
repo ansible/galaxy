@@ -109,13 +109,26 @@ django_1             | TASK [Create galaxy admin user] *************************
 django_1             | changed: [localhost]
 django_1             |
 django_1             | TASK [Rebuild Galaxy index] ****************************************************
+django_1             |
+django_1             | TASK [Rebuild custom indexes] **************************************************
+django_1             | changed: [localhost]
+django_1             |
+django_1             | TASK [Remove any log files] ****************************************************
+django_1             | changed: [localhost]
+django_1             |  [WARNING]: Consider using file module with state=absent rather than running rm
+django_1             |
+django_1             | TASK [Create dbinit.completed] *************************************************
+django_1             | changed: [localhost]
+django_1             |
+django_1             | PLAY RECAP *********************************************************************
+django_1             | localhost                  : ok=11   changed=10   unreachable=0    failed=0
+django_1             |
+django_1             | /galaxy
 ```
-
 
 The *postgres*, *memcache*, *elasticsearch*, and *rabbitmq* services will run in the background, while *django* and *gulp* execute in the foreground. The logs for the web server, celery and gulp in will be displaybed in real time. Once */setup/dbinit.yml* completes, you can access the web server using the URL: [http://localhost:8000](http://localhost:8000).
 
 **NOTE**: If you're running Docker Machine, replace *localhost* with the IP address of the Virtual Machine. User `docker-machine ip default` to get the IP, replacing *default* with the name of your VM.
- 
 
 ### Connect to GitHub
 

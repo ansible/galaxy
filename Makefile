@@ -31,7 +31,8 @@ endif
 .PHONY: clean clean_dist clean_images clean_containers \
         refresh migrate migrate_empty makemigrations build_from_scratch \
         build build_debug \
-        run sdist stop requirements ui_build export_test_data import_test_data createsuperuser \
+        run run_background \
+        sdist stop requirements ui_build export_test_data import_test_data createsuperuser \
         refresh_role_counts shell
 
 # Remove containers, images and ~/.galaxy
@@ -86,10 +87,14 @@ createsuperuser:
 	@echo "Create Superuser"
 	@docker exec -i -t ansible_django_1 galaxy-manage createsuperuser
 
-# Start Galaxy containers
+# Start Galaxy containers with django and gulp in the foreground
 run:
 	ansible-container --var-file ansible/develop.yml run -d memcache rabbit postgres elastic; \
 	ansible-container --var-file ansible/develop.yml --debug run django gulp
+
+# Start all containers in the background
+run_background:
+	ansible-container --var-file ansible/develop.yml --debug run -d
 
 stop:
 	@ansible-container stop --force
