@@ -49,6 +49,7 @@ class LooseVersionField(models.Field):
     def get_prep_value(self, value):
         return str(value)
 
+
 add_introspection_rules([], ["^galaxy\.main\.fields\.LooseVersionField"])
 
 # From:
@@ -59,6 +60,7 @@ class TruncatingCharField(models.CharField):
         if value and len(value) > self.max_length:
             return value[:self.max_length - 3] + '...'
         return value
+
 
 add_introspection_rules([], ["^galaxy\.main\.fields\.TruncatingCharField"])
 

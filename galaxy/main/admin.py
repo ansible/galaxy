@@ -23,14 +23,20 @@ from galaxy.main.models import Platform, Role, RoleVersion
 
 class PlatformAdmin(admin.ModelAdmin):
     pass
+
+
 admin.site.register(Platform, PlatformAdmin)
 
 class RoleAdmin(admin.ModelAdmin):
     pass
+
+
 admin.site.register(Role, RoleAdmin)
 
 class RoleVersionAdmin(admin.ModelAdmin):
     pass
+
+
 admin.site.register(RoleVersion, RoleVersionAdmin)
 
 #class RoleImportAdmin(admin.ModelAdmin):

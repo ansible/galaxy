@@ -18,15 +18,17 @@
 from __future__ import unicode_literals
 import re
 
-from django.contrib.auth.models import (AbstractBaseUser, PermissionsMixin,
+from django.contrib.auth.models import (AbstractBaseUser,
+                                        PermissionsMixin,
                                         UserManager)
 from django.core.mail import send_mail
 from django.core import validators
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.http import urlquote
 from django.utils import timezone
 
-from galaxy.main.mixins import *      # noqa
+from galaxy.main.mixins import DirtyMixin
 
 class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     """

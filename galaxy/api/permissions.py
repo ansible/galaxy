@@ -27,7 +27,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework import permissions
 
 # AWX
-from galaxy.api.access import *  # noqa
+from galaxy.api.access import check_user_access
 from galaxy.api.utils import get_object_or_400
 
 logger = logging.getLogger('galaxy.api.permissions')

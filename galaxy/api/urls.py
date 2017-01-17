@@ -37,6 +37,7 @@ def url(regex, view, kwargs=None, name=None, prefix=''):
         name = view
     return original_url(regex, view, kwargs, name, prefix)
 
+
 user_urls = patterns(
     'galaxy.api.views',
     url(r'^$',                              'user_list'),

@@ -25,4 +25,5 @@ class RoleAutoFixture(AutoFixture):
         'github_repo': generators.StaticGenerator('github_repo'),
     }
 
+
 register(Role, RoleAutoFixture)

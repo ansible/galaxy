@@ -125,6 +125,7 @@ class sdist_galaxy(_sdist, object):
                 self.pyc_only_files.append(f)
         super(sdist_galaxy, self).make_distribution()
 
+
 setup(
     name='galaxy',
     version=__version__.split("-")[0], # FIXME: Should keep full version here?

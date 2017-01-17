@@ -21,9 +21,12 @@ import math
 import requests
 import logging
 import base64
+import json
+import re
 
 from urlparse import parse_qs
 from hashlib import sha256
+from collections import OrderedDict
 
 # Github
 from github import Github
@@ -46,6 +49,8 @@ from django.utils.datastructures import SortedDict
 from django.apps import apps
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
+from django.urls import reverse
+from django.core.exceptions import PermissionDenied
 
 #allauth
 from allauth.socialaccount.models import SocialAccount
@@ -64,10 +69,50 @@ from OpenSSL.crypto import verify, load_publickey, FILETYPE_PEM, X509
 from OpenSSL.crypto import Error as SignatureError
 
 # local stuff
-from galaxy.api.access import *                 # noqa
-from galaxy.api.base_views import *             # noqa
-from galaxy.api.serializers import *            # noqa
-from galaxy.main.models import *                # noqa
+
+from galaxy.accounts.models import CustomUser as User
+
+from galaxy.api.access import check_user_access
+
+from galaxy.api.base_views import (APIView,
+                                   ListAPIView,
+                                   ListCreateAPIView,
+                                   SubListAPIView,
+                                   RetrieveAPIView,
+                                   RetrieveUpdateDestroyAPIView)
+
+from galaxy.api.serializers import (MeSerializer,
+                                    UserListSerializer,
+                                    UserDetailSerializer,
+                                    SubscriptionSerializer,
+                                    StargazerSerializer,
+                                    CategorySerializer,
+                                    TagSerializer,
+                                    PlatformSerializer,
+                                    RoleVersionSerializer,
+                                    RepositorySerializer,
+                                    TopContributorsSerializer,
+                                    NotificationSecretSerializer,
+                                    NotificationSerializer,
+                                    ImportTaskSerializer,
+                                    ImportTaskLatestSerializer,
+                                    RoleListSerializer,
+                                    RoleDetailSerializer,
+                                    RoleSearchSerializer,
+                                    ElasticSearchDSLSerializer)
+
+from galaxy.main.models import (Platform,
+                                Category,
+                                Tag,
+                                Role,
+                                ImportTask,
+                                RoleVersion,
+                                NotificationSecret,
+                                Notification,
+                                Repository,
+                                Subscription,
+                                Stargazer)
+
 from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
 from galaxy.main.celerytasks.tasks import import_role, update_user_repos
@@ -1377,11 +1422,12 @@ def get_response(*args, **kwargs):
     
     return response
 
-#------------------------------------------------------------------------
 
+#------------------------------------------------------------------------
 # Create view functions for all of the class-based views to simplify inclusion
 # in URL patterns and reverse URL lookups, converting CamelCase names to
 # lowercase_with_underscore (e.g. MyView.as_view() becomes my_view).
+
 this_module = sys.modules[__name__]
 for attr, value in locals().items():
     if isinstance(value, type) and issubclass(value, APIView):

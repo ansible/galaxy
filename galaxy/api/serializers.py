@@ -49,6 +49,31 @@ from galaxy.main.models import (Platform,
 from html5css3 import Writer
 from docutils.core import publish_string
 
+__all__ = [
+    'BaseSerializer',
+    'MeSerializer',
+    'UserListSerializer',
+    'UserDetailSerializer',
+    'SubscriptionSerializer',
+    'StargazerSerializer',
+    'CategorySerializer',
+    'TagSerializer',
+    'PlatformSerializer',
+    'RoleVersionSerializer',
+    'RepositorySerializer',
+    'TopContributorsSerializer',
+    'NotificationSecretSerializer',
+    'NotificationSerializer',
+    'ImportTaskSerializer',
+    'ImportTaskLatestSerializer',
+    'RoleListSerializer',
+    'RoleTopSerializer',
+    'RoleDetailSerializer',
+    'RoleSearchSerializer',
+    'ElasticSearchDSLSerializer'
+]
+
+
 User = get_user_model()
 
 BASE_FIELDS = ('id', 'url', 'related', 'summary_fields', 'created', 'modified', 'name')

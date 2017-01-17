@@ -38,8 +38,8 @@ from rest_framework import status
 from rest_framework import views
 
 # local
-from galaxy.api.access import *   # noqa
-from galaxy.api.utils import get_object_or_400
+from galaxy.api.access import check_user_access
+from galaxy.api.utils import get_object_or_400, camelcase_to_underscore
 from galaxy.main.models import RoleRating
 
 # FIXME: machinery for auto-adding audit trail logs to all CREATE/EDITS

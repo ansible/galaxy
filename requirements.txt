@@ -30,3 +30,4 @@ honcho
 ansible
 pyinotify
 pyOpenSSL
+flake8

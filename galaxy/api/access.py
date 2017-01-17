@@ -274,6 +274,7 @@ class StargazerAccess(BaseAccess):
     def can_delete(self,data):
         return self.user.is_authenticated()
 
+
 register_access(User, UserAccess)
 register_access(Role, RoleAccess)
 register_access(RoleVersion, RoleVersionAccess)

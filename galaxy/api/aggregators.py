@@ -23,4 +23,6 @@ import django.db.models.aggregates
 class AvgWithZeroForNull(django.db.models.aggregates.Avg):
     template = 'COALESCE(%(function)s(%(field)s), 0)'
     name = 'AvgWithZeroForNull'
+
+
 django.db.models.aggregates.AvgWithZeroForNull = AvgWithZeroForNull
