@@ -32,6 +32,7 @@ endif
         refresh migrate migrate_empty makemigrations build_from_scratch \
         build build_debug \
         run run_background \
+        flake8 \
         sdist stop requirements ui_build export_test_data import_test_data createsuperuser \
         refresh_role_counts shell
 
@@ -86,6 +87,10 @@ all_indexes: custom_indexes
 createsuperuser: 
 	@echo "Create Superuser"
 	@docker exec -i -t ansible_django_1 galaxy-manage createsuperuser
+
+# run flake8 inside a django container
+flake8:
+	docker run -v ${PWD}:/galaxy -w /galaxy galaxy-django:latest flake8 --config=tox.ini galaxy
 
 # Start Galaxy containers with django and gulp in the foreground
 run:
