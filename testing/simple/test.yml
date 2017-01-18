@@ -8,11 +8,8 @@
 
   tasks:
     - name: Wait for server to start  
-      wait_for:
-        host: "{{ host }}"
-        port: "{{ port }}"
-        delay: 60
-        timeout: 300
+      pause:
+        seconds: 120
  
     - name: Access the home page
       uri: 
