@@ -11,6 +11,18 @@
       pause:
         seconds: 120
  
+    - name: Check container status
+      command: docker ps -a
+      register: output
+
+    - debug: var=output.stdout_lines
+
+    - name: Check django logs
+      command: docker logs ansible_django_1
+      register: output 
+
+    - debug: var=output.stdout_lines
+
     - name: Access the home page
       uri: 
         url: "http://{{ host }}:{{ port }}"
