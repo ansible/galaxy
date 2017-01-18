@@ -3,22 +3,20 @@ services:
   django:
     image: centos:7
     working_dir: /galaxy
-    environment:
-      - PGPASSWORD={{ galaxy_postgres_password }}
-    volumes:
-      - ${PWD}:/galaxy:z
-      - {{ galaxy_log_dir }}:/galaxy_logs:Z
-      - {{ galaxy_config_path }}:/etc/galaxy:Z
     links:
       - postgres
       - elastic
       - memcache
       - rabbit
+    command: [/usr/local/bin/dumb-init, /galaxy/ansible/start_development.sh]
     user: django
+    ports:
+      - "8000:8000"
+    environment: 
+      - C_FORCE_ROOT=1
     dev_overrides:
-      command: [/usr/local/bin/dumb-init, /galaxy/ansible/start_development.sh]
-      ports:
-        - "8000:8000"
+      volumes:
+        - ${PWD}:/galaxy:z
 
   postgres:
     image: postgres:9.5.4
@@ -42,11 +40,11 @@ services:
 
   gulp:
     image: centos:7
-    volumes:
-      - ${PWD}:/galaxy:z
     command: ["/bin/true"]
     dev_overrides:
-      working_dir: /galaxy
       command: [/usr/local/bin/dumb-init, /usr/bin/gulp]
+      working_dir: /galaxy
+      volumes:
+        - ${PWD}:/galaxy:z
 
 registries: {}

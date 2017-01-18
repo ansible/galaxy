@@ -6,11 +6,11 @@ rm -f /galaxy_logs/*.log
 
 if [ ! -f /setup/dbinit.completed ]; then
      cd /setup
-     ansible-playbook -i inventory dbinit.yml
+     /venv/bin/ansible-playbook -i inventory dbinit.yml
      cd - 
 else
-     galaxy-manage makemigrations
-     galaxy-manage migrate --noinput
+     /venv/bin/galaxy-manage makemigrations
+     /venv/bin/galaxy-manage migrate --noinput
 fi
 
-honcho start
+/venv/bin/honcho start

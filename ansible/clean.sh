@@ -9,9 +9,17 @@
 
 if [ $# -eq 0 ] || [ "$1" = "containers" ]; then
     echo "Removing Galaxy containers..."
-    containers=$(docker ps -a --format "{{.Names}}" | grep -e django -e elastic -e postgres -e rabbit -e memcache -e gulp | wc -l | tr -d '[[:space:]]')
+    containers=$(docker ps -a --format "{{.Names}}" | \
+    grep -e django \
+         -e elastic \
+         -e postgres \
+         -e rabbit \
+         -e memcache \
+         -e gulp \
+         -e ansible_ansible-container_1 | wc -l | tr -d '[[:space:]]')
     if [ ${containers} -gt 0 ]; then 
-        docker rm --force $(docker ps -a --format "{{.Names}}" | grep -e django -e elastic -e postgres -e rabbit -e memcache -e gulp)
+        docker rm --force $(docker ps -a --format "{{.Names}}" | \
+          grep -e django -e elastic -e postgres -e rabbit -e memcache -e gulp -e ansible_ansible-container_1)
     else
         echo "No Galaxy containers found"
     fi
@@ -27,6 +35,3 @@ if [ $# -eq 0 ] || [ "$1" = "images" ]; then
     fi
 fi
 
-if [ $# -eq 0 ]; then
-    rm -rf ~/.galaxy
-fi 

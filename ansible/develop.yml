@@ -2,9 +2,8 @@
 # develop.yml
 # environment settings, passwords, etc. to use during development
 
-galaxy_log_dir: "{{ lookup('env', 'HOME') }}/.galaxy/logs"
-galaxy_config_path: "{{ lookup('env', 'HOME') }}/.galaxy/config"
-
+galaxy_user: django
+galaxy_venv: /venv
 galaxy_env: "DEV"
 galaxy_project_dir: "/galaxy"
 galaxy_configure_supervisor: False

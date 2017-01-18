@@ -2,6 +2,7 @@
 ---
 # develop.yml 
 
+django_user: django
 galaxy_env: "DEV"
 galaxy_project_dir: "/galaxy"
 galaxy_log_dir: "/galaxy_logs"

@@ -31,7 +31,7 @@ endif
 .PHONY: clean clean_dist clean_images clean_containers \
         refresh migrate migrate_empty makemigrations build_from_scratch \
         build build_debug \
-        run run_background \
+        run run_production\
         flake8 \
         build_indexes \
         sdist stop requirements ui_build export_test_data import_test_data createsuperuser \
@@ -54,15 +54,15 @@ clean_images:
 
 # Create and execute database migrations
 migrate:
-	@docker exec -i -t ansible_django_1 galaxy-manage makemigrations main --noinput
-	@docker exec -i -t ansible_django_1 galaxy-manage migrate --noinput
+	@docker exec -i -t ansible_django_1 /venv/bin/galaxy-manage makemigrations main --noinput
+	@docker exec -i -t ansible_django_1 /venv/bin/galaxy-manage migrate --noinput
 
 # Create an empty migration
 migrate_empty:
-	@docker exec -i -t ansible_django_1 galaxy-manage makemigrations --empty main
+	@docker exec -i -t ansible_django_1 /venv/bin/galaxy-manage makemigrations --empty main
 
 makemigrations:
-	@docker exec -i -t ansible_django_1 galaxy-manage makemigrations main
+	@docker exec -i -t ansible_django_1 /venv/bin/galaxy-manage makemigrations main
 
 psql:
 	@docker exec -i -t ansible_django_1 psql -h postgres -d galaxy -U galaxy
@@ -79,26 +79,26 @@ build_debug:
 
 build_indexes:
 	@echo "Rebuild Custom Indexes"
-	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_galaxy_indexes
+	@docker exec -i -t ansible_django_1 /venv/bin/galaxy-manage rebuild_galaxy_indexes
 	@echo "Rebuild Search Index"
-	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_index --noinput
+	@docker exec -i -t ansible_django_1 /venv/bin/galaxy-manage rebuild_index --noinput
 
 createsuperuser: 
 	@echo "Create Superuser"
-	@docker exec -i -t ansible_django_1 galaxy-manage createsuperuser
+	@docker exec -i -t ansible_django_1 /venv/bin/galaxy-manage createsuperuser
 
-# run flake8 inside a django container
+# Run flake8 inside the django container
 flake8:
-	docker run -v ${PWD}:/galaxy -w /galaxy galaxy-django:latest flake8 --config=tox.ini galaxy
+	docker run -v ${PWD}:/galaxy -w /galaxy galaxy-django:latest /venv/bin/flake8 --config=tox.ini galaxy
 
 # Start Galaxy containers with django and gulp in the foreground
 run:
 	ansible-container --var-file ansible/develop.yml run -d memcache rabbit postgres elastic; \
 	ansible-container --var-file ansible/develop.yml --debug run django gulp
 
-# Start all containers in the background
-run_background:
-	ansible-container --var-file ansible/develop.yml --debug run -d
+# Start production
+run_production:
+	ansible-container --var-file ansible/develop.yml --debug run -d --production
 
 stop:
 	@ansible-container stop --force
@@ -139,7 +139,7 @@ import_test_data:
 
 refresh_role_counts:
 	@echo Refresh role counts
-	@docker exec -i -t ansible_django_1 galaxy-manage refresh_role_counts
+	@docker exec -i -t ansible_django_1 /venv/bin/galaxy-manage refresh_role_counts
 shell:
 	@echo Starting shell on ansible_django_1
 	@docker exec -i -t ansible_django_1 /bin/bash

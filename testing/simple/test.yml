@@ -29,8 +29,6 @@
         return_content: yes
       register: homeout 
        
-    - debug: var=homeout 
-
     - name: Assert expected output found
       assert:
         that:

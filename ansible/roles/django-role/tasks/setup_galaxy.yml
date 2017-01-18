@@ -1,0 +1,27 @@
+# setup_galaxy.yml
+
+- name: Deploy settings file
+  template:
+    src: /ansible-container/settings/settings_develop.py.j2
+    dest: /etc/galaxy/settings.py
+    owner: "{{ galaxy_user }}"
+    group: root
+    mode: 0660
+
+- name: Create the SECRET_KEY file
+  command: /venv/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)"
+  args:
+     creates: /etc/galaxy/SECRET_KEY
+
+- name: Adjust SECRET_KEY permissions
+  file:
+    path: /etc/galaxy/SECRET_KEY
+    state: file
+    owner: root
+    group: root
+    mode: 0660
+
+- name: Install galaxy
+  command: "{{ galaxy_venv }}/bin/python ./setup.py develop"
+  args:
+    chdir: /galaxy

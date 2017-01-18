@@ -28,22 +28,48 @@
   - openssl-devel
   - postgresql95
   - postgresql95-devel
-  - python-psycopg2
-  - ansible 
+  - python-virtualenv
+  - wget
 
-- name: Create group django
-  group:
-    name: django
-    gid: 1000 
+- name: Add PATH to /etc/environment
+  shell: echo "export PATH=${PATH}:/usr/pgsql-9.5/bin" >/etc/environment
 
 - name: Create user django
   user:
-    name: django
+    name: "{{ galaxy_user }}" 
     uid: 1000
-    group: django
+    group: root 
     createhome: yes
-    home: /home/django
+    home: "/home/{{ galaxy_user }}"
     shell: /bin/bash
+
+- name: Create pgpass
+  template:
+    src: pgpass.j2
+    dest: "/home/{{ galaxy_user }}/.pgpass"
+    owner: django
+    group: root
+    mode: 0600
+
+- name: Create galaxy directories
+  file: 
+    path: "{{ item }}" 
+    state: directory
+    owner: "{{ galaxy_user }}" 
+    group: root
+    mode: 0775 
+  with_items:
+    - /etc/galaxy
+    - /galaxy_logs
+    - /galaxy
+    - /setup
+    - /venv
+
+- name: Copy source
+  synchronize:
+    src: "{{ lookup('pipe','dirname `pwd`') }}/"
+    dest: /galaxy/ 
+  remote_user: "{{ galaxy_user }}" 
 
 - name: Download dumb-init
   get_url:
@@ -53,79 +79,25 @@
     group: root
     mode: 755
 
-- name: Clear yum cache
-  command: yum clean all
-
-- name: Install python packages
-  pip:
-    requirements: /galaxy/requirements.txt
-
-- name: Clear pip cache
-  file: 
-    path: /root/.cache/pip
-    state: absent
-
-- name: Create the /etc/galaxy directory
-  file: 
-    path: /etc/galaxy
-    owner: root
-    group: django
-    mode: 2775 
-    state: directory
-
-- name: Create /galaxy_logs directory
-  file:
-    path: /galaxy_logs
-    owner: django
-    group: django
-    mode: 0775
-    state: directory
-
-- name: Install galaxy
-  command: python ./setup.py develop
-  args:
-    chdir: /galaxy
-
-- name: Deploy settings file
-  template:
-    src: ../settings/settings_develop.py.j2
-    dest: /etc/galaxy/settings.py
-    owner: root 
-    group: django
-    mode: 0660
-
-- name: Create the SECRET_KEY file
-  command: /usr/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)" creates=/etc/galaxy/SECRET_KEY
-
-- name: Adjust SECRET_KEY permissions
-  file:
-    path: /etc/galaxy/SECRET_KEY
-    state: file
-    owner: root
-    group: django
-    mode: 0660
-
-- name: Create setup directory 
-  file:
-    path: /setup
-    state: directory
-    owner: django
-    group: django 
-    mode: 0775
-
 - name: Copy dbinit.yml
   template:
     src: dbinit.yml.j2
     dest: /setup/dbinit.yml
-    owner: django
-    group: django
+    owner: "{{ galaxy_user }}" 
+    group: root 
     mode: 0664
 
 - name: Copy inventory 
   copy:
     src: inventory
     dest: /setup/inventory
-    owner: django
-    group: django
+    owner: "{{ galaxy_user }}" 
+    group: root 
     mode: 0664
+
+- name: Create virtualenv and install python packages 
+  include: install_python_packages.yml
+
+- name: Setup galaxy
+  include: setup_galaxy.yml 
 

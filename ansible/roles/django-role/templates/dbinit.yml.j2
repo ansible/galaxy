@@ -14,9 +14,9 @@
         host: postgres
         port: 5432
         connect_timeout: 10
-    
+
     - name: Perform initial migrations 
-      command: galaxy-manage migrate --noinput --fake-initial
+      command: /venv/bin/galaxy-manage migrate --noinput --fake-initial
     
     - name: Disable triggers
       command: psql -h postgres -d galaxy -U galaxy -f /galaxy/test-data/disable_triggers.sql
@@ -30,15 +30,6 @@
     - name: Update django site name
       command: psql -h postgres -d galaxy -U galaxy -f /galaxy/ansible/update_site.sql
     
-    - name: Create galaxy admin user
-      expect:
-        command: galaxy-manage createsuperuser
-        responses:
-          Username: "{{ galaxy_admin_username }}"
-          "Email address": "admin@galaxy.com"
-          Password: "{{ galaxy_admin_password }}"
-          "Password (again)": "{{ galaxy_admin_password }}"
-     
     - name: Remove any log files
       command: rm -f *.log
       args:

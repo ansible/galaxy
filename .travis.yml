@@ -25,7 +25,7 @@ script:
 - make flake8
 
 # start the application
-- make run_background 
+- make run_production
 - docker ps -a
 - docker images
 
@@ -34,7 +34,7 @@ script:
 - ansible-playbook -i inventory test.yml
 
 # Stop the application
-- cd ..
+- cd ../..
 - make stop 
 
 #notifications:

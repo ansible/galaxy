@@ -21,7 +21,6 @@ requests
 requests-oauthlib
 bleach
 rst2html5-tools
-# psycopg2
 setuptools
 PyYAML
 python-memcached
@@ -30,4 +29,3 @@ honcho
 ansible
 pyinotify
 pyOpenSSL
-flake8
