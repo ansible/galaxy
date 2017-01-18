@@ -39,16 +39,6 @@
           Password: "{{ galaxy_admin_password }}"
           "Password (again)": "{{ galaxy_admin_password }}"
      
-    - name: Rebuild Galaxy index
-      command: python ./manage.py rebuild_index --noinput
-      args:
-        chdir: /galaxy
-    
-    - name: Rebuild custom indexes
-      command: python ./manage.py rebuild_galaxy_indexes
-      args:
-        chdir: /galaxy
-    
     - name: Remove any log files
       command: rm -f *.log
       args:

@@ -12,7 +12,7 @@
         host: "{{ host }}"
         port: "{{ port }}"
         delay: 60
-        timeout: 120
+        timeout: 300
  
     - name: Access the home page
       uri: 

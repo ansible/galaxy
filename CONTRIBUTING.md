@@ -73,7 +73,7 @@ Start the services by running the following:
 $ make run
 ```
 
-The first time you start the application, the *django* container will perform migrations, load test data, and rebuild the Elasticsearch indexes. The index rebuild can take several minutes. As the container starts, you will see output from */setup/dbinit.yml* that looks like the following:
+The first time you start the application, the *django* container will perform migrations, and load test data. Performing these operations delays the start of the web server for a few moments. As the container starts, you will see output from */setup/dbinit.yml* that looks like the following:
 
 ```
 Attaching to ansible_gulp_1, ansible_django_1
@@ -108,11 +108,6 @@ django_1             |
 django_1             | TASK [Create galaxy admin user] ************************************************
 django_1             | changed: [localhost]
 django_1             |
-django_1             | TASK [Rebuild Galaxy index] ****************************************************
-django_1             |
-django_1             | TASK [Rebuild custom indexes] **************************************************
-django_1             | changed: [localhost]
-django_1             |
 django_1             | TASK [Remove any log files] ****************************************************
 django_1             | changed: [localhost]
 django_1             |  [WARNING]: Consider using file module with state=absent rather than running rm
@@ -129,6 +124,16 @@ django_1             | /galaxy
 The *postgres*, *memcache*, *elasticsearch*, and *rabbitmq* services will run in the background, while *django* and *gulp* execute in the foreground. The logs for the web server, celery and gulp will be displaybed in real-time. Once */setup/dbinit.yml* completes, you can access the web server using the URL: [http://localhost:8000](http://localhost:8000).
 
 **NOTE**: If you're running Docker Machine, replace *localhost* with the IP address of the Virtual Machine. User `docker-machine ip default` to get the IP, replacing *default* with the name of your VM.
+
+### Rebuild search indexes
+
+If you plan to use the Browse page on your local Galaxy server, you'll need to build the Elasticsearch indexes. Once your web server is running, meaning that migrations completed and test data loaded (as discussed above), run the following command from the *galaxy* project root to manually build the indexes:
+
+```
+$ make build_indexes
+```
+
+The process may take up to 10 minutes to complete the index build.
 
 ### Connect to GitHub
 

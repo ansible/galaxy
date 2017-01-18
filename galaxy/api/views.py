@@ -49,7 +49,7 @@ from django.utils.datastructures import SortedDict
 from django.apps import apps
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 
 #allauth

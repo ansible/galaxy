@@ -33,6 +33,7 @@ endif
         build build_debug \
         run run_background \
         flake8 \
+        build_indexes \
         sdist stop requirements ui_build export_test_data import_test_data createsuperuser \
         refresh_role_counts shell
 
@@ -76,11 +77,9 @@ build:
 build_debug:
 	ansible-container --var-file ansible/develop.yml --debug build -- -e"@/ansible-container/ansible/develop.yml"
 
-custom_indexes:
+build_indexes:
 	@echo "Rebuild Custom Indexes"
 	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_galaxy_indexes
-
-all_indexes: custom_indexes
 	@echo "Rebuild Search Index"
 	@docker exec -i -t ansible_django_1 galaxy-manage rebuild_index --noinput
 
