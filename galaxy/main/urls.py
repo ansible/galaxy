@@ -18,7 +18,8 @@
 from django.conf.urls import patterns, url
 from galaxy.main.views import RoleListView, RoleDetailView, NamespaceListView
 from django.conf import settings
-from django.contrib.staticfiles import views
+from django.contrib.staticfiles.views import serve as serve_static
+from django.views.decorators.cache import never_cache
 
 urlpatterns = patterns(
     'galaxy.main.views',
@@ -51,6 +52,6 @@ urlpatterns = patterns(
 )
 
 if settings.DEBUG:
-    urlpatterns += [
-        url(r'^static/(?P<path>.*)$', views.serve),
-    ]
+    urlpatterns += patterns('',
+        url(r'^static/(?P<path>.*)$', never_cache(serve_static)),
+    )
