@@ -122,6 +122,14 @@
                                 </div>
                             </div>
                         </div>
+                        <div uib-collapse="!repo.show_enable_failed" class="delete-container">
+                            <p>An error occurred while attempting to start the import. Error: {{ repo.enable_failed_msg }}</p>
+                            <div class="form-group">
+                                <div class="form-button text-right">
+                                    <a href="" ng-click="repo.show_enable_failed=false;repo.state = null;" class="btn btn-xs btn-default">OK</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-sm-3 tools-container">

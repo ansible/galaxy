@@ -118,6 +118,8 @@
                 repo.github_secret_type = "password";
                 repo.travis_token_type = "password";
                 repo.name_pattern_error = false;
+                repo.show_enable_failed = false;
+                repo.show_enable_failed_msg = '';
                 if (repo.summary_fields) {
                     repo.summary_fields.notification_secrets.forEach(function(secret) {
                         if (secret.source == 'travis') {
@@ -311,11 +313,27 @@
                     'github_user': _repo.github_user,
                     'github_repo': _repo.github_repo,
                     'alternate_role_name': _repo.role_name
-                }).$promise.then(_checkStatus);
+                }).$promise.then(_checkStatus, function(response) {
+                    // handle an error
+                    _repo.show_enable_failed = true;
+                    var msg = ''
+                    if (response.config && response.config.url) {
+                        msg = 'Request to ' + response.config.url + ' resulted in ';
+                    }
+                    _repo.enable_failed_msg = msg + response.status + ' - ' + response.statusText;
+                    _repo.is_enabled = false;
+                });
             }
         }
 
         function _toggleRepository(_repo) {
+            if (_repo.show_integrations)
+                _cancelIntegrations(_repo);
+            if (_repo.show_delete_warning)
+                _deleteCancel(_repo);
+            _repo.show_delete_failed=false;
+            _repo.show_enable_failed=false;
+
             if (_repo.is_enabled) {
                 _importRepository(_repo);
             } else {
