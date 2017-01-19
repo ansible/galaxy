@@ -161,7 +161,7 @@ Docker Machine, replace *localhost* with the IP address of the Virtualbox host.
 
 After you save the new application, access your local Galaxy admin site at [http://localhost:8000/admin](http://localhost:8000/admin). If you have not already done so, follow the *Create an admin user* instructions above. 
 
-After you log into the admin site, click `Add social application`. Set the *provider* to `GitHub`, and enter `GitHub` as the *name*. From the new GitHub Oauth application you just created, copy the *ClientID* value into *Client id*, and opy the *Client Secret* value into *Secret key*. Under *Sites*, add `localhost` to *Chosen sites*. Save the changes.
+After logging into the admin site, you'll create a new social application. Start by finding `Social applications` at the bottom of the table, and clicking the *Add* button to its right. On the next screen, set the *provider* to `GitHub`, and enter `GitHub` as the *name*. From the new GitHub Oauth application you just created, copy the *ClientID* value into *Client id*, and copy the *Client Secret* value into *Secret key*. Under *Sites*, add `localhost` to *Chosen sites*. Save the changes.
 
 Log out of the *admin* account, and go back to `http://localhost:8000`. Click the GitHub logo under `Log into Galaxy with GitHub`.
 You should see the message `Verify Your Email Address`.
