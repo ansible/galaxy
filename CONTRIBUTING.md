@@ -8,13 +8,13 @@ The issue log is at [galaxy-issues](https://github.com/ansible/galaxy-issues). E
 
 To setup a local development environment you will need to install the following:
 
-* [Ansible Container 0.2.0+](https://github.com/ansible/ansible-container)
+* [Ansible Container 0.3.0+](https://github.com/ansible/ansible-container)
 * [Ansible 2.1.1.0+](https://github.com/ansible/ansible)
 
 We recommend using [Git Flow](https://github.com/nvie/gitflow), although it's not strictly required. Any development 
 should be done in feature branches and compared to the `develop` branch.
 
-### Checkout the Project and Start a Feature
+### Start a Feature
 
 Clone the [Galaxy repo](https://github.com/ansible/galaxy) to your local projects folder:
 
@@ -38,17 +38,17 @@ cd ~/projects/galaxy
 git flow feature start mynewfeature
 ```
 
-### Build and Start the Galaxy Services
+### Build Galaxy
 
-You should already have Docker running and Ansible Container installed. To build the Galaxy images run the following from the root directory of your Galaxy clone:
+You should already have Docker running and Ansible Container installed. To build the Galaxy images, run the following from the root directory of your Galaxy clone:
 
 ```
 $ make build
 ```
 
-**NOTE**: The build process downloads images from Docker Hub for most services, excluding *django* and *gulp*. The *django* and *gulp* services are built from a *centos:7* base image, and the build involves downloading and installing both *yum* and *pip* packages. The build will run from 10 minutes up to an hour depending on the speed of your internet connection, and the amount of CPU and memory available on your platform.
+**NOTE**: The build process downloads images from Docker Hub for most services, excluding *django* and *gulp*. The *django* and *gulp* services are built from a *centos:7* base image, and the build involves downloading and installing both *yum* and *pip* packages. The build can run from 10 minutes up to an hour depending on the speed of your internet connection, and the amount of available CPU and memory.
 
-After the build completes, you will see the following images in Docker:
+After the build completes, you will see the following Docker images:
 
 ```
 $ docker images
@@ -105,9 +105,6 @@ django_1             |
 django_1             | TASK [Update django site name] *************************************************
 django_1             | changed: [localhost]
 django_1             |
-django_1             | TASK [Create galaxy admin user] ************************************************
-django_1             | changed: [localhost]
-django_1             |
 django_1             | TASK [Remove any log files] ****************************************************
 django_1             | changed: [localhost]
 django_1             |  [WARNING]: Consider using file module with state=absent rather than running rm
@@ -121,7 +118,7 @@ django_1             |
 django_1             | /galaxy
 ```
 
-The *postgres*, *memcache*, *elasticsearch*, and *rabbitmq* services will run in the background, while *django* and *gulp* execute in the foreground. The logs for the web server, celery and gulp will be displaybed in real-time. Once */setup/dbinit.yml* completes, you can access the web server using the URL: [http://localhost:8000](http://localhost:8000).
+The *postgres*, *memcache*, *elasticsearch*, and *rabbitmq* services will run in the background, while *django* and *gulp* execute in the foreground. The logs for the web server, celery and gulp will be displaybed in real-time. You can access the web server using the URL: [http://localhost:8000](http://localhost:8000).
 
 **NOTE**: If you're running Docker Machine, replace *localhost* with the IP address of the Virtual Machine. User `docker-machine ip default` to get the IP, replacing *default* with the name of your VM.
 
@@ -135,6 +132,22 @@ $ make build_indexes
 
 The process may take up to 10 minutes to complete the index build.
 
+### Create an admin user
+
+To create a superuser with access to the admin site, open a new terminal session or window, and run `make createsuperuser`. The following shows the creation of an admin user: 
+
+```
+$ make createsuperuser
+Create Superuser
+
+Username: admin
+Email address: noemail@noemail.com
+Password:
+Password (again):
+Superuser created successfully.
+```
+The admin site can be accessed at [http://localhost:8000/admin](http://localhost:8000/admin).
+
 ### Connect to GitHub
 
 To log into the development site, you first have to authorize it as a GitHub Oauth Application. You can do this by logging 
@@ -146,14 +159,9 @@ of the Virtualbox host.
 - Set the *Authorization Callback URL* to `http://localhost:8000/accounts/github/login/callback/`. And again, if you're using 
 Docker Machine, replace *localhost* with the IP address of the Virtualbox host.
 
-After you save the new application, go back to your Galaxy site, and in the browser enter the address 
-`http://localhost:8000/admin`, replacing *localhost* with the IP address of the Virtualbox host, if you're using Docker 
-Machine.
+After you save the new application, access your local Galaxy admin site at [http://localhost:8000/admin](http://localhost:8000/admin). If you have not already done so, follow the *Create an admin user* instructions above. 
 
-Log into the admin site using `admin` as the both the username and password, click on `Social Applications`, and then click 
-`Add social application`. Set the *provider* to `GitHub`, and enter `GitHub` as the *name*. From the new GitHub Oauth 
-application you just created, copy the *ClientID* value into *Client id*, and opy the *Client Secret* value into *Secret key*. 
-Under *Sites*, add `localhost` to *Chosen sites*. Save the changes.
+After you log into the admin site, click `Add social application`. Set the *provider* to `GitHub`, and enter `GitHub` as the *name*. From the new GitHub Oauth application you just created, copy the *ClientID* value into *Client id*, and opy the *Client Secret* value into *Secret key*. Under *Sites*, add `localhost` to *Chosen sites*. Save the changes.
 
 Log out of the *admin* account, and go back to `http://localhost:8000`. Click the GitHub logo under `Log into Galaxy with GitHub`.
 You should see the message `Verify Your Email Address`.
@@ -163,8 +171,7 @@ paste it into your browser. And finally, click the `Confirm` button.
 
 ### Stop Services and Other Commands
 
-Ctrl-C or closing the terminal session window stops the containers running in the foreground. To stop all containers 
-run `make stop` from another terminal session. Use `docker ps` to check the state of the services.
+Ctrl-C or closing the terminal session window stops the containers running in the foreground. To stop all containers, open a seccon terminal session or window, and run `make stop`. Use `docker ps` to check the state of the services.
 
 Review the Makefile for additional commands. Examples include:
 
