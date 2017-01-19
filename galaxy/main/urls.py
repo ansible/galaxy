@@ -52,7 +52,4 @@ urlpatterns = patterns(
 )
 
 if settings.DEBUG:
-    urlpatterns += patterns('',
-        url(r'^static/(?P<path>.*)$', never_cache(serve_static)),
-    )
-
+    urlpatterns += patterns('', url(r'^static/(?P<path>.*)$', never_cache(serve_static)),)
