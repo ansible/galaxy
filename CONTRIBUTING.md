@@ -162,11 +162,41 @@ After you save the new application, access your local Galaxy admin site at [http
 
 After logging into the admin site, you'll create a new social application. Start by finding `Social applications` at the bottom of the table, and clicking the *Add* button to its right. On the next screen, set the *provider* to `GitHub`, and enter `GitHub` as the *name*. From the new GitHub Oauth application you just created, copy the *ClientID* value into *Client id*, and copy the *Client Secret* value into *Secret key*. Under *Sites*, add `localhost` to *Chosen sites*. Save the changes.
 
-Log out of the *admin* account, and go back to `http://localhost:8000`. Click the GitHub logo under `Log into Galaxy with GitHub`.
-You should see the message `Verify Your Email Address`.
+Log out of the *admin* account, and go back to [http://localhost:8000(http://localhost:8000). Click the GitHub logo under `Log into Galaxy with GitHub`. On the next screen, you should see the message `Verify Your Email Address`.
 
-Look in ~/.galaxy/logs/email. There should be a new file with a `.log` extension. Open it, retrieve the verification URL, and
-paste it into your browser. And finally, click the `Confirm` button.
+The email was written to a log file found on the *django* container. To access it, use the following commands to connect to the container and view the file:
+```
+# Connect to the container and start the bash shell
+$ docker exec -it ansible_django_1 /bin/bash
+
+# Set the working directory to /galaxy_logs/email
+$ cd /galaxy_logs/email
+
+# List the log files
+$ ls -l
+
+total 4
+-rw-r--r-- 1 django root 863 Jan 19 05:04 20170119-000450-139972593475792.log
+
+# Show the contents of the latest message
+$ cat 20170119-000450-139972593475792.log
+
+From: webmaster@localhost
+To: foo@gmail.com
+Date: Thu, 19 Jan 2017 05:04:50 -0000
+Message-ID: <20170119050450.181.62126@c164ede7ada7>
+
+You are receiving this email because someone (hopefully you) created an account at https://galaxy.ansible.com. To confirm this is correct, please click on the following link to verify your email address:
+
+http://localhost:8000/accounts/confirm-email/MQ:1cU4u2:SfDV-p07an0_hv5K9ggi1kuPbJM/
+
+If you believe you have received this email in error, please disregard it.
+
+If you have any questions regarding this email, or if you have trouble with the link provided above, please contact support.
+
+Thanks!
+```
+From the latest log file, retrieve the verification URL, and paste it into your browser. Once the page loads, click the `Confirm` button, and on the next page click the blue GitHub logo to log in.
 
 ### Stop Services and Other Commands
 
