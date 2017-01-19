@@ -122,7 +122,7 @@ The *postgres*, *memcache*, *elasticsearch*, and *rabbitmq* services will run in
 
 **NOTE**: If you're running Docker Machine, replace *localhost* with the IP address of the Virtual Machine. User `docker-machine ip default` to get the IP, replacing *default* with the name of your VM.
 
-### Rebuild search indexes
+### Rebuild Search Indexes
 
 If you plan to use the Browse page on your local Galaxy server, you'll need to build the Elasticsearch indexes. Once your web server is running, meaning that migrations completed and test data loaded (as discussed above), run the following command from the *galaxy* project root to manually build the indexes:
 
@@ -132,7 +132,7 @@ $ make build_indexes
 
 The process may take up to 10 minutes to complete the index build.
 
-### Create an admin user
+### Create an Admin User
 
 To create a superuser with access to the admin site, open a new terminal session or window, and run `make createsuperuser`. The following shows the creation of an admin user: 
 
@@ -156,10 +156,9 @@ into GitHub, going to Personal Settings, choosing `Oauth Applications`, and then
 - Click `Register New Application`
 - Set the *Homepage URL* to `http://localhost:8000`. If you're using Docker Machine, replace *localhost* with the IP address 
 of the Virtualbox host.
-- Set the *Authorization Callback URL* to `http://localhost:8000/accounts/github/login/callback/`. And again, if you're using 
-Docker Machine, replace *localhost* with the IP address of the Virtualbox host.
+- Set the *Authorization Callback URL* to `http://localhost:8000/accounts/github/login/callback/`. And again, if you're using Docker Machine, replace *localhost* with the IP address of the Virtualbox host.
 
-After you save the new application, access your local Galaxy admin site at [http://localhost:8000/admin](http://localhost:8000/admin). If you have not already done so, follow the *Create an admin user* instructions above. 
+After you save the new application, access your local Galaxy admin site at [http://localhost:8000/admin](http://localhost:8000/admin). If you have not already done so, follow the *Create an Admin User* instructions above. 
 
 After logging into the admin site, you'll create a new social application. Start by finding `Social applications` at the bottom of the table, and clicking the *Add* button to its right. On the next screen, set the *provider* to `GitHub`, and enter `GitHub` as the *name*. From the new GitHub Oauth application you just created, copy the *ClientID* value into *Client id*, and copy the *Client Secret* value into *Secret key*. Under *Sites*, add `localhost` to *Chosen sites*. Save the changes.
 
