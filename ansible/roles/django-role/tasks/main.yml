@@ -66,7 +66,7 @@
     - /venv
 
 - name: Copy source
-  synchronize:
+  copy:
     src: "{{ lookup('pipe','dirname `pwd`') }}/"
     dest: /galaxy/ 
   remote_user: "{{ galaxy_user }}" 
