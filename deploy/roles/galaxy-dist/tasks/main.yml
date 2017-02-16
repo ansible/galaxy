@@ -1,0 +1,21 @@
+# tasks/main.yml
+---
+
+- name: Remove old dist files
+  command: rm -f galaxy-*.tar.gz
+  args:
+    chdir: /tmp
+
+- name: Copy the file
+  copy:
+    src: "{{ galaxy_dist_file }}"
+    dest: "/tmp/{{ galaxy_dist_file | basename }}"
+
+- name: Stat the dist file
+  stat:
+    path: "/tmp/{{ galaxy_dist_file | basename }}"
+  register: stat_output
+
+- name: Show dist file status
+  debug: var=stat_output
+

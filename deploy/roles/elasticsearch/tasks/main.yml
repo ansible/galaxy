@@ -1,0 +1,19 @@
+# tasks/main.yml
+---
+
+- include: sysctl.yml
+
+- include: setup.yml
+
+- name: Start Elasticsearch.
+  service: name=elasticsearch state=started enabled=yes
+
+- name: Copy elasticsearch.yml
+  template:
+    src: elasticsearch.yml.j2 
+    dest: /etc/elasticsearch/elasticsearch.yml
+    owner: root
+    group: root
+    mode: 0644 
+  notify: restart elasticsearch
+

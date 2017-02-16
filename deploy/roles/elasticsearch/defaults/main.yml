@@ -1,0 +1,9 @@
+# defaults/main.yml
+---
+
+# String of comma separated node names or IP addresses
+es_node_list: ""
+
+es_cluster_name: elasticsearch
+es_transport_port: 9300
+es_http_port: 9200

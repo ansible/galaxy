@@ -1,0 +1,32 @@
+galaxy_log_dir: /var/log/galaxy
+galaxy_selinux: yes
+
+# These are all the packages required to run galaxy. Depending on the node's function (i.e. celery or web), 
+#  only a subset may be required.
+yum_packages:
+  - gcc
+  - git
+  - httpd
+  - iptables-services
+  - libjpeg
+  - libselinux-python
+  - libsemanage-python
+  - make
+  - mod_wsgi
+  - mod_ssl
+  - python-devel
+  - python-pip
+  - python-psycopg2
+  - python-setuptools
+  - PyYAML
+  - supervisor
+  - libtiff-devel
+  - libjpeg-devel
+  - libzip-devel
+  - freetype-devel
+  - lcms2-devel
+  - libwebp-devel
+  - tcl-devel
+  - tk-devel
+  - libffi-devel
+  - openssl-devel

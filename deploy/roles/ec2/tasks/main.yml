@@ -1,0 +1,24 @@
+# tasks/main.yml
+
+- name: Create VM
+  ec2:
+    assign_public_ip: "{{ ec2_assign_public_ip }}"
+    exact_count: "{{ ec2_exact_count }}"
+    count_tag: "{{ ec2_count_tag }}"
+    group: "{{ ec2_group }}"
+    image: "{{ ec2_image }}"
+    type: "{{ ec2_type }}"
+    instance_tags: "{{ ec2_instance_tags }}"
+    region: "{{ ec2_region }}"
+    tenancy: "{{ ec2_tenancy }}"
+    vpc_subnet_id: "{{ ec2_vpc_subnet_id }}"
+    key_name: "{{ ec2_key_name }}"
+    termination_protection: "{{ ec2_termination_protection }}"
+    volumes: "{{ ec2_volumes }}"
+    wait: yes
+  register: vm_output
+   
+- name: Debug
+  debug:
+    var: vm_output
+  when: debug

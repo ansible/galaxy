@@ -1,0 +1,12 @@
+- name: Get the user's public keys from GitHub
+  uri:
+    url: https://github.com/{{ user.github_user }}.keys 
+    return_content: yes
+  register: github_output
+
+- name: Install authorized_keys
+  authorized_key:
+    state: 'present'
+    user: "{{ user.username }}" 
+    key: "{{ github_output.content }}" 
+

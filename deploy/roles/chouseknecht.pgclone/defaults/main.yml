@@ -1,0 +1,24 @@
+# defaults/main.yml
+
+---
+# Destination data directory. This will be deleted on the target node.
+pgbase_output_dir: /var/lib/pgsql/data 
+
+# Directory where backup files will be stored
+pgbase_backup_dir: /tmp
+
+# Files to backup before deleting the output directory from the target node.
+pgbase_save_files: []
+
+# Recover file info
+pgbase_create_recovery_file: False
+pgbase_standby_mode: off
+pgbase_trigger_file: ""
+
+# Connection info for the remote database that will be copied.
+#  This will typically be the master database.
+pgbase_connect_host: ""
+pgbase_connect_port: 5432
+pgbase_connect_user: ""
+pgbase_connect_pass: ""
+

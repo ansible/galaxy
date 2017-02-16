@@ -1,0 +1,18 @@
+# remove-galaxy-ec2.yml  
+#
+#  CAUTION: Removes all nodes with tag galaxy:galaxy
+#
+#  Run cmd:  ansible-playbook -i ec2.py --extra-vars="@your-vars-file.yml" remove-galaxy-ec2.yml
+
+- name: Remove galaxy ec2 instances
+  hosts: localhost
+  gather_facts: no  
+  tasks: 
+    - name: Remove galaxy VMs
+      # Assumes instance protection is already off 
+      ec2:
+        instance_ids:
+        - "{{ hostvars[item]['ec2_id'] }}" 
+        region: "{{ hostvars[item]['ec2_region'] }}"  
+        state: absent
+      with_items: "{{ groups[galaxy_hosts_all] }}"

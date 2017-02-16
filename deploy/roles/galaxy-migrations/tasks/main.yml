@@ -1,0 +1,11 @@
+- name: Apply migrations
+  shell: galaxy-manage migrate --fake-initial --noinput
+
+- name: Rebuild Search Indexes
+  shell: "galaxy-manage rebuild_index --noinput"
+
+- name: Rebuild custom search indexes
+  shell: "galaxy-manage rebuild_galaxy_indexes"
+
+- name: Create download cache table
+  shell: "galaxy-manage createcachetable"

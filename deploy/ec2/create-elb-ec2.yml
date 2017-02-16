@@ -1,0 +1,46 @@
+
+# create-elb-ec2.yml
+#
+#  Creates a classic Elastic Load Balancer.
+#
+# run cmd: ansible-playbook -i ec2.py --extra-vars="@your-vars-file.yml" create-elb-ec2.yml 
+
+- name: Create elastic load balancer
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks: 
+
+  - name: Set instance_ids
+    set_fact:
+      instance_ids: "{% for host in groups[galaxy_hosts_web] %}{{ hostvars[host]['ec2_id'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+
+  - name: Create the load balancer
+    ec2_elb_lb: 
+      name: "{{ galaxy_elb_name }}" 
+      region: "{{ galaxy_region }}"
+      state: present
+      security_group_ids: "{{ galaxy_elb_security_groups }}"
+      subnets: "{{ galaxy_subnets }}"
+      listeners:
+      - protocol: http
+        load_balancer_port: 80
+        instance_port: 80
+      - protocol: https
+        load_balancer_port: 443
+        instance_port: 81
+        instance_protocol: http
+        ssl_certificate_id: "{{ galaxy_elb_certificate }}"
+      health_check:
+        ping_protocol: https 
+        ping_port: 81 
+        ping_path: /
+        response_timeout: 5
+        interval: 5
+        unhealthy_threshold: 2
+        healthy_threshold: 10
+      instance_ids: "{{ instance_ids.split(',') }}"
+      stickiness:
+        type: loadbalancer
+        enabled: yes
+        expiration: 1800

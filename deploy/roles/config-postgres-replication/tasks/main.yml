@@ -1,0 +1,26 @@
+# tasks/main.yml
+--- 
+
+- name: Template postgresql.conf to master
+  template:
+    src: postgresql.conf.j2
+    dest: /var/lib/pgsql/data/postgresql.conf
+
+- name: Create the replication user. Ignore errors, if the users already exists.
+  postgresql_user:
+    name: "{{ galaxy_replicator_user }}"
+    password: "{{ galaxy_replicator_pass }}" 
+    role_attr_flags: REPLICATION
+  ignore_errors: yes
+
+- name: Template pg_hba.conf
+  template:
+    src: pg_hba.conf.j2
+    dest: /var/lib/pgsql/data/pg_hba.conf
+  when: galaxy_secondary_ip != ""
+
+- name: Restart postgres
+  service:
+    name: postgresql
+    state: restarted
+

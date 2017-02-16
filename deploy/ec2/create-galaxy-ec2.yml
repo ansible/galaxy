@@ -1,0 +1,35 @@
+# create-galaxy-ec2.yml
+#  Create Galaxy nodes on EC2 
+#  Run cmd: ansible-playbook --extra-vars="@your-var-file.yml" create-galaxy-ec2.yml
+
+- name: Create hosts 
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  vars_files:
+    - "{{ galaxy_hosts_definition }}"
+
+  vars:
+    debug: yes
+
+  tasks:
+  - name: Creats hosts...
+    include_role:
+      name: ec2
+    vars:
+      ec2_assign_public_ip: yes
+      ec2_group: "{{ galaxy_group }}" 
+      ec2_image: ami-6d1c2007
+      ec2_region: "{{ galaxy_region }}" 
+      ec2_tenancy: default
+      ec2_vpc_subnet_id: "{{ item.subnet }}"
+      ec2_key_name: "{{ galaxy_key_name }}" 
+      ec2_termination_protection: "{{ galaxy_termination_protection }}"
+      ec2_exact_count: "{{ item.count }}"
+      ec2_count_tag: "{{ item.tags }}" 
+      ec2_type: "{{ item.type }}"
+      ec2_instance_tags: "{{ item.tags }}"
+      ec2_volumes: "{{ item.volumes }}"
+
+    with_items: "{{ galaxy_hosts }}"
+

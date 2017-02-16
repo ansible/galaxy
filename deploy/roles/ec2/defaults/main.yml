@@ -1,0 +1,15 @@
+# defaults/main.yml
+---
+  
+ec2_assign_public_ip: yes
+ec2_exact_count: 1
+ec2_count_tag: {}
+ec2_group: galaxy
+ec2_image: ami-6d1c2007
+ec2_type: m4.large
+ec2_instance_tags: {}
+ec2_region: us-east-1
+ec2_tenancy: default
+ec2_vpc_subnet_id: "{{ galaxy_subnet_id }}" 
+ec2_key_name: chouse
+ec2_termination_protection: yes

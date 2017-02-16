@@ -27,5 +27,5 @@ python-memcached
 mock
 honcho
 ansible
-pyinotify
+# pyinotify
 pyOpenSSL

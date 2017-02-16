@@ -1,0 +1,97 @@
+---
+
+- name: install epel
+  yum: name=epel-release
+
+- name: install RPM packages required for galaxy
+  yum: 
+    name: "{{ item }}"
+  with_items: "{{ yum_packages }}"
+
+- name: Create a galaxy group 
+  group: name=galaxy system=yes
+
+- name: create the galaxy user
+  user:
+    name: galaxy
+    group: galaxy 
+    system: yes
+    createhome: no
+    shell: /sbin/nologin
+
+- name: Add apache to the galaxy group
+  user:
+    name: apache
+    groups:
+      - apache
+      - galaxy
+    append: no
+  when: inventory_group == 'web'
+
+- name: Install ansible
+  pip: name=ansible state=present
+
+- name: Copy requirements.txt
+  get_url:
+    url: https://raw.githubusercontent.com/ansible/galaxy/develop/requirements.txt 
+    dest: /tmp/requirements.txt
+
+- name: Install pip packages required by galaxy
+  pip: requirements=/tmp/requirements.txt
+
+- name: Remove requirements.txt
+  file:
+    path: /tmp/requirements.txt
+    state: absent
+
+- name: Create /etc/galaxy directory
+  file:
+    path: /etc/galaxy
+    state: directory
+    mode: 0775
+    owner: root
+    group: root
+
+- name: Create galaxy log directory
+  file:
+    path: "{{ galaxy_log_dir }}"
+    state: directory
+    mode: 0775
+    owner: galaxy
+    group: galaxy 
+
+- name: Set galaxy log directory selinux permissions
+  file:
+    path: "{{ galaxy_log_dir }}"
+    state: directory
+    owner: galaxy 
+    group: galaxy 
+    recurse: yes
+    seuser: system_u
+    serole: object_r
+    setype: httpd_log_t
+  when: galaxy_selinux
+
+- name: Set permissions on any existing log files
+  shell: chmod 664 *.log
+  args:
+    chdir: "{{ galaxy_log_dir }}"
+  ignore_errors: yes
+
+# Since Ansible is installed, we have to add a config file to set things like local_tmp
+- name: Configure /etc/ansible directory
+  file:
+    path: /etc/ansible
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+
+- name: Copy ansible.cfg
+  template:
+    src: ansible.cfg.j2
+    dest: /etc/ansible/ansible.cfg
+    owner: root
+    group: root
+    mode: 0664
+

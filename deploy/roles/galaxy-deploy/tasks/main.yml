@@ -1,0 +1,48 @@
+---
+- name: Check for the tar file
+  shell: ls -1 {{ galaxy_dist_dir }}/galaxy-*.tar.gz
+  register: app_tar
+
+- name: File should exist 
+  assert:
+    that: "'tar.gz' in app_tar.stdout"
+
+- name: Remove the existing app
+  pip:
+    name: galaxy
+    state: absent
+  ignore_errors: yes
+
+- name: Install the Galaxy app
+  pip:
+    name: "{{ app_tar.stdout }}"
+    state: present
+
+- name: Deploy settings file
+  template:
+    src: settings.py.j2
+    dest: /etc/galaxy/settings.py
+    owner: root
+    group: root
+    mode: 0664
+
+- name: Create the SECRET_KEY file
+  command: /usr/bin/python -c "import uuid; file('/etc/galaxy/SECRET_KEY', 'wb').write(uuid.uuid4().hex)"
+  args:
+    creates: /etc/galaxy/SECRET_KEY
+
+- name: Adjust SECRET_KEY permissions
+  file:
+    path: /etc/galaxy/SECRET_KEY
+    state: file
+    owner: root
+    group: root 
+    mode: 0664
+
+- name: Celery tasks
+  include: celery.yml
+  when: "'celery' in inventory_group"
+
+- name: Web tasks
+  include: web.yml
+  when: "'web' in inventory_group"

@@ -1,0 +1,24 @@
+# init-galaxy-ec2.yml
+#  Add users, create authorized_keys files, adjust sudoers file, install ntp, and take care
+#  of any initial configuration that's common to all nodes.
+#   
+#  run cmd: ansible-playbook -i ec2.py --user centos init-galaxy-ec2.yml 
+
+- name: Init new galaxy hosts 
+  hosts: "{{ galaxy_hosts_all }}" 
+  vars_files:
+   - authorized-users.yml
+  become: yes
+
+  roles:
+    - role: auth-users
+    - role: ntp      
+
+  tasks:
+    - name: Nopasswd sudoer access
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: "%wheel ALL=(ALL) NOPASSWD: ALL"
+

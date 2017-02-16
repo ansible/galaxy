@@ -1,0 +1,7 @@
+---
+# Dest path for robots.txt
+searchbots_path: ''
+
+# List of paths to disallow
+searchbots_disallows:
+- '/'

@@ -1,0 +1,15 @@
+# defaults/main.yml
+--- 
+# one of: archive, minimal, hot_standby
+wal_level: hot_standby
+
+max_wal_senders: 3
+checkpoint_segments: 10
+wal_keep_segments: 10
+hot_standby: "on"
+
+# Replication user
+galaxy_replicator_user: ""
+galaxy_replicator_pass: ""
+
+galaxy_secondary_ip: ""

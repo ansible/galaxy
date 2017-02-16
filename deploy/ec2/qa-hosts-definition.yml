@@ -1,0 +1,123 @@
+# hosts-definition.yml
+#
+# Galaxy production infrastructure 
+#
+
+---
+default_volumes:
+ - device_name: /dev/sda1
+   volume_type: gp2
+   volume_size: 8 
+   delete_on_termination: yes 
+
+galaxy_hosts:
+
+# master database
+- count: 1
+  type: m3.large
+  subnet: "{{ galaxy_subnets[0] }}"
+  volumes:
+    - device_name: /dev/sda1
+      volume_type: gp2 
+      volume_size: 24 
+      delete_on_termination: yes 
+  tags:
+    Name: galaxy-qa-db-01
+    galaxy: qa
+    galaxy_group: qa_db
+    galaxy_postgres: master
+
+# replication database
+- count: 1
+  type: m3.large
+  subnet: "{{ galaxy_subnets[1] }}"
+  volumes:
+    - device_name: /dev/sda1
+      volume_type: gp2 
+      volume_size: 24
+      delete_on_termination: yes
+  tags:
+    Name: galaxy-qa-db-02
+    galaxy: qa
+    galaxy_group: qa_db
+    galaxy_postgres: slave
+
+# elasticsearch hosts
+- count: 1
+  type: t2.medium
+  volumes: "{{ default_volumes }}"
+  subnet: "{{ galaxy_subnets[0] }}"
+  tags:
+    Name: galaxy-qa-es-01
+    galaxy: qa
+    galaxy_group: qa_elastic 
+
+- count: 1
+  type: t2.medium
+  subnet: "{{ galaxy_subnets[1] }}"
+  volumes: "{{ default_volumes }}"
+  tags:
+    Name: galaxy-qa-es-02
+    galaxy: qa
+    galaxy_group: qa_elastic 
+
+- count: 1
+  type: t2.medium
+  subnet: "{{ galaxy_subnets[1] }}"
+  volumes: "{{ default_volumes }}"
+  tags:
+    Name: galaxy-qa-es-03
+    galaxy: qa
+    galaxy_group: qa_elastic 
+      
+# web hosts
+- count: 1
+  type: t2.medium
+  subnet: "{{ galaxy_subnets[0] }}"
+  volumes: "{{ default_volumes }}"
+  tags:
+    Name: galaxy-qa-web-01
+    galaxy: qa
+    galaxy_group: qa_web 
+
+- count: 1
+  type: t2.medium
+  subnet: "{{ galaxy_subnets[1] }}"
+  volumes: "{{ default_volumes }}"
+  tags:
+    Name: galaxy-qa-web-02
+    galaxy: qa
+    galaxy_group: qa_web 
+
+# celery host
+- count: 1
+  type: t2.small
+  subnet: "{{ galaxy_subnets[0] }}"
+  volumes: "{{ default_volumes }}"
+  tags:
+    Name: galaxy-qa-celery-01
+    galaxy: qa
+    galaxy_group: qa_celery
+    galaxy_celery_queue: imports
+
+# celery host
+- count: 1
+  type: t2.small
+  subnet: "{{ galaxy_subnets[1] }}"
+  volumes: "{{ default_volumes }}"
+  tags:
+    Name: galaxy-qa-celery-02
+    galaxy: qa
+    galaxy_group: qa_celery
+    galaxy_celery_queue: user
+
+# celery host
+- count: 1
+  type: t2.small
+  subnet: "{{ galaxy_subnets[1] }}"
+  volumes: "{{ default_volumes }}"
+  tags:
+    Name: galaxy-qa-celery-03
+    galaxy: qa
+    galaxy_group: qa_celery
+    galaxy_celery_queue: admin
