@@ -2,9 +2,7 @@
 ---
 
 - name: Remove old dist files
-  command: rm -f /tmp/galaxy-*.tar.gz
-  args:
-    chdir: /tmp
+  shell: rm -f /tmp/galaxy-*.tar.gz
 
 - name: Copy the file
   copy:
