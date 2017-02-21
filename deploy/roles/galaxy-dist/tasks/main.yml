@@ -2,7 +2,7 @@
 ---
 
 - name: Remove old dist files
-  command: rm -f galaxy-*.tar.gz
+  command: rm -f /tmp/galaxy-*.tar.gz
   args:
     chdir: /tmp
 
