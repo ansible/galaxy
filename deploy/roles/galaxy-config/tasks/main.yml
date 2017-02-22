@@ -1,15 +1,20 @@
 ---
 
-- name: install epel
+- name: Install epel
   yum: name=epel-release
 
-- name: install RPM packages required for galaxy
+- name: Install RPM packages required for galaxy
   yum: 
     name: "{{ item }}"
   with_items: "{{ yum_packages }}"
 
-# Assumes the galaxy group was already created
-- name: create the galaxy user
+- name: Create the galaxy group
+  group:
+    name: galaxy
+    system: no
+    state: present
+
+- name: Create the galaxy user
   user:
     name: galaxy
     group: galaxy 
@@ -17,7 +22,6 @@
     createhome: no
     shell: /sbin/nologin
 
-# Assumes the galaxy group was already created
 - name: Add apache to the galaxy group
   user:
     name: apache
