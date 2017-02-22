@@ -23,12 +23,7 @@
     shell: /sbin/nologin
 
 - name: Add apache to the galaxy group
-  user:
-    name: apache
-    groups:
-      - apache
-      - galaxy
-    append: no
+  shell: usermod -G galaxy -a apache
   when: inventory_group == 'web'
 
 - name: Install ansible
