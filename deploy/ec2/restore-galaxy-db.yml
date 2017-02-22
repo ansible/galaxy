@@ -7,6 +7,20 @@
 #
 ---
 
+- name: Check for credentials
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  vars:
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+  tasks:
+    - assert:
+        that:
+          - aws_access_key is defined and aws_access_key != ""
+          - aws_secret_key is defined and aws_access_key != ""
+        msg: "Environmnt variables AWS_ACCESS_KEY_ID and/or AWS_SECRET_ACCESS_KEY not defined !!"
+       
 - name: Stop web server processes
   hosts: "{{ galaxy_hosts_web }}"
   become: yes 
@@ -43,8 +57,8 @@
     # Restore the database to the master node
     - role: galaxy-restore-db
       galaxy_encryption_password: "{{ galaxy_backup_enc_key }}"
-      aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY') }}"
-      aws_secret_key: "{{ lookup('env', 'AWS_SECRET_KEY') }}" 
+      aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+      aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}" 
       when: ec2_tag_galaxy_postgres == 'master'
 
 - name: Restart web server processes
