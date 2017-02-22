@@ -30,7 +30,7 @@
     # Update conf file, and disable hot_standby on the master node 
     - role: config-postgres-replication
       hot_standby: "off"
-      galaxy_secondary_id: "{{ secondary_ip }}"
+      galaxy_secondary_ip: "{{ secondary_ip }}"
       when: ec2_tag_galaxy_postgres == 'master'
 
     # Update conf file, and enable hot_standby on the slave node 

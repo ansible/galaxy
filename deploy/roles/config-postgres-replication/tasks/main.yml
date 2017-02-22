@@ -13,7 +13,7 @@
     role_attr_flags: REPLICATION
   ignore_errors: yes
 
-- name: Template pg_hba.conf
+- name: Template pg_hba.conf to the master node
   template:
     src: pg_hba.conf.j2
     dest: /var/lib/pgsql/data/pg_hba.conf
