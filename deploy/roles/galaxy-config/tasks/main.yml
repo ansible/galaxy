@@ -8,9 +8,7 @@
     name: "{{ item }}"
   with_items: "{{ yum_packages }}"
 
-- name: Create a galaxy group 
-  group: name=galaxy system=yes
-
+# Assumes the galaxy group was already created
 - name: create the galaxy user
   user:
     name: galaxy
@@ -19,6 +17,7 @@
     createhome: no
     shell: /sbin/nologin
 
+# Assumes the galaxy group was already created
 - name: Add apache to the galaxy group
   user:
     name: apache

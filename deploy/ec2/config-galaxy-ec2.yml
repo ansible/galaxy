@@ -38,6 +38,16 @@
       hot_standby: "on"
       when: ec2_tag_galaxy_postgres == 'slave'
 
+- name: Create the Galay group
+  hosts:
+    - "{{ galaxy_hosts_web }}"
+    - "{{ galaxy_hosts_celery }}"
+  gather_facts: no
+  tasks:
+    - include_role:
+        name: galaxy-config
+        tasks_from: group.yml
+   
 - name: Config CELERY nodes 
   hosts: "{{ galaxy_hosts_celery }}" 
   become: yes

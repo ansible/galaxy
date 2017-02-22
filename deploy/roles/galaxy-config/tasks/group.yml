@@ -1,0 +1,5 @@
+- name: Create a galaxy group
+  group:
+    name: galaxy
+    system: yes
+    state: present
