@@ -2,6 +2,8 @@
 - name: "Build prefix from current date"
   shell: date +'data/%Y/%m/%d'
   register: prefix
+  environment:
+    TZ: America/New_York
 
 - name: "Show prefix"
   debug:
