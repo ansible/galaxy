@@ -13,7 +13,7 @@
       backup_username: galaxy
       backup_enc_password: "{{ galaxy_encryption_password }}"
       backup_s3_bucket: galaxy.ansibleworks.com
-      backup_aws_access_key: "{{ galaxy_access_key }}"
-      backup_aws_secret_key: "{{ galaxy_secret_key }}"
+      backup_aws_access_key: "{{ aws_access_key }}"
+      backup_aws_secret_key: "{{ aws_secret_key }}"
       backup_tmp: /tmp
       when: ec2_tag_galaxy_postgres == 'master'
