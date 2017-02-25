@@ -4,6 +4,7 @@
 postgresql_packages:
 - postgresql-server
 - python-psycopg2
+- python-pip
 
 galaxy_subnet_cidrs: []
 galaxy_postgresql_dbname: "galaxy"
