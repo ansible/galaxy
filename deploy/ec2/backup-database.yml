@@ -9,7 +9,7 @@
     aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
     aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
   roles:
-    - role: backup_database
+    - role: backup-database
       backup_username: galaxy
       backup_enc_password: "{{ galaxy_encryption_password }}"
       backup_s3_bucket: galaxy.ansibleworks.com
