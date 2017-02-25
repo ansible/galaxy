@@ -1,0 +1,18 @@
+---
+- apt: name=apt-transport-https state=present
+
+- apt_key: id=A2923DFF56EDA6E76E55E492D3A80E30382E94DE keyserver=hkp://keyserver.ubuntu.com:80 state=present
+  when: datadog_apt_key_url_new is not defined
+
+- apt_key: id=A2923DFF56EDA6E76E55E492D3A80E30382E94DE url={{ datadog_apt_key_url_new }} state=present
+  when: datadog_apt_key_url_new is defined
+
+- apt_key: id=C7A7DA52 keyserver=hkp://keyserver.ubuntu.com:80 state=present
+  when: datadog_apt_key_url is not defined
+
+- apt_key: id=C7A7DA52 url={{ datadog_apt_key_url }} state=present
+  when: datadog_apt_key_url is defined
+
+- apt_repository: repo='{{ datadog_apt_repo }}' state=present update_cache=yes
+
+- apt: name=datadog-agent state=latest

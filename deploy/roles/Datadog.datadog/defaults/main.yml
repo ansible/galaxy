@@ -1,0 +1,15 @@
+---
+datadog_enabled: yes
+
+# default datadog.conf options
+datadog_config: {}
+
+# default checks enabled
+datadog_checks: {}
+
+# default user/group
+datadog_user: dd-agent
+datadog_group: root
+
+# default apt repo
+datadog_apt_repo: "deb http://apt.datadoghq.com/ stable main"

@@ -3,7 +3,7 @@
 # run cmd: ansible-playbook -i ec2.py --extra-vars="@your-var-file.yml" backup-database.yml
 ---
 - name: Backup database
-  hosts: "{{ galaxy_hosts_web }}"
+  hosts: "{{ galaxy_hosts_db }}"
   become: yes
   vars:
     aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"

@@ -1,0 +1,15 @@
+---
+- name: Download new RPM key
+  get_url:
+    url: "http://yum.datadoghq.com/DATADOG_RPM_KEY_E09422B3.public"
+    dest: /tmp/DATADOG_RPM_KEY_E09422B3.public
+    sha256sum: 694a2ffecff85326cc08e5f1a619937999a5913171e42f166e13ec802c812085
+
+- name: Import new RPM key
+  rpm_key: key=/tmp/DATADOG_RPM_KEY_E09422B3.public state=present
+
+- name: Copy repo file into place
+  template: src=datadog.repo.j2 dest=/etc/yum.repos.d/datadog.repo owner=root group=root mode=0644
+
+- name: Install datadog-agent package
+  yum: name=datadog-agent state=latest
