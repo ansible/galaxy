@@ -1,0 +1,19 @@
+# backup-database.yml
+# Run pg_dump, encrypt the output file, and ship it to S3
+# run cmd: ansible-playbook -i ec2.py --extra-vars="@your-var-file.yml" backup-database.yml
+---
+- name: Backup database
+  hosts: "{{ galaxy_hosts_web }}"
+  become: yes
+  vars:
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+  roles:
+    - role: backup_database
+      backup_username: galaxy
+      backup_enc_password: "{{ galaxy_encryption_password }}"
+      backup_s3_bucket: galaxy.ansibleworks.com
+      backup_aws_access_key: "{{ galaxy_access_key }}"
+      backup_aws_secret_key: "{{ galaxy_secret_key }}"
+      backup_tmp: /tmp
+      when: ec2_tag_galaxy_postgres == 'slave' 
