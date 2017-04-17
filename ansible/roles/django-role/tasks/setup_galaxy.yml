@@ -22,6 +22,6 @@
     mode: 0660
 
 - name: Install galaxy
-  command: "{{ galaxy_venv }}/bin/python ./setup.py develop"
+  command: "{{ galaxy_venv }}/bin/python /galaxy/setup.py develop"
   args:
-    chdir: /galaxy
+    chdir: /
