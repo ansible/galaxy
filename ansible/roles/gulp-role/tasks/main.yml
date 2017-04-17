@@ -15,7 +15,7 @@
     group: root
     mode: 755
 
-name: Create galaxy directory
+- name: Create galaxy directory
   file: 
     path: /galaxy
     state: directory
