@@ -658,6 +658,7 @@ def import_role(task_id):
 
     # iterate over repo tags and create version objects
     add_message(import_task, u"INFO", u"Adding repo tags as role versions")
+    git_tag_list = []
     try:
         git_tag_list = repo.get_tags()
         for tag in git_tag_list:
@@ -666,7 +667,28 @@ def import_role(task_id):
             rv.save()
     except Exception as exc:
         add_message(import_task, u"ERROR", u"An error occurred while importing repo tags: %s" % unicode(exc))
-    
+
+    add_message(import_task, u"INFO", u"Removing old tags")
+    if git_tag_list:
+        remove_versions = []
+        try:
+            for version in role.versions.all():
+                found = False
+                for tag in git_tag_list:
+                    if tag.name == version.name:
+                        found = True
+                        break
+                if not found:
+                    remove_versions.append(version.name)
+        except Exception as exc:
+            fail_import_task(import_task, u"Error identifying tags to remove: %s" % unicode(exc))
+
+        if remove_versions:
+            try:
+                for version_name in remove_versions:
+                    RoleVersion.objects.filter(name=version_name, role=role).delete()
+            except Exception as exc:
+                fail_import_task(import_task, u"Error removing tags from role: %s" % unicode(exc))
     try:
         role.validate_char_lengths()
     except Exception as exc:
