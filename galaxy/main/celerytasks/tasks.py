@@ -45,6 +45,8 @@ from galaxy.settings import GITHUB_SERVER
 
 logger = logging.getLogger(__name__)
 
+META_FILES = ["meta/main.yml", "meta/main.yaml", "meta.yml", "meta.yaml"]
+
 
 def get_repo_raw(token, repo_name):
     '''
@@ -83,7 +85,7 @@ def get_meta_data(repo):
     '''
     meta = None
 
-    for meta_file in ["meta/main.yml", "ansible/meta.yml", "meta/main.yaml", "ansible/meta.yaml"]:
+    for meta_file in META_FILES:
         try:
             meta = repo.get_file_contents(meta_file)
         except Exception:
@@ -522,13 +524,10 @@ def import_role(task_id):
         
     # parse meta data
     add_message(import_task, u"INFO", u"Parsing and validating meta data.")
-
-    for meta_file in ["meta/main.yml", "ansible/meta.yml", "meta/main.yaml", "ansible/meta.yaml"]:
+    for meta_file in META_FILES:
         meta_data = decode_file(import_task, repo, branch, meta_file, return_yaml=True)
-
         if meta_data:
             break
-
     if not meta_data:
         fail_import_task(import_task, u"Failed to get meta data. Did you forget to add meta/main.yml or "
                                       u"ansible/meta.yml?")
@@ -557,9 +556,9 @@ def import_role(task_id):
 
     # check if meta/container.yml exists
     container_yml = decode_file(import_task, repo, branch, 'meta/container.yml', return_yaml=False)
-    ansible_container_yml = decode_file(import_task, repo, branch, 'ansible/container.yml', return_yaml=False)
+    ansible_container_yml = decode_file(import_task, repo, branch, 'container.yml', return_yaml=False)
     if container_yml and ansible_container_yml:
-        add_message(import_task, u"ERROR", (u"Found ansible/container.yml and meta/container.yml. "
+        add_message(import_task, u"ERROR", (u"Found container.yml and meta/container.yml. "
                                             u"A role can only have only one container.yml file."))
     elif container_yml:
         add_message(import_task, u"INFO", u"Found meta/container.yml")
@@ -567,7 +566,7 @@ def import_role(task_id):
         role.role_type = Role.CONTAINER
         role.container_yml = container_yml
     elif ansible_container_yml:
-        add_message(import_task, u"INFO", u"Found ansible/container.yml")
+        add_message(import_task, u"INFO", u"Found container.yml")
         add_message(import_task, u"INFO", u"Setting role type to Container App")
         role.role_type = Role.CONTAINER_APP
         role.container_yml = ansible_container_yml
