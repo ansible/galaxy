@@ -15,6 +15,22 @@
     group: root
     mode: 755
 
+- name: Create galaxy directory
+  file: 
+    path: /galaxy
+    state: directory
+    owner: root
+    group: root
+    mode: 775 
+
+- name: Copy package.json
+  copy:
+    src: "{{ lookup('pipe','dirname `pwd`') }}/package.json"
+    dest: /galaxy/package.json
+    owner: root
+    group: root
+    mode: 775
+
 - name: Install node packages
   npm: path=/galaxy state=latest
 

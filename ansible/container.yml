@@ -14,6 +14,7 @@ services:
       - "8000:8000"
     environment: 
       - C_FORCE_ROOT=1
+      - PYTHONPATH=/galaxy
     dev_overrides:
       volumes:
         - ${PWD}:/galaxy:z
