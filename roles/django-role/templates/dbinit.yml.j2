@@ -28,7 +28,7 @@
       command: psql -h postgres -d galaxy -U galaxy -f /galaxy/test-data/enable_triggers.sql
     
     - name: Update django site name
-      command: psql -h postgres -d galaxy -U galaxy -f /galaxy/ansible/update_site.sql
+      command: psql -h postgres -d galaxy -U galaxy -f /setup/update_site.sql
     
     - name: Remove any log files
       command: rm -f *.log
@@ -39,4 +39,14 @@
       file:
         path: /setup/dbinit.completed
         state: touch
+
+    - name: Refresh custom indexes
+      command: /venv/bin/python ./manage.py rebuild_galaxy_indexes
+      args:
+        chdir: /galaxy
+
+    - name: Refresh galaxy index
+      command: /venv/bin/python ./manage.py rebuild_index --noinput
+      args:
+        chdir: /galaxy
 

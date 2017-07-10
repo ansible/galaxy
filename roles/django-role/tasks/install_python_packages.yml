@@ -30,6 +30,11 @@
     chdir: "{{ galaxy_venv }}/bin"
   when: not ez.stat.exists
 
+- name: Copy requirements.txt
+  copy:
+    src: /src/requirements.txt
+    dest: /galaxy/requirements.txt
+
 - name: Install python packages
   pip:
     executable: "{{ galaxy_venv }}/bin/pip"

@@ -2,17 +2,16 @@
 
 ## Opening Issues
 
-The issue log is at [galaxy-issues](https://github.com/ansible/galaxy-issues). Eventually it will be merged into the Galaxy repo, but for now please continue to open issues there.
+The issue log is at [galaxy-issues](https://github.com/ansible/galaxy-issues). Eventually it may be merged into the Galaxy repo, but for now please continue to open issues there.
 
 ## Development
 
 To setup a local development environment you will need to install the following:
 
-* [Ansible Container 0.3.0+](https://github.com/ansible/ansible-container)
-* [Ansible 2.1.1.0+](https://github.com/ansible/ansible)
+* [Ansible Container](https://github.com/ansible/ansible-container) running from source. For assistance, see [the Running from Source guide](http://docs.ansible.com/ansible-container/installation.html#running-from-source).
 
-We recommend using [Git Flow](https://github.com/nvie/gitflow), although it's not strictly required. Any development 
-should be done in feature branches and compared to the `develop` branch.
+* We recommend using [Git Flow](https://github.com/nvie/gitflow), although it's not strictly required. Any development 
+should be done in feature branches, and compared to the `develop` branch.
 
 ### Start a Feature
 
@@ -51,88 +50,41 @@ $ make build
 After the build completes, you will see the following Docker images:
 
 ```
+# View the Galaxy images
 $ docker images
-REPOSITORY                          TAG                 IMAGE ID            CREATED             SIZE
-galaxy-django                       20160919015153      cb4deac13890        15 hours ago        619.5 MB
-galaxy-django                       latest              cb4deac13890        15 hours ago        619.5 MB
-galaxy-gulp                         20160919015153      a9c8919e1a05        16 hours ago        482 MB
-galaxy-gulp                         latest              a9c8919e1a05        16 hours ago        482 MB
-ansible/ansible-container-builder   0.2                 0e13266a8f4a        31 hours ago        831.3 MB
-centos                              7                   980e0e4c79ec        12 days ago         196.8 MB
-elasticsearch                       latest              31347bae83b8        2 weeks ago         344.9 MB
-python                              2.7                 4c5f5839b372        2 weeks ago         675.3 MB
-postgres                            9.4                 7ba4f6e9e5fe        2 weeks ago         264.9 MB
-postgres                            latest              6f86882e145d        2 weeks ago         265.9 MB
-memcached                           latest              228303902e2e        2 weeks ago         128.2 MB
-rabbitmq                            latest              0463354ada4d        3 weeks ago         180.8 MB
+
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+galaxy-django       20170717173749      b7f05cefadbe        23 minutes ago      872MB
+galaxy-django       latest              b7f05cefadbe        23 minutes ago      872MB
+galaxy-gulp         latest              2461ebb38ac5        4 hours ago         405MB
+galaxy-gulp         20170714223513      47702c4705ec        2 days ago          405MB
+galaxy-conductor    latest              21f24543e888        2 days ago          518MB
+memcached           latest              4b6d78556a83        10 days ago         82.6MB
+centos              7                   36540f359ca3        11 days ago         193MB
+rabbitmq            latest              f8fb6fc4d6ff        3 weeks ago         124MB
+elasticsearch       2.4.1               8e3cf79edcc3        8 months ago        346MB
+postgres            9.5.4               2417ea518abc        8 months ago        264MB
 ```
 
 Start the services by running the following:
 
 ```
+# Start the Galaxy services
 $ make run
 ```
 
-The first time you start the application, the *django* container will perform migrations, and load test data. Performing these operations delays the start of the web server for a few moments. As the container starts, you will see output from */setup/dbinit.yml* that looks like the following:
+The *django* service executes the Django development web server and a celery process. Before starting the web server for the first time, it will perform database migrations, load test data, and rebuild the search indexes. These operations may take up to 10 minutes, so before attempting to access the web server, check the log file to see which task is being executed, and whether or not the web server has started. The following command will attach to the service's STDOUT and display the log output in realtime:
 
 ```
-Attaching to ansible_gulp_1, ansible_django_1
-django_1             |
-django_1             | PLAY [Database init] ***********************************************************
-django_1             |
-django_1             | TASK [Wait for postgresql] *****************************************************
-django_1             | ok: [localhost]
-django_1             |
-django_1             | TASK [Perform initial migrations] **********************************************
-gulp_1               | [16:08:04] Using gulpfile /galaxy/gulpfile.js
-gulp_1               | [16:08:04] Starting 'less'...
-gulp_1               | [16:08:04] Starting 'watch'...
-gulp_1               | [16:08:05] Finished 'watch' after 1.01 s
-gulp_1               | [16:08:06] Finished 'less' after 1.76 s
-gulp_1               | [16:08:06] Starting 'default'...
-gulp_1               | [16:08:06] Finished 'default' after 34 μs
-django_1             | changed: [localhost]
-django_1             |
-django_1             | TASK [Disable triggers] ********************************************************
-django_1             | changed: [localhost]
-django_1             |
-django_1             | TASK [Import testing data] *****************************************************
-django_1             | changed: [localhost]
-django_1             |
-django_1             | TASK [Enable triggers] *********************************************************
-django_1             | changed: [localhost]
-django_1             |
-django_1             | TASK [Update django site name] *************************************************
-django_1             | changed: [localhost]
-django_1             |
-django_1             | TASK [Remove any log files] ****************************************************
-django_1             | changed: [localhost]
-django_1             |  [WARNING]: Consider using file module with state=absent rather than running rm
-django_1             |
-django_1             | TASK [Create dbinit.completed] *************************************************
-django_1             | changed: [localhost]
-django_1             |
-django_1             | PLAY RECAP *********************************************************************
-django_1             | localhost                  : ok=11   changed=10   unreachable=0    failed=0
-django_1             |
-django_1             | /galaxy
+# Follow the django service log output
+$ docker logs -f galaxy_django_1
 ```
 
-The *postgres*, *memcache*, *elasticsearch*, and *rabbitmq* services will run in the background, while *django* and *gulp* execute in the foreground. The logs for the web server, celery and gulp will be displaybed in real-time. You can access the web server using the URL: [http://localhost:8000](http://localhost:8000).
+Once the web server starts, use Ctrl-C to stop following the log output, or switch to a different terminal session. 
 
-**NOTE**: If you're running Docker Machine, replace *localhost* with the IP address of the Virtual Machine. User `docker-machine ip default` to get the IP, replacing *default* with the name of your VM.
+You can access the web server at [http://localhost:8000](http://localhost:8000).
 
-### Rebuild Search Indexes
-
-If you plan to use the Browse page on your local Galaxy server, you'll need to build the Elasticsearch indexes. Once your web server is running, meaning that migrations completed and test data loaded (as discussed above), run the following command from the *galaxy* project root to manually build the indexes:
-
-```
-$ make build_indexes
-```
-
-The process may take up to 10 minutes to complete the index build.
-
-### Create an Admin User
+### Create an admin user
 
 To create a superuser with access to the admin site, open a new terminal session or window, and run `make createsuperuser`. The following shows the creation of an admin user: 
 
@@ -198,16 +150,29 @@ Thanks!
 ```
 From the latest log file, retrieve the verification URL, and paste it into your browser. Once the page loads, click the `Confirm` button, and on the next page click the blue GitHub logo to log in.
 
-### Stop Services and Other Commands
+### Modifying static assets
 
-Ctrl-C or closing the terminal session window stops the containers running in the foreground. To stop all containers, open a seccon terminal session or window, and run `make stop`. Use `docker ps` to check the state of the services.
+The Javascript, CSS and HTML components for the web site can be found in the [galaxy/static](./galaxy/static) folder. The *gulp* service watches for modification to the `less` stylesheets, and automatically recompiles the CSS. After making a change, refresh your browser, and you should see the changes. If you don't see the changes, use the following command to check the gulp service's log:
+
+```
+# View the gulp service log
+$ docker logs galaxy_gulp_1
+```
+
+### Stop services 
+
+To stop all services, run `make stop`. You can then run `docker ps` to check the state of the services.
+
+### Other useful commands
 
 Review the Makefile for additional commands. Examples include:
 
-- `make psql` to access the database command line tool 
-- `make migrate` to generate and apply Django migrations
-- `make refresh` to remove all galaxy images, containers, logging data, rebuild images, and restart the containers 
+- `make build_indexes` to rebuild the search indexes
 - `make clean` to remove all galaxy images, containers and logging data
+- `make createsuperuser` to create the Django admin user 
+- `make migrate` to generate and apply Django migrations
+- `make psql` to access the database command line tool 
+- `make refresh` to remove all galaxy images, containers, logging data, rebuild images, and restart the containers 
 
 ### Submitting Code
 
@@ -217,7 +182,7 @@ always happy to review and discuss them with you.
 Before submitting a large pull request for a new feature, we suggest opening an issue to discuss the feature prior to 
 submission.
 
-We reserve the right to reject submissions that are not a good fit for the project or not in keeping with the intended 
+We reserve the right to reject submissions that are not a good fit for the project, or not in keeping with the intended 
 direction of the project. If you are unsure as to whether a feature is a good fit, take the time to open an issue.
 
 Please observe the following when submitting a PR:
@@ -226,6 +191,4 @@ Please observe the following when submitting a PR:
 * Follow the Git Flow branching model and develop in a feature branch
 * Limit the scope of a submission to a single feature or bug fix.
 * Before embarking on a large feature, open an issue and submit the feature for review by the community
-
-
 

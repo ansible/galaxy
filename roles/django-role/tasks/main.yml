@@ -67,7 +67,7 @@
 
 - name: Copy source
   synchronize:
-    src: "{{ lookup('pipe','dirname `pwd`') }}/"
+    src: /src/
     dest: /galaxy/ 
   remote_user: "{{ galaxy_user }}" 
 
@@ -87,13 +87,20 @@
     group: root 
     mode: 0664
 
-- name: Copy inventory 
+- name: Copy files to /setup 
   copy:
-    src: inventory
-    dest: /setup/inventory
+    src: "{{ role_path }}/files/{{ item.name }}" 
+    dest: "/setup/{{ item.name }}"
     owner: "{{ galaxy_user }}" 
     group: root 
-    mode: 0664
+    mode: "{{ item.mode }}"
+  with_items:
+  - name: inventory
+    mode: "u=rw,g=rw,o=r"
+  - name: update_site.sql
+    mode: "u=rw,g=rw,o=r"
+  - name: start-development.sh 
+    mode: "u=rwx,g=rwx,o=rx"
 
 - name: Create virtualenv and install python packages 
   include: install_python_packages.yml

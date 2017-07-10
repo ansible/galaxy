@@ -3,13 +3,13 @@
   gather_facts: no
   connection: local
   vars: 
-    host: 0.0.0.0
-    port: 8000
+    galaxy_host: 0.0.0.0 
+    galaxy_port: 8000
 
   tasks:
     - name: Wait for server to start  
       pause:
-        seconds: 120
+        seconds: 300 
  
     - name: Check container status
       command: docker ps -a
@@ -18,14 +18,14 @@
     - debug: var=output.stdout_lines
 
     - name: Check django logs
-      command: docker logs ansible_django_1
+      command: docker logs galaxy_django_1 
       register: output 
 
     - debug: var=output.stdout_lines
 
     - name: Access the home page
       uri: 
-        url: "http://{{ host }}:{{ port }}"
+        url: "http://{{ galaxy_host }}:{{ galaxy_port }}"
         return_content: yes
       register: homeout 
        

@@ -2,7 +2,7 @@
 
 - name: Deploy settings file
   template:
-    src: /ansible-container/settings/settings_develop.py.j2
+    src: /src/settings/settings_develop.py.j2
     dest: /etc/galaxy/settings.py
     owner: "{{ galaxy_user }}"
     group: root
