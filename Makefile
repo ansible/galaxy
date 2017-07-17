@@ -69,7 +69,7 @@ psql:
 
 # Build Galaxy images 
 build:
-	ansible-container --debug build
+	ansible-container --debug --devel build
 
 # Rebuild Galaxy search indexes
 build_indexes:
@@ -88,11 +88,11 @@ flake8:
 
 # Start Galaxy containers with django and gulp in the foreground
 run:
-	ansible-container --debug run
+	ansible-container --debug --devel run
 
 # Start production
 run_production:
-	ansible-container --debug run --production
+	ansible-container --debug --devel run --production
 
 stop:
 	@ansible-container stop --force
