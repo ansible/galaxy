@@ -191,7 +191,7 @@ class ApiV1RootView(APIView):
         data['platforms']   = reverse('api:platform_list')
         data['imports']     = reverse('api:import_task_list')
         data['repos']                = reverse('api:repos_view')
-        data['latest impoorts']      = reverse('api:import_task_latest_list')
+        data['latest imports']      = reverse('api:import_task_latest_list')
         data['notification secrets'] = reverse('api:notification_secret_list')
         data['notifications']        = reverse('api:notification_list')
         data['tokens']               = reverse('api:token')
