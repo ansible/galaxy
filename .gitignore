@@ -18,3 +18,4 @@ provisioning/ec2_inventory
 /logs
 galaxy.min.css
 .DS_Store
+ansible-deployment/

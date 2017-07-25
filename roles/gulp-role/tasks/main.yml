@@ -7,13 +7,37 @@
   - nodejs
   - npm
 
+- name: Create gulp group
+  group:
+    name: gulp 
+    gid: 1001
+    state: present
+
+- name: Create gulp user
+  user:
+    name: gulp 
+    uid: 1000
+    group: root
+    groups: gulp
+    append: yes
+    state: present
+    shell: /bin/bash 
+
 - name: Download dumb-init
   get_url:
     url: https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64
     dest: /usr/local/bin/dumb-init
     owner: root
     group: root
-    mode: 755
+    mode: 0775
+
+- name: Create node_modules
+  file:
+    path: /galaxy/node_modules
+    state: directory
+    owner: gulp
+    group: gulp
+    mode: 0775
 
 - name: Install node packages
   npm: path=/galaxy state=latest

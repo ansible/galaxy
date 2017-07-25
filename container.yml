@@ -23,7 +23,7 @@ services:
       volumes:
         - ${PWD}:/galaxy:z
     roles:
-    - django-role
+      - django-role
 
   postgres:
     from: postgres:9.5.4
@@ -47,15 +47,15 @@ services:
 
   gulp:
     from: centos:7
+    roles:
+      - gulp-role
     command: ["/bin/true"]
     working_dir: /galaxy
+    volumes:
+      - ${PWD}:/galaxy:z
+    entrypoint: /usr/bin/entrypoint.sh
+    user: gulp 
     dev_overrides:
-      entrypoint: /usr/bin/entrypoint.sh
       command: [/usr/local/bin/dumb-init, /usr/bin/gulp]
-      working_dir: /galaxy
-      volumes:
-        - ${PWD}:/galaxy:z
-    roles:
-    - gulp-role
 
 registries: {}
