@@ -103,8 +103,8 @@
     mode: "u=rwx,g=rwx,o=rx"
 
 - name: Create virtualenv and install python packages 
-  include: install_python_packages.yml
+  include: install-python-packages.yml
 
 - name: Setup galaxy
-  include: setup_galaxy.yml 
+  include: setup-galaxy.yml 
 

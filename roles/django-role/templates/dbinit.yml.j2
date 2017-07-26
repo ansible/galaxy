@@ -16,7 +16,9 @@
         connect_timeout: 10
 
     - name: Perform initial migrations 
-      command: /venv/bin/galaxy-manage migrate --noinput --fake-initial
+      command: /venv/bin/python manage.py migrate --noinput --fake-initial
+      args:
+        chdir: /galaxy
     
     - name: Disable triggers
       command: psql -h postgres -d galaxy -U galaxy -f /galaxy/test-data/disable_triggers.sql
@@ -41,12 +43,12 @@
         state: touch
 
     - name: Refresh custom indexes
-      command: /venv/bin/python ./manage.py rebuild_galaxy_indexes
+      command: /venv/bin/python manage.py rebuild_galaxy_indexes
       args:
         chdir: /galaxy
 
-    - name: Refresh galaxy index
-      command: /venv/bin/python ./manage.py rebuild_index --noinput
+    - name: Start background refresh of galaxy index
+      shell: nohup /venv/bin/python manage.py rebuild_index --noinput >/setup/rebuild_index.log 2>&1 &
       args:
         chdir: /galaxy
 
