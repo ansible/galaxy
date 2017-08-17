@@ -28,6 +28,11 @@ LogFormat "%a %l %u %t \"%r\" %>s %b" common
   RewriteRule !/api/v1/notifications https://%{HTTP_HOST}%{REQUEST_URI}
   RewriteCond %{REQUEST_METHOD} !POST
   RewriteRule /api/v1/notifications https://%{HTTP_HOST}%{REQUEST_URI}
+  
+  # For maintenance page, comment above and uncomment below
+  # RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+  # RewriteRule ^.*$ /static/maintenance/maintenance.html [R=503,L]
+  # ErrorDocument 503 /static/maintenance/maintenance.html
 
   CustomLog "/var/log/httpd/galaxy_access.log" common
   ErrorLog "/var/log/httpd/galaxy_error.log"
