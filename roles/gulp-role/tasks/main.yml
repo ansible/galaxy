@@ -2,10 +2,13 @@
   yum: name=epel-release
 
 - name: Install nodejs
-  yum: name="{{ item }}"
-  with_items:
-  - nodejs
-  - npm
+  shell: curl -sL https://rpm.nodesource.com/setup_7.x | bash - && yum install -y nodejs
+
+- name: Check node version
+  command: node -v
+
+- name: Check npm version
+  command: npm -v
 
 - name: Create gulp group
   group:
