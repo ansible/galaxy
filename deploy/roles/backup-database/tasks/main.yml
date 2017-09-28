@@ -1,6 +1,11 @@
 ---
 - name: Install boto
-  pip: name=boto
+  pip:
+    name: "{{ item }}"
+    state: latest 
+  with_items:
+  - boto3
+  - botocore
 
 - name: Get Timestamp
   shell: date +'%Y%m%d%H%M%S'
@@ -14,7 +19,7 @@
   register: prefix
 
 - name: "Put the database backup to S3"
-  s3:
+  aws_s3:
     aws_access_key: "{{ backup_aws_access_key }}"
     aws_secret_key: "{{ backup_aws_secret_key }}"
     bucket: "{{ backup_s3_bucket }}"
