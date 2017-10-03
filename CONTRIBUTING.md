@@ -98,7 +98,7 @@ Password:
 Password (again):
 Superuser created successfully.
 ```
-The admin site can be accessed at [http://localhost:8000/admin](http://localhost:8000/admin).
+The admin site can be accessed at [http://localhost:8000/galaxy__admin__site](http://localhost:8000/galaxy__admin__site).
 
 ### Connect to GitHub
 
@@ -110,7 +110,7 @@ into GitHub, going to Personal Settings, choosing `Oauth Applications`, and then
 of the Virtualbox host.
 - Set the *Authorization Callback URL* to `http://localhost:8000/accounts/github/login/callback/`. And again, if you're using Docker Machine, replace *localhost* with the IP address of the Virtualbox host.
 
-After you save the new application, access your local Galaxy admin site at [http://localhost:8000/admin](http://localhost:8000/admin). If you have not already done so, follow the *Create an Admin User* instructions above. 
+After you save the new application, access your local Galaxy admin site at [http://localhost:8000/galaxy__admin__site](http://localhost:8000/galaxy__admin__site). If you have not already done so, follow the *Create an Admin User* instructions above.
 
 After logging into the admin site, you'll create a new social application. Start by finding `Social applications` at the bottom of the table, and clicking the *Add* button to its right. On the next screen, set the *provider* to `GitHub`, and enter `GitHub` as the *name*. From the new GitHub Oauth application you just created, copy the *ClientID* value into *Client id*, and copy the *Client Secret* value into *Secret key*. Under *Sites*, add `localhost` to *Chosen sites*. Save the changes.
 
