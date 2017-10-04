@@ -31,8 +31,8 @@ endif
 .PHONY: clean clean_dist clean_images clean_containers \
         refresh migrate migrate_empty makemigrations build_from_scratch \
         build build_debug \
-        run run_production\
-        flake8 \
+        run run_production \
+        flake8 test \
         build_indexes \
         sdist stop requirements ui_build export_test_data import_test_data createsuperuser \
         refresh_role_counts shell
@@ -86,6 +86,9 @@ createsuperuser:
 flake8:
 	docker run -v ${PWD}:/galaxy -w /galaxy galaxy-django:latest /venv/bin/flake8 --config=tox.ini galaxy
 
+test:
+	docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py test
+
 # Start Galaxy containers with django and gulp in the foreground
 run:
 	ansible-container --debug --devel run
@@ -134,6 +137,7 @@ import_test_data:
 refresh_role_counts:
 	@echo Refresh role counts
 	@docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py refresh_role_counts
+
 shell:
 	@echo Starting shell on galaxy_django_1
 	@docker exec -i -t galaxy_django_1 /bin/bash
