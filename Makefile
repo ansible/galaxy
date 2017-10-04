@@ -42,7 +42,7 @@ clean:
 	@./clean.sh
 
 # Refresh development environment after pulling new code.
-refresh: clean build run 
+refresh: clean build run
 
 # Remove containers
 clean_containers:
@@ -54,33 +54,33 @@ clean_images:
 
 # Create and execute database migrations
 migrate:
-	@docker exec -i -t ansible_django_1 /venv/bin/python ./manage.py makemigrations main --noinput
-	@docker exec -i -t ansible_django_1 /venv/bin/python ./manage.py migrate --noinput
+	@docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py makemigrations main --noinput
+	@docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py migrate --noinput
 
 # Create an empty migration
 migrate_empty:
-	@docker exec -i -t ansible_django_1 /venv/bin/python ./manage.py makemigrations --empty main
+	@docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py makemigrations --empty main
 
 makemigrations:
-	@docker exec -i -t ansible_django_1 /venv/bin/python ./manage.py makemigrations main
+	@docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py makemigrations main
 
 psql:
-	@docker exec -i -t ansible_django_1 psql -h postgres -d galaxy -U galaxy
+	@docker exec -i -t galaxy_django_1 psql -h postgres -d galaxy -U galaxy
 
-# Build Galaxy images 
+# Build Galaxy images
 build:
 	ansible-container --debug --devel build
 
 # Rebuild Galaxy search indexes
 build_indexes:
 	@echo "Rebuild Custom Indexes"
-	@docker exec -i -t ansible_django_1 /venv/bin/python ./manage.py rebuild_galaxy_indexes
+	@docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py rebuild_galaxy_indexes
 	@echo "Rebuild Search Index"
-	@docker exec -i -t ansible_django_1 /venv/bin/python ./manage.py rebuild_index --noinput
+	@docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py rebuild_index --noinput
 
-createsuperuser: 
+createsuperuser:
 	@echo "Create Superuser"
-	@docker exec -i -t ansible_django_1 /venv/bin/python ./manage.py  createsuperuser
+	@docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py  createsuperuser
 
 # Run flake8 inside the django container
 flake8:
@@ -125,16 +125,16 @@ ui_build:
 
 export_test_data:
 	@echo Export data to test-data/role_data.dmp.gz
-	@docker exec -i -t ansible_django_1 /galaxy/test-data/export.sh
+	@docker exec -i -t galaxy_django_1 /galaxy/test-data/export.sh
 
 import_test_data:
 	@echo Import data from test-data/role_data.dmp.gz
-	@docker exec -i -t ansible_django_1 /galaxy/test-data/import.sh
+	@docker exec -i -t galaxy_django_1 /galaxy/test-data/import.sh
 
 refresh_role_counts:
 	@echo Refresh role counts
-	@docker exec -i -t ansible_django_1 /venv/bin/python ./manage.py refresh_role_counts
+	@docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py refresh_role_counts
 shell:
-	@echo Starting shell on ansible_django_1
-	@docker exec -i -t ansible_django_1 /bin/bash
+	@echo Starting shell on galaxy_django_1
+	@docker exec -i -t galaxy_django_1 /bin/bash
 
