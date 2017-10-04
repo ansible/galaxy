@@ -28,7 +28,6 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 # local stuff
-import urls as main_urls
 from models import Role, Namespace
 
 # rst2html5-tools
@@ -93,6 +92,7 @@ def readme_to_html(obj):
     return content
 
 def get_url_parts(path):
+    import urls as main_urls
     # create URLs for breadcrumbs displayed in page headers
     url_parts = path.split('/')
     total_path = ""
