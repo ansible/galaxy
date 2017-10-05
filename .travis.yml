@@ -19,13 +19,14 @@ script:
 - docker info
 
 # build images
-- make build 
+- make build
 
 # Run flake8
 - make flake8
 
 # start the application
 - make run_production
+- make test
 - docker ps -a
 - docker images
 
@@ -35,5 +36,5 @@ script:
 
 # Stop the application
 - cd ../..
-- make stop 
+- make stop
 
