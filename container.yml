@@ -54,14 +54,14 @@ services:
     user: django
     environment:
       - C_FORCE_ROOT=1
+    roles:
+      - django-role
     dev_overrides:
       command: [/usr/local/bin/dumb-init, /setup/start-development.sh]
       ports:
         - "8000:8000"
       volumes:
         - ${PWD}:/galaxy:z
-    roles:
-      - django-role
 
   celery:
     from: galaxy-django:latest
@@ -76,8 +76,6 @@ services:
     dev_overrides:
       volumes:
       - ${PWD}:/galaxy:z
-    roles:
-      - django-role
 
   postgres:
     from: postgres:9.5.4
