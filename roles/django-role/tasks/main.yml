@@ -101,6 +101,8 @@
     mode: "u=rw,g=rw,o=r"
   - name: start-development.sh 
     mode: "u=rwx,g=rwx,o=rx"
+  - name: entrypoint.sh
+    mode: "u=rwx,g=rwx,o=rx"
 
 - name: Create virtualenv and install python packages 
   include: install-python-packages.yml
