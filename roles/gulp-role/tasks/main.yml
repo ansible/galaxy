@@ -51,9 +51,13 @@
 - name: Install less globally
   npm: name=less global=yes
 
-- name: Copy entrypoint.sh 
-  copy:
-    src: "{{ role_path }}/files/entrypoint.sh"
-    dest: /usr/bin/entrypoint.sh 
-    mode: 0775
+- name: Build static assets
+  command: gulp build
+  args:
+    chdir: /galaxy
 
+- name: Copy static assets to conductor
+  synchronize:
+    src: /galaxy/galaxy/static
+    dest: /build
+    mode: pull
