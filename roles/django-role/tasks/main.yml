@@ -99,12 +99,12 @@
     mode: "u=rw,g=rw,o=r"
   - name: update_site.sql
     mode: "u=rw,g=rw,o=r"
-  - name: start-development.sh 
+  - name: start.sh
     mode: "u=rwx,g=rwx,o=rx"
-  - name: entrypoint.sh
+  - name: start-development.sh
     mode: "u=rwx,g=rwx,o=rx"
 
-- name: Create virtualenv and install python packages 
+- name: Create virtualenv and install python packages
   include: install-python-packages.yml
 
 - name: Setup galaxy

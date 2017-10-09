@@ -48,9 +48,7 @@ services:
       - elastic
       - memcache
       - rabbit
-    entrypoint: [/setup/entrypoint.sh]
-    command: ['/usr/local/bin/dumb-init', '/venv/bin/gunicorn', '-w', '2',
-              '-b', '0.0.0.0:8000', 'galaxy.wsgi:application']
+    command: ['/usr/local/bin/dumb-init', '/setup/start.sh']
     user: django
     environment:
       - C_FORCE_ROOT=1
