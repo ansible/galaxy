@@ -77,7 +77,7 @@
     dest: /usr/local/bin/dumb-init
     owner: root
     group: root
-    mode: 755
+    mode: 0755
 
 - name: Copy dbinit.yml
   template:
