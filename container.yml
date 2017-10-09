@@ -35,7 +35,7 @@ services:
         ASSET_PATHS:
           - /build/static
         PROXY: yes
-        PROXY_PASS: 'http://django:8080'
+        PROXY_PASS: 'http://django:8000'
     dev_overrides:
       ports: []
       command:  [/bin/true]
@@ -48,11 +48,14 @@ services:
       - elastic
       - memcache
       - rabbit
-    command: [/usr/local/bin/dumb-init, /setup/start-development.sh]
+    entrypoint: [/setup/entrypoint.sh]
+    command: ['/usr/local/bin/dumb-init', '/venv/bin/gunicorn', '-w', '2',
+              '-b', '0.0.0.0:8000', 'galaxy.wsgi:application']
     user: django
     environment:
       - C_FORCE_ROOT=1
     dev_overrides:
+      command: [/usr/local/bin/dumb-init, /setup/start-development.sh]
       ports:
         - "8000:8000"
       volumes:

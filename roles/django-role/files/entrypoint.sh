@@ -9,4 +9,3 @@ if [ ! -f /setup/dbinit.completed ]; then
 fi
 
 exec "$@"
-
