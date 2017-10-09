@@ -1,0 +1,7 @@
+---
+STATIC_ROOT: /static
+PIDFILE_DIR: /run/nginx
+ASSET_PATHS: []
+PROXY: no 
+PROXY_PASS: ""
+PROXY_LOCATION: "/"
