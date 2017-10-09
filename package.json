@@ -21,7 +21,7 @@
     "url": "https://github.com/ansible/galaxy/issues"
   },
   "devDependencies": {
-    "less": "latest",
+    "less": "<3.0.0",
     "gulp": "latest",
     "gulp-less": "latest",
     "gulp-dest": "latest",
