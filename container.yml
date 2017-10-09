@@ -50,13 +50,29 @@ services:
       - rabbit
     command: [/usr/local/bin/dumb-init, /setup/start-development.sh]
     user: django
-    ports:
-      - "8000:8000"
-    environment: 
+    environment:
       - C_FORCE_ROOT=1
     dev_overrides:
+      ports:
+        - "8000:8000"
       volumes:
         - ${PWD}:/galaxy:z
+    roles:
+      - django-role
+
+  celery:
+    from: galaxy-django:latest
+    working_dir: /galaxy
+    links:
+    - rabbit
+    command: [/usr/local/bin/dumb-init, /venv/bin/python, /galaxy/manage.py, celeryd,
+      -B, --autoreload, -Q, 'celery,import_tasks,login_tasks']
+    environment:
+    - C_FORCE_ROOT=1
+    user: django
+    dev_overrides:
+      volumes:
+      - ${PWD}:/galaxy:z
     roles:
       - django-role
 
@@ -65,7 +81,7 @@ services:
     environment:
       - POSTGRES_PASSWORD={{ galaxy_postgres_password }}
       - POSTGRES_USER={{ galaxy_postgres_user }}
-      - POSTGRES_DB={{ galaxy_postgres_db }} 
+      - POSTGRES_DB={{ galaxy_postgres_db }}
 
   elastic:
     from: elasticsearch:2.4.1

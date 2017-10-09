@@ -25,7 +25,6 @@ setuptools
 PyYAML
 python-memcached
 mock
-honcho
 ansible
 # pyinotify
 pyOpenSSL

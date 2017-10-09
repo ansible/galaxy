@@ -22,4 +22,4 @@ else
      fi
 fi
 
-/venv/bin/honcho start
+/venv/bin/python /galaxy/manage.py runserver 0.0.0.0:8000 --nostatic
