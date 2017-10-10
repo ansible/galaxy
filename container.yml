@@ -3,8 +3,25 @@ settings:
   save_conductor_container: false
   vars_files:
   - develop.yml
-    
+
+  conductor:
+    volumes:
+      - build:/build
+
 services:
+
+  gulp:
+    from: centos:7
+    roles:
+      - gulp-role
+    command: [/bin/true]
+    working_dir: /galaxy
+    user: gulp
+    volumes:
+      - ${PWD}:/galaxy:z
+    dev_overrides:
+      command: [/usr/local/bin/dumb-init, /usr/bin/gulp]
+
   django:
     from: centos:7
     working_dir: /galaxy
@@ -13,24 +30,57 @@ services:
       - elastic
       - memcache
       - rabbit
-    command: [/usr/local/bin/dumb-init, /setup/start-development.sh]
+    command: ['/usr/local/bin/dumb-init', '/setup/start.sh']
     user: django
-    ports:
-      - "8000:8000"
-    environment: 
+    environment:
       - C_FORCE_ROOT=1
-    dev_overrides:
-      volumes:
-        - ${PWD}:/galaxy:z
     roles:
       - django-role
+    dev_overrides:
+      command: [/usr/local/bin/dumb-init, /setup/start-development.sh]
+      ports:
+        - "8000:8000"
+      volumes:
+        - ${PWD}:/galaxy:z
+
+  celery:
+    from: galaxy-django:latest
+    working_dir: /galaxy
+    links:
+    - rabbit
+    command: [/usr/local/bin/dumb-init, /venv/bin/python, /galaxy/manage.py, celeryd,
+      -B, --autoreload, -Q, 'celery,import_tasks,login_tasks']
+    environment:
+    - C_FORCE_ROOT=1
+    user: django
+    dev_overrides:
+      volumes:
+      - ${PWD}:/galaxy:z
 
   postgres:
     from: postgres:9.5.4
     environment:
       - POSTGRES_PASSWORD={{ galaxy_postgres_password }}
       - POSTGRES_USER={{ galaxy_postgres_user }}
-      - POSTGRES_DB={{ galaxy_postgres_db }} 
+      - POSTGRES_DB={{ galaxy_postgres_db }}
+
+  nginx:
+    from: 'centos:7'
+    ports:
+    - 8000:8000
+    user: 'nginx'
+    command: ['/usr/bin/dumb-init', 'nginx', '-c', '/etc/nginx/nginx.conf']
+    links:
+      - django
+    roles:
+      - role: nginx
+        ASSET_PATHS:
+          - /build/static
+        PROXY: yes
+        PROXY_PASS: 'http://django:8000'
+    dev_overrides:
+      ports: []
+      command:  [/bin/true]
 
   elastic:
     from: elasticsearch:2.4.1
@@ -45,17 +95,8 @@ services:
       - RABBITMQ_DEFAULT_PASS={{ galaxy_rabbitmq_pass }}
       - RABBITMQ_DEFAULT_VHOST={{ galaxy_rabbitmq_vhost }}
 
-  gulp:
-    from: centos:7
-    roles:
-      - gulp-role
-    command: ["/bin/true"]
-    working_dir: /galaxy
-    volumes:
-      - ${PWD}:/galaxy:z
-    entrypoint: /usr/bin/entrypoint.sh
-    user: gulp 
-    dev_overrides:
-      command: [/usr/local/bin/dumb-init, /usr/bin/gulp]
+volumes:
+  build:
+    docker: {}
 
 registries: {}

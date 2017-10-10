@@ -64,6 +64,7 @@
     - /galaxy
     - /setup
     - /venv
+    - /var/lib/galaxy/public/static
 
 - name: Copy source
   synchronize:
@@ -77,7 +78,7 @@
     dest: /usr/local/bin/dumb-init
     owner: root
     group: root
-    mode: 755
+    mode: 0755
 
 - name: Copy dbinit.yml
   template:
@@ -99,12 +100,19 @@
     mode: "u=rw,g=rw,o=r"
   - name: update_site.sql
     mode: "u=rw,g=rw,o=r"
-  - name: start-development.sh 
+  - name: start.sh
+    mode: "u=rwx,g=rwx,o=rx"
+  - name: start-development.sh
     mode: "u=rwx,g=rwx,o=rx"
 
-- name: Create virtualenv and install python packages 
+- name: Create virtualenv and install python packages
   include: install-python-packages.yml
 
 - name: Setup galaxy
   include: setup-galaxy.yml 
 
+- name: Copy static assets to conductor
+  synchronize:
+    src: /var/lib/galaxy/public/static
+    dest: /build
+    mode: pull

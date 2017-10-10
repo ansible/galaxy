@@ -21,3 +21,17 @@
     group: root
     mode: 0660
 
+- name: Build static assets
+  command: /venv/bin/python manage.py collectstatic --noinput
+  args:
+    chdir: /galaxy
+
+# FIXME(cutwater): This is workaround for lacking sudo in centos cointaner
+- name: Change ownership of logs and static assets
+  file:
+    path: "{{ item }}"
+    owner: "{{ galaxy_user }}"
+    recurse: true
+  with_items:
+    - /galaxy_logs
+    - /var/lib/

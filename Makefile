@@ -34,7 +34,7 @@ endif
         run run_production \
         flake8 test \
         build_indexes \
-        sdist stop requirements ui_build export_test_data import_test_data createsuperuser \
+        sdist stop stop_production requirements ui_build export_test_data import_test_data createsuperuser \
         refresh_role_counts shell
 
 # Remove containers, images and ~/.galaxy
@@ -99,6 +99,9 @@ run_production:
 
 stop:
 	@ansible-container stop --force
+
+stop_production:
+	@ansible-container stop --force --production
 
 sdist: clean_dist ui_build
 	if [ "$(OFFICIAL)" = "yes" ] ; then \

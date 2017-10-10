@@ -36,5 +36,5 @@ script:
 
 # Stop the application
 - cd ../..
-- make stop
+- make stop_production
 
