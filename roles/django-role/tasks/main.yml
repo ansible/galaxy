@@ -64,6 +64,7 @@
     - /galaxy
     - /setup
     - /venv
+    - /var/lib/galaxy/public/static
 
 - name: Copy source
   synchronize:
@@ -112,6 +113,6 @@
 
 - name: Copy static assets to conductor
   synchronize:
-    src: /galaxy/galaxy/static
+    src: /var/lib/galaxy/public/static
     dest: /build
     mode: pull
