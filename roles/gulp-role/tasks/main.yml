@@ -55,9 +55,3 @@
   command: gulp build
   args:
     chdir: /galaxy
-
-- name: Copy static assets to conductor
-  synchronize:
-    src: /galaxy/galaxy/static
-    dest: /build
-    mode: pull

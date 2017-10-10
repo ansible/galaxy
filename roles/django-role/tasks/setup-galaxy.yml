@@ -21,3 +21,7 @@
     group: root
     mode: 0660
 
+- name: Build static assets
+  command: /venv/bin/python manage.py collectstatic
+  args:
+    chdir: /galaxy
