@@ -22,24 +22,6 @@ services:
     dev_overrides:
       command: [/usr/local/bin/dumb-init, /usr/bin/gulp]
 
-  nginx:
-    from: 'centos:7'
-    ports:
-    - 8000:8000
-    user: 'nginx'
-    command: ['/usr/bin/dumb-init', 'nginx', '-c', '/etc/nginx/nginx.conf']
-    links:
-      - django
-    roles:
-      - role: nginx
-        ASSET_PATHS:
-          - /build/static
-        PROXY: yes
-        PROXY_PASS: 'http://django:8000'
-    dev_overrides:
-      ports: []
-      command:  [/bin/true]
-
   django:
     from: centos:7
     working_dir: /galaxy
@@ -81,6 +63,24 @@ services:
       - POSTGRES_PASSWORD={{ galaxy_postgres_password }}
       - POSTGRES_USER={{ galaxy_postgres_user }}
       - POSTGRES_DB={{ galaxy_postgres_db }}
+
+  nginx:
+    from: 'centos:7'
+    ports:
+    - 8000:8000
+    user: 'nginx'
+    command: ['/usr/bin/dumb-init', 'nginx', '-c', '/etc/nginx/nginx.conf']
+    links:
+      - django
+    roles:
+      - role: nginx
+        ASSET_PATHS:
+          - /build/static
+        PROXY: yes
+        PROXY_PASS: 'http://django:8000'
+    dev_overrides:
+      ports: []
+      command:  [/bin/true]
 
   elastic:
     from: elasticsearch:2.4.1
