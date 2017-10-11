@@ -162,7 +162,7 @@ class BaseSerializer(serializers.ModelSerializer):
                 return obj.get_absolute_url()
             except AttributeError:
                 return ''
-    
+
     def get_related(self, obj):
         res = OrderedDict()
         if getattr(obj, 'owner', None):
@@ -208,7 +208,7 @@ class BaseSerializer(serializers.ModelSerializer):
                 return obj.modified
             except AttributeError:
                 return None
-            
+
     def get_active(self, obj):
         if obj is None:
             return False
@@ -219,7 +219,7 @@ class BaseSerializer(serializers.ModelSerializer):
                 return obj.active
             except AttributeError:
                 return None
-     
+
     def validate_description(self, attrs, source):
         # Description should always be empty string, never null.
         attrs[source] = attrs.get(source, None) or ''
@@ -491,7 +491,7 @@ class RepositorySerializer(BaseSerializer):
 
 
 class TopContributorsSerializer(serializers.BaseSerializer):
-    
+
     def to_representation(self, obj):
         return {
             'namespace': obj['namespace'],
@@ -527,7 +527,7 @@ class NotificationSecretSerializer(BaseSerializer):
     def get_secret(self, obj):
         # show only last 4 digits of secret
         last = ''
-        try: 
+        try:
             last = obj.secret[-4:]
         except:
             pass
@@ -574,7 +574,7 @@ class NotificationSerializer(BaseSerializer):
             ('name', r.name)
         ]) for r in obj.roles.all()]
         d['imports'] = [OrderedDict([
-            ('id', t.id) 
+            ('id', t.id)
         ]) for t in obj.imports.all()]
         return d
 
@@ -609,7 +609,7 @@ class ImportTaskSerializer(BaseSerializer):
             'modified',
             'created',
             'active',
-            'stargazers_count', 
+            'stargazers_count',
             'watchers_count',
             'forks_count',
             'open_issues_count',
@@ -653,7 +653,7 @@ class ImportTaskSerializer(BaseSerializer):
             ('is_valid', obj.role.is_valid),
             ('active', obj.role.active),
         ])
-        
+
         d['notifications'] = [OrderedDict([
             ('id', n.id),
             ('travis_build_url', n.travis_build_url),
@@ -712,7 +712,7 @@ class ImportTaskLatestSerializer(BaseSerializer):
             ('is_valid', r.is_valid),
         ])
         return d
-        
+
     def get_url(self, obj):
         if obj is None:
             return ''
@@ -866,7 +866,7 @@ class RoleDetailSerializer(BaseSerializer):
         d['versions'] = [
             dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
         return d
-    
+
     def get_readme_html(self, obj):
         if obj.readme_html:
             return obj.readme_html
@@ -888,8 +888,8 @@ class RoleSearchSerializer(HaystackSerializer):
             "role_id",
             "role_type",
             "username",
-            "name", 
-            "description", 
+            "name",
+            "description",
             "github_user",
             "github_repo",
             "github_branch",
@@ -898,7 +898,7 @@ class RoleSearchSerializer(HaystackSerializer):
             "platform_details",
             "versions",
             "dependencies",
-            "created", 
+            "created",
             "modified",
             "imported",
             "last_commit_date",

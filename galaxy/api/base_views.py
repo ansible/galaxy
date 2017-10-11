@@ -47,7 +47,7 @@ from galaxy.main.models import RoleRating
 __all__ = [
     'APIView', 'GenericAPIView', 'ListAPIView', 'ListCreateAPIView',
     'SubListAPIView', 'SubListCreateAPIView', 'RetrieveAPIView',
-    'RetrieveUpdateAPIView', 'RetrieveUpdateDestroyAPIView', 
+    'RetrieveUpdateAPIView', 'RetrieveUpdateDestroyAPIView',
 ]
 
 logger = logging.getLogger('galaxy.api.base_views')
@@ -135,7 +135,7 @@ class GenericAPIView(generics.GenericAPIView, APIView):
             return qs.filter(is_active=True)
         else:
             return qs.filter(active=True)
-    
+
     def get_description_context(self):
         # Set instance attributes needed to get serializer metadata.
         if not hasattr(self, 'request'):
@@ -357,14 +357,14 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
             data = request.DATA.dict()
         else:
             data = request.DATA
-        
+
         # add the parent key to the post data using the pk from the URL
         parent_key = getattr(self, 'parent_key', None)
         # logger.debug('SubListCreateAPIView.create: parent_key=%s', parent_key)
         if parent_key:
             data[parent_key] = self.kwargs['pk']
         # logger.debug('SubListCreateAPIView.create: data.parent_key=%s', data[parent_key])
-        
+
         # attempt to deserialize the object
         try:
             serializer = self.serializer_class(data=data)
@@ -384,7 +384,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
 
         # save the object through the serializer, reload and return the saved
         # object deserialized
-        
+
         try:
             self.pre_save(serializer.validated_data)
             obj = serializer.save()
@@ -405,9 +405,9 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         relationship = getattr(parent, self.relationship)
         sub_id = request.DATA.get('id', None)
         data = request.DATA
-        
+
         # FIXME: We have special case handling for RoleRatings
-        #        which would probably be better moved into 
+        #        which would probably be better moved into
         #        a new class and overridden completely
         is_role_rating = isinstance(parent, RoleRating)
         #logger.debug('SubListCreateAPIView.attach: parent=%s', parent.__class__.__name__)
@@ -445,9 +445,9 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
                 if sub.is_dirty:
                     sub.save()
                     modified = True
-            
+
         # Verify we have permission to attach.
-        if not check_user_access(request.user, self.parent_model, 
+        if not check_user_access(request.user, self.parent_model,
                                  'attach', parent, sub,
                                  self.relationship, data,
                                  skip_sub_obj_read_check=created):
@@ -460,12 +460,12 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
 
         # SPECIAL CASE
         # FIXME: the base view for objects with mutually exclusive
-        #        relationship should probably be split off into a 
+        #        relationship should probably be split off into a
         #        new view, which codifies the mutually exclusive things
         #if attached and is_role_rating:
             """
             Up/down votes are mutually exclusive. If we've attached
-            the user to one of the lists, we need to make sure we 
+            the user to one of the lists, we need to make sure we
             remove them from the other (if they're in it).
             """
             # mux_relationship = None
@@ -498,7 +498,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         sub = get_object_or_400(self.model, pk=sub_id)
 
         #if not request.user.can_access(self.parent_model, 'unattach', parent,
-        if not check_user_access(request.user, self.parent_model, 'unattach', 
+        if not check_user_access(request.user, self.parent_model, 'unattach',
                                  parent, sub, self.relationship):
             raise PermissionDenied()
 
