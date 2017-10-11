@@ -82,8 +82,8 @@ BASE_FIELDS = ('id', 'url', 'related', 'summary_fields', 'created', 'modified', 
 DEFAULT_SUMMARY_FIELDS = ('name', 'description',)
 
 SUMMARIZABLE_FK_FIELDS = {
-    'owner' : ('id','url','username', 'full_name', 'avatar_url'),
-    'role'  : ('id','url','name',),
+    'owner': ('id', 'url', 'username', 'full_name', 'avatar_url'),
+    'role': ('id', 'url', 'name',),
 }
 
 
