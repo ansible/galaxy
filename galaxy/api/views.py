@@ -829,10 +829,11 @@ class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance=instance)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
-    def destroy(self):
+    def destroy(self, request, *args, **kwargs):
         obj = super(NotificationSecretDetail, self).get_object()
         obj.delete()
-        return Response(dict(detail="Requested secret deleted."), status=status.HTTP_202_ACCEPTED)
+        return Response(dict(detail="Requested secret deleted."),
+                        status=status.HTTP_202_ACCEPTED)
 
 
 class NotificationList(ListCreateAPIView):
