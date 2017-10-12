@@ -88,7 +88,7 @@
     group: root 
     mode: 0664
 
-- name: Copy files to /setup 
+- name: Copy files to /setup
   copy:
     src: "{{ role_path }}/files/{{ item.name }}" 
     dest: "/setup/{{ item.name }}"

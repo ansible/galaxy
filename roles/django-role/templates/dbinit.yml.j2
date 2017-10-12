@@ -19,19 +19,10 @@
       command: /venv/bin/python manage.py migrate --noinput --fake-initial
       args:
         chdir: /galaxy
-    
-    - name: Disable triggers
-      command: psql -h postgres -d galaxy -U galaxy -f /galaxy/test-data/disable_triggers.sql
-    
-    - name: Import testing data
-      shell: cat /galaxy/test-data/role_data.dmp.gz | gunzip | psql -h postgres -d "{{ galaxy_postgres_db }}" -U "{{ galaxy_postgres_user }}"
-    
-    - name: Enable triggers
-      command: psql -h postgres -d galaxy -U galaxy -f /galaxy/test-data/enable_triggers.sql
-    
+
     - name: Update django site name
       command: psql -h postgres -d galaxy -U galaxy -f /setup/update_site.sql
-    
+
     - name: Remove any log files
       command: rm -f *.log
       args:
