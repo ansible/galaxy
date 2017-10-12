@@ -1,5 +1,4 @@
-
-- name: Download postgres repo package 
+- name: Download postgres repo package
   get_url: 
     url: https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-7-x86_64/pgdg-centos95-9.5-3.noarch.rpm
     dest: /tmp/pgdg-centos95-9.5-3.noarch.rpm
@@ -80,14 +79,6 @@
     group: root
     mode: 0755
 
-- name: Copy dbinit.yml
-  template:
-    src: dbinit.yml.j2
-    dest: /setup/dbinit.yml
-    owner: "{{ galaxy_user }}" 
-    group: root 
-    mode: 0664
-
 - name: Copy files to /setup
   copy:
     src: "{{ role_path }}/files/{{ item.name }}" 
@@ -100,6 +91,8 @@
     mode: "u=rw,g=rw,o=r"
   - name: update_site.sql
     mode: "u=rw,g=rw,o=r"
+  - name: common.sh
+    mode: "u=rwx,g=rwx,o=rx"
   - name: start.sh
     mode: "u=rwx,g=rwx,o=rx"
   - name: start-development.sh
@@ -109,7 +102,7 @@
   include: install-python-packages.yml
 
 - name: Setup galaxy
-  include: setup-galaxy.yml 
+  import_tasks: setup-galaxy.yml
 
 - name: Copy static assets to conductor
   synchronize:
