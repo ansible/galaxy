@@ -33,11 +33,6 @@
         path: /setup/dbinit.completed
         state: touch
 
-    - name: Refresh custom indexes
-      command: /venv/bin/python manage.py rebuild_galaxy_indexes
-      args:
-        chdir: /galaxy
-
     - name: Start background refresh of galaxy index
       shell: nohup /venv/bin/python manage.py rebuild_index --noinput >/setup/rebuild_index.log 2>&1 &
       args:
