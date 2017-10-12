@@ -19,12 +19,12 @@
 Based on code found at:
 http://russellneufeld.wordpress.com/2012/05/24/using-memcached-as-a-distributed-lock-from-within-django/
 
-We use this primarily from celery tasks to ensure that 
+We use this primarily from celery tasks to ensure that
 background calculations do not step on each other. In order
 to get around some of the issues presented at the above
-link, instead of monkey patching the memcache backend we 
+link, instead of monkey patching the memcache backend we
 instead use a distributed/replicated store like couchbase.
-This allows us to guarantee that 
+This allows us to guarantee that
 """
 
 import time
@@ -32,15 +32,15 @@ import logging
 import contextlib
 import random
 from django.core.cache import cache as django_cache
- 
+
 class MemcacheLockException(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
- 
+
 @contextlib.contextmanager
 def memcache_lock(key, attempts=1, expires=120):
     key = '__d_lock_%s' % key
- 
+
     got_lock = False
     try:
         got_lock = _acquire_lock(key, attempts, expires)
@@ -48,7 +48,7 @@ def memcache_lock(key, attempts=1, expires=120):
     finally:
         if got_lock:
             _release_lock(key)
- 
+
 
 def _acquire_lock(key, attempts, expires):
     for i in xrange(0, attempts):

@@ -519,9 +519,9 @@ def import_role(task_id):
         branch = role.github_branch
     else:
         branch = repo.default_branch
-    
+
     add_message(import_task, u"INFO", u"Accessing branch: %s" % branch)
-        
+
     # parse meta data
     add_message(import_task, u"INFO", u"Parsing and validating meta data.")
     for meta_file in META_FILES:
@@ -576,7 +576,7 @@ def import_role(task_id):
 
     if role.issue_tracker_url == "" and repo.has_issues:
         role.issue_tracker_url = repo.html_url + '/issues'
-    
+
     if role.company != "" and len(role.company) > 50:
         add_message(import_task, u"WARNING", u"galaxy_info.company exceeds max length of 50 in meta data")
         role.company = role.company[:50]
@@ -618,7 +618,7 @@ def import_role(task_id):
     role.stargazers_count = repo.stargazers_count
     role.watchers_count = sub_count
     role.forks_count = repo.forks_count
-    role.open_issues_count = repo.open_issues_count 
+    role.open_issues_count = repo.open_issues_count
 
     last_commit = repo.get_commits(sha=branch)[0].commit
     role.commit = last_commit.sha
@@ -630,13 +630,13 @@ def import_role(task_id):
     import_task.stargazers_count = repo.stargazers_count
     import_task.watchers_count = sub_count
     import_task.forks_count = repo.forks_count
-    import_task.open_issues_count = repo.open_issues_count 
+    import_task.open_issues_count = repo.open_issues_count
 
     import_task.commit = last_commit.sha
     import_task.commit_message = last_commit.message[:255]
     import_task.commit_url = last_commit.html_url
     import_task.github_branch = branch
-    
+
     add_tags(import_task, galaxy_info, role)
     if role.role_type in (role.CONTAINER, role.ANSIBLE):
         if not galaxy_info.get('platforms'):
@@ -805,7 +805,7 @@ def refresh_user_stars(user, token):
                     'github_user': name[0],
                     'github_repo': name[1]
                 })
-    
+
     try:
         starred = ghu.get_starred()
     except GithubException as exc:
@@ -824,7 +824,7 @@ def refresh_user_stars(user, token):
                 github_repo=name[1],
                 defaults={
                     'github_user': name[0],
-                    'github_repo': name[1]    
+                    'github_repo': name[1]
                 })
 
 

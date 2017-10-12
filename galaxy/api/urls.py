@@ -45,7 +45,7 @@ user_urls = patterns(
     url(r'^(?P<pk>[0-9]+)/repos/$',         'user_repositories_list'),
     url(r'^(?P<pk>[0-9]+)/subscriptions/$', 'user_subscription_list'),
     url(r'^(?P<pk>[0-9]+)/starred/$',       'user_starred_list'),
-    url(r'^(?P<pk>[0-9]+)/secrets/$',       'user_notification_secret_list'),    
+    url(r'^(?P<pk>[0-9]+)/secrets/$',       'user_notification_secret_list'),
 )
 
 role_urls = patterns(
@@ -109,7 +109,7 @@ notification_urls = patterns(
     url(r'^$',                         'notification_list'),
     url(r'^(?P<pk>[0-9]+)/$',          'notification_detail'),
     url(r'^(?P<pk>[0-9]+)/roles/$',    'notification_roles_list'),
-    url(r'^(?P<pk>[0-9]+)/imports/$',  'notification_imports_list'),    
+    url(r'^(?P<pk>[0-9]+)/imports/$',  'notification_imports_list'),
 )
 
 repo_urls = patterns(

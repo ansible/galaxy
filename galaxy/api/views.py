@@ -247,7 +247,7 @@ class CategoryList(ListAPIView):
 class TagList(ListAPIView):
     model = Tag
     serializer_class = TagSerializer
-    
+
     def get_queryset(self):
         return self.model.objects.filter(active=True)
 
@@ -338,7 +338,7 @@ class RoleList(ListAPIView):
                 serializer = self.get_serializer(qs, many=True)
             return Response(serializer.data)
         return super(RoleList, self).list(self, request, *args, **kwargs)
-        
+
     def get_queryset(self):
         qs = super(RoleList, self).get_queryset()
         qs = qs.prefetch_related('platforms', 'tags', 'versions', 'dependencies')
@@ -361,10 +361,10 @@ class ImportTaskList(ListCreateAPIView):
     permission_classes = (ModelAccessPermission,)
     model = ImportTask
     serializer_class = ImportTaskSerializer
-    
+
     def get_queryset(self):
         return super(ImportTaskList, self).get_queryset()
-       
+
     def post(self, request, *args, **kwargs):
         github_user = request.data.get('github_user', None)
         github_repo = request.data.get('github_repo', None)
@@ -372,10 +372,10 @@ class ImportTaskList(ListCreateAPIView):
         alternate_role_name = request.data.get('alternate_role_name', None)
 
         name = alternate_role_name if alternate_role_name else github_repo
-        
+
         if not github_user or not github_repo:
             raise ValidationError(dict(detail="Invalid request. Expecting github_user and github_repo."))
-        
+
         response = dict(results=[])
         if Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True).count() > 1:
             # multiple roles match github_user/github_repo
@@ -502,7 +502,7 @@ class StargazerList(ListCreateAPIView):
                                                                                    e.data,
                                                                                    e.status)
             raise ValidationError(dict(detail=msg))
-        
+
         try:
             gh_user = gh_api.get_user()
         except GithubException as e:
@@ -515,7 +515,7 @@ class StargazerList(ListCreateAPIView):
             msg = "GitHub API failed to add user {0} to stargazers ".format(request.user.github_user) + \
                 "for {0}/{1}. {2} - {3}".format(github_user, github_repo, e.data, e.status)
             raise ValidationError(dict(detail=msg))
-        
+
         new_star, created = Stargazer.objects.get_or_create(
             owner=request.user,
             github_user=github_user,
@@ -527,11 +527,11 @@ class StargazerList(ListCreateAPIView):
             })
 
         star_count = gh_repo.stargazers_count + 1
-        
+
         for role in Role.objects.filter(github_user=github_user,github_repo=github_repo):
             role.stargazers_count = star_count
             role.save()
-        
+
         return Response(dict(
             result=dict(id=new_star.id,
                         github_user=new_star.github_user,
@@ -559,7 +559,7 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
             msg = "Failed to connect to GitHub API. This is most likely a temporary " + \
                 "error, please try again in a few minutes. {0} - {1}".format(e.data, e.status)
             raise ValidationError(dict(detail=msg))
-    
+
         try:
             gh_repo = gh_api.get_repo(obj.github_user + '/' + obj.github_repo)
         except GithubException, e:
@@ -568,7 +568,7 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
                                                                                    e.data,
                                                                                    e.status)
             raise ValidationError(dict(detail=msg))
-        
+
         try:
             gh_user = gh_api.get_user()
         except GithubException, e:
@@ -581,7 +581,7 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
             msg = "GitHub API failed to remove user {0} from stargazers ".format(request.user.github_user) + \
                 "for {0}/{1}. {2} - {3}".format(obj.github_user, obj.github_repo, e.data, e.status)
             raise ValidationError(dict(detail=msg))
-        
+
         obj.delete()
 
         star_count = gh_repo.stargazers_count - 1 if gh_repo.stargazers_count > 1 else 0
@@ -631,7 +631,7 @@ class SubscriptionList(ListCreateAPIView):
                                                                                    e.data,
                                                                                    e.status)
             raise ValidationError(dict(detail=msg))
-        
+
         try:
             gh_user = gh_api.get_user()
         except GithubException, e:
@@ -645,7 +645,7 @@ class SubscriptionList(ListCreateAPIView):
                                                                                   github_user,
                                                                                   github_repo)
             raise ValidationError(dict(detail=msg))
-        
+
         new_sub, created = Subscription.objects.get_or_create(
             owner=request.user,
             github_user=github_user,
@@ -659,11 +659,11 @@ class SubscriptionList(ListCreateAPIView):
         sub_count = 0
         for s in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
-        
+
         for role in Role.objects.filter(github_user=github_user,github_repo=github_repo):
             role.watchers_count = sub_count
             role.save()
-        
+
         return Response(dict(
             result=dict(
                 id=new_sub.id,
@@ -695,7 +695,7 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
             msg = "Failed to connect to GitHub API. This is most likely a temporary error, " + \
                   "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
             raise ValidationError(dict(detail=msg))
-    
+
         try:
             gh_repo = gh_api.get_repo(obj.github_user + '/' + obj.github_repo)
         except GithubException, e:
@@ -704,7 +704,7 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
                                                                                    e.data,
                                                                                    e.status)
             raise ValidationError(dict(detail=msg))
-        
+
         try:
             gh_user = gh_api.get_user()
         except GithubException, e:
@@ -720,13 +720,13 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
                                                                                         e.data,
                                                                                         e.status)
             raise ValidationError(dict(detail=msg))
-        
+
         obj.delete()
 
         sub_count = 0
         for sub in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
-        
+
         for role in Role.objects.filter(github_user=obj.github_user,github_repo=obj.github_repo):
             role.watchers_count = sub_count
             role.save()
@@ -746,7 +746,7 @@ class NotificationSecretList(ListCreateAPIView):
     serializer_class = NotificationSecretSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated, ModelAccessPermission,)
-    
+
     def list(self, request, *args, **kwargs):
         # only list secrets belonging to the authenticated user
         queryset = self.filter_queryset(self.get_queryset())
@@ -765,7 +765,7 @@ class NotificationSecretList(ListCreateAPIView):
 
         if source not in ['github', 'travis']:
             raise ValidationError(dict(detail="Invalid source value. Expecting one of: [github, travis]"))
-        
+
         if source == 'travis':
             secret = sha256(github_user + '/' + github_repo + secret).hexdigest()
 
@@ -804,13 +804,13 @@ class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
         secret = request.data.get('secret',None)
         github_user = request.data.get('github_user', None)
         github_repo = request.data.get('github_repo', None)
-        
+
         if not secret or not source or not github_user or not github_repo:
             raise ValidationError(dict(detail="Invalid request. Missing one or more required values."))
 
         if source not in ['github', 'travis']:
             raise ValidationError(dict(detail="Invalid source value. Expecting one of: [github, travis]"))
-        
+
         instance = self.get_object()
 
         if source == 'travis':
@@ -1196,7 +1196,7 @@ class RemoveRole(APIView):
 
         gh_user = request.query_params.get('github_user',None)
         gh_repo = request.query_params.get('github_repo', None)
-        
+
         if not gh_user or not gh_repo:
             raise ValidationError(dict(detail="Invalid request."))
 
@@ -1216,7 +1216,7 @@ class RemoveRole(APIView):
                 msg = "Failed to connect to GitHub API. This is most likely a temporary error, " + \
                       "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
                 raise ValidationError(dict(detail=msg))
-        
+
             try:
                 ghu = gh_api.get_user()
             except:
@@ -1266,7 +1266,7 @@ class RemoveRole(APIView):
             update_custom_indexes.delay(username=role.namespace,
                                         tags=role.get_tags(),
                                         platforms=role.get_unique_platforms())
-                
+
         # Update the repository cache
         for repo in Repository.objects.filter(github_user=gh_user, github_repo=gh_repo):
             repo.is_enabled = False
@@ -1318,7 +1318,7 @@ class RefreshUserRepos(APIView):
                   "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
             logger.error(msg)
             raise HttpResponseBadRequest({'detail': msg})
-    
+
         try:
             ghu = gh_api.get_user()
         except:
@@ -1347,21 +1347,21 @@ class TokenView(APIView):
     Allows ansible-galaxy CLI to retrieve an auth token
     '''
     def post(self, request, *args, **kwargs):
-        
+
         gh_user = None
         user = None
         token = None
         github_token = request.data.get('github_token', None)
-        
+
         if github_token is None:
             raise ValidationError(dict(detail="Invalid request."))
-        
+
         try:
             git_status = requests.get(GITHUB_SERVER)
             git_status.raise_for_status()
         except:
             raise ValidationError(dict(detail="Error accessing GitHub API. Please try again later."))
-        
+
         try:
             header = dict(Authorization='token ' + github_token)
             gh_user = requests.get(GITHUB_SERVER + '/user', headers=header)
@@ -1371,13 +1371,13 @@ class TokenView(APIView):
                 raise ValidationError(dict(detail=gh_user['message']))
         except:
             raise ValidationError(dict(detail="Error accessing GitHub with provided token."))
-            
+
         if SocialAccount.objects.filter(provider='github', uid=gh_user['id']).count() > 0:
             user = SocialAccount.objects.get(provider='github', uid=gh_user['id']).user
         else:
             msg = "Galaxy user not found. You must first log into Galaxy using your GitHub account."
             raise ValidationError(dict(detail=msg))
-        
+
         if Token.objects.filter(user=user).count() > 0:
             token = Token.objects.filter(user=user)[0]
         else:
@@ -1386,9 +1386,9 @@ class TokenView(APIView):
         result = dict(token=token.key, username=user.username)
         return Response(result, status=status.HTTP_200_OK)
 
-            
+
 def get_response(*args, **kwargs):
-    """ 
+    """
     Create a response object with paging, count and timing attributes for search result views.
     """
     page = 0
@@ -1398,7 +1398,7 @@ def get_response(*args, **kwargs):
     request = kwargs.pop('request', None)
     result = kwargs.pop('result', None)
     view = kwargs.pop('view', None)
-    
+
     for key, value in request.GET.items():
         if key == 'page':
             page = int(value) - 1 if int(value) > 0 else 0
@@ -1410,17 +1410,17 @@ def get_response(*args, **kwargs):
         response['cur_page'] = cur_page
         response['num_pages'] = num_pages
         response['page_size'] = page_size
-    
+
         if view:
             if num_pages > 1 and cur_page < num_pages:
                 response['next_page'] = "%s?&page=%s" % (reverse(view), page + 2)
             if num_pages > 1 and cur_page > 1:
-                response['prev_page'] = "%s?&page=%s" % (reverse(view), cur_page - 1)   
-            
+                response['prev_page'] = "%s?&page=%s" % (reverse(view), cur_page - 1)
+
         response['count'] = result.hits.total
         response['respose_time'] = result.took
         response['success'] = result.success()
-    
+
     return response
 
 

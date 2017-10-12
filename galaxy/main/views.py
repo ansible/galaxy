@@ -259,7 +259,7 @@ class NamespaceListView(ListView):
         context = super(NamespaceListView, self).get_context_data(**kwargs)
         context['search_value'] = self.request.GET.get('author', '')
         context["site_name"] = settings.SITE_NAME
-        context["load_angular"] = False       
+        context["load_angular"] = False
         context["page_title"] = "Browse Authors"
 
         # the paginator includes
@@ -360,11 +360,11 @@ class RoleDetailView(DetailView):
             context['namespace'] = None
 
         context['namespace_name'] = self.namespace
-        context['name'] = self.name 
+        context['name'] = self.name
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False
         context["meta_description"] = "Role %s.%s - %s" % (self.role.namespace, self.role.name, self.role.description)
-        
+
         try:
             gh_user = User.objects.get(github_user=self.role.github_user)
             context['avatar'] = gh_user.github_avatar
@@ -379,9 +379,9 @@ class RoleDetailView(DetailView):
         if user.is_authenticated():
             sub = user.get_subscriber(self.role.github_user, self.role.github_repo)
             if sub:
-                context['is_subscriber'] = True 
+                context['is_subscriber'] = True
                 context['subscriber_id'] = sub.id
-        
+
         context['is_stargazer'] = False
         if user.is_authenticated():
             star = user.get_stargazer(self.role.github_user, self.role.github_repo)

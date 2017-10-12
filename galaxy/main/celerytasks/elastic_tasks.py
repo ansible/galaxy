@@ -31,8 +31,8 @@ def update_tags(tags, logger):
                 pg_tag = Tag.objects.get(name=tag)
                 es_tags = TagDoc.search().query('match', tag=tag).execute()
                 cnt = pg_tag.get_num_roles() if pg_tag else 0
-                updated = False    
-                
+                updated = False
+
                 for es_tag in es_tags:
                     if es_tag.tag == tag:
                         updated = True
@@ -83,7 +83,7 @@ def update_platforms(platforms, logger):
                     .distinct('namespace', 'name').count()
                 es_platforms = PlatformDoc.search().query('match', name=platform_name).execute()
                 updated = False
-                
+
                 for es_platform in es_platforms:
                     if es_platform.name == platform_name:
                         updated = True
@@ -122,15 +122,15 @@ def update_platforms(platforms, logger):
 def update_users(user, logger):
     logger.info(u"USER: {0}".format(user).encode('utf-8').strip())
     try:
-        with memcache_lock("user_%s" % user):      
+        with memcache_lock("user_%s" % user):
             es_users = UserDoc.search().query('match', username=user).execute()
-            updated = False    
-            
+            updated = False
+
             for es_user in es_users:
                 if es_user.username == user:
                     logger.info(u"USER: {0} already exists".format(user).encode('utf-8').strip())
                     updated = True
-            
+
             if not updated:
                 # new tag
                 try:
@@ -151,9 +151,9 @@ def update_custom_indexes(username=None, tags=[], platforms=[]):
 
     if len(tags) > 0:
         update_tags(tags, logger)
-    
+
     if len(platforms) > 0:
         update_platforms(platforms, logger)
-    
+
     if username is not None:
         update_users(username, logger)

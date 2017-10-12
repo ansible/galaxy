@@ -32,7 +32,7 @@ from galaxy.main.fields import LooseVersionField, TruncatingCharField
 from galaxy.main.mixins import DirtyMixin
 
 __all__ = [
-    'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 
+    'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating',
     'RoleVersion', 'UserAlias', 'NotificationSecret', 'Notification', 'Repository', 'Subscription', 'Stargazer',
     'Namespace'
 ]
@@ -248,7 +248,7 @@ class Role(CommonModelNameNotUnique):
         related_name = 'roles',
         verbose_name = 'Tags',
         blank        = True,
-        editable     = False,    
+        editable     = False,
     )
     tags.help_text = ""
 
@@ -257,7 +257,7 @@ class Role(CommonModelNameNotUnique):
         related_name = 'categories',
         verbose_name = "Categories",
         blank        = True,
-        editable     = False,    
+        editable     = False,
     )
     categories.help_text = ""
 
@@ -410,7 +410,7 @@ class Role(CommonModelNameNotUnique):
         null         = True,
         verbose_name = "Laste Commit DateTime"
     )
-    
+
     #
     # #tags = ArrayField(models.CharField(max_length=256), null=True, editable=True, size=100)
 
@@ -427,7 +427,7 @@ class Role(CommonModelNameNotUnique):
     average_score = models.FloatField(
         default    = 0.0,
     )
-    
+
     # ------------------------------------------------------------------------------
     # other functions and properties
 
@@ -445,14 +445,14 @@ class Role(CommonModelNameNotUnique):
 
     def get_unique_platform_versions(self):
         return [platform.release for platform in self.platforms.filter(active=True).order_by('release').distinct('release')]
-    
+
     def get_unique_platform_search_terms(self):
         # Fetch the unique set of aliases
         terms = []
         for platform in self.platforms.filter(active=True).exclude(alias__isnull=True).exclude(alias__exact='').all():
             terms += platform.alias.split(' ')
         return set(terms)
-    
+
     def get_username(self):
         return self.namespace
 
@@ -535,7 +535,7 @@ class RoleVersion(CommonModelNameNotUnique):
     #
     # ------------------------------------------------------------------------------
     # regular fields
-    
+
     release_date = models.DateTimeField(
         blank      = True,
         null       = True,
@@ -606,9 +606,9 @@ class RoleRating(PrimordialModel):
                 return 1
             else:
                 return value
-        
+
         self.score = clamp_range(self.score)
-        
+
         if len(self.comment) > 5000:
             self.comment = self.comment[:5000]
         super(RoleRating, self).save(*args, **kwargs)
@@ -751,7 +751,7 @@ class NotificationSecret(PrimordialModel):
     class Meta:
         ordering = ('source','github_user','github_repo')
         unique_together = ('source','github_user','github_repo')
-        
+
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name  = 'notification_secrets',
