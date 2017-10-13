@@ -4,6 +4,10 @@
 
 This is the source code behind Galaxy - https://galaxy.ansible.com.
 
+## Roadmap
+
+To see what we're working on, and where we're headed, view the [ROADMAP.md](./ROADMAP.md)
+
 ## Contributing
 
 If you're interested in contributing, please see [CONTRIBUTING.md](./CONTRIBUTING.md).
