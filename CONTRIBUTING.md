@@ -1,9 +1,5 @@
 # Contributing
 
-## Opening Issues
-
-The issue log is at [galaxy-issues](https://github.com/ansible/galaxy-issues). Eventually it may be merged into the Galaxy repo, but for now please continue to open issues there.
-
 ## Development
 
 To setup a local development environment you will need to install the following:
