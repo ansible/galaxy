@@ -1,10 +1,12 @@
 Ansible Container has been contribued to by the following authors:
-(This list is automatically generated - please file an issue for corrections)
+This list is automatically generated - please file an issue for corrections)
 
 Chris Houseknecht <chouseknecht@ansible.com>
 James Cammarata <jimi@sngx.net>
 Chris Church <chris@ninemoreminutes.com>
 Joe Fiorini <joe@joefiorini.com>
+Alexander Saprykin <osapryki@redhat.com>
 Jiri Tyr <jtyr@users.noreply.github.com>
+Alexander Saprykin <cutwater@users.noreply.github.com>
 Karl Goetz <goetzk@users.noreply.github.com>
 Brian Coca <bcoca@users.noreply.github.com>
