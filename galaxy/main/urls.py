@@ -32,14 +32,14 @@ urlpatterns = patterns(
     url(r'^detail$', 'detail_category', name='detail-category'),
     url(r'^roleadd$', 'role_add_view', name='role-add-category'),
     url(r'^imports$', 'import_status_view', name='import-status'),
-    
+
     # Logged in/secured URLs
     url(r'^accounts/connect/$', 'accounts_connect'),
     url(r'^accounts/connect/success/$', 'accounts_connect_success', name='accounts-connect-success'),
     url(r'^accounts/profile/$', 'accounts_profile', name='accounts-profile'),
     #url(r'^accounts/role/view/(?P<role>[\w\-\._:]+)$', 'accounts_role_view', name='accounts-role-view'),
     #url(r'^accounts/role/refresh/(?P<id>[\w\-\._:]+)$', 'accounts_role_refresh', name='accounts-role-refresh'),
-    
+
     # Secure Action URLs
     #url(r'^accounts/role/save$', 'accounts_role_save', name='accounts-role-save'),
     #url(r'^accounts/role/delete/(?P<id>[0-9]+)$', 'accounts_role_delete', name='accounts-role-delete'),

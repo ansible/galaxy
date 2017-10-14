@@ -27,7 +27,7 @@ from galaxy.main.search_models import TagDoc, PlatformDoc, UserDoc
 
 class Command(BaseCommand):
     help = 'Rebuild custom elasticsearch indexes: galaxy_platforms, galaxy_tags'
-    
+
     def handle(self, *args, **options):
         self.rebuild_tags()
         self.rebuild_platforms()
@@ -38,17 +38,17 @@ class Command(BaseCommand):
         galaxy_users.doc_type(UserDoc)
         galaxy_users.delete(ignore=404)
         galaxy_users.create()
-        
+
         for role in Role.objects.filter(active=True, is_valid=True).order_by('namespace').distinct('namespace').all():
             doc = UserDoc(username=role.namespace)
             doc.save()
-        
+
     def rebuild_tags(self):
         galaxy_tags = Index('galaxy_tags')
         galaxy_tags.doc_type(TagDoc)
         galaxy_tags.delete(ignore=404)
         galaxy_tags.create()
-        
+
         for tag in Tag.objects.filter(active=True).all():
             doc = TagDoc(tag=tag.name, roles=tag.get_num_roles())
             doc.meta.id = tag.id
@@ -56,7 +56,7 @@ class Command(BaseCommand):
 
     def rebuild_platforms(self):
         galaxy_platforms = Index('galaxy_platforms')
-        
+
         galaxy_platforms.doc_type(PlatformDoc)
         galaxy_platforms.delete(ignore=404)
         galaxy_platforms.create()
