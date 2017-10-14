@@ -381,7 +381,6 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
             #             request.user, self.model._meta.verbose_name)
             raise PermissionDenied()
 
-
         # save the object through the serializer, reload and return the saved
         # object deserialized
 

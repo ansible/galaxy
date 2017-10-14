@@ -466,7 +466,6 @@ class Role(CommonModelNameNotUnique):
                     raise Exception("Role %s value exceeeds max length of %s." % (field.name, field.max_length))
 
 
-
 class Namespace(PrimordialModel):
 
     class Meta:
@@ -544,7 +543,6 @@ class RoleVersion(CommonModelNameNotUnique):
         editable   = False,
         db_index   = True,
     )
-
 
     #
     # ------------------------------------------------------------------------------

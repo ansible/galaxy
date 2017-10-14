@@ -151,5 +151,3 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
             if account.provider == 'github':
                 connected = True
         return connected
-
-
