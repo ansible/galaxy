@@ -133,7 +133,7 @@ setup(
     author_email='support@ansible.com',
     description='Galaxy: Find, reuse and share the best Ansible content.',
     long_description='Galaxy is a web site and command line tool for creating and sharing Ansible roles.',
-    license='Apache v2',
+    license='Apache-2.0',
     keywords='ansible galaxy',
     url='http://github.com/ansible/galaxy',
     packages=['galaxy'],
@@ -147,7 +147,7 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
         'Intended Audience :: System Administrators'
-        'License :: Apache v2',
+        'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Operating System :: POSIX',
