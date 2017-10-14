@@ -38,4 +38,3 @@ class DirtyMixin(object):
         del state['_original_state']
         self._original_state = state
         super(DirtyMixin, self).save()
-

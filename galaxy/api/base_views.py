@@ -557,4 +557,3 @@ class RetrieveUpdateDestroyAPIView(RetrieveUpdateAPIView, generics.RetrieveUpdat
 #         else:
 #             raise NotImplementedError('destroy() not implemented yet for %s' % obj)
 #         return HttpResponse(status=204)
-

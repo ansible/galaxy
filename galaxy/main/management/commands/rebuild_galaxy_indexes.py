@@ -87,4 +87,3 @@ class Command(BaseCommand):
             if platform.alias:
                 terms += platform.alias.split(' ')
         return set(terms)
-

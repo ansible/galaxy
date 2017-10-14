@@ -63,4 +63,3 @@ class TruncatingCharField(models.CharField):
 
 
 add_introspection_rules([], ["^galaxy\.main\.fields\.TruncatingCharField"])
-

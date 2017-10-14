@@ -58,6 +58,3 @@ def manage():
         sys.stdout.write('galaxy-%s\n' % __version__)
     else:
         execute_from_command_line(sys.argv)
-
-
-
