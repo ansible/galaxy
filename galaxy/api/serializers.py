@@ -202,7 +202,7 @@ class BaseSerializer(serializers.ModelSerializer):
         if obj is None:
             return None
         elif isinstance(obj, User):
-            return obj.last_login # Not actually exposed for User.
+            return obj.last_login  # Not actually exposed for User.
         else:
             try:
                 return obj.modified

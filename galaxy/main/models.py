@@ -60,7 +60,7 @@ class BaseModel(models.Model, DirtyMixin):
 
     def __unicode__(self):
         if hasattr(self, 'name'):
-            return unicode("%s-%s"% (self.name, self.id))
+            return unicode("%s-%s" % (self.name, self.id))
         else:
             return u'%s-%s' % (self._meta.verbose_name, self.id)
 
@@ -215,7 +215,7 @@ class UserAlias(models.Model):
     )
 
     def __unicode__(self):
-        return unicode("%s (alias of %s)"% (self.alias_name, self.alias_of.username))
+        return unicode("%s (alias of %s)" % (self.alias_name, self.alias_of.username))
 
 class Role(CommonModelNameNotUnique):
     # a class representing a user role
