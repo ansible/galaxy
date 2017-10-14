@@ -2,7 +2,7 @@
   yum: name=epel-release
 
 - name: Install nodejs
-  shell: curl -sL https://rpm.nodesource.com/setup_7.x | bash - && yum install -y nodejs
+  shell: curl -sL https://rpm.nodesource.com/setup_8.x | bash - && yum install -y nodejs
 
 - name: Check node version
   command: node -v
