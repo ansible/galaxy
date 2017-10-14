@@ -4,11 +4,16 @@
 - name: Install nodejs
   shell: curl -sL https://rpm.nodesource.com/setup_8.x | bash - && yum install -y nodejs
 
+- name: Install yarn repository
+  get_url:
+    url: https://dl.yarnpkg.com/rpm/yarn.repo
+    dest: /etc/yum.repos.d/yarn.repo
+
+- name: Install yarn
+  yum: name=yarn
+
 - name: Check node version
   command: node -v
-
-- name: Check npm version
-  command: npm -v
 
 - name: Create gulp group
   group:
@@ -43,13 +48,12 @@
     mode: 0775
 
 - name: Install node packages
-  npm: path=/galaxy state=latest
+  command: yarn global add gulp
 
-- name: Install gulp globally
-  npm: name=gulp global=yes
-
-- name: Install less globally
-  npm: name=less global=yes
+- name: Install dependencies
+  command: yarn install
+  args:
+    chdir: /galaxy
 
 - name: Build static assets
   command: gulp build
