@@ -27,6 +27,7 @@ else:
 
 __all__ = ['LooseVersionField', 'TruncatingCharField']
 
+
 class LooseVersionField(models.Field):
     ''' store and return values as a LooseVersion '''
 
@@ -51,6 +52,7 @@ class LooseVersionField(models.Field):
 
 
 add_introspection_rules([], ["^galaxy\.main\.fields\.LooseVersionField"])
+
 
 # From:
 # http://stackoverflow.com/questions/3459843/auto-truncating-fields-at-max-length-in-django-charfields

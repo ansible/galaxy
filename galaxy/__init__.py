@@ -39,6 +39,7 @@ def find_commands(management_dir):
         pass
     return commands
 
+
 def prepare_env():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings')
     local_site_packages = os.path.join(os.path.dirname(__file__), 'lib', 'site-packages')
@@ -48,6 +49,7 @@ def prepare_env():
         warnings.simplefilter('ignore', DeprecationWarning)
     # import django.utils
     settings.version = __version__
+
 
 def manage():
     # Prepare the galaxy environment.

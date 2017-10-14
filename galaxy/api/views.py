@@ -124,6 +124,7 @@ logger = logging.getLogger(__name__)
 #--------------------------------------------------------------------------------
 # Helper functions
 
+
 def filter_user_queryset(qs):
     return qs.filter(is_active=True)
 
@@ -199,12 +200,14 @@ class ApiV1RootView(APIView):
         data['remove role']          = reverse('api:remove_role')
         return Response(data)
 
+
 class RoleTypes(APIView):
     permission_classes = (AllowAny,)
     view_name = 'Role Types'
 
     def get(self, request, format=None):
         return Response(Role.ROLE_TYPE_CHOICES)
+
 
 class ApiV1SearchView(APIView):
     permission_classes = (AllowAny,)

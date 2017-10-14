@@ -18,6 +18,7 @@
 from galaxy.main.models import Role
 from autofixture import generators, register, AutoFixture
 
+
 class RoleAutoFixture(AutoFixture):
     field_values = {
         'name': generators.StaticGenerator('role_name'),

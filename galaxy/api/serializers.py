@@ -113,6 +113,7 @@ def readme_to_html(obj):
 
     return content
 
+
 class BaseSerializer(serializers.ModelSerializer):
     # add the URL and related resources
     url            = serializers.SerializerMethodField()

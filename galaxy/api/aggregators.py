@@ -20,6 +20,7 @@ import django.db.models.aggregates
 # Usage (to retrieve objects with highest average, NULLs become zeroes and are last):
 # MyModel.objects.annotate(average=AvgWithZeroForNull('other_model__field_name')).order_by('-average')
 
+
 class AvgWithZeroForNull(django.db.models.aggregates.Avg):
     template = 'COALESCE(%(function)s(%(field)s), 0)'
     name = 'AvgWithZeroForNull'
