@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  web:
+    image: galaxy:latest
+    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv && /entrypoint.sh manage migrate --noinput && /entrypoint.sh run web']
+    environment:
+      - GALAXY_SECRET_KEY=secret
+      - GALAXY_DB_HOST=postgres
+      - GALAXY_DB_PASSWORD=galaxy
+      - GALAXY_RABBITMQ_HOST=rabbitmq
+      - GALAXY_RABBITMQ_PASSWORD=galaxy
+      - GALAXY_MEMCACHE_HOST=memcache
+      - GALAXY_ELASTICSEARCH_HOST=elastic
+    ports:
+      - '8000:8000'
+    links:
+      - postgres
+      - elastic
+      - memcache
+      - rabbitmq
+
+  worker:
+    image: galaxy:latest
+    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv && /entrypoint.sh run worker']
+    environment:
+      - GALAXY_SECRET_KEY=secret
+      - GALAXY_DB_HOST=postgres
+      - GALAXY_DB_PASSWORD=galaxy
+      - GALAXY_RABBITMQ_HOST=rabbitmq
+      - GALAXY_RABBITMQ_PASSWORD=galaxy
+      - GALAXY_MEMCACHE_HOST=memcache
+      - GALAXY_ELASTICSEARCH_HOST=elastic
+      - C_FORCE_ROOT=1
+    links:
+      - postgres
+      - rabbitmq
+
+  postgres:
+    image: postgres:9.5.4
+    environment:
+      - POSTGRES_DB=galaxy
+      - POSTGRES_USER=galaxy
+      - POSTGRES_PASSWORD=galaxy
+
+  elastic:
+    image: elasticsearch:2.4.1
+
+  memcache:
+    image: memcached:latest
+
+  rabbitmq:
+    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=galaxy
+      - RABBITMQ_DEFAULT_PASS=galaxy
+      - RABBITMQ_DEFAULT_VHOST=galaxy
