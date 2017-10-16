@@ -1,6 +1,7 @@
 {
   "name": "galaxy",
   "version": "0.0.0",
+  "private": true,
   "description": "Find, reuse and share the best Ansible content",
   "main": "\\",
   "scripts": {
@@ -16,7 +17,7 @@
     "Ansibleworks"
   ],
   "author": "Chris Houseknecht",
-  "license": "Commercial",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/ansible/galaxy/issues"
   },
