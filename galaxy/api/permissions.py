@@ -34,6 +34,7 @@ logger = logging.getLogger('galaxy.api.permissions')
 
 __all__ = ['ModelAccessPermission',]
 
+
 class ModelAccessPermission(permissions.BasePermission):
     '''
     Default permissions class to check user access based on the model and

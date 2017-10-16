@@ -33,9 +33,11 @@ import contextlib
 import random
 from django.core.cache import cache as django_cache
 
+
 class MemcacheLockException(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
+
 
 @contextlib.contextmanager
 def memcache_lock(key, attempts=1, expires=120):

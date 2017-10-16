@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
     help = (u"Update each role's GitHub stargazer and watcher counts, and remove any roles "
             u"that no longer exist on GitHub.")
-    
+
     def handle(self, *args, **options):
 
         # Users should already be authenticated to Galaxy via GitHub and have a valid token.

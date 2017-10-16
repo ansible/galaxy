@@ -67,6 +67,7 @@ def user_logged_in_handler(request, user, **kwargs):
             user.cache_refreshed = True
             user.save()
 
+
 @receiver(post_save, sender=ImportTask)
 def import_task_post_save(sender, **kwargs):
     '''

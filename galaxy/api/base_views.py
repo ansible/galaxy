@@ -52,6 +52,7 @@ __all__ = [
 
 logger = logging.getLogger('galaxy.api.base_views')
 
+
 def get_view_name(cls, suffix=None):
     '''
     Wrapper around REST framework get_view_name() to support get_name() method
@@ -68,6 +69,7 @@ def get_view_name(cls, suffix=None):
     if name:
         return ('%s %s' % (name, suffix)) if suffix else name
     return views.get_view_name(cls, suffix=None)
+
 
 def get_view_description(cls, html=False):
     '''
@@ -87,6 +89,7 @@ def get_view_description(cls, html=False):
     if html:
         desc = '<div class="description">%s</div>' % desc
     return mark_safe(desc)
+
 
 class APIView(views.APIView):
 
@@ -121,6 +124,7 @@ class APIView(views.APIView):
             template_list.append('main/%s.md' % template_basename)
         context = self.get_description_context()
         return render_to_string(template_list, context)
+
 
 class GenericAPIView(generics.GenericAPIView, APIView):
     # Base class for all model-based views.
@@ -278,12 +282,14 @@ class ListAPIView(generics.ListAPIView, GenericAPIView):
                 fields.append(field.name)
         return fields
 
+
 class ListCreateAPIView(ListAPIView, generics.ListCreateAPIView):
     # Base class for a list view that allows creating new objects.
 
     def pre_save(self, obj):
         if hasattr(self.model, 'owner'):
             obj['owner_id'] = self.request.user.id
+
 
 class SubListAPIView(ListAPIView):
     # Base class for a read-only sublist view.
@@ -328,6 +334,7 @@ class SubListAPIView(ListAPIView):
         qs = self.model.objects.all().distinct()
         sublist_qs = getattr(parent, self.relationship).distinct()
         return qs & sublist_qs
+
 
 class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
     # Base class for a sublist view that allows for creating subobjects and
@@ -380,7 +387,6 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
             # logger.debug('SubListCreateAPIView.create: permission denied user=%s model=%s action=add',
             #             request.user, self.model._meta.verbose_name)
             raise PermissionDenied()
-
 
         # save the object through the serializer, reload and return the saved
         # object deserialized
@@ -523,8 +529,10 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
     def put(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
 
+
 class RetrieveAPIView(generics.RetrieveAPIView, GenericAPIView):
     pass
+
 
 class RetrieveUpdateAPIView(RetrieveAPIView, generics.RetrieveUpdateAPIView):
 
@@ -540,6 +548,7 @@ class RetrieveUpdateAPIView(RetrieveAPIView, generics.RetrieveUpdateAPIView):
     def update_filter(self, request, *args, **kwargs):
         ''' scrub any fields the user cannot/should not put/patch, based on user context.  This runs after read-only serialization filtering '''
         pass
+
 
 class RetrieveUpdateDestroyAPIView(RetrieveUpdateAPIView, generics.RetrieveUpdateDestroyAPIView):
     pass
@@ -558,4 +567,3 @@ class RetrieveUpdateDestroyAPIView(RetrieveUpdateAPIView, generics.RetrieveUpdat
 #         else:
 #             raise NotImplementedError('destroy() not implemented yet for %s' % obj)
 #         return HttpResponse(status=204)
-

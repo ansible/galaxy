@@ -167,7 +167,7 @@ class RoleAccess(BaseAccess):
         # unauthenticated users can never attach
         if not self.user.is_authenticated:
             return False
-        
+
         if isinstance(sub_obj, RoleRating):
             if obj.owner.id == self.user.id:
                 # people cannot rate their own roles
@@ -211,7 +211,7 @@ class NotificationSecretAccess(BaseAccess):
 
 class ImportTaskAccess(BaseAccess):
     model = ImportTask
-    
+
     def can_add(self, data):
         return self.user.is_authenticated()
 
@@ -228,14 +228,14 @@ class ImportTaskMessageAccess(BaseAccess):
 
     def can_add(self, data):
         return False
-    
+
     def can_change(self, obj, data):
         return False
 
     def can_attach(self, obj, sub_obj, relationship, data,
                    skip_sub_obj_read_check=False):
         return False
-    
+
     def get_queryset(self):
         return self.model.objects.filter(active=True, task__active=True).distinct()
 

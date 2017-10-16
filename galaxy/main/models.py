@@ -60,7 +60,7 @@ class BaseModel(models.Model, DirtyMixin):
 
     def __unicode__(self):
         if hasattr(self, 'name'):
-            return unicode("%s-%s"% (self.name, self.id))
+            return unicode("%s-%s" % (self.name, self.id))
         else:
             return u'%s-%s' % (self._meta.verbose_name, self.id)
 
@@ -125,6 +125,7 @@ class CommonModel(PrimordialModel):
     name = models.CharField(max_length=512, unique=True, db_index=True)
     original_name = models.CharField(max_length=512)
 
+
 class CommonModelNameNotUnique(PrimordialModel):
     # a base model where the name is not unique '''
 
@@ -136,6 +137,7 @@ class CommonModelNameNotUnique(PrimordialModel):
 
 ###################################################################################
 # Actual models
+
 
 class Category(CommonModel):
     #
@@ -154,6 +156,7 @@ class Category(CommonModel):
 
     #def get_num_roles(self):
     #    return self.roles.filter(active=True, owner__is_active=True).count()
+
 
 class Tag(CommonModel):
     #
@@ -196,6 +199,7 @@ class Platform(CommonModelNameNotUnique):
     def get_absolute_url(self):
         return reverse('api:platform_detail', args=(self.pk,))
 
+
 class UserAlias(models.Model):
     #
     # a class representing a mapping between users and aliases
@@ -215,7 +219,8 @@ class UserAlias(models.Model):
     )
 
     def __unicode__(self):
-        return unicode("%s (alias of %s)"% (self.alias_name, self.alias_of.username))
+        return unicode("%s (alias of %s)" % (self.alias_name, self.alias_of.username))
+
 
 class Role(CommonModelNameNotUnique):
     # a class representing a user role
@@ -466,7 +471,6 @@ class Role(CommonModelNameNotUnique):
                     raise Exception("Role %s value exceeeds max length of %s." % (field.name, field.max_length))
 
 
-
 class Namespace(PrimordialModel):
 
     class Meta:
@@ -545,7 +549,6 @@ class RoleVersion(CommonModelNameNotUnique):
         db_index   = True,
     )
 
-
     #
     # ------------------------------------------------------------------------------
     # other functions and properties
@@ -558,6 +561,7 @@ class RoleVersion(CommonModelNameNotUnique):
         # values in the other rating fields
         self.loose_version = self.name
         super(RoleVersion, self).save(*args, **kwargs)
+
 
 class RoleRating(PrimordialModel):
 
@@ -922,5 +926,3 @@ class RefreshRoleCount (PrimordialModel):
         default      = 0,
         null         = True
     )
-
-

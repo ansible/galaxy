@@ -61,6 +61,7 @@ common_services = [
 # Helpers
 #------------------------------------------------------------------------------
 
+
 def readme_to_html(obj):
     if obj is None:
         return ''
@@ -90,6 +91,7 @@ def readme_to_html(obj):
                       "README. If you re-import this role, the HTML will show up, and this message will go away."
 
     return content
+
 
 def get_url_parts(path):
     import urls as main_urls
@@ -440,6 +442,7 @@ def accounts_connect_success(request):
     context = build_standard_context(request)
     context["connected_to_github"] = True
     return render_to_response('socialaccount/connections.html',context)
+
 
 @login_required
 def role_add_view(request):

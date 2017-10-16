@@ -52,4 +52,3 @@ prepare_env()
 
 # Return the default Django WSGI application.
 application = get_wsgi_application()
-

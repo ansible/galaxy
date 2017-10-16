@@ -41,7 +41,6 @@ if settings.SITE_ENV == 'DEV':
         def generate(self):
             return random.randrange(100) > (100 - self.percent_chance)
 
-
     class UserNameGenerator(generators.FirstNameGenerator, generators.LastNameGenerator):
         """ Generates a username of the form f_lname """
 

@@ -19,6 +19,7 @@
 
 from rest_framework import renderers
 
+
 class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
     '''
     Customizations to the default browsable API renderer.

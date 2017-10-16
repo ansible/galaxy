@@ -31,7 +31,7 @@ autocomplete = analyzer(
 class BaseSearchModel(DocType):
     created_on = Date(include_in_all=False)
     last_modified_on = Date(include_in_all=False)
-    
+
     def save(self, **kwargs):
         if not self.created_on:
             self.created_on = datetime.now()
@@ -42,7 +42,7 @@ class BaseSearchModel(DocType):
 class TagDoc(BaseSearchModel):
     tag = String(analyzer=autocomplete, search_analyzer='standard')
     roles = Long(include_in_all=False)
-    
+
     class Meta:
         index = 'galaxy_tags'
         all = MetaField(enabled=True)
@@ -64,7 +64,7 @@ class PlatformDoc(BaseSearchModel):
 
 class UserDoc(BaseSearchModel):
     username = String(analyzer=autocomplete, search_analyzer='standard')
-     
+
     class Meta:
         index = 'galaxy_users'
         all = MetaField(enabled=False)

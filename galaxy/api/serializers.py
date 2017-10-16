@@ -113,6 +113,7 @@ def readme_to_html(obj):
 
     return content
 
+
 class BaseSerializer(serializers.ModelSerializer):
     # add the URL and related resources
     url            = serializers.SerializerMethodField()
@@ -202,7 +203,7 @@ class BaseSerializer(serializers.ModelSerializer):
         if obj is None:
             return None
         elif isinstance(obj, User):
-            return obj.last_login # Not actually exposed for User.
+            return obj.last_login  # Not actually exposed for User.
         else:
             try:
                 return obj.modified
