@@ -40,7 +40,7 @@ def _read_secret_key(settings_dir='/etc/galaxy'):
     try:
         with open(os.path.join(settings_dir, 'SECRET_KEY')) as fp:
             return fp.read().strip()
-    except OSError:
+    except IOError:
         return None
 
 
