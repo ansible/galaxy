@@ -11,6 +11,7 @@ known_hosts
 provisioning/library/
 rpm-build/
 node_modules/
+public/
 nohup.out
 provisioning/ec2_inventory
 .vagrant
