@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2017, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -16,4 +16,3 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 # Django settings for galaxy project.
 
-execfile('/etc/galaxy/settings.py')
