@@ -74,6 +74,8 @@ def _include_settings(filename, scope=None, optional=False):
 
 DEBUG = False
 
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+
 # Database
 # ---------------------------------------------------------
 
@@ -163,6 +165,19 @@ BROKER_URL = 'amqp://{user}:{password}@{host}:{port}/{vhost}'.format(
 SITE_ENV = 'PROD'
 
 SITE_NAME = os.environ.get('GALAXY_SITE_NAME', 'localhost')
+
+# =========================================================
+# Logging
+# =========================================================
+
+LOGS_DIR = '/var/log/galaxy'
+
+LOGGING['handlers']['allauth_logfile']['filename'] = \
+    os.path.join(LOGS_DIR, 'allauth.log')
+LOGGING['handlers']['django_logfile']['filename'] = \
+    os.path.join(LOGS_DIR, 'django.log')
+LOGGING['handlers']['galaxy_logfile']['filename'] = \
+    os.path.join(LOGS_DIR, 'galaxy.log')
 
 # =========================================================
 # System Settings
