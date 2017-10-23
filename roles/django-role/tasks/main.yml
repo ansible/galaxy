@@ -59,10 +59,10 @@
     mode: 0775 
   with_items:
     - /etc/galaxy
-    - /galaxy_logs
     - /galaxy
     - /setup
     - /venv
+    - /var/log/galaxy
     - /var/lib/galaxy/public/static
 
 - name: Copy source
