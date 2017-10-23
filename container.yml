@@ -34,6 +34,7 @@ services:
     user: django
     environment:
       - C_FORCE_ROOT=1
+      - DJANGO_SETTINGS_MODULE=galaxy.settings.development
     roles:
       - django-role
     dev_overrides:
@@ -52,6 +53,7 @@ services:
       -B, --autoreload, -Q, 'celery,import_tasks,login_tasks']
     environment:
     - C_FORCE_ROOT=1
+    - DJANGO_SETTINGS_MODULE=galaxy.settings.development
     user: django
     dev_overrides:
       volumes:
