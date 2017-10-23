@@ -16,7 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 # Django settings for galaxy project.
 
-import os
+import inspect
 
 from .default import *  # noqa
 
@@ -42,6 +42,30 @@ def _read_secret_key(settings_dir='/etc/galaxy'):
             return fp.read().strip()
     except OSError:
         return None
+
+
+def _include_settings(filename, scope=None, optional=False):
+    """
+    Includes python settings file into specified scope.
+
+    :param str filename: Python source file.
+    :param scope: Destination scope, by default global scope of function caller
+           is used.
+    :param bool optional: If set to True no exception will be raised if
+           file does not exist.
+    """
+    if scope is None:
+        scope = inspect.stack()[1][0].f_globals
+
+    try:
+        fp = open(filename)
+    except IOError:
+        if optional:
+            return
+        raise
+
+    with fp:
+        exec(fp.read(), scope)
 
 
 # =========================================================
@@ -139,3 +163,9 @@ BROKER_URL = 'amqp://{user}:{password}@{host}:{port}/{vhost}'.format(
 SITE_ENV = 'PROD'
 
 SITE_NAME = os.environ.get('GALAXY_SITE_NAME', 'localhost')
+
+# =========================================================
+# System Settings
+# =========================================================
+
+_include_settings('/etc/galaxy/settings.py', scope=globals(), optional=True)
