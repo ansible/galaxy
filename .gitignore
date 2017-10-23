@@ -11,11 +11,13 @@ known_hosts
 provisioning/library/
 rpm-build/
 node_modules/
+public/
 nohup.out
 provisioning/ec2_inventory
 .vagrant
 /Vagrantfile
 /logs
+/var
 galaxy.min.css
 .DS_Store
 ansible-deployment/

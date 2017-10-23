@@ -41,7 +41,7 @@ from galaxy.main.models import (Platform,
                                 RoleVersion,
                                 Namespace)
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
-from galaxy.settings import GITHUB_SERVER
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ def get_repo_raw(token, repo_name):
     '''
     auth_header = {u'Authorization': u'token ' + token}
     try:
-        url = u"{0}/repos/{1}".format(GITHUB_SERVER, repo_name)
+        url = u"{0}/repos/{1}".format(settings.GITHUB_SERVER, repo_name)
         response = requests.get(url, headers=auth_header)
         response.raise_for_status()
         repo = response.json()

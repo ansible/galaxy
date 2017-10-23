@@ -18,20 +18,22 @@
 """
 WSGI config for Galaxy project.
 """
+import logging
+import os
+import socket
+import time
 
 from galaxy import prepare_env
 from django.core.wsgi import get_wsgi_application
-from galaxy.settings import WAIT_FOR
+from django.conf import settings
 
-import socket
-import time
-import logging
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.default')
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 logger = logging.getLogger('galaxy.main')
 
-for service in WAIT_FOR:
+for service in settings.WAIT_FOR:
     is_alive = False
     count = 0
     while not is_alive and count < 10:
