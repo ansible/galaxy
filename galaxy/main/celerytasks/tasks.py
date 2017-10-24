@@ -493,7 +493,7 @@ def update_role_videos(import_task, role, videos=None):
             if not isinstance(video, dict) or set(video.keys()) < {'url', 'title'}:
                 add_message(import_task, u"ERROR", u"Expecting each item in video_links to be a dictionary with "
                                                    u"'url' and 'title' keys")
-                break
+                continue
 
             google_match = google_re.match(video['url'])
             vimeo_match = vimeo_re.match(video['url'])
@@ -501,7 +501,7 @@ def update_role_videos(import_task, role, videos=None):
             if not google_match and not vimeo_match and not youtube_match:
                 add_message(import_task, u"ERROR", u"Format of URL %s not recognized. Expected it be a shared link "
                                                    u"from Vimeo, YouTube, or Google Drive." % video['url'])
-                break
+                continue
             if google_match:
                 try:
                     file_id = google_match.group(1)
@@ -509,7 +509,7 @@ def update_role_videos(import_task, role, videos=None):
                 except IndexError:
                     add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
                                                        u"a shared link from Google Drive?" % video['url'])
-                    break
+                    continue
             elif vimeo_match:
                 try:
                     file_id = vimeo_match.group(1)
@@ -517,7 +517,7 @@ def update_role_videos(import_task, role, videos=None):
                 except IndexError:
                     add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
                                                        u"a shared link from Vimeo?" % video['url'])
-                    break
+                    continue
             elif youtube_match:
                 try:
                     file_id = youtube_match.group(1)
@@ -525,7 +525,7 @@ def update_role_videos(import_task, role, videos=None):
                 except IndexError:
                     add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
                                                        u"a shared link from YouTube?" % video['url'])
-                    break
+                    continue
 
             role.videos.update_or_create(url=video['embed_url'], defaults={'description': video['title']})
 
