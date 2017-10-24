@@ -467,6 +467,69 @@ def add_tags(import_task, galaxy_info, role):
             role.tags.remove(tag)
 
 
+def update_role_videos(import_task, role, videos=None):
+    existing_videos = role.videos.all().count()
+
+    if not videos and not existing_videos:
+        # nothing to do
+        return
+
+    if not videos and existing_videos:
+        # no video provided in meta data, so remove any existing videos
+        role.videos.all().delete()
+        return
+
+    if videos:
+        if not isinstance(videos, list):
+            add_message(import_task, u"ERROR", u"Invalid data format for video_links. "
+                                               u"Expecting video_links to be a list.")
+            return
+
+        google_re = re.compile('https:\/\/drive.google.com.*file\/d\/([0-9A-Za-z-_]+)\/.*')
+        vimeo_re = re.compile('https:\/\/vimeo.com\/([0-9]+)')
+        youtube_re = re.compile('https://youtu.be/([0-9A-Za-z-_]+)')
+
+        for video in videos:
+            if not isinstance(video, dict) or set(video.keys()) < {'url', 'title'}:
+                add_message(import_task, u"ERROR", u"Expecting each item in video_links to be a dictionary with "
+                                                   u"'url' and 'title' keys")
+                break
+
+            google_match = google_re.match(video['url'])
+            vimeo_match = vimeo_re.match(video['url'])
+            youtube_match = youtube_re.match(video['url'])
+            if not google_match and not vimeo_match and not youtube_match:
+                add_message(import_task, u"ERROR", u"Format of URL %s not recognized. Expected it be a shared link "
+                                                   u"from Vimeo, YouTube, or Google Drive." % video['url'])
+                break
+            if google_match:
+                try:
+                    file_id = google_match.group(1)
+                    video['embed_url'] = "https://drive.google.com/file/d/%s/preview" % file_id
+                except IndexError:
+                    add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
+                                                       u"a shared link from Google Drive?" % video['url'])
+                    break
+            elif vimeo_match:
+                try:
+                    file_id = vimeo_match.group(1)
+                    video['embed_url'] = "https://player.vimeo.com/video/" + file_id
+                except IndexError:
+                    add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
+                                                       u"a shared link from Vimeo?" % video['url'])
+                    break
+            elif youtube_match:
+                try:
+                    file_id = youtube_match.group(1)
+                    video['embed_url'] = "https://www.youtube.com/embed/" + file_id
+                except IndexError:
+                    add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
+                                                       u"a shared link from YouTube?" % video['url'])
+                    break
+
+            role.videos.update_or_create(url=video['embed_url'], defaults={'description': video['title']})
+
+
 @task(throws=(Exception,), name="galaxy.main.celerytasks.tasks.import_role")
 def import_role(task_id):
     try:
@@ -546,13 +609,18 @@ def import_role(task_id):
     role.author              = strip_input(galaxy_info.get("author", ""))
     role.company             = strip_input(galaxy_info.get("company", ""))
     role.license             = strip_input(galaxy_info.get("license", ""))
+
     if galaxy_info.get('min_ansible_version'):
         role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version", ""))
+
     if galaxy_info.get('min_ansible_container_version'):
         role.min_ansible_container_version = strip_input(galaxy_info.get("min_ansible_container_version", ""))
-    role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url", ""))
-    role.github_branch       = strip_input(galaxy_info.get("github_branch", ""))
+
+    role.issue_tracker_url     = strip_input(galaxy_info.get("issue_tracker_url", ""))
+    role.github_branch         = strip_input(galaxy_info.get("github_branch", ""))
     role.github_default_branch = repo.default_branch
+
+    update_role_videos(import_task, role, videos=galaxy_info.get('video_links'))
 
     # check if meta/container.yml exists
     container_yml = decode_file(import_task, repo, branch, 'meta/container.yml', return_yaml=False)

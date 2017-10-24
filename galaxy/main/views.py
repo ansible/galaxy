@@ -395,6 +395,7 @@ class RoleDetailView(DetailView):
         context['tags'] = role.tags.all()
         context['platforms'] = role.platforms.all()
         context['dependencies'] = role.dependencies.all()
+        context['videos'] = role.videos.all()
 
         context['imports'] = []
         for imp_task in role.import_tasks.all().order_by('-id')[:10]:
