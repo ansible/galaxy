@@ -35,6 +35,5 @@ script:
 - ansible-playbook -i inventory test.yml
 
 # Stop the application
-- cd ../..
-- make stop_production
+- docker kill $(docker ps -q)
 
