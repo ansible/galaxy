@@ -11,11 +11,11 @@
   gather_facts: no
 
   roles:
+    # Replace robots.txt with an empty disallow path
     - role: searchbots
       searchbots_path: ../../galaxy/templates
-      searchbots_disallows:
-      - '/'
-      when: galaxy_disallow_searchbots
+      searchbots_disallows: []
+      when: galaxy_allow_searchbots
 
   tasks: 
     - name: Update admin url
