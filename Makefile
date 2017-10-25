@@ -32,7 +32,7 @@ endif
         refresh migrate migrate_empty makemigrations build_from_scratch \
         build build_debug \
         run run_production \
-        flake8 test \
+        flake8 test waitenv \
         build_indexes \
         sdist stop stop_production requirements ui_build export_test_data import_test_data createsuperuser \
         refresh_role_counts shell
@@ -87,7 +87,10 @@ flake8:
 	docker run -v ${PWD}:/galaxy -w /galaxy galaxy-django:latest /venv/bin/flake8 --config=tox.ini galaxy
 
 test:
-	docker exec -i -t galaxy_django_1 /bin/bash -c '/venv/bin/python scripts/wait_for_tcp.py postgres 5432 && /venv/bin/python ./manage.py test'
+	docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py test
+
+waitenv:
+	docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py waitenv
 
 # Start Galaxy containers with django and gulp in the foreground
 run:

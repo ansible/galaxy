@@ -1,13 +1,8 @@
 PYTHON="/venv/bin/python"
 PG_ISREADY="/usr/pgsql-9.5/bin/pg_isready"
 
-function wait_for_postgres() {
-    local timeout=10
-    local pg_isready="${PG_ISREADY} -h postgres -p 5432"
-    until ${pg_isready} &>/dev/null || [ ${timeout} -le 0 ]; do
-        sleep 1
-        (( timeout-- ))
-    done
+function waitenv() {
+     ${PYTHON} manage.py waitenv
 }
 
 function run_migrations() {
@@ -19,8 +14,8 @@ function update_django_site() {
 }
 
 function init_django_db() {
-    echo "Waiting for PostgreSQL..."
-    wait_for_postgres
+    echo "Waiting for Environment..."
+    waitenv
 
     echo "Running migrations..."
     run_migrations
