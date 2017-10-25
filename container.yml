@@ -34,6 +34,7 @@ services:
     user: django
     environment:
       - C_FORCE_ROOT=1
+      - DJANGO_SETTINGS_MODULE=galaxy.settings.production
     roles:
       - django-role
     dev_overrides:
@@ -42,20 +43,26 @@ services:
         - "8000:8000"
       volumes:
         - ${PWD}:/galaxy:z
+      environment:
+        - DJANGO_SETTINGS_MODULE=galaxy.settings.development
 
   celery:
     from: galaxy-django:latest
     working_dir: /galaxy
     links:
-    - rabbit
+      - rabbit
     command: [/usr/local/bin/dumb-init, /venv/bin/python, /galaxy/manage.py, celeryd,
-      -B, --autoreload, -Q, 'celery,import_tasks,login_tasks']
+              -B, --autoreload, -Q, 'celery,import_tasks,login_tasks']
     environment:
-    - C_FORCE_ROOT=1
+      - C_FORCE_ROOT=1
+      - DJANGO_SETTINGS_MODULE=galaxy.settings.production
     user: django
     dev_overrides:
       volumes:
-      - ${PWD}:/galaxy:z
+        - ${PWD}:/galaxy:z
+      environment:
+        - C_FORCE_ROOT=1
+        - DJANGO_SETTINGS_MODULE=galaxy.settings.development
 
   postgres:
     from: postgres:9.5.4

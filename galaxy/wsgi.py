@@ -18,11 +18,10 @@
 """
 WSGI config for Galaxy project.
 """
-
+import logging
 import os
 import socket
 import time
-import logging
 
 from django.core.wsgi import get_wsgi_application
 from django.conf import settings
@@ -30,7 +29,7 @@ from django.conf import settings
 from galaxy import prepare_env
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.default')
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 

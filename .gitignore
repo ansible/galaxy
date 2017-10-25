@@ -16,6 +16,7 @@ provisioning/ec2_inventory
 .vagrant
 /Vagrantfile
 /logs
+/var
 galaxy.min.css
 .DS_Store
 ansible-deployment/
