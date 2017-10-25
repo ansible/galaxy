@@ -222,7 +222,6 @@ class UserAlias(models.Model):
         return unicode("%s (alias of %s)" % (self.alias_name, self.alias_of.username))
 
 
-
 class Video(PrimordialModel):
     class Meta:
         verbose_name = "videos"
