@@ -1,11 +1,29 @@
-var gulp = require('gulp');
-var less = require('gulp-less');
-var dest = require('gulp-dest');
-var watch = require('gulp-watch');
-var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
-var rename = require('gulp-rename');
-var gutil = require('gulp-util');
+const gulp = require('gulp');
+const less = require('gulp-less');
+const dest = require('gulp-dest');
+const watch = require('gulp-watch');
+const uglify = require('gulp-uglify');
+const concat = require('gulp-concat');
+const rename = require('gulp-rename');
+const gutil = require('gulp-util');
+const proxy    = require('http-proxy-middleware')
+const sync     = require('browser-sync')
+const history  = require('connect-history-api-fallback')
+
+
+gulp.task('server', function() {
+    const proxyDjango = proxy('/', {target: 'http://django:8000', xfwd: true})
+
+    sync.init({
+        notify: false,
+        open: false,
+        port: 8000,
+        server: {
+            baseDir: '/galaxy',
+            middleware: [proxyDjango, history()]
+        }
+    });
+});
 
 gulp.task('accountApp', function() {
     return gulp.src([
@@ -89,9 +107,21 @@ gulp.task('less', function() {
         .pipe(gulp.dest('./'));
 });
 
-gulp.task('watch', function () {
-    gulp.watch('./galaxy/static/less/*.less',['less']);
+gulp.task('less-watch', ['less'], function (done) {
+    sync.reload();
+    done();
 });
 
-gulp.task('default', ['less','watch']);
+gulp.task('generic-watch', function(done) {
+    sync.reload();
+    done();
+});
+
+gulp.task('watch', function () {
+    gulp.watch('./galaxy/static/less/*.less', ['less-watch']);
+    gulp.watch('./galaxy/static/js/*/*.js', ['generic-watch']);
+    gulp.watch('./galaxy/static/partials/*.html', ['generic-watch']);
+});
+
+gulp.task('default', ['less', 'server', 'watch']);
 gulp.task('build', ['less', 'accountApp', 'listApp', 'detailApp', 'exploreApp', 'roleAddApp', 'importStatusApp']);

@@ -148,7 +148,9 @@ From the latest log file, retrieve the verification URL, and paste it into your 
 
 ### Modifying static assets
 
-The Javascript, CSS and HTML components for the web site can be found in the [galaxy/static](./galaxy/static) folder. The *gulp* service watches for modification to the `less` stylesheets, and automatically recompiles the CSS. After making a change, refresh your browser, and you should see the changes. If you don't see the changes, use the following command to check the gulp service's log:
+The Javascript, CSS and HTML components for the web site can be found in the [galaxy/static](./galaxy/static) folder. Within this folder, the *gulp* service watches for modifications to `less/*.less` stylesheets, and automatically recompiles the CSS and refreshes your browser. It also refreshes your browser whenever changes are made to `js/*/*.js` and `partion/*.html` files.
+
+If changes to frontend assets are not being reflected in your browser, use the following command to check the gulp service logs:
 
 ```
 # View the gulp service log
