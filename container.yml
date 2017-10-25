@@ -19,8 +19,10 @@ services:
     user: gulp
     volumes:
       - ${PWD}:/galaxy:z
+    ports:
+      - '8000:8000'
     dev_overrides:
-      command: [/usr/local/bin/dumb-init, /usr/bin/gulp]
+      command: [/usr/local/bin/dumb-init, /usr/local/bin/gulp]
 
   django:
     from: centos:7
@@ -38,8 +40,8 @@ services:
       - django-role
     dev_overrides:
       command: [/usr/local/bin/dumb-init, /setup/start-development.sh]
-      ports:
-        - "8000:8000"
+      export:
+      - '8000'
       volumes:
         - ${PWD}:/galaxy:z
 
