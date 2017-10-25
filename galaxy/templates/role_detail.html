@@ -46,6 +46,12 @@
                     <li role="presentation">
                         <a href="#readme" aria-controls="readme" role="tab" data-toggle="tab">README</a>
                     </li>
+                    {% if videos %}
+                    <li role="presentation">
+                        <a href="#videos" aria-controls="videos" role="tab" data-toggle="tab">Videos</a>
+                    </li>
+                    {% endif %}
+
                     {% if role.container_yml %}
                     <li role="presentation">
                         <a href="#container-yml" aria-controls="container-yml" role="tab" data-toggle="tab">Container.yml</a>
@@ -322,6 +328,20 @@
                     <div role="tabpanel" class="tab-pane" id="readme">
                         {{ readme_html | safe }}
                     </div>
+
+                    {% if videos %}
+                    <div role="tabpanel" class="tab-pane" id="videos">
+                        <div class="video-tab-content">
+                            {% for video in videos %}
+                            <div class="video">
+                                <iframe src="{{ video.url }}" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                            </div>
+                            <div class="video-title">{{ video.description }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <div role="tabpanel" class="tab-pane" id="container-yml">
 <pre>
 {{ role.container_yml | safe }}

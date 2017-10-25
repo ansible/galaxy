@@ -43,7 +43,8 @@ from galaxy.main.models import (Platform,
                                 Notification,
                                 Repository,
                                 Subscription,
-                                Stargazer)
+                                Stargazer
+                                )
 
 # rst2html5-tools
 from html5css3 import Writer
@@ -773,9 +774,8 @@ class RoleListSerializer(BaseSerializer):
         d['tags'] = [
             dict(name=g.name) for g in obj.tags.all()]
         d['versions'] = [
-            dict(id=g.id,
-                 name=g.name,
-                 release_date=g.release_date) for g in obj.versions.all()]
+            dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
+        d['videos'] = [dict(url=v.url, description=v.description) for v in obj.videos.all()]
         return d
 
     def get_readme_html(self, obj):
@@ -858,14 +858,11 @@ class RoleDetailSerializer(BaseSerializer):
         if obj is None:
             return {}
         d = super(RoleDetailSerializer, self).get_summary_fields(obj)
-        d['dependencies'] = [
-            dict(id=g.id, name=str(g)) for g in obj.dependencies.all()]
-        d['platforms'] = [
-            dict(name=g.name, release=g.release) for g in obj.platforms.all()]
-        d['tags'] = [
-            dict(name=g.name) for g in obj.tags.all()]
-        d['versions'] = [
-            dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
+        d['dependencies'] = [dict(id=g.id, name=str(g)) for g in obj.dependencies.all()]
+        d['platforms'] = [dict(name=g.name, release=g.release) for g in obj.platforms.all()]
+        d['tags'] = [dict(name=g.name) for g in obj.tags.all()]
+        d['versions'] = [dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
+        d['videos'] = [dict(url=v.url, description=v.description) for v in obj.videos.all()]
         return d
 
     def get_readme_html(self, obj):

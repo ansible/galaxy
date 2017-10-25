@@ -177,7 +177,7 @@ class Tag(CommonModel):
 
 
 class Platform(CommonModelNameNotUnique):
-    # a class represnting the valid platforms a role supports '''
+    # a class representing the valid platforms a role supports '''
 
     class Meta:
         ordering = ['name','release']
@@ -220,6 +220,18 @@ class UserAlias(models.Model):
 
     def __unicode__(self):
         return unicode("%s (alias of %s)" % (self.alias_name, self.alias_of.username))
+
+
+class Video(PrimordialModel):
+    class Meta:
+        verbose_name = "videos"
+
+    url = models.CharField(
+        max_length=256,
+        blank=False,
+        null=False,
+        unique=True
+    )
 
 
 class Role(CommonModelNameNotUnique):
@@ -265,6 +277,15 @@ class Role(CommonModelNameNotUnique):
         editable     = False,
     )
     categories.help_text = ""
+
+    videos = models.ManyToManyField(
+        'Video',
+        related_name = 'videos',
+        verbose_name = 'videos',
+        blank        = True,
+        editable     = False
+    )
+    videos.hel_text = ""
 
     #
     # ------------------------------------------------------------------------------
