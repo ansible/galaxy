@@ -146,7 +146,9 @@ CACHES = {
 }
 
 ELASTICSEARCH = {
-    'hosts': ["elastic:9200"]
+    'default': {
+        'hosts': ["elastic:9200"],
+    }
 }
 
 HAYSTACK_CONNECTIONS = {

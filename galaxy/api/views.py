@@ -51,6 +51,7 @@ from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
+from django.conf import settings
 
 #allauth
 from allauth.socialaccount.models import SocialAccount
@@ -117,7 +118,7 @@ from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
 from galaxy.main.celerytasks.tasks import import_role, update_user_repos
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
-from galaxy.settings import GITHUB_SERVER, GITHUB_TASK_USERS, TRAVIS_CONFIG_URL
+
 
 logger = logging.getLogger(__name__)
 
@@ -966,7 +967,7 @@ class NotificationList(ListCreateAPIView):
         """
         Returns the PEM encoded public key from the Travis CI /config endpoint
         """
-        response = requests.get(TRAVIS_CONFIG_URL, timeout=10.0)
+        response = requests.get(settings.TRAVIS_CONFIG_URL, timeout=10.0)
         response.raise_for_status()
         return response.json()['config']['notifications']['webhook']['public_key']
 
@@ -978,7 +979,8 @@ class NotificationList(ListCreateAPIView):
             pass
         if not owner:
             try:
-                owner = User.objects.get(username=GITHUB_TASK_USERS[0])
+                owner = User.objects.get(
+                    username=settings.GITHUB_TASK_USERS[0])
             except User.DoesNotExist:
                 msg = "Notification error: Galaxy task user not found"
                 logger.error(msg)
@@ -1360,14 +1362,14 @@ class TokenView(APIView):
             raise ValidationError(dict(detail="Invalid request."))
 
         try:
-            git_status = requests.get(GITHUB_SERVER)
+            git_status = requests.get(settings.GITHUB_SERVER)
             git_status.raise_for_status()
         except:
             raise ValidationError(dict(detail="Error accessing GitHub API. Please try again later."))
 
         try:
             header = dict(Authorization='token ' + github_token)
-            gh_user = requests.get(GITHUB_SERVER + '/user', headers=header)
+            gh_user = requests.get(settings.GITHUB_SERVER + '/user', headers=header)
             gh_user.raise_for_status()
             gh_user = gh_user.json()
             if hasattr(gh_user,'message'):
