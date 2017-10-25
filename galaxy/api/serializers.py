@@ -43,8 +43,7 @@ from galaxy.main.models import (Platform,
                                 Notification,
                                 Repository,
                                 Subscription,
-                                Stargazer,
-                                Video,
+                                Stargazer
                                 )
 
 # rst2html5-tools
