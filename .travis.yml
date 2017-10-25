@@ -26,6 +26,7 @@ script:
 
 # start the application
 - make run_production
+- make waitenv
 - make test
 - docker ps -a
 - docker images
