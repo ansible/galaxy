@@ -29,3 +29,5 @@ mock
 ansible
 # pyinotify
 pyOpenSSL
+psycopg2
+
