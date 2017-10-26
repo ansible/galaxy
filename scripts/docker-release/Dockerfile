@@ -1,5 +1,7 @@
 FROM centos:7
 
+RUN useradd -r -m -g root galaxy
+
 ENV PIP_NO_CACHE_DIR off
 
 # Install python
@@ -9,9 +11,7 @@ RUN yum -y install epel-release \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
-# TODO(cutwater): Create user / group for galaxy?
-
-# Install dumb-init or tini
+# Install tini
 ENV TINI_VERSION v0.16.1
 RUN yum -y install wget \
     && wget -O /usr/local/bin/tini "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini" \
@@ -23,7 +23,9 @@ RUN yum -y install wget \
 # Create directories structure
 RUN mkdir -p /etc/galaxy \
     && mkdir -p /var/log/galaxy \
-    && mkdir -p /var/lib/galaxy/public
+    && mkdir -p /var/lib/galaxy/public \
+    && chown galaxy:root /var/log/galaxy \
+    && chmod g+w /var/log/galaxy
 
 # Install python dependencies
 ENV VENV_BIN /var/lib/galaxy/venv/bin
@@ -42,6 +44,7 @@ WORKDIR /galaxy
 
 ENV DJANGO_SETTINGS_MODULE galaxy.settings.production
 
+USER galaxy
 EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint.sh"]
