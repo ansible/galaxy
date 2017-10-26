@@ -235,7 +235,7 @@ WAIT_FOR = [
         'port': int(os.environ.get('GALAXY_MEMCACHE_PORT', 11211))
     },
     {
-        'host': os.environ.get('GALAXY_ELASTICSEARCH_HOST'),
+        'host': os.environ.get('GALAXY_ELASTICSEARCH_HOST', ''),
         'port': int(os.environ.get('GALAXY_ELASTICSEARCH_PORT', 9200)),
     }
 ]
