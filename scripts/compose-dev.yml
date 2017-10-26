@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  galaxy:
+    image: galaxy-dev:latest
+    build:
+      context: ./docker-dev
+    volumes:
+      - ${PWD}:/galaxy:rw
+    environment:
+      - TMUX
+    ports:
+      - '8000:8000'
+    links:
+      - postgres
+      - elastic
+      - memcache
+      - rabbitmq
+  postgres:
+    image: postgres:9.5.4
+    environment:
+      - POSTGRES_DB=galaxy
+      - POSTGRES_USER=galaxy
+      - POSTGRES_PASSWORD=galaxy
+
+  elastic:
+    image: elasticsearch:2.4.1
+
+  memcache:
+    image: memcached:latest
+
+  rabbitmq:
+    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=galaxy
+      - RABBITMQ_DEFAULT_PASS=galaxy
+      - RABBITMQ_DEFAULT_VHOST=galaxy

@@ -23,7 +23,8 @@ RUN yum -y install epel-release \
 COPY package.json /tmp/package.json
 COPY yarn.lock /tmp/yarn.lock
 RUN cd /tmp \
-    && yarn install
+    && yarn install \
+    && yarn global add gulp
 
 ENV PIP_NO_CACHE_DIR off
 
