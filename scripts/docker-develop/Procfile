@@ -1,0 +1,2 @@
+celery:       make celery
+runserver:    make runserver

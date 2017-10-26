@@ -148,3 +148,10 @@ shell:
 	@echo Starting shell on galaxy_django_1
 	@docker exec -i -t galaxy_django_1 /bin/bash
 
+celery:
+	# Only works inside the development container
+	${VENV_DIR}/bin/python manage.py celeryd -B --autoreload -Q 'celery,import_tasks,login_tasks'
+
+runserver:
+	# Only works inside the development container
+	${VENV_DIR}/bin/python manage.py runserver 0.0.0.0:8000
