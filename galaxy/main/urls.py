@@ -16,10 +16,12 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.conf.urls import patterns, url
-from galaxy.main.views import RoleListView, RoleDetailView, NamespaceListView
 from django.conf import settings
-from django.contrib.staticfiles.views import serve as serve_static
 from django.views.decorators.cache import never_cache
+from django.contrib.staticfiles.views import serve as serve_staticfiles
+from django.views.static import serve as serve_static
+
+from galaxy.main.views import RoleListView, RoleDetailView, NamespaceListView
 
 urlpatterns = patterns(
     'galaxy.main.views',
@@ -51,5 +53,14 @@ urlpatterns = patterns(
     url(r'^([\w\-._+]+)/([\w\-._+]+)/$', RoleDetailView.as_view(), name='role-detail'),
 )
 
+# FIX
 if settings.DEBUG:
-    urlpatterns += patterns('', url(r'^static/(?P<path>.*)$', never_cache(serve_static)),)
+    urlpatterns += [
+        url(r'^static/(?P<path>.*)$',
+            never_cache(serve_staticfiles))
+    ]
+else:
+    urlpatterns += [
+        url(r'^static/(?P<path>.*)$', serve_static,
+            kwargs={'document_root': settings.STATIC_ROOT})
+    ]
