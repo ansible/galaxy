@@ -45,7 +45,7 @@
       http_proxy: "{{ http_proxy | default('') }}"
       https_proxy: "{{ https_proxy | default('') }}"
       no_proxy: "{{ no_proxy | default('') }}"
-    name: galaxy
+    name: ansible/galaxy
     tag: '{{ galaxy_version }}' 
     path: '{{ root_path }}'
     dockerfile: scripts/docker-release/Dockerfile
