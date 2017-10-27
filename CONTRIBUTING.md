@@ -59,7 +59,9 @@ If you have not done so already, you'll need to fork the Galaxy repo on GitHub. 
 
 #### Build the galaxy-dev image
 
-You're going to run a script that will build the`galaxy-dev` image, which will contain everything needed to run the Galaxy frontend web server, backend Django server, and Celery task runner. Prior to building this image, the script will first build the `galaxy-build` image, which contains all of the required OS packages, Python dependencies, and frontend tools and packages. The `galaxy-build` image is then used as the base image to create `galaxy-dev`.
+The first step to running a local Galaxy instance is building the images. You're going to run a script that will build the`galaxy-dev` image, which will contain everything needed to run the Galaxy frontend web server, backend Django server, and Celery task runner. 
+
+Prior to building this image, the script will first build the `galaxy-build` image, which contains all of the required OS packages, Python dependencies, and frontend tools and packages. The `galaxy-build` image is then used as the base image to create `galaxy-dev`.
 
 If you're curious about what actually goes into building the images, you'll find the Dockerfile for `galaxy-build` in [scripts/docker-release](./scripts/docker-release). The actual filename is `Dockerfile.build`. And you'll find the Dockerfile for `galaxy-dev` in [scripts/docker-dev](./scripts/docker-dev).
 
@@ -73,7 +75,7 @@ $ cd galaxy
 $ make dev/build
 ```
 
-Once the build completes, you will the `galaxy-dev` and `galaxy-build` images in your local image cache. Use the `docker images` command to check, as follows:
+Once the build completes, you will have the `galaxy-dev` and `galaxy-build` images in your local image cache. Use the `docker images` command to check, as follows:
 
 ```bash
 $ docker images
@@ -90,7 +92,9 @@ We use `docker-compose` to run the containers. If you're curious about the servi
 
 #### Quick start
 
-There are a couple different ways to start the development containers. If all of this is new, and you just want to get things going, run the following command to start the containers in an attached mode. All that means is that the STDOUT and STDERR for each container will stream to the STDOUT and STDERR of your terminal session. Your session will be totally consumed with the output, which is OK. Seeing the output lets you know what's actually happening in the containers. To run other commands, and do other things from the your terminal, you'll need to start a second session.
+There are a couple different ways to start the development containers. If all of this is new, and you just want to get things going, run the following command to start the containers in an attached mode. All that means is that the STDOUT and STDERR for each container will stream to the STDOUT and STDERR of your terminal session. 
+
+After running the command, your session will be totally consumed with the output, which is OK. Seeing the output lets you know what's actually happening in the containers. So afterwards, to run additional commands from your terminal, you'll need to start a second session.
 
 So without further ado, run the following:
 
@@ -102,7 +106,20 @@ $ cd galaxy
 $ make dev/up
 ```
 
-Any missing images (i.e., postgresql, memcached, rabbitmq, elasticsearch) will be pulled, and the containers will launch. Aftr the above commands completes, you can take a look at the containers by running `docker ps` in your second terminal session.
+Any missing images (i.e., postgresql, memcachd, rabbitmq, elasticsearch) will be pulled. Getting all the images downloaded may take a few minutes. Once all the images are available, the ontainers will launch.
+
+Aftr the above commands completes, you can take a look at the containers by running `docker ps` in your second terminal session.
+
+```bash
+$ docker ps 
+
+CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS                                NAMES
+fc06225cdfd5        galaxy-dev:latest     "/bin/sh -c /galax..."   6 hours ago         Up 5 hours          0.0.0.0:8000->8000/tcp               galaxy_galaxy_1
+dc007355a69a        elasticsearch:2.4.1   "/docker-entrypoin..."   6 hours ago         Up 6 hours          9200/tcp, 9300/tcp                   galaxy_elastic_1
+fa48c619cc3d        postgres:9.5.4        "/docker-entrypoin..."   6 hours ago         Up 6 hours          5432/tcp                             galaxy_postgres_1
+b7f374cf7d56        rabbitmq:latest       "docker-entrypoint..."   6 hours ago         Up 6 hours          4369/tcp, 5671-5672/tcp, 25672/tcp   galaxy_rabbitmq_1
+9b8245eea91b        memcached:latest      "docker-entrypoint..."   6 hours ago         Up 6 hours          11211/tcp                            galaxy_memcache_1
+```
 
 #### Running detached
 
@@ -116,57 +133,61 @@ $ cd galaxy
 $ make dev/up_detached
 ```
 
+Since the STDOUT and STDERR are not streaming to your terminal session, you'll need to use the `docker logs` command to view logging output. As pictured above in [quick start](#quick-start), use `docker ps` to see the list of running containers, then use `docker logs -f <container name>` to stream a container's output. Use `Ctrl-C` to stop the streaming output.
+
 #### Running through tmux
 
-If you're familiar with `tmux`, and you would prefer to view the container output through a tmux session, use the following process to launch the containers, and then start the processes within the `galaxy` service using `tmux`.
+If you're familiar with `tmux`, and you would prefer to view the container output through a `tmux` session, use the following 2-step process to launch the containers, and then start the processes within the `galaxy` service using `tmux`.
 
-Start by executing the following command to launch the containers in detached mode, running in the background. Note that there will be no running processes in the `galaxy` service container, because you'll be starting them using `tmux` in the next step.
+1. Execute the following to launch the containers in detached mode, running in the background. Note that there will be no running processes in the `galaxy` service container, because you'll start them in the next step with `tmux`.
 
-```bash
-# Set your working directory to the project root
-$ cd galaxy
+    ```bash
+    # Set your working directory to the project root
+    $ cd galaxy
 
-# Start the build process
-$ make dev/up_tmux
-```
+    # Start the build process
+    $ make dev/up_tmux
+    ```
 
-Once the above commands completes, you can view the containers by running `docker ps`. The service we're most interested in is `galaxy`, and it's container name will be `galaxy_galaxy_1`. Before we can launch `tmux`, we need to wait for database migrations and other setup to complete. To see what's going on inside the `galaxy` service container, and whether or not the setup is complete, run the following to stream its logging output:
+    Once the above commands completes, you can view the containers by running `docker ps`. The service we're most interested in is `galaxy`, and it's container name will be `galaxy_galaxy_1`. Before we can launch `tmux`, we need to wait for database migrations and other setup to complete. To see what's going on inside the `galaxy` service container, and whether or not the setup is complete, run the following to stream its logging output:
 
-```
-$ docker logs -f galaxy_galaxy_1
-```
+    ```
+    $ docker logs -f galaxy_galaxy_1
+    ```
 
-The above will stream the log output to your terminal window. When all the migrations and setup work is done, the output stream will stop, and you'll see output similar to the following:
+    The above will stream the log output to your terminal window. When all the migrations and setup work is done, the output stream will stop, and you'll see output similar to the following:
 
-```
-  Applying socialaccount.0003_extra_data_default_dict... OK
-+ make build_indexes
-Rebuild Custom Indexes
-/var/lib/galaxy/venv/bin/python ./manage.py rebuild_galaxy_indexes
-/var/lib/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
+    ```
+    Applying socialaccount.0003_extra_data_default_dict... OK
+    + make build_indexes
+    Rebuild Custom Indexes
+    /var/lib/galaxy/venv/bin/python ./manage.py rebuild_galaxy_indexes
+    /var/lib/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
   from django.utils.importlib import import_module
 
-Rebuild Search Index
-/var/lib/galaxy/venv/bin/python ./manage.py rebuild_index --noinput
-/var/lib/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
+    Rebuild Search Index
+    /var/lib/galaxy/venv/bin/python ./manage.py rebuild_index --noinput
+    /var/lib/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
   from django.utils.importlib import import_module
 
-Removing all documents from your index because you said so.
-All documents removed.
-Indexing 0 roles
-+ '[' 1 == 1 ']'
-+ scripts/docker-dev/sleep.sh
-```
+    Removing all documents from your index because you said so.
+    All documents removed.
+    Indexing 0 roles
+    + '[' 1 == 1 ']'
+    + scripts/docker-dev/sleep.sh
+    ```
 
-If you see the very last line, `scripts/docker-dev/sleep.sh`, you're ready to start `tmux` and launch the processes inside the `galaxy` service container. Press `Ctrl-c` to stop streaming the logging output, and then run the following:
+    Once you see the very last line, `scripts/docker-dev/sleep.sh`, you're ready for step 2. 
+    
+2. Now you'll start `tmux` and launch the processes inside the `galaxy` service container by running the following. If you're streaming the logging ouptut still, use `Ctrl-c` to stop the stream.
 
-```bash
-# Set your working directory to the project root
-$ cd galaxy
+    ```bash
+    # Set your working directory to the project root
+    $ cd galaxy
 
-# Start tmux
-$ make dev/tmux
-```
+    # Start tmux
+    $ make dev/tmux
+    ```
 
 ### Accessing the Galaxy web site
 
@@ -196,7 +217,7 @@ Check the output stream from the `galaxy` service container, and look for the co
 [03:10:04] Finished 'default' after 108 μs
 ```
 
-OK, go ahead. What are you waiting for? You can view your Galaxy site at: [http://localhost:8000](http://localhost:8000).
+OK, go for it! Your Galaxy web site is available at: [http://localhost:8000](http://localhost:8000).
 
 **NOTE:**
 
@@ -219,23 +240,29 @@ Password (again):
 Superuser created successfully.
 ```
 
-The Django admin site can be accessed at [http://localhost:8000/galaxy__admin__site](http://localhost:8000/galaxy__admin__site).
+The Django admin site can be accessed at [http://localhost:8000/admin](http://localhost:8000/admin).
 
 ### Connect to GitHub
 
-To log into the development site, you first have to authorize it as a GitHub Oauth Application. You can do this by logging 
+To log into the development site, you first have to authorize it as a GitHub Oauth Application. You can do this by logging
 into GitHub, going to Personal Settings, choosing `Oauth Applications`, and then doing the following to create a new app:
 
 - Click `Register New Application`
-- Set the *Homepage URL* to `http://localhost:8000`. If you're using Docker Machine, replace *localhost* with the IP address 
-of the Virtualbox host.
-- Set the *Authorization Callback URL* to `http://localhost:8000/accounts/github/login/callback/`. And again, if you're using Docker Machine, replace *localhost* with the IP address of the Virtualbox host.
+- Set the *Homepage URL* to `http://localhost:8000`.
+- Set the *Authorization Callback URL* to `http://localhost:8000/accounts/github/login/callback/`.
 
-After you save the new application, access your local Galaxy admin site at [http://localhost:8000/galaxy__admin__site](http://localhost:8000/galaxy__admin__site). If you have not already done so, follow the *Create an Admin User* instructions above.
+After you save the new application, access your local Galaxy admin site at [http://localhost:8000/galaxy__admin__site](http://localhost:8000/admin), and log in using the admin us
+er you created above in [Create admin user](#create-admin-user)
 
-After logging into the admin site, you'll create a new social application. Start by finding `Social applications` at the bottom of the table, and clicking the *Add* button to its right. On the next screen, set the *provider* to `GitHub`, and enter `GitHub` as the *name*. From the new GitHub Oauth application you just created, copy the *ClientID* value into *Client id*, and copy the *Client Secret* value into *Secret key*. Under *Sites*, add `localhost` to *Chosen sites*. Save the changes.
+After logging into the admin site, you'll create a new social application. Start by finding `Social applications` at the bottom of the list, and clicking the *Add* button to its right. On the next screen, do the following to configure the new application:
 
-Log out of the *admin* account, and go back to [http://localhost:8000(http://localhost:8000). Click the GitHub logo under `Log into Galaxy with GitHub`.
+- Set the *provider* to `GitHub`
+- Enter `GitHub` as the *name*
+- From the new GitHub Oauth application you just created, copy the *ClientID* value into *Client id*
+- Copy the *Client Secret* value into *Secret key*
+- Under *Sites*, add `localhost` to *Chosen sites*. Save the changes.
+
+Now test the authentication. Log out of your admin account, and go back to the home page at [http://localhost:8000](http://localhost:8000). Now log in using your GitHub account by clicking the GitHub logo under `Log into Galaxy with GitHub`.
 
 ### Modifying static assets
 
@@ -244,22 +271,3 @@ The Javascript, CSS and HTML components for the web site can be found in the [ga
 ### Stop services 
 
 To stop all services, run `make dev/down`.
-
-### Submitting Code
-
-Code submissions are accepted via pull requests (PR), and they are always welcome! We may not accept them all, but we are 
-always happy to review and discuss them with you.
-
-Before submitting a large pull request for a new feature, we suggest opening an issue to discuss the feature prior to 
-submission.
-
-We reserve the right to reject submissions that are not a good fit for the project, or not in keeping with the intended 
-direction of the project. If you are unsure as to whether a feature is a good fit, take the time to open an issue.
-
-Please observe the following when submitting a PR:
-
-* Rebase instead of merge (http://git-scm.com/book/en/Git-Branching-Rebasing).
-* Follow the Git Flow branching model and develop in a feature branch
-* Limit the scope of a submission to a single feature or bug fix.
-* Before embarking on a large feature, open an issue and submit the feature for review by the community
-
