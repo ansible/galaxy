@@ -126,3 +126,6 @@ WAIT_FOR = [
     {'host': 'memcache', 'port': 11211},
     {'host': 'elastic', 'port': 9200}
 ]
+
+ADMIN_URL_PATTERN = r'^admin/'
+
