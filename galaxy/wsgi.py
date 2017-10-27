@@ -18,10 +18,14 @@
 """
 WSGI config for Galaxy project.
 """
+import os
+
 from django.core.wsgi import get_wsgi_application
 
 from galaxy import prepare_env
 
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.production')
 
 # Prepare the galaxy environment.
 prepare_env()
