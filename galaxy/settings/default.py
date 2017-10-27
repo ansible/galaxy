@@ -356,30 +356,6 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
-#        'allauth_logfile': {
-#            'level': 'DEBUG',
-#            'class': 'logging.handlers.RotatingFileHandler',
-#            'filename': os.path.join(LOGS_DIR, 'allauth.log'),
-#            'maxBytes': 500000,
-#            'backupCount': 4,
-#            'formatter': 'verbose',
-#        },
-#        'django_logfile': {
-#            'level': 'DEBUG',
-#            'class': 'logging.handlers.RotatingFileHandler',
-#            'filename': os.path.join(LOGS_DIR, 'django.log'),
-#            'maxBytes': 500000,
-#            'backupCount': 4,
-#            'formatter': 'verbose',
-#        },
-#        'galaxy_logfile': {
-#            'level': 'DEBUG',
-#            'class': 'logging.handlers.RotatingFileHandler',
-#            'filename': os.path.join(LOGS_DIR, 'galaxy.log'),
-#            'maxBytes': 500000,
-#            'backupCount': 4,
-#            'formatter': 'verbose',
-#        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',

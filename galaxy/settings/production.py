@@ -43,7 +43,6 @@ The following environment variables are supported:
 """
 
 import os
-import inspect
 
 from . import include_settings
 from .default import *  # noqa
