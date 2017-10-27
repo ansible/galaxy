@@ -12,5 +12,5 @@ make build_indexes
 if [ "${TMUX}" == "1" ]; then 
     scripts/docker-dev/sleep.sh
 else
-    ${VENV_DIR}/bin/honcho start -f "scripts/docker-dev/Procfile"
+    ${VENV_BIN}/honcho start -f "scripts/docker-dev/Procfile"
 fi

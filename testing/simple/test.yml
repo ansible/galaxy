@@ -18,7 +18,7 @@
     - debug: var=output.stdout_lines
 
     - name: Check django logs
-      command: docker logs galaxy_django_1 
+      command: docker-compose -f ../../scripts/compose-dev.yml -p galaxy logs galaxy
       register: output 
 
     - debug: var=output.stdout_lines
