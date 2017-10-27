@@ -34,7 +34,7 @@
   vars:
       slack_message: "{{ galaxy_slack_message | default('None') }}"
   roles:
-      - role: notify-slack,
+      - role: notify-slack
         notify_slack_message: "{{ slack_message }}"
         when: slack_message != 'None'
 
