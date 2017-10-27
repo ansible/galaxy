@@ -16,26 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 # Django settings for galaxy project.
 
+from . import include_settings
 
-def include_settings(filename, scope=None, optional=False):
-    """
-    Includes python settings file into specified scope.
 
-    :param str filename: Python source file.
-    :param scope: Destination scope, by default global scope of function caller
-           is used.
-    :param bool optional: If set to True no exception will be raised if
-           file does not exist.
-    """
-    if scope is None:
-        scope = inspect.stack()[1][0].f_globals
-
-    try:
-        fp = open(filename)
-    except IOError:
-        if optional:
-            return
-        raise
-
-    with fp:
-        exec(fp.read(), scope)
+include_settings('/etc/galaxy/settings.py', scope=globals(), optional=True)
