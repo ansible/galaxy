@@ -16,6 +16,8 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 # Django settings for galaxy project.
 
+import inspect
+
 
 def include_settings(filename, scope=None, optional=False):
     """

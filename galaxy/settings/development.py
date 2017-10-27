@@ -128,4 +128,3 @@ WAIT_FOR = [
 ]
 
 ADMIN_URL_PATTERN = r'^admin/'
-
