@@ -39,6 +39,7 @@ The following environment variables are supported:
 * GALAXY_RABBITMQ_PORT
 * GALAXY_RABBITMQ_USER
 * GALAXY_RABBITMQ_PASSWORD
+* GALAXY_ADMIN_PATH
 """
 
 import os
@@ -239,6 +240,8 @@ WAIT_FOR = [
         'port': int(os.environ.get('GALAXY_ELASTICSEARCH_PORT', 9200)),
     }
 ]
+
+ADMIN_URL_PATTERN = r'^%s/' % os.environ.get('GALAXY_ADMIN_PATH', 'admin')
 
 # =========================================================
 # Logging
