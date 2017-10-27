@@ -163,12 +163,12 @@ If you're familiar with `tmux`, and you would prefer to view the container outpu
     Rebuild Custom Indexes
     /var/lib/galaxy/venv/bin/python ./manage.py rebuild_galaxy_indexes
     /var/lib/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
-  from django.utils.importlib import import_module
+    from django.utils.importlib import import_module
 
     Rebuild Search Index
     /var/lib/galaxy/venv/bin/python ./manage.py rebuild_index --noinput
     /var/lib/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
-  from django.utils.importlib import import_module
+    from django.utils.importlib import import_module
 
     Removing all documents from your index because you said so.
     All documents removed.
