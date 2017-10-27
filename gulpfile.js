@@ -12,7 +12,7 @@ const history  = require('connect-history-api-fallback')
 
 
 gulp.task('server', function() {
-    const proxyDjango = proxy('/', {target: 'http://django:8000', xfwd: true})
+    const proxyDjango = proxy('/', {target: 'http://localhost:8888', xfwd: true})
 
     sync.init({
         notify: false,

@@ -266,7 +266,7 @@ ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
 
 ACCOUNT_EMAIL_REQUIRED = True
 
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 ACCOUNT_EMAIL_SUBJECT_PREFIX = 'Ansible Galaxy '
 
@@ -326,7 +326,7 @@ WAIT_FOR = []
 # Logging
 # =========================================================
 
-LOGS_DIR = os.path.join(BASE_DIR, 'var', 'log')
+# LOGS_DIR = os.path.join(BASE_DIR, 'var', 'log')
 
 # TODO(cutwater): Adjust logging config for production environment
 # TODO(cutwater): Review logging config
@@ -356,30 +356,30 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
-        'allauth_logfile': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOGS_DIR, 'allauth.log'),
-            'maxBytes': 500000,
-            'backupCount': 4,
-            'formatter': 'verbose',
-        },
-        'django_logfile': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOGS_DIR, 'django.log'),
-            'maxBytes': 500000,
-            'backupCount': 4,
-            'formatter': 'verbose',
-        },
-        'galaxy_logfile': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOGS_DIR, 'galaxy.log'),
-            'maxBytes': 500000,
-            'backupCount': 4,
-            'formatter': 'verbose',
-        },
+#        'allauth_logfile': {
+#            'level': 'DEBUG',
+#            'class': 'logging.handlers.RotatingFileHandler',
+#            'filename': os.path.join(LOGS_DIR, 'allauth.log'),
+#            'maxBytes': 500000,
+#            'backupCount': 4,
+#            'formatter': 'verbose',
+#        },
+#        'django_logfile': {
+#            'level': 'DEBUG',
+#            'class': 'logging.handlers.RotatingFileHandler',
+#            'filename': os.path.join(LOGS_DIR, 'django.log'),
+#            'maxBytes': 500000,
+#            'backupCount': 4,
+#            'formatter': 'verbose',
+#        },
+#        'galaxy_logfile': {
+#            'level': 'DEBUG',
+#            'class': 'logging.handlers.RotatingFileHandler',
+#            'filename': os.path.join(LOGS_DIR, 'galaxy.log'),
+#            'maxBytes': 500000,
+#            'backupCount': 4,
+#            'formatter': 'verbose',
+#        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -394,7 +394,7 @@ LOGGING = {
             'propagate': True,
         },
         'django': {
-            'handlers': ['django_logfile'],
+            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
         },

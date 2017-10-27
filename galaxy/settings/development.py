@@ -110,7 +110,7 @@ HAYSTACK_CONNECTIONS = {
 # Celery settings
 # ---------------------------------------------------------
 
-BROKER_URL = 'amqp://galaxy:galaxy@rabbit:5672/galaxy'
+BROKER_URL = 'amqp://galaxy:galaxy@rabbitmq:5672/galaxy'
 
 # =========================================================
 # Galaxy Settings
@@ -122,7 +122,7 @@ SITE_NAME = 'localhost'
 
 WAIT_FOR = [
     {'host': 'postgres', 'port': 5432},
-    {'host': 'rabbit', 'port': 5672},
+    {'host': 'rabbitmq', 'port': 5672},
     {'host': 'memcache', 'port': 11211},
     {'host': 'elastic', 'port': 9200}
 ]

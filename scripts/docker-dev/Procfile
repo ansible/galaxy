@@ -1,0 +1,3 @@
+celery:       make celery
+runserver:    make runserver
+gulp:         make gulp
