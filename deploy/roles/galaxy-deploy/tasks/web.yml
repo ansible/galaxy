@@ -13,6 +13,8 @@
 
 - name: Collect galaxy static files
   command: galaxy-manage collectstatic --clear --noinput
+  environment:
+    DJANGO_SETTINGS_MODULE: 'galaxy.settings.custom'
   notify:
     - restart apache
 
