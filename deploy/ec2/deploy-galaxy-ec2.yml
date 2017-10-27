@@ -18,12 +18,6 @@
       when: galaxy_allow_searchbots
 
   tasks: 
-    - name: Update admin url
-      lineinfile:
-        dest: ../../galaxy/urls.py
-        regexp: \^admin\/
-        line: "    url(r'^{{ galaxy_admin_url }}/', include(admin.site.urls)),"
-
     - name: Install requirements
       command: make requirements
       args:
