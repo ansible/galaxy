@@ -16,6 +16,7 @@ services:
       - elastic
       - memcache
       - rabbitmq
+
   postgres:
     image: postgres:9.5.4
     environment:
