@@ -123,8 +123,7 @@ docker/test-flake8:
 # ---------------------------------------------------------
 
 .PHONY: dev/build
-dev/build:
-	scripts/build-docker-dev.sh
+dev/build: build/docker-dev
 
 .PHONY: dev/createsuperuser
 dev/createsuperuser:
