@@ -16,7 +16,7 @@ script:
 - make test/flake8
 
 # build images
-- make dev/build
+- make build/docker-dev
 
 # start the application
 - make dev/up_detached
