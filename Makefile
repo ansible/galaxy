@@ -118,11 +118,13 @@ dev/stop:
 # Create the tmux session. Do NOT call directly. Use dev/tmux or dev/tmuxcc instead.
 .PHONY: dev/tmux_noattach
 dev/tmux_noattach:
-	# Create the tmux session. Do NOT call directly. Use dev/tmux or dev/tmuxcc instead.
-	tmux new-session -d -s galaxy -n galaxy 'bash -c "make runserver; exec bash"'
-	tmux new-window -t galaxy:1 -n celery 'bash -c "make celery; exec bash"'
-	tmux new-window -t galaxy:2 -n gulp 'bash -c "make gulp; exec bash"'
-	tmux select-window -t galaxy:0
+	tmux new-session -d -s galaxy -n galaxy \; \
+		 set-option -g allow-rename off \; \
+		 send-keys "make runserver" Enter \; \
+		 new-window -n celery \; \
+		 send-keys "make celery" Enter \; \
+		 new-window -n gulp \; \
+		 send-keys "make gulp" Enter
 
 .PHONY: dev/tmux
 dev/tmux:
