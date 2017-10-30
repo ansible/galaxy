@@ -89,6 +89,19 @@ sdist: clean_dist ui_build
 	   BUILD=$(BUILD) $(PYTHON) setup.py sdist_galaxy; \
 	fi
 
+.PHONY: build/docker-build
+build/docker-build:
+	docker build --rm -t galaxy-build -f scripts/docker-release/Dockerfile.build .
+
+.PHONY: build/docker-dev
+build/docker-dev: build/docker-build
+	docker build --rm -t galaxy-dev -f scripts/docker-dev/Dockerfile .
+
+.PHONY: build/docker-release
+build/docker-release: build/docker-build
+	docker run --rm -v $(CURDIR):/galaxy galaxy-build
+	docker build --rm -t galaxy -f scripts/docker-release/Dockerfile .
+
 # ---------------------------------------------------------
 # Test targets
 # ---------------------------------------------------------
