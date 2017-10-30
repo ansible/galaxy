@@ -37,6 +37,59 @@ help:
 	@echo "Prints help"
 
 # ---------------------------------------------------------
+# Common targets
+# ---------------------------------------------------------
+
+.PHONY: runserver
+runserver:
+	python manage.py runserver 0.0.0.0:8888
+
+.PHONY: celery
+celery:
+	python manage.py celeryd -B --autoreload -Q 'celery,import_tasks,login_tasks'
+
+.PHONY: gulp
+gulp:
+	/usr/local/bin/gulp
+
+.PHONY: waitenv
+waitenv:
+	@echo "Waiting for services to start..."
+	python ./manage.py waitenv
+
+.PHONY: migrate
+migrate:
+	@echo "Run migrations"
+	python ./manage.py migrate --noinput
+
+.PHONY: build_indexes
+build_indexes:
+	@echo "Rebuild Custom Indexes"
+	python ./manage.py rebuild_galaxy_indexes
+	@echo "Rebuild Search Index"
+	python ./manage.py rebuild_index --noinput
+
+.PHONY: clean_dist
+clean_dist:
+	rm -rf dist/*
+	rm -rf build rpm-build *.egg-info
+	rm -rf debian deb-build
+	rm -f galaxy/static/dist/*.js
+	find . -type f -regex ".*\.py[co]$$" -delete
+
+# ---------------------------------------------------------
+# Build targets
+# ---------------------------------------------------------
+
+.PHONY: sdist
+sdist: clean_dist ui_build
+	if [ "$(OFFICIAL)" = "yes" ] ; then \
+	   $(PYTHON) setup.py release_build; \
+	else \
+	   BUILD=$(BUILD) $(PYTHON) setup.py sdist_galaxy; \
+	fi
+
+# ---------------------------------------------------------
 # Test targets
 # ---------------------------------------------------------
 
@@ -141,65 +194,20 @@ dev/gulp_build:
 	# build UI components
 	$(DOCKER_COMPOSE) exec galaxy bash -c '/usr/local/bin/gulp build'
 
-.PHONY: sdist
-sdist: clean_dist ui_build
-	if [ "$(OFFICIAL)" = "yes" ] ; then \
-	   $(PYTHON) setup.py release_build; \
-	else \
-	   BUILD=$(BUILD) $(PYTHON) setup.py sdist_galaxy; \
-	fi
-
-.PHONY: clean_dist
-clean_dist:
-	rm -rf dist/*
-	rm -rf build rpm-build *.egg-info
-	rm -rf debian deb-build
-	rm -f galaxy/static/dist/*.js
-	find . -type f -regex ".*\.py[co]$$" -delete
-
-.PHONY: export_test_data
-export_test_data:
+.PHONY: dev/export-test-data
+export-test-data:
 	@echo Export data to test-data/role_data.dmp.gz
-	@docker exec -i -t galaxy_django_1 /galaxy/test-data/export.sh
+	$(DOCKER_COMPOSE) /galaxy/test-data/export.sh
 
-.PHONY: import_test_data
+.PHONY: dev/import-test-data
 import_test_data:
 	@echo Import data from test-data/role_data.dmp.gz
-	@docker exec -i -t galaxy_django_1 /galaxy/test-data/import.sh
+	$(DOCKER_COMPOSE) /galaxy/test-data/import.sh
 
-.PHONY: refresh_role_counts
-refresh_role_counts:
+.PHONY: dev/refresh-role-counts
+refresh-role-counts:
 	@echo Refresh role counts
-	@docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py refresh_role_counts
-
-.PHONY: celery
-celery:
-	python manage.py celeryd -B --autoreload -Q 'celery,import_tasks,login_tasks'
-
-.PHONY: runserver
-runserver:
-	python manage.py runserver 0.0.0.0:8888
-
-.PHONY: gulp
-gulp:
-	/usr/local/bin/gulp
-
-.PHONY: waitenv
-waitenv:
-	@echo "Waiting for services to start..."
-	python ./manage.py waitenv
-
-.PHONY: migrate
-migrate:
-	@echo "Run migrations"
-	python ./manage.py migrate --noinput
-
-.PHONY: build_indexes
-build_indexes:
-	@echo "Rebuild Custom Indexes"
-	python ./manage.py rebuild_galaxy_indexes
-	@echo "Rebuild Search Index"
-	python ./manage.py rebuild_index --noinput
+	$(DOCKER_COMPOSE) $(VENV_BIN)/python ./manage.py refresh_role_counts
 
 %:
 	@:
