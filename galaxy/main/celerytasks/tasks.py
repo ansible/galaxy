@@ -619,10 +619,10 @@ def import_role(task_id):
         add_message(import_task, u"INFO", u"Setting role name to %s" % import_task.alternate_role_name)
         role.name = import_task.alternate_role_name
 
-    role.description         = strip_input(galaxy_info.get("description", repo.description))
-    role.author              = strip_input(galaxy_info.get("author", ""))
-    role.company             = strip_input(galaxy_info.get("company", ""))
-    role.license             = strip_input(galaxy_info.get("license", ""))
+    role.description = strip_input(galaxy_info.get("description", repo.description))
+    role.author = strip_input(galaxy_info.get("author", ""))
+    role.company = strip_input(galaxy_info.get("company", ""))
+    role.license = strip_input(galaxy_info.get("license", ""))
 
     if galaxy_info.get('min_ansible_version'):
         role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version", ""))
@@ -630,8 +630,8 @@ def import_role(task_id):
     if galaxy_info.get('min_ansible_container_version'):
         role.min_ansible_container_version = strip_input(galaxy_info.get("min_ansible_container_version", ""))
 
-    role.issue_tracker_url     = strip_input(galaxy_info.get("issue_tracker_url", ""))
-    role.github_branch         = strip_input(galaxy_info.get("github_branch", ""))
+    role.issue_tracker_url = strip_input(galaxy_info.get("issue_tracker_url", ""))
+    role.github_branch = strip_input(galaxy_info.get("github_branch", ""))
     role.github_default_branch = repo.default_branch
 
     update_role_videos(import_task, role, videos=galaxy_info.get('video_links'))

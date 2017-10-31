@@ -55,8 +55,8 @@ class BaseModel(models.Model, DirtyMixin):
     class Meta:
         abstract = True
 
-    created       = models.DateTimeField(auto_now_add=True)
-    modified      = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         if hasattr(self, 'name'):
@@ -88,7 +88,7 @@ class PrimordialModel(BaseModel):
         abstract = True
 
     description = TruncatingCharField(max_length=255, blank=True, default='')
-    active      = models.BooleanField(default=True, db_index=True)
+    active = models.BooleanField(default=True, db_index=True)
 
     def mark_inactive(self, save=True):
         '''Use instead of delete to rename and mark inactive.'''
@@ -183,14 +183,14 @@ class Platform(CommonModelNameNotUnique):
         ordering = ['name', 'release']
 
     release = models.CharField(
-        max_length   = 50,
-        verbose_name = "Distribution Release Version",
+        max_length=50,
+        verbose_name="Distribution Release Version",
     )
     alias = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        null         = True,
-        verbose_name = "Search terms"
+        max_length=256,
+        blank=True,
+        null=True,
+        verbose_name="Search terms"
     )
 
     def __unicode__(self):
@@ -214,8 +214,8 @@ class UserAlias(models.Model):
     )
     alias_name = models.CharField(
         # must be in-sync with galaxy/accounts/models.py:CustomUser
-        max_length   = 30,
-        unique       = True,
+        max_length=30,
+        unique=True,
     )
 
     def __unicode__(self):
@@ -255,34 +255,34 @@ class Role(CommonModelNameNotUnique):
 
     dependencies = models.ManyToManyField(
         'Role',
-        related_name = '+',
-        blank        = True,
-        editable     = False,
+        related_name='+',
+        blank=True,
+        editable=False,
     )
     platforms = models.ManyToManyField(
         'Platform',
-        related_name = 'roles',
-        verbose_name = "Supported Platforms",
-        blank        = True,
-        editable     = False,
+        related_name='roles',
+        verbose_name="Supported Platforms",
+        blank=True,
+        editable=False,
     )
     platforms.help_text = ""
 
     tags = models.ManyToManyField(
         'Tag',
-        related_name = 'roles',
-        verbose_name = 'Tags',
-        blank        = True,
-        editable     = False,
+        related_name='roles',
+        verbose_name='Tags',
+        blank=True,
+        editable=False,
     )
     tags.help_text = ""
 
     categories = models.ManyToManyField(
         'Category',
-        related_name = 'categories',
-        verbose_name = "Categories",
-        blank        = True,
-        editable     = False,
+        related_name='categories',
+        verbose_name="Categories",
+        blank=True,
+        editable=False,
     )
     categories.help_text = ""
 
@@ -305,135 +305,135 @@ class Role(CommonModelNameNotUnique):
         editable=False,
     )
     namespace = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        null         = True,
-        verbose_name = "Namespace",
+        max_length=256,
+        blank=True,
+        null=True,
+        verbose_name="Namespace",
     )
     github_user = models.CharField(
-        max_length   = 256,
-        verbose_name = "Github Username",
+        max_length=256,
+        verbose_name="Github Username",
     )
     github_repo = models.CharField(
-        max_length   = 256,
-        verbose_name = "Github Repository",
+        max_length=256,
+        verbose_name="Github Repository",
     )
     github_branch = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        default      = '',
-        verbose_name = "Github Branch"
+        max_length=256,
+        blank=True,
+        default='',
+        verbose_name="Github Branch"
     )
     github_default_branch = models.CharField(
-        max_length   = 256,
-        default      = 'master',
-        verbose_name = "Default Branch"
+        max_length=256,
+        default='master',
+        verbose_name="Default Branch"
     )
     readme = models.TextField(
-        blank        = True,
-        default      = '',
-        verbose_name = 'README raw content'
+        blank=True,
+        default='',
+        verbose_name='README raw content'
     )
     readme_type = models.CharField(
-        max_length   = 5,
-        null         = True,
-        verbose_name = 'README type'
+        max_length=5,
+        null=True,
+        verbose_name='README type'
     )
     readme_html = models.TextField(
-        blank        = True,
-        default      = '',
-        verbose_name = 'README HTML'
+        blank=True,
+        default='',
+        verbose_name='README HTML'
     )
     container_yml = models.TextField(
-        blank        = True,
-        null         = True,
-        verbose_name = 'container.yml'
+        blank=True,
+        null=True,
+        verbose_name='container.yml'
     )
     min_ansible_version = models.CharField(
-        max_length   = 10,
-        blank        = True,
-        null         = True,
-        verbose_name = "Min Ansible Version",
+        max_length=10,
+        blank=True,
+        null=True,
+        verbose_name="Min Ansible Version",
     )
     min_ansible_container_version = models.CharField(
-        max_length   = 10,
-        blank        = True,
-        null         = True,
-        verbose_name = "Min Ansible Container Version",
+        max_length=10,
+        blank=True,
+        null=True,
+        verbose_name="Min Ansible Container Version",
     )
     issue_tracker_url = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        null         = True,
-        verbose_name = "Issue Tracker URL",
+        max_length=256,
+        blank=True,
+        null=True,
+        verbose_name="Issue Tracker URL",
     )
     license = models.CharField(
-        max_length   = 50,
-        blank        = True,
-        verbose_name = "License (optional)",
+        max_length=50,
+        blank=True,
+        verbose_name="License (optional)",
     )
     company = models.CharField(
-        max_length   = 50,
-        blank        = True,
-        null         = True,
-        verbose_name = "Company Name (optional)",
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name="Company Name (optional)",
     )
     is_valid = models.BooleanField(
-        default      = False,
-        editable     = False,
+        default=False,
+        editable=False,
     )
     featured = models.BooleanField(
-        default      = False,
-        editable     = False,
+        default=False,
+        editable=False,
     )
     travis_status_url = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        default      = '',
-        verbose_name = "Travis Build Status"
+        max_length=256,
+        blank=True,
+        default='',
+        verbose_name="Travis Build Status"
     )
     travis_build_url = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        default      = '',
-        verbose_name = "Travis Build URL"
+        max_length=256,
+        blank=True,
+        default='',
+        verbose_name="Travis Build URL"
     )
-    imported         = models.DateTimeField(
-        null         = True,
-        verbose_name = "Last Import"
+    imported = models.DateTimeField(
+        null=True,
+        verbose_name="Last Import"
     )
-    download_count   = models.IntegerField(
-        default      = 0
+    download_count = models.IntegerField(
+        default=0
     )
 
     # GitHub repo attributes
     stargazers_count = models.IntegerField(
-        default      = 0
+        default=0
     )
-    watchers_count   = models.IntegerField(
-        default      = 0
+    watchers_count = models.IntegerField(
+        default=0
     )
-    forks_count      = models.IntegerField(
-        default      = 0
+    forks_count = models.IntegerField(
+        default=0
     )
     open_issues_count = models.IntegerField(
-        default      = 0
+        default=0
     )
-    commit           = models.CharField(
-        max_length   = 256,
-        blank        = True
+    commit = models.CharField(
+        max_length=256,
+        blank=True
     )
-    commit_message   = models.CharField(
-        max_length   = 256,
-        blank        = True
+    commit_message = models.CharField(
+        max_length=256,
+        blank=True
     )
-    commit_url       = models.CharField(
-        max_length   = 256,
-        blank        = True
+    commit_url = models.CharField(
+        max_length=256,
+        blank=True
     )
     commit_created = models.DateTimeField(
-        null         = True,
-        verbose_name = "Laste Commit DateTime"
+        null=True,
+        verbose_name="Laste Commit DateTime"
     )
 
     #
@@ -443,14 +443,14 @@ class Role(CommonModelNameNotUnique):
     # fields calculated by a celery task or signal, not set
 
     bayesian_score = models.FloatField(
-        default    = 0.0,
-        editable   = False,
+        default=0.0,
+        editable=False,
     )
     num_ratings = models.IntegerField(
-        default    = 0,
+        default=0,
     )
     average_score = models.FloatField(
-        default    = 0.0,
+        default=0.0,
     )
 
     # ------------------------------------------------------------------------------
@@ -497,49 +497,49 @@ class Namespace(PrimordialModel):
         ordering = ('namespace',)
 
     namespace = models.CharField(
-        max_length   = 256,
-        unique       = True,
-        verbose_name = "GitHub namespace"
+        max_length=256,
+        unique=True,
+        verbose_name="GitHub namespace"
     )
     name = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        null         = True,
-        verbose_name = "GitHub name"
+        max_length=256,
+        blank=True,
+        null=True,
+        verbose_name="GitHub name"
     )
     avatar_url = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        null         = True,
-        verbose_name = "GitHub Avatar URL"
+        max_length=256,
+        blank=True,
+        null=True,
+        verbose_name="GitHub Avatar URL"
     )
     location = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        null         = True,
-        verbose_name = "Location"
+        max_length=256,
+        blank=True,
+        null=True,
+        verbose_name="Location"
     )
     company = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        null         = True,
-        verbose_name = "Location"
+        max_length=256,
+        blank=True,
+        null=True,
+        verbose_name="Location"
     )
     email = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        null         = True,
-        verbose_name = "Location"
+        max_length=256,
+        blank=True,
+        null=True,
+        verbose_name="Location"
     )
     html_url = models.CharField(
-        max_length   = 256,
-        blank        = True,
-        null         = True,
-        verbose_name = "URL"
+        max_length=256,
+        blank=True,
+        null=True,
+        verbose_name="URL"
     )
     followers = models.IntegerField(
-        null         = True,
-        verbose_name  = "Followers"
+        null=True,
+        verbose_name="Followers"
     )
 
 
@@ -561,12 +561,12 @@ class RoleVersion(CommonModelNameNotUnique):
     # regular fields
 
     release_date = models.DateTimeField(
-        blank      = True,
-        null       = True,
+        blank=True,
+        null=True,
     )
     loose_version = LooseVersionField(
-        editable   = False,
-        db_index   = True,
+        editable=False,
+        db_index=True,
     )
 
     #
@@ -594,11 +594,11 @@ class RoleRating(PrimordialModel):
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name = 'ratings',
+        related_name='ratings',
     )
     role = models.ForeignKey(
         Role,
-        related_name = 'ratings',
+        related_name='ratings',
     )
 
     #
@@ -606,12 +606,12 @@ class RoleRating(PrimordialModel):
     # regular fields
 
     comment = models.TextField(
-        blank      = True,
-        null       = True,
+        blank=True,
+        null=True,
     )
     score = models.IntegerField(
-        default      = 0,
-        db_index     = True,
+        default=0,
+        db_index=True,
     )
 
     #
@@ -650,98 +650,98 @@ class ImportTask(PrimordialModel):
         get_latest_by = 'created'
 
     github_user = models.CharField(
-        max_length   = 256,
-        verbose_name = "Github Username",
+        max_length=256,
+        verbose_name="Github Username",
     )
     github_repo = models.CharField(
-        max_length   = 256,
-        verbose_name = "Github Repository",
+        max_length=256,
+        verbose_name="Github Repository",
     )
     github_reference = models.CharField(
-        max_length   = 256,
-        verbose_name = "Github Reference",
-        null         = True,
-        blank        = True,
-        default      = ''
+        max_length=256,
+        verbose_name="Github Reference",
+        null=True,
+        blank=True,
+        default=''
     )
     role = models.ForeignKey(
         Role,
-        related_name = 'import_tasks',
-        db_index     = True,
+        related_name='import_tasks',
+        db_index=True,
     )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name  = 'import_tasks',
-        db_index      = True,
+        related_name='import_tasks',
+        db_index=True,
     )
     alternate_role_name = models.CharField(
-        max_length    = 256,
-        verbose_name  = "Alternate Role Name",
-        null          = True,
-        blank         = True,
+        max_length=256,
+        verbose_name="Alternate Role Name",
+        null=True,
+        blank=True,
     )
     celery_task_id = models.CharField(
-        max_length   = 100,
-        blank        = True,
-        null         = True,
+        max_length=100,
+        blank=True,
+        null=True,
     )
     state = models.CharField(
-        max_length   = 20,
-        default      = 'PENDING',
+        max_length=20,
+        default='PENDING',
     )
     started = models.DateTimeField(
-        auto_now_add = False,
-        null         = True,
-        blank        = True,
+        auto_now_add=False,
+        null=True,
+        blank=True,
     )
     finished = models.DateTimeField(
-        auto_now_add = False,
-        null         = True,
-        blank        = True,
+        auto_now_add=False,
+        null=True,
+        blank=True,
     )
 
     # GitHub repo attributes at time of import
     stargazers_count = models.IntegerField(
-        default      = 0
+        default=0
     )
-    watchers_count   = models.IntegerField(
-        default      = 0
+    watchers_count = models.IntegerField(
+        default=0
     )
-    forks_count      = models.IntegerField(
-        default      = 0
+    forks_count = models.IntegerField(
+        default=0
     )
     open_issues_count = models.IntegerField(
-        default      = 0
+        default=0
     )
-    github_branch    = models.CharField(
-        max_length = 256,
-        blank = True,
-        default = '',
-        verbose_name = "Github Branch"
+    github_branch = models.CharField(
+        max_length=256,
+        blank=True,
+        default='',
+        verbose_name="Github Branch"
     )
-    commit           = models.CharField(
-        max_length   = 256,
-        blank        = True
+    commit = models.CharField(
+        max_length=256,
+        blank=True
     )
-    commit_message   = models.CharField(
-        max_length   = 256,
-        blank        = True
+    commit_message = models.CharField(
+        max_length=256,
+        blank=True
     )
-    commit_url       = models.CharField(
-        max_length   = 256,
-        blank        = True
+    commit_url = models.CharField(
+        max_length=256,
+        blank=True
     )
     travis_status_url = models.CharField(
-        max_length    = 256,
-        blank         = True,
-        default       = '',
-        verbose_name  = "Travis Build Status"
+        max_length=256,
+        blank=True,
+        default='',
+        verbose_name="Travis Build Status"
     )
-    travis_build_url  = models.CharField(
-        max_length    = 256,
-        blank         = True,
-        default       = '',
-        verbose_name  = "Travis Build URL"
+    travis_build_url = models.CharField(
+        max_length=256,
+        blank=True,
+        default='',
+        verbose_name="Travis Build URL"
     )
 
     def __unicode__(self):
@@ -758,13 +758,13 @@ class ImportTask(PrimordialModel):
 class ImportTaskMessage(PrimordialModel):
     task = models.ForeignKey(
         ImportTask,
-        related_name = 'messages',
+        related_name='messages',
     )
     message_type = models.CharField(
-        max_length = 10,
+        max_length=10,
     )
     message_text = models.CharField(
-        max_length  = 256,
+        max_length=256,
     )
 
     def __unicode__(self):
@@ -778,25 +778,25 @@ class NotificationSecret(PrimordialModel):
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name  = 'notification_secrets',
-        db_index      = True,
+        related_name='notification_secrets',
+        db_index=True,
     )
     source = models.CharField(
-        max_length    = 20,
-        verbose_name  = "Source"
+        max_length=20,
+        verbose_name="Source"
     )
     github_user = models.CharField(
-        max_length   = 256,
-        verbose_name = "Github Username",
+        max_length=256,
+        verbose_name="Github Username",
     )
     github_repo = models.CharField(
-        max_length   = 256,
-        verbose_name = "Github Repository",
+        max_length=256,
+        verbose_name="Github Repository",
     )
     secret = models.CharField(
-        max_length    = 256,
-        verbose_name  = "Secret",
-        db_index      = True
+        max_length=256,
+        verbose_name="Secret",
+        db_index=True
     )
 
     def __unicode__(self):
@@ -812,57 +812,57 @@ class Notification(PrimordialModel):
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name  = 'notifications',
-        db_index      = True,
-        editable      = False
+        related_name='notifications',
+        db_index=True,
+        editable=False
     )
     source = models.CharField(
-        max_length    = 20,
-        verbose_name  = "Source",
-        editable      = False
+        max_length=20,
+        verbose_name="Source",
+        editable=False
     )
     github_branch = models.CharField(
-        max_length    = 256,
-        verbose_name  = "GitHub Branch",
-        blank         = True,
-        editable      = False
+        max_length=256,
+        verbose_name="GitHub Branch",
+        blank=True,
+        editable=False
     )
     travis_build_url = models.CharField(
-        max_length   = 256,
-        blank        = True
+        max_length=256,
+        blank=True
     )
-    travis_status    = models.CharField(
-        max_length   = 256,
-        blank        = True
+    travis_status = models.CharField(
+        max_length=256,
+        blank=True
     )
-    commit           = models.CharField(
-        max_length   = 256,
-        blank        = True
+    commit = models.CharField(
+        max_length=256,
+        blank=True
     )
-    committed_at     = models.DateTimeField(
-        auto_now     = False,
-        null         = True
+    committed_at = models.DateTimeField(
+        auto_now=False,
+        null=True
     )
-    commit_message   = models.CharField(
-        max_length   = 256,
-        blank        = True
+    commit_message = models.CharField(
+        max_length=256,
+        blank=True
     )
     roles = models.ManyToManyField(
         Role,
-        related_name  = 'notifications',
-        verbose_name  = 'Roles',
-        editable      = False
+        related_name='notifications',
+        verbose_name='Roles',
+        editable=False
     )
     imports = models.ManyToManyField(
         ImportTask,
-        related_name  = 'notifications',
-        verbose_name  = 'Tasks',
-        editable      = False
+        related_name='notifications',
+        verbose_name='Tasks',
+        editable=False
     )
     messages = ArrayField(
         models.CharField(max_length=256),
-        default       = list,
-        editable      = False
+        default=list,
+        editable=False
     )
 
 
@@ -873,18 +873,18 @@ class Repository (PrimordialModel):
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name  = 'repositories',
+        related_name='repositories',
     )
     github_user = models.CharField(
-        max_length   = 256,
-        verbose_name = "Github Username",
+        max_length=256,
+        verbose_name="Github Username",
     )
     github_repo = models.CharField(
-        max_length   = 256,
-        verbose_name = "Github Repository",
+        max_length=256,
+        verbose_name="Github Repository",
     )
     is_enabled = models.BooleanField(
-        default      = False
+        default=False
     )
 
 
@@ -895,15 +895,15 @@ class Subscription (PrimordialModel):
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name   = 'subscriptions',
+        related_name='subscriptions',
     )
     github_user = models.CharField(
-        max_length     = 256,
-        verbose_name   = "Github Username",
+        max_length=256,
+        verbose_name="Github Username",
     )
     github_repo = models.CharField(
-        max_length     = 256,
-        verbose_name   = "Github Repository",
+        max_length=256,
+        verbose_name="Github Repository",
     )
 
 
@@ -914,35 +914,35 @@ class Stargazer (PrimordialModel):
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name = 'starred',
+        related_name='starred',
     )
     github_user = models.CharField(
-        max_length   = 256,
-        verbose_name = "Github Username",
+        max_length=256,
+        verbose_name="Github Username",
     )
     github_repo = models.CharField(
-        max_length   = 256,
-        verbose_name = "Github Repository",
+        max_length=256,
+        verbose_name="Github Repository",
     )
 
 
 class RefreshRoleCount (PrimordialModel):
     state = models.CharField(
-        max_length   = 20
+        max_length=20
     )
     passed = models.IntegerField(
-        default      = 0,
-        null         = True
+        default=0,
+        null=True
     )
     failed = models.IntegerField(
-        default      = 0,
-        null         = True
+        default=0,
+        null=True
     )
     deleted = models.IntegerField(
-        default      = 0,
-        null         = True
+        default=0,
+        null=True
     )
     updated = models.IntegerField(
-        default      = 0,
-        null         = True
+        default=0,
+        null=True
     )

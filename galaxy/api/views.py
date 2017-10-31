@@ -145,15 +145,15 @@ def filter_rating_queryset(qs):
 
 def create_import_task(github_user, github_repo, github_branch, role, user, travis_status_url='', travis_build_url='', alternate_role_name=None):
     task = ImportTask.objects.create(
-        github_user         = github_user,
-        github_repo         = github_repo,
-        github_reference    = github_branch,
-        alternate_role_name = alternate_role_name,
-        travis_status_url = travis_status_url,
-        travis_build_url = travis_build_url,
-        role        = role,
-        owner       = user,
-        state       = 'PENDING'
+        github_user=github_user,
+        github_repo=github_repo,
+        github_reference=github_branch,
+        alternate_role_name=alternate_role_name,
+        travis_status_url=travis_status_url,
+        travis_build_url=travis_build_url,
+        role=role,
+        owner=user,
+        state='PENDING'
     )
     import_role.delay(task.id)
     return task
@@ -185,20 +185,20 @@ class ApiV1RootView(APIView):
     def get(self, request, format=None):
         # list top level resources
         data = SortedDict()
-        data['users']       = reverse('api:user_list')
-        data['roles']       = reverse('api:role_list')
-        data['role_types']  = reverse('api:role_types')
-        data['categories']  = reverse('api:category_list')
-        data['tags']        = reverse('api:tag_list')
-        data['platforms']   = reverse('api:platform_list')
-        data['imports']     = reverse('api:import_task_list')
-        data['repos']                = reverse('api:repos_view')
-        data['latest imports']       = reverse('api:import_task_latest_list')
+        data['users'] = reverse('api:user_list')
+        data['roles'] = reverse('api:role_list')
+        data['role_types'] = reverse('api:role_types')
+        data['categories'] = reverse('api:category_list')
+        data['tags'] = reverse('api:tag_list')
+        data['platforms'] = reverse('api:platform_list')
+        data['imports'] = reverse('api:import_task_list')
+        data['repos'] = reverse('api:repos_view')
+        data['latest imports'] = reverse('api:import_task_latest_list')
         data['notification secrets'] = reverse('api:notification_secret_list')
-        data['notifications']        = reverse('api:notification_list')
-        data['tokens']               = reverse('api:token')
-        data['search']               = reverse('api:search_view')
-        data['remove role']          = reverse('api:remove_role')
+        data['notifications'] = reverse('api:notification_list')
+        data['tokens'] = reverse('api:token')
+        data['search'] = reverse('api:search_view')
+        data['remove role'] = reverse('api:remove_role')
         return Response(data)
 
 
@@ -232,10 +232,10 @@ class ApiV1ReposView(APIView):
 
     def get(self, request, *args, **kwargs):
         data = OrderedDict()
-        data['list']           = reverse('api:repository_list')
-        data['refresh']        = reverse('api:refresh_user_repos')
-        data['stargazers']     = reverse('api:stargazer_list')
-        data['subscriptions']  = reverse('api:subscription_list')
+        data['list'] = reverse('api:repository_list')
+        data['refresh'] = reverse('api:refresh_user_repos')
+        data['stargazers'] = reverse('api:stargazer_list')
+        data['subscriptions'] = reverse('api:subscription_list')
         return Response(data)
 
 
