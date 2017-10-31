@@ -1,9 +1,11 @@
 language: python
 dist: trusty
 sudo: required
+
 services:
 - docker
 
+# TODO(cutwater): Do we need this?
 before_install:
 - sudo apt-add-repository 'deb http://archive.ubuntu.com/ubuntu trusty-backports universe'
 - sudo apt-get update -qq
@@ -18,6 +20,7 @@ script:
 # build images
 - make build/docker-dev
 
+# TODO(cutwater): Run tests locally
 # start the application
 - make dev/up_detached
 - make dev/waitenv
@@ -34,3 +37,17 @@ script:
 
 # Stop the application
 - make dev/down
+
+# Build release image
+- |
+  if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "develop" ]]; then
+    ANSIBLE_RELEASE_IMAGE=ansible/galaxy ANSIBLE_RELEASE_TAG=develop \
+      make build/docker-release
+  fi
+
+after_success:
+- |
+  if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "develop" ]]; then
+    docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    docker push ansible/galaxy:develop
+  fi
