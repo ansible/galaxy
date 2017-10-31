@@ -181,9 +181,9 @@ dev/stop:
 dev/tmux_noattach:
 	tmux new-session -d -s galaxy -n galaxy \; \
 		 set-option -g allow-rename off \; \
-		 send-keys "make runserver" Enter \; \
+		 send-keys "scripts/docker-dev/entrypoint.sh make runserver" Enter \; \
 		 new-window -n celery \; \
-		 send-keys "make celery" Enter \; \
+		 send-keys "scripts/docker-dev/entrypoint.sh make celery" Enter \; \
 		 new-window -n gulp \; \
 		 send-keys "make gulp" Enter
 
