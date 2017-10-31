@@ -9,22 +9,19 @@ localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env pyth
 #dockerhub_base=ansible
 #dockerhub_version=latest
 
-# This will create or update a default admin (superuser) account in AWX, if not provided
-# then these default values are used
-# default_admin_user=admin
-# default_admin_password=password
+galaxy_secret=8fe174fc6c3cab489f29ee1a341885d2
 
-# AWX Secret key
-# It's *very* important that this stay the same between upgrades or you will lose the ability to decrypt
-# your credentials
-#awx_secret_key=awxsecret
+# This will create or update a default admin (superuser) account in Galaxy, if not provided
+# then these default values are used
+#default_admin_user=admin
+#default_admin_password=password
 
 # Openshift Install
 # Will need to set -e openshift_password=developer -e docker_registry_password=$(oc whoami -t)
-openshift_host=127.0.0.1:8443
-galaxy_openshift_project=galaxy
-openshift_user=developer
-awx_node_port=30083
+#openshift_host=127.0.0.1:8443
+#openshift_project=galaxy
+#openshift_user=developer
+#awx_node_port=30083
 
 # Standalone Docker Install
 postgres_data_dir=/tmp/pgdocker
@@ -35,33 +32,22 @@ host_port=80
 # Required for Standalone Docker Install if building the image on your own
 # Optional for Standalone Docker Install if using Dockerhub or another prebuilt registry
 # Define if you want the image pushed to a registry. The container definition will also use these images
-# docker_registry=172.30.1.1:5000
-# docker_registry_repository=awx
-# docker_registry_username=developer
+#docker_registry=172.30.1.1:5000
+#docker_registry_repository=awx
+#docker_registry_username=developer
 
 # Set pg_hostname if you have an external postgres server, otherwise
 # a new postgres service will be created
-# pg_hostname=postgresql
-pg_username=awx
-pg_password=awxpass
-pg_database=awx
+pg_hostname=postgres
+pg_username=galaxy
+pg_password=galaxy
+pg_database=galaxy
 pg_port=5432
 
-# Use a local distribution build container image for building the AWX package
-# This is helpful if you don't want to bother installing the build-time dependencies as
-# it is taken care of already.
-# NOTE: IMPORTANT: If you are running a mininshift install, using this container might not work
-#                  if you are using certain drivers like KVM where the source tree can't be mapped
-#                  into the build container.
-#                  Thus this setting must be set to False which will trigger a local build. To view the
-#                  typical dependencies that you might need to install see:
-#                  installer/image_build/files/Dockerfile.sdist
-# use_container_for_build=true
-
-# Build AWX with official logos
+# Build Galaxy with official logos
 # Requires cloning awx-logos repo into the project root.
 # Review the trademark guidelines at https://github.com/ansible/awx-logos/blob/master/TRADEMARKS.md
-# awx_official=true
+custom_branding=true
 
 # Proxy
 #http_proxy=http://proxy:3128

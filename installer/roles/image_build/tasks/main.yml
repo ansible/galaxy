@@ -39,13 +39,25 @@
       - '{{ root_path }}:/galaxy:rw'
   delegate_to: localhost
 
+- name: Wait for galaxy-build to finish
+  shell: '{% raw %}docker inspect -f "{{ .State.Running }}" galaxy-build{% endraw %}'
+  register: builder_state
+  until: builder_state.stdout == 'false'
+  retries: 5
+  delay: 15
+  delegate_to: localhost
+
+- name: Set Galaxy image name
+  set_fact:
+    galaxy_image: "{{ galaxy_image| default('galaxy') }}"
+
 - name: Build the galaxy image
   docker_image: 
     buildargs:
       http_proxy: "{{ http_proxy | default('') }}"
       https_proxy: "{{ https_proxy | default('') }}"
       no_proxy: "{{ no_proxy | default('') }}"
-    name: ansible/galaxy
+    name: '{{ galaxy_image }}' 
     tag: '{{ galaxy_version }}' 
     path: '{{ root_path }}'
     dockerfile: scripts/docker-release/Dockerfile
