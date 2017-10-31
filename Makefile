@@ -37,6 +37,72 @@ help:
 	@echo "Prints help"
 
 # ---------------------------------------------------------
+# Common targets
+# ---------------------------------------------------------
+
+.PHONY: runserver
+runserver:
+	python manage.py runserver 0.0.0.0:8888
+
+.PHONY: celery
+celery:
+	python manage.py celeryd -B --autoreload -Q 'celery,import_tasks,login_tasks'
+
+.PHONY: gulp
+gulp:
+	/usr/local/bin/gulp
+
+.PHONY: waitenv
+waitenv:
+	@echo "Waiting for services to start..."
+	python ./manage.py waitenv
+
+.PHONY: migrate
+migrate:
+	@echo "Run migrations"
+	python ./manage.py migrate --noinput
+
+.PHONY: build_indexes
+build_indexes:
+	@echo "Rebuild Custom Indexes"
+	python ./manage.py rebuild_galaxy_indexes
+	@echo "Rebuild Search Index"
+	python ./manage.py rebuild_index --noinput
+
+.PHONY: clean_dist
+clean_dist:
+	rm -rf dist/*
+	rm -rf build rpm-build *.egg-info
+	rm -rf debian deb-build
+	rm -f galaxy/static/dist/*.js
+	find . -type f -regex ".*\.py[co]$$" -delete
+
+# ---------------------------------------------------------
+# Build targets
+# ---------------------------------------------------------
+
+.PHONY: sdist
+sdist: clean_dist ui_build
+	if [ "$(OFFICIAL)" = "yes" ] ; then \
+	   $(PYTHON) setup.py release_build; \
+	else \
+	   BUILD=$(BUILD) $(PYTHON) setup.py sdist_galaxy; \
+	fi
+
+.PHONY: build/docker-build
+build/docker-build:
+	docker build --rm -t galaxy-build -f scripts/docker-release/Dockerfile.build .
+
+.PHONY: build/docker-dev
+build/docker-dev: build/docker-build
+	docker build --rm -t galaxy-dev -f scripts/docker-dev/Dockerfile .
+
+.PHONY: build/docker-release
+build/docker-release: build/docker-build
+	docker run --rm -v $(CURDIR):/galaxy galaxy-build
+	docker build --rm -t galaxy -f scripts/docker-release/Dockerfile .
+
+# ---------------------------------------------------------
 # Test targets
 # ---------------------------------------------------------
 
@@ -57,8 +123,7 @@ docker/test-flake8:
 # ---------------------------------------------------------
 
 .PHONY: dev/build
-dev/build:
-	scripts/build-docker-dev.sh
+dev/build: build/docker-dev
 
 .PHONY: dev/createsuperuser
 dev/createsuperuser:
@@ -118,11 +183,13 @@ dev/stop:
 # Create the tmux session. Do NOT call directly. Use dev/tmux or dev/tmuxcc instead.
 .PHONY: dev/tmux_noattach
 dev/tmux_noattach:
-	# Create the tmux session. Do NOT call directly. Use dev/tmux or dev/tmuxcc instead.
-	tmux new-session -d -s galaxy -n galaxy 'bash -c "make runserver; exec bash"'
-	tmux new-window -t galaxy:1 -n celery 'bash -c "make celery; exec bash"'
-	tmux new-window -t galaxy:2 -n gulp 'bash -c "make gulp; exec bash"'
-	tmux select-window -t galaxy:0
+	tmux new-session -d -s galaxy -n galaxy \; \
+		 set-option -g allow-rename off \; \
+		 send-keys "make runserver" Enter \; \
+		 new-window -n celery \; \
+		 send-keys "make celery" Enter \; \
+		 new-window -n gulp \; \
+		 send-keys "make gulp" Enter
 
 .PHONY: dev/tmux
 dev/tmux:
@@ -139,65 +206,20 @@ dev/gulp_build:
 	# build UI components
 	$(DOCKER_COMPOSE) exec galaxy bash -c '/usr/local/bin/gulp build'
 
-.PHONY: sdist
-sdist: clean_dist ui_build
-	if [ "$(OFFICIAL)" = "yes" ] ; then \
-	   $(PYTHON) setup.py release_build; \
-	else \
-	   BUILD=$(BUILD) $(PYTHON) setup.py sdist_galaxy; \
-	fi
-
-.PHONY: clean_dist
-clean_dist:
-	rm -rf dist/*
-	rm -rf build rpm-build *.egg-info
-	rm -rf debian deb-build
-	rm -f galaxy/static/dist/*.js
-	find . -type f -regex ".*\.py[co]$$" -delete
-
-.PHONY: export_test_data
-export_test_data:
+.PHONY: dev/export-test-data
+export-test-data:
 	@echo Export data to test-data/role_data.dmp.gz
-	@docker exec -i -t galaxy_django_1 /galaxy/test-data/export.sh
+	$(DOCKER_COMPOSE) /galaxy/test-data/export.sh
 
-.PHONY: import_test_data
+.PHONY: dev/import-test-data
 import_test_data:
 	@echo Import data from test-data/role_data.dmp.gz
-	@docker exec -i -t galaxy_django_1 /galaxy/test-data/import.sh
+	$(DOCKER_COMPOSE) /galaxy/test-data/import.sh
 
-.PHONY: refresh_role_counts
-refresh_role_counts:
+.PHONY: dev/refresh-role-counts
+refresh-role-counts:
 	@echo Refresh role counts
-	@docker exec -i -t galaxy_django_1 /venv/bin/python ./manage.py refresh_role_counts
-
-.PHONY: celery
-celery:
-	python manage.py celeryd -B --autoreload -Q 'celery,import_tasks,login_tasks'
-
-.PHONY: runserver
-runserver:
-	python manage.py runserver 0.0.0.0:8888
-
-.PHONY: gulp
-gulp:
-	/usr/local/bin/gulp
-
-.PHONY: waitenv
-waitenv:
-	@echo "Waiting for services to start..."
-	python ./manage.py waitenv
-
-.PHONY: migrate
-migrate:
-	@echo "Run migrations"
-	python ./manage.py migrate --noinput
-
-.PHONY: build_indexes
-build_indexes:
-	@echo "Rebuild Custom Indexes"
-	python ./manage.py rebuild_galaxy_indexes
-	@echo "Rebuild Search Index"
-	python ./manage.py rebuild_index --noinput
+	$(DOCKER_COMPOSE) $(VENV_BIN)/python ./manage.py refresh_role_counts
 
 %:
 	@:
