@@ -41,7 +41,7 @@ script:
 # Build release image
 - |
   if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "develop" ]]; then
-    ANSIBLE_RELEASE_IMAGE=ansible/galaxy ANSIBLE_RELEASE_TAG=develop \
+    GALAXY_RELEASE_IMAGE=ansible/galaxy GALAXY_RELEASE_TAG=develop \
       make build/docker-release
   fi
 
