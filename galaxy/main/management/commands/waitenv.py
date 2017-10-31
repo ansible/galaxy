@@ -1,11 +1,12 @@
 import socket
 import time
-import logging 
+import logging
 
 from django.conf import settings
 from django.core.management import base as management
 
 logger = logging.getLogger(__name__)
+
 
 def try_connect(host, port, timeout=5.0):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -32,7 +33,7 @@ def wait_for_connection(host, port, attempts=10):
 class Command(management.BaseCommand):
 
     def add_arguments(self, parser):
-        parser.add_argument('--wait-for', action='store', dest='services', default=[], nargs='+', 
+        parser.add_argument('--wait-for', action='store', dest='services', default=[], nargs='+',
                             help="Override settings.WAIT_FOR with a list of 'host:port' services to wait on")
 
     def handle(self, *args, **options):
@@ -41,14 +42,13 @@ class Command(management.BaseCommand):
         if services:
             for srv in services:
                 try:
-                    host, port = srv.split(':', 1) 
+                    host, port = srv.split(':', 1)
                     wait_for_connection(host, int(port))
                 except IOError as exc:
                     raise management.CommandError(exc)
-            return  
+            return
         for srv in settings.WAIT_FOR:
             try:
                 wait_for_connection(srv['host'], srv['port'])
             except IOError as exc:
                 raise management.CommandError(exc)
-
