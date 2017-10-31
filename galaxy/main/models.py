@@ -210,7 +210,7 @@ class UserAlias(models.Model):
 
     alias_of = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name = 'aliases',
+        related_name='aliases',
     )
     alias_name = models.CharField(
         # must be in-sync with galaxy/accounts/models.py:CustomUser
@@ -553,7 +553,7 @@ class RoleVersion(CommonModelNameNotUnique):
 
     role = models.ForeignKey(
         Role,
-        related_name = 'versions',
+        related_name='versions',
     )
 
     #

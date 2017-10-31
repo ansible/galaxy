@@ -69,7 +69,7 @@ class Command(BaseCommand):
             search_name = 'Enterprise_Linux' if platform.name == 'EL' else platform.name
             doc = PlatformDoc(
                 name=search_name,
-                releases= release_list,
+                releases=release_list,
                 roles=Role.objects.filter(active=True, is_valid=True, platforms__name=platform.name)
                                   .order_by('namespace', 'name')
                                   .distinct('namespace', 'name').count(),

@@ -266,10 +266,10 @@ class UserListSerializer(BaseSerializer):
             return {}
         res = super(UserListSerializer, self).get_related(obj)
         res.update(dict(
-            subscriptions = reverse('api:user_subscription_list', args=(obj.pk,)),
-            starred = reverse('api:user_starred_list', args=(obj.pk,)),
-            repositories = reverse('api:user_repositories_list', args=(obj.pk,)),
-            secrets = reverse('api:user_notification_secret_list', args=(obj.pk,)),
+            subscriptions=reverse('api:user_subscription_list', args=(obj.pk,)),
+            starred=reverse('api:user_starred_list', args=(obj.pk,)),
+            repositories=reverse('api:user_repositories_list', args=(obj.pk,)),
+            secrets=reverse('api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
@@ -353,10 +353,10 @@ class UserDetailSerializer(BaseSerializer):
             return {}
         res = super(UserDetailSerializer, self).get_related(obj)
         res.update(dict(
-            repositories = reverse('api:user_repositories_list', args=(obj.pk,)),
-            subscriptions = reverse('api:user_subscription_list', args=(obj.pk,)),
-            starred = reverse('api:user_starred_list', args=(obj.pk,)),
-            secrets = reverse('api:user_notification_secret_list', args=(obj.pk,)),
+            repositories=reverse('api:user_repositories_list', args=(obj.pk,)),
+            subscriptions=reverse('api:user_subscription_list', args=(obj.pk,)),
+            starred=reverse('api:user_starred_list', args=(obj.pk,)),
+            secrets=reverse('api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
@@ -459,7 +459,7 @@ class RepositorySerializer(BaseSerializer):
             return {}
         res = super(RepositorySerializer, self).get_related(obj)
         res.update(dict(
-            owner = reverse('api:user_detail', args=(obj.owner.id,)),
+            owner=reverse('api:user_detail', args=(obj.owner.id,)),
         ))
         return res
 
@@ -585,9 +585,9 @@ class NotificationSerializer(BaseSerializer):
             return {}
         res = super(NotificationSerializer, self).get_related(obj)
         res.update(dict(
-            roles = reverse('api:notification_roles_list', args=(obj.pk,)),
-            imports = reverse('api:notification_imports_list', args=(obj.pk,)),
-            owner = reverse('api:user_detail', args=(obj.owner.id,)),
+            roles=reverse('api:notification_roles_list', args=(obj.pk,)),
+            imports=reverse('api:notification_imports_list', args=(obj.pk,)),
+            owner=reverse('api:user_detail', args=(obj.owner.id,)),
         ))
         return res
 
