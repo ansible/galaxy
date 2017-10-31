@@ -75,3 +75,8 @@
     project_src: '{{ tempdir.path }}' 
   register: startup
 
+- name: Remove temp directory 
+  file:
+    state: absent
+    path: '{{ tempdir.path }}'
+
