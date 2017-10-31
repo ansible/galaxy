@@ -1,3 +1,6 @@
+GALAXY_RELEASE_IMAGE=galaxy
+GALAXY_RELEASE_TAG=latest
+
 PYTHON=python
 
 VENV_BIN=/var/lib/galaxy/venv/bin
@@ -92,7 +95,8 @@ build/docker-dev: build/docker-build
 .PHONY: build/docker-release
 build/docker-release: build/docker-build
 	docker run --rm -v $(CURDIR):/galaxy galaxy-build
-	docker build --rm -t galaxy -f scripts/docker-release/Dockerfile .
+	docker build --rm -t $(GALAXY_RELEASE_IMAGE):$(GALAXY_RELEASE_TAG) \
+		-f scripts/docker-release/Dockerfile .
 
 # ---------------------------------------------------------
 # Test targets
