@@ -394,11 +394,11 @@ class ImportTaskList(ListCreateAPIView):
                 github_repo=github_repo,
                 active=True,
                 defaults={
-                    'namespace':   github_user,
-                    'name':        name,
+                    'namespace': github_user,
+                    'name': name,
                     'github_user': github_user,
                     'github_repo': github_repo,
-                    'is_valid':    False,
+                    'is_valid': False,
                 }
             )
             task = create_import_task(github_user, github_repo, github_reference, role, request.user, '', '', alternate_role_name)
@@ -777,8 +777,8 @@ class NotificationSecretList(ListCreateAPIView):
             source=source,
             github_user=github_user,
             github_repo=github_repo,
-            defaults = {
-                'owner':  request.user,
+            defaults={
+                'owner': request.user,
                 'source': source,
                 'secret': secret,
                 'github_user': github_user,
@@ -917,14 +917,14 @@ class NotificationList(ListCreateAPIView):
                 github_repo=github_repo,
                 active=True,
                 defaults={
-                    'namespace':   github_user,
-                    'name':        name,
+                    'namespace': github_user,
+                    'name': name,
                     'github_user': github_user,
                     'github_repo': github_repo,
                     'github_default_branch': 'master',
                     'travis_status_url': travis_status_url,
                     'travis_build_url': payload['build_url'],
-                    'is_valid':    False,
+                    'is_valid': False,
                 }
             )
             notification.roles.add(role)

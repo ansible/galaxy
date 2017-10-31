@@ -417,7 +417,7 @@ class RoleDetailView(DetailView):
         for ver in role.versions.all().order_by('-release_date'):
             context['versions'].append({
                 'loose_version': ver.loose_version,
-                'release_date':  ver.release_date.strftime('%Y-%m-%d %H:%M:%I %p') if ver.release_date else 'NA'
+                'release_date': ver.release_date.strftime('%Y-%m-%d %H:%M:%I %p') if ver.release_date else 'NA'
             })
         context['import_date'] = role.imported.strftime('%Y-%m-%d %H:%M:%I %p %Z') if role.imported else 'NA'
         context['last_commit_date'] = role.commit_created.strftime('%Y-%m-%d %H:%M:%I %p %Z') if role.commit_created \
