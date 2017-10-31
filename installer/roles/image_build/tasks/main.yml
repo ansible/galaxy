@@ -4,7 +4,7 @@
     root_path: '{{ playbook_dir }}/..' 
 
 - name: Get version from checkout if not provided
-  shell: echo -e "from galaxy import __version__\nprint(__version__)\n" | /usr/bin/env python
+  shell: git describe --long | sed 's/-g.*//' | sed 's/-/./' 
   args: 
     chdir: '{{ root_path }}'
   register: version_command  
