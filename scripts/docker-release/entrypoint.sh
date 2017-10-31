@@ -5,14 +5,21 @@ set -o errexit
 
 readonly VENV_BIN=${VENV_BIN:-/var/lib/galaxy/venv/bin}
 
+# FIXME(cutwater): Yet another workaround for running entrypoint not as PID 1
+# All run commands should be implemented outside entrypoint (e.g. in manage.py)
+function _exec_cmd() {
+    [ $$ -eq 1 ] && set -- tini -- "$@"
+    exec "$@"
+}
+
 function run_web() {
-    exec tini -- "${VENV_BIN}/gunicorn" \
+    _exec_cmd "${VENV_BIN}/gunicorn" \
         -w 2 -b 0.0.0.0:8000 \
         galaxy.wsgi:application
 }
 
 function run_worker() {
-    exec tini -- "${VENV_BIN}/python" manage.py celeryd \
+    _exec_cmd "${VENV_BIN}/python" manage.py celeryd \
         -B --autoreload -Q 'celery,import_tasks,login_tasks'
 }
 
@@ -32,8 +39,8 @@ case "$1" in
         run_service "${@:2}"
     ;;
     manage)
-        exec "${VENV_BIN}/python" manage.py "${@:2}"
+        _exec_cmd "${VENV_BIN}/python" manage.py "${@:2}"
     ;;
 esac
 
-exec "$@"
+_exec_cmd "$@"
