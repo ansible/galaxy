@@ -220,19 +220,6 @@ WAIT_FOR = [
 ADMIN_URL_PATTERN = r'^%s/' % os.environ.get('GALAXY_ADMIN_PATH', 'admin')
 
 # =========================================================
-# Logging
-# =========================================================
-
-LOGS_DIR = '/var/log/galaxy'
-
-LOGGING['handlers']['allauth_logfile']['filename'] = (  # noqa: F405
-    os.path.join(LOGS_DIR, 'allauth.log'))
-LOGGING['handlers']['django_logfile']['filename'] = (  # noqa: F405
-    os.path.join(LOGS_DIR, 'django.log'))
-LOGGING['handlers']['galaxy_logfile']['filename'] = (  # noqa: F405
-    os.path.join(LOGS_DIR, 'galaxy.log'))
-
-# =========================================================
 # System Settings
 # =========================================================
 
