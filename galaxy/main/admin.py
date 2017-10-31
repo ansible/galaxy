@@ -38,18 +38,18 @@ admin.site.register(Platform, PlatformAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(RoleVersion, RoleVersionAdmin)
 
-#class RoleImportAdmin(admin.ModelAdmin):
+# class RoleImportAdmin(admin.ModelAdmin):
 #    pass
-#admin.site.register(RoleImport, RoleImportAdmin)
+# admin.site.register(RoleImport, RoleImportAdmin)
 
-#class RoleRatingAdmin(admin.ModelAdmin):
+# class RoleRatingAdmin(admin.ModelAdmin):
 #    pass
-#admin.site.register(RoleRating, RoleRatingAdmin)
+# admin.site.register(RoleRating, RoleRatingAdmin)
 
-#class CategoryAdmin(admin.ModelAdmin):
+# class CategoryAdmin(admin.ModelAdmin):
 #    pass
-#admin.site.register(Category, CategoryAdmin)
+# admin.site.register(Category, CategoryAdmin)
 
-#class UserAliasAdmin(admin.ModelAdmin):
+# class UserAliasAdmin(admin.ModelAdmin):
 #    pass
-#admin.site.register(UserAlias, UserAliasAdmin)
+# admin.site.register(UserAlias, UserAliasAdmin)

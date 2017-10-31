@@ -53,7 +53,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
 
-#allauth
+# allauth
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.models import SocialToken
 
@@ -122,7 +122,7 @@ from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 
 logger = logging.getLogger(__name__)
 
-#--------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
 # Helper functions
 
 
@@ -158,7 +158,7 @@ def create_import_task(github_user, github_repo, github_branch, role, user, trav
     import_role.delay(task.id)
     return task
 
-#--------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
 
 
 class ApiRootView(APIView):
@@ -220,8 +220,8 @@ class ApiV1SearchView(APIView):
         data['roles'] = reverse('api:search-roles-list')
         data['tags'] = reverse('api:tags_search_view')
         data['users'] = reverse('api:user_search_view')
-        #data['faceted_platforms'] = reverse('api:faceted_platforms_view')
-        #data['faceted_tags'] = reverse('api:faceted_tags_view')
+        # data['faceted_platforms'] = reverse('api:faceted_platforms_view')
+        # data['faceted_tags'] = reverse('api:faceted_tags_view')
         data['top_contributors'] = reverse('api:top_contributors_list')
         return Response(data)
 
@@ -1429,7 +1429,7 @@ def get_response(*args, **kwargs):
     return response
 
 
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # Create view functions for all of the class-based views to simplify inclusion
 # in URL patterns and reverse URL lookups, converting CamelCase names to
 # lowercase_with_underscore (e.g. MyView.as_view() becomes my_view).

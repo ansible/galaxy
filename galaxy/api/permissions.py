@@ -123,7 +123,7 @@ class ModelAccessPermission(permissions.BasePermission):
         return result
 
     def has_permission(self, request, view, obj=None):
-        #logger.debug('has_permission(user=%s method=%s data=%r, %s, %r)',
+        # logger.debug('has_permission(user=%s method=%s data=%r, %s, %r)',
         #             request.user, request.method, request.DATA,
         #             view.__class__.__name__, obj)
         try:

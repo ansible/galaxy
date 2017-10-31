@@ -41,7 +41,7 @@ __all__ = [
 # Our custom user class, brought in here so it can be used commonly throughout
 # the rest of the codebase
 
-#User = get_user_model()
+# User = get_user_model()
 
 ###################################################################################
 # Abstract models that form a base for all real models
@@ -154,7 +154,7 @@ class Category(CommonModel):
     def get_absolute_url(self):
         return reverse('api:category_detail', args=(self.pk,))
 
-    #def get_num_roles(self):
+    # def get_num_roles(self):
     #    return self.roles.filter(active=True, owner__is_active=True).count()
 
 
@@ -750,7 +750,7 @@ class ImportTask(PrimordialModel):
     def validate_char_lengths(self):
         for field in self._meta.get_fields():
             if not field.is_relation and field.get_internal_type() == 'CharField':
-                #print "%s %s" % (field.name, field.max_length)
+                # print "%s %s" % (field.name, field.max_length)
                 if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
                     raise Exception("Import Task %s value exceeeds max length of %s." % (field.name, field.max_length))
 
