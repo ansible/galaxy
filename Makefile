@@ -9,13 +9,6 @@ DATE := $(shell date -u +%Y%m%d%H%M)
 VERSION=$(shell $(PYTHON) -c "from galaxy import __version__; print(__version__.split('-')[0])")
 RELEASE=$(shell $(PYTHON) -c "from galaxy import __version__; print(__version__.split('-')[1])")
 
-#ansible-container options
-ifeq ($(DETACHED),yes)
-  detach_option="-d"
-else
-  detach_option=""
-endif
-
 ifneq ($(OFFICIAL),yes)
 BUILD=dev$(DATE)
 SDIST_TAR_FILE=galaxy-$(VERSION)-$(BUILD).tar.gz
@@ -30,7 +23,6 @@ DEB_PKG_RELEASE=$(VERSION)-$(RELEASE)
 endif
 
 DOCKER_COMPOSE=docker-compose -f ./scripts/compose-dev.yml -p galaxy
-
 
 .PHONY: help
 help:
