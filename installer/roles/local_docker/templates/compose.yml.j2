@@ -6,7 +6,7 @@ services:
     command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv && /entrypoint.sh manage migrate --noinput && /entrypoint.sh run web']
     environment:
       - GALAXY_SECRET_KEY={{ galaxy_secret }}
-      - GALAXY_DB_HOST={{ pg_hostname }}
+      - GALAXY_DB_HOST={{ pg_hostname | default('postgres') }}
       - GALAXY_DB_USER={{ pg_username }}
       - GALAXY_DB_PASSWORD={{ pg_password }}
       - GALAXY_DB_NAME={{ pg_database }}
@@ -30,7 +30,7 @@ services:
     command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv --wait-for web:8000 && /entrypoint.sh run worker']
     environment:
       - GALAXY_SECRET_KEY={{ galaxy_secret }}
-      - GALAXY_DB_HOST={{ pg_hostname }}
+      - GALAXY_DB_HOST={{ pg_hostname | default('postgres') }}
       - GALAXY_DB_USER={{ pg_username }}
       - GALAXY_DB_PASSWORD={{ pg_password }}
       - GALAXY_DB_NAME={{ pg_database }}

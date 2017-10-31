@@ -2,6 +2,9 @@
 - name: Set fact root_path 
   set_fact: 
     root_path: '{{ playbook_dir }}/..' 
+  tags:
+  - start
+  - stop
 
 - name: Get version from checkout if not provided
   shell: git describe --long | sed 's/-g.*//' | sed 's/-/./' 
@@ -10,14 +13,28 @@
   register: version_command  
   delegate_to: localhost
   when: galaxy_version is not defined
+  tags:
+  - start
+  - stop 
 
 - name: Set global version if not provided
   set_fact:
     galaxy_version: "{{ version_command.stdout }}"
   when: galaxy_version is not defined
+  tags:
+  - start
+  - stop 
 
 - name: Show galaxy version 
   debug: var=galaxy_version
+  tags:
+  - start
+  - stop
+
+- include_tasks: copy_branding.yml
+  when: custom_branding_path is defined
+  tags:
+  - start
 
 - name: Build galaxy-build image
   docker_image:
@@ -30,6 +47,8 @@
     path: '{{ root_path }}'
     dockerfile: scripts/docker-release/Dockerfile.build
   delegate_to: localhost
+  tags:
+  - start
 
 - name: Run galaxy-build container 
   docker_container:
@@ -38,6 +57,8 @@
     volumes: 
       - '{{ root_path }}:/galaxy:rw'
   delegate_to: localhost
+  tags:
+  - start
 
 - name: Wait for galaxy-build to finish
   shell: '{% raw %}docker inspect -f "{{ .State.Running }}" galaxy-build{% endraw %}'
@@ -46,10 +67,15 @@
   retries: 5
   delay: 15
   delegate_to: localhost
+  tags:
+  - start
 
 - name: Set Galaxy image name
   set_fact:
     galaxy_image: "{{ galaxy_image| default('galaxy') }}"
+  tags:
+  - start
+  - stop
 
 - name: Build the galaxy image
   docker_image: 
@@ -62,4 +88,6 @@
     path: '{{ root_path }}'
     dockerfile: scripts/docker-release/Dockerfile
   delegate_to: localhost
-
+  tags:
+  - start
+  
