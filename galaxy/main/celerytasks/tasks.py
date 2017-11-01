@@ -488,7 +488,7 @@ def update_role_videos(import_task, role, videos=None):
         google_re = re.compile('https:\/\/drive.google.com.*file\/d\/([0-9A-Za-z-_]+)\/.*')
         vimeo_re = re.compile('https:\/\/vimeo.com\/([0-9]+)')
         youtube_re = re.compile('https://youtu.be/([0-9A-Za-z-_]+)')
-
+        new_videos = []
         for video in videos:
             if not isinstance(video, dict) or set(video.keys()) != {'url', 'title'}:
                 add_message(import_task, u"ERROR", u"Expecting each item in video_links to be a dictionary with "
@@ -505,7 +505,11 @@ def update_role_videos(import_task, role, videos=None):
             if google_match:
                 try:
                     file_id = google_match.group(1)
-                    video['embed_url'] = "https://drive.google.com/file/d/%s/preview" % file_id
+                    new_videos.append({
+                        'embed_url': "https://drive.google.com/file/d/%s/preview" % file_id,
+                        'description': video['title']
+                    })
+
                 except IndexError:
                     add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
                                                        u"a shared link from Google Drive?" % video['url'])
@@ -513,7 +517,10 @@ def update_role_videos(import_task, role, videos=None):
             elif vimeo_match:
                 try:
                     file_id = vimeo_match.group(1)
-                    video['embed_url'] = "https://player.vimeo.com/video/" + file_id
+                    new_videos.append({
+                        'embed_url': "https://player.vimeo.com/video/" + file_id,
+                        'description': video['title']
+                    })
                 except IndexError:
                     add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
                                                        u"a shared link from Vimeo?" % video['url'])
@@ -521,13 +528,20 @@ def update_role_videos(import_task, role, videos=None):
             elif youtube_match:
                 try:
                     file_id = youtube_match.group(1)
-                    video['embed_url'] = "https://www.youtube.com/embed/" + file_id
+                    new_videos.append({
+                        'embed_url': "https://www.youtube.com/embed/" + file_id,
+                        'description': video['title']
+                    })
                 except IndexError:
                     add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
                                                        u"a shared link from YouTube?" % video['url'])
                     continue
 
-            role.videos.update_or_create(url=video['embed_url'], defaults={'description': video['title']})
+        if new_videos:
+            # replace any existing videos
+            role.videos.all().delete()
+            for video in new_videos:
+                role.videos.create(url=video['embed_url'], description=video['description'])
 
 
 @task(throws=(Exception,), name="galaxy.main.celerytasks.tasks.import_role")
