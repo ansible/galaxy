@@ -15,6 +15,7 @@ function _exec_cmd() {
 function run_web() {
     _exec_cmd "${VENV_BIN}/gunicorn" \
         -w 2 -b 0.0.0.0:8000 \
+        --worker-class gevent \
         galaxy.wsgi:application
 }
 

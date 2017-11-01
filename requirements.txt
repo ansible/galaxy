@@ -30,4 +30,4 @@ ansible
 # pyinotify
 pyOpenSSL
 psycopg2
-
+gevent>=0.13
