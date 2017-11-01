@@ -159,7 +159,7 @@ ELASTICSEARCH = {
         'hosts': [
             '{0}:{1}'.format(
                 os.environ.get('GALAXY_ELASTICSEARCH_HOST'),
-                os.environ.get('GALAXY_ELASTICSEARCH_PORT'))
+                os.environ.get('GALAXY_ELASTICSEARCH_PORT', 9200))
         ],
     },
 }
@@ -171,7 +171,7 @@ HAYSTACK_CONNECTIONS = {
         'URL': [
             'http://{0}:{1}'.format(
                 os.environ.get('GALAXY_ELASTICSEARCH_HOST'),
-                os.environ.get('GALAXY_ELASTICSEARCH_PORT'))
+                os.environ.get('GALAXY_ELASTICSEARCH_PORT', 9200))
         ],
         'INDEX_NAME': 'haystack',
     },
