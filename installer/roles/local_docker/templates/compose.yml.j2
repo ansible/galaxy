@@ -1,0 +1,83 @@
+version: '3'
+
+services:
+  web:
+    image: {{ galaxy_actual_image }}
+    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv && /entrypoint.sh manage migrate --noinput && /entrypoint.sh manage rebuild_index --noinput && /entrypoint.sh manage rebuild_galaxy_indexes && /entrypoint.sh run web']
+    environment:
+      - GALAXY_SECRET_KEY={{ galaxy_secret }}
+      - GALAXY_DB_HOST={{ pg_hostname | default('postgres') }}
+      - GALAXY_DB_USER={{ pg_username }}
+      - GALAXY_DB_PASSWORD={{ pg_password }}
+      - GALAXY_DB_NAME={{ pg_database }}
+      - GALAXY_DB_PORT={{ pg_port }} 
+      - GALAXY_RABBITMQ_HOST=rabbitmq
+      - GALAXY_RABBITMQ_PASSWORD=galaxy
+      - GALAXY_MEMCACHE_HOST=memcache
+      - GALAXY_ELASTICSEARCH_HOST={{ elastic_hostname | default('elastic') }}
+      - GALAXY_ELASTICSEARCH_PORT={{ elastic_port | default(9200) }}
+    ports:
+      - '{{ host_port }}:8000'
+    links:
+{% if elastic_hostname is not defined %}
+      - elastic
+{% endif %}
+      - memcache
+      - rabbitmq
+{% if pg_hostname is not defined %}
+      - postgres
+{% endif %}
+
+  worker:
+    image: {{ galaxy_actual_image }}
+    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv --wait-for web:8000 && /entrypoint.sh run worker']
+    environment:
+      - GALAXY_SECRET_KEY={{ galaxy_secret }}
+      - GALAXY_DB_HOST={{ pg_hostname | default('postgres') }}
+      - GALAXY_DB_USER={{ pg_username }}
+      - GALAXY_DB_PASSWORD={{ pg_password }}
+      - GALAXY_DB_NAME={{ pg_database }}
+      - GALAXY_DB_PORT={{ pg_port }} 
+      - GALAXY_RABBITMQ_HOST=rabbitmq
+      - GALAXY_RABBITMQ_PASSWORD=galaxy
+      - GALAXY_MEMCACHE_HOST=memcache
+      - GALAXY_ELASTICSEARCH_HOST={{ elastic_hostname | default('elastic') }}
+      - GALAXY_ELASTICSEARCH_PORT={{ elastic_port | default(9200) }}
+      - C_FORCE_ROOT=1
+    links:
+      - web
+      - rabbitmq
+{% if elastic_hostname is not defined %}
+      - elastic
+{% endif %}
+{% if pg_hostname is not defined %}
+      - postgres
+{% endif %}
+
+{% if pg_hostname is not defined %}
+  postgres:
+    image: postgres:9.5.4
+    volumes:
+    - {{ postgres_data_dir }}:/var/lib/postgresql/data:Z
+    environment:
+      - POSTGRES_DB={{ pg_database }}
+      - POSTGRES_USER={{ pg_username }}
+      - POSTGRES_PASSWORD={{ pg_password }}
+{% endif %}
+
+{% if elastic_hostname is not defined %}
+  elastic:
+    image: elasticsearch:2.4.1
+    volumes:
+    - {{ elastic_data_dir }}:/usr/share/elasticsearch/data:Z
+{% endif %}
+
+  memcache:
+    image: memcached:latest
+
+  rabbitmq:
+    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=galaxy
+      - RABBITMQ_DEFAULT_PASS=galaxy
+      - RABBITMQ_DEFAULT_VHOST=galaxy
