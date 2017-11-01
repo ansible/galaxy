@@ -1,0 +1,8 @@
+# stop.yml
+---
+- name: Stop Galaxy
+  docker_service:
+    state: absent 
+    project_name: galaxy
+    project_src: '{{ tempdir.path }}'
+

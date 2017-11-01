@@ -1,0 +1,38 @@
+localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env python"
+
+[all:vars]
+
+# Remove these lines if you want to run a local image build.
+# Otherwise, the playbook will install the official Galaxy image.
+# By default the base will be used to search for ansible/galaxy
+dockerhub_base=ansible
+dockerhub_version=latest
+
+# Django secret key used to provide cryptographic signing.
+galaxy_secret=8fe174fc6c3cab489f29ee1a341885d2
+
+# Standalone Docker Install
+postgres_data_dir=/tmp/pgdata
+elastic_data_dir=/tmp/elastic
+host_port=80
+
+# Define if you want the image pushed to a registry.
+#docker_registry=172.30.1.1:5000
+#docker_registry_repository=galaxy
+#docker_registry_username=developer
+
+# Set pg_hostname if you have an external postgres server, otherwise
+# a new postgres service will be created
+#pg_hostname=postgres
+pg_username=galaxy
+pg_password=galaxy
+pg_database=galaxy
+pg_port=5432
+
+# Build Galaxy with custom branding. Provide a path that contains templates, img, less, partials, etc.
+#custom_branding_path=
+
+# Proxy
+#http_proxy=http://proxy:3128
+#https_proxy=http://proxy:3128
+#no_proxy=mycorp.org
