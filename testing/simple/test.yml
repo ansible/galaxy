@@ -8,8 +8,10 @@
 
   tasks:
     - name: Wait for server to start  
-      pause:
-        seconds: 300 
+      wait_for:
+        port: 8000
+        timeout: 120 
+        delay: 20 
  
     - name: Check container status
       command: docker ps -a
