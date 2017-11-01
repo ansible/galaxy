@@ -490,7 +490,7 @@ def update_role_videos(import_task, role, videos=None):
         youtube_re = re.compile('https://youtu.be/([0-9A-Za-z-_]+)')
 
         for video in videos:
-            if not isinstance(video, dict) or set(video.keys()) < {'url', 'title'}:
+            if not isinstance(video, dict) or set(video.keys()) != {'url', 'title'}:
                 add_message(import_task, u"ERROR", u"Expecting each item in video_links to be a dictionary with "
                                                    u"'url' and 'title' keys")
                 continue
