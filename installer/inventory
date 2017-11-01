@@ -2,25 +2,21 @@ localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env pyth
 
 [all:vars]
 
-# Remove these lines if you want to run a local image build
-# Otherwise the setup playbook will install the official Ansible images. Versions may
-# be selected based on: latest, 1, 1.0, 1.0.0, 1.0.0.123
-# by default the base will be used to search for ansible/awx_web and ansible/awx_task
-#dockerhub_base=ansible
-#dockerhub_version=latest
+# Remove these lines if you want to run a local image build.
+# Otherwise, the playbook will install the official Galaxy image.
+# By default the base will be used to search for ansible/galaxy
+dockerhub_base=ansible
+dockerhub_version=latest
 
 # Django secret key used to provide cryptographic signing.
 galaxy_secret=8fe174fc6c3cab489f29ee1a341885d2
 
 # Standalone Docker Install
-postgres_data_dir=/tmp/pgdocker
+postgres_data_dir=/tmp/pgdata
+elastic_data_dir=/tmp/elastic
 host_port=80
 
-# Required for Openshift when building the image on your own
-# Optional for Openshift if using Dockerhub or another prebuilt registry
-# Required for Standalone Docker Install if building the image on your own
-# Optional for Standalone Docker Install if using Dockerhub or another prebuilt registry
-# Define if you want the image pushed to a registry. The container definition will also use these images
+# Define if you want the image pushed to a registry.
 #docker_registry=172.30.1.1:5000
 #docker_registry_repository=galaxy
 #docker_registry_username=developer
@@ -34,7 +30,7 @@ pg_database=galaxy
 pg_port=5432
 
 # Build Galaxy with custom branding. Provide a path that contains templates, img, less, partials, etc.
-custom_branding_path=~/projects/galaxy-deploy
+#custom_branding_path=
 
 # Proxy
 #http_proxy=http://proxy:3128

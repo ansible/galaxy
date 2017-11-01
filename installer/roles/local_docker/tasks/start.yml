@@ -6,4 +6,3 @@
     project_name: galaxy
     project_src: '{{ tempdir.path }}'
   register: startup
-

@@ -60,6 +60,8 @@ services:
 
   elastic:
     image: elasticsearch:2.4.1
+    volumes:
+    - {{ elastic_data_dir }}:/usr/share/elasticsearch/data:Z
 
   memcache:
     image: memcached:latest

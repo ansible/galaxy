@@ -2,10 +2,7 @@
 - name: Manage Galaxy Container Images
   block:
     - name: Export Docker web image if it isnt local and there isnt a registry defined
-      docker_image:
-        name: "{{ galaxy_image }}"
-        tag: "{{ galaxy_version }}"
-        archive_path: "{{ galaxy_local_base_config_path | default('/tmp') }}/{{ galaxy_image }}_{{ galaxy_version }}.tar"
+      shell: "docker image save {{ galaxy_image }}:{{ galaxy_version }} | gzip >{{ galaxy_local_base_config_path | default('/tmp') }}/{{ galaxy_image }}_{{ galaxy_version }}.tgz" 
       when: inventory_hostname != "localhost" and docker_registry is not defined
       delegate_to: localhost
       tags:
@@ -38,12 +35,26 @@
       - start      
 
     - name: Copy image to docker execution
-      copy:
-        src: "{{ galaxy_local_base_config_path | default('/tmp') }}/{{ galaxy_image }}_{{ galaxy_version }}.tar"
-        dest: "{{ docker_deploy_base_path }}/{{ galaxy_image }}_{{ galaxy_version }}.tar"
+      synchronize:
+        src: "{{ galaxy_local_base_config_path | default('/tmp') }}/{{ galaxy_image }}_{{ galaxy_version }}.tgz"
+        dest: "{{ docker_deploy_base_path }}/{{ galaxy_image }}_{{ galaxy_version }}.tgz"
       when: ansible_connection != "local" and docker_registry is not defined
       tags:
-      - start      
+      - start
+
+    - name: Remove the .tar file
+      file:
+        state: absent
+        path: '{{ docker_deploy_base_path }}/{{ galaxy_image }}_{{ galaxy_version }}.tar'
+      when: ansible_connection != "local" and docker_registry is not defined
+      tags:
+      - start
+   
+    - name: Unzip the archive
+      shell: gunzip "{{ docker_deploy_base_path }}/{{ galaxy_image }}_{{ galaxy_version }}.tgz"
+      when: ansible_connection != "local" and docker_registry is not defined
+      tags:
+      - start
 
     - name: Load image
       docker_image:
