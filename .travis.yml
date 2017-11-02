@@ -40,14 +40,9 @@ script:
 
 # Build release image
 - |
-  if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "develop" ]]; then
-    GALAXY_RELEASE_IMAGE=ansible/galaxy GALAXY_RELEASE_TAG=develop \
-      make build/docker-release
+  if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
+    make build/docker-release
   fi
 
 after_success:
-- |
-  if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "develop" ]]; then
-    docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    docker push ansible/galaxy:develop
-  fi
+- scripts/travis-publish-image.sh
