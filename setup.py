@@ -16,18 +16,13 @@
 #  You should have received a copy of the Apache License
 #  along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import os
-import datetime
 import glob
+import os
 import sys
 
 from setuptools import setup
 
-from galaxy import __version__
-
-
-build_timestamp = os.getenv(
-    "BUILD", datetime.datetime.now().strftime('-%Y%m%d%H%M'))
+from galaxy.common import version
 
 # Paths we'll use later
 etcpath = "/etc/galaxy"
@@ -84,7 +79,7 @@ def proc_data_files(data_files):
 
 setup(
     name='galaxy',
-    version=__version__.split("-")[0],  # FIXME: Should keep full version here?
+    version=version.get_git_version(),
     author='Ansible, Inc.',
     author_email='support@ansible.com',
     description='Galaxy: Find, reuse and share the best Ansible content.',
@@ -120,9 +115,6 @@ setup(
                           "galaxy/static/favicon.ico"])]
     ),
     options={
-        'egg_info': {
-            'tag_build': '-%s' % build_timestamp,
-        },
         'aliases': {
             'dev_build': 'clean --all egg_info sdist_galaxy',
             'release_build': 'clean --all egg_info -b "" sdist_galaxy',
