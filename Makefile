@@ -76,6 +76,10 @@ clean_dist:
 # Build targets
 # ---------------------------------------------------------
 
+.PHONY: ui_build
+ui_build:
+	node node_modules/gulp/bin/gulp.js build
+
 .PHONY: sdist
 sdist: clean_dist ui_build
 	if [ "$(OFFICIAL)" = "yes" ] ; then \
