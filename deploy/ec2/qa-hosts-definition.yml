@@ -26,6 +26,7 @@ galaxy_hosts:
     galaxy: qa
     galaxy_group: qa_db
     galaxy_postgres: master
+    Ice: galaxy-qa
 
 # replication database
 - count: 1
@@ -41,6 +42,7 @@ galaxy_hosts:
     galaxy: qa
     galaxy_group: qa_db
     galaxy_postgres: slave
+    Ice: galaxy-qa
 
 # elasticsearch hosts
 - count: 1
@@ -51,6 +53,7 @@ galaxy_hosts:
     Name: galaxy-qa-es-01
     galaxy: qa
     galaxy_group: qa_elastic 
+    Ice: galaxy-qa
 
 - count: 1
   type: t2.medium
@@ -60,6 +63,7 @@ galaxy_hosts:
     Name: galaxy-qa-es-02
     galaxy: qa
     galaxy_group: qa_elastic 
+    Ice: galaxy-qa
 
 - count: 1
   type: t2.medium
@@ -69,6 +73,7 @@ galaxy_hosts:
     Name: galaxy-qa-es-03
     galaxy: qa
     galaxy_group: qa_elastic 
+    Ice: galaxy-qa
       
 # web hosts
 - count: 1
@@ -79,6 +84,7 @@ galaxy_hosts:
     Name: galaxy-qa-web-01
     galaxy: qa
     galaxy_group: qa_web 
+    Ice: galaxy-qa
 
 - count: 1
   type: t2.medium
@@ -88,6 +94,7 @@ galaxy_hosts:
     Name: galaxy-qa-web-02
     galaxy: qa
     galaxy_group: qa_web 
+    Ice: galaxy-qa
 
 # celery host
 - count: 1
@@ -99,6 +106,7 @@ galaxy_hosts:
     galaxy: qa
     galaxy_group: qa_celery
     galaxy_celery_queue: imports
+    Ice: galaxy-qa
 
 # celery host
 - count: 1
@@ -110,6 +118,7 @@ galaxy_hosts:
     galaxy: qa
     galaxy_group: qa_celery
     galaxy_celery_queue: user
+    Ice: galaxy-qa
 
 # celery host
 - count: 1
@@ -121,3 +130,4 @@ galaxy_hosts:
     galaxy: qa
     galaxy_group: qa_celery
     galaxy_celery_queue: admin
+    Ice: galaxy-qa
