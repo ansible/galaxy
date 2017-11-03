@@ -67,9 +67,10 @@ def user_logged_in_handler(request, user, **kwargs):
             user.cache_refreshed = True
             user.save()
 
+
 @receiver(post_save, sender=ImportTask)
 def import_task_post_save(sender, **kwargs):
-    ''' 
+    '''
     When a role is imported enable the role in the user's repository cache
     '''
     instance = kwargs['instance']

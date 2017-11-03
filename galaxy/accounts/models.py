@@ -30,6 +30,7 @@ from django.utils import timezone
 
 from galaxy.main.mixins import DirtyMixin
 
+
 class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     """
     A custom user class that basically mirrors Django's `AbstractUser` class
@@ -151,5 +152,3 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
             if account.provider == 'github':
                 connected = True
         return connected
-
-

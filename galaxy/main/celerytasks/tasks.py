@@ -41,7 +41,7 @@ from galaxy.main.models import (Platform,
                                 RoleVersion,
                                 Namespace)
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
-from galaxy.settings import GITHUB_SERVER
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ def get_repo_raw(token, repo_name):
     '''
     auth_header = {u'Authorization': u'token ' + token}
     try:
-        url = u"{0}/repos/{1}".format(GITHUB_SERVER, repo_name)
+        url = u"{0}/repos/{1}".format(settings.GITHUB_SERVER, repo_name)
         response = requests.get(url, headers=auth_header)
         response.raise_for_status()
         repo = response.json()
@@ -467,6 +467,83 @@ def add_tags(import_task, galaxy_info, role):
             role.tags.remove(tag)
 
 
+def update_role_videos(import_task, role, videos=None):
+    existing_videos = role.videos.all().count()
+
+    if not videos and not existing_videos:
+        # nothing to do
+        return
+
+    if not videos and existing_videos:
+        # no video provided in meta data, so remove any existing videos
+        role.videos.all().delete()
+        return
+
+    if videos:
+        if not isinstance(videos, list):
+            add_message(import_task, u"ERROR", u"Invalid data format for video_links. "
+                                               u"Expecting video_links to be a list.")
+            return
+
+        google_re = re.compile('https:\/\/drive.google.com.*file\/d\/([0-9A-Za-z-_]+)\/.*')
+        vimeo_re = re.compile('https:\/\/vimeo.com\/([0-9]+)')
+        youtube_re = re.compile('https://youtu.be/([0-9A-Za-z-_]+)')
+        new_videos = []
+        for video in videos:
+            if not isinstance(video, dict) or set(video.keys()) != {'url', 'title'}:
+                add_message(import_task, u"ERROR", u"Expecting each item in video_links to be a dictionary with "
+                                                   u"'url' and 'title' keys")
+                continue
+
+            google_match = google_re.match(video['url'])
+            vimeo_match = vimeo_re.match(video['url'])
+            youtube_match = youtube_re.match(video['url'])
+            if not google_match and not vimeo_match and not youtube_match:
+                add_message(import_task, u"ERROR", u"Format of URL %s not recognized. Expected it be a shared link "
+                                                   u"from Vimeo, YouTube, or Google Drive." % video['url'])
+                continue
+            if google_match:
+                try:
+                    file_id = google_match.group(1)
+                    new_videos.append({
+                        'embed_url': "https://drive.google.com/file/d/%s/preview" % file_id,
+                        'description': video['title']
+                    })
+
+                except IndexError:
+                    add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
+                                                       u"a shared link from Google Drive?" % video['url'])
+                    continue
+            elif vimeo_match:
+                try:
+                    file_id = vimeo_match.group(1)
+                    new_videos.append({
+                        'embed_url': "https://player.vimeo.com/video/" + file_id,
+                        'description': video['title']
+                    })
+                except IndexError:
+                    add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
+                                                       u"a shared link from Vimeo?" % video['url'])
+                    continue
+            elif youtube_match:
+                try:
+                    file_id = youtube_match.group(1)
+                    new_videos.append({
+                        'embed_url': "https://www.youtube.com/embed/" + file_id,
+                        'description': video['title']
+                    })
+                except IndexError:
+                    add_message(import_task, u"ERROR", u"Failed to get file_id from video_link URL %s. Is the URL "
+                                                       u"a shared link from YouTube?" % video['url'])
+                    continue
+
+        if new_videos:
+            # replace any existing videos
+            role.videos.all().delete()
+            for video in new_videos:
+                role.videos.create(url=video['embed_url'], description=video['description'])
+
+
 @task(throws=(Exception,), name="galaxy.main.celerytasks.tasks.import_role")
 def import_role(task_id):
     try:
@@ -519,9 +596,9 @@ def import_role(task_id):
         branch = role.github_branch
     else:
         branch = repo.default_branch
-    
+
     add_message(import_task, u"INFO", u"Accessing branch: %s" % branch)
-        
+
     # parse meta data
     add_message(import_task, u"INFO", u"Parsing and validating meta data.")
     for meta_file in META_FILES:
@@ -546,13 +623,18 @@ def import_role(task_id):
     role.author              = strip_input(galaxy_info.get("author", ""))
     role.company             = strip_input(galaxy_info.get("company", ""))
     role.license             = strip_input(galaxy_info.get("license", ""))
+
     if galaxy_info.get('min_ansible_version'):
         role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version", ""))
+
     if galaxy_info.get('min_ansible_container_version'):
         role.min_ansible_container_version = strip_input(galaxy_info.get("min_ansible_container_version", ""))
-    role.issue_tracker_url   = strip_input(galaxy_info.get("issue_tracker_url", ""))
-    role.github_branch       = strip_input(galaxy_info.get("github_branch", ""))
+
+    role.issue_tracker_url     = strip_input(galaxy_info.get("issue_tracker_url", ""))
+    role.github_branch         = strip_input(galaxy_info.get("github_branch", ""))
     role.github_default_branch = repo.default_branch
+
+    update_role_videos(import_task, role, videos=galaxy_info.get('video_links'))
 
     # check if meta/container.yml exists
     container_yml = decode_file(import_task, repo, branch, 'meta/container.yml', return_yaml=False)
@@ -576,7 +658,7 @@ def import_role(task_id):
 
     if role.issue_tracker_url == "" and repo.has_issues:
         role.issue_tracker_url = repo.html_url + '/issues'
-    
+
     if role.company != "" and len(role.company) > 50:
         add_message(import_task, u"WARNING", u"galaxy_info.company exceeds max length of 50 in meta data")
         role.company = role.company[:50]
@@ -618,7 +700,7 @@ def import_role(task_id):
     role.stargazers_count = repo.stargazers_count
     role.watchers_count = sub_count
     role.forks_count = repo.forks_count
-    role.open_issues_count = repo.open_issues_count 
+    role.open_issues_count = repo.open_issues_count
 
     last_commit = repo.get_commits(sha=branch)[0].commit
     role.commit = last_commit.sha
@@ -630,13 +712,13 @@ def import_role(task_id):
     import_task.stargazers_count = repo.stargazers_count
     import_task.watchers_count = sub_count
     import_task.forks_count = repo.forks_count
-    import_task.open_issues_count = repo.open_issues_count 
+    import_task.open_issues_count = repo.open_issues_count
 
     import_task.commit = last_commit.sha
     import_task.commit_message = last_commit.message[:255]
     import_task.commit_url = last_commit.html_url
     import_task.github_branch = branch
-    
+
     add_tags(import_task, galaxy_info, role)
     if role.role_type in (role.CONTAINER, role.ANSIBLE):
         if not galaxy_info.get('platforms'):
@@ -805,7 +887,7 @@ def refresh_user_stars(user, token):
                     'github_user': name[0],
                     'github_repo': name[1]
                 })
-    
+
     try:
         starred = ghu.get_starred()
     except GithubException as exc:
@@ -824,7 +906,7 @@ def refresh_user_stars(user, token):
                 github_repo=name[1],
                 defaults={
                     'github_user': name[0],
-                    'github_repo': name[1]    
+                    'github_repo': name[1]
                 })
 
 

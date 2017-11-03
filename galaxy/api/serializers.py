@@ -43,7 +43,8 @@ from galaxy.main.models import (Platform,
                                 Notification,
                                 Repository,
                                 Subscription,
-                                Stargazer)
+                                Stargazer
+                                )
 
 # rst2html5-tools
 from html5css3 import Writer
@@ -82,8 +83,8 @@ BASE_FIELDS = ('id', 'url', 'related', 'summary_fields', 'created', 'modified', 
 DEFAULT_SUMMARY_FIELDS = ('name', 'description',)
 
 SUMMARIZABLE_FK_FIELDS = {
-    'owner' : ('id','url','username', 'full_name', 'avatar_url'),
-    'role'  : ('id','url','name',),
+    'owner': ('id', 'url', 'username', 'full_name', 'avatar_url'),
+    'role': ('id', 'url', 'name',),
 }
 
 
@@ -112,6 +113,7 @@ def readme_to_html(obj):
                       "README. If you re-import this role, the HTML will show up, and this message will go away."
 
     return content
+
 
 class BaseSerializer(serializers.ModelSerializer):
     # add the URL and related resources
@@ -162,7 +164,7 @@ class BaseSerializer(serializers.ModelSerializer):
                 return obj.get_absolute_url()
             except AttributeError:
                 return ''
-    
+
     def get_related(self, obj):
         res = OrderedDict()
         if getattr(obj, 'owner', None):
@@ -202,13 +204,13 @@ class BaseSerializer(serializers.ModelSerializer):
         if obj is None:
             return None
         elif isinstance(obj, User):
-            return obj.last_login # Not actually exposed for User.
+            return obj.last_login  # Not actually exposed for User.
         else:
             try:
                 return obj.modified
             except AttributeError:
                 return None
-            
+
     def get_active(self, obj):
         if obj is None:
             return False
@@ -219,7 +221,7 @@ class BaseSerializer(serializers.ModelSerializer):
                 return obj.active
             except AttributeError:
                 return None
-     
+
     def validate_description(self, attrs, source):
         # Description should always be empty string, never null.
         attrs[source] = attrs.get(source, None) or ''
@@ -491,7 +493,7 @@ class RepositorySerializer(BaseSerializer):
 
 
 class TopContributorsSerializer(serializers.BaseSerializer):
-    
+
     def to_representation(self, obj):
         return {
             'namespace': obj['namespace'],
@@ -527,7 +529,7 @@ class NotificationSecretSerializer(BaseSerializer):
     def get_secret(self, obj):
         # show only last 4 digits of secret
         last = ''
-        try: 
+        try:
             last = obj.secret[-4:]
         except:
             pass
@@ -574,7 +576,7 @@ class NotificationSerializer(BaseSerializer):
             ('name', r.name)
         ]) for r in obj.roles.all()]
         d['imports'] = [OrderedDict([
-            ('id', t.id) 
+            ('id', t.id)
         ]) for t in obj.imports.all()]
         return d
 
@@ -609,7 +611,7 @@ class ImportTaskSerializer(BaseSerializer):
             'modified',
             'created',
             'active',
-            'stargazers_count', 
+            'stargazers_count',
             'watchers_count',
             'forks_count',
             'open_issues_count',
@@ -653,7 +655,7 @@ class ImportTaskSerializer(BaseSerializer):
             ('is_valid', obj.role.is_valid),
             ('active', obj.role.active),
         ])
-        
+
         d['notifications'] = [OrderedDict([
             ('id', n.id),
             ('travis_build_url', n.travis_build_url),
@@ -712,7 +714,7 @@ class ImportTaskLatestSerializer(BaseSerializer):
             ('is_valid', r.is_valid),
         ])
         return d
-        
+
     def get_url(self, obj):
         if obj is None:
             return ''
@@ -772,9 +774,8 @@ class RoleListSerializer(BaseSerializer):
         d['tags'] = [
             dict(name=g.name) for g in obj.tags.all()]
         d['versions'] = [
-            dict(id=g.id,
-                 name=g.name,
-                 release_date=g.release_date) for g in obj.versions.all()]
+            dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
+        d['videos'] = [dict(url=v.url, description=v.description) for v in obj.videos.all()]
         return d
 
     def get_readme_html(self, obj):
@@ -857,16 +858,13 @@ class RoleDetailSerializer(BaseSerializer):
         if obj is None:
             return {}
         d = super(RoleDetailSerializer, self).get_summary_fields(obj)
-        d['dependencies'] = [
-            dict(id=g.id, name=str(g)) for g in obj.dependencies.all()]
-        d['platforms'] = [
-            dict(name=g.name, release=g.release) for g in obj.platforms.all()]
-        d['tags'] = [
-            dict(name=g.name) for g in obj.tags.all()]
-        d['versions'] = [
-            dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
+        d['dependencies'] = [dict(id=g.id, name=str(g)) for g in obj.dependencies.all()]
+        d['platforms'] = [dict(name=g.name, release=g.release) for g in obj.platforms.all()]
+        d['tags'] = [dict(name=g.name) for g in obj.tags.all()]
+        d['versions'] = [dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
+        d['videos'] = [dict(url=v.url, description=v.description) for v in obj.videos.all()]
         return d
-    
+
     def get_readme_html(self, obj):
         if obj.readme_html:
             return obj.readme_html
@@ -888,8 +886,8 @@ class RoleSearchSerializer(HaystackSerializer):
             "role_id",
             "role_type",
             "username",
-            "name", 
-            "description", 
+            "name",
+            "description",
             "github_user",
             "github_repo",
             "github_branch",
@@ -898,7 +896,7 @@ class RoleSearchSerializer(HaystackSerializer):
             "platform_details",
             "versions",
             "dependencies",
-            "created", 
+            "created",
             "modified",
             "imported",
             "last_commit_date",

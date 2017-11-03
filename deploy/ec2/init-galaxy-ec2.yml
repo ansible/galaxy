@@ -2,7 +2,7 @@
 #  Add users, create authorized_keys files, adjust sudoers file, install ntp, and take care
 #  of any initial configuration that's common to all nodes.
 #   
-#  run cmd: ansible-playbook -i ec2.py --user centos init-galaxy-ec2.yml 
+#  run cmd: ansible-playbook -i ec2.py --extra-vars="@<your vars file>" --user centos init-galaxy-ec2.yml --ask-vault-pass
 
 - name: Init new galaxy hosts 
   hosts: "{{ galaxy_hosts_all }}" 
@@ -21,4 +21,3 @@
         state: present
         regexp: '^%wheel'
         line: "%wheel ALL=(ALL) NOPASSWD: ALL"
-

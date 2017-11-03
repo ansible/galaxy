@@ -1,6 +1,7 @@
 {
   "name": "galaxy",
   "version": "0.0.0",
+  "private": true,
   "description": "Find, reuse and share the best Ansible content",
   "main": "\\",
   "scripts": {
@@ -15,14 +16,18 @@
     "Ansible",
     "Ansibleworks"
   ],
-  "author": "Chris Houseknecht",
-  "license": "Commercial",
+  "author": "Ansible",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/ansible/galaxy/issues"
   },
   "devDependencies": {
-    "less": "latest",
-    "gulp": "latest",
+    "browser-sync": "latest",
+    "http-proxy-middleware": "latest",
+    "node-notifier": "*",
+    "connect-history-api-fallback": "^1.1.0",
+    "less": "<3.0.0",
+    "gulp": "*",
     "gulp-less": "latest",
     "gulp-dest": "latest",
     "gulp-watch": "latest",
@@ -30,6 +35,6 @@
     "gulp-uglify": "latest",
     "gulp-concat": "latest",
     "gulp-rename": "latest",
-    "gulp-util": ">=0.10"
+    "gulp-util": "latest"
   }
 }

@@ -22,6 +22,7 @@ from galaxy.main.models import Role, ImportTask
 
 User = get_user_model()
 
+
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('role_id', nargs='+', type=int)

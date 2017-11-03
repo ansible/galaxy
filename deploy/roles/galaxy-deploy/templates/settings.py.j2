@@ -142,7 +142,9 @@ CACHES = {
 }
 
 ELASTICSEARCH = {
-    'hosts': [{{ galaxy_es_node_list }}]
+    'default': {
+        'hosts': [{{ galaxy_es_node_list }}]
+    }
 }
 
 HAYSTACK_CONNECTIONS = {
@@ -181,7 +183,7 @@ REST_FRAMEWORK = {
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'galaxy', 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
          'OPTIONS': {
             'debug': True,
@@ -250,7 +252,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(BASE_DIR, 'galaxy', 'static'),
+    os.path.join(BASE_DIR, 'static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -323,6 +325,8 @@ AUTHENTICATION_BACKENDS = (
 MAINTENANCE_FILE = '/var/lib/galaxy/.maintenance'
 
 TRAVIS_CONFIG_URL = 'https://api.travis-ci.org/config'
+
+ADMIN_URL_PATTERN = r'^{{ galaxy_admin_path }}/'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

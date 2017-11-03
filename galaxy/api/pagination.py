@@ -71,6 +71,7 @@ class PreviousLinkField(pagination.NextPageField):
         url = request and request.get_full_path() or ''
         return replace_query_param(url, self.page_field, page)
 
+
 class PaginationSerializer(pagination.BasePaginationSerializer):
     '''Custom pagination serializer to output only URL path (without host/port).'''
 

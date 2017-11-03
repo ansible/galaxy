@@ -20,6 +20,7 @@ __all__ = ['DirtyMixin',]
 ###################################################################################
 # A mixin object that lets us check if a model object has been modified
 
+
 class DirtyMixin(object):
     def __init__(self, *args, **kwargs):
         super(DirtyMixin, self).__init__(*args, **kwargs)
@@ -38,4 +39,3 @@ class DirtyMixin(object):
         del state['_original_state']
         self._original_state = state
         super(DirtyMixin, self).save()
-

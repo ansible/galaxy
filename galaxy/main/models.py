@@ -32,7 +32,7 @@ from galaxy.main.fields import LooseVersionField, TruncatingCharField
 from galaxy.main.mixins import DirtyMixin
 
 __all__ = [
-    'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 
+    'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating',
     'RoleVersion', 'UserAlias', 'NotificationSecret', 'Notification', 'Repository', 'Subscription', 'Stargazer',
     'Namespace'
 ]
@@ -60,7 +60,7 @@ class BaseModel(models.Model, DirtyMixin):
 
     def __unicode__(self):
         if hasattr(self, 'name'):
-            return unicode("%s-%s"% (self.name, self.id))
+            return unicode("%s-%s" % (self.name, self.id))
         else:
             return u'%s-%s' % (self._meta.verbose_name, self.id)
 
@@ -125,6 +125,7 @@ class CommonModel(PrimordialModel):
     name = models.CharField(max_length=512, unique=True, db_index=True)
     original_name = models.CharField(max_length=512)
 
+
 class CommonModelNameNotUnique(PrimordialModel):
     # a base model where the name is not unique '''
 
@@ -136,6 +137,7 @@ class CommonModelNameNotUnique(PrimordialModel):
 
 ###################################################################################
 # Actual models
+
 
 class Category(CommonModel):
     #
@@ -154,6 +156,7 @@ class Category(CommonModel):
 
     #def get_num_roles(self):
     #    return self.roles.filter(active=True, owner__is_active=True).count()
+
 
 class Tag(CommonModel):
     #
@@ -174,7 +177,7 @@ class Tag(CommonModel):
 
 
 class Platform(CommonModelNameNotUnique):
-    # a class represnting the valid platforms a role supports '''
+    # a class representing the valid platforms a role supports '''
 
     class Meta:
         ordering = ['name','release']
@@ -196,6 +199,7 @@ class Platform(CommonModelNameNotUnique):
     def get_absolute_url(self):
         return reverse('api:platform_detail', args=(self.pk,))
 
+
 class UserAlias(models.Model):
     #
     # a class representing a mapping between users and aliases
@@ -215,7 +219,20 @@ class UserAlias(models.Model):
     )
 
     def __unicode__(self):
-        return unicode("%s (alias of %s)"% (self.alias_name, self.alias_of.username))
+        return unicode("%s (alias of %s)" % (self.alias_name, self.alias_of.username))
+
+
+class Video(PrimordialModel):
+    class Meta:
+        verbose_name = "videos"
+
+    url = models.CharField(
+        max_length=256,
+        blank=False,
+        null=False,
+        unique=True
+    )
+
 
 class Role(CommonModelNameNotUnique):
     # a class representing a user role
@@ -248,7 +265,7 @@ class Role(CommonModelNameNotUnique):
         related_name = 'roles',
         verbose_name = 'Tags',
         blank        = True,
-        editable     = False,    
+        editable     = False,
     )
     tags.help_text = ""
 
@@ -257,9 +274,18 @@ class Role(CommonModelNameNotUnique):
         related_name = 'categories',
         verbose_name = "Categories",
         blank        = True,
-        editable     = False,    
+        editable     = False,
     )
     categories.help_text = ""
+
+    videos = models.ManyToManyField(
+        'Video',
+        related_name = 'videos',
+        verbose_name = 'videos',
+        blank        = True,
+        editable     = False
+    )
+    videos.hel_text = ""
 
     #
     # ------------------------------------------------------------------------------
@@ -410,7 +436,7 @@ class Role(CommonModelNameNotUnique):
         null         = True,
         verbose_name = "Laste Commit DateTime"
     )
-    
+
     #
     # #tags = ArrayField(models.CharField(max_length=256), null=True, editable=True, size=100)
 
@@ -427,7 +453,7 @@ class Role(CommonModelNameNotUnique):
     average_score = models.FloatField(
         default    = 0.0,
     )
-    
+
     # ------------------------------------------------------------------------------
     # other functions and properties
 
@@ -445,14 +471,14 @@ class Role(CommonModelNameNotUnique):
 
     def get_unique_platform_versions(self):
         return [platform.release for platform in self.platforms.filter(active=True).order_by('release').distinct('release')]
-    
+
     def get_unique_platform_search_terms(self):
         # Fetch the unique set of aliases
         terms = []
         for platform in self.platforms.filter(active=True).exclude(alias__isnull=True).exclude(alias__exact='').all():
             terms += platform.alias.split(' ')
         return set(terms)
-    
+
     def get_username(self):
         return self.namespace
 
@@ -464,7 +490,6 @@ class Role(CommonModelNameNotUnique):
             if not field.is_relation and field.get_internal_type() == 'CharField':
                 if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
                     raise Exception("Role %s value exceeeds max length of %s." % (field.name, field.max_length))
-
 
 
 class Namespace(PrimordialModel):
@@ -535,7 +560,7 @@ class RoleVersion(CommonModelNameNotUnique):
     #
     # ------------------------------------------------------------------------------
     # regular fields
-    
+
     release_date = models.DateTimeField(
         blank      = True,
         null       = True,
@@ -544,7 +569,6 @@ class RoleVersion(CommonModelNameNotUnique):
         editable   = False,
         db_index   = True,
     )
-
 
     #
     # ------------------------------------------------------------------------------
@@ -558,6 +582,7 @@ class RoleVersion(CommonModelNameNotUnique):
         # values in the other rating fields
         self.loose_version = self.name
         super(RoleVersion, self).save(*args, **kwargs)
+
 
 class RoleRating(PrimordialModel):
 
@@ -606,9 +631,9 @@ class RoleRating(PrimordialModel):
                 return 1
             else:
                 return value
-        
+
         self.score = clamp_range(self.score)
-        
+
         if len(self.comment) > 5000:
             self.comment = self.comment[:5000]
         super(RoleRating, self).save(*args, **kwargs)
@@ -751,7 +776,7 @@ class NotificationSecret(PrimordialModel):
     class Meta:
         ordering = ('source','github_user','github_repo')
         unique_together = ('source','github_user','github_repo')
-        
+
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name  = 'notification_secrets',
@@ -922,5 +947,3 @@ class RefreshRoleCount (PrimordialModel):
         default      = 0,
         null         = True
     )
-
-

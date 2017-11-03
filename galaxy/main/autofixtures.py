@@ -40,7 +40,6 @@ if settings.SITE_ENV == 'DEV':
 
         def generate(self):
             return random.randrange(100) > (100 - self.percent_chance)
-            
 
     class UserNameGenerator(generators.FirstNameGenerator, generators.LastNameGenerator):
         """ Generates a username of the form f_lname """
@@ -82,7 +81,7 @@ if settings.SITE_ENV == 'DEV':
         software_packages = [
             'nginx', 'httpd', 'php', 'python', 'perl', 'ruby',
             'memcache', 'mysql', 'oracle', 'couchbase', 'hadoop',
-            'cobbler', 'haproxy', 'keepalived', 
+            'cobbler', 'haproxy', 'keepalived',
         ]
 
         def generate(self):

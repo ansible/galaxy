@@ -28,7 +28,6 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 # local stuff
-import urls as main_urls
 from models import Role, Namespace
 
 # rst2html5-tools
@@ -62,6 +61,7 @@ common_services = [
 # Helpers
 #------------------------------------------------------------------------------
 
+
 def readme_to_html(obj):
     if obj is None:
         return ''
@@ -92,7 +92,9 @@ def readme_to_html(obj):
 
     return content
 
+
 def get_url_parts(path):
+    import urls as main_urls
     # create URLs for breadcrumbs displayed in page headers
     url_parts = path.split('/')
     total_path = ""
@@ -228,17 +230,17 @@ def detail_category(request, category=None, page=1):
 
 def handle_404_view(request):
     context = dict(page_title="404 Error")
-    return render_to_response('custom404.html', context)
+    return render_to_response('custom404.html', context, status=404)
 
 
 def handle_400_view(request):
     context = dict(page_title="400 Error")
-    return render_to_response('custom400.html', context)
+    return render_to_response('custom400.html', context, status=400)
 
 
 def handle_500_view(request):
     context = dict(page_title="500 Error")
-    return render_to_response('custom500.html', context)
+    return render_to_response('custom500.html', context, status=500)
 
 
 class NamespaceListView(ListView):
@@ -259,7 +261,7 @@ class NamespaceListView(ListView):
         context = super(NamespaceListView, self).get_context_data(**kwargs)
         context['search_value'] = self.request.GET.get('author', '')
         context["site_name"] = settings.SITE_NAME
-        context["load_angular"] = False       
+        context["load_angular"] = False
         context["page_title"] = "Browse Authors"
 
         # the paginator includes
@@ -360,11 +362,11 @@ class RoleDetailView(DetailView):
             context['namespace'] = None
 
         context['namespace_name'] = self.namespace
-        context['name'] = self.name 
+        context['name'] = self.name
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False
         context["meta_description"] = "Role %s.%s - %s" % (self.role.namespace, self.role.name, self.role.description)
-        
+
         try:
             gh_user = User.objects.get(github_user=self.role.github_user)
             context['avatar'] = gh_user.github_avatar
@@ -379,9 +381,9 @@ class RoleDetailView(DetailView):
         if user.is_authenticated():
             sub = user.get_subscriber(self.role.github_user, self.role.github_repo)
             if sub:
-                context['is_subscriber'] = True 
+                context['is_subscriber'] = True
                 context['subscriber_id'] = sub.id
-        
+
         context['is_stargazer'] = False
         if user.is_authenticated():
             star = user.get_stargazer(self.role.github_user, self.role.github_repo)
@@ -393,6 +395,7 @@ class RoleDetailView(DetailView):
         context['tags'] = role.tags.all()
         context['platforms'] = role.platforms.all()
         context['dependencies'] = role.dependencies.all()
+        context['videos'] = role.videos.all()
 
         context['imports'] = []
         for imp_task in role.import_tasks.all().order_by('-id')[:10]:
@@ -440,6 +443,7 @@ def accounts_connect_success(request):
     context = build_standard_context(request)
     context["connected_to_github"] = True
     return render_to_response('socialaccount/connections.html',context)
+
 
 @login_required
 def role_add_view(request):

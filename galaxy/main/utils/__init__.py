@@ -17,6 +17,7 @@
 
 import re
 
+
 def camelcase_to_underscore(s):
     '''
     Convert CamelCase names to lowercase_with_underscore.

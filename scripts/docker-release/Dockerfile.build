@@ -1,0 +1,41 @@
+FROM centos:7
+
+# Install nodejs and yarn
+# TODO(cutwater): Use direct package link instead of
+# setup_8.x script execution.
+RUN yum -y install wget \
+    && wget -O - https://rpm.nodesource.com/setup_8.x | bash - \
+    && wget -O /etc/yum.repos.d/yarn.repo https://dl.yarnpkg.com/rpm/yarn.repo \
+    && yum -y install nodejs yarn \
+    && yum -y remove wget \
+    && yum -y clean all \
+    && rm -rf /var/cache/yum
+
+# Install python
+ENV PIP_NO_CACHE_DIR off
+RUN yum -y install epel-release \
+    && yum -y install python python-pip \
+    && pip install virtualenv \
+    && yum -y clean all \
+    && rm -rf /var/cache/yum
+
+# Install node dependencies
+COPY package.json /tmp/package.json
+COPY yarn.lock /tmp/yarn.lock
+RUN cd /tmp \
+    && yarn install \
+    && yarn global add gulp
+ENV NODE_PATH /tmp/node_modules
+
+# Install python dependencies
+COPY requirements.txt /tmp/requirements.txt
+ENV VENV_BIN /var/lib/galaxy/venv/bin
+RUN mkdir -p /var/lib/galaxy/ \
+    && virtualenv /var/lib/galaxy/venv \
+    && ${VENV_BIN}/pip install -U pip \
+    && ${VENV_BIN}/pip install -r /tmp/requirements.txt
+
+WORKDIR /galaxy
+
+# TODO: Replace with makefile target
+CMD /galaxy/scripts/docker-release/build.sh

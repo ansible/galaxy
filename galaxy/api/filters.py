@@ -37,6 +37,7 @@ from galaxy.main.models import UserAlias
 
 GalaxyUser = get_user_model()
 
+
 class ActiveOnlyBackend(BaseFilterBackend):
     '''
     Filter to show only objects where is_active/active is True.
@@ -49,6 +50,7 @@ class ActiveOnlyBackend(BaseFilterBackend):
             elif field.name == 'active':
                 queryset = queryset.filter(active=True)
         return queryset
+
 
 class FieldLookupBackend(BaseFilterBackend):
     '''
@@ -232,6 +234,7 @@ class FieldLookupBackend(BaseFilterBackend):
         except ValidationError, e:
             raise ParseError(e.messages)
 
+
 class OrderByBackend(BaseFilterBackend):
     '''
     Filter to apply ordering based on query string parameters.
@@ -258,6 +261,7 @@ class OrderByBackend(BaseFilterBackend):
         except FieldError, e:
             # Return a 400 for invalid field names.
             raise ParseError(*e.args)
+
 
 class HaystackFilter(HaystackFilter):
     def filter_queryset(self, request, queryset, view):
