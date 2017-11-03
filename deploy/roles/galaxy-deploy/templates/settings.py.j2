@@ -142,7 +142,9 @@ CACHES = {
 }
 
 ELASTICSEARCH = {
-    'hosts': [{{ galaxy_es_node_list }}]
+    'default': {
+        'hosts': [{{ galaxy_es_node_list }}]
+    }
 }
 
 HAYSTACK_CONNECTIONS = {
