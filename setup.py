@@ -1,19 +1,18 @@
 #!/usr/bin/env python
-
 # (c) 2012-2016, Ansible by Red Hat
-# 
+#
 #  This file is part of Ansible Galaxy
-# 
+#
 #  Ansible Galaxy is free software: you can redistribute it and/or modify
 #  it under the terms of the Apache License as published by
 #  the Apache Software Foundation, either version 2 of the License, or
 #  (at your option) any later version.
-# 
+#
 #  Ansible Galaxy is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  Apache License for more details.
-# 
+#
 #  You should have received a copy of the Apache License
 #  along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
@@ -29,21 +28,24 @@ from setuptools.command.sdist import sdist as _sdist
 
 from galaxy import __version__
 
-build_timestamp = os.getenv("BUILD",datetime.datetime.now().strftime('-%Y%m%d%H%M'))
+build_timestamp = os.getenv(
+    "BUILD", datetime.datetime.now().strftime('-%Y%m%d%H%M'))
 
 # Paths we'll use later
 etcpath = "/etc/galaxy"
 homedir = "/var/lib/galaxy"
 if os.path.exists("/etc/debian_version"):
-    webconfig  = "/etc/apache2/conf.d"
+    webconfig = "/etc/apache2/conf.d"
 else:
-    webconfig  = "/etc/httpd/conf.d"
+    webconfig = "/etc/httpd/conf.d"
 
-if os.environ.get('USER','') == 'vagrant' or os.environ.get('SUDO_USER','') == 'vagrant':
+if (os.environ.get('USER', '') == 'vagrant'
+        or os.environ.get('SUDO_USER', '') == 'vagrant'):
     del os.link
 
 #####################################################################
 # Helper Functions
+
 
 def explode_glob_path(path):
     """Take a glob and hand back the full recursive expansion,
@@ -72,7 +74,7 @@ def proc_data_files(data_files):
     if hasattr(sys, 'real_prefix'):
         return result
 
-    for dir,files in data_files:
+    for dir, files in data_files:
         includes = []
         for item in files:
             includes.extend(explode_glob_path(item))
@@ -80,6 +82,7 @@ def proc_data_files(data_files):
     return result
 
 #####################################################################
+
 
 class sdist_galaxy(_sdist, object):
     '''
@@ -128,11 +131,12 @@ class sdist_galaxy(_sdist, object):
 
 setup(
     name='galaxy',
-    version=__version__.split("-")[0], # FIXME: Should keep full version here?
+    version=__version__.split("-")[0],  # FIXME: Should keep full version here?
     author='Ansible, Inc.',
     author_email='support@ansible.com',
     description='Galaxy: Find, reuse and share the best Ansible content.',
-    long_description='Galaxy is a web site and command line tool for creating and sharing Ansible roles.',
+    long_description='Galaxy is a web site and command line tool for '
+                     'creating and sharing Ansible roles.',
     license='Apache-2.0',
     keywords='ansible galaxy',
     url='http://github.com/ansible/galaxy',
@@ -155,14 +159,14 @@ setup(
         'Topic :: System :: Installation/Setup',
         'Topic :: System :: Systems Administration',
     ],
-    entry_points = {
+    entry_points={
         'console_scripts': ['galaxy-manage = galaxy:manage'],
     },
-    data_files = proc_data_files([
+    data_files=proc_data_files([
         ("%s" % homedir, ["config/wsgi.py",
                           "galaxy/static/favicon.ico"])]
     ),
-    options = {
+    options={
         'egg_info': {
             'tag_build': '-%s' % build_timestamp,
         },
@@ -171,7 +175,7 @@ setup(
             'release_build': 'clean --all egg_info -b "" sdist_galaxy',
         },
     },
-    cmdclass = {
+    cmdclass={
         'sdist_galaxy': sdist_galaxy,
     },
 )
