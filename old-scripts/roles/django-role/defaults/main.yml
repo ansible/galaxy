@@ -1,4 +1,0 @@
---- 
-django_python_modules:
-  - psycopg2
-  - flake8
