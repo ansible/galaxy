@@ -85,7 +85,7 @@ sdist: clean_dist ui_build
 	if [ "$(OFFICIAL)" = "yes" ] ; then \
 	   $(PYTHON) setup.py release_build; \
 	else \
-	   BUILD=$(BUILD) $(PYTHON) setup.py sdist_galaxy; \
+	   BUILD=$(BUILD) $(PYTHON) setup.py sdist; \
 	fi
 
 .PHONY: build/docker-build
