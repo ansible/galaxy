@@ -27,6 +27,7 @@ galaxy_hosts:
     galaxy: prod
     galaxy_group: pr_db
     galaxy_postgres: master
+    Ice: galaxy-prod
 
 # replication database
 - count: 1
@@ -43,6 +44,7 @@ galaxy_hosts:
     galaxy: prod
     galaxy_group: pr_db
     galaxy_postgres: slave
+    Ice: galaxy-prod
 
 # elasticsearch hosts
 - count: 1
@@ -53,6 +55,7 @@ galaxy_hosts:
     Name: galaxy-pr-es-01
     galaxy: prod
     galaxy_group: pr_elastic 
+    Ice: galaxy-prod
 
 - count: 1
   type: t2.medium
@@ -62,6 +65,7 @@ galaxy_hosts:
     Name: galaxy-pr-es-02
     galaxy: prod
     galaxy_group: pr_elastic 
+    Ice: galaxy-prod
 
 - count: 1
   type: t2.medium
@@ -71,6 +75,7 @@ galaxy_hosts:
     Name: galaxy-pr-es-03
     galaxy: prod
     galaxy_group: pr_elastic 
+    Ice: galaxy-prod
       
 # web hosts
 - count: 1
@@ -81,6 +86,7 @@ galaxy_hosts:
     Name: galaxy-pr-web-01
     galaxy: prod
     galaxy_group: pr_web 
+    Ice: galaxy-prod
 
 - count: 1
   type: t2.medium
@@ -90,6 +96,7 @@ galaxy_hosts:
     Name: galaxy-pr-web-02
     galaxy: prod
     galaxy_group: pr_web 
+    Ice: galaxy-prod
 
 # celery host
 - count: 1
@@ -101,6 +108,7 @@ galaxy_hosts:
     galaxy: prod
     galaxy_group: pr_celery
     galaxy_celery_queue: imports
+    Ice: galaxy-prod
 
 # celery host
 - count: 1
@@ -112,6 +120,7 @@ galaxy_hosts:
     galaxy: prod
     galaxy_group: pr_celery
     galaxy_celery_queue: user
+    Ice: galaxy-prod
 
 # celery host
 - count: 1
@@ -123,3 +132,4 @@ galaxy_hosts:
     galaxy: prod
     galaxy_group: pr_celery
     galaxy_celery_queue: admin
+    Ice: galaxy-prod
