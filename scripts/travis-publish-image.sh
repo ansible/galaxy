@@ -16,13 +16,16 @@ if [[ "$TRAVIS_BRANCH" == "develop" ]]; then
     echo "Pushing docker image: ansible/galaxy:develop"
     docker push ansible/galaxy:develop
 elif [[ "$TRAVIS_TAG" =~ $GALAXY_VERSION_TAG ]]; then
-    docker tag galaxy:latest "ansible/galaxy:$TRAVIS_TAG"
+    # Strip 'v' prefix from git tag
+    IMAGE_TAG=${TRAVIS_TAG#v}
+
+    docker tag galaxy:latest "ansible/galaxy:$IMAGE_TAG"
     docker tag galaxy:latest ansible/galaxy:latest
 
     docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    echo "Pushing docker image: ansible/galaxy:$TRAVIS_TAG"
-    docker push ansible/galaxy:$TRAVIS_TAG
-    echo "Updating ansible/galaxy:latest to ansible/galaxy:$TRAVIS_TAG"
+    echo "Pushing docker image: ansible/galaxy:$IMAGE_TAG"
+    docker push ansible/galaxy:$IMAGE_TAG
+    echo "Updating ansible/galaxy:latest to ansible/galaxy:$IMAGE_TAG"
     docker push ansible/galaxy:latest
 else
     echo "WARNING: Cannot publish image. Configuration not supported."
