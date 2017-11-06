@@ -234,7 +234,7 @@ class MeSerializer(BaseSerializer):
 
     class Meta:
         model = User
-        fields = ('id','authenticated','staff','username',)
+        fields = ('id', 'authenticated', 'staff', 'username',)
 
     def get_summary_fields(self, obj):
         if obj is None or isinstance(obj, AnonymousUser):
@@ -314,7 +314,7 @@ class UserDetailSerializer(BaseSerializer):
             'id',
             'username',
             'password',
-            'email','karma',
+            'email', 'karma',
             'staff',
             'full_name',
             'date_joined',
@@ -438,7 +438,7 @@ class PlatformSerializer(BaseSerializer):
 class RoleVersionSerializer(BaseSerializer):
     class Meta:
         model = RoleVersion
-        fields = ('id','name','release_date',)
+        fields = ('id', 'name', 'release_date',)
 
 
 class RepositorySerializer(BaseSerializer):
@@ -469,11 +469,11 @@ class RepositorySerializer(BaseSerializer):
         d = super(RepositorySerializer, self).get_summary_fields(obj)
         d['notification_secrets'] = [
             OrderedDict([
-                ('id',s.id),
-                ('github_user',s.github_user),
-                ('github_repo',s.github_repo),
-                ('source',s.source),
-                ('secret','******' + s.secret[-4:]),
+                ('id', s.id),
+                ('github_user', s.github_user),
+                ('github_repo', s.github_repo),
+                ('source', s.source),
+                ('secret', '******' + s.secret[-4:]),
             ]) for s in NotificationSecret.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo)
         ]
         d['roles'] = [
@@ -649,9 +649,9 @@ class ImportTaskSerializer(BaseSerializer):
             return {}
         d = super(ImportTaskSerializer, self).get_summary_fields(obj)
         d['role'] = OrderedDict([
-            ('id',obj.role.id),
-            ('namespace',obj.role.namespace),
-            ('name',obj.role.name),
+            ('id', obj.role.id),
+            ('namespace', obj.role.namespace),
+            ('name', obj.role.name),
             ('is_valid', obj.role.is_valid),
             ('active', obj.role.active),
         ])
@@ -665,9 +665,9 @@ class ImportTaskSerializer(BaseSerializer):
         ]) for n in obj.notifications.all().order_by('id')]
 
         d['task_messages'] = [OrderedDict([
-            ('id',g.id),
-            ('message_type',g.message_type),
-            ('message_text',g.message_text)
+            ('id', g.id),
+            ('message_type', g.message_type),
+            ('message_text', g.message_text)
         ]) for g in obj.messages.all().order_by('id')]
         return d
 
@@ -710,7 +710,7 @@ class ImportTaskLatestSerializer(BaseSerializer):
             ('commit_url', g.commit_url)
         ])
         d['role'] = OrderedDict([
-            ('id',r.id),
+            ('id', r.id),
             ('is_valid', r.is_valid),
         ])
         return d
@@ -733,9 +733,9 @@ class RoleListSerializer(BaseSerializer):
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid','github_user', 'github_repo',
+        fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid', 'github_user', 'github_repo',
                                 'github_branch', 'min_ansible_version', 'issue_tracker_url',
-                                'license','company', 'description', 'readme', 'readme_html',
+                                'license', 'company', 'description', 'readme', 'readme_html',
                                 'travis_status_url', 'stargazers_count', 'watchers_count',
                                 'forks_count', 'open_issues_count', 'commit', 'commit_message',
                                 'commit_url', 'download_count')
@@ -822,11 +822,11 @@ class RoleDetailSerializer(BaseSerializer):
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('role_type', 'namespace','is_valid','github_user','github_repo','github_branch',
-                                'min_ansible_version', 'issue_tracker_url', 'license','company','description',
+        fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid', 'github_user', 'github_repo', 'github_branch',
+                                'min_ansible_version', 'issue_tracker_url', 'license', 'company', 'description',
                                 'readme', 'readme_html', 'tags', 'travis_status_url', 'stargazers_count',
                                 'watchers_count', 'forks_count', 'open_issues_count', 'commit', 'commit_message',
-                                'commit_url', 'created', 'modified', 'download_count','imported')
+                                'commit_url', 'created', 'modified', 'download_count', 'imported')
 
     def to_native(self, obj):
         ret = super(RoleDetailSerializer, self).to_native(obj)
@@ -956,7 +956,7 @@ class RoleSearchSerializer(HaystackSerializer):
         request = self.context.get('request', None)
         if request is not None and request.user.is_authenticated():
             try:
-                Subscription.objects.get(owner=request.user,github_user=instance.github_user, github_repo=instance.github_repo)
+                Subscription.objects.get(owner=request.user, github_user=instance.github_user, github_repo=instance.github_repo)
                 return True
             except:
                 pass
@@ -967,7 +967,7 @@ class RoleSearchSerializer(HaystackSerializer):
         request = self.context.get('request', None)
         if request is not None:
             try:
-                Stargazer.objects.get(owner=request.user,github_user=instance.github_user, github_repo=instance.github_repo)
+                Stargazer.objects.get(owner=request.user, github_user=instance.github_user, github_repo=instance.github_repo)
                 return True
             except:
                 pass
@@ -982,7 +982,7 @@ class ElasticSearchDSLSerializer(serializers.BaseSerializer):
         result['id'] = obj.meta.id
         for key in obj:
             if key != 'meta':
-                if hasattr(obj[key],'__iter__'):
+                if hasattr(obj[key], '__iter__'):
                     result[key] = [itm for itm in obj[key]]
                 else:
                     result[key] = obj[key]

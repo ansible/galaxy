@@ -381,9 +381,9 @@ class ImportTaskList(ListCreateAPIView):
             raise ValidationError(dict(detail="Invalid request. Expecting github_user and github_repo."))
 
         response = dict(results=[])
-        if Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True).count() > 1:
+        if Role.objects.filter(github_user=github_user, github_repo=github_repo, active=True).count() > 1:
             # multiple roles match github_user/github_repo
-            for role in Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True):
+            for role in Role.objects.filter(github_user=github_user, github_repo=github_repo, active=True):
                 task = create_import_task(github_user, github_repo, github_reference, role, request.user, '', '', alternate_role_name)
                 import_role.delay(task.id)
                 serializer = self.get_serializer(instance=task)
@@ -430,7 +430,7 @@ class ImportTaskLatestList(ListAPIView):
     serializer_class = ImportTaskLatestSerializer
 
     def get_queryset(self):
-        return ImportTask.objects.values('owner_id','github_user','github_repo').annotate(last_id=Max('id')).order_by('owner_id','github_user','github_repo')
+        return ImportTask.objects.values('owner_id', 'github_user', 'github_repo').annotate(last_id=Max('id')).order_by('owner_id', 'github_user', 'github_repo')
 
 
 class UserRepositoriesList(SubListAPIView):
@@ -532,7 +532,7 @@ class StargazerList(ListCreateAPIView):
 
         star_count = gh_repo.stargazers_count + 1
 
-        for role in Role.objects.filter(github_user=github_user,github_repo=github_repo):
+        for role in Role.objects.filter(github_user=github_user, github_repo=github_repo):
             role.stargazers_count = star_count
             role.save()
 
@@ -590,7 +590,7 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
 
         star_count = gh_repo.stargazers_count - 1 if gh_repo.stargazers_count > 1 else 0
 
-        for role in Role.objects.filter(github_user=obj.github_user,github_repo=obj.github_repo):
+        for role in Role.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo):
             role.stargazers_count = star_count
             role.save()
 
@@ -639,7 +639,7 @@ class SubscriptionList(ListCreateAPIView):
         try:
             gh_user = gh_api.get_user()
         except GithubException, e:
-            msg = "GitHub API failed to return authorized user. {0} - {1}".format(e.data,e.status)
+            msg = "GitHub API failed to return authorized user. {0} - {1}".format(e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
         try:
@@ -664,7 +664,7 @@ class SubscriptionList(ListCreateAPIView):
         for s in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        for role in Role.objects.filter(github_user=github_user,github_repo=github_repo):
+        for role in Role.objects.filter(github_user=github_user, github_repo=github_repo):
             role.watchers_count = sub_count
             role.save()
 
@@ -731,7 +731,7 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
         for sub in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        for role in Role.objects.filter(github_user=obj.github_user,github_repo=obj.github_repo):
+        for role in Role.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo):
             role.watchers_count = sub_count
             role.save()
 
@@ -804,8 +804,8 @@ class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, ModelAccessPermission,)
 
     def put(self, request, *args, **kwargs):
-        source = request.data.get('source',None)
-        secret = request.data.get('secret',None)
+        source = request.data.get('source', None)
+        secret = request.data.get('secret', None)
         github_user = request.data.get('github_user', None)
         github_repo = request.data.get('github_repo', None)
 
@@ -1056,7 +1056,7 @@ class TopContributorsList(ListAPIView):
     serializer_class = TopContributorsSerializer
 
     def list(self, request, *args, **kwargs):
-        qs = Role.objects.values('namespace').annotate(count=Count('id')).order_by('-count','namespace')
+        qs = Role.objects.values('namespace').annotate(count=Count('id')).order_by('-count', 'namespace')
         page = self.paginate_queryset(qs)
         if page is not None:
             serializer = self.get_pagination_serializer(page)
@@ -1111,14 +1111,14 @@ class UserSearchView(APIView):
         page = 0
         page_size = 10
         order_fields = []
-        for key,value in request.GET.items():
-            if key in ('username','content','autocomplete'):
+        for key, value in request.GET.items():
+            if key in ('username', 'content', 'autocomplete'):
                 q = Q('match', username=value)
             if key == 'page':
                 page = int(value) - 1 if int(value) > 0 else 0
             if key == 'page_size':
                 page_size = int(value)
-            if key in ('order','order_by'):
+            if key in ('order', 'order_by'):
                 order_fields = value.split(',')
         if page_size > 1000:
             page_size = 1000
@@ -1139,18 +1139,18 @@ class PlatformsSearchView(APIView):
         page = 0
         page_size = 10
         order_fields = []
-        for key,value in request.GET.items():
+        for key, value in request.GET.items():
             if key == 'name':
                 q = Q('match', name=value)
             if key == 'releases':
                 q = Q('match', releases=value)
-            if key in ('content','autocomplete'):
+            if key in ('content', 'autocomplete'):
                 q = Q('match', autocomplete=value)
             if key == 'page':
                 page = int(value) - 1 if int(value) > 0 else 0
             if key == 'page_size':
                 page_size = int(value)
-            if key in ('order','order_by'):
+            if key in ('order', 'order_by'):
                 order_fields = value.split(',')
         if page_size > 1000:
             page_size = 1000
@@ -1171,8 +1171,8 @@ class TagsSearchView(APIView):
         page = 0
         page_size = 10
         order_fields = []
-        for key,value in request.GET.items():
-            if key in ('tag','content','autocomplete'):
+        for key, value in request.GET.items():
+            if key in ('tag', 'content', 'autocomplete'):
                 q = Q('match', tag=value)
             if key == 'page':
                 page = int(value) - 1 if int(value) > 0 else 0
@@ -1199,7 +1199,7 @@ class RemoveRole(APIView):
 
     def delete(self, request, *args, **kwargs):
 
-        gh_user = request.query_params.get('github_user',None)
+        gh_user = request.query_params.get('github_user', None)
         gh_repo = request.query_params.get('github_repo', None)
 
         if not gh_user or not gh_repo:
@@ -1245,15 +1245,15 @@ class RemoveRole(APIView):
             ('status', '')
         ])
 
-        roles = Role.objects.filter(github_user=gh_user,github_repo=gh_repo)
+        roles = Role.objects.filter(github_user=gh_user, github_repo=gh_repo)
         cnt = len(roles)
         if cnt == 0:
-            response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user,gh_repo)
+            response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user, gh_repo)
             return Response(response)
         elif cnt == 1:
-            response['status'] = "Role %s.%s deleted" % (gh_user,gh_repo)
+            response['status'] = "Role %s.%s deleted" % (gh_user, gh_repo)
         else:
-            response['status'] = "Deleted %d roles associated with %s/%s" % (len(roles),gh_user,gh_repo)
+            response['status'] = "Deleted %d roles associated with %s/%s" % (len(roles), gh_user, gh_repo)
 
         for role in roles:
             response['deleted_roles'].append({
@@ -1372,7 +1372,7 @@ class TokenView(APIView):
             gh_user = requests.get(settings.GITHUB_SERVER + '/user', headers=header)
             gh_user.raise_for_status()
             gh_user = gh_user.json()
-            if hasattr(gh_user,'message'):
+            if hasattr(gh_user, 'message'):
                 raise ValidationError(dict(detail=gh_user['message']))
         except:
             raise ValidationError(dict(detail="Error accessing GitHub with provided token."))

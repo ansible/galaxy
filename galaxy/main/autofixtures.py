@@ -118,9 +118,9 @@ if settings.SITE_ENV == 'DEV':
 
     class RoleVersionAutoFixture(AutoFixture):
         choices = []
-        for major in range(0,3):
-            for minor in range(0,9):
-                choices.append("v%d.%d" % (major,minor))
+        for major in range(0, 3):
+            for minor in range(0, 9):
+                choices.append("v%d.%d" % (major, minor))
         field_values = {
             'name': generators.ChoicesGenerator(values=choices),
             'loose_version': generators.StaticGenerator("0.0"),

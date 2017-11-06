@@ -15,7 +15,7 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-__all__ = ['DirtyMixin',]
+__all__ = ['DirtyMixin']
 
 ###################################################################################
 # A mixin object that lets us check if a model object has been modified
