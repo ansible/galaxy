@@ -178,7 +178,7 @@ def intro(request):
 
 def accounts_landing(request):
     if request.user.is_authenticated():
-        request.session["transient"] = {"status":"info","msg":"Redirected to your dashboard."}
+        request.session["transient"] = {"status": "info", "msg": "Redirected to your dashboard."}
         return HttpResponseRedirect("/accounts/profile/")
     else:
         context = build_standard_context(request)
@@ -252,9 +252,9 @@ class NamespaceListView(ListView):
     def get_queryset(self):
         author = self.request.GET.get('author')
         if author:
-            qs = Role.objects.filter(active=True,is_valid=True,namespace__icontains=author).order_by('namespace').distinct('namespace')
+            qs = Role.objects.filter(active=True, is_valid=True, namespace__icontains=author).order_by('namespace').distinct('namespace')
         else:
-            qs = Role.objects.filter(active=True,is_valid=True).order_by('namespace').distinct('namespace')
+            qs = Role.objects.filter(active=True, is_valid=True).order_by('namespace').distinct('namespace')
         return qs
 
     def get_context_data(self, **kwargs):
@@ -435,14 +435,14 @@ class RoleDetailView(DetailView):
 @login_required
 def accounts_connect(request):
     context = build_standard_context(request)
-    return render_to_response('socialaccount/connections.html',context)
+    return render_to_response('socialaccount/connections.html', context)
 
 
 @login_required
 def accounts_connect_success(request):
     context = build_standard_context(request)
     context["connected_to_github"] = True
-    return render_to_response('socialaccount/connections.html',context)
+    return render_to_response('socialaccount/connections.html', context)
 
 
 @login_required
@@ -504,7 +504,7 @@ def import_status_view(request):
 
     context["load_angular"] = True
     context["page_title"] = "My Imports"
-    return render_to_response('import_status.html',context)
+    return render_to_response('import_status.html', context)
 
 
 @login_required
@@ -536,4 +536,4 @@ def accounts_profile(request):
         context["transient"] = request.session["transient"]
         del request.session["transient"]
 
-    return render_to_response('account/profile.html',context)
+    return render_to_response('account/profile.html', context)

@@ -180,7 +180,7 @@ class Platform(CommonModelNameNotUnique):
     # a class representing the valid platforms a role supports '''
 
     class Meta:
-        ordering = ['name','release']
+        ordering = ['name', 'release']
 
     release = models.CharField(
         max_length   = 50,
@@ -238,7 +238,7 @@ class Role(CommonModelNameNotUnique):
     # a class representing a user role
 
     class Meta:
-        unique_together = ('namespace','name')
+        unique_together = ('namespace', 'name')
         ordering = ['namespace', 'name']
 
     #
@@ -458,7 +458,7 @@ class Role(CommonModelNameNotUnique):
     # other functions and properties
 
     def __unicode__(self):
-        return "%s.%s" % (self.namespace,self.name)
+        return "%s.%s" % (self.namespace, self.name)
 
     def get_last_import(self):
         try:
@@ -575,7 +575,7 @@ class RoleVersion(CommonModelNameNotUnique):
     # other functions and properties
 
     def __unicode__(self):
-        return "%s.%s-%s" % (self.role.namespace,self.role.name,self.name)
+        return "%s.%s-%s" % (self.role.namespace, self.role.name, self.name)
 
     def save(self, *args, **kwargs):
         # the value of score is based on the
@@ -587,7 +587,7 @@ class RoleVersion(CommonModelNameNotUnique):
 class RoleRating(PrimordialModel):
 
     class Meta:
-        unique_together = ('owner','role')
+        unique_together = ('owner', 'role')
 
     #
     # ------------------------------------------------------------------------------
@@ -620,7 +620,7 @@ class RoleRating(PrimordialModel):
     # other functions and properties
 
     def __unicode__(self):
-        return "%s.%s -> %s" % (self.role.namespace,self.role.name,self.score)
+        return "%s.%s -> %s" % (self.role.namespace, self.role.name, self.score)
 
     def save(self, *args, **kwargs):
         def clamp_range(value):
@@ -746,7 +746,7 @@ class ImportTask(PrimordialModel):
     )
 
     def __unicode__(self):
-        return "%d-%s" % (self.id,self.started.strftime("%Y%m%d-%H%M%S-%Z"))
+        return "%d-%s" % (self.id, self.started.strftime("%Y%m%d-%H%M%S-%Z"))
 
     def validate_char_lengths(self):
         for field in self._meta.get_fields():
@@ -769,13 +769,13 @@ class ImportTaskMessage(PrimordialModel):
     )
 
     def __unicode__(self):
-        return "%d-%s-%s" % (self.task.id,self.message_type,self.message_text)
+        return "%d-%s-%s" % (self.task.id, self.message_type, self.message_text)
 
 
 class NotificationSecret(PrimordialModel):
     class Meta:
-        ordering = ('source','github_user','github_repo')
-        unique_together = ('source','github_user','github_repo')
+        ordering = ('source', 'github_user', 'github_repo')
+        unique_together = ('source', 'github_user', 'github_repo')
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -801,7 +801,7 @@ class NotificationSecret(PrimordialModel):
     )
 
     def __unicode__(self):
-        return "%s-%s" % (self.owner.username,self.source)
+        return "%s-%s" % (self.owner.username, self.source)
 
     def repo_full_name(self):
         return "%s/%s" % (self.github_user, self.github_repo)
@@ -870,7 +870,7 @@ class Notification(PrimordialModel):
 class Repository (PrimordialModel):
     class Meta:
         unique_together = ('owner', 'github_user', 'github_repo')
-        ordering = ('github_user','github_repo')
+        ordering = ('github_user', 'github_repo')
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -891,7 +891,7 @@ class Repository (PrimordialModel):
 
 class Subscription (PrimordialModel):
     class Meta:
-        unique_together = ('owner','github_user','github_repo')
+        unique_together = ('owner', 'github_user', 'github_repo')
         ordering = ('owner', 'github_user', 'github_repo')
 
     owner = models.ForeignKey(
@@ -910,7 +910,7 @@ class Subscription (PrimordialModel):
 
 class Stargazer (PrimordialModel):
     class Meta:
-        unique_together = ('owner','github_user','github_repo')
+        unique_together = ('owner', 'github_user', 'github_repo')
         ordering = ('owner', 'github_user', 'github_repo')
 
     owner = models.ForeignKey(

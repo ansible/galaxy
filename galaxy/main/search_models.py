@@ -36,7 +36,7 @@ class BaseSearchModel(DocType):
         if not self.created_on:
             self.created_on = datetime.now()
         self.last_modified_on = datetime.now()
-        return super(BaseSearchModel,self).save(** kwargs)
+        return super(BaseSearchModel, self).save(** kwargs)
 
 
 class TagDoc(BaseSearchModel):

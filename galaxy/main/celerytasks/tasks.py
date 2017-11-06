@@ -358,7 +358,7 @@ def add_platforms(import_task, galaxy_info, role):
                     platform_list.append(u"%s-%s" % (name, p.release))
                 except:
                     add_message(import_task, u"ERROR", u"Invalid platform: %s-%s (skipping)" %
-                                (name,version))
+                                (name, version))
         except Exception as exc:
             add_message(import_task, u"ERROR", u"An unknown error occurred while adding platform: %s" % unicode(exc))
 
@@ -424,7 +424,7 @@ def add_tags(import_task, galaxy_info, role):
         else:
             for category in cats:
                 for cat in category.split(':'):
-                    if re.match('^[a-zA-Z0-9]+$',cat):
+                    if re.match('^[a-zA-Z0-9]+$', cat):
                         meta_tags.append(cat)
                     else:
                         add_message(import_task, u"WARNING", u"%s is not a valid tag" % cat)
@@ -436,7 +436,7 @@ def add_tags(import_task, galaxy_info, role):
         else:
             for tag in tags:
                 for t in tag.split(':'):
-                    if re.match('^[a-zA-Z0-9:]+$',t):
+                    if re.match('^[a-zA-Z0-9:]+$', t):
                         meta_tags.append(t)
                     else:
                         add_message(import_task, u"WARNING", u"'%s' is not a valid tag. Skipping." % t)
@@ -619,7 +619,7 @@ def import_role(task_id):
         add_message(import_task, u"INFO", u"Setting role name to %s" % import_task.alternate_role_name)
         role.name = import_task.alternate_role_name
 
-    role.description         = strip_input(galaxy_info.get("description",repo.description))
+    role.description         = strip_input(galaxy_info.get("description", repo.description))
     role.author              = strip_input(galaxy_info.get("author", ""))
     role.company             = strip_input(galaxy_info.get("company", ""))
     role.license             = strip_input(galaxy_info.get("license", ""))

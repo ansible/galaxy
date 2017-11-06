@@ -32,7 +32,7 @@ from galaxy.api.utils import get_object_or_400
 
 logger = logging.getLogger('galaxy.api.permissions')
 
-__all__ = ['ModelAccessPermission',]
+__all__ = ['ModelAccessPermission']
 
 
 class ModelAccessPermission(permissions.BasePermission):

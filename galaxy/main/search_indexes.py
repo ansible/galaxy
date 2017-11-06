@@ -49,8 +49,8 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     issue_tracker_url = indexes.CharField(model_attr='issue_tracker_url', default='', indexed=False)
     stargazers_count = indexes.IntegerField(model_attr='stargazers_count')
     watchers_count = indexes.IntegerField(model_attr='watchers_count')
-    forks_count = indexes.IntegerField(model_attr='forks_count',indexed=False)
-    open_issues_count = indexes.IntegerField(model_attr='open_issues_count',indexed=False)
+    forks_count = indexes.IntegerField(model_attr='forks_count', indexed=False)
+    open_issues_count = indexes.IntegerField(model_attr='open_issues_count', indexed=False)
     min_ansible_version = indexes.CharField(model_attr='min_ansible_version', default='1.2', indexed=False)
     user_is_subscriber = indexes.BooleanField(default=False, indexed=False)
     user_is_stargazer = indexes.BooleanField(default=False, indexed=False)
@@ -73,7 +73,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
         return obj.get_tags()
 
     def prepare_average_score(self, obj):
-        return round(obj.average_score,1)
+        return round(obj.average_score, 1)
 
     def prepare_platforms_autocomplete(self, obj):
         return "%s %s %s" % (

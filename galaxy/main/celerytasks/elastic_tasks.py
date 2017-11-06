@@ -79,7 +79,7 @@ def update_platforms(platforms, logger):
         try:
             with memcache_lock("platform_%s" % platform):
                 cnt = Role.objects.filter(active=True, is_valid=True, platforms__name=platform) \
-                    .order_by('namespace','name') \
+                    .order_by('namespace', 'name') \
                     .distinct('namespace', 'name').count()
                 es_platforms = PlatformDoc.search().query('match', name=platform_name).execute()
                 updated = False
