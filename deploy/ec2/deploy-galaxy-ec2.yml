@@ -29,7 +29,7 @@
         chdir: ../..
 
     - name: Create the dist file
-      command: make sdist
+      command: make build/dist
       args:
         chdir: ../..  
 

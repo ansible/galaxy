@@ -1,31 +1,9 @@
 GALAXY_RELEASE_IMAGE ?= galaxy
 GALAXY_RELEASE_TAG ?= latest
 
-PYTHON=python
-
 VENV_BIN=/var/lib/galaxy/venv/bin
-
-SITELIB=$(shell $(PYTHON) -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")
-
-DATE := $(shell date -u +%Y%m%d%H%M)
-
-VERSION=$(shell $(PYTHON) -c "from galaxy import __version__; print(__version__.split('-')[0])")
-RELEASE=$(shell $(PYTHON) -c "from galaxy import __version__; print(__version__.split('-')[1])")
-
-ifneq ($(OFFICIAL),yes)
-BUILD=dev$(DATE)
-SDIST_TAR_FILE=galaxy-$(VERSION)-$(BUILD).tar.gz
-SETUP_TAR_NAME=galaxy-setup-$(VERSION)-$(BUILD)
-else
-BUILD=
-SDIST_TAR_FILE=galaxy-$(VERSION).tar.gz
-SETUP_TAR_NAME=galaxy-setup-$(VERSION)
-RPM_PKG_RELEASE=$(RELEASE)
-DEB_BUILD_DIR=deb-build/galaxy-$(VERSION)
-DEB_PKG_RELEASE=$(VERSION)-$(RELEASE)
-endif
-
 DOCKER_COMPOSE=docker-compose -f ./scripts/compose-dev.yml -p galaxy
+
 
 .PHONY: help
 help:
@@ -57,6 +35,10 @@ migrate:
 	@echo "Run migrations"
 	python ./manage.py migrate --noinput
 
+.PHONY: collectstatic
+collectstatic:
+	python manage.py collectstatic --noinput --clear
+
 .PHONY: build_indexes
 build_indexes:
 	@echo "Rebuild Custom Indexes"
@@ -64,29 +46,26 @@ build_indexes:
 	@echo "Rebuild Search Index"
 	python ./manage.py rebuild_index --noinput
 
-.PHONY: clean_dist
-clean_dist:
-	rm -rf dist/*
-	rm -rf build rpm-build *.egg-info
-	rm -rf debian deb-build
-	rm -f galaxy/static/dist/*.js
-	find . -type f -regex ".*\.py[co]$$" -delete
+.PHONY: clean
+clean:
+	rm -rfv dist build *.egg-info
+	rm -rfv rpm-build debian deb-build
+	rm -fv galaxy/static/dist/*.js
+	find . -type f -name "*.pyc" -delete
 
 # ---------------------------------------------------------
 # Build targets
 # ---------------------------------------------------------
 
-.PHONY: ui_build
-ui_build:
+.PHONY: build/static
+build/static:
 	node node_modules/gulp/bin/gulp.js build
 
-.PHONY: sdist
-sdist: clean_dist ui_build
-	if [ "$(OFFICIAL)" = "yes" ] ; then \
-	   $(PYTHON) setup.py release_build; \
-	else \
-	   BUILD=$(BUILD) $(PYTHON) setup.py sdist; \
-	fi
+.PHONY: build/dist
+build/dist: build/static
+	python setup.py clean sdist bdist_wheel
+	GALAXY_VERSION=$$(python setup.py --version) \
+		&& ln -sf galaxy-$$GALAXY_VERSION-py2-none-any.whl dist/galaxy.whl
 
 .PHONY: build/docker-build
 build/docker-build:

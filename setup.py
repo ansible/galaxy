@@ -114,10 +114,4 @@ setup(
         ("%s" % homedir, ["config/wsgi.py",
                           "galaxy/static/favicon.ico"])]
     ),
-    options={
-        'aliases': {
-            'dev_build': 'clean --all egg_info sdist_galaxy',
-            'release_build': 'clean --all egg_info -b "" sdist_galaxy',
-        },
-    },
 )
