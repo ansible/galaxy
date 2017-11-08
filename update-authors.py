@@ -31,7 +31,7 @@ while log_entries:
 
 sorted_user_scores = sorted(user_scores.items(), key=lambda tpl: tpl[1], reverse=True)
 
-print("Ansible Container has been contribued to by the following authors:\n"
+print("Galaxy has been contribued to by the following authors:\n"
       "This list is automatically generated - please file an issue for corrections)\n")
 for author, _ in sorted_user_scores:
     print(author)

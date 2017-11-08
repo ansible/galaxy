@@ -4,13 +4,17 @@
 
 This is the source code behind Galaxy - https://galaxy.ansible.com.
 
+## Installing
+
+View the [install guide](./INSTALL.md) to setup and run your very own Galaxy site. 
+
 ## Roadmap
 
-To see what we're working on, and where we're headed, view the [ROADMAP.md](./ROADMAP.md)
+To see what we're working on, and where we're headed, view the [road map](./ROADMAP.md)
 
 ## Contributing
 
-If you're interested in contributing, please see [CONTRIBUTING.md](./CONTRIBUTING.md).
+If you're interested in jumping in and helping out, view the [contributing guide](./CONTRIBUTING.md).
 
 ## Branch Information
 

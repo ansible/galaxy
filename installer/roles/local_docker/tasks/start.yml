@@ -1,0 +1,8 @@
+# start.yml
+---
+- name: Start Galaxy
+  docker_service:
+    state: present
+    project_name: galaxy
+    project_src: '{{ tempdir.path }}'
+  register: startup
