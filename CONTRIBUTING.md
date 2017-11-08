@@ -251,10 +251,17 @@ into GitHub, going to Personal Settings, choosing `Oauth Applications`, and then
 - Set the *Homepage URL* to `http://localhost:8000`.
 - Set the *Authorization Callback URL* to `http://localhost:8000/accounts/github/login/callback/`.
 
-After you save the new application, access your local Galaxy admin site at [http://localhost:8000/admin](http://localhost:8000/admin), and log in using the admin us
-er you created above in [Create admin user](#create-admin-user)
+#### Log into your Galaxy admin site
 
-After logging into the admin site, you'll create a new social application. Start by finding `Social applications` at the bottom of the list, and clicking the *Add* button to its right. On the next screen, do the following to configure the new application:
+After you save the new application, access your local Galaxy admin site at [http://localhost:8000/admin](http://localhost:8000/admin), and log in using the admin user you created above in [Create admin user](#create-admin-user)
+
+#### Update the site name
+
+Click on *Sites*. You'll see one site defined, *example.com*. Click on *example.com* to modify it. On the next page, change both the *Domain Name* and *Display Name* from *example.com* to *localhost*. Click the *Save* button.
+
+#### Create a new social application 
+
+Next, create a new social application. Start by finding `Social applications` at the bottom of the list, on the admin site home page. Click the *Add* button to its right, and on the next page, complete the following to configure the new application:
 
 - Set the *provider* to `GitHub`
 - Enter `GitHub` as the *name*
