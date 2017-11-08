@@ -19,7 +19,7 @@ runserver:
 
 .PHONY: celery
 celery:
-	python manage.py celeryd -B --autoreload -Q 'celery,import_tasks,login_tasks'
+	python manage.py celeryd -B --autoreload -Q 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
 
 .PHONY: gulp
 gulp:
