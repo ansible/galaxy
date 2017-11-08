@@ -1,2 +1,0 @@
-ALTER TABLE main_role ENABLE TRIGGER all;
-ALTER TABLE main_repository ENABLE TRIGGER all;

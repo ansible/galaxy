@@ -41,6 +41,10 @@ COPY build/static /var/lib/galaxy/public/static
 RUN ${VENV_BIN}/pip install $(readlink -f /tmp/dist/galaxy.whl) \
     && rm -rf /tmp/dist
 
+# Copy test data
+RUN mkdir -p /galaxy/test-data
+COPY test-data/* /galaxy/test-data/
+
 WORKDIR /galaxy
 
 ENV DJANGO_SETTINGS_MODULE galaxy.settings.production
