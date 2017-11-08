@@ -11,10 +11,10 @@ RUN yum -y install wget \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
-# Install python
+# Install packages and create virtual environment
 ENV PIP_NO_CACHE_DIR off
 RUN yum -y install epel-release \
-    && yum -y install python python-pip \
+    && yum -y install git make python python-pip \
     && pip install virtualenv \
     && yum -y clean all \
     && rm -rf /var/cache/yum
@@ -32,10 +32,9 @@ COPY requirements.txt /tmp/requirements.txt
 ENV VENV_BIN /var/lib/galaxy/venv/bin
 RUN mkdir -p /var/lib/galaxy/ \
     && virtualenv /var/lib/galaxy/venv \
-    && ${VENV_BIN}/pip install -U pip \
+    && ${VENV_BIN}/pip install -U pip wheel \
     && ${VENV_BIN}/pip install -r /tmp/requirements.txt
 
-WORKDIR /galaxy
 
-# TODO: Replace with makefile target
+WORKDIR /galaxy
 CMD /galaxy/scripts/docker-release/build.sh
