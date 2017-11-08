@@ -22,6 +22,7 @@ This document provides a guide for installing Galaxy.
   - [Post build](#post-build)
   - [Accessing Galaxy](#accessing-galaxy)
   - [Configure GitHub Oauth](#configure-github-oauth)
+  - [Load platforms](#load-platforms)
   - [Stop containers](#stop-containers)
 
 ## Getting started
@@ -284,7 +285,7 @@ In order to access Galaxy using GitHub Oauth, you'll need to complete create an 
 You'll first need to create an admin user by performing the following:
 
 - Start an interactive sessoin on the web container by running the command: `docker exec -it galaxy_web_1 /bin/bash`
-- Within the web container run the following: `${VENV_BIN}/python manage.py createsuperuser`
+- Within the web container run the following: `${VENV_BIN}/galaxy-manage createsuperuser`
 - You will be prompted for a username, email address and password, and asked to confirm the password. The email address is not important, any value that looks like a valid email will work. 
 - Once the account is created, use the `exit` command to termintate the session. 
 
@@ -307,6 +308,21 @@ Within the local Galaxy admin site, you'll add a new social application, by clic
 Within the new social application, set the `Provider` to `GitHub`, and the `Name` to `GitHub`. From your Oauth application on GitHub, copy the `Client Id` and `Client Secret` to the `Client Id` and `Secret Key` fields respectively. Under `Sites`, move your site name from `Available Sites` to the list of `Chosen Sites`. And finally, click the `Save` button to save your changes.
 
 Log out of your admin account on your Galaxy site, return to the [home page](http://localhost), and click the Octocat logo to log in using your GitHub account.
+
+### Load platforms
+
+If you want to poplulate the Platforms data, run the following:
+
+```bash
+# Start an interactive session with the web container
+$ docker exec -it galaxy_web_1 /bin/bash 
+
+# Set the working directory
+$ cd /galaxy/test-data
+
+# Load platforms
+$ ${VENV_BIN}/galaxy-manage loaddata platform.json
+```
 
 ### Stop containers
 
