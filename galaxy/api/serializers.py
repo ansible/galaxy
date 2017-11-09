@@ -34,6 +34,7 @@ from drf_haystack.serializers import HaystackSerializer
 from galaxy.main.search_indexes import RoleIndex
 from galaxy.api.utils import html_decode
 from galaxy.main.models import (Platform,
+                                CloudPlatform,
                                 Category,
                                 Tag,
                                 Role,
@@ -433,6 +434,11 @@ class PlatformSerializer(BaseSerializer):
     class Meta:
         model = Platform
         fields = BASE_FIELDS + ('release',)
+
+
+class CloudPlatformSerializer(BaseSerializer):
+    class Meta:
+        model = CloudPlatform
 
 
 class RoleVersionSerializer(BaseSerializer):

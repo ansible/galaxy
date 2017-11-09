@@ -90,6 +90,7 @@ from galaxy.api.serializers import (MeSerializer,
                                     CategorySerializer,
                                     TagSerializer,
                                     PlatformSerializer,
+                                    CloudPlatformSerializer,
                                     RoleVersionSerializer,
                                     RepositorySerializer,
                                     TopContributorsSerializer,
@@ -103,6 +104,7 @@ from galaxy.api.serializers import (MeSerializer,
                                     ElasticSearchDSLSerializer)
 
 from galaxy.main.models import (Platform,
+                                CloudPlatform,
                                 Category,
                                 Tag,
                                 Role,
@@ -275,6 +277,17 @@ class PlatformList(ListAPIView):
 class PlatformDetail(RetrieveAPIView):
     model = Platform
     serializer_class = PlatformSerializer
+
+
+class CloudPlatformList(ListAPIView):
+    model = CloudPlatform
+    serializer_class = CloudPlatformSerializer
+    paginate_by = None
+
+
+class CloudPlatformDetail(RetrieveAPIView):
+    model = CloudPlatform
+    serializer_class = CloudPlatformSerializer
 
 
 class RoleDependenciesList(SubListAPIView):
