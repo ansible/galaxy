@@ -229,8 +229,7 @@ class Video(PrimordialModel):
     url = models.CharField(
         max_length=256,
         blank=False,
-        null=False,
-        unique=True
+        null=False
     )
     url.help_text = ""
 
