@@ -232,6 +232,15 @@ class Video(PrimordialModel):
         null=False,
         unique=True
     )
+    url.help_text = ""
+
+    role = models.ForeignKey(
+        'Role',
+        related_name='videos',
+        on_delete=models.CASCADE,
+        null=True
+    )
+    role.help_text = ""
 
 
 class Role(CommonModelNameNotUnique):
@@ -277,15 +286,6 @@ class Role(CommonModelNameNotUnique):
         editable     = False,
     )
     categories.help_text = ""
-
-    videos = models.ManyToManyField(
-        'Video',
-        related_name = 'videos',
-        verbose_name = 'videos',
-        blank        = True,
-        editable     = False
-    )
-    videos.hel_text = ""
 
     #
     # ------------------------------------------------------------------------------
