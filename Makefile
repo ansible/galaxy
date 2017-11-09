@@ -4,7 +4,6 @@ GALAXY_RELEASE_TAG ?= latest
 VENV_BIN=/var/lib/galaxy/venv/bin
 DOCKER_COMPOSE=docker-compose -f ./scripts/compose-dev.yml -p galaxy
 
-
 .PHONY: help
 help:
 	@echo "Prints help"
@@ -59,7 +58,11 @@ clean:
 
 .PHONY: build/static
 build/static:
-	node node_modules/gulp/bin/gulp.js build
+	if hash gulp 2>/dev/null; then \
+		gulp build; \
+	else \
+		node node_modules/gulp/bin/gulp.js build; \
+	fi
 
 .PHONY: build/dist
 build/dist: build/static
