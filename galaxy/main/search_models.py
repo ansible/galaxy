@@ -23,8 +23,8 @@ __all__ = ["TagDoc", "PlatformDoc", "UserDoc"]
 
 autocomplete = analyzer(
     'autocomplete',
-    tokenizer = 'standard',
-    filter = ["lowercase", token_filter('autocomplete_filter', 'edgeNGram', min_gram=2, max_gram=20)]
+    tokenizer='standard',
+    filter=["lowercase", token_filter('autocomplete_filter', 'edgeNGram', min_gram=2, max_gram=20)]
 )
 
 

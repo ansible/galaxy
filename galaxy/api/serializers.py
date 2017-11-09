@@ -117,14 +117,14 @@ def readme_to_html(obj):
 
 class BaseSerializer(serializers.ModelSerializer):
     # add the URL and related resources
-    url            = serializers.SerializerMethodField()
-    related        = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
+    related = serializers.SerializerMethodField()
     summary_fields = serializers.SerializerMethodField()
 
     # make certain fields read only
-    created       = serializers.SerializerMethodField()
-    modified      = serializers.SerializerMethodField()
-    active        = serializers.SerializerMethodField()
+    created = serializers.SerializerMethodField()
+    modified = serializers.SerializerMethodField()
+    active = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(BaseSerializer, self).__init__(*args, **kwargs)
@@ -244,8 +244,8 @@ class MeSerializer(BaseSerializer):
 
 
 class UserListSerializer(BaseSerializer):
-    staff          = serializers.ReadOnlyField(source='is_staff')
-    email          = serializers.SerializerMethodField()
+    staff = serializers.ReadOnlyField(source='is_staff')
+    email = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -266,10 +266,10 @@ class UserListSerializer(BaseSerializer):
             return {}
         res = super(UserListSerializer, self).get_related(obj)
         res.update(dict(
-            subscriptions = reverse('api:user_subscription_list', args=(obj.pk,)),
-            starred = reverse('api:user_starred_list', args=(obj.pk,)),
-            repositories = reverse('api:user_repositories_list', args=(obj.pk,)),
-            secrets = reverse('api:user_notification_secret_list', args=(obj.pk,)),
+            subscriptions=reverse('api:user_subscription_list', args=(obj.pk,)),
+            starred=reverse('api:user_starred_list', args=(obj.pk,)),
+            repositories=reverse('api:user_repositories_list', args=(obj.pk,)),
+            secrets=reverse('api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
@@ -305,8 +305,8 @@ class UserDetailSerializer(BaseSerializer):
         default='',
         help_text='Write-only field used to change the password.'
     )
-    staff          = serializers.ReadOnlyField(source='is_staff')
-    email          = serializers.SerializerMethodField()
+    staff = serializers.ReadOnlyField(source='is_staff')
+    email = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -353,10 +353,10 @@ class UserDetailSerializer(BaseSerializer):
             return {}
         res = super(UserDetailSerializer, self).get_related(obj)
         res.update(dict(
-            repositories = reverse('api:user_repositories_list', args=(obj.pk,)),
-            subscriptions = reverse('api:user_subscription_list', args=(obj.pk,)),
-            starred = reverse('api:user_starred_list', args=(obj.pk,)),
-            secrets = reverse('api:user_notification_secret_list', args=(obj.pk,)),
+            repositories=reverse('api:user_repositories_list', args=(obj.pk,)),
+            subscriptions=reverse('api:user_subscription_list', args=(obj.pk,)),
+            starred=reverse('api:user_starred_list', args=(obj.pk,)),
+            secrets=reverse('api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
@@ -459,7 +459,7 @@ class RepositorySerializer(BaseSerializer):
             return {}
         res = super(RepositorySerializer, self).get_related(obj)
         res.update(dict(
-            owner = reverse('api:user_detail', args=(obj.owner.id,)),
+            owner=reverse('api:user_detail', args=(obj.owner.id,)),
         ))
         return res
 
@@ -585,9 +585,9 @@ class NotificationSerializer(BaseSerializer):
             return {}
         res = super(NotificationSerializer, self).get_related(obj)
         res.update(dict(
-            roles = reverse('api:notification_roles_list', args=(obj.pk,)),
-            imports = reverse('api:notification_imports_list', args=(obj.pk,)),
-            owner = reverse('api:user_detail', args=(obj.owner.id,)),
+            roles=reverse('api:notification_roles_list', args=(obj.pk,)),
+            imports=reverse('api:notification_imports_list', args=(obj.pk,)),
+            owner=reverse('api:user_detail', args=(obj.owner.id,)),
         ))
         return res
 
@@ -801,9 +801,9 @@ class RoleTopSerializer(BaseSerializer):
             return {}
         res = super(RoleTopSerializer, self).get_related(obj)
         res.update(dict(
-            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
-            versions = reverse('api:role_versions_list', args=(obj.pk,)),
+            dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
+            imports=reverse('api:role_import_task_list', args=(obj.pk,)),
+            versions=reverse('api:role_versions_list', args=(obj.pk,)),
         ))
         return res
 
@@ -818,7 +818,7 @@ class RoleTopSerializer(BaseSerializer):
 
 class RoleDetailSerializer(BaseSerializer):
     readme_html = serializers.SerializerMethodField()
-    tags        = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
@@ -837,9 +837,9 @@ class RoleDetailSerializer(BaseSerializer):
             return {}
         res = super(RoleDetailSerializer, self).get_related(obj)
         res.update(dict(
-            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
-            versions = reverse('api:role_versions_list', args=(obj.pk,)),
+            dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
+            imports=reverse('api:role_import_task_list', args=(obj.pk,)),
+            versions=reverse('api:role_versions_list', args=(obj.pk,)),
         ))
         return res
 

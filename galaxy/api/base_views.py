@@ -416,7 +416,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         #        which would probably be better moved into
         #        a new class and overridden completely
         is_role_rating = isinstance(parent, RoleRating)
-        #logger.debug('SubListCreateAPIView.attach: parent=%s', parent.__class__.__name__)
+        # logger.debug('SubListCreateAPIView.attach: parent=%s', parent.__class__.__name__)
 
         # Create the sub object if an ID is not provided.
         # We never create objects when attaching to a RoleRating
@@ -468,7 +468,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         # FIXME: the base view for objects with mutually exclusive
         #        relationship should probably be split off into a
         #        new view, which codifies the mutually exclusive things
-        #if attached and is_role_rating:
+        # if attached and is_role_rating:
             """
             Up/down votes are mutually exclusive. If we've attached
             the user to one of the lists, we need to make sure we
@@ -503,7 +503,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         relationship = getattr(parent, self.relationship)
         sub = get_object_or_400(self.model, pk=sub_id)
 
-        #if not request.user.can_access(self.parent_model, 'unattach', parent,
+        # if not request.user.can_access(self.parent_model, 'unattach', parent,
         if not check_user_access(request.user, self.parent_model, 'unattach',
                                  parent, sub, self.relationship):
             raise PermissionDenied()

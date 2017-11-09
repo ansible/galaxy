@@ -50,24 +50,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
                                       _('Enter a valid username.'),
                                       'invalid')
         ])
-    full_name       = models.CharField(_('full name'), max_length=254, blank=True)
-    short_name      = models.CharField(_('short name'), max_length=30, blank=True)
-    email           = models.EmailField(_('email address'), max_length=254, unique=True)
-    is_staff        = models.BooleanField(
+    full_name = models.CharField(_('full name'), max_length=254, blank=True)
+    short_name = models.CharField(_('short name'), max_length=30, blank=True)
+    email = models.EmailField(_('email address'), max_length=254, unique=True)
+    is_staff = models.BooleanField(
         _('staff status'),
         default=False,
         help_text=_('Designates whether the user can log into this admin site.'))
-    is_active       = models.BooleanField(
+    is_active = models.BooleanField(
         _('active'),
         default=True,
         db_index=True,
         help_text=_('Designates whether this user should be treated as '
                     'active. Unselect this instead of deleting accounts.'))
-    date_joined     = models.DateTimeField(_('date joined'), default=timezone.now)
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    karma           = models.IntegerField(default = 0, db_index = True)
-    github_avatar   = models.CharField(_('github avatar'), max_length=254, blank=True)
-    github_user     = models.CharField(_('github user'), max_length=254, blank=True)
+    karma = models.IntegerField(default=0, db_index=True)
+    github_avatar = models.CharField(_('github avatar'), max_length=254, blank=True)
+    github_user = models.CharField(_('github user'), max_length=254, blank=True)
     cache_refreshed = models.BooleanField(_('cache refreshed'), default=False)
 
     objects = UserManager()
@@ -87,7 +87,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
 
         if self.is_active:
             if 'username' in self._meta.get_all_field_names():
-                self.name   = "_deleted_%s_%s" % (timezone.now().isoformat(), self.username)
+                self.name = "_deleted_%s_%s" % (timezone.now().isoformat(), self.username)
             self.is_active = False
             if save:
                 self.save()
