@@ -18,9 +18,6 @@
 from django.contrib import admin
 from galaxy.main.models import Platform, Role, RoleVersion
 
-###################################################################################
-# Admin Models
-
 
 class PlatformAdmin(admin.ModelAdmin):
     pass
@@ -37,19 +34,3 @@ class RoleVersionAdmin(admin.ModelAdmin):
 admin.site.register(Platform, PlatformAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(RoleVersion, RoleVersionAdmin)
-
-# class RoleImportAdmin(admin.ModelAdmin):
-#    pass
-# admin.site.register(RoleImport, RoleImportAdmin)
-
-# class RoleRatingAdmin(admin.ModelAdmin):
-#    pass
-# admin.site.register(RoleRating, RoleRatingAdmin)
-
-# class CategoryAdmin(admin.ModelAdmin):
-#    pass
-# admin.site.register(Category, CategoryAdmin)
-
-# class UserAliasAdmin(admin.ModelAdmin):
-#    pass
-# admin.site.register(UserAlias, UserAliasAdmin)
