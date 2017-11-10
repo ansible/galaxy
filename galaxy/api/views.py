@@ -143,7 +143,9 @@ def filter_rating_queryset(qs):
     )
 
 
-def create_import_task(github_user, github_repo, github_branch, role, user, travis_status_url='', travis_build_url='', alternate_role_name=None):
+def create_import_task(
+        github_user, github_repo, github_branch, role, user,
+        travis_status_url='', travis_build_url='', alternate_role_name=None):
     task = ImportTask.objects.create(
         github_user=github_user,
         github_repo=github_repo,
@@ -378,13 +380,21 @@ class ImportTaskList(ListCreateAPIView):
         name = alternate_role_name if alternate_role_name else github_repo
 
         if not github_user or not github_repo:
-            raise ValidationError(dict(detail="Invalid request. Expecting github_user and github_repo."))
+            # FIXME(cutwater): Why dict is needed?
+            raise ValidationError(dict(
+                detail="Invalid request. Expecting github_user "
+                       "and github_repo."))
 
         response = dict(results=[])
         if Role.objects.filter(github_user=github_user, github_repo=github_repo, active=True).count() > 1:
             # multiple roles match github_user/github_repo
-            for role in Role.objects.filter(github_user=github_user, github_repo=github_repo, active=True):
-                task = create_import_task(github_user, github_repo, github_reference, role, request.user, '', '', alternate_role_name)
+            for role in Role.objects.filter(
+                    github_user=github_user, github_repo=github_repo,
+                    active=True):
+                task = create_import_task(
+                    github_user, github_repo, github_reference, role,
+                    request.user, travis_status_url='', travis_build_url='',
+                    alternate_role_name=alternate_role_name)
                 import_role.delay(task.id)
                 serializer = self.get_serializer(instance=task)
                 response['results'].append(serializer.data)
@@ -401,7 +411,10 @@ class ImportTaskList(ListCreateAPIView):
                     'is_valid': False,
                 }
             )
-            task = create_import_task(github_user, github_repo, github_reference, role, request.user, '', '', alternate_role_name)
+            task = create_import_task(
+                github_user, github_repo, github_reference, role, request.user,
+                travis_status_url='', travis_build_url='',
+                alternate_role_name=alternate_role_name)
             serializer = self.get_serializer(instance=task)
             response['results'].append(serializer.data)
         return Response(response, status=status.HTTP_201_CREATED, headers=self.get_success_headers(response))
