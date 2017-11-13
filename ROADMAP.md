@@ -1,6 +1,16 @@
 # Roadmap
 
-## Release 2.3 (Current Development)
+## [Release 2.4](https://github.com/ansible/galaxy/milestone/2) (Current Development)
+
+- Determine scope of supporting private GitHub repos [#161](https://github.com/ansible/galaxy/issues/161)
+- Add OpenShift as an install option [#160](https://github.com/ansible/galaxy/issues/160)
+- Role type indicator [#158](https://github.com/ansible/galaxy/issues/158)
+- Cloud platforms [#157](https://github.com/ansible/galaxy/issues/157)
+- Dynamic home page content [#156](https://github.com/ansible/galaxy/issues/156) 
+- Download button [#155](https://github.com/ansible/galaxy/issues/156)
+- Make it easier to know 'role relavance' [#36](https://github.com/ansible/galaxy/issues/36)
+
+## Release 2.3 (Completed)
 
 - Cleanup and simplify the development container build and run workflow
 - Create a container release workflow that results in pre-baked images hosted on Docker Hub
@@ -11,7 +21,3 @@
 - Support adding embedded video to the detail page of a 'role' via meta data. Landed in [PR #94](https://github.com/ansible/galaxy/pull/94)
 
 
-## Release 2.4 (Future)
-
-- Investigate replacing Galaxy home page with an OpenSource CMS 
-- Make it easy to add custom branding
