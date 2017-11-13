@@ -21,8 +21,9 @@ from django.core.management.base import BaseCommand
 from elasticsearch_dsl import Index
 
 # local
-from galaxy.main.models import Platform, Tag, Role
-from galaxy.main.search_models import TagDoc, PlatformDoc, UserDoc
+from galaxy.main.models import Platform, CloudPlatform, Tag, Role
+from galaxy.main.search_models import (
+    TagDoc, CloudPlatformDoc, PlatformDoc, UserDoc)
 
 
 class Command(BaseCommand):
@@ -31,6 +32,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.rebuild_tags()
         self.rebuild_platforms()
+        self.rebuild_cloud_platforms()
         self.rebuild_users()
 
     def rebuild_users(self):
@@ -75,6 +77,27 @@ class Command(BaseCommand):
                                   .distinct('namespace', 'name').count(),
                 alias=alias_list,
                 autocomplete="%s %s %s" % (search_name, ' '.join(release_list), ' '.join(alias_list))
+            )
+            doc.save()
+
+    def rebuild_cloud_platforms(self):
+        index = Index('galaxy_cloud_platforms')
+
+        index.doc_type(CloudPlatformDoc)
+        index.delete(ignore=404)
+        index.create()
+
+        for platform in CloudPlatform.objects.filter(active=True).all():
+            doc = CloudPlatformDoc(
+                name=platform.name,
+                roles=(
+                    Role.objects
+                        .filter(
+                            active=True, is_valid=True,
+                            cloud_platforms__name=platform.name)
+                        .order_by('namespace', 'name')
+                        .distinct('namespace', 'name').count()),
+                autocomplete=platform.name,
             )
             doc.save()
 

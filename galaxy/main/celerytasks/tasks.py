@@ -818,9 +818,9 @@ def import_role(task_id):
     warning_count = import_task.messages.filter(message_type="WARNING").count()
     import_state = u"SUCCESS" if error_count == 0 else u"FAILED"
     add_message(import_task, u"INFO", u"Import completed")
-    add_message(import_task, import_state, u"Status %s : warnings=%d errors=%d" % (import_state,
-                                                                                   warning_count,
-                                                                                   error_count))
+    add_message(import_task, import_state,
+                u"Status %s : warnings=%d errors=%d" % (
+                    import_state, warning_count, error_count))
 
     try:
         import_task.state = import_state
@@ -836,11 +836,13 @@ def import_role(task_id):
     # Update ES indexes
     update_custom_indexes.delay(username=role.namespace,
                                 tags=role.get_tags(),
-                                platforms=role.get_unique_platforms())
+                                platforms=role.get_unique_platforms(),
+                                cloud_platforms=role.get_cloud_platforms())
     return True
 
 
-@task(name="galaxy.main.celerytasks.tasks.refresh_user_repos", throws=(Exception,))
+@task(name="galaxy.main.celerytasks.tasks.refresh_user_repos",
+      throws=(Exception,))
 @transaction.atomic
 def refresh_user_repos(user, token):
     logger.info(u"Refreshing User Repo Cache for {}".format(user.username))

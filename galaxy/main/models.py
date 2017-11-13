@@ -491,6 +491,9 @@ class Role(CommonModelNameNotUnique):
     def get_unique_platforms(self):
         return [platform.name for platform in self.platforms.filter(active=True).order_by('name').distinct('name')]
 
+    def get_cloud_platforms(self):
+        return [cp.name for cp in self.cloud_platforms.filter(active=True)]
+
     def get_unique_platform_versions(self):
         return [platform.release for platform in self.platforms.filter(active=True).order_by('release').distinct('release')]
 
