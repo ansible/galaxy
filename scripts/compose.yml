@@ -44,7 +44,7 @@ services:
       - POSTGRES_PASSWORD=galaxy
 
   elastic:
-    image: elasticsearch:2.4.1
+    image: 'ansible/galaxy-elasticsearch:2.4.6'
 
   memcache:
     image: memcached:latest

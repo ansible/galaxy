@@ -18,14 +18,14 @@ services:
       - rabbitmq
 
   postgres:
-    image: postgres:9.5.4
+    image: centos/postgresql-95-centos7 
     environment:
-      - POSTGRES_DB=galaxy
-      - POSTGRES_USER=galaxy
-      - POSTGRES_PASSWORD=galaxy
+      - POSTGRESQL_DATABASE=galaxy
+      - POSTGRESQL_USER=galaxy
+      - POSTGRESQL_PASSWORD=galaxy
 
   elastic:
-    image: elasticsearch:2.4.1
+    image: 'ansible/galaxy-elasticsearch:2.4.6'
 
   memcache:
     image: memcached:latest

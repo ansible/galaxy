@@ -6,4 +6,13 @@
     - role: image_build
       when: "dockerhub_base is not defined"
 
+    - role: image_push
+
     - role: local_docker
+      when: openshift_project is not defined
+
+    - role: ansible.kubernetes-modules
+      when: openshift_project is defined
+     
+    - role: openshift
+      when: openshift_project is defined

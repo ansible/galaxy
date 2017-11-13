@@ -1,0 +1,123 @@
+# service.yml
+---
+- name: Create web service
+  k8s_v1_service:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+              name: web
+              namespace: '{{ openshift_project }}'
+              labels:
+                  app: galaxy
+                  service: web
+          spec:
+              selector:
+                  app: galaxy
+                  service: web
+              ports:
+                - protocol: TCP
+                  targetPort: 8000
+                  name: port-8000-tcp
+                  port: 8000
+
+- name: Create postgres service
+  k8s_v1_service:
+      state: present
+      force: false
+      resource_definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+              name: postgres
+              namespace: '{{ openshift_project }}'
+              labels:
+                  app: galaxy
+                  service: postgres
+          spec:
+              selector:
+                  app: galaxy
+                  service: postgres
+              ports:
+                - protocol: TCP
+                  targetPort: 5432
+                  name: port-5432-tcp
+                  port: 5432
+  when: 'pg_hostname is not defined'
+
+- name: Create elastic service
+  k8s_v1_service:
+      state: present
+      force: false
+      resource_definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+              name: elastic
+              namespace: '{{ openshift_project }}'
+              labels:
+                  app: galaxy
+                  service: elastic
+          spec:
+              selector:
+                  app: galaxy
+                  service: elastic
+              ports:
+                - protocol: TCP
+                  targetPort: 9200
+                  name: port-9200-tcp
+                  port: 9200
+                - protocol: TCP
+                  targetPort: 9300
+                  name: port-9300-tcp
+                  port: 9300
+  when: 'elastic_hostname is not defined'
+
+- name: Create memcache service
+  k8s_v1_service:
+      state: present
+      force: false
+      resource_definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+              name: memcache
+              namespace: '{{ openshift_project }}'
+              labels:
+                  app: galaxy
+                  service: memcache
+          spec:
+              selector:
+                  app: galaxy
+                  service: memcache
+              ports:
+                - protocol: TCP
+                  targetPort: 11211
+                  name: port-11211-tcp
+                  port: 11211
+
+- name: Create rabbitmq service
+  k8s_v1_service:
+      state: present
+      force: false
+      resource_definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+              name: rabbitmq
+              namespace: '{{ openshift_project }}'
+              labels:
+                  app: galaxy
+                  service: rabbitmq
+          spec:
+              selector:
+                  app: galaxy
+                  service: rabbitmq
+              ports:
+                - protocol: TCP
+                  targetPort: 5672
+                  name: port-5672-tcp
+                  port: 5672

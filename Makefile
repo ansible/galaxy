@@ -52,6 +52,10 @@ clean:
 	rm -fv galaxy/static/dist/*.js
 	find . -type f -name "*.pyc" -delete
 
+.PHONT: createsuperuser
+	@echo Create super user
+	${VENV_BIN}/python ./manage.py createsuperuser
+
 # ---------------------------------------------------------
 # Build targets
 # ---------------------------------------------------------

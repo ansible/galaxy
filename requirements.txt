@@ -14,7 +14,7 @@ django-site-maintenance
 django-debug-toolbar
 django-haystack
 drf-haystack==1.5.6
-elasticsearch==1.7.0
+elasticsearch==2.4.1
 elasticsearch-dsl==2.2.0
 PyGithub
 markdown==2.4.1
