@@ -63,6 +63,11 @@
                                         <td class="value na" ng-if="!role.platforms.length">NA</td>
                                     </tr>
                                     <tr class="stat-row">
+                                        <td class="key">Clouds</td>
+                                        <td class="value" ng-if="role.cloud_platforms.length" ng-bind="role.cloud_platforms.join(', ')"></td>
+                                        <td class="value na" ng-if="!role.cloud_platforms.length">NA</td>
+                                    </tr>
+                                    <tr class="stat-row">
                                         <td class="key">Tags</td>
                                         <td class="value" ng-if="role.tags.length" ng-bind="role.tags.join(', ') + ' '"></td>
                                         <td class="value na" ng-if="!role.tags.length">NA</td>
