@@ -98,11 +98,13 @@ def get_meta_data(repo):
 
 
 def update_user_repos(github_repos, user):
-    '''
-    Refresh user repositories. Used by refresh_user_repos task and galaxy.api.views.RefreshUserRepos.
+    """
+    Refresh user repositories. Used by refresh_user_repos task and
+    galaxy.api.views.RefreshUserRepos.
     Returns user.repositories.all() queryset.
-    '''
-    logger.info("Starting update_user_repos for user {0}".format(user.username))
+    """
+    logger.info("Starting update_user_repos for user {0}"
+                .format(user.username))
     repo_dict = dict()
     for repo in github_repos:
         if not repo.private:
@@ -110,7 +112,8 @@ def update_user_repos(github_repos, user):
             if meta_data:
                 logger.info("Create or Update repo {0}".format(repo.full_name))
                 name = repo.full_name.split('/')
-                cnt = Role.objects.filter(github_user=name[0], github_repo=name[1]).count()
+                cnt = Role.objects.filter(
+                    github_user=name[0], github_repo=name[1]).count()
                 enabled = cnt > 0
                 user.repositories.update_or_create(
                     github_user=name[0],
@@ -129,16 +132,19 @@ def update_user_repos(github_repos, user):
             logger.info("Remove from cache {0}".format(full_name))
             repo.delete()
 
-    logger.info("Finished update_user_repos for user {0}".format(user.username))
+    logger.info("Finished update_user_repos for user {0}"
+                .format(user.username))
 
 
 def refresh_existing_user_repos(token, github_user):
-    '''
+    """
     Remove repos belonging to the user that are no longer accessible in GitHub,
     or update github_user, github_repo, if it has changed.
-    '''
-    logger.info("Starting refresh_existing_user_repos for GitHub user {0}".format(github_user.login))
+    """
+    logger.info("Starting refresh_existing_user_repos for GitHub user {0}"
+                .format(github_user.login))
     remove_roles = []
+
     for role in Role.objects.filter(github_user=github_user.login):
         full_name = "{0}/{1}".format(role.github_user, role.github_repo)
         try:
@@ -147,12 +153,10 @@ def refresh_existing_user_repos(token, github_user):
                 continue
             repo_name = repo['name']
             repo_owner = repo['owner']['login']
-            if role.github_repo.lower() != repo_name.lower() or role.github_user.lower() != repo_owner.lower():
+            if (role.github_repo.lower() != repo_name.lower()
+                    or role.github_user.lower() != repo_owner.lower()):
                 logger.info(u'UPDATED: {0} to {1}/{2}'.format(
-                    full_name,
-                    repo_owner,
-                    repo_name
-                ))
+                    full_name, repo_owner, repo_name))
                 role.github_user = repo_owner
                 role.github_repo = repo_name
                 role.save()
@@ -160,7 +164,8 @@ def refresh_existing_user_repos(token, github_user):
             logger.error(u"NOT FOUND: {0}".format(full_name))
             remove_roles.append(role.id)
         except Exception as exc:
-            logger.error(u"Error: refresh_existing_user_repos {0} - {1}".format(full_name, exc.message))
+            logger.error(u"Error: refresh_existing_user_repos {0} - {1}"
+                         .format(full_name, exc.message))
 
     for role_id in remove_roles:
         try:
@@ -168,9 +173,11 @@ def refresh_existing_user_repos(token, github_user):
             logger.info(u'DELETING: {0}/{1}'.format(role.namespace, role.name))
             role.delete()
         except Exception as exc:
-            logger.error(u"Error: refresh_existing_user_repos - {0}".format(exc.message))
+            logger.error(u"Error: refresh_existing_user_repos - {0}"
+                         .format(exc.message))
 
-    logger.info("Finished refresh_existing_user_repos for GitHub user {0}".format(github_user.login))
+    logger.info("Finished refresh_existing_user_repos for GitHub user {0}"
+                .format(github_user.login))
 
 
 def update_namespace(repo):
