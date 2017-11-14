@@ -116,7 +116,8 @@ from galaxy.main.models import (Platform,
 
 from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
-from galaxy.main.celerytasks.tasks import import_role, update_user_repos
+from galaxy.main.celerytasks.tasks import (
+    import_role, update_user_repos, refresh_existing_user_repos)
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 
 
@@ -1351,9 +1352,16 @@ class RefreshUserRepos(APIView):
             raise HttpResponseBadRequest({'detail': msg})
 
         try:
+            refresh_existing_user_repos(token.token, ghu)
+        except Exception as exc:
+            logger.error("Error: refresh_user_repos - {0}".format(exc.message))
+            raise
+
+        try:
             update_user_repos(user_repos, request.user)
         except Exception as exc:
             logger.error("Error: update_user_repos - {0}".format(exc.message))
+            raise
 
         qs = request.user.repositories.all()
         serializer = RepositorySerializer(qs, many=True)
