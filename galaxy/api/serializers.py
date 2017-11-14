@@ -34,6 +34,7 @@ from drf_haystack.serializers import HaystackSerializer
 from galaxy.main.search_indexes import RoleIndex
 from galaxy.api.utils import html_decode
 from galaxy.main.models import (Platform,
+                                CloudPlatform,
                                 Category,
                                 Tag,
                                 Role,
@@ -433,6 +434,12 @@ class PlatformSerializer(BaseSerializer):
     class Meta:
         model = Platform
         fields = BASE_FIELDS + ('release',)
+
+
+class CloudPlatformSerializer(BaseSerializer):
+    class Meta:
+        model = CloudPlatform
+        fields = BASE_FIELDS
 
 
 class RoleVersionSerializer(BaseSerializer):
@@ -873,6 +880,7 @@ class RoleDetailSerializer(BaseSerializer):
 
 class RoleSearchSerializer(HaystackSerializer):
     platforms = serializers.SerializerMethodField()
+    cloud_platforms = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     versions = serializers.SerializerMethodField()
     dependencies = serializers.SerializerMethodField()
@@ -893,6 +901,7 @@ class RoleSearchSerializer(HaystackSerializer):
             "github_branch",
             "tags",
             "platforms",
+            "cloud_platforms",
             "platform_details",
             "versions",
             "dependencies",
@@ -903,6 +912,7 @@ class RoleSearchSerializer(HaystackSerializer):
             "text",
             "autocomplete",
             "platforms_autocomplete",
+            "cloud_platforms_autocomplete",
             "tags_autocomplete",
             "username_autocomplete",
             "travis_status_url",
@@ -929,7 +939,11 @@ class RoleSearchSerializer(HaystackSerializer):
     def get_platforms(self, instance):
         if instance is None:
             return []
+        # FIXME(cutwater): List comprehension is redundant
         return [p for p in instance.platforms]
+
+    def get_cloud_platforms(self, instance):
+        return instance.cloud_platforms or []
 
     def get_tags(self, instance):
         if instance is None:

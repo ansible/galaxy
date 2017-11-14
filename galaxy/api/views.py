@@ -90,6 +90,7 @@ from galaxy.api.serializers import (MeSerializer,
                                     CategorySerializer,
                                     TagSerializer,
                                     PlatformSerializer,
+                                    CloudPlatformSerializer,
                                     RoleVersionSerializer,
                                     RepositorySerializer,
                                     TopContributorsSerializer,
@@ -103,6 +104,7 @@ from galaxy.api.serializers import (MeSerializer,
                                     ElasticSearchDSLSerializer)
 
 from galaxy.main.models import (Platform,
+                                CloudPlatform,
                                 Category,
                                 Tag,
                                 Role,
@@ -194,6 +196,7 @@ class ApiV1RootView(APIView):
         data['categories'] = reverse('api:category_list')
         data['tags'] = reverse('api:tag_list')
         data['platforms'] = reverse('api:platform_list')
+        data['cloud_platforms'] = reverse('api:cloud_platform_list')
         data['imports'] = reverse('api:import_task_list')
         data['repos'] = reverse('api:repos_view')
         data['latest imports'] = reverse('api:import_task_latest_list')
@@ -220,6 +223,7 @@ class ApiV1SearchView(APIView):
     def get(self, request, *args, **kwargs):
         data = OrderedDict()
         data['platforms'] = reverse('api:platforms_search_view')
+        data['cloud_platforms'] = reverse('api:cloud_platforms_search_view')
         data['roles'] = reverse('api:search-roles-list')
         data['tags'] = reverse('api:tags_search_view')
         data['users'] = reverse('api:user_search_view')
@@ -278,6 +282,17 @@ class PlatformList(ListAPIView):
 class PlatformDetail(RetrieveAPIView):
     model = Platform
     serializer_class = PlatformSerializer
+
+
+class CloudPlatformList(ListAPIView):
+    model = CloudPlatform
+    serializer_class = CloudPlatformSerializer
+    paginate_by = None
+
+
+class CloudPlatformDetail(RetrieveAPIView):
+    model = CloudPlatform
+    serializer_class = CloudPlatformSerializer
 
 
 class RoleDependenciesList(SubListAPIView):
@@ -1099,6 +1114,17 @@ class RoleSearchView(HaystackViewSet):
     lookup_sep = ','
     filter_backends = [HaystackFilter]
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        print(queryset)
+        instance = self.filter_queryset(queryset)
+        page = self.paginate_queryset(instance)
+        if page is not None:
+            serializer = self.get_pagination_serializer(page)
+        else:
+            serializer = self.get_serializer(instance, many=True)
+        return Response(serializer.data)
+
 
 class FacetedView(APIView):
 
@@ -1174,7 +1200,39 @@ class PlatformsSearchView(APIView):
         s = s[page * page_size:page * page_size + page_size]
         result = s.execute()
         serializer = ElasticSearchDSLSerializer(result.hits, many=True)
-        response = get_response(request=request, result=result, view='api:platforms_search_view')
+        response = get_response(request=request, result=result,
+                                view='api:platforms_search_view')
+        response['results'] = serializer.data
+        return Response(response)
+
+
+class CloudPlatformsSearchView(APIView):
+    def get(self, request, *args, **kwargs):
+        q = None
+        page = 0
+        page_size = 10
+        order_fields = []
+        for key, value in request.GET.items():
+            if key == 'name':
+                q = Q('match', name=value)
+            if key in ('content', 'autocomplete'):
+                q = Q('match', autocomplete=value)
+            if key == 'page':
+                page = int(value) - 1 if int(value) > 0 else 0
+            if key == 'page_size':
+                page_size = int(value)
+            if key in ('order', 'order_by'):
+                order_fields = value.split(',')
+        if page_size > 1000:
+            page_size = 1000
+        s = Search(index='galaxy_cloud_platforms')
+        s = s.query(q) if q else s
+        s = s.sort(*order_fields) if len(order_fields) > 0 else s
+        s = s[page * page_size:page * page_size + page_size]
+        result = s.execute()
+        serializer = ElasticSearchDSLSerializer(result.hits, many=True)
+        response = get_response(request=request, result=result,
+                                view='api:cloud_platforms_search_view')
         response['results'] = serializer.data
         return Response(response)
 

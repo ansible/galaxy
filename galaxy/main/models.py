@@ -32,9 +32,10 @@ from galaxy.main.fields import LooseVersionField, TruncatingCharField
 from galaxy.main.mixins import DirtyMixin
 
 __all__ = [
-    'PrimordialModel', 'Platform', 'Category', 'Tag', 'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating',
-    'RoleVersion', 'UserAlias', 'NotificationSecret', 'Notification', 'Repository', 'Subscription', 'Stargazer',
-    'Namespace'
+    'PrimordialModel', 'Platform', 'CloudPlatform', 'Category', 'Tag',
+    'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 'RoleVersion',
+    'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
+    'Subscription', 'Stargazer', 'Namespace'
 ]
 
 ###################################################################################
@@ -200,6 +201,20 @@ class Platform(CommonModelNameNotUnique):
         return reverse('api:platform_detail', args=(self.pk,))
 
 
+class CloudPlatform(CommonModel):
+    """
+    A model representing the valid cloud platforms for role.
+    """
+    class Meta:
+        ordering = ['name']
+
+    def __unicode__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('api:cloud_platform_detail', args=(self.pk,))
+
+
 class UserAlias(models.Model):
     #
     # a class representing a mapping between users and aliases
@@ -267,6 +282,14 @@ class Role(CommonModelNameNotUnique):
         editable=False,
     )
     platforms.help_text = ""
+
+    cloud_platforms = models.ManyToManyField(
+        'CloudPlatform',
+        related_name='roles',
+        verbose_name="Cloud Platforms",
+        blank=True,
+        editable=False,
+    )
 
     tags = models.ManyToManyField(
         'Tag',
@@ -467,6 +490,9 @@ class Role(CommonModelNameNotUnique):
 
     def get_unique_platforms(self):
         return [platform.name for platform in self.platforms.filter(active=True).order_by('name').distinct('name')]
+
+    def get_cloud_platforms(self):
+        return [cp.name for cp in self.cloud_platforms.filter(active=True)]
 
     def get_unique_platform_versions(self):
         return [platform.release for platform in self.platforms.filter(active=True).order_by('release').distinct('release')]

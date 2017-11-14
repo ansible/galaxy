@@ -19,6 +19,7 @@ from django.conf.urls import include, patterns, url as original_url
 from rest_framework import routers
 from .views import (RoleSearchView,
                     PlatformsSearchView,
+                    CloudPlatformsSearchView,
                     TagsSearchView,
                     ApiV1SearchView,
                     ApiV1ReposView,
@@ -65,6 +66,12 @@ platform_urls = patterns(
     url(r'^(?P<pk>[0-9]+)/$', 'platform_detail'),
 )
 
+cloud_platform_urls = patterns(
+    'galaxy.api.views',
+    url(r'^$', 'cloud_platform_list'),
+    url(r'^(?P<pk>[0-9]+)/$', 'cloud_platform_detail'),
+)
+
 category_urls = patterns(
     'galaxy.api.views',
     url(r'^$', 'category_list'),
@@ -84,10 +91,11 @@ search_urls = patterns(
     #    kwargs={u'facet_key': u'platforms', u'model': u'Role'}, name="faceted_platforms_view"),
     # url(r'facetedtags/$',                FacetedView.as_view(),
     #    kwargs={u'facet_key': u'tags', u'model': u'Role'}, name="faceted_tags_view"),
-    url(r'platforms/$', PlatformsSearchView.as_view(), name='platforms_search_view'),
-    url(r'tags/$', TagsSearchView.as_view(), name='tags_search_view'),
-    url(r'users/$', UserSearchView.as_view(), name='user_search_view'),
-    url(r'top_contributors/$', 'top_contributors_list', name='top_contributors_list'),
+    url(r'^platforms/$', PlatformsSearchView.as_view(), name='platforms_search_view'),
+    url(r'^cloud_platforms/$', CloudPlatformsSearchView.as_view(), name='cloud_platforms_search_view'),
+    url(r'^tags/$', TagsSearchView.as_view(), name='tags_search_view'),
+    url(r'^users/$', UserSearchView.as_view(), name='user_search_view'),
+    url(r'^top_contributors/$', 'top_contributors_list', name='top_contributors_list'),
 )
 
 import_task_urls = patterns(
@@ -134,6 +142,7 @@ v1_urls = patterns(
     url(r'^categories/', include(category_urls)),
     url(r'^tags/', include(tag_urls)),
     url(r'^platforms/', include(platform_urls)),
+    url(r'^cloud_platforms/', include(cloud_platform_urls)),
     url(r'^imports/', include(import_task_urls)),
     url(r'^tokens/', TokenView.as_view(), name='token'),
     url(r'^removerole/', RemoveRole.as_view(), name='remove_role'),

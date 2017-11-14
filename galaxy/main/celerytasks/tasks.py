@@ -27,21 +27,23 @@ from github import Github
 from github import GithubException, UnknownObjectException
 from urlparse import urlparse
 from requests import HTTPError
-from django.utils import timezone
+from django.conf import settings
 from django.db import transaction
+from django.utils import timezone
 from allauth.socialaccount.models import SocialToken
 
 from ansible.playbook.role.requirement import RoleRequirement
 from ansible.errors import AnsibleError
 
 from galaxy.main.models import (Platform,
+                                CloudPlatform,
                                 Tag,
                                 Role,
                                 ImportTask,
                                 RoleVersion,
                                 Namespace)
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
-from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -376,6 +378,34 @@ def add_platforms(import_task, galaxy_info, role):
             role.platforms.remove(platform)
 
 
+def _add_cloud_platforms(import_task, galaxy_info, role):
+    add_message(import_task, u"INFO", u"Parsing cloud platforms")
+    cloud_platforms = galaxy_info.get('cloud_platforms', [])
+    if isinstance(cloud_platforms, basestring):
+        cloud_platforms = [cloud_platforms]
+
+    if not cloud_platforms:
+        add_message(import_task, u'WARNING',
+                    u'No cloud platforms found in meta data')
+
+    cloud_platforms = set(cloud_platforms)
+
+    # Remove cloud platforms that are no longer listed in the metadata
+    for platform in role.cloud_platforms.all():
+        if platform.name not in cloud_platforms:
+            role.cloud_platforms.remove(platform)
+
+    # Add new cloud platforms
+    for name in cloud_platforms:
+        try:
+            platform = CloudPlatform.objects.get(name=name)
+        except CloudPlatform.DoesNotExist:
+            add_message(import_task, u'ERROR',
+                        u'Invalid cloud platform: {0}, skipping'.format(name))
+            continue
+        role.cloud_platforms.add(platform)
+
+
 def add_dependencies(import_task, dependencies, role):
     if not dependencies:
         return
@@ -551,7 +581,7 @@ def update_role_videos(import_task, role, videos=None):
                 role.videos.create(url=video['embed_url'], description=video['description'])
 
 
-@task(throws=(Exception,), name="galaxy.main.celerytasks.tasks.import_role")
+@task(name="galaxy.main.celerytasks.tasks.import_role", throws=(Exception,))
 def import_role(task_id):
     try:
         logger.info(u"Starting task: %d" % int(task_id))
@@ -727,11 +757,14 @@ def import_role(task_id):
     import_task.github_branch = branch
 
     add_tags(import_task, galaxy_info, role)
+
     if role.role_type in (role.CONTAINER, role.ANSIBLE):
         if not galaxy_info.get('platforms'):
             add_message(import_task, u"ERROR", u"No platforms found in meta data")
         else:
             add_platforms(import_task, galaxy_info, role)
+
+    _add_cloud_platforms(import_task, galaxy_info, role)
 
     if role.role_type in (role.CONTAINER, role.ANSIBLE) and meta_data.get('dependencies'):
         add_dependencies(import_task, meta_data['dependencies'], role)
@@ -792,9 +825,9 @@ def import_role(task_id):
     warning_count = import_task.messages.filter(message_type="WARNING").count()
     import_state = u"SUCCESS" if error_count == 0 else u"FAILED"
     add_message(import_task, u"INFO", u"Import completed")
-    add_message(import_task, import_state, u"Status %s : warnings=%d errors=%d" % (import_state,
-                                                                                   warning_count,
-                                                                                   error_count))
+    add_message(import_task, import_state,
+                u"Status %s : warnings=%d errors=%d" % (
+                    import_state, warning_count, error_count))
 
     try:
         import_task.state = import_state
@@ -810,11 +843,13 @@ def import_role(task_id):
     # Update ES indexes
     update_custom_indexes.delay(username=role.namespace,
                                 tags=role.get_tags(),
-                                platforms=role.get_unique_platforms())
+                                platforms=role.get_unique_platforms(),
+                                cloud_platforms=role.get_cloud_platforms())
     return True
 
 
-@task(name="galaxy.main.celerytasks.tasks.refresh_user_repos", throws=(Exception,))
+@task(name="galaxy.main.celerytasks.tasks.refresh_user_repos",
+      throws=(Exception,))
 @transaction.atomic
 def refresh_user_repos(user, token):
     logger.info(u"Refreshing User Repo Cache for {}".format(user.username))

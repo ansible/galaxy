@@ -394,6 +394,7 @@ class RoleDetailView(DetailView):
         role = self.role
         context['tags'] = role.tags.all()
         context['platforms'] = role.platforms.all()
+        context['cloud_platforms'] = role.cloud_platforms.all()
         context['dependencies'] = role.dependencies.all()
         context['videos'] = role.videos.all()
 
