@@ -262,7 +262,6 @@
             // Update the query string
             queryStorageFactory.save_state(_queryParams($scope.list_data));
 
-            $log.debug(params);
             return roleSearchService.get(params)
                 .$promise.then(function(data) {
                     angular.forEach(data.results, function(row) {
