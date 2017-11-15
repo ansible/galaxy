@@ -13,7 +13,7 @@
     {% else %}
     <title>Galaxy{% if page_title %} | {{ page_title }}{% endif %}</title>
     {% endif %}
-    
+
     {% block extra_head %}{% endblock %}
 
     <!-- CSS -->
@@ -25,7 +25,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/animate.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/angular-toggle-switch-bootstrap-3.css' %}" />
 
-    {% for extra in extra_css %}<link href="{% static extra %}" rel='stylesheet' type='text/css' />{% endfor %}   
+    {% for extra in extra_css %}<link href="{% static extra %}" rel='stylesheet' type='text/css' />{% endfor %}
 
     <!-- JS -->
     <script type="text/javascript" src="{% static 'vendorjs/jquery.min.js' %}"></script>
@@ -42,7 +42,8 @@
     <script type="text/javascript" src="{% static 'vendorjs/angular-toggle-switch.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'vendorjs/angulartics.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'vendorjs/angulartics-ga.min.js' %}"></script>
-    
+    <script type="text/javascript" src="{% static 'vendorjs/moment.min.js' %}"></script>
+
     <script>
         var GLOBAL_DEBUG = "{{ debug }}";
         var GLOBAL_VERSION = "{{ version }}"

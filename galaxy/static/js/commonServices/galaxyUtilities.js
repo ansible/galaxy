@@ -28,6 +28,12 @@
     mod.factory('fromQueryParams', [_fromQueryParams]);
     mod.factory('getCSRFToken', [_getToken]);
 
+    mod.filter('timeFromNow', function () {
+        return function (value) {
+            return moment(value).fromNow();
+        }
+    });
+
     // check if a scalar is empty
     function _Empty() {
         return function(v) {

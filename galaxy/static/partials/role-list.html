@@ -58,9 +58,14 @@
                                         <td class="value"><a ng-href="/{{ role.username }}/">{{ role.username }}</a></td>
                                     </tr>
                                     <tr class="stat-row">
-                                        <td class="key">Platforms</td>
+                                        <td class="key">OS</td>
                                         <td class="value" ng-if="role.platforms.length" ng-bind="role.platforms.join(', ')"></td>
                                         <td class="value na" ng-if="!role.platforms.length">NA</td>
+                                    </tr>
+                                    <tr class="stat-row">
+                                        <td class="key">Clouds</td>
+                                        <td class="value" ng-if="role.cloud_platforms.length" ng-bind="role.cloud_platforms.join(', ')"></td>
+                                        <td class="value na" ng-if="!role.cloud_platforms.length">NA</td>
                                     </tr>
                                     <tr class="stat-row">
                                         <td class="key">Tags</td>
@@ -69,13 +74,12 @@
                                     </tr>
                                     <tr class="stat-row">
                                         <td class="key">Last Commit</td>
-                                        <td class="value" ng-if="role.last_commit_date">{{ role.last_commit_date | date : 'yyyy-MM-dd hh:mm a UTC' }}</td>
+                                        <td class="value" ng-if="role.last_commit_date">
+                                            <time datetime="{{ role.last_commit_date }}Z" title="{{ role.last_commit_date | date : 'MMM d, y h:mm:ss a' }} UTC">
+                                                {{ role.last_commit_date | timeFromNow }}
+                                            </time>
+                                        </td>
                                         <td class="value na" ng-if="!role.last_commit_date">NA</td>
-                                    </tr>
-                                    <tr class="stat-row">
-                                        <td class="key">Last Import</td>
-                                        <td class="value" ng-if="role.imported">{{ role.imported | date : 'yyyy-MM-dd hh:mm a UTC' }}</td>
-                                        <td class="value na" ng-if="!role.imported">NA</td>
                                     </tr>
                                 </table>
                             </div>
