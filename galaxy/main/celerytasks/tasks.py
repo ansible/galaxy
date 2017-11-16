@@ -689,6 +689,9 @@ def import_role(task_id):
         add_message(import_task, u"INFO", u"Setting role type to Container App")
         role.role_type = Role.CONTAINER_APP
         role.container_yml = ansible_container_yml
+    elif galaxy_info.get('demo', False):
+        add_message(import_task, u"INFO", u"Setting role type to Demo")
+        role.role_type = Role.DEMO
     else:
         role.role_type = role.ANSIBLE
         role.container_yml = None
