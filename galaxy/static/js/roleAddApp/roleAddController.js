@@ -51,7 +51,7 @@
         notificationSecretService) {
 
         
-        $scope.page_title = 'My Roles';
+        $scope.page_title = 'My Content';
         $scope.loading = true;
         $scope.repositories = repositories;
         $scope.username = currentUserService.username;
