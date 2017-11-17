@@ -28,6 +28,17 @@
     mod.factory('fromQueryParams', [_fromQueryParams]);
     mod.factory('getCSRFToken', [_getToken]);
 
+    // Configure moment.js tresholds
+    moment.relativeTimeRounding(Math.floor);
+    moment.relativeTimeThreshold('s', 60);
+    // NOTE(cutwater): Setting 'ss' treshhold before 's' overrides
+    // it's value to 's' - 1
+    moment.relativeTimeThreshold('ss', 0);
+    moment.relativeTimeThreshold('m', 60);
+    moment.relativeTimeThreshold('h', 24);
+    moment.relativeTimeThreshold('d', 31);
+    moment.relativeTimeThreshold('M', 12);
+
     mod.filter('timeFromNow', function () {
         return function (value) {
             return moment(value).fromNow();
