@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% load galaxyhelpers %}
+{% load humanize %}
+{% load tz %}
 
 {% block general_content %}
 
@@ -190,11 +192,33 @@
                                     {% endif %}
                                     <tr>
                                         <td class="key">Last Commit</td>
-                                        <td class="value" >{{ last_commit_date }}</td>
+                                        <td class="value">
+                                            {% if last_commit_date %}
+                                            {% localtime off %}
+                                                <time datetime="{{ last_commit_date | date:'c' }}"
+                                                      title="{{ last_commit_date | date:'M j, Y g:i:s a' }} UTC">
+                                                    {{ last_commit_date | naturaltime }}
+                                                </time>
+                                            {% endlocaltime %}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="key">Last Imported</td>
-                                        <td class="value" >{{ import_date }}</td>
+                                        <td class="value" >
+                                            {% if import_date %}
+                                            {% localtime off %}
+                                                <time datetime="{{ import_date | date:'c' }}"
+                                                      title="{{ import_date | date:'M j, Y g:i:s a' }} UTC">
+                                                    {{ import_date | naturaltime }}
+                                                </time>
+                                            {% endlocaltime %}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
@@ -219,7 +243,18 @@
                                             {% for version in versions %}
                                             <tr>
                                                 <td>{{ version.loose_version }}</td>
-                                                <td>{{ version.release_date }}</td>
+                                                <td>
+                                                    {% if version.release_date %}
+                                                    {% localtime off %}
+                                                        <time datetime="{{ version.release_date | date:'c' }}"
+                                                              title="{{ version.release_date | date:'M j, Y g:i:s a' }} UTC">
+                                                            {{ version.release_date | naturaltime }}
+                                                        </time>
+                                                    {% endlocaltime %}
+                                                    {% else %}
+                                                        NA
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                             {% endfor %}
                                             {{ versions.count }}
@@ -331,7 +366,18 @@
                                             <tbody>
                                             {% for import in imports %}
                                             <tr>
-                                                <td>{{ import.finished }}</td>
+                                                <td>
+                                                    {% if import.finished %}
+                                                    {% localtime off %}
+                                                        <time datetime="{{ import.finished | date:'c' }}"
+                                                              title="{{ import.finished | date:'M j, Y g:i:s a' }} UTC">
+                                                            {{ import.finished | naturaltime }}
+                                                        </time>
+                                                    {% endlocaltime %}
+                                                    {% else %}
+                                                        NA
+                                                    {% endif %}
+                                                </td>
                                                 <td>{{ import.state }}</td>
                                             </tr>
                                             {% endfor %}
