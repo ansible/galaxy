@@ -71,7 +71,7 @@
         $('body').css({ 'overflow-y': 'hidden', 'height': 'auto' });
         
         $scope.galaxy_page_title_fluid = true;
-        $scope.page_title = 'Browse Roles';
+        $scope.page_title = 'Search';
         $scope.version = GLOBAL_VERSION;
         
         $scope.list_data = {

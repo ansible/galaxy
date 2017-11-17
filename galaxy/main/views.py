@@ -463,7 +463,7 @@ def role_add_view(request):
         ]
     context["use_menu_controller"] = False
     context["load_angular"] = True
-    context["page_title"] = "My Roles"
+    context["page_title"] = "My Content"
 
     app_id = ""
     if settings.SITE_NAME == 'galaxy.ansible.com':

@@ -91,7 +91,7 @@ def check_title(value):
     elif value == 'Accounts Logout':
         return 'Logout'
     elif value == 'Accounts Profile':
-        return 'My Roles'
+        return 'My Content'
     elif value == 'Accounts Email':
         return 'Manage Email'
     elif value == 'Intro':

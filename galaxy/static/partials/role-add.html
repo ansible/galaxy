@@ -23,13 +23,13 @@
         
         <div class="inner-container">
             <div class="instructions">
-                <h2>Import Your Roles from GitHub</h2>
+                <h2>Import Your Content from GitHub</h2>
                 <div class="text">
-                    <p>Click the toggle next to the repository to reveal a check mark. This will add the role to Galaxy, making it visible on
-                        the Browse Roles page and allowing anyone to download it. Removing the check mark will delete the role from Galaxy.
+                    <p>Click the toggle next to the repository to reveal a check mark. This will add the repository to Galaxy, making it visible on
+                        the Search page and allowing anyone to download it. Removing the check mark will delete the repository from Galaxy.
                         Use settings <a href="" disabled="disabled" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a> to enable
-                        Travis notifications and control the role name.</p>
-                    <p>If you don't see all of your roles, <a ng-href="{{ auth_orgs_url}}">review and add</a> your authorized organizations.</p>
+                        Travis notifications and control the repository name.</p>
+                    <p>If you don't see all of your repositories, <a ng-href="{{ auth_orgs_url}}">review and add</a> your authorized organizations.</p>
                 </div>
             </div>
 
@@ -44,7 +44,7 @@
                     </div>
                     <div class="col-sm-6 tools">
                         <div class="search-roles">
-                            <input type="text" placeholder="Search Roles" class="form-control input-sm" ng-model="searchText" ng-disabled="!repositories.length">
+                            <input type="text" placeholder="Search" class="form-control input-sm" ng-model="searchText" ng-disabled="!repositories.length">
                             <div class="search-icon"><i class="fa fa-search" ng-show="!searchText"></i></div>
                             <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
                         </div>
