@@ -401,7 +401,7 @@ class RoleDetailView(DetailView):
         context['imports'] = []
         for imp_task in role.import_tasks.all().order_by('-id')[:10]:
             context['imports'].append({
-                'finished': imp_task.finished.strftime('%Y-%m-%d %H:%M:%I %p %Z') if imp_task.finished else 'NA',
+                'finished': imp_task.finished,
                 'state': imp_task.state
             })
 
@@ -418,11 +418,10 @@ class RoleDetailView(DetailView):
         for ver in role.versions.all().order_by('-release_date'):
             context['versions'].append({
                 'loose_version': ver.loose_version,
-                'release_date': ver.release_date.strftime('%Y-%m-%d %H:%M:%I %p') if ver.release_date else 'NA'
+                'release_date': ver.release_date
             })
-        context['import_date'] = role.imported.strftime('%Y-%m-%d %H:%M:%I %p %Z') if role.imported else 'NA'
-        context['last_commit_date'] = role.commit_created.strftime('%Y-%m-%d %H:%M:%I %p %Z') if role.commit_created \
-            else 'NA'
+        context['import_date'] = role.imported
+        context['last_commit_date'] = role.commit_created
         context['readme_html'] = readme_to_html(role)
         context['page_title'] = "%s.%s" % (self.namespace, self.name)
         return context
