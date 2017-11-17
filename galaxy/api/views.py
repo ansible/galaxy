@@ -213,7 +213,9 @@ class RoleTypes(APIView):
     view_name = 'Role Types'
 
     def get(self, request, format=None):
-        return Response(Role.ROLE_TYPE_CHOICES)
+        roles = [role for role in Role.ROLE_TYPE_CHOICES
+                 if role[0] in settings.ROLE_TYPES_ENABLED]
+        return Response(roles)
 
 
 class ApiV1SearchView(APIView):

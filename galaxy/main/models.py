@@ -315,10 +315,12 @@ class Role(CommonModelNameNotUnique):
     ANSIBLE = 'ANS'
     CONTAINER = 'CON'
     CONTAINER_APP = 'APP'
+    DEMO = 'DEM'
     ROLE_TYPE_CHOICES = (
         (ANSIBLE, 'Ansible'),
         (CONTAINER, 'Container Enabled'),
-        (CONTAINER_APP, 'Container App')
+        (CONTAINER_APP, 'Container App'),
+        (DEMO, 'Demo')
     )
     role_type = models.CharField(
         max_length=3,
