@@ -938,23 +938,18 @@ class Subscription (PrimordialModel):
     )
 
 
-class Stargazer (PrimordialModel):
+class Stargazer(PrimordialModel):
     class Meta:
-        unique_together = ('owner', 'github_user', 'github_repo')
-        ordering = ('owner', 'github_user', 'github_repo')
+        unique_together = ('owner', 'role')
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='starred',
     )
-    github_user = models.CharField(
-        max_length=256,
-        verbose_name="Github Username",
-    )
-    github_repo = models.CharField(
-        max_length=256,
-        verbose_name="Github Repository",
-    )
+
+    role = models.ForeignKey(
+        Role,
+        related_name='stars')
 
 
 class RefreshRoleCount (PrimordialModel):

@@ -560,27 +560,19 @@ class StargazerList(ListCreateAPIView):
                 "for {0}/{1}. {2} - {3}".format(github_user, github_repo, e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
-        new_star, created = Stargazer.objects.get_or_create(
-            owner=request.user,
-            github_user=github_user,
-            github_repo=github_repo,
-            defaults={
-                'owner': request.user,
-                'github_user': github_user,
-                'github_repo': github_repo
-            })
-
-        star_count = gh_repo.stargazers_count + 1
-
-        for role in Role.objects.filter(github_user=github_user, github_repo=github_repo):
-            role.stargazers_count = star_count
-            role.save()
+        role = Role.objects.get(
+            github_user=github_user, github_repo=github_repo)
+        star = role.stars.create(owner=request.user)
+        role.stargazers_count = gh_repo.stargazers_count + 1
+        role.save()
 
         return Response(dict(
-            result=dict(id=new_star.id,
-                        github_user=new_star.github_user,
-                        github_repo=new_star.github_repo,
-                        stargazers_count=star_count)), status=status.HTTP_201_CREATED)
+            result=dict(
+                id=star.id,
+                github_user=role.github_user,
+                github_repo=role.github_repo,
+                stargazers_count=role.stargazers_count)),
+            status=status.HTTP_201_CREATED)
 
 
 class StargazerDetail(RetrieveUpdateDestroyAPIView):
@@ -605,7 +597,8 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
             raise ValidationError(dict(detail=msg))
 
         try:
-            gh_repo = gh_api.get_repo(obj.github_user + '/' + obj.github_repo)
+            gh_repo = gh_api.get_repo(
+                obj.role.github_user + '/' + obj.role.github_repo)
         except GithubException, e:
             msg = "GitHub API failed to return repo for {0}/{1}. {2} - {3}".format(obj.github_user,
                                                                                    obj.github_repo,
@@ -628,17 +621,12 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
 
         obj.delete()
 
-        star_count = gh_repo.stargazers_count - 1 if gh_repo.stargazers_count > 1 else 0
+        role = Role.objects.get(github_user=obj.role.github_user,
+                                github_repo=obj.role.github_repo)
+        role.stargazers_count = max(0, gh_repo.stargazers_count - 1)
+        role.save()
 
-        for role in Role.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo):
-            role.stargazers_count = star_count
-            role.save()
-
-        result = "{0} removed from stargazers for {1}/{2}.".format(request.user.github_user,
-                                                                   obj.github_user,
-                                                                   obj.github_repo)
-
-        return Response(detail=result, status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 class SubscriptionList(ListCreateAPIView):

@@ -17,6 +17,7 @@
                 <i class="fa fa-user"></i> <span class="username">{{ user.username }}</span> <span class="caret"></span></a>
             <ul class="dropdown-menu dropdown-menu-right user-menu">
                 <li><a href="/imports#/">My Imports</a></li>
+                <li><a href="/stars#/">My Stars</a></li>
                 <li><a href="{% url 'account_email' %}">Manage E-mail</a></li>
                 {% url 'socialaccount_connections' as connections_url %}
                 {% if connections_url %}

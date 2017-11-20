@@ -46,6 +46,7 @@ common_services = [
     'js/commonServices/platformService.js',
     'js/commonServices/galaxyUtilities.js',
     'js/commonServices/searchService.js',
+    'js/commonServices/userStarredService.js',
     'js/commonDirectives/commonDirectives.js',
     'js/commonDirectives/autocompleteDirective.js',
     'js/commonDirectives/textCollapseDirective.js',
@@ -512,6 +513,32 @@ def import_status_view(request):
     context["load_angular"] = True
     context["page_title"] = "My Imports"
     return render_to_response('import_status.html', context)
+
+
+@login_required
+def stars_list_view(request):
+    context = build_standard_context(request)
+    context["ng_app"] = "userStarredApp"
+    context["extra_css"] = []
+
+    if settings.SITE_ENV == 'DEV':
+        context["extra_js"] = [
+            'js/userStarredApp/userStarredApp.js',
+            'js/userStarredApp/userStarredController.js',
+            'js/commonServices/galaxyUtilities.js',
+        ] + common_services
+    else:
+        context["extra_js"] = [
+            'dist/galaxy.starsListApp.min.js'
+        ]
+
+    if request.session.get("transient"):
+        context["transient"] = request.session["transient"]
+        del request.session["transient"]
+
+    context["load_angular"] = True
+    context["page_title"] = "My Stars"
+    return render_to_response('ng_view.html', context)
 
 
 @login_required
