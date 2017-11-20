@@ -87,8 +87,15 @@
                                 {% endif %}
 
                                 <a class="btn btn-default btn-md" href="https://github.com/{{role.github_user}}/{{role.github_repo}}" target="_blank"><i class="fa fa-github"></i> Github Repo</a>
-                                
-                                {% if is_authenticated %}   
+
+                                <a id="download-btn" class="btn btn-default btn-md"
+                                   data-id="{{ role.id }}"
+                                   data-name="{{ role.name }}"
+                                   href="https://github.com/{{ role.github_user }}/{{ role.github_repo }}/archive/{{ role.github_default_branch }}.zip">
+                                    <i class="fa fa-cloud-download"></i> Download
+                                </a>
+
+                                {% if is_authenticated %}
                                         <a href="" id="unsubscribe-btn"
                                             class="btn btn-default btn-md"
                                             data-id="{{ subscriber_id }}"
@@ -459,6 +466,9 @@
             e.preventDefault();
             delete_role();
         });
+        $('#download-btn').click(function(e) {
+            updateDownloadStatistics();
+        });
     });
 
     function get_token() {
@@ -634,6 +644,16 @@
                 s.find('.count').text(count - 1);
                 s.show();
             }
+        });
+    }
+
+    function updateDownloadStatistics() {
+        var elem = $('#download-btn');
+        var id = elem.attr('data-id');
+
+        $.ajax('/api/v1/roles/'+ id +'/downloads/', {
+            'method': 'POST',
+            'headers': { 'X-CSRFToken': get_token() }
         });
     }
 </script>

@@ -20,10 +20,10 @@ from rest_framework import routers
 
 from galaxy.api import views
 
+
 router = routers.DefaultRouter()
 router.register('v1/search/roles', views.RoleSearchView,
                 base_name="search-roles")
-
 
 user_urls = [
     url(r'^$', views.UserList.as_view(), name='user_list'),
@@ -51,7 +51,9 @@ role_urls = [
     url(r'^(?P<pk>[0-9]+)/versions/$',
         views.RoleVersionsList.as_view(), name='role_versions_list'),
     url(r'^(?P<pk>[0-9]+)/notifications/$',
-        views.RoleNotificationList.as_view(), name='role_notification_list')
+        views.RoleNotificationList.as_view(), name='role_notification_list'),
+    url(r'^(?P<pk>[0-9]+)/downloads/$', views.RoleDownloads.as_view(),
+        name='role_downloads')
 ]
 
 platform_urls = [
