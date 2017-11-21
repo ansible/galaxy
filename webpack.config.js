@@ -5,9 +5,10 @@ const staticPrefix = 'galaxy/static/',
     distPath = path.join(__dirname, staticPrefix, 'dist');
 
 var entry = {
-    vendor: ['./js/vendor.js'],
-    accountApp: ['./js/accountApp.js'],
-    roleAddApp: ['./js/roleAddApp.js']
+    vendor: './js/vendor.js',
+    accountApp: './js/accountApp.js',
+    roleAddApp: './js/roleAddApp.js',
+    listApp: './js/listApp.js'
 };
 
 module.exports = {

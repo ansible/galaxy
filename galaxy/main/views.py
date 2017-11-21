@@ -189,16 +189,9 @@ def list_category(request, category=None, page=1):
     context = build_standard_context(request)
     context["ng_app"] = "listApp"
     context["extra_css"] = []
-    if settings.SITE_ENV == 'DEV':
-        context["extra_js"] = [
-            'js/listApp/listApp.js',
-            'js/listApp/roleListController.js',
-            'js/listApp/menuController.js',
-        ] + common_services
-    else:
-        context["extra_js"] = [
-            'dist/galaxy.listApp.min.js'
-        ]
+    context["extra_js"] = [
+        'dist/listApp.js'
+    ]
     context["use_menu_controller"] = True
     context["load_angular"] = True
     context["page_title"] = "Browse Roles"
