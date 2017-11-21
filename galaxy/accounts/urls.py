@@ -15,12 +15,10 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from . import views
 
 
-urlpatters = patterns(
-    '',
+urlpatters = [
     url(r'^dashboard/$', views.dashboard, name='accounts_dashboard'),
-
-)
+]
