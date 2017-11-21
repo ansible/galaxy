@@ -4,11 +4,16 @@ const path = require('path'),
 const staticPrefix = 'galaxy/static/',
     distPath = path.join(__dirname, staticPrefix, 'dist');
 
+var entry = {
+    vendor: ['./js/vendor.js'],
+    accountApp: ['./js/accountApp.js']
+};
+
 module.exports = {
     context: path.join(__dirname, staticPrefix),
-    entry: './js/vendor.js',
+    entry: entry,
     output: {
-        filename: 'vendor.js',
+        filename: '[name].js',
         path: distPath
     },
     devtool: 'cheap-source-map',

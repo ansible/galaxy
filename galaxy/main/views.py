@@ -518,19 +518,9 @@ def accounts_profile(request):
     context["ng_app"] = "accountsApp"
     context["extra_css"] = [
     ]
-    if settings.SITE_ENV == 'DEV':
-        context["extra_js"] = [
-            'js/commonServices/meService.js',
-            'js/commonServices/storageService.js',
-            'js/commonServices/relatedService.js',
-            'js/commonServices/galaxyUtilities.js',
-            'js/accountApp/myRolesController.js',
-            'js/accountApp/accountApp.js',
-        ]
-    else:
-        context["extra_js"] = [
-            'dist/galaxy.accountApp.min.js'
-        ]
+    context["extra_js"] = [
+        'dist/accountApp.js'
+    ]
 
     if request.session.get("transient"):
         context["transient"] = request.session["transient"]
