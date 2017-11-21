@@ -6,7 +6,8 @@ const staticPrefix = 'galaxy/static/',
 
 var entry = {
     vendor: ['./js/vendor.js'],
-    accountApp: ['./js/accountApp.js']
+    accountApp: ['./js/accountApp.js'],
+    roleAddApp: ['./js/roleAddApp.js']
 };
 
 module.exports = {

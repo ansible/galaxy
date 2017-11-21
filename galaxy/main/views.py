@@ -450,17 +450,9 @@ def role_add_view(request):
     context = build_standard_context(request)
     context["ng_app"] = "roleAddApp"
     context["extra_css"] = []
-    if settings.SITE_ENV == 'DEV':
-        context["extra_js"] = [
-            'js/roleAddApp/roleAddApp.js',
-            'js/roleAddApp/roleAddController.js',
-            'js/detailApp/menuController.js',
-            'js/roleAddApp/notificationSecretService.js',
-        ] + common_services
-    else:
-        context["extra_js"] = [
-            'dist/galaxy.roleAddApp.min.js'
-        ]
+    context["extra_js"] = [
+        'dist/roleAddApp.js'
+    ]
     context["use_menu_controller"] = False
     context["load_angular"] = True
     context["page_title"] = "My Content"
