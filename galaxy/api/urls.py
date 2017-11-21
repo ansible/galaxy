@@ -15,29 +15,14 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from django.conf.urls import include, url as original_url
+from django.conf.urls import include, url
 from rest_framework import routers
-from .views import (RoleSearchView,
-                    PlatformsSearchView,
-                    CloudPlatformsSearchView,
-                    TagsSearchView,
-                    ApiV1SearchView,
-                    ApiV1ReposView,
-                    UserSearchView,
-                    TokenView,
-                    RemoveRole,
-                    RefreshUserRepos)
+
 from galaxy.api import views
 
 router = routers.DefaultRouter()
-router.register('v1/search/roles', RoleSearchView, base_name="search-roles")
-
-
-def url(regex, view, kwargs=None, name=None, prefix=''):
-    # Set default name from view name (if a string).
-    if isinstance(view, basestring) and name is None:
-        name = view
-    return original_url(regex, view, kwargs, name, prefix)
+router.register('v1/search/roles', views.RoleSearchView,
+                base_name="search-roles")
 
 
 user_urls = [
@@ -93,17 +78,17 @@ tag_urls = [
 ]
 
 search_urls = [
-    url(r'^$', ApiV1SearchView.as_view(), name="search_view"),
+    url(r'^$', views.ApiV1SearchView.as_view(), name="search_view"),
     # url(r'facetedplatforms/$',           FacetedView.as_view(),
     #    kwargs={u'facet_key': u'platforms', u'model': u'Role'}, name="faceted_platforms_view"),
     # url(r'facetedtags/$',                FacetedView.as_view(),
     #    kwargs={u'facet_key': u'tags', u'model': u'Role'}, name="faceted_tags_view"),
-    url(r'^platforms/$', PlatformsSearchView.as_view(),
+    url(r'^platforms/$', views.PlatformsSearchView.as_view(),
         name='platforms_search_view'),
-    url(r'^cloud_platforms/$', CloudPlatformsSearchView.as_view(),
+    url(r'^cloud_platforms/$', views.CloudPlatformsSearchView.as_view(),
         name='cloud_platforms_search_view'),
-    url(r'^tags/$', TagsSearchView.as_view(), name='tags_search_view'),
-    url(r'^users/$', UserSearchView.as_view(), name='user_search_view'),
+    url(r'^tags/$', views.TagsSearchView.as_view(), name='tags_search_view'),
+    url(r'^users/$', views.UserSearchView.as_view(), name='user_search_view'),
     url(r'^top_contributors/$', views.TopContributorsList.as_view(),
         name='top_contributors_list'),
 ]
@@ -137,11 +122,12 @@ notification_urls = [
 ]
 
 repo_urls = [
-    url(r'^$', ApiV1ReposView.as_view(), name="repos_view"),
+    url(r'^$', views.ApiV1ReposView.as_view(), name="repos_view"),
     url(r'list/$', views.RepositoryList.as_view(), name='repository_list'),
     url(r'list/(?P<pk>[0-9]+)/$', views.RepositoryDetail.as_view(),
         name='repository_detail'),
-    url(r'refresh/$', RefreshUserRepos.as_view(), name='refresh_user_repos'),
+    url(r'refresh/$', views.RefreshUserRepos.as_view(),
+        name='refresh_user_repos'),
     url(r'stargazers/$', views.StargazerList.as_view(), name='stargazer_list'),
     url(r'stargazers/(?P<pk>[0-9]+)/$', views.StargazerDetail.as_view(),
         name='stargazer_detail'),
@@ -162,8 +148,8 @@ v1_urls = [
     url(r'^platforms/', include(platform_urls)),
     url(r'^cloud_platforms/', include(cloud_platform_urls)),
     url(r'^imports/', include(import_task_urls)),
-    url(r'^tokens/', TokenView.as_view(), name='token'),
-    url(r'^removerole/', RemoveRole.as_view(), name='remove_role'),
+    url(r'^tokens/', views.TokenView.as_view(), name='token'),
+    url(r'^removerole/', views.RemoveRole.as_view(), name='remove_role'),
     url(r'^notification_secrets/', include(notification_secret_urls)),
     url(r'^notifications/', include(notification_urls)),
     url(r'^repos/', include(repo_urls)),
