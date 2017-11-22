@@ -46,4 +46,3 @@ if settings.DEBUG:
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls))
     ]
-    url(r'^galaxy__admin__site/', include(admin.site.urls)),
