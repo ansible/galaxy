@@ -22,17 +22,20 @@ from galaxy.main import models
 register = template.Library()
 
 
+# TODO(cutwater): Pass context variable as parameter
 class ContentBlockNode(template.Node):
     def __init__(self, block_name):
         self.blockname = block_name
 
     def render(self, context):
-        # TODO(cutwater): Pre-load content blocks for view
-        block = models.ContentBlock.objects.get(name=self.blockname)
         # FIXME(cutwater): THIS IS UNSAFE
         # Injects content from database as is. Additional sanitizing required.
         # Consider using `bleach` python library for that purpose.
-        return block.content
+        try:
+            return context['contentblocks'][self.blockname].content
+        except KeyError:
+            block = models.ContentBlock.objects.get(name=self.blockname)
+            return block.content
 
 
 @register.tag('contentblock')
