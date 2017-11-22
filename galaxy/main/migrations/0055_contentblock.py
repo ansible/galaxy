@@ -71,14 +71,7 @@ def upgrade_contentblocks_data(apps, schema_editor):
 
 
 def downgrade_contentblocks_data(apps, schema_editor):
-    ContentBlock = apps.get_model("main", "ContentBlock")
-    db_alias = schema_editor.connection.alias
-    ContentBlock.objects.using(db_alias).filter(name__in=[
-        'main-title',
-        'main-share',
-        'main-downloads',
-        'main-featured-blog'
-    ]).delete()
+    pass
 
 
 class Migration(migrations.Migration):
