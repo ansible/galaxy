@@ -16,10 +16,11 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.conf import settings
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 import autofixture
+
 
 handler404 = 'galaxy.main.views.handle_404_view'
 handler400 = 'galaxy.main.views.handle_400_view'
@@ -28,21 +29,21 @@ handler500 = 'galaxy.main.views.handle_500_view'
 admin.autodiscover()
 autofixture.autodiscover()
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
     url(r'^api/', include('galaxy.api.urls', namespace='api', app_name='api')),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
     # url(r'^avatar/', include('avatar.urls')),
     url(settings.ADMIN_URL_PATTERN, include(admin.site.urls)),
-    url(r'^robots\.txt$', TemplateView.as_view(template_name="robots.txt", content_type='text/plain')),
+    url(r'^robots\.txt$', TemplateView.as_view(template_name="robots.txt",
+                                               content_type='text/plain')),
     url(r'', include('galaxy.main.urls', namespace='main', app_name='main')),
-)
+]
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns += patterns(
-        '',
+    urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls))
-    )
+    ]
     url(r'^galaxy__admin__site/', include(admin.site.urls)),
