@@ -977,9 +977,7 @@ class RefreshRoleCount (PrimordialModel):
 
 
 class ContentBlock(BaseModel):
-    name = models.SlugField()
-    title = models.CharField('title', max_length=256, blank=True)
-    image = models.CharField('image', max_length=256, blank=True)
+    name = models.SlugField(unique=True)
     content = models.TextField('content', blank=True)
 
     def __unicode__(self):
