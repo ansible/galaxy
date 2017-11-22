@@ -10,7 +10,6 @@ celery==3.1.24
 django-bootstrap-form
 django-celery
 django-filter
-django-site-maintenance
 django-debug-toolbar
 django-haystack
 drf-haystack==1.5.6
