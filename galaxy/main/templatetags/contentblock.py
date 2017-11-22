@@ -22,29 +22,24 @@ from galaxy.main import models
 register = template.Library()
 
 
-# TODO(cutwater): Simplify contentblocks, remove image and title
-# Render as a simple tag, not a block tag
 class ContentBlockNode(template.Node):
-    def __init__(self, nodelist, block_name):
-        self.nodelist = nodelist
+    def __init__(self, block_name):
         self.blockname = block_name
 
     def render(self, context):
         # TODO(cutwater): Pre-load content blocks for view
         block = models.ContentBlock.objects.get(name=self.blockname)
-        context['contentblock'] = block
-        return self.nodelist.render(context)
+        # FIXME(cutwater): THIS IS UNSAFE
+        # Injects content from database as is. Additional sanitizing required.
+        # Consider using `bleach` python library for that purpose.
+        return block.content
 
 
 @register.tag('contentblock')
 def contentblock_tag(parser, token):
     bits = token.split_contents()
-
     if len(bits) != 2:
         raise template.TemplateSyntaxError(
             "'{0}' takes one argument (name)".format(bits[0]))
     block_name = bits[1]
-
-    nodelist = parser.parse(('endcontentblock', ))
-    parser.delete_first_token()
-    return ContentBlockNode(nodelist, block_name)
+    return ContentBlockNode(block_name)

@@ -5,13 +5,9 @@
         <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-4">
                 {% contentblock main-downloads %}
-                    {{ contentblock.content | safe }}
-                {% endcontentblock %}
             </div>
             <div class="col-lg-4 col-md-4 col-sm-4">
                 {% contentblock main-share %}
-                    {{ contentblock.content | safe }}
-                {% endcontentblock %}
             </div>
             <div class="col-lg-4 col-md-4 col-sm-4">
                 <div id="featured-section">
@@ -42,7 +38,7 @@
                     </div>
                     <div id="featured-blog" class="featured">
                         <div id="featured-blog-body" class="featured-body">
-                            {% contentblock main-featured-blog %}{{ contentblock.content | safe }}{% endcontentblock %}
+                            {% contentblock main-featured-blog %}
                         </div>
                     </div>
                 </div>
