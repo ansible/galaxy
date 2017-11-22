@@ -45,7 +45,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.db import IntegrityError
 from django.db.models import Count, Max
 from django.http import Http404, HttpResponseBadRequest
-from django.utils.datastructures import SortedDict
 from django.apps import apps
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
@@ -190,7 +189,7 @@ class ApiV1RootView(APIView):
 
     def get(self, request, format=None):
         # list top level resources
-        data = SortedDict()
+        data = OrderedDict()
         data['users'] = reverse('api:user_list')
         data['roles'] = reverse('api:role_list')
         data['role_types'] = reverse('api:role_types')
