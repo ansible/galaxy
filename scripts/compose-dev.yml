@@ -9,6 +9,8 @@ services:
       - ${PWD}:/galaxy:rw
     environment:
       - TMUX
+      - TEST
+      - DATABASE_URL
     ports:
       - '8000:8000'
     links:
@@ -23,8 +25,13 @@ services:
       - POSTGRESQL_DATABASE=galaxy
       - POSTGRESQL_USER=galaxy
       - POSTGRESQL_PASSWORD=galaxy
+      - POSTGRESQL_ADMIN_PASSWORD=postgres
 
   elastic:
+    user: elasticsearch
+    expose:
+    - 9200
+    - 9300
     image: 'ansible/galaxy-elasticsearch:2.4.6'
 
   memcache:

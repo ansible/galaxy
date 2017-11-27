@@ -132,7 +132,7 @@ dev/flake8:
 .PHONY: dev/test
 dev/test:
 	@echo "Running tests"
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py test
+	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py test --noinput
 
 .PHONY: dev/waitenv
 dev/waitenv:
@@ -152,6 +152,11 @@ dev/up_tmux:
 	# Run before dev/tmux to start containers detached and no processes running in the galaxy container.
 	@TMUX=1 $(DOCKER_COMPOSE) up -d
 
+.PHONY: dev/up_test
+dev/up_test:
+	# Run before dev/test to start containers detached and no processes running in the galaxy container.
+	@TEST=1 DATABASE_URL=postgres://postgres:postgres@postgres:5432/galaxy $(DOCKER_COMPOSE) up -d
+
 .PHONY: dev/down
 dev/down:
 	$(DOCKER_COMPOSE) down
@@ -165,6 +170,12 @@ dev/restart:
 dev/stop:
 	# Stop one or more services
 	$(DOCKER_COMPOSE) stop $(filter-out $@,$(MAKECMDGOALS))
+
+.PHONY: dev/rm
+dev/rm:
+	# Remove services
+	$(DOCKER_COMPOSE) stop
+	$(DOCKER_COMPOSE) rm -f
 
 # Create the tmux session. Do NOT call directly. Use dev/tmux or dev/tmuxcc instead.
 .PHONY: dev/tmux_noattach
