@@ -35,7 +35,7 @@ __all__ = [
     'PrimordialModel', 'Platform', 'CloudPlatform', 'Category', 'Tag',
     'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 'RoleVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
-    'Subscription', 'Stargazer', 'Namespace'
+    'Subscription', 'Stargazer', 'Namespace', 'ContentBlock'
 ]
 
 ###################################################################################
@@ -974,3 +974,11 @@ class RefreshRoleCount (PrimordialModel):
         default=0,
         null=True
     )
+
+
+class ContentBlock(BaseModel):
+    name = models.SlugField(unique=True)
+    content = models.TextField('content', blank=True)
+
+    def __unicode__(self):
+        return self.name

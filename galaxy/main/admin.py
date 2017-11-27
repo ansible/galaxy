@@ -16,7 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.contrib import admin
-from galaxy.main.models import Platform, CloudPlatform, Role, RoleVersion
+from galaxy.main import models
 
 
 class PlatformAdmin(admin.ModelAdmin):
@@ -35,7 +35,12 @@ class RoleVersionAdmin(admin.ModelAdmin):
     pass
 
 
-admin.site.register(Platform, PlatformAdmin)
-admin.site.register(CloudPlatform, CloudPlatformAdmin)
-admin.site.register(Role, RoleAdmin)
-admin.site.register(RoleVersion, RoleVersionAdmin)
+class ContentBlockAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(models.Platform, PlatformAdmin)
+admin.site.register(models.CloudPlatform, CloudPlatformAdmin)
+admin.site.register(models.Role, RoleAdmin)
+admin.site.register(models.RoleVersion, RoleVersionAdmin)
+admin.site.register(models.ContentBlock, ContentBlockAdmin)

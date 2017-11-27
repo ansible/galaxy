@@ -28,7 +28,7 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 # local stuff
-from models import Role, Namespace
+from galaxy.main.models import Role, Namespace, ContentBlock
 
 # rst2html5-tools
 from html5css3 import Writer
@@ -145,6 +145,13 @@ def build_standard_context(request):
 
 def home(request):
     context = build_standard_context(request)
+    contentblocks = ContentBlock.objects.filter(name__in=[
+        'main-title',
+        'main-share',
+        'main-downloads',
+        'main-featured-blog'
+    ]).all()
+    context['contentblocks'] = {item.name: item for item in contentblocks}
     return render_to_response('home.html', context)
 
 
