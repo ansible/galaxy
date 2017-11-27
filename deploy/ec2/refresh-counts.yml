@@ -12,6 +12,8 @@
   tasks:  
     - name: Start the refresh        
       shell: galaxy-manage refresh_role_counts
+      environment:
+        DJANGO_SETTINGS_MODULE: 'galaxy.settings.custom'
       register: out
       when: ec2_tag_galaxy_celery_queue == 'admin'
     - debug: var=out.stdout_lines
@@ -23,9 +25,13 @@
   tasks:  
     - name: Rebuild Custom Indexes
       shell: galaxy-manage rebuild_galaxy_indexes
+      environment:
+        DJANGO_SETTINGS_MODULE: 'galaxy.settings.custom'
       when: inventory_hostname == groups[galaxy_hosts_web][0]
     - name: Rebuild Index
       shell: galaxy-manage rebuild_index --noinput
+      environment:
+        DJANGO_SETTINGS_MODULE: 'galaxy.settings.custom'
       when: inventory_hostname == groups[galaxy_hosts_web][0]
 
 - name: Notify slack
