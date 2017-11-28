@@ -21,8 +21,8 @@ from django.views.decorators.cache import never_cache
 from django.contrib.staticfiles.views import serve as serve_staticfiles
 from django.views.static import serve as serve_static
 
-from galaxy.main.views import RoleListView, RoleDetailView, NamespaceListView
 from galaxy.main import views
+
 
 urlpatterns = [
     # Non-secure URLs
@@ -43,10 +43,11 @@ urlpatterns = [
     url(r'^accounts/profile/$', views.accounts_profile,
         name='accounts-profile'),
 
-    url(r'^authors/$', NamespaceListView.as_view(), name='namespace-list'),
-    url(r'^([\w\-._+]+)/$', RoleListView.as_view(), name='role-list'),
-    url(r'^([\w\-._+]+)/([\w\-._+]+)/$', RoleDetailView.as_view(),
-        name='role-detail'),
+    url(r'^authors/$', views.NamespaceListView.as_view(),
+        name='namespace-list'),
+    url(r'^([\w\-._+]+)/$', views.RoleListView.as_view(), name='role-list'),
+    url(r'^([\w\-._+]+)/([\w\-._+]+)/$',
+        views.RoleDetailView.as_view(), name='role-detail'),
 ]
 
 # FIX

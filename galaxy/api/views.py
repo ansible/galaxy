@@ -52,6 +52,7 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 # allauth
 from allauth.socialaccount.models import SocialAccount
@@ -338,6 +339,15 @@ class RoleVersionsList(SubListAPIView):
     serializer_class = RoleVersionSerializer
     parent_model = Role
     relationship = 'versions'
+
+
+class RoleDownloads(APIView):
+
+    def post(self, request, pk):
+        obj = get_object_or_404(Role, pk=pk)
+        obj.download_count += 1
+        obj.save()
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class RoleList(ListAPIView):
