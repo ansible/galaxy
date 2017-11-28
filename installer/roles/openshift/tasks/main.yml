@@ -299,18 +299,10 @@
                         securityContext: {}
                         state: present
                         env:
+                          - name: DATABASE_URL
+                            value: "postgres://{{ pg_username }}:{{ pg_password }}@{{ pg_hostname | default('postgres') }}:{{ pg_port }}/{{ pg_database }}"
                           - name: GALAXY_SECRET_KEY
                             value: '{{ galaxy_secret }}'
-                          - name: GALAXY_DB_HOST
-                            value: '{{ pg_hostname | default("postgres") }}'
-                          - name: GALAXY_DB_USER
-                            value: '{{ pg_username }}'
-                          - name: GALAXY_DB_PASSWORD
-                            value: '{{ pg_password }}'
-                          - name: GALAXY_DB_NAME
-                            value: '{{ pg_database }}'
-                          - name: GALAXY_DB_PORT
-                            value: '{{ pg_port }}'
                           - name: GALAXY_RABBITMQ_HOST
                             value: rabbitmq
                           - name: GALAXY_RABBITMQ_PASSWORD
@@ -384,18 +376,10 @@
                           securityContext: {}
                           state: present
                           env:
+                            - name: DATABASE_URL
+                              value: "postgres://{{ pg_username }}:{{ pg_password }}@{{ pg_hostname | default('postgres') }}:{{ pg_port }}/{{ pg_database }}"
                             - name: GALAXY_SECRET_KEY
                               value: '{{ galaxy_secret }}'
-                            - name: GALAXY_DB_HOST
-                              value: '{{ pg_hostname | default("postgres") }}'
-                            - name: GALAXY_DB_USER
-                              value: '{{ pg_username }}'
-                            - name: GALAXY_DB_PASSWORD
-                              value: '{{ pg_password }}'
-                            - name: GALAXY_DB_NAME
-                              value: '{{ pg_database }}'
-                            - name: GALAXY_DB_PORT
-                              value: '{{ pg_port }}'
                             - name: GALAXY_RABBITMQ_HOST
                               value: rabbitmq
                             - name: GALAXY_RABBITMQ_PASSWORD

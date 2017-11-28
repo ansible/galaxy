@@ -62,6 +62,7 @@ Before you can run a deployment, you'll need the following installed in your loc
 - [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) Requires Version 2.4+
 - [Docker](https://docs.docker.com/engine/installation/)
 - [docker-py](https://github.com/docker/docker-py) Python module
+- [docker-compose](https://github.com/docker/compose) Python module
 - [GNU Make](https://www.gnu.org/software/make/)
 - [Git](https://git-scm.com/)
 

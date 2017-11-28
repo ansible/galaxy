@@ -187,8 +187,8 @@ SITE_NAME = os.environ.get('GALAXY_SITE_NAME', 'localhost')
 # FIXME(cutwater): Remove WAIT_FOR logic from django application
 WAIT_FOR = [
     {
-        'host': os.environ.get('GALAXY_DB_HOST', ''),
-        'port': int(os.environ.get('GALAXY_DB_PORT', 5432)),
+        'host': DATABASES['default']['HOST'],
+        'port': DATABASES['default']['PORT'],
     },
     {
         'host': os.environ.get('GALAXY_RABBITMQ_HOST', ''),
