@@ -79,7 +79,7 @@ ALLOWED_HOSTS = os.environ.get('GALAXY_ALLOWED_HOSTS', '*').split(',')
 # Database
 # ---------------------------------------------------------
 
-# Define DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME 
+# Define DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
 DATABASES = {'default': dj_database_url.config(conn_max_age=None)}
 
 # Cache
