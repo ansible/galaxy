@@ -9,6 +9,8 @@ services:
       - ${PWD}:/galaxy:rw
     environment:
       - TMUX
+      - TEST
+      - GALAXY_DB_URL=postgres://postgres:postgres@postgres:5432/galaxy
     ports:
       - '8000:8000'
     links:
@@ -18,14 +20,19 @@ services:
       - rabbitmq
 
   postgres:
-    image: postgres:9.5.4
+    image: centos/postgresql-95-centos7 
     environment:
-      - POSTGRES_DB=galaxy
-      - POSTGRES_USER=galaxy
-      - POSTGRES_PASSWORD=galaxy
+      - POSTGRESQL_DATABASE=galaxy
+      - POSTGRESQL_USER=galaxy
+      - POSTGRESQL_PASSWORD=galaxy
+      - POSTGRESQL_ADMIN_PASSWORD=postgres
 
   elastic:
-    image: elasticsearch:2.4.1
+    user: elasticsearch
+    expose:
+    - 9200
+    - 9300
+    image: 'ansible/galaxy-elasticsearch:2.4.6'
 
   memcache:
     image: memcached:latest

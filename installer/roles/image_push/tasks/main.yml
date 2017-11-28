@@ -1,0 +1,118 @@
+---
+- name: Manage Galaxy Container Images
+  block:
+    - name: Export galaxy image, if not local install, and no registry defined
+      shell: "docker image save {{ galaxy_image }}:{{ galaxy_version }} | gzip >{{ galaxy_local_base_config_path | default('/tmp') }}/{{ galaxy_image }}_{{ galaxy_version }}.tgz" 
+      when: inventory_hostname != "localhost" and docker_registry is not defined
+      delegate_to: localhost
+      tags:
+      - start      
+
+    - name: Authenticate with Docker registry if registry password given
+      docker_login:
+        registry: "{{ docker_registry }}"
+        username: "{{ docker_registry_username }}"
+        password: "{{ docker_registry_password }}"
+        reauthorize: yes
+      when: docker_registry is defined and docker_registry_password is defined
+      delegate_to: localhost
+      tags:
+      - start      
+
+    - name: Set docker base path
+      set_fact:
+        docker_deploy_base_path: "{{ galaxy_base_path | default('/tmp') }}/docker_deploy"
+      when: ansible_connection != "local" and docker_registry is not defined
+      tags:
+      - start      
+
+    - name: Ensure directory exists
+      file:
+        path: "{{ docker_deploy_base_path }}"
+        state: directory
+      when: ansible_connection != "local" and docker_registry is not defined
+      tags:
+      - start      
+
+    - name: Copy image to docker execution
+      synchronize:
+        src: "{{ galaxy_local_base_config_path | default('/tmp') }}/{{ galaxy_image }}_{{ galaxy_version }}.tgz"
+        dest: "{{ docker_deploy_base_path }}/{{ galaxy_image }}_{{ galaxy_version }}.tgz"
+      when: ansible_connection != "local" and docker_registry is not defined
+      tags:
+      - start
+
+    - name: Remove the .tar file
+      file:
+        state: absent
+        path: '{{ docker_deploy_base_path }}/{{ galaxy_image }}_{{ galaxy_version }}.tar'
+      when: ansible_connection != "local" and docker_registry is not defined
+      tags:
+      - start
+   
+    - name: Unzip the archive
+      shell: gunzip "{{ docker_deploy_base_path }}/{{ galaxy_image }}_{{ galaxy_version }}.tgz"
+      when: ansible_connection != "local" and docker_registry is not defined
+      tags:
+      - start
+
+    - name: Load image
+      docker_image:
+        name: "{{ galaxy_image }}"
+        tag: "{{ galaxy_version }}"
+        load_path: "{{ docker_deploy_base_path }}/{{ galaxy_image }}_{{ galaxy_version }}.tar"
+        timeout: 300
+      when: ansible_connection != "local" and docker_registry is not defined
+      tags:
+      - start      
+
+    - name: Remove local images to ensure proper push behavior
+      # TODO: this code will not be necessary if and when docker_image can be configured to push if the image
+      # Already exists locally
+      # Pull request: https://github.com/ansible/ansible/pull/31863
+      docker_image:
+        name: "{{ docker_registry }}/{{ docker_registry_repository }}/{{ galaxy_image }}"
+        tag: "{{ galaxy_version }}"
+        state: absent
+      when: docker_registry is defined and dockerhub_base is not defined and docker_remove_local_images|default(False)
+      tags:
+      - start
+      delegate_to: localhost
+
+    - name: Tag and Push Container Images
+      docker_image:
+        name: "{{ galaxy_image }}"
+        repository: "{{ docker_registry }}/{{ docker_registry_repository }}/{{ galaxy_image }}"
+        tag: "{{ galaxy_version }}"
+        push: yes
+      when: docker_registry is defined and dockerhub_base is not defined
+      tags:
+      - start
+      delegate_to: localhost
+
+    - name: Set full image path for Registry
+      set_fact:
+        galaxy_docker_actual_image: >-
+          {{ docker_registry }}/{{ docker_registry_repository }}/{{ galaxy_image }}:{{ galaxy_version }}
+      when: docker_registry is defined and dockerhub_base is not defined
+      tags:
+      - start
+      - stop
+
+    - name: Set full image path for local install
+      set_fact:
+        galaxy_actual_image: "{{ galaxy_image }}:{{ galaxy_version }}"
+      when: docker_registry is not defined
+      tags:
+      - start
+      - stop
+  when: dockerhub_base is not defined
+
+- name: Set DockerHub Image Paths
+  set_fact:
+    galaxy_actual_image: "{{ dockerhub_base }}/galaxy:{{ dockerhub_version }}"
+  when: dockerhub_base is defined
+  tags:
+  - start
+  - stop
+

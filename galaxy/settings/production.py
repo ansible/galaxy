@@ -22,12 +22,8 @@ The following environment variables are supported:
 
 * GALAXY_SECRET_KEY
 * GALAXY_ALLOWED_HOSTS
-* GALAXY_DB_NAME
-* GALAXY_DB_USER
-* GALAXY_DB_PASSWORD
-* GALAXY_DB_HOST
-* GALAXY_DB_PORT
 * GALAXY_EMAIL_HOST
+* GALAXY_DB_URL
 * GALAXY_EMAIL_PORT
 * GALAXY_EMAIL_USER
 * GALAXY_EMAIL_PASSWORD
@@ -43,6 +39,7 @@ The following environment variables are supported:
 """
 
 import os
+import dj_database_url
 
 from . import include_settings
 from .default import *  # noqa
@@ -82,18 +79,8 @@ ALLOWED_HOSTS = os.environ.get('GALAXY_ALLOWED_HOSTS', '*').split(',')
 # Database
 # ---------------------------------------------------------
 
-# TODO(cutwater): Replace with DATABASE_URL connection string parameter
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('GALAXY_DB_NAME', 'galaxy'),
-        'USER': os.environ.get('GALAXY_DB_USER', 'galaxy'),
-        'PASSWORD': os.environ.get('GALAXY_DB_PASSWORD', ''),
-        'HOST': os.environ.get('GALAXY_DB_HOST', ''),
-        'PORT': int(os.environ.get('GALAXY_DB_PORT', 5432)),
-        'CONN_MAX_AGE': None,
-    }
-}
+# Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
+DATABASES = {'default': dj_database_url.config(env='GALAXY_DB_URL', conn_max_age=None)}
 
 # Cache
 # ---------------------------------------------------------
@@ -200,8 +187,8 @@ SITE_NAME = os.environ.get('GALAXY_SITE_NAME', 'localhost')
 # FIXME(cutwater): Remove WAIT_FOR logic from django application
 WAIT_FOR = [
     {
-        'host': os.environ.get('GALAXY_DB_HOST', ''),
-        'port': int(os.environ.get('GALAXY_DB_PORT', 5432)),
+        'host': DATABASES['default']['HOST'],
+        'port': DATABASES['default']['PORT'],
     },
     {
         'host': os.environ.get('GALAXY_RABBITMQ_HOST', ''),

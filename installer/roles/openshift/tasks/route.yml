@@ -1,0 +1,22 @@
+# route.yml
+---
+- name: Create route
+  openshift_v1_route:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          apiVersion: v1
+          kind: Route
+          metadata:
+              name: 'web-8000'
+              namespace: '{{ openshift_project }}'
+              labels:
+                  app: galaxy
+                  service: web
+          spec:
+              to:
+                  kind: Service
+                  name: web
+              port:
+                  targetPort: port-8000-tcp

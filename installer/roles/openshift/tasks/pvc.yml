@@ -1,0 +1,37 @@
+# pvc.yml
+---
+- name: Create PVC
+  k8s_v1_persistent_volume_claim:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+              name: elastic-volume
+              namespace: '{{ openshift_project }}'
+          spec:
+              resources:
+                  requests:
+                      storage: 5Gi
+              accessModes:
+                - ReadWriteOnce
+
+- name: Create PVC
+  k8s_v1_persistent_volume_claim:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+              name: pgdata-volume
+              namespace: '{{ openshift_project }}'
+          spec:
+              resources:
+                  requests:
+                      storage: 5Gi
+              accessModes:
+                - ReadWriteOnce

@@ -52,6 +52,10 @@ clean:
 	rm -fv galaxy/static/dist/*.js
 	find . -type f -name "*.pyc" -delete
 
+.PHONT: createsuperuser
+	@echo Create super user
+	${VENV_BIN}/python ./manage.py createsuperuser
+
 # ---------------------------------------------------------
 # Build targets
 # ---------------------------------------------------------
@@ -128,7 +132,7 @@ dev/flake8:
 .PHONY: dev/test
 dev/test:
 	@echo "Running tests"
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py test
+	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py test --noinput
 
 .PHONY: dev/waitenv
 dev/waitenv:
@@ -161,6 +165,12 @@ dev/restart:
 dev/stop:
 	# Stop one or more services
 	$(DOCKER_COMPOSE) stop $(filter-out $@,$(MAKECMDGOALS))
+
+.PHONY: dev/rm
+dev/rm:
+	# Remove services
+	$(DOCKER_COMPOSE) stop
+	$(DOCKER_COMPOSE) rm -f
 
 # Create the tmux session. Do NOT call directly. Use dev/tmux or dev/tmuxcc instead.
 .PHONY: dev/tmux_noattach

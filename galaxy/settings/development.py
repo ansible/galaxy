@@ -17,6 +17,7 @@
 # Django settings for galaxy project.
 
 import os
+import dj_database_url
 
 from .default import *  # noqa
 
@@ -40,18 +41,11 @@ INSTALLED_APPS += (  # noqa: F405
 # Database
 # ---------------------------------------------------------
 
-# TODO(cutwater): Replace with DATABASE_URL connection string parameter
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'galaxy',
-        'USER': 'galaxy',
-        'PASSWORD': 'galaxy',
-        'HOST': 'postgres',
-        'PORT': 5432,
-        'CONN_MAX_AGE': None,
-    }
-}
+# Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
+DATABASES = {'default': dj_database_url.config(env='GALAXY_DB_URL', conn_max_age=None)}
+
+# Set the test database name
+DATABASES['default']['TEST'] = {'NAME': 'test_galaxy'}
 
 # Cache
 # ---------------------------------------------------------

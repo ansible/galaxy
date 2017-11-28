@@ -190,7 +190,7 @@ def update_users(user, logger):
                 # new tag
                 try:
                     logger.info(u"USER: {} add".format(user).encode('utf-8').strip())
-                    doc = UserDoc(uername=user)
+                    doc = UserDoc(username=user)
                     doc.save()
                 except Exception as exc:
                     logger.error(u"USER: {0} failed to add {1}".format(user, str(exc)).encode('utf-8').strip())
