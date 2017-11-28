@@ -5,7 +5,7 @@ services:
     image: {{ galaxy_actual_image }}
     command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv && /entrypoint.sh manage migrate --noinput && /entrypoint.sh manage rebuild_index --noinput && /entrypoint.sh manage rebuild_galaxy_indexes && /entrypoint.sh run web']
     environment:
-      - DATABASE_URL=postgres://{{ pg_username }}:{{ pg_password }}@{{ pg_hostname | default('postgres') }}:{{ pg_port }}/{{ pg_database }}
+      - GALAXY_DB_URL=postgres://{{ pg_username }}:{{ pg_password }}@{{ pg_hostname | default('postgres') }}:{{ pg_port }}/{{ pg_database }}
       - GALAXY_SECRET_KEY={{ galaxy_secret }}
       - GALAXY_RABBITMQ_HOST=rabbitmq
       - GALAXY_RABBITMQ_PASSWORD=galaxy
@@ -28,7 +28,7 @@ services:
     image: {{ galaxy_actual_image }}
     command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv --wait-for web:8000 && /entrypoint.sh run worker']
     environment:
-      - DATABASE_URL=postgres://{{ pg_username }}:{{ pg_password }}@{{ pg_hostname | default('postgres') }}:{{ pg_port }}/{{ pg_database }}
+      - GALAXY_DB_URL=postgres://{{ pg_username }}:{{ pg_password }}@{{ pg_hostname | default('postgres') }}:{{ pg_port }}/{{ pg_database }}
       - GALAXY_SECRET_KEY={{ galaxy_secret }}
       - GALAXY_RABBITMQ_HOST=rabbitmq
       - GALAXY_RABBITMQ_PASSWORD=galaxy

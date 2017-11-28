@@ -22,13 +22,9 @@ script:
 
 # TODO(cutwater): Run tests locally
 # start the application
-- make dev/up_test
+- make dev/up_detached
 - make dev/waitenv
 - make dev/test
-
-# Restart containers in development
-- make dev/rm
-- make dev/up_detached
 
 # check images running
 - docker ps -a

@@ -299,7 +299,7 @@
                         securityContext: {}
                         state: present
                         env:
-                          - name: DATABASE_URL
+                          - name: GALAXY_DB_URL
                             value: "postgres://{{ pg_username }}:{{ pg_password }}@{{ pg_hostname | default('postgres') }}:{{ pg_port }}/{{ pg_database }}"
                           - name: GALAXY_SECRET_KEY
                             value: '{{ galaxy_secret }}'
@@ -376,7 +376,7 @@
                           securityContext: {}
                           state: present
                           env:
-                            - name: DATABASE_URL
+                            - name: GALAXY_DB_URL
                               value: "postgres://{{ pg_username }}:{{ pg_password }}@{{ pg_hostname | default('postgres') }}:{{ pg_port }}/{{ pg_database }}"
                             - name: GALAXY_SECRET_KEY
                               value: '{{ galaxy_secret }}'

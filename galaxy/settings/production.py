@@ -23,7 +23,7 @@ The following environment variables are supported:
 * GALAXY_SECRET_KEY
 * GALAXY_ALLOWED_HOSTS
 * GALAXY_EMAIL_HOST
-* DATABASE_URL    # from dj_database_url
+* GALAXY_DB_URL 
 * GALAXY_EMAIL_PORT
 * GALAXY_EMAIL_USER
 * GALAXY_EMAIL_PASSWORD
@@ -79,8 +79,8 @@ ALLOWED_HOSTS = os.environ.get('GALAXY_ALLOWED_HOSTS', '*').split(',')
 # Database
 # ---------------------------------------------------------
 
-# Define DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
-DATABASES = {'default': dj_database_url.config(conn_max_age=None)}
+# Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
+DATABASES = {'default': dj_database_url.config(env='GALAXY_DB_URL', conn_max_age=None)}
 
 # Cache
 # ---------------------------------------------------------

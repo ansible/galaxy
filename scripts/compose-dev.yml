@@ -10,7 +10,7 @@ services:
     environment:
       - TMUX
       - TEST
-      - DATABASE_URL
+      - GALAXY_DB_URL=postgres://postgres:postgres@postgres:5432/galaxy
     ports:
       - '8000:8000'
     links:

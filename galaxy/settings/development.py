@@ -41,11 +41,11 @@ INSTALLED_APPS += (  # noqa: F405
 # Database
 # ---------------------------------------------------------
 
-# Define DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
-DATABASES = {'default': dj_database_url.config(default='postgres://galaxy:galaxy@postgres:5432/galaxy', conn_max_age=None)}
+# Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
+DATABASES = {'default': dj_database_url.config(env='GALAXY_DB_URL', conn_max_age=None)}
 
 # Set the test database name
-DATABASES['default']['TEST'] = {'NAME': 'galaxy'}
+DATABASES['default']['TEST'] = {'NAME': 'test_galaxy'}
 
 # Cache
 # ---------------------------------------------------------

@@ -6,7 +6,7 @@ services:
     command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv && /entrypoint.sh manage migrate --noinput && /entrypoint.sh manage rebuild_index --noinput && /entrypoint.sh manage rebuild_galaxy_indexes && /entrypoint.sh run web']
     environment:
       - GALAXY_SECRET_KEY=secret
-      - DATABASE_URL="postgres://galaxy:galaxy@postgres:5432/galaxy"
+      - GALAXY_DB_URL="postgres://galaxy:galaxy@postgres:5432/galaxy"
       - GALAXY_RABBITMQ_HOST=rabbitmq
       - GALAXY_RABBITMQ_PASSWORD=galaxy
       - GALAXY_MEMCACHE_HOST=memcache
@@ -24,7 +24,7 @@ services:
     command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv --wait-for web:8000 && /entrypoint.sh run worker']
     environment:
       - GALAXY_SECRET_KEY=secret
-      - DATABASE_URL="postgres://galaxy:galaxy@postgres:5432/galaxy"
+      - GALAXY_DB_URL="postgres://galaxy:galaxy@postgres:5432/galaxy"
       - GALAXY_RABBITMQ_HOST=rabbitmq
       - GALAXY_RABBITMQ_PASSWORD=galaxy
       - GALAXY_MEMCACHE_HOST=memcache

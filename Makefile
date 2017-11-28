@@ -152,11 +152,6 @@ dev/up_tmux:
 	# Run before dev/tmux to start containers detached and no processes running in the galaxy container.
 	@TMUX=1 $(DOCKER_COMPOSE) up -d
 
-.PHONY: dev/up_test
-dev/up_test:
-	# Run before dev/test to start containers detached and no processes running in the galaxy container.
-	@TEST=1 DATABASE_URL=postgres://postgres:postgres@postgres:5432/galaxy $(DOCKER_COMPOSE) up -d
-
 .PHONY: dev/down
 dev/down:
 	$(DOCKER_COMPOSE) down
