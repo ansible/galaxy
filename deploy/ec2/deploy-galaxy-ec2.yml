@@ -34,7 +34,7 @@
         chdir: ../..  
 
     - name: Get the name of the local distribution file
-      shell: ls -1 $(pwd)/dist/galaxy-*.tar.gz
+      shell: ls -1 $(pwd)/dist/galaxy-*-none-any.whl
       args:
         chdir: ../.. 
       register: dist_file 

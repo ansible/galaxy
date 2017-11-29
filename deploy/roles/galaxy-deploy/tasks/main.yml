@@ -1,11 +1,11 @@
 ---
-- name: Check for the tar file
-  shell: ls -1 {{ galaxy_dist_dir }}/galaxy-*.tar.gz
-  register: app_tar
+- name: Check for the wheel file
+  shell: ls -1 {{ galaxy_dist_dir }}/galaxy-*-none-any.whl
+  register: whl_file
 
 - name: File should exist 
   assert:
-    that: "'tar.gz' in app_tar.stdout"
+    that: "'none-any.whl' in whl_file.stdout"
 
 - name: Remove the existing app
   pip:
@@ -15,7 +15,7 @@
 
 - name: Install the Galaxy app
   pip:
-    name: "{{ app_tar.stdout }}"
+    name: "{{ whl_file.stdout }}"
     state: present
 
 - name: Deploy settings file
