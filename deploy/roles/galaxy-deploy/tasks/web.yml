@@ -27,6 +27,17 @@
     src: /var/lib/galaxy/public/static/img/favicon.ico
     dest: /var/lib/galaxy/favicon.ico
     remote_src: yes
-  notify:
-    - restart apache
 
+- name: Stop apache
+  service: 
+    name: httpd
+    state: stopped
+
+- name: Set log file ownership
+  command: chown apache:apache /var/log/galaxy/*
+
+- name: Start apache 
+  service:
+    name: httpd
+    state: started
+    enabled: yes
