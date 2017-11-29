@@ -7,17 +7,13 @@
   assert:
     that: "'none-any.whl' in whl_file.stdout"
 
-- name: Remove the existing app
-  pip:
-    name: galaxy
-    state: absent
+- name: Remove the existing Galaxy app
+  command: pip uninstall -y galaxy
   ignore_errors: yes
 
 - name: Install the Galaxy app
-  pip:
-    name: "{{ whl_file.stdout }}"
-    state: present
-
+  command: pip install --upgrade "{{ whl_file.stdout }}"
+  
 - name: Deploy settings file
   template:
     src: settings.py.j2
