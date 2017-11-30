@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 #  This file is part of Ansible Galaxy
 #
