@@ -65,7 +65,6 @@ INSTALLED_APPS = (
     # 3rd part apps
     'bootstrapform',
     'djcelery',
-    'maintenance',
     'rest_framework',
     'rest_framework.authtoken',
     'haystack',
@@ -85,7 +84,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'maintenance.middleware.MaintenanceMiddleware',
 )
 
 ROOT_URLCONF = 'galaxy.urls'
