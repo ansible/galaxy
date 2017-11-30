@@ -87,9 +87,13 @@
   # Only run tasks on the first host in the group
   - name: Rebuild Search Indexes
     shell: "galaxy-manage rebuild_index --noinput"
+    environment:
+      DJANGO_SETTINGS_MODULE: galaxy.settings.custom
     when: inventory_hostname == groups[galaxy_hosts_web][0]
 
   - name: Rebuild custom search indexes
     shell: "galaxy-manage rebuild_galaxy_indexes"
+    environment:
+      DJANGO_SETTINGS_MODULE: galaxy.settings.custom
     when: inventory_hostname == groups[galaxy_hosts_web][0]
 
