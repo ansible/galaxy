@@ -12,7 +12,7 @@
     mode: 0775
 
 - name: Remove django logs
-  command: 'rm -f /var/log/{{ item }}'
+  command: 'rm -f /var/log/galaxy/{{ item }}'
   with_items:
   - allauth.log 
   - django.log

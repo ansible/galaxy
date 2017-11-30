@@ -34,7 +34,7 @@
     state: stopped
 
 - name: Set log file ownership
-  command: chown apache:apache /var/log/galaxy/*
+  command: chown -f apache:apache /var/log/galaxy/*
 
 - name: Start apache 
   service:
