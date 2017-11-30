@@ -261,7 +261,10 @@ class Role(CommonModelNameNotUnique):
     # a class representing a user role
 
     class Meta:
-        unique_together = ('namespace', 'name')
+        unique_together = [
+            ('namespace', 'name'),
+            ('github_user', 'github_repo'),
+        ]
         ordering = ['namespace', 'name']
 
     #
