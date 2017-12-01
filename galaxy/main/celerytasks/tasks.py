@@ -940,19 +940,23 @@ def refresh_user_stars(user, token):
         logger.error(msg)
         raise Exception(msg)
 
-    # Refresh user starred cache
-    user.starred.all().delete()
-    for s in starred:
-        name = s.full_name.split('/')
-        cnt = Role.objects.filter(github_user=name[0], github_repo=name[1]).count()
-        if cnt > 0:
-            user.starred.get_or_create(
-                github_user=name[0],
-                github_repo=name[1],
-                defaults={
-                    'github_user': name[0],
-                    'github_repo': name[1]
-                })
+    new_starred = {(s.owner.login, s.name) for s in starred}
+    old_starred = {(s.role.github_user, s.role.github_repo): s.id
+                   for s in user.starred.select_related('role').all()}
+
+    to_remove = [v for k, v in old_starred.iteritems()
+                 if k not in new_starred]
+    to_add = new_starred - set(old_starred)
+
+    user.starred.filter(id__in=to_remove).delete()
+
+    for github_user, github_repo in to_add:
+        try:
+            role = Role.objects.get(
+                github_user=github_user, github_repo=github_repo)
+        except Role.DoesNotExist:
+            continue
+        user.starred.create(role=role)
 
 
 @task(name="galaxy.main.celerytasks.tasks.refresh_role_counts")

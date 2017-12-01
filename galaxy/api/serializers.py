@@ -287,9 +287,9 @@ class UserListSerializer(BaseSerializer):
         d['starred'] = [
             OrderedDict([
                 ('id', g.id),
-                ('github_user', g.github_user),
-                ('github_repo', g.github_repo)
-            ]) for g in obj.starred.all()]
+                ('github_user', g.role.github_user),
+                ('github_repo', g.role.github_repo)
+            ]) for g in obj.starred.select_related('role').all()]
         return d
 
     def get_email(self, obj):
@@ -374,9 +374,9 @@ class UserDetailSerializer(BaseSerializer):
         d['starred'] = [
             OrderedDict([
                 ('id', g.id),
-                ('github_user', g.github_user),
-                ('github_repo', g.github_repo)
-            ]) for g in obj.starred.all()]
+                ('github_user', g.role.github_user),
+                ('github_repo', g.role.github_repo)
+            ]) for g in obj.starred.select_related('role').all()]
         return d
 
     def get_email(self, obj):
@@ -402,12 +402,19 @@ class SubscriptionSerializer(BaseSerializer):
             return obj.get_absolute_url()
 
 
+class StargazerRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ('id', 'namespace', 'name', 'github_repo', 'github_user')
+
+
 class StargazerSerializer(BaseSerializer):
     owner = serializers.CharField(read_only=True)
+    role = StargazerRoleSerializer(read_only=True)
 
     class Meta:
         model = Stargazer
-        fields = ('owner', 'github_user', 'github_repo')
+        fields = ('owner', 'role')
 
     def get_url(self, obj):
         if obj is None:
@@ -981,7 +988,9 @@ class RoleSearchSerializer(HaystackSerializer):
         request = self.context.get('request', None)
         if request is not None:
             try:
-                Stargazer.objects.get(owner=request.user, github_user=instance.github_user, github_repo=instance.github_repo)
+                Stargazer.objects.get(
+                    owner=request.user,
+                    role=instance)
                 return True
             except:
                 pass

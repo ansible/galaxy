@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^detail$', views.detail_category, name='detail-category'),
     url(r'^roleadd$', views.role_add_view, name='role-add-category'),
     url(r'^imports$', views.import_status_view, name='import-status'),
+    url(r'^stars$', views.stars_list_view, name='stars-list'),
 
     # Logged in/secured URLs
     url(r'^accounts/connect/$', views.accounts_connect),
