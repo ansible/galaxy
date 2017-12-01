@@ -131,13 +131,6 @@ EMAIL_USE_TLS = True
 # Third Party Apps Settings
 # =========================================================
 
-# Maintenance
-# ---------------------------------------------------------
-
-MAINTENANCE_MODE = False
-
-MAINTENANCE_FILE = '/var/lib/galaxy/.maintenance'
-
 # Elasticsearch settings
 # ---------------------------------------------------------
 
