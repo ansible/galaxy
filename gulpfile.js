@@ -137,4 +137,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('default', ['less', 'server', 'watch']);
-gulp.task('build', ['less', 'accountApp', 'listApp', 'detailApp', 'exploreApp', 'roleAddApp', 'importStatusApp']);
+gulp.task('build', [
+    'less', 'accountApp', 'listApp', 'detailApp',
+    'exploreApp', 'roleAddApp', 'importStatusApp', 'userStarredApp'
+]);
