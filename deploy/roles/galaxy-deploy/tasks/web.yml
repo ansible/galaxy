@@ -24,7 +24,7 @@
 
 - name: Copy favicon.ico
   copy:
-    src: /var/lib/galaxy/public/static/img/favicon.ico
+    src: /var/lib/galaxy/public/static/img/favicon-32x32.png
     dest: /var/lib/galaxy/favicon.ico
     remote_src: yes
 
