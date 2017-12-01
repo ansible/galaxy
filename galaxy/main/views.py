@@ -529,7 +529,7 @@ def stars_list_view(request):
         ] + common_services
     else:
         context["extra_js"] = [
-            'dist/galaxy.starsListApp.min.js'
+            'dist/galaxy.userStarredApp.min.js'
         ]
 
     if request.session.get("transient"):
