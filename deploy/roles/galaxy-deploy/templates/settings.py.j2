@@ -32,8 +32,6 @@ if SITE_ENV == "DEV":
 else:
     DEBUG = False
 
-MAINTENANCE_MODE = False
-
 WAIT_FOR = []
 
 # Add IPs that should see django-debug-toolbar
@@ -277,7 +275,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'maintenance.middleware.MaintenanceMiddleware',
 )
 
 ROOT_URLCONF = 'galaxy.urls'
@@ -293,6 +290,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'django.contrib.humanize',
     'debug_toolbar',
     'allauth',
     'allauth.account',
@@ -302,7 +300,6 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.twitter',
     'bootstrapform',
     'djcelery',
-    'maintenance',
     'rest_framework',
     'rest_framework.authtoken',
     'haystack',
@@ -321,8 +318,6 @@ AUTHENTICATION_BACKENDS = (
     # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
 )
-
-MAINTENANCE_FILE = '/var/lib/galaxy/.maintenance'
 
 TRAVIS_CONFIG_URL = 'https://api.travis-ci.org/config'
 

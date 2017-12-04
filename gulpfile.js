@@ -97,6 +97,19 @@ gulp.task('roleAddApp', function() {
     .pipe(gulp.dest('./galaxy/static/dist'));
 });
 
+gulp.task('userStarredApp', function() {
+    return gulp.src([
+        './galaxy/static/js/userStarredApp/*.js',
+        './galaxy/static/js/commonDirectives/*.js',
+        './galaxy/static/js/commonServices/*.js'
+    ])
+    .pipe(concat('galaxy.userStarredApp.js'))
+    .pipe(uglify({ 'mangle': true, 'compress': true }))
+    .pipe(rename({extname: ".min.js"}))
+    .pipe(gulp.dest('./galaxy/static/dist'));
+});
+
+
 gulp.task('less', function() {
     return gulp.src(['./galaxy/static/less/galaxy.less'])
         .pipe(less({
@@ -124,4 +137,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('default', ['less', 'server', 'watch']);
-gulp.task('build', ['less', 'accountApp', 'listApp', 'detailApp', 'exploreApp', 'roleAddApp', 'importStatusApp']);
+gulp.task('build', [
+    'less', 'accountApp', 'listApp', 'detailApp',
+    'exploreApp', 'roleAddApp', 'importStatusApp', 'userStarredApp'
+]);

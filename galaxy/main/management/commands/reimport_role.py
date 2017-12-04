@@ -34,12 +34,12 @@ class Command(BaseCommand):
         role = Role.objects.get(id=role_id)
         last_task = ImportTask.objects.filter(role=role, state='SUCCESS').order_by('-id').first()
         task = ImportTask.objects.create(
-            github_user         = role.github_user,
-            github_repo         = role.github_repo,
-            github_reference    = role.github_branch,
-            alternate_role_name = last_task.alternate_role_name,
-            role        = role,
-            owner       = last_task.owner,
-            state       = 'PENDING'
+            github_user=role.github_user,
+            github_repo=role.github_repo,
+            github_reference=role.github_branch,
+            alternate_role_name=last_task.alternate_role_name,
+            role=role,
+            owner=last_task.owner,
+            state='PENDING'
         )
         import_role.delay(task.id)

@@ -1,4 +1,4 @@
-/* (c) 2012-2016, Ansible by Red Hat
+/* (c) 2012-2018, Ansible by Red Hat
  *
  * This file is part of Ansible Galaxy
  *
@@ -51,7 +51,7 @@
         notificationSecretService) {
 
         
-        $scope.page_title = 'My Roles';
+        $scope.page_title = 'My Content';
         $scope.loading = true;
         $scope.repositories = repositories;
         $scope.username = currentUserService.username;

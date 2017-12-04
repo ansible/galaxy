@@ -1,4 +1,4 @@
-# (c) 2012-2017, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'django.contrib.humanize',
 
     # Allauth apps
     'allauth',
@@ -64,7 +65,6 @@ INSTALLED_APPS = (
     # 3rd part apps
     'bootstrapform',
     'djcelery',
-    'maintenance',
     'rest_framework',
     'rest_framework.authtoken',
     'haystack',
@@ -84,7 +84,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'maintenance.middleware.MaintenanceMiddleware',
 )
 
 ROOT_URLCONF = 'galaxy.urls'
@@ -191,10 +190,6 @@ DATABASES = {}
 # Third Party Apps Settings
 # =========================================================
 
-# Maintenance
-# ---------------------------------------------------------
-
-MAINTENANCE_MODE = False
 
 # Rest Framework
 # ---------------------------------------------------------
@@ -321,6 +316,10 @@ TRAVIS_CONFIG_URL = 'https://api.travis-ci.org/config'
 
 # TODO(cutwater): Consider removing wait_for from settings
 WAIT_FOR = []
+
+ADMIN_URL_PATTERN = r'^admin/'
+
+ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
 
 # =========================================================
 # Logging

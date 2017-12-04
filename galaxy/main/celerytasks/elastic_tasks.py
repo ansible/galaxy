@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -19,8 +19,10 @@ from celery import task
 
 # local
 from galaxy.main.models import Platform, Role, Tag
-from galaxy.main.search_models import TagDoc, PlatformDoc, UserDoc
-from galaxy.main.utils.memcache_lock import memcache_lock, MemcacheLockException
+from galaxy.main.search_models import (
+    TagDoc, PlatformDoc, CloudPlatformDoc, UserDoc)
+from galaxy.main.utils.memcache_lock import (
+    memcache_lock, MemcacheLockException)
 
 
 def update_tags(tags, logger):
@@ -79,7 +81,7 @@ def update_platforms(platforms, logger):
         try:
             with memcache_lock("platform_%s" % platform):
                 cnt = Role.objects.filter(active=True, is_valid=True, platforms__name=platform) \
-                    .order_by('namespace','name') \
+                    .order_by('namespace', 'name') \
                     .distinct('namespace', 'name').count()
                 es_platforms = PlatformDoc.search().query('match', name=platform_name).execute()
                 updated = False
@@ -119,6 +121,59 @@ def update_platforms(platforms, logger):
             logger.info(u"PLATFORM: %s failed to get lock %s".format(platform, str(exc)).encode('utf-8').strip())
 
 
+def update_cloud_platforms(cloud_platforms, logger):
+    for platform in cloud_platforms:
+        logger.info(u"CLOUD_PLATFORM: {}"
+                    .format(platform).encode('utf-8').strip())
+        try:
+            with memcache_lock("cloud_platform_%s" % platform):
+                cnt = (
+                    Role.objects.filter(
+                        active=True, is_valid=True,
+                        cloud_platforms__name=platform)
+                    .order_by('namespace', 'name')
+                    .distinct('namespace', 'name')
+                    .count())
+                es_platforms = CloudPlatformDoc.search().query(
+                    'match', name=platform).execute()
+                updated = False
+
+                for es_platform in es_platforms:
+                    if es_platform.name == platform:
+                        updated = True
+                        if es_platform.roles != cnt:
+                            logger.info(u"CLOUD PLATFORM: {0} update count {1}"
+                                        .format(platform, cnt)
+                                        .encode('utf-8').strip())
+                            try:
+                                es_platform.update(roles=cnt)
+                            except Exception as exc:
+                                logger.error(
+                                    "PLATFORM: {0} failed to update {1}"
+                                    .format(platform, str(exc))
+                                    .encode('utf-8').strip())
+                                raise
+                        else:
+                            logger.info(
+                                u"CLOUD_PLATFORM: no update required {0}"
+                                .format(platform).encode('utf-8').strip())
+
+                if not updated:
+                    # new platform
+                    try:
+                        logger.info(u"CLOUD_PLATFORM: {0} add"
+                                    .format(platform).encode('utf-8').strip())
+                        doc = CloudPlatformDoc(name=platform, roles=cnt)
+                        doc.save()
+                    except Exception as exc:
+                        logger.error(u"CLOUD_PLATFORM:{0} failed to add {1}"
+                                     .format(platform, str(exc)))
+                        raise
+        except MemcacheLockException as exc:
+            logger.info(u"CLOUD_PLATFORM: %s failed to get lock %s"
+                        .format(platform, str(exc)).encode('utf-8').strip())
+
+
 def update_users(user, logger):
     logger.info(u"USER: {0}".format(user).encode('utf-8').strip())
     try:
@@ -135,7 +190,7 @@ def update_users(user, logger):
                 # new tag
                 try:
                     logger.info(u"USER: {} add".format(user).encode('utf-8').strip())
-                    doc = UserDoc(uername=user)
+                    doc = UserDoc(username=user)
                     doc.save()
                 except Exception as exc:
                     logger.error(u"USER: {0} failed to add {1}".format(user, str(exc)).encode('utf-8').strip())
@@ -144,16 +199,22 @@ def update_users(user, logger):
         logger.info(u"USER: {0} failed to get lock {1}".format(user, str(exc)).encode('utf-8').strip())
 
 
-@task(throws=(Exception,), name="galaxy.main.celerytasks.elastic_tasks.update_custom_indexes")
-def update_custom_indexes(username=None, tags=[], platforms=[]):
+# FIXME(cutwater): Mutalbe types usage as argument default values.
+@task(name="galaxy.main.celerytasks.elastic_tasks.update_custom_indexes",
+      throws=(Exception,))
+def update_custom_indexes(username=None, tags=None,
+                          platforms=None, cloud_platforms=None):
 
     logger = update_custom_indexes.get_logger()
 
-    if len(tags) > 0:
+    if tags:
         update_tags(tags, logger)
 
-    if len(platforms) > 0:
+    if platforms:
         update_platforms(platforms, logger)
+
+    if cloud_platforms:
+        update_cloud_platforms(cloud_platforms, logger)
 
     if username is not None:
         update_users(username, logger)

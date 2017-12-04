@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -210,23 +210,23 @@ class FieldLookupBackend(BaseFilterBackend):
                 args = []
                 for n, k, v in and_filters:
                     if n:
-                        args.append(~Q(**{k:v}))
+                        args.append(~Q(**{k: v}))
                     else:
-                        args.append(Q(**{k:v}))
+                        args.append(Q(**{k: v}))
                 if or_filters:
                     q = Q()
-                    for n,k,v in or_filters:
+                    for n, k, v in or_filters:
                         if n:
-                            q |= ~Q(**{k:v})
+                            q |= ~Q(**{k: v})
                         else:
-                            q |= Q(**{k:v})
+                            q |= Q(**{k: v})
                     args.append(q)
                 queryset = queryset.filter(*args)
-                for n,k,v in chain_filters:
+                for n, k, v in chain_filters:
                     if n:
-                        q = ~Q(**{k:v})
+                        q = ~Q(**{k: v})
                     else:
-                        q = Q(**{k:v})
+                        q = Q(**{k: v})
                     queryset = queryset.filter(q)
             return queryset.distinct()
         except (FieldError, FieldDoesNotExist, ValueError), e:

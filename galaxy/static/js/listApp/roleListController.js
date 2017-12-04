@@ -1,4 +1,4 @@
-/* (c) 2012-2016, Ansible by Red Hat
+/* (c) 2012-2018, Ansible by Red Hat
  *
  * This file is part of Ansible Galaxy
  *
@@ -71,7 +71,7 @@
         $('body').css({ 'overflow-y': 'hidden', 'height': 'auto' });
         
         $scope.galaxy_page_title_fluid = true;
-        $scope.page_title = 'Browse Roles';
+        $scope.page_title = 'Search';
         $scope.version = GLOBAL_VERSION;
         
         $scope.list_data = {
@@ -81,6 +81,7 @@
             'page_range'         : [],
             'tags'               : '',
             'platforms'          : '',
+            'cloud_platforms'    : '',
             'users'              : '',
             'role_type'          : '',
             'autocomplete'       : '',
@@ -101,6 +102,7 @@
             'Author',
             'Keyword',
             'Platform',
+            'Cloud Platform',
             'Tag',
             'Role Type'
         ];
@@ -145,6 +147,7 @@
         var suggestions = $resource('/api/v1/search/:object/', { 'object': '@object', 'page': 1, 'page_size': 10 }, {
             'tags': { method: 'GET', params:{ object: 'tags' }, isArray: false },
             'platforms': { method: 'GET', params:{ object: 'platforms' }, isArray: false },
+            'cloud_platforms': { method: 'GET', params:{ object: 'cloud_platforms' }, isArray: false },
             'users': { method: 'GET', params:{ object: 'users' }, isArray: false }
         });
 
@@ -225,6 +228,11 @@
             if ($scope.list_data.platforms) {
                 params.platforms_autocomplete = $scope.list_data.platforms;
                 event_track.category += '/Platforms:' + params.platforms_autocomplete;
+            }
+
+            if ($scope.list_data.cloud_platforms) {
+                params.cloud_platforms_autocomplete = $scope.list_data.cloud_platforms;
+                event_track.category += '/CloudPlatforms:' + params.cloud_platforms_autocomplete;
             }
 
             if ($scope.list_data.users) {
@@ -309,12 +317,15 @@
         function _search(_keywords, _orderby) {
             $scope.list_data.page = 1;
             $scope.roles = [];
-            var tags = [], platforms = [], keywords = [], users = [], role_type = [], params = {};
+            var tags = [], platforms = [], cloud_platforms = [],
+                keywords = [], users = [], role_type = [], params = {};
             angular.forEach(_keywords, function(keyword) {
                 if (keyword.type === 'Tag') {
                     tags.push(keyword.value);
                 } else if (keyword.type === 'Platform') {
                     platforms.push(keyword.value);
+                } else if (keyword.type === 'Cloud Platform') {
+                    cloud_platforms.push(keyword.value);
                 } else if (keyword.type === 'Author') {
                     users.push(keyword.value);
                 } else if (keyword.type === 'Role Type') {
@@ -328,6 +339,7 @@
                 }
             });
             $scope.list_data.platforms = '';
+            $scope.list_data.cloud_platforms = '';
             $scope.list_data.autocomplete = '';
             $scope.list_data.order = '';
             $scope.list_data.tags = '';
@@ -338,6 +350,9 @@
             }
             if (platforms.length) {
                 $scope.list_data.platforms = platforms.join(' ');
+            }
+            if (cloud_platforms.length) {
+                $scope.list_data.cloud_platforms = cloud_platforms.join(' ');
             }
             if (keywords.length) {
                 $scope.list_data.autocomplete = keywords.join(' ');
@@ -389,6 +404,15 @@
                         });
                     });
                 });
+            } else if (type === 'Cloud Platform' && value) {
+                suggestions.cloud_platforms({ autocomplete: value }).$promise.then(function(data) {
+                    angular.forEach(data.results, function(result) {
+                        $scope.searchSuggestions.push({
+                            type: 'Cloud Platform',
+                            name: result.name
+                        });
+                    });
+                });
             } else if (type === 'Author' && value) {
                 suggestions.users({ autocomplete: value }).$promise.then(function(data) {
                     angular.forEach(data.results, function(result) {
@@ -424,6 +448,9 @@
             if ($scope.list_data.platforms) {
                 result.platforms = $scope.list_data.platforms;
             }
+            if ($scope.list_data.cloud_platforms) {
+                result.cloud_platforms = $scope.list_data.cloud_platforms;
+            }
             if ($scope.list_data.users) {
                 result.users = $scope.list_data.users;
             }
@@ -445,6 +472,7 @@
             result.page_size = data.page_size || 10;
             result.tags = data.tags || '';
             result.platforms = data.platforms || '';
+            result.cloud_platforms = data.cloud_platforms || '';
             result.users = data.users || '';
             result.autocomplete = data.autocomplete || '';
             result.order = data.order || '';
@@ -453,9 +481,12 @@
         }
 
         function _setSearchTerms(data) {
-            var keys = []
+            var keys = [];
             if (data.platforms) {
                 _getKeys('Platform', data.platforms, keys);
+            }
+            if (data.cloud_platforms) {
+                _getKeys('Cloud Platform', data.cloud_platforms, keys);
             }
             if (data.tags) {
                 _getKeys('Tag', data.tags, keys);

@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -21,6 +21,7 @@ import re
 from django.contrib.auth.models import (AbstractBaseUser,
                                         PermissionsMixin,
                                         UserManager)
+from django.core import exceptions
 from django.core.mail import send_mail
 from django.core import validators
 from django.db import models
@@ -50,24 +51,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
                                       _('Enter a valid username.'),
                                       'invalid')
         ])
-    full_name       = models.CharField(_('full name'), max_length=254, blank=True)
-    short_name      = models.CharField(_('short name'), max_length=30, blank=True)
-    email           = models.EmailField(_('email address'), max_length=254, unique=True)
-    is_staff        = models.BooleanField(
+    full_name = models.CharField(_('full name'), max_length=254, blank=True)
+    short_name = models.CharField(_('short name'), max_length=30, blank=True)
+    email = models.EmailField(_('email address'), max_length=254, unique=True)
+    is_staff = models.BooleanField(
         _('staff status'),
         default=False,
         help_text=_('Designates whether the user can log into this admin site.'))
-    is_active       = models.BooleanField(
+    is_active = models.BooleanField(
         _('active'),
         default=True,
         db_index=True,
         help_text=_('Designates whether this user should be treated as '
                     'active. Unselect this instead of deleting accounts.'))
-    date_joined     = models.DateTimeField(_('date joined'), default=timezone.now)
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    karma           = models.IntegerField(default = 0, db_index = True)
-    github_avatar   = models.CharField(_('github avatar'), max_length=254, blank=True)
-    github_user     = models.CharField(_('github user'), max_length=254, blank=True)
+    karma = models.IntegerField(default=0, db_index=True)
+    github_avatar = models.CharField(_('github avatar'), max_length=254, blank=True)
+    github_user = models.CharField(_('github user'), max_length=254, blank=True)
     cache_refreshed = models.BooleanField(_('cache refreshed'), default=False)
 
     objects = UserManager()
@@ -87,7 +88,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
 
         if self.is_active:
             if 'username' in self._meta.get_all_field_names():
-                self.name   = "_deleted_%s_%s" % (timezone.now().isoformat(), self.username)
+                self.name = "_deleted_%s_%s" % (timezone.now().isoformat(), self.username)
             self.is_active = False
             if save:
                 self.save()
@@ -128,22 +129,23 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     def get_starred(self):
         return [{
             'id': g.id,
-            'github_user': g.github_user,
-            'github_repo': g.github_repo,
-        } for g in self.starred.all()]
+            'github_user': g.role.github_user,
+            'github_repo': g.role.github_repo,
+        } for g in self.starred.select_related('role').all()]
 
     def get_subscriber(self, github_user, github_repo):
         try:
-            sub = self.subscriptions.get(github_user=github_user, github_repo=github_repo)
-            return sub
-        except:
+            return self.subscriptions.get(
+                github_user=github_user, github_repo=github_repo)
+        except exceptions.ObjectDoesNotExist:
             return None
 
     def get_stargazer(self, github_user, github_repo):
         try:
-            star = self.starred.get(github_user=github_user, github_repo=github_repo)
+            star = self.starred.get(role__github_user=github_user,
+                                    role__github_repo=github_repo)
             return star
-        except:
+        except exceptions.ObjectDoesNotExist:
             return None
 
     def is_connected_to_github(self):

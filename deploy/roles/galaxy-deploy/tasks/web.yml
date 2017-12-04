@@ -15,6 +15,37 @@
   command: galaxy-manage collectstatic --clear --noinput
   environment:
     DJANGO_SETTINGS_MODULE: 'galaxy.settings.custom'
-  notify:
-    - restart apache
 
+- name: Copy wsgi.py
+  copy:
+    src: /usr/lib/python2.7/site-packages/galaxy/wsgi.py
+    dest: /var/lib/galaxy/wsgi.py
+    remote_src: yes
+
+- name: Copy favicon.ico
+  copy:
+    src: /var/lib/galaxy/public/static/img/favicon.ico
+    dest: /var/lib/galaxy/favicon.ico
+    remote_src: yes
+
+- name: Stop apache
+  service: 
+    name: httpd
+    state: stopped
+
+- name: Set log file ownership
+  file:
+    path: '/var/log/galaxy/{{ item }}'
+    owner: apache
+    group: apache
+    state: touch
+  with_items:
+  - allauth.log
+  - django.log
+  - galaxy.log
+
+- name: Start apache 
+  service:
+    name: httpd
+    state: started
+    enabled: yes

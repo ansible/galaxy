@@ -1,4 +1,4 @@
-# (c) 2012-2014, Ansible, Inc. <support@ansible.com>
+# (c) 2012-2018, Ansible, Inc. <support@ansible.com>
 #
 # This file is part of Ansible Galaxy
 #

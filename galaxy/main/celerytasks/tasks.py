@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -27,21 +27,23 @@ from github import Github
 from github import GithubException, UnknownObjectException
 from urlparse import urlparse
 from requests import HTTPError
-from django.utils import timezone
+from django.conf import settings
 from django.db import transaction
+from django.utils import timezone
 from allauth.socialaccount.models import SocialToken
 
 from ansible.playbook.role.requirement import RoleRequirement
 from ansible.errors import AnsibleError
 
 from galaxy.main.models import (Platform,
+                                CloudPlatform,
                                 Tag,
                                 Role,
                                 ImportTask,
                                 RoleVersion,
                                 Namespace)
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
-from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -98,11 +100,13 @@ def get_meta_data(repo):
 
 
 def update_user_repos(github_repos, user):
-    '''
-    Refresh user repositories. Used by refresh_user_repos task and galaxy.api.views.RefreshUserRepos.
+    """
+    Refresh user repositories. Used by refresh_user_repos task and
+    galaxy.api.views.RefreshUserRepos.
     Returns user.repositories.all() queryset.
-    '''
-    logger.info("Starting update_user_repos for user {0}".format(user.username))
+    """
+    logger.info("Starting update_user_repos for user {0}"
+                .format(user.username))
     repo_dict = dict()
     for repo in github_repos:
         if not repo.private:
@@ -110,7 +114,8 @@ def update_user_repos(github_repos, user):
             if meta_data:
                 logger.info("Create or Update repo {0}".format(repo.full_name))
                 name = repo.full_name.split('/')
-                cnt = Role.objects.filter(github_user=name[0], github_repo=name[1]).count()
+                cnt = Role.objects.filter(
+                    github_user=name[0], github_repo=name[1]).count()
                 enabled = cnt > 0
                 user.repositories.update_or_create(
                     github_user=name[0],
@@ -129,16 +134,19 @@ def update_user_repos(github_repos, user):
             logger.info("Remove from cache {0}".format(full_name))
             repo.delete()
 
-    logger.info("Finished update_user_repos for user {0}".format(user.username))
+    logger.info("Finished update_user_repos for user {0}"
+                .format(user.username))
 
 
 def refresh_existing_user_repos(token, github_user):
-    '''
+    """
     Remove repos belonging to the user that are no longer accessible in GitHub,
     or update github_user, github_repo, if it has changed.
-    '''
-    logger.info("Starting refresh_existing_user_repos for GitHub user {0}".format(github_user.login))
+    """
+    logger.info("Starting refresh_existing_user_repos for GitHub user {0}"
+                .format(github_user.login))
     remove_roles = []
+
     for role in Role.objects.filter(github_user=github_user.login):
         full_name = "{0}/{1}".format(role.github_user, role.github_repo)
         try:
@@ -147,12 +155,10 @@ def refresh_existing_user_repos(token, github_user):
                 continue
             repo_name = repo['name']
             repo_owner = repo['owner']['login']
-            if role.github_repo.lower() != repo_name.lower() or role.github_user.lower() != repo_owner.lower():
+            if (role.github_repo.lower() != repo_name.lower()
+                    or role.github_user.lower() != repo_owner.lower()):
                 logger.info(u'UPDATED: {0} to {1}/{2}'.format(
-                    full_name,
-                    repo_owner,
-                    repo_name
-                ))
+                    full_name, repo_owner, repo_name))
                 role.github_user = repo_owner
                 role.github_repo = repo_name
                 role.save()
@@ -160,7 +166,8 @@ def refresh_existing_user_repos(token, github_user):
             logger.error(u"NOT FOUND: {0}".format(full_name))
             remove_roles.append(role.id)
         except Exception as exc:
-            logger.error(u"Error: refresh_existing_user_repos {0} - {1}".format(full_name, exc.message))
+            logger.error(u"Error: refresh_existing_user_repos {0} - {1}"
+                         .format(full_name, exc.message))
 
     for role_id in remove_roles:
         try:
@@ -168,9 +175,11 @@ def refresh_existing_user_repos(token, github_user):
             logger.info(u'DELETING: {0}/{1}'.format(role.namespace, role.name))
             role.delete()
         except Exception as exc:
-            logger.error(u"Error: refresh_existing_user_repos - {0}".format(exc.message))
+            logger.error(u"Error: refresh_existing_user_repos - {0}"
+                         .format(exc.message))
 
-    logger.info("Finished refresh_existing_user_repos for GitHub user {0}".format(github_user.login))
+    logger.info("Finished refresh_existing_user_repos for GitHub user {0}"
+                .format(github_user.login))
 
 
 def update_namespace(repo):
@@ -358,7 +367,7 @@ def add_platforms(import_task, galaxy_info, role):
                     platform_list.append(u"%s-%s" % (name, p.release))
                 except:
                     add_message(import_task, u"ERROR", u"Invalid platform: %s-%s (skipping)" %
-                                (name,version))
+                                (name, version))
         except Exception as exc:
             add_message(import_task, u"ERROR", u"An unknown error occurred while adding platform: %s" % unicode(exc))
 
@@ -367,6 +376,34 @@ def add_platforms(import_task, galaxy_info, role):
         platform_key = "%s-%s" % (platform.name, platform.release)
         if platform_key not in platform_list:
             role.platforms.remove(platform)
+
+
+def _add_cloud_platforms(import_task, galaxy_info, role):
+    add_message(import_task, u"INFO", u"Parsing cloud platforms")
+    cloud_platforms = galaxy_info.get('cloud_platforms', [])
+    if isinstance(cloud_platforms, basestring):
+        cloud_platforms = [cloud_platforms]
+
+    if not cloud_platforms:
+        add_message(import_task, u'WARNING',
+                    u'No cloud platforms found in meta data')
+
+    cloud_platforms = set(cloud_platforms)
+
+    # Remove cloud platforms that are no longer listed in the metadata
+    for platform in role.cloud_platforms.all():
+        if platform.name not in cloud_platforms:
+            role.cloud_platforms.remove(platform)
+
+    # Add new cloud platforms
+    for name in cloud_platforms:
+        try:
+            platform = CloudPlatform.objects.get(name=name)
+        except CloudPlatform.DoesNotExist:
+            add_message(import_task, u'ERROR',
+                        u'Invalid cloud platform: {0}, skipping'.format(name))
+            continue
+        role.cloud_platforms.add(platform)
 
 
 def add_dependencies(import_task, dependencies, role):
@@ -424,7 +461,7 @@ def add_tags(import_task, galaxy_info, role):
         else:
             for category in cats:
                 for cat in category.split(':'):
-                    if re.match('^[a-zA-Z0-9]+$',cat):
+                    if re.match('^[a-zA-Z0-9]+$', cat):
                         meta_tags.append(cat)
                     else:
                         add_message(import_task, u"WARNING", u"%s is not a valid tag" % cat)
@@ -436,7 +473,7 @@ def add_tags(import_task, galaxy_info, role):
         else:
             for tag in tags:
                 for t in tag.split(':'):
-                    if re.match('^[a-zA-Z0-9:]+$',t):
+                    if re.match('^[a-zA-Z0-9:]+$', t):
                         meta_tags.append(t)
                     else:
                         add_message(import_task, u"WARNING", u"'%s' is not a valid tag. Skipping." % t)
@@ -544,7 +581,7 @@ def update_role_videos(import_task, role, videos=None):
                 role.videos.create(url=video['embed_url'], description=video['description'])
 
 
-@task(throws=(Exception,), name="galaxy.main.celerytasks.tasks.import_role")
+@task(name="galaxy.main.celerytasks.tasks.import_role", throws=(Exception,))
 def import_role(task_id):
     try:
         logger.info(u"Starting task: %d" % int(task_id))
@@ -619,10 +656,10 @@ def import_role(task_id):
         add_message(import_task, u"INFO", u"Setting role name to %s" % import_task.alternate_role_name)
         role.name = import_task.alternate_role_name
 
-    role.description         = strip_input(galaxy_info.get("description",repo.description))
-    role.author              = strip_input(galaxy_info.get("author", ""))
-    role.company             = strip_input(galaxy_info.get("company", ""))
-    role.license             = strip_input(galaxy_info.get("license", ""))
+    role.description = strip_input(galaxy_info.get("description", repo.description))
+    role.author = strip_input(galaxy_info.get("author", ""))
+    role.company = strip_input(galaxy_info.get("company", ""))
+    role.license = strip_input(galaxy_info.get("license", ""))
 
     if galaxy_info.get('min_ansible_version'):
         role.min_ansible_version = strip_input(galaxy_info.get("min_ansible_version", ""))
@@ -630,8 +667,8 @@ def import_role(task_id):
     if galaxy_info.get('min_ansible_container_version'):
         role.min_ansible_container_version = strip_input(galaxy_info.get("min_ansible_container_version", ""))
 
-    role.issue_tracker_url     = strip_input(galaxy_info.get("issue_tracker_url", ""))
-    role.github_branch         = strip_input(galaxy_info.get("github_branch", ""))
+    role.issue_tracker_url = strip_input(galaxy_info.get("issue_tracker_url", ""))
+    role.github_branch = strip_input(galaxy_info.get("github_branch", ""))
     role.github_default_branch = repo.default_branch
 
     update_role_videos(import_task, role, videos=galaxy_info.get('video_links'))
@@ -652,6 +689,9 @@ def import_role(task_id):
         add_message(import_task, u"INFO", u"Setting role type to Container App")
         role.role_type = Role.CONTAINER_APP
         role.container_yml = ansible_container_yml
+    elif galaxy_info.get('demo', False):
+        add_message(import_task, u"INFO", u"Setting role type to Demo")
+        role.role_type = Role.DEMO
     else:
         role.role_type = role.ANSIBLE
         role.container_yml = None
@@ -720,11 +760,14 @@ def import_role(task_id):
     import_task.github_branch = branch
 
     add_tags(import_task, galaxy_info, role)
+
     if role.role_type in (role.CONTAINER, role.ANSIBLE):
         if not galaxy_info.get('platforms'):
             add_message(import_task, u"ERROR", u"No platforms found in meta data")
         else:
             add_platforms(import_task, galaxy_info, role)
+
+    _add_cloud_platforms(import_task, galaxy_info, role)
 
     if role.role_type in (role.CONTAINER, role.ANSIBLE) and meta_data.get('dependencies'):
         add_dependencies(import_task, meta_data['dependencies'], role)
@@ -785,9 +828,9 @@ def import_role(task_id):
     warning_count = import_task.messages.filter(message_type="WARNING").count()
     import_state = u"SUCCESS" if error_count == 0 else u"FAILED"
     add_message(import_task, u"INFO", u"Import completed")
-    add_message(import_task, import_state, u"Status %s : warnings=%d errors=%d" % (import_state,
-                                                                                   warning_count,
-                                                                                   error_count))
+    add_message(import_task, import_state,
+                u"Status %s : warnings=%d errors=%d" % (
+                    import_state, warning_count, error_count))
 
     try:
         import_task.state = import_state
@@ -803,11 +846,13 @@ def import_role(task_id):
     # Update ES indexes
     update_custom_indexes.delay(username=role.namespace,
                                 tags=role.get_tags(),
-                                platforms=role.get_unique_platforms())
+                                platforms=role.get_unique_platforms(),
+                                cloud_platforms=role.get_cloud_platforms())
     return True
 
 
-@task(name="galaxy.main.celerytasks.tasks.refresh_user_repos", throws=(Exception,))
+@task(name="galaxy.main.celerytasks.tasks.refresh_user_repos",
+      throws=(Exception,))
 @transaction.atomic
 def refresh_user_repos(user, token):
     logger.info(u"Refreshing User Repo Cache for {}".format(user.username))
@@ -895,19 +940,23 @@ def refresh_user_stars(user, token):
         logger.error(msg)
         raise Exception(msg)
 
-    # Refresh user starred cache
-    user.starred.all().delete()
-    for s in starred:
-        name = s.full_name.split('/')
-        cnt = Role.objects.filter(github_user=name[0], github_repo=name[1]).count()
-        if cnt > 0:
-            user.starred.get_or_create(
-                github_user=name[0],
-                github_repo=name[1],
-                defaults={
-                    'github_user': name[0],
-                    'github_repo': name[1]
-                })
+    new_starred = {(s.owner.login, s.name) for s in starred}
+    old_starred = {(s.role.github_user, s.role.github_repo): s.id
+                   for s in user.starred.select_related('role').all()}
+
+    to_remove = [v for k, v in old_starred.iteritems()
+                 if k not in new_starred]
+    to_add = new_starred - set(old_starred)
+
+    user.starred.filter(id__in=to_remove).delete()
+
+    for github_user, github_repo in to_add:
+        try:
+            role = Role.objects.get(
+                github_user=github_user, github_repo=github_repo)
+        except Role.DoesNotExist:
+            continue
+        user.starred.create(role=role)
 
 
 @task(name="galaxy.main.celerytasks.tasks.refresh_role_counts")

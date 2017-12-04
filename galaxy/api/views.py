@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -45,15 +45,15 @@ from django.contrib.auth.models import AnonymousUser
 from django.db import IntegrityError
 from django.db.models import Count, Max
 from django.http import Http404, HttpResponseBadRequest
-from django.utils.datastructures import SortedDict
 from django.apps import apps
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 
-#allauth
+# allauth
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.models import SocialToken
 
@@ -90,6 +90,7 @@ from galaxy.api.serializers import (MeSerializer,
                                     CategorySerializer,
                                     TagSerializer,
                                     PlatformSerializer,
+                                    CloudPlatformSerializer,
                                     RoleVersionSerializer,
                                     RepositorySerializer,
                                     TopContributorsSerializer,
@@ -103,6 +104,7 @@ from galaxy.api.serializers import (MeSerializer,
                                     ElasticSearchDSLSerializer)
 
 from galaxy.main.models import (Platform,
+                                CloudPlatform,
                                 Category,
                                 Tag,
                                 Role,
@@ -116,13 +118,14 @@ from galaxy.main.models import (Platform,
 
 from galaxy.main.utils import camelcase_to_underscore
 from galaxy.api.permissions import ModelAccessPermission
-from galaxy.main.celerytasks.tasks import import_role, update_user_repos
+from galaxy.main.celerytasks.tasks import (
+    import_role, update_user_repos, refresh_existing_user_repos)
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 
 
 logger = logging.getLogger(__name__)
 
-#--------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
 # Helper functions
 
 
@@ -143,22 +146,24 @@ def filter_rating_queryset(qs):
     )
 
 
-def create_import_task(github_user, github_repo, github_branch, role, user, travis_status_url='', travis_build_url='', alternate_role_name=None):
+def create_import_task(
+        github_user, github_repo, github_branch, role, user,
+        travis_status_url='', travis_build_url='', alternate_role_name=None):
     task = ImportTask.objects.create(
-        github_user         = github_user,
-        github_repo         = github_repo,
-        github_reference    = github_branch,
-        alternate_role_name = alternate_role_name,
-        travis_status_url = travis_status_url,
-        travis_build_url = travis_build_url,
-        role        = role,
-        owner       = user,
-        state       = 'PENDING'
+        github_user=github_user,
+        github_repo=github_repo,
+        github_reference=github_branch,
+        alternate_role_name=alternate_role_name,
+        travis_status_url=travis_status_url,
+        travis_build_url=travis_build_url,
+        role=role,
+        owner=user,
+        state='PENDING'
     )
     import_role.delay(task.id)
     return task
 
-#--------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
 
 
 class ApiRootView(APIView):
@@ -169,10 +174,10 @@ class ApiRootView(APIView):
         # list supported API versions
         current = reverse('api:api_v1_root_view', args=[])
         data = dict(
-            description = 'GALAXY REST API',
-            current_version = 'v1',
-            available_versions = dict(
-                v1 = current
+            description='GALAXY REST API',
+            current_version='v1',
+            available_versions=dict(
+                v1=current
             )
         )
         return Response(data)
@@ -184,21 +189,22 @@ class ApiV1RootView(APIView):
 
     def get(self, request, format=None):
         # list top level resources
-        data = SortedDict()
-        data['users']       = reverse('api:user_list')
-        data['roles']       = reverse('api:role_list')
-        data['role_types']  = reverse('api:role_types')
-        data['categories']  = reverse('api:category_list')
-        data['tags']        = reverse('api:tag_list')
-        data['platforms']   = reverse('api:platform_list')
-        data['imports']     = reverse('api:import_task_list')
-        data['repos']                = reverse('api:repos_view')
-        data['latest imports']       = reverse('api:import_task_latest_list')
+        data = OrderedDict()
+        data['users'] = reverse('api:user_list')
+        data['roles'] = reverse('api:role_list')
+        data['role_types'] = reverse('api:role_types')
+        data['categories'] = reverse('api:category_list')
+        data['tags'] = reverse('api:tag_list')
+        data['platforms'] = reverse('api:platform_list')
+        data['cloud_platforms'] = reverse('api:cloud_platform_list')
+        data['imports'] = reverse('api:import_task_list')
+        data['repos'] = reverse('api:repos_view')
+        data['latest imports'] = reverse('api:import_task_latest_list')
         data['notification secrets'] = reverse('api:notification_secret_list')
-        data['notifications']        = reverse('api:notification_list')
-        data['tokens']               = reverse('api:token')
-        data['search']               = reverse('api:search_view')
-        data['remove role']          = reverse('api:remove_role')
+        data['notifications'] = reverse('api:notification_list')
+        data['tokens'] = reverse('api:token')
+        data['search'] = reverse('api:search_view')
+        data['remove role'] = reverse('api:remove_role')
         return Response(data)
 
 
@@ -207,7 +213,9 @@ class RoleTypes(APIView):
     view_name = 'Role Types'
 
     def get(self, request, format=None):
-        return Response(Role.ROLE_TYPE_CHOICES)
+        roles = [role for role in Role.ROLE_TYPE_CHOICES
+                 if role[0] in settings.ROLE_TYPES_ENABLED]
+        return Response(roles)
 
 
 class ApiV1SearchView(APIView):
@@ -217,11 +225,12 @@ class ApiV1SearchView(APIView):
     def get(self, request, *args, **kwargs):
         data = OrderedDict()
         data['platforms'] = reverse('api:platforms_search_view')
+        data['cloud_platforms'] = reverse('api:cloud_platforms_search_view')
         data['roles'] = reverse('api:search-roles-list')
         data['tags'] = reverse('api:tags_search_view')
         data['users'] = reverse('api:user_search_view')
-        #data['faceted_platforms'] = reverse('api:faceted_platforms_view')
-        #data['faceted_tags'] = reverse('api:faceted_tags_view')
+        # data['faceted_platforms'] = reverse('api:faceted_platforms_view')
+        # data['faceted_tags'] = reverse('api:faceted_tags_view')
         data['top_contributors'] = reverse('api:top_contributors_list')
         return Response(data)
 
@@ -232,10 +241,10 @@ class ApiV1ReposView(APIView):
 
     def get(self, request, *args, **kwargs):
         data = OrderedDict()
-        data['list']           = reverse('api:repository_list')
-        data['refresh']        = reverse('api:refresh_user_repos')
-        data['stargazers']     = reverse('api:stargazer_list')
-        data['subscriptions']  = reverse('api:subscription_list')
+        data['list'] = reverse('api:repository_list')
+        data['refresh'] = reverse('api:refresh_user_repos')
+        data['stargazers'] = reverse('api:stargazer_list')
+        data['subscriptions'] = reverse('api:subscription_list')
         return Response(data)
 
 
@@ -275,6 +284,17 @@ class PlatformList(ListAPIView):
 class PlatformDetail(RetrieveAPIView):
     model = Platform
     serializer_class = PlatformSerializer
+
+
+class CloudPlatformList(ListAPIView):
+    model = CloudPlatform
+    serializer_class = CloudPlatformSerializer
+    paginate_by = None
+
+
+class CloudPlatformDetail(RetrieveAPIView):
+    model = CloudPlatform
+    serializer_class = CloudPlatformSerializer
 
 
 class RoleDependenciesList(SubListAPIView):
@@ -318,6 +338,15 @@ class RoleVersionsList(SubListAPIView):
     serializer_class = RoleVersionSerializer
     parent_model = Role
     relationship = 'versions'
+
+
+class RoleDownloads(APIView):
+
+    def post(self, request, pk):
+        obj = get_object_or_404(Role, pk=pk)
+        obj.download_count += 1
+        obj.save()
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class RoleList(ListAPIView):
@@ -378,13 +407,21 @@ class ImportTaskList(ListCreateAPIView):
         name = alternate_role_name if alternate_role_name else github_repo
 
         if not github_user or not github_repo:
-            raise ValidationError(dict(detail="Invalid request. Expecting github_user and github_repo."))
+            # FIXME(cutwater): Why dict is needed?
+            raise ValidationError(dict(
+                detail="Invalid request. Expecting github_user "
+                       "and github_repo."))
 
         response = dict(results=[])
-        if Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True).count() > 1:
+        if Role.objects.filter(github_user=github_user, github_repo=github_repo, active=True).count() > 1:
             # multiple roles match github_user/github_repo
-            for role in Role.objects.filter(github_user=github_user,github_repo=github_repo,active=True):
-                task = create_import_task(github_user, github_repo, github_reference, role, request.user, '', '', alternate_role_name)
+            for role in Role.objects.filter(
+                    github_user=github_user, github_repo=github_repo,
+                    active=True):
+                task = create_import_task(
+                    github_user, github_repo, github_reference, role,
+                    request.user, travis_status_url='', travis_build_url='',
+                    alternate_role_name=alternate_role_name)
                 import_role.delay(task.id)
                 serializer = self.get_serializer(instance=task)
                 response['results'].append(serializer.data)
@@ -394,14 +431,17 @@ class ImportTaskList(ListCreateAPIView):
                 github_repo=github_repo,
                 active=True,
                 defaults={
-                    'namespace':   github_user,
-                    'name':        name,
+                    'namespace': github_user,
+                    'name': name,
                     'github_user': github_user,
                     'github_repo': github_repo,
-                    'is_valid':    False,
+                    'is_valid': False,
                 }
             )
-            task = create_import_task(github_user, github_repo, github_reference, role, request.user, '', '', alternate_role_name)
+            task = create_import_task(
+                github_user, github_repo, github_reference, role, request.user,
+                travis_status_url='', travis_build_url='',
+                alternate_role_name=alternate_role_name)
             serializer = self.get_serializer(instance=task)
             response['results'].append(serializer.data)
         return Response(response, status=status.HTTP_201_CREATED, headers=self.get_success_headers(response))
@@ -430,7 +470,7 @@ class ImportTaskLatestList(ListAPIView):
     serializer_class = ImportTaskLatestSerializer
 
     def get_queryset(self):
-        return ImportTask.objects.values('owner_id','github_user','github_repo').annotate(last_id=Max('id')).order_by('owner_id','github_user','github_repo')
+        return ImportTask.objects.values('owner_id', 'github_user', 'github_repo').annotate(last_id=Max('id')).order_by('owner_id', 'github_user', 'github_repo')
 
 
 class UserRepositoriesList(SubListAPIView):
@@ -520,27 +560,19 @@ class StargazerList(ListCreateAPIView):
                 "for {0}/{1}. {2} - {3}".format(github_user, github_repo, e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
-        new_star, created = Stargazer.objects.get_or_create(
-            owner=request.user,
-            github_user=github_user,
-            github_repo=github_repo,
-            defaults={
-                'owner': request.user,
-                'github_user': github_user,
-                'github_repo': github_repo
-            })
-
-        star_count = gh_repo.stargazers_count + 1
-
-        for role in Role.objects.filter(github_user=github_user,github_repo=github_repo):
-            role.stargazers_count = star_count
-            role.save()
+        role = Role.objects.get(
+            github_user=github_user, github_repo=github_repo)
+        star = role.stars.create(owner=request.user)
+        role.stargazers_count = gh_repo.stargazers_count + 1
+        role.save()
 
         return Response(dict(
-            result=dict(id=new_star.id,
-                        github_user=new_star.github_user,
-                        github_repo=new_star.github_repo,
-                        stargazers_count=star_count)), status=status.HTTP_201_CREATED)
+            result=dict(
+                id=star.id,
+                github_user=role.github_user,
+                github_repo=role.github_repo,
+                stargazers_count=role.stargazers_count)),
+            status=status.HTTP_201_CREATED)
 
 
 class StargazerDetail(RetrieveUpdateDestroyAPIView):
@@ -565,7 +597,8 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
             raise ValidationError(dict(detail=msg))
 
         try:
-            gh_repo = gh_api.get_repo(obj.github_user + '/' + obj.github_repo)
+            gh_repo = gh_api.get_repo(
+                obj.role.github_user + '/' + obj.role.github_repo)
         except GithubException, e:
             msg = "GitHub API failed to return repo for {0}/{1}. {2} - {3}".format(obj.github_user,
                                                                                    obj.github_repo,
@@ -588,17 +621,12 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
 
         obj.delete()
 
-        star_count = gh_repo.stargazers_count - 1 if gh_repo.stargazers_count > 1 else 0
+        role = Role.objects.get(github_user=obj.role.github_user,
+                                github_repo=obj.role.github_repo)
+        role.stargazers_count = max(0, gh_repo.stargazers_count - 1)
+        role.save()
 
-        for role in Role.objects.filter(github_user=obj.github_user,github_repo=obj.github_repo):
-            role.stargazers_count = star_count
-            role.save()
-
-        result = "{0} removed from stargazers for {1}/{2}.".format(request.user.github_user,
-                                                                   obj.github_user,
-                                                                   obj.github_repo)
-
-        return Response(detail=result, status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 class SubscriptionList(ListCreateAPIView):
@@ -639,7 +667,7 @@ class SubscriptionList(ListCreateAPIView):
         try:
             gh_user = gh_api.get_user()
         except GithubException, e:
-            msg = "GitHub API failed to return authorized user. {0} - {1}".format(e.data,e.status)
+            msg = "GitHub API failed to return authorized user. {0} - {1}".format(e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
         try:
@@ -664,7 +692,7 @@ class SubscriptionList(ListCreateAPIView):
         for s in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        for role in Role.objects.filter(github_user=github_user,github_repo=github_repo):
+        for role in Role.objects.filter(github_user=github_user, github_repo=github_repo):
             role.watchers_count = sub_count
             role.save()
 
@@ -731,7 +759,7 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
         for sub in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        for role in Role.objects.filter(github_user=obj.github_user,github_repo=obj.github_repo):
+        for role in Role.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo):
             role.watchers_count = sub_count
             role.save()
 
@@ -777,8 +805,8 @@ class NotificationSecretList(ListCreateAPIView):
             source=source,
             github_user=github_user,
             github_repo=github_repo,
-            defaults = {
-                'owner':  request.user,
+            defaults={
+                'owner': request.user,
                 'source': source,
                 'secret': secret,
                 'github_user': github_user,
@@ -804,8 +832,8 @@ class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, ModelAccessPermission,)
 
     def put(self, request, *args, **kwargs):
-        source = request.data.get('source',None)
-        secret = request.data.get('secret',None)
+        source = request.data.get('source', None)
+        secret = request.data.get('secret', None)
         github_user = request.data.get('github_user', None)
         github_repo = request.data.get('github_repo', None)
 
@@ -917,14 +945,14 @@ class NotificationList(ListCreateAPIView):
                 github_repo=github_repo,
                 active=True,
                 defaults={
-                    'namespace':   github_user,
-                    'name':        name,
+                    'namespace': github_user,
+                    'name': name,
                     'github_user': github_user,
                     'github_repo': github_repo,
                     'github_default_branch': 'master',
                     'travis_status_url': travis_status_url,
                     'travis_build_url': payload['build_url'],
-                    'is_valid':    False,
+                    'is_valid': False,
                 }
             )
             notification.roles.add(role)
@@ -1056,7 +1084,7 @@ class TopContributorsList(ListAPIView):
     serializer_class = TopContributorsSerializer
 
     def list(self, request, *args, **kwargs):
-        qs = Role.objects.values('namespace').annotate(count=Count('id')).order_by('-count','namespace')
+        qs = Role.objects.values('namespace').annotate(count=Count('id')).order_by('-count', 'namespace')
         page = self.paginate_queryset(qs)
         if page is not None:
             serializer = self.get_pagination_serializer(page)
@@ -1085,6 +1113,17 @@ class RoleSearchView(HaystackViewSet):
     lookup_sep = ','
     filter_backends = [HaystackFilter]
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        print(queryset)
+        instance = self.filter_queryset(queryset)
+        page = self.paginate_queryset(instance)
+        if page is not None:
+            serializer = self.get_pagination_serializer(page)
+        else:
+            serializer = self.get_serializer(instance, many=True)
+        return Response(serializer.data)
+
 
 class FacetedView(APIView):
 
@@ -1111,14 +1150,14 @@ class UserSearchView(APIView):
         page = 0
         page_size = 10
         order_fields = []
-        for key,value in request.GET.items():
-            if key in ('username','content','autocomplete'):
+        for key, value in request.GET.items():
+            if key in ('username', 'content', 'autocomplete'):
                 q = Q('match', username=value)
             if key == 'page':
                 page = int(value) - 1 if int(value) > 0 else 0
             if key == 'page_size':
                 page_size = int(value)
-            if key in ('order','order_by'):
+            if key in ('order', 'order_by'):
                 order_fields = value.split(',')
         if page_size > 1000:
             page_size = 1000
@@ -1139,18 +1178,18 @@ class PlatformsSearchView(APIView):
         page = 0
         page_size = 10
         order_fields = []
-        for key,value in request.GET.items():
+        for key, value in request.GET.items():
             if key == 'name':
                 q = Q('match', name=value)
             if key == 'releases':
                 q = Q('match', releases=value)
-            if key in ('content','autocomplete'):
+            if key in ('content', 'autocomplete'):
                 q = Q('match', autocomplete=value)
             if key == 'page':
                 page = int(value) - 1 if int(value) > 0 else 0
             if key == 'page_size':
                 page_size = int(value)
-            if key in ('order','order_by'):
+            if key in ('order', 'order_by'):
                 order_fields = value.split(',')
         if page_size > 1000:
             page_size = 1000
@@ -1160,7 +1199,39 @@ class PlatformsSearchView(APIView):
         s = s[page * page_size:page * page_size + page_size]
         result = s.execute()
         serializer = ElasticSearchDSLSerializer(result.hits, many=True)
-        response = get_response(request=request, result=result, view='api:platforms_search_view')
+        response = get_response(request=request, result=result,
+                                view='api:platforms_search_view')
+        response['results'] = serializer.data
+        return Response(response)
+
+
+class CloudPlatformsSearchView(APIView):
+    def get(self, request, *args, **kwargs):
+        q = None
+        page = 0
+        page_size = 10
+        order_fields = []
+        for key, value in request.GET.items():
+            if key == 'name':
+                q = Q('match', name=value)
+            if key in ('content', 'autocomplete'):
+                q = Q('match', autocomplete=value)
+            if key == 'page':
+                page = int(value) - 1 if int(value) > 0 else 0
+            if key == 'page_size':
+                page_size = int(value)
+            if key in ('order', 'order_by'):
+                order_fields = value.split(',')
+        if page_size > 1000:
+            page_size = 1000
+        s = Search(index='galaxy_cloud_platforms')
+        s = s.query(q) if q else s
+        s = s.sort(*order_fields) if len(order_fields) > 0 else s
+        s = s[page * page_size:page * page_size + page_size]
+        result = s.execute()
+        serializer = ElasticSearchDSLSerializer(result.hits, many=True)
+        response = get_response(request=request, result=result,
+                                view='api:cloud_platforms_search_view')
         response['results'] = serializer.data
         return Response(response)
 
@@ -1171,8 +1242,8 @@ class TagsSearchView(APIView):
         page = 0
         page_size = 10
         order_fields = []
-        for key,value in request.GET.items():
-            if key in ('tag','content','autocomplete'):
+        for key, value in request.GET.items():
+            if key in ('tag', 'content', 'autocomplete'):
                 q = Q('match', tag=value)
             if key == 'page':
                 page = int(value) - 1 if int(value) > 0 else 0
@@ -1199,7 +1270,7 @@ class RemoveRole(APIView):
 
     def delete(self, request, *args, **kwargs):
 
-        gh_user = request.query_params.get('github_user',None)
+        gh_user = request.query_params.get('github_user', None)
         gh_repo = request.query_params.get('github_repo', None)
 
         if not gh_user or not gh_repo:
@@ -1245,15 +1316,15 @@ class RemoveRole(APIView):
             ('status', '')
         ])
 
-        roles = Role.objects.filter(github_user=gh_user,github_repo=gh_repo)
+        roles = Role.objects.filter(github_user=gh_user, github_repo=gh_repo)
         cnt = len(roles)
         if cnt == 0:
-            response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user,gh_repo)
+            response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user, gh_repo)
             return Response(response)
         elif cnt == 1:
-            response['status'] = "Role %s.%s deleted" % (gh_user,gh_repo)
+            response['status'] = "Role %s.%s deleted" % (gh_user, gh_repo)
         else:
-            response['status'] = "Deleted %d roles associated with %s/%s" % (len(roles),gh_user,gh_repo)
+            response['status'] = "Deleted %d roles associated with %s/%s" % (len(roles), gh_user, gh_repo)
 
         for role in roles:
             response['deleted_roles'].append({
@@ -1338,9 +1409,16 @@ class RefreshUserRepos(APIView):
             raise HttpResponseBadRequest({'detail': msg})
 
         try:
+            refresh_existing_user_repos(token.token, ghu)
+        except Exception as exc:
+            logger.error("Error: refresh_user_repos - {0}".format(exc.message))
+            raise
+
+        try:
             update_user_repos(user_repos, request.user)
         except Exception as exc:
             logger.error("Error: update_user_repos - {0}".format(exc.message))
+            raise
 
         qs = request.user.repositories.all()
         serializer = RepositorySerializer(qs, many=True)
@@ -1372,7 +1450,7 @@ class TokenView(APIView):
             gh_user = requests.get(settings.GITHUB_SERVER + '/user', headers=header)
             gh_user.raise_for_status()
             gh_user = gh_user.json()
-            if hasattr(gh_user,'message'):
+            if hasattr(gh_user, 'message'):
                 raise ValidationError(dict(detail=gh_user['message']))
         except:
             raise ValidationError(dict(detail="Error accessing GitHub with provided token."))
@@ -1429,7 +1507,7 @@ def get_response(*args, **kwargs):
     return response
 
 
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # Create view functions for all of the class-based views to simplify inclusion
 # in URL patterns and reverse URL lookups, converting CamelCase names to
 # lowercase_with_underscore (e.g. MyView.as_view() becomes my_view).

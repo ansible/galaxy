@@ -3,6 +3,7 @@
 *.retry
 .idea/
 .develop/
+.cache/
 build/
 dist/
 galaxy.egg-info/

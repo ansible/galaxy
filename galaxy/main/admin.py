@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -16,13 +16,14 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.contrib import admin
-from galaxy.main.models import Platform, Role, RoleVersion
-
-###################################################################################
-# Admin Models
+from galaxy.main import models
 
 
 class PlatformAdmin(admin.ModelAdmin):
+    pass
+
+
+class CloudPlatformAdmin(admin.ModelAdmin):
     pass
 
 
@@ -34,22 +35,12 @@ class RoleVersionAdmin(admin.ModelAdmin):
     pass
 
 
-admin.site.register(Platform, PlatformAdmin)
-admin.site.register(Role, RoleAdmin)
-admin.site.register(RoleVersion, RoleVersionAdmin)
+class ContentBlockAdmin(admin.ModelAdmin):
+    pass
 
-#class RoleImportAdmin(admin.ModelAdmin):
-#    pass
-#admin.site.register(RoleImport, RoleImportAdmin)
 
-#class RoleRatingAdmin(admin.ModelAdmin):
-#    pass
-#admin.site.register(RoleRating, RoleRatingAdmin)
-
-#class CategoryAdmin(admin.ModelAdmin):
-#    pass
-#admin.site.register(Category, CategoryAdmin)
-
-#class UserAliasAdmin(admin.ModelAdmin):
-#    pass
-#admin.site.register(UserAlias, UserAliasAdmin)
+admin.site.register(models.Platform, PlatformAdmin)
+admin.site.register(models.CloudPlatform, CloudPlatformAdmin)
+admin.site.register(models.Role, RoleAdmin)
+admin.site.register(models.RoleVersion, RoleVersionAdmin)
+admin.site.register(models.ContentBlock, ContentBlockAdmin)

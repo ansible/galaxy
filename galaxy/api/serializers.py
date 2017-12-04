@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -34,6 +34,7 @@ from drf_haystack.serializers import HaystackSerializer
 from galaxy.main.search_indexes import RoleIndex
 from galaxy.api.utils import html_decode
 from galaxy.main.models import (Platform,
+                                CloudPlatform,
                                 Category,
                                 Tag,
                                 Role,
@@ -117,14 +118,14 @@ def readme_to_html(obj):
 
 class BaseSerializer(serializers.ModelSerializer):
     # add the URL and related resources
-    url            = serializers.SerializerMethodField()
-    related        = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
+    related = serializers.SerializerMethodField()
     summary_fields = serializers.SerializerMethodField()
 
     # make certain fields read only
-    created       = serializers.SerializerMethodField()
-    modified      = serializers.SerializerMethodField()
-    active        = serializers.SerializerMethodField()
+    created = serializers.SerializerMethodField()
+    modified = serializers.SerializerMethodField()
+    active = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(BaseSerializer, self).__init__(*args, **kwargs)
@@ -234,7 +235,7 @@ class MeSerializer(BaseSerializer):
 
     class Meta:
         model = User
-        fields = ('id','authenticated','staff','username',)
+        fields = ('id', 'authenticated', 'staff', 'username',)
 
     def get_summary_fields(self, obj):
         if obj is None or isinstance(obj, AnonymousUser):
@@ -244,8 +245,8 @@ class MeSerializer(BaseSerializer):
 
 
 class UserListSerializer(BaseSerializer):
-    staff          = serializers.ReadOnlyField(source='is_staff')
-    email          = serializers.SerializerMethodField()
+    staff = serializers.ReadOnlyField(source='is_staff')
+    email = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -266,10 +267,10 @@ class UserListSerializer(BaseSerializer):
             return {}
         res = super(UserListSerializer, self).get_related(obj)
         res.update(dict(
-            subscriptions = reverse('api:user_subscription_list', args=(obj.pk,)),
-            starred = reverse('api:user_starred_list', args=(obj.pk,)),
-            repositories = reverse('api:user_repositories_list', args=(obj.pk,)),
-            secrets = reverse('api:user_notification_secret_list', args=(obj.pk,)),
+            subscriptions=reverse('api:user_subscription_list', args=(obj.pk,)),
+            starred=reverse('api:user_starred_list', args=(obj.pk,)),
+            repositories=reverse('api:user_repositories_list', args=(obj.pk,)),
+            secrets=reverse('api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
@@ -286,9 +287,9 @@ class UserListSerializer(BaseSerializer):
         d['starred'] = [
             OrderedDict([
                 ('id', g.id),
-                ('github_user', g.github_user),
-                ('github_repo', g.github_repo)
-            ]) for g in obj.starred.all()]
+                ('github_user', g.role.github_user),
+                ('github_repo', g.role.github_repo)
+            ]) for g in obj.starred.select_related('role').all()]
         return d
 
     def get_email(self, obj):
@@ -305,8 +306,8 @@ class UserDetailSerializer(BaseSerializer):
         default='',
         help_text='Write-only field used to change the password.'
     )
-    staff          = serializers.ReadOnlyField(source='is_staff')
-    email          = serializers.SerializerMethodField()
+    staff = serializers.ReadOnlyField(source='is_staff')
+    email = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -314,7 +315,7 @@ class UserDetailSerializer(BaseSerializer):
             'id',
             'username',
             'password',
-            'email','karma',
+            'email', 'karma',
             'staff',
             'full_name',
             'date_joined',
@@ -353,10 +354,10 @@ class UserDetailSerializer(BaseSerializer):
             return {}
         res = super(UserDetailSerializer, self).get_related(obj)
         res.update(dict(
-            repositories = reverse('api:user_repositories_list', args=(obj.pk,)),
-            subscriptions = reverse('api:user_subscription_list', args=(obj.pk,)),
-            starred = reverse('api:user_starred_list', args=(obj.pk,)),
-            secrets = reverse('api:user_notification_secret_list', args=(obj.pk,)),
+            repositories=reverse('api:user_repositories_list', args=(obj.pk,)),
+            subscriptions=reverse('api:user_subscription_list', args=(obj.pk,)),
+            starred=reverse('api:user_starred_list', args=(obj.pk,)),
+            secrets=reverse('api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
@@ -373,9 +374,9 @@ class UserDetailSerializer(BaseSerializer):
         d['starred'] = [
             OrderedDict([
                 ('id', g.id),
-                ('github_user', g.github_user),
-                ('github_repo', g.github_repo)
-            ]) for g in obj.starred.all()]
+                ('github_user', g.role.github_user),
+                ('github_repo', g.role.github_repo)
+            ]) for g in obj.starred.select_related('role').all()]
         return d
 
     def get_email(self, obj):
@@ -401,12 +402,19 @@ class SubscriptionSerializer(BaseSerializer):
             return obj.get_absolute_url()
 
 
+class StargazerRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ('id', 'namespace', 'name', 'github_repo', 'github_user')
+
+
 class StargazerSerializer(BaseSerializer):
     owner = serializers.CharField(read_only=True)
+    role = StargazerRoleSerializer(read_only=True)
 
     class Meta:
         model = Stargazer
-        fields = ('owner', 'github_user', 'github_repo')
+        fields = ('owner', 'role')
 
     def get_url(self, obj):
         if obj is None:
@@ -435,10 +443,16 @@ class PlatformSerializer(BaseSerializer):
         fields = BASE_FIELDS + ('release',)
 
 
+class CloudPlatformSerializer(BaseSerializer):
+    class Meta:
+        model = CloudPlatform
+        fields = BASE_FIELDS
+
+
 class RoleVersionSerializer(BaseSerializer):
     class Meta:
         model = RoleVersion
-        fields = ('id','name','release_date',)
+        fields = ('id', 'name', 'release_date',)
 
 
 class RepositorySerializer(BaseSerializer):
@@ -459,7 +473,7 @@ class RepositorySerializer(BaseSerializer):
             return {}
         res = super(RepositorySerializer, self).get_related(obj)
         res.update(dict(
-            owner = reverse('api:user_detail', args=(obj.owner.id,)),
+            owner=reverse('api:user_detail', args=(obj.owner.id,)),
         ))
         return res
 
@@ -469,11 +483,11 @@ class RepositorySerializer(BaseSerializer):
         d = super(RepositorySerializer, self).get_summary_fields(obj)
         d['notification_secrets'] = [
             OrderedDict([
-                ('id',s.id),
-                ('github_user',s.github_user),
-                ('github_repo',s.github_repo),
-                ('source',s.source),
-                ('secret','******' + s.secret[-4:]),
+                ('id', s.id),
+                ('github_user', s.github_user),
+                ('github_repo', s.github_repo),
+                ('source', s.source),
+                ('secret', '******' + s.secret[-4:]),
             ]) for s in NotificationSecret.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo)
         ]
         d['roles'] = [
@@ -585,9 +599,9 @@ class NotificationSerializer(BaseSerializer):
             return {}
         res = super(NotificationSerializer, self).get_related(obj)
         res.update(dict(
-            roles = reverse('api:notification_roles_list', args=(obj.pk,)),
-            imports = reverse('api:notification_imports_list', args=(obj.pk,)),
-            owner = reverse('api:user_detail', args=(obj.owner.id,)),
+            roles=reverse('api:notification_roles_list', args=(obj.pk,)),
+            imports=reverse('api:notification_imports_list', args=(obj.pk,)),
+            owner=reverse('api:user_detail', args=(obj.owner.id,)),
         ))
         return res
 
@@ -649,9 +663,9 @@ class ImportTaskSerializer(BaseSerializer):
             return {}
         d = super(ImportTaskSerializer, self).get_summary_fields(obj)
         d['role'] = OrderedDict([
-            ('id',obj.role.id),
-            ('namespace',obj.role.namespace),
-            ('name',obj.role.name),
+            ('id', obj.role.id),
+            ('namespace', obj.role.namespace),
+            ('name', obj.role.name),
             ('is_valid', obj.role.is_valid),
             ('active', obj.role.active),
         ])
@@ -665,9 +679,9 @@ class ImportTaskSerializer(BaseSerializer):
         ]) for n in obj.notifications.all().order_by('id')]
 
         d['task_messages'] = [OrderedDict([
-            ('id',g.id),
-            ('message_type',g.message_type),
-            ('message_text',g.message_text)
+            ('id', g.id),
+            ('message_type', g.message_type),
+            ('message_text', g.message_text)
         ]) for g in obj.messages.all().order_by('id')]
         return d
 
@@ -710,7 +724,7 @@ class ImportTaskLatestSerializer(BaseSerializer):
             ('commit_url', g.commit_url)
         ])
         d['role'] = OrderedDict([
-            ('id',r.id),
+            ('id', r.id),
             ('is_valid', r.is_valid),
         ])
         return d
@@ -733,9 +747,9 @@ class RoleListSerializer(BaseSerializer):
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid','github_user', 'github_repo',
+        fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid', 'github_user', 'github_repo',
                                 'github_branch', 'min_ansible_version', 'issue_tracker_url',
-                                'license','company', 'description', 'readme', 'readme_html',
+                                'license', 'company', 'description', 'readme', 'readme_html',
                                 'travis_status_url', 'stargazers_count', 'watchers_count',
                                 'forks_count', 'open_issues_count', 'commit', 'commit_message',
                                 'commit_url', 'download_count')
@@ -801,9 +815,9 @@ class RoleTopSerializer(BaseSerializer):
             return {}
         res = super(RoleTopSerializer, self).get_related(obj)
         res.update(dict(
-            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
-            versions = reverse('api:role_versions_list', args=(obj.pk,)),
+            dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
+            imports=reverse('api:role_import_task_list', args=(obj.pk,)),
+            versions=reverse('api:role_versions_list', args=(obj.pk,)),
         ))
         return res
 
@@ -818,15 +832,15 @@ class RoleTopSerializer(BaseSerializer):
 
 class RoleDetailSerializer(BaseSerializer):
     readme_html = serializers.SerializerMethodField()
-    tags        = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
-        fields = BASE_FIELDS + ('role_type', 'namespace','is_valid','github_user','github_repo','github_branch',
-                                'min_ansible_version', 'issue_tracker_url', 'license','company','description',
+        fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid', 'github_user', 'github_repo', 'github_branch',
+                                'min_ansible_version', 'issue_tracker_url', 'license', 'company', 'description',
                                 'readme', 'readme_html', 'tags', 'travis_status_url', 'stargazers_count',
                                 'watchers_count', 'forks_count', 'open_issues_count', 'commit', 'commit_message',
-                                'commit_url', 'created', 'modified', 'download_count','imported')
+                                'commit_url', 'created', 'modified', 'download_count', 'imported')
 
     def to_native(self, obj):
         ret = super(RoleDetailSerializer, self).to_native(obj)
@@ -837,9 +851,9 @@ class RoleDetailSerializer(BaseSerializer):
             return {}
         res = super(RoleDetailSerializer, self).get_related(obj)
         res.update(dict(
-            dependencies = reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports  = reverse('api:role_import_task_list', args=(obj.pk,)),
-            versions = reverse('api:role_versions_list', args=(obj.pk,)),
+            dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
+            imports=reverse('api:role_import_task_list', args=(obj.pk,)),
+            versions=reverse('api:role_versions_list', args=(obj.pk,)),
         ))
         return res
 
@@ -873,6 +887,7 @@ class RoleDetailSerializer(BaseSerializer):
 
 class RoleSearchSerializer(HaystackSerializer):
     platforms = serializers.SerializerMethodField()
+    cloud_platforms = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     versions = serializers.SerializerMethodField()
     dependencies = serializers.SerializerMethodField()
@@ -893,6 +908,7 @@ class RoleSearchSerializer(HaystackSerializer):
             "github_branch",
             "tags",
             "platforms",
+            "cloud_platforms",
             "platform_details",
             "versions",
             "dependencies",
@@ -903,6 +919,7 @@ class RoleSearchSerializer(HaystackSerializer):
             "text",
             "autocomplete",
             "platforms_autocomplete",
+            "cloud_platforms_autocomplete",
             "tags_autocomplete",
             "username_autocomplete",
             "travis_status_url",
@@ -929,7 +946,11 @@ class RoleSearchSerializer(HaystackSerializer):
     def get_platforms(self, instance):
         if instance is None:
             return []
+        # FIXME(cutwater): List comprehension is redundant
         return [p for p in instance.platforms]
+
+    def get_cloud_platforms(self, instance):
+        return instance.cloud_platforms or []
 
     def get_tags(self, instance):
         if instance is None:
@@ -956,7 +977,7 @@ class RoleSearchSerializer(HaystackSerializer):
         request = self.context.get('request', None)
         if request is not None and request.user.is_authenticated():
             try:
-                Subscription.objects.get(owner=request.user,github_user=instance.github_user, github_repo=instance.github_repo)
+                Subscription.objects.get(owner=request.user, github_user=instance.github_user, github_repo=instance.github_repo)
                 return True
             except:
                 pass
@@ -967,7 +988,9 @@ class RoleSearchSerializer(HaystackSerializer):
         request = self.context.get('request', None)
         if request is not None:
             try:
-                Stargazer.objects.get(owner=request.user,github_user=instance.github_user, github_repo=instance.github_repo)
+                Stargazer.objects.get(
+                    owner=request.user,
+                    role=instance)
                 return True
             except:
                 pass
@@ -982,7 +1005,7 @@ class ElasticSearchDSLSerializer(serializers.BaseSerializer):
         result['id'] = obj.meta.id
         for key in obj:
             if key != 'meta':
-                if hasattr(obj[key],'__iter__'):
+                if hasattr(obj[key], '__iter__'):
                     result[key] = [itm for itm in obj[key]]
                 else:
                     result[key] = obj[key]

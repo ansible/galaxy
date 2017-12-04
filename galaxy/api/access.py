@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -242,7 +242,7 @@ class ImportTaskMessageAccess(BaseAccess):
 
 class NotificationAccess(BaseAccess):
 
-    def can_add(self,data):
+    def can_add(self, data):
         return True
 
     def can_change(self, obj, data):
@@ -260,7 +260,7 @@ class SubscriptionAccess(BaseAccess):
     def can_change(self, data):
         return False
 
-    def can_delete(self,data):
+    def can_delete(self, data):
         return self.user.is_authenticated()
 
 
@@ -271,7 +271,7 @@ class StargazerAccess(BaseAccess):
     def can_change(self, data):
         return False
 
-    def can_delete(self,data):
+    def can_delete(self, data):
         return self.user.is_authenticated()
 
 

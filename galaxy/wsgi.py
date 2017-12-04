@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -24,8 +24,8 @@ from django.core.wsgi import get_wsgi_application
 
 from galaxy import prepare_env
 
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.production')
+# For public Galaxy, we need to default /etc/galaxy/settings.py
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.custom')
 
 # Prepare the galaxy environment.
 prepare_env()

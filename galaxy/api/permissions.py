@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -32,7 +32,7 @@ from galaxy.api.utils import get_object_or_400
 
 logger = logging.getLogger('galaxy.api.permissions')
 
-__all__ = ['ModelAccessPermission',]
+__all__ = ['ModelAccessPermission']
 
 
 class ModelAccessPermission(permissions.BasePermission):
@@ -123,7 +123,7 @@ class ModelAccessPermission(permissions.BasePermission):
         return result
 
     def has_permission(self, request, view, obj=None):
-        #logger.debug('has_permission(user=%s method=%s data=%r, %s, %r)',
+        # logger.debug('has_permission(user=%s method=%s data=%r, %s, %r)',
         #             request.user, request.method, request.DATA,
         #             view.__class__.__name__, obj)
         try:

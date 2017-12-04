@@ -1,3 +1,23 @@
+- name: Stop supervisord 
+  service: 
+    name: supervisord 
+    state: stopped 
+
+- name: Make sure /var/lib/galaxy exists
+  file:
+    path: /var/lib/galaxy
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+
+- name: Remove django logs
+  command: 'rm -f /var/log/galaxy/{{ item }}'
+  with_items:
+  - allauth.log 
+  - django.log
+  - galaxy.log 
+
 - name: Restart and enable supervisord
   service:
     name: supervisord

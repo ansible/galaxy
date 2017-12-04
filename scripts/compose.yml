@@ -3,11 +3,10 @@ version: '3'
 services:
   web:
     image: galaxy:latest
-    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv && /entrypoint.sh manage migrate --noinput && /entrypoint.sh run web']
+    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv && /entrypoint.sh manage migrate --noinput && /entrypoint.sh manage rebuild_index --noinput && /entrypoint.sh manage rebuild_galaxy_indexes && /entrypoint.sh run web']
     environment:
       - GALAXY_SECRET_KEY=secret
-      - GALAXY_DB_HOST=postgres
-      - GALAXY_DB_PASSWORD=galaxy
+      - GALAXY_DB_URL="postgres://galaxy:galaxy@postgres:5432/galaxy"
       - GALAXY_RABBITMQ_HOST=rabbitmq
       - GALAXY_RABBITMQ_PASSWORD=galaxy
       - GALAXY_MEMCACHE_HOST=memcache
@@ -22,11 +21,10 @@ services:
 
   worker:
     image: galaxy:latest
-    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv && /entrypoint.sh run worker']
+    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv --wait-for web:8000 && /entrypoint.sh run worker']
     environment:
       - GALAXY_SECRET_KEY=secret
-      - GALAXY_DB_HOST=postgres
-      - GALAXY_DB_PASSWORD=galaxy
+      - GALAXY_DB_URL="postgres://galaxy:galaxy@postgres:5432/galaxy"
       - GALAXY_RABBITMQ_HOST=rabbitmq
       - GALAXY_RABBITMQ_PASSWORD=galaxy
       - GALAXY_MEMCACHE_HOST=memcache
@@ -34,6 +32,7 @@ services:
       - C_FORCE_ROOT=1
     links:
       - postgres
+      - elastic
       - rabbitmq
 
   postgres:
@@ -44,7 +43,11 @@ services:
       - POSTGRES_PASSWORD=galaxy
 
   elastic:
-    image: elasticsearch:2.4.1
+    user: elasticsearch
+    expose:
+    - 9200
+    - 9300
+    image: 'ansible/galaxy-elasticsearch:2.4.6'
 
   memcache:
     image: memcached:latest

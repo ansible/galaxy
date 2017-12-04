@@ -1,0 +1,427 @@
+# main.yml
+---
+- name: Create project
+  openshift_v1_project:
+      name: '{{ openshift_project }}'
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+  tags:
+  - start
+
+- name: Destroy project
+  openshift_v1_project:
+      name: '{{ openshift_project }}'
+      state: absent
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+  tags:
+  - destroy
+
+- include_tasks: pvc.yml
+  tags:
+  - start
+
+- include_tasks: service.yml
+  tags:
+  - start
+
+- include_tasks: route.yml
+  tags:
+  - start
+
+- name: Define elastic deployment
+  set_fact:
+      elastic_dc:
+          apiVersion: v1
+          kind: deployment_config
+          metadata:
+              name: elastic
+              labels:
+                  app: galaxy
+                  service: elastic
+              namespace: '{{ openshift_project }}'
+          spec:
+              template:
+                  metadata:
+                      labels:
+                          app: galaxy
+                          service: elastic
+                  spec:
+                      containers:
+                        - name: elastic
+                          securityContext: {}
+                          state: present
+                          volumeMounts:
+                            - readOnly: false
+                              mountPath: /usr/share/elasticsearch/data
+                              name: elastic-volume
+                          command: ['elasticsearch']
+                          image: 'ansible/galaxy-elasticsearch:2.4.6'
+                      volumes:
+                        - name: elastic-volume
+                          persistentVolumeClaim:
+                              claimName: elastic-volume
+              replicas: 0
+              strategy:
+                  type: Rolling
+      replicas_one:
+          spec:
+              replicas: 1
+  tags:
+  - start
+  - stop
+
+- name: Stop elastic deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ elastic_dc }}'
+  when: 'elastic_host is not defined'
+  tags:
+  - stop
+  - restart
+
+- name: Start elastic deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ elastic_dc | combine(replicas_one, recursive=True) }}'
+  when: 'elastic_hostname is not defined'
+  tags:
+  - start
+  - restart
+
+- name: Define elastic deployment
+  set_fact:
+      memcache_dc:
+          apiVersion: v1
+          kind: deployment_config
+          metadata:
+              name: memcache
+              labels:
+                  app: galaxy
+                  service: memcache
+              namespace: '{{ openshift_project }}'
+          spec:
+              template:
+                  metadata:
+                      labels:
+                          app: galaxy
+                          service: memcache
+                  spec:
+                      containers:
+                        - name: memcache
+                          securityContext: {}
+                          state: present
+                          image: memcached:latest
+              replicas: 0
+              strategy:
+                  type: Rolling
+  tags:
+  - start
+  - stop
+
+- name: Stop memcache deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ memcache_dc }}'
+  tags:
+  - stop
+  - restart
+
+- name: Start memcache deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ memcache_dc | combine(replicas_one, recursive=True) }}'
+  tags:
+  - start
+  - restart
+
+- name: Define rabbitmq deployment
+  set_fact:
+      rabbitmq_dc:
+          apiVersion: v1
+          kind: deployment_config
+          metadata:
+              name: rabbitmq
+              labels:
+                  app: galaxy
+                  service: rabbitmq
+              namespace: '{{ openshift_project }}'
+          spec:
+              template:
+                  metadata:
+                      labels:
+                          app: galaxy
+                          service: rabbitmq
+                  spec:
+                      containers:
+                        - name: rabbitmq
+                          securityContext: {}
+                          state: present
+                          env:
+                            - name: RABBITMQ_DEFAULT_USER
+                              value: galaxy
+                            - name: RABBITMQ_DEFAULT_PASS
+                              value: galaxy
+                            - name: RABBITMQ_DEFAULT_VHOST
+                              value: galaxy
+                          image: rabbitmq:latest
+              replicas: 0
+              strategy:
+                  type: Rolling
+  tags:
+  - start
+  - stop
+
+- name: Stop rabbitmq deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ rabbitmq_dc }}'
+  tags:
+  - stop
+  - restart
+
+- name: Start rabbitmq deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ rabbitmq_dc | combine(replicas_one, recursive=True) }}'
+  tags:
+  - start
+  - restart
+
+- name: Define postgres deployment
+  set_fact:
+      postgres_dc:
+          apiVersion: v1
+          kind: deployment_config
+          metadata:
+              name: postgres
+              labels:
+                  app: galaxy
+                  service: postgres
+              namespace: '{{ openshift_project }}'
+          spec:
+              template:
+                  metadata:
+                      labels:
+                          app: galaxy
+                          service: postgres
+                  spec:
+                      containers:
+                        - name: postgres
+                          securityContext: {}
+                          state: present
+                          env:
+                            - name: POSTGRESQL_DATABASE
+                              value: '{{ pg_database }}'
+                            - name: POSTGRESQL_USER
+                              value: '{{ pg_username }}'
+                            - name: POSTGRESQL_PASSWORD
+                              value: '{{ pg_password }}'
+                          volumeMounts:
+                            - readOnly: false
+                              mountPath: /var/lib/pgsql/data
+                              name: pgdata-volume
+                          image: 'centos/postgresql-95-centos7'
+                      volumes:
+                        - name: pgdata-volume
+                          persistentVolumeClaim:
+                              claimName: pgdata-volume
+              replicas: 0
+              strategy:
+                  type: Rolling
+  tags:
+  - start
+  - stop
+
+- name: Stop postgres deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ postgres_dc }}'
+  when: 'pg_hostname is not defined'
+  tags:
+  - stop
+  - restart
+
+- name: Start postgres deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ postgres_dc | combine(replicas_one, recursive=True) }}'
+  when: 'pg_hostname is not defined'
+  tags:
+  - start
+  - restart
+
+- name: Define web deployment
+  set_fact:
+     web_dc:
+        apiVersion: v1
+        kind: deployment_config
+        metadata:
+            name: web
+            labels:
+                app: galaxy
+                service: web
+            namespace: '{{ openshift_project }}'
+        spec:
+            template:
+                metadata:
+                    labels:
+                        app: galaxy
+                        service: web
+                spec:
+                    containers:
+                      - name: web
+                        securityContext: {}
+                        state: present
+                        env:
+                          - name: GALAXY_DB_URL
+                            value: "postgres://{{ pg_username }}:{{ pg_password }}@{{ pg_hostname | default('postgres') }}:{{ pg_port }}/{{ pg_database }}"
+                          - name: GALAXY_SECRET_KEY
+                            value: '{{ galaxy_secret }}'
+                          - name: GALAXY_RABBITMQ_HOST
+                            value: rabbitmq
+                          - name: GALAXY_RABBITMQ_PASSWORD
+                            value: galaxy
+                          - name: GALAXY_MEMCACHE_HOST
+                            value: memcache
+                          - name: GALAXY_ELASTICSEARCH_HOST
+                            value: '{{ elastic_hostname | default("elastic") }}'
+                          - name: GALAXY_ELASTICSEARCH_PORT
+                            value: '{{ elastic_port | default(9200) }}'
+                        args:
+                          - /bin/bash
+                          - -c
+                          - /entrypoint.sh manage waitenv && /entrypoint.sh
+                            manage migrate --noinput && /entrypoint.sh manage
+                            rebuild_index --noinput && /entrypoint.sh manage
+                            rebuild_galaxy_indexes && /entrypoint.sh run web
+                        ports:
+                          - protocol: TCP
+                            containerPort: 8000
+                        image: '{{ galaxy_actual_image }}'
+            replicas: 0
+            strategy:
+                type: Rolling
+  tags:
+  - start
+  - stop
+
+- name: Stop web deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ web_dc }}'
+  tags:
+  - stop
+  - restart
+
+- name: Start web deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ web_dc | combine(replicas_one, recursive=True) }}'
+  tags:
+  - start
+  - restart
+
+- name: Define worker deployment
+  set_fact:
+      worker_dc:
+          apiVersion: v1
+          kind: deployment_config
+          metadata:
+              name: worker
+              labels:
+                  app: galaxy
+                  service: worker
+              namespace: '{{ openshift_project }}'
+          spec:
+              template:
+                  metadata:
+                      labels:
+                          app: galaxy
+                          service: worker
+                  spec:
+                      containers:
+                        - name: worker
+                          securityContext: {}
+                          state: present
+                          env:
+                            - name: GALAXY_DB_URL
+                              value: "postgres://{{ pg_username }}:{{ pg_password }}@{{ pg_hostname | default('postgres') }}:{{ pg_port }}/{{ pg_database }}"
+                            - name: GALAXY_SECRET_KEY
+                              value: '{{ galaxy_secret }}'
+                            - name: GALAXY_RABBITMQ_HOST
+                              value: rabbitmq
+                            - name: GALAXY_RABBITMQ_PASSWORD
+                              value: galaxy
+                            - name: GALAXY_MEMCACHE_HOST
+                              value: memcache
+                            - name: GALAXY_ELASTICSEARCH_HOST
+                              value: '{{ elastic_hostname | default("elastic") }}'
+                            - name: GALAXY_ELASTICSEARCH_PORT
+                              value: '{{ elastic_port | default(9200) }}'
+                            - name: C_FORCE_ROOT
+                              value: '1'
+                          args:
+                            - /bin/bash
+                            - -c
+                            - '/entrypoint.sh manage waitenv --wait-for web:8000 && /entrypoint.sh run worker'
+                          image: '{{ galaxy_actual_image }}'
+              replicas: 0
+              strategy:
+                  type: Rolling
+  tags:
+  - start
+  - stop
+
+- name: Stop worker deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ worker_dc }}'
+  tags:
+  - stop
+  - restart
+
+- name: Start worker deployment
+  openshift_v1_deployment_config:
+      state: present
+      kubeconfig: '{{ openshift_kubeconfig }}'
+      force: false
+      resource_definition:
+          '{{ worker_dc | combine(replicas_one, recursive=True) }}'
+  tags:
+  - start
+  - restart

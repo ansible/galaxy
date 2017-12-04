@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% load galaxyhelpers %}
+{% load humanize %}
+{% load tz %}
 
 {% block general_content %}
 
@@ -85,8 +87,15 @@
                                 {% endif %}
 
                                 <a class="btn btn-default btn-md" href="https://github.com/{{role.github_user}}/{{role.github_repo}}" target="_blank"><i class="fa fa-github"></i> Github Repo</a>
-                                
-                                {% if is_authenticated %}   
+
+                                <a id="download-btn" class="btn btn-default btn-md"
+                                   data-id="{{ role.id }}"
+                                   data-name="{{ role.name }}"
+                                   href="https://github.com/{{ role.github_user }}/{{ role.github_repo }}/archive/{{ role.github_default_branch }}.zip">
+                                    <i class="fa fa-cloud-download"></i> Download
+                                </a>
+
+                                {% if is_authenticated %}
                                         <a href="" id="unsubscribe-btn"
                                             class="btn btn-default btn-md"
                                             data-id="{{ subscriber_id }}"
@@ -163,22 +172,24 @@
                                         <td class="key">Type</td>
                                         <td class="value">{{ role_type }}</td>
                                     </tr>
-                                    {%if role.min_ansible_version %}
+                                    {% if role.min_ansible_version %}
                                     <tr>
                                         <td class="key">Minimum Ansible Version</td>
                                         <td class="value">{{ role.min_ansible_version }}</td>
                                     </tr>
                                     {% endif %}
-                                    {%if role.min_ansible_container_version %}
+                                    {% if role.min_ansible_container_version %}
                                     <tr>
                                         <td class="key">Minimum Ansible Container Version</td>
                                         <td class="value">{{ role.min_ansible_container_version }}</td>
                                     </tr>
                                     {% endif %}
+                                    {% if role.role_type != role.DEMO %}
                                     <tr>
                                         <td class="key">Installation</td>
                                         <td class="value"><code>$ {{ install_command }} {{role.namespace}}.{{role.name}}</code></td>
                                     </tr>
+                                    {% endif %}
                                     {% if tags %}
                                     <tr>
                                         <td class="key">Tags</td><td class="value">
@@ -190,11 +201,33 @@
                                     {% endif %}
                                     <tr>
                                         <td class="key">Last Commit</td>
-                                        <td class="value" >{{ last_commit_date }}</td>
+                                        <td class="value">
+                                            {% if last_commit_date %}
+                                            {% localtime off %}
+                                                <time datetime="{{ last_commit_date | date:'c' }}"
+                                                      title="{{ last_commit_date | date:'M j, Y g:i:s a' }} UTC">
+                                                    {{ last_commit_date | naturaltime }}
+                                                </time>
+                                            {% endlocaltime %}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="key">Last Imported</td>
-                                        <td class="value" >{{ import_date }}</td>
+                                        <td class="value" >
+                                            {% if import_date %}
+                                            {% localtime off %}
+                                                <time datetime="{{ import_date | date:'c' }}"
+                                                      title="{{ import_date | date:'M j, Y g:i:s a' }} UTC">
+                                                    {{ import_date | naturaltime }}
+                                                </time>
+                                            {% endlocaltime %}
+                                            {% else %}
+                                                NA
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
@@ -219,7 +252,18 @@
                                             {% for version in versions %}
                                             <tr>
                                                 <td>{{ version.loose_version }}</td>
-                                                <td>{{ version.release_date }}</td>
+                                                <td>
+                                                    {% if version.release_date %}
+                                                    {% localtime off %}
+                                                        <time datetime="{{ version.release_date | date:'c' }}"
+                                                              title="{{ version.release_date | date:'M j, Y g:i:s a' }} UTC">
+                                                            {{ version.release_date | naturaltime }}
+                                                        </time>
+                                                    {% endlocaltime %}
+                                                    {% else %}
+                                                        NA
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                             {% endfor %}
                                             {{ versions.count }}
@@ -236,7 +280,7 @@
                                 {% if platforms %}
                                 <div class="platforms section">
                                     <table class="table ga-table-striped">
-                                        <caption>Supported Platforms</caption>
+                                        <caption>OS Platforms</caption>
                                         <thead>
                                             <tr>
                                                 <th>Platform</th>
@@ -256,6 +300,30 @@
                                             {% if platforms.count == 0 %}
                                             <tr>
                                                 <td colspan="2">No platform information available.</td>
+                                            </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if cloud_platforms %}
+                                <div class="section">
+                                    <table class="table ga-table-striped">
+                                        <caption>Cloud Platforms</caption>
+                                        <thead><th>Platform</th></thead>
+                                    </table>
+                                    <div class="table-scroller">
+                                        <table class="table ga-table-striped">
+                                            <tbody>
+                                            {% for cloud_platform in cloud_platforms  %}
+                                                <tr>
+                                                    <td>{{ cloud_platform.name }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            {%  if cloud_platforms.count == 0 %}
+                                            <tr>
+                                                <td colspan="2">No cloud platform information available.</td>
                                             </tr>
                                             {% endif %}
                                             </tbody>
@@ -307,7 +375,18 @@
                                             <tbody>
                                             {% for import in imports %}
                                             <tr>
-                                                <td>{{ import.finished }}</td>
+                                                <td>
+                                                    {% if import.finished %}
+                                                    {% localtime off %}
+                                                        <time datetime="{{ import.finished | date:'c' }}"
+                                                              title="{{ import.finished | date:'M j, Y g:i:s a' }} UTC">
+                                                            {{ import.finished | naturaltime }}
+                                                        </time>
+                                                    {% endlocaltime %}
+                                                    {% else %}
+                                                        NA
+                                                    {% endif %}
+                                                </td>
                                                 <td>{{ import.state }}</td>
                                             </tr>
                                             {% endfor %}
@@ -360,7 +439,7 @@
 
         $('#galaxy-nav-items li').each(function() {
             t = $(this).find('a').text();
-            if (t === 'Browse Roles') {
+            if (t === 'Search') {
                 $(this).addClass('active');
             } else {
                 $(this).removeClass('active');
@@ -386,6 +465,9 @@
         $('#delete-btn').click(function(e) {
             e.preventDefault();
             delete_role();
+        });
+        $('#download-btn').click(function(e) {
+            updateDownloadStatistics();
         });
     });
 
@@ -562,6 +644,16 @@
                 s.find('.count').text(count - 1);
                 s.show();
             }
+        });
+    }
+
+    function updateDownloadStatistics() {
+        var elem = $('#download-btn');
+        var id = elem.attr('data-id');
+
+        $.ajax('/api/v1/roles/'+ id +'/downloads/', {
+            'method': 'POST',
+            'headers': { 'X-CSRFToken': get_token() }
         });
     }
 </script>

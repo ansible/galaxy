@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -32,6 +32,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     github_branch = indexes.CharField(model_attr='github_branch', indexed=False)
     tags = indexes.MultiValueField(default='', faceted=True)
     platforms = indexes.MultiValueField(default='', faceted=True)
+    cloud_platforms = indexes.MultiValueField(default='', faceted=True)
     platform_details = indexes.CharField(default='', indexed=False)
     versions = indexes.CharField(default='', indexed=False)
     dependencies = indexes.CharField(default='', indexed=False)
@@ -42,6 +43,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     autocomplete = indexes.EdgeNgramField(use_template=True)
     platforms_autocomplete = indexes.EdgeNgramField(default='')
+    cloud_platforms_autocomplete = indexes.EdgeNgramField(default='')
     tags_autocomplete = indexes.EdgeNgramField(default='')
     username_autocomplete = indexes.EdgeNgramField(model_attr='namespace')
     travis_status_url = indexes.CharField(model_attr='travis_status_url', default='', indexed=False)
@@ -49,8 +51,8 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     issue_tracker_url = indexes.CharField(model_attr='issue_tracker_url', default='', indexed=False)
     stargazers_count = indexes.IntegerField(model_attr='stargazers_count')
     watchers_count = indexes.IntegerField(model_attr='watchers_count')
-    forks_count = indexes.IntegerField(model_attr='forks_count',indexed=False)
-    open_issues_count = indexes.IntegerField(model_attr='open_issues_count',indexed=False)
+    forks_count = indexes.IntegerField(model_attr='forks_count', indexed=False)
+    open_issues_count = indexes.IntegerField(model_attr='open_issues_count', indexed=False)
     min_ansible_version = indexes.CharField(model_attr='min_ansible_version', default='1.2', indexed=False)
     user_is_subscriber = indexes.BooleanField(default=False, indexed=False)
     user_is_stargazer = indexes.BooleanField(default=False, indexed=False)
@@ -69,11 +71,14 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
             for platform in obj.platforms.filter(active=True).order_by('name').distinct('name')
         ]
 
+    def prepare_cloud_platforms(self, obj):
+        return obj.get_cloud_platforms()
+
     def prepare_tags(self, obj):
         return obj.get_tags()
 
     def prepare_average_score(self, obj):
-        return round(obj.average_score,1)
+        return round(obj.average_score, 1)
 
     def prepare_platforms_autocomplete(self, obj):
         return "%s %s %s" % (
@@ -81,6 +86,9 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
             ' '.join(obj.get_unique_platform_search_terms()),
             ' '.join(obj.get_unique_platform_versions())
         )
+
+    def prepare_cloud_platforms_autocomplete(self, obj):
+        return ' '.join(obj.get_cloud_platforms())
 
     def prepare_tags_autocomplete(self, obj):
         return ' '.join(obj.get_tags())

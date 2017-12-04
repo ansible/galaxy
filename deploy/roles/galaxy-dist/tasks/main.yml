@@ -1,19 +1,19 @@
 # tasks/main.yml
 ---
 
-- name: Remove old dist files
-  shell: rm -f /tmp/galaxy-*.tar.gz
+- name: Remove old wheel files
+  shell: rm -f /tmp/galaxy-*-none-any.whl
 
 - name: Copy the file
   copy:
     src: "{{ galaxy_dist_file }}"
     dest: "/tmp/{{ galaxy_dist_file | basename }}"
 
-- name: Stat the dist file
+- name: Stat the wheel file
   stat:
     path: "/tmp/{{ galaxy_dist_file | basename }}"
   register: stat_output
 
-- name: Show dist file status
+- name: Show wheel file status
   debug: var=stat_output
 

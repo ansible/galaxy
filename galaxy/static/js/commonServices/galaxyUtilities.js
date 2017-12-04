@@ -1,4 +1,4 @@
-/* (c) 2012-2016, Ansible by Red Hat
+/* (c) 2012-2018, Ansible by Red Hat
  *
  * This file is part of Ansible Galaxy
  *
@@ -27,6 +27,23 @@
     mod.factory('queryParams', [_queryParams]);
     mod.factory('fromQueryParams', [_fromQueryParams]);
     mod.factory('getCSRFToken', [_getToken]);
+
+    // Configure moment.js tresholds
+    moment.relativeTimeRounding(Math.floor);
+    moment.relativeTimeThreshold('s', 60);
+    // NOTE(cutwater): Setting 'ss' treshhold before 's' overrides
+    // it's value to 's' - 1
+    moment.relativeTimeThreshold('ss', 0);
+    moment.relativeTimeThreshold('m', 60);
+    moment.relativeTimeThreshold('h', 24);
+    moment.relativeTimeThreshold('d', 31);
+    moment.relativeTimeThreshold('M', 12);
+
+    mod.filter('timeFromNow', function () {
+        return function (value) {
+            return moment(value).fromNow();
+        }
+    });
 
     // check if a scalar is empty
     function _Empty() {

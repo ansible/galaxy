@@ -20,8 +20,8 @@ function run_web() {
 }
 
 function run_worker() {
-    _exec_cmd "${VENV_BIN}/python" manage.py celeryd \
-        -B --autoreload -Q 'celery,import_tasks,login_tasks'
+    _exec_cmd "${VENV_BIN}/galaxy-manage" celeryd \
+        -B --autoreload -Q 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
 }
 
 function run_service() {
@@ -40,7 +40,7 @@ case "$1" in
         run_service "${@:2}"
     ;;
     manage)
-        _exec_cmd "${VENV_BIN}/python" manage.py "${@:2}"
+        _exec_cmd "${VENV_BIN}/galaxy-manage" "${@:2}"
     ;;
 esac
 

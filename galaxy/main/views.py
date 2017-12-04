@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -28,7 +28,7 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 # local stuff
-from models import Role, Namespace
+from galaxy.main.models import Role, Namespace, ContentBlock
 
 # rst2html5-tools
 from html5css3 import Writer
@@ -46,6 +46,7 @@ common_services = [
     'js/commonServices/platformService.js',
     'js/commonServices/galaxyUtilities.js',
     'js/commonServices/searchService.js',
+    'js/commonServices/userStarredService.js',
     'js/commonDirectives/commonDirectives.js',
     'js/commonDirectives/autocompleteDirective.js',
     'js/commonDirectives/textCollapseDirective.js',
@@ -57,9 +58,9 @@ common_services = [
     'js/commonServices/githubClickService.js',
 ]
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Helpers
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 def readme_to_html(obj):
@@ -138,13 +139,20 @@ def build_standard_context(request):
 
     return context
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Non-secure URLs
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 def home(request):
     context = build_standard_context(request)
+    contentblocks = ContentBlock.objects.filter(name__in=[
+        'main-title',
+        'main-share',
+        'main-downloads',
+        'main-featured-blog'
+    ]).all()
+    context['contentblocks'] = {item.name: item for item in contentblocks}
     return render_to_response('home.html', context)
 
 
@@ -178,7 +186,7 @@ def intro(request):
 
 def accounts_landing(request):
     if request.user.is_authenticated():
-        request.session["transient"] = {"status":"info","msg":"Redirected to your dashboard."}
+        request.session["transient"] = {"status": "info", "msg": "Redirected to your dashboard."}
         return HttpResponseRedirect("/accounts/profile/")
     else:
         context = build_standard_context(request)
@@ -252,9 +260,9 @@ class NamespaceListView(ListView):
     def get_queryset(self):
         author = self.request.GET.get('author')
         if author:
-            qs = Role.objects.filter(active=True,is_valid=True,namespace__icontains=author).order_by('namespace').distinct('namespace')
+            qs = Role.objects.filter(active=True, is_valid=True, namespace__icontains=author).order_by('namespace').distinct('namespace')
         else:
-            qs = Role.objects.filter(active=True,is_valid=True).order_by('namespace').distinct('namespace')
+            qs = Role.objects.filter(active=True, is_valid=True).order_by('namespace').distinct('namespace')
         return qs
 
     def get_context_data(self, **kwargs):
@@ -394,13 +402,14 @@ class RoleDetailView(DetailView):
         role = self.role
         context['tags'] = role.tags.all()
         context['platforms'] = role.platforms.all()
+        context['cloud_platforms'] = role.cloud_platforms.all()
         context['dependencies'] = role.dependencies.all()
         context['videos'] = role.videos.all()
 
         context['imports'] = []
         for imp_task in role.import_tasks.all().order_by('-id')[:10]:
             context['imports'].append({
-                'finished': imp_task.finished.strftime('%Y-%m-%d %H:%M:%I %p %Z') if imp_task.finished else 'NA',
+                'finished': imp_task.finished,
                 'state': imp_task.state
             })
 
@@ -417,32 +426,31 @@ class RoleDetailView(DetailView):
         for ver in role.versions.all().order_by('-release_date'):
             context['versions'].append({
                 'loose_version': ver.loose_version,
-                'release_date':  ver.release_date.strftime('%Y-%m-%d %H:%M:%I %p') if ver.release_date else 'NA'
+                'release_date': ver.release_date
             })
-        context['import_date'] = role.imported.strftime('%Y-%m-%d %H:%M:%I %p %Z') if role.imported else 'NA'
-        context['last_commit_date'] = role.commit_created.strftime('%Y-%m-%d %H:%M:%I %p %Z') if role.commit_created \
-            else 'NA'
+        context['import_date'] = role.imported
+        context['last_commit_date'] = role.commit_created
         context['readme_html'] = readme_to_html(role)
         context['page_title'] = "%s.%s" % (self.namespace, self.name)
         return context
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Logged in/secured URLs
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 @login_required
 def accounts_connect(request):
     context = build_standard_context(request)
-    return render_to_response('socialaccount/connections.html',context)
+    return render_to_response('socialaccount/connections.html', context)
 
 
 @login_required
 def accounts_connect_success(request):
     context = build_standard_context(request)
     context["connected_to_github"] = True
-    return render_to_response('socialaccount/connections.html',context)
+    return render_to_response('socialaccount/connections.html', context)
 
 
 @login_required
@@ -463,7 +471,7 @@ def role_add_view(request):
         ]
     context["use_menu_controller"] = False
     context["load_angular"] = True
-    context["page_title"] = "My Roles"
+    context["page_title"] = "My Content"
 
     app_id = ""
     if settings.SITE_NAME == 'galaxy.ansible.com':
@@ -504,7 +512,33 @@ def import_status_view(request):
 
     context["load_angular"] = True
     context["page_title"] = "My Imports"
-    return render_to_response('import_status.html',context)
+    return render_to_response('import_status.html', context)
+
+
+@login_required
+def stars_list_view(request):
+    context = build_standard_context(request)
+    context["ng_app"] = "userStarredApp"
+    context["extra_css"] = []
+
+    if settings.SITE_ENV == 'DEV':
+        context["extra_js"] = [
+            'js/userStarredApp/userStarredApp.js',
+            'js/userStarredApp/userStarredController.js',
+            'js/commonServices/galaxyUtilities.js',
+        ] + common_services
+    else:
+        context["extra_js"] = [
+            'dist/galaxy.userStarredApp.min.js'
+        ]
+
+    if request.session.get("transient"):
+        context["transient"] = request.session["transient"]
+        del request.session["transient"]
+
+    context["load_angular"] = True
+    context["page_title"] = "My Stars"
+    return render_to_response('ng_view.html', context)
 
 
 @login_required
@@ -536,4 +570,4 @@ def accounts_profile(request):
         context["transient"] = request.session["transient"]
         del request.session["transient"]
 
-    return render_to_response('account/profile.html',context)
+    return render_to_response('account/profile.html', context)

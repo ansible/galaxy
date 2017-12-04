@@ -34,11 +34,16 @@ RUN virtualenv /var/lib/galaxy/venv \
     && ${VENV_BIN}/pip install -U pip \
     && ${VENV_BIN}/pip install -r /tmp/requirements.txt
 
-# Copy sources
-# TODO(cutwater): Install galaxy as a wheel package using pip
 COPY scripts/docker-release/entrypoint.sh /entrypoint.sh
-COPY . /galaxy
-RUN mv /galaxy/build/static /var/lib/galaxy/public/static
+COPY dist/ /tmp/dist
+COPY build/static /var/lib/galaxy/public/static
+
+RUN ${VENV_BIN}/pip install $(readlink -f /tmp/dist/galaxy.whl) \
+    && rm -rf /tmp/dist
+
+# Copy test data
+RUN mkdir -p /galaxy/test-data
+COPY test-data/* /galaxy/test-data/
 
 WORKDIR /galaxy
 

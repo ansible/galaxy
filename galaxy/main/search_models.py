@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -18,13 +18,17 @@
 from datetime import datetime
 from elasticsearch_dsl import DocType, String, Long, Date, MetaField, analyzer, token_filter
 
-__all__ = ["TagDoc", "PlatformDoc", "UserDoc"]
+__all__ = ["TagDoc", "PlatformDoc", "CloudPlatformDoc", "UserDoc"]
 
 
 autocomplete = analyzer(
     'autocomplete',
-    tokenizer = 'standard',
-    filter = ["lowercase", token_filter('autocomplete_filter', 'edgeNGram', min_gram=2, max_gram=20)]
+    tokenizer='standard',
+    filter=[
+        "lowercase",
+        token_filter('autocomplete_filter', 'edgeNGram',
+                     min_gram=2, max_gram=20)
+    ]
 )
 
 
@@ -36,7 +40,7 @@ class BaseSearchModel(DocType):
         if not self.created_on:
             self.created_on = datetime.now()
         self.last_modified_on = datetime.now()
-        return super(BaseSearchModel,self).save(** kwargs)
+        return super(BaseSearchModel, self).save(** kwargs)
 
 
 class TagDoc(BaseSearchModel):
@@ -58,6 +62,17 @@ class PlatformDoc(BaseSearchModel):
 
     class Meta:
         index = 'galaxy_platforms'
+        all = MetaField(enabled=True)
+        dynamic = MetaField(enabled=False)
+
+
+class CloudPlatformDoc(BaseSearchModel):
+    name = String()
+    roles = Long(include_in_all=False)
+    autocomplete = String(analyzer=autocomplete, search_analyzer='standard')
+
+    class Meta:
+        index = 'galaxy_cloud_platforms'
         all = MetaField(enabled=True)
         dynamic = MetaField(enabled=False)
 

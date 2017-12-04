@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -74,6 +74,6 @@ def import_task_post_save(sender, **kwargs):
     When a role is imported enable the role in the user's repository cache
     '''
     instance = kwargs['instance']
-    for repo in Repository.objects.filter(github_user=instance.github_user,github_repo=instance.github_repo):
+    for repo in Repository.objects.filter(github_user=instance.github_user, github_repo=instance.github_repo):
         repo.is_enabled = True
         repo.save()

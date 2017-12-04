@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -26,7 +26,7 @@ import sys
 from rest_framework.exceptions import ParseError, PermissionDenied
 
 # PyCrypto
-#from Crypto.Cipher import AES
+# from Crypto.Cipher import AES
 
 __all__ = ['get_object_or_400', 'get_object_or_403', 'camelcase_to_underscore',
            'get_ansible_version', 'get_version', 'html_decode']
@@ -116,7 +116,7 @@ def get_encryption_key(instance, field_name):
     h.update(field_name)
     return h.digest()[:16]
 
-#def encrypt_field(instance, field_name, ask=False):
+# def encrypt_field(instance, field_name, ask=False):
 #    '''
 #    Return content of the given instance and field name encrypted.
 #    '''
@@ -131,7 +131,7 @@ def get_encryption_key(instance, field_name):
 #    b64data = base64.b64encode(encrypted)
 #    return '$encrypted$%s$%s' % ('AES', b64data)
 #
-#def decrypt_field(instance, field_name):
+# def decrypt_field(instance, field_name):
 #    '''
 #    Return content of the given instance and field name decrypted.
 #    '''

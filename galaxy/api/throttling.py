@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -43,12 +43,12 @@ class RoleDownloadCountThrottle(ScopedRateThrottle):
                 role_name = request.query_params['name']
                 try:
                     # attempt to lookup role first. if that fails, we don't want get_cache_key to be called.
-                    role = Role.objects.get(namespace=role_namespace,name=role_name)
+                    role = Role.objects.get(namespace=role_namespace, name=role_name)
                     self.role_id = role.id
                     allowed = super(RoleDownloadCountThrottle, self).allow_request(request, view)
                     if not allowed:
                         # user downloaded requested role already
-                        self.logger.debug('user requested role %s.%s already.' % (role_namespace,role_name))
+                        self.logger.debug('user requested role %s.%s already.' % (role_namespace, role_name))
                         return True
                     role.download_count += 1
                     role.save()

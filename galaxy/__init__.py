@@ -1,4 +1,4 @@
-# (c) 2012-2016, Ansible by Red Hat
+# (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -19,8 +19,10 @@ import os.path
 import sys
 import warnings
 
-__version__ = '2.3.0'
+from galaxy.common import version
+
 __all__ = ['__version__']
+__version__ = version.get_package_version(__name__)
 
 
 def find_commands(management_dir):
