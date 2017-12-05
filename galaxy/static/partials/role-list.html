@@ -40,20 +40,14 @@
                         <a ng-href="/{{ role.username }}/{{ role.name }}/">
                         <div class="header">
                             <div class="title">{{ role.name }}</div>
+                            <div><a ng-href="/{{ role.username }}/">{{ role.username }}</a></div>
                         </div>
-                        <hr />
                         <div class="body">
                             <div class="description" dot-dot-dot ng-if="role.description">{{ role.description }}</div>
-                            <div class="description na" dot-dot-dot ng-if="!role.description">NA</div>
-
                             <table class="stats-table">
                                 <tr class="stat-row">
                                     <td class="key">Type</td>
                                     <td class="value">{{ role.display_type_title }}</td>
-                                </tr>
-                                <tr class="stat-row">
-                                    <td class="key">Author</td>
-                                    <td class="value"><a ng-href="/{{ role.username }}/">{{ role.username }}</a></td>
                                 </tr>
                                 <tr class="stat-row">
                                     <td class="key">OS</td>
