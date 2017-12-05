@@ -40,7 +40,6 @@
                         <a ng-href="/{{ role.username }}/{{ role.name }}/">
                         <div class="header">
                             <div class="title">{{ role.name }}</div>
-                            <div class="badge" tooltip-placement="top" uib-tooltip="Galaxy Download Count">{{ role.download_count }}</div>
                         </div>
                         <hr />
                         <div class="body">
@@ -82,13 +81,18 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="row footer">
+                        <div class="footer">
                             <div class="img-container" ng-if="role.travis_status_url">
                                 <a ng-href="{{ role.travis_build_url }}" target="_blank">
                                 <img ng-src="{{ role.travis_status_url }}" tooltip-placement="top" uib-tooltip="Travis Build Status" class="travis-status-img" />
                                 </a>
                             </div>
                             <div class="counts">
+                                <div class="downloads">
+                                    <div class="btn btn-default btn-xs">
+                                        <i class="fa fa-download"></i> Downloads {{ role.download_count }}
+                                    </div>
+                                </div>
                                 <div class="subscribe">
                                     <a href="" ng-if="!role.user_is_subscriber" ng-click="subscribe(role)"
                                         class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
