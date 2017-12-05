@@ -65,12 +65,9 @@
         githubClickService) {
 
         $('#bs-example-navbar-collapse-1').removeClass('in');  //force collapse of mobile navbar
-        $('#galaxy-navbar-container, #galaxy-page-title-container').removeClass('container').addClass('container-fluid');
         $('#galaxy-copyright').hide();
         $('#galaxy-footer-blue-line').hide();
-        $('body').css({ 'overflow-y': 'hidden', 'height': 'auto' });
-        
-        $scope.galaxy_page_title_fluid = true;
+
         $scope.page_title = 'Search';
         $scope.version = GLOBAL_VERSION;
         
@@ -155,29 +152,19 @@
         var restored_query = queryStorageFactory.restore_state(_getQueryParams($scope.list_data));
         $scope.list_data = angular.extend({}, $scope.list_data, _getQueryParams(restored_query));
 
-        var lazy_resize = _.debounce(function() { 
-            _windowResize();
-        }, 500);
-
-        $($window).resize(lazy_resize);
-       
         _getTopTags();
-        _refresh().then(lazy_resize);
-        
+        _refresh();
+
         $timeout(function() {
             // Match the autocomplete widget to query params
-            _windowResize();
             _setSearchTerms($scope.list_data);
             _setOrderBy();
             _updateTopTags();
-            $('#galaxy-page-title-container').removeClass('container').addClass('container-fluid');
         }, 500);
 
         $scope.$on('$destroy', function() {
-            $('#galaxy-navbar-container').removeClass('container-fluid').addClass('container');
             $('#galaxy-copyright').show();
             $('#galaxy-footer-blue-line').show();
-            $('body').css({ 'overflow-y': 'auto', 'height': '100%' });
         });
         
         return;
@@ -287,7 +274,6 @@
                     $scope.list_data.page_range = [];
                     $scope.setPageRange();
                     _resizeSearchControls();
-                    $timeout(_windowResize, 500);
                 });
         }
 
@@ -555,15 +541,6 @@
 
         function _clearRoleTypes() {
             $scope.searchSuggestions = [];
-        }
-
-        function _windowResize() {            
-            var windowHeight = $($window).height();
-            var searchHeight = $('#role-list-search').outerHeight() + 20;
-            var footerHeight = 40;
-            var newHeight = windowHeight - 140 - searchHeight - footerHeight;
-            $log.debug('searchHeight: ' + searchHeight + ' footerHeight: ' + footerHeight);
-            $('#results-outer-container').height(newHeight);
         }
 
         function _resizeSearchControls() {

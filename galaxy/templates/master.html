@@ -5,7 +5,7 @@
 <div class="wrap">
     <div class="content">
         {% block body %}
-        <nav id="galaxy-navbar" class="navbar navbar-default {% if ng_app == 'listApp' %} navbar-fixed-top {% endif %}">
+        <nav id="galaxy-navbar" class="navbar navbar-default">
             <div id="galaxy-navbar-container" class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -19,7 +19,7 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     {% include 'menu.html' %}
                 </div>
-            </div><!-- container-fluid -->
+            </div><!-- galaxy-navbar-container -->
         </nav>
 
         {% block content %}{% endblock %}

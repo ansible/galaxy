@@ -16,128 +16,126 @@
  along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 -->
 
-<div id="galaxy-role-list">
+<ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
-    <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
+<div class="container" id="galaxy-role-list">
+    <div class="row" id="search-control-container">
+        <div class="col-lg-10 col-md-9 col-sm-9" id="results-column">
+            <div id="search-controls-container">
+                <div id="role-list-search">
+                    <autocomplete
+                        search-suggestion-function="searchSuggestion"
+                        search-placeholder="Search"
+                        search-function="search"
+                        search-order-options="orderOptions"
+                        search-type-options="searchTypeOptions"
+                        search-suggestions="searchSuggestions"
+                        search-role-types="searchRoleTypes"
+                        search-refresh-role-types="refreshRoleTypes"
+                        search-clear-role-types="clearRoleTypes"></autocomplete>
+                </div>
+                <div id="results-outer-container">
+                <div id="results-container">
+                    <div class="result" ng-repeat="role in roles">
+                        <a ng-href="/{{ role.username }}/{{ role.name }}/">
+                        <div class="header">
+                            <div class="title">{{ role.name }}</div>
+                            <div class="badge" tooltip-placement="top" uib-tooltip="Galaxy Download Count">{{ role.download_count }}</div>
+                        </div>
+                        <hr />
+                        <div class="body">
+                            <div class="description" dot-dot-dot ng-if="role.description">{{ role.description }}</div>
+                            <div class="description na" dot-dot-dot ng-if="!role.description">NA</div>
 
-    <div class="container-fluid" id="role-list-container">
-        <div class="row" id="search-control-container">
-            <div class="col-lg-10 col-md-9 col-sm-9" id="results-column">
-                <div id="search-controls-container">
-                    <div id="role-list-search">
-                        <autocomplete 
-                            search-suggestion-function="searchSuggestion"
-                            search-placeholder="Search"
-                            search-function="search" 
-                            search-order-options="orderOptions" 
-                            search-type-options="searchTypeOptions" 
-                            search-suggestions="searchSuggestions"
-                            search-role-types="searchRoleTypes"
-                            search-refresh-role-types="refreshRoleTypes"
-                            search-clear-role-types="clearRoleTypes"></autocomplete>
-                    </div>
-                    <div id="results-outer-container">
-                    <div id="results-container">
-                        <div class="result" ng-repeat="role in roles">
-                            <a ng-href="/{{ role.username }}/{{ role.name }}/">
-                            <div class="header">
-                                <div class="title">{{ role.name }}</div>
-                                <div class="badge" tooltip-placement="top" uib-tooltip="Galaxy Download Count">{{ role.download_count }}</div>
-                            </div>   
-                            <hr />
-                            <div class="body">
-                                <div class="description" dot-dot-dot ng-if="role.description">{{ role.description }}</div>
-                                <div class="description na" dot-dot-dot ng-if="!role.description">NA</div>
-                                <table class="stats-table">
-                                    <tr class="stat-row">
-                                        <td class="key">Type</td>
-                                        <td class="value">{{ role.display_type_title }}</td>
-                                    </tr>
-                                    <tr class="stat-row">
-                                        <td class="key">Author</td>
-                                        <td class="value"><a ng-href="/{{ role.username }}/">{{ role.username }}</a></td>
-                                    </tr>
-                                    <tr class="stat-row">
-                                        <td class="key">OS</td>
-                                        <td class="value" ng-if="role.platforms.length" ng-bind="role.platforms.join(', ')"></td>
-                                        <td class="value na" ng-if="!role.platforms.length">NA</td>
-                                    </tr>
-                                    <tr class="stat-row">
-                                        <td class="key">Clouds</td>
-                                        <td class="value" ng-if="role.cloud_platforms.length" ng-bind="role.cloud_platforms.join(', ')"></td>
-                                        <td class="value na" ng-if="!role.cloud_platforms.length">NA</td>
-                                    </tr>
-                                    <tr class="stat-row">
-                                        <td class="key">Tags</td>
-                                        <td class="value" ng-if="role.tags.length" ng-bind="role.tags.join(', ') + ' '"></td>
-                                        <td class="value na" ng-if="!role.tags.length">NA</td>
-                                    </tr>
-                                    <tr class="stat-row">
-                                        <td class="key">Last Commit</td>
-                                        <td class="value" ng-if="role.last_commit_date">
-                                            <time datetime="{{ role.last_commit_date }}Z" title="{{ role.last_commit_date | date : 'MMM d, yyyy h:mm:ss a' }} UTC">
-                                                {{ role.last_commit_date | timeFromNow }}
-                                            </time>
-                                        </td>
-                                        <td class="value na" ng-if="!role.last_commit_date">NA</td>
-                                    </tr>
-                                </table>
+                            <table class="stats-table">
+                                <tr class="stat-row">
+                                    <td class="key">Type</td>
+                                    <td class="value">{{ role.display_type_title }}</td>
+                                </tr>
+                                <tr class="stat-row">
+                                    <td class="key">Author</td>
+                                    <td class="value"><a ng-href="/{{ role.username }}/">{{ role.username }}</a></td>
+                                </tr>
+                                <tr class="stat-row">
+                                    <td class="key">OS</td>
+                                    <td class="value" ng-if="role.platforms.length" ng-bind="role.platforms.join(', ')"></td>
+                                    <td class="value na" ng-if="!role.platforms.length">NA</td>
+                                </tr>
+                                <tr class="stat-row">
+                                    <td class="key">Clouds</td>
+                                    <td class="value" ng-if="role.cloud_platforms.length" ng-bind="role.cloud_platforms.join(', ')"></td>
+                                    <td class="value na" ng-if="!role.cloud_platforms.length">NA</td>
+                                </tr>
+                                <tr class="stat-row">
+                                    <td class="key">Tags</td>
+                                    <td class="value" ng-if="role.tags.length" ng-bind="role.tags.join(', ') + ' '"></td>
+                                    <td class="value na" ng-if="!role.tags.length">NA</td>
+                                </tr>
+                                <tr class="stat-row">
+                                    <td class="key">Last Commit</td>
+                                    <td class="value" ng-if="role.last_commit_date">
+                                        <time datetime="{{ role.last_commit_date }}Z" title="{{ role.last_commit_date | date : 'MMM d, yyyy h:mm:ss a' }} UTC">
+                                            {{ role.last_commit_date | timeFromNow }}
+                                        </time>
+                                    </td>
+                                    <td class="value na" ng-if="!role.last_commit_date">NA</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="row footer">
+                            <div class="img-container" ng-if="role.travis_status_url">
+                                <a ng-href="{{ role.travis_build_url }}" target="_blank">
+                                <img ng-src="{{ role.travis_status_url }}" tooltip-placement="top" uib-tooltip="Travis Build Status" class="travis-status-img" />
+                                </a>
                             </div>
-                            <div class="row footer">
-                                <div class="img-container" ng-if="role.travis_status_url">
-                                    <a ng-href="{{ role.travis_build_url }}" target="_blank">
-                                    <img ng-src="{{ role.travis_status_url }}" tooltip-placement="top" uib-tooltip="Travis Build Status" class="travis-status-img" />
+                            <div class="counts">
+                                <div class="subscribe">
+                                    <a href="" ng-if="!role.user_is_subscriber" ng-click="subscribe(role)"
+                                        class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
+                                        <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Watch &nbsp;{{ role.watchers_count }}
+                                    </a>
+                                    <a href="" ng-if="role.user_is_subscriber" ng-click="unsubscribe(role)"
+                                        class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
+                                        <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Unwatch &nbsp;{{ role.watchers_count }}
                                     </a>
                                 </div>
-                                <div class="counts">
-                                    <div class="subscribe">
-                                        <a href="" ng-if="!role.user_is_subscriber" ng-click="subscribe(role)"
-                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
-                                            <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Watch &nbsp;{{ role.watchers_count }}
-                                        </a>
-                                        <a href="" ng-if="role.user_is_subscriber" ng-click="unsubscribe(role)"
-                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
-                                            <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Unwatch &nbsp;{{ role.watchers_count }}
-                                        </a>
-                                    </div>
-                                    <div class="stargaze">
-                                        <a href="" ng-if="!role.user_is_stargazer" ng-click="star(role)"
-                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
-                                            <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Star {{ role.stargazers_count }}
-                                        </a>
-                                        <a href="" ng-if="role.user_is_stargazer" ng-click="unstar(role)"
-                                            class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
-                                            <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Unstar {{ role.stargazers_count }}
-                                        </a>
-                                    </div>
+                                <div class="stargaze">
+                                    <a href="" ng-if="!role.user_is_stargazer" ng-click="star(role)"
+                                        class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
+                                        <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Star {{ role.stargazers_count }}
+                                    </a>
+                                    <a href="" ng-if="role.user_is_stargazer" ng-click="unstar(role)"
+                                        class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
+                                        <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Unstar {{ role.stargazers_count }}
+                                    </a>
                                 </div>
                             </div>
-                            </a>
-                        </div><!-- result -->
-                    </div><!-- results -->
-                    <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
-                    <ng-include src="'/static/partials/footer.html'"></ng-include>
-                    </div><!-- results outer container -->
-                </div><!-- search-controls-container -->
-            </div>
-            <div class="col-lg-2 col-md-3 col-sm-3">
-                <div id="role-tags-container">
-                    <div class="header">
-                         <div class="title">POPULAR TAGS</div>
-                    </div>
-                    <div class="body-wrapper">
-                        <div class="body">
-                            <div class="tag" ng-repeat="tag in topTags">
-                                <div class="tag-name" ng-click="activateTag(tag)" ng-class="{ active: tag.active }">{{ tag.tag }}</div>
-                                <div class="tag-roles">{{ tag.roles }}</div>
-                            </div>
+                        </div>
+                        </a>
+                    </div><!-- result -->
+                </div><!-- results -->
+                <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
+                <ng-include src="'/static/partials/footer.html'"></ng-include>
+                </div><!-- results outer container -->
+            </div><!-- search-controls-container -->
+        </div>
+        <div class="col-lg-2 col-md-3 col-sm-3">
+            <div id="role-tags-container">
+                <div class="header">
+                     <div class="title">POPULAR TAGS</div>
+                </div>
+                <div class="body-wrapper">
+                    <div class="body">
+                        <div class="tag" ng-repeat="tag in topTags">
+                            <div class="tag-name" ng-click="activateTag(tag)" ng-class="{ active: tag.active }">{{ tag.tag }}</div>
+                            <div class="tag-roles">{{ tag.roles }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div><!-- search-control-container -->
-    </div><!-- container -->
+        </div>
+    </div><!-- search-control-container -->
+</div><!-- container -->
 
-    <ng-include src="'/static/partials/loader.html'"></ng-include>
+<ng-include src="'/static/partials/loader.html'"></ng-include>
 
-</div>
