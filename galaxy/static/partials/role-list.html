@@ -48,29 +48,17 @@
                                     <td class="key">Type</td>
                                     <td class="value">{{ role.display_type_title }}</td>
                                 </tr>
-                                <tr class="stat-row">
+                                <tr class="stat-row" ng-if="role.platforms.length" >
                                     <td class="key">OS</td>
-                                    <td class="value" ng-if="role.platforms.length" ng-bind="role.platforms.join(', ')"></td>
-                                    <td class="value na" ng-if="!role.platforms.length">NA</td>
+                                    <td class="value" ng-bind="role.platforms.join(', ')"></td>
                                 </tr>
-                                <tr class="stat-row">
+                                <tr class="stat-row"  ng-if="role.cloud_platforms.length" >
                                     <td class="key">Clouds</td>
-                                    <td class="value" ng-if="role.cloud_platforms.length" ng-bind="role.cloud_platforms.join(', ')"></td>
-                                    <td class="value na" ng-if="!role.cloud_platforms.length">NA</td>
+                                    <td class="value" ng-bind="role.cloud_platforms.join(', ')"></td>
                                 </tr>
-                                <tr class="stat-row">
+                                <tr class="stat-row" ng-if="role.tags.length" >
                                     <td class="key">Tags</td>
-                                    <td class="value" ng-if="role.tags.length" ng-bind="role.tags.join(', ') + ' '"></td>
-                                    <td class="value na" ng-if="!role.tags.length">NA</td>
-                                </tr>
-                                <tr class="stat-row">
-                                    <td class="key">Last Commit</td>
-                                    <td class="value" ng-if="role.last_commit_date">
-                                        <time datetime="{{ role.last_commit_date }}Z" title="{{ role.last_commit_date | date : 'MMM d, yyyy h:mm:ss a' }} UTC">
-                                            {{ role.last_commit_date | timeFromNow }}
-                                        </time>
-                                    </td>
-                                    <td class="value na" ng-if="!role.last_commit_date">NA</td>
+                                    <td class="value" ng-bind="role.tags.join(', ') + ' '"></td>
                                 </tr>
                             </table>
                         </div>
@@ -105,6 +93,12 @@
                                         class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
                                         <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Unstar {{ role.stargazers_count }}
                                     </a>
+                                </div>
+                                <div style="display: inline-block" ng-if="role.last_commit_date">
+                                    Commited
+                                    <time datetime="{{ role.last_commit_date }}Z" title="{{ role.last_commit_date | date : 'MMM d, yyyy h:mm:ss a' }} UTC">
+                                        {{ role.last_commit_date | timeFromNow }}
+                                    </time>
                                 </div>
                             </div>
                         </div>
