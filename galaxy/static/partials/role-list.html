@@ -37,9 +37,8 @@
                 <div id="results-outer-container">
                 <div id="results-container">
                     <div class="result" ng-repeat="role in roles">
-                        <a ng-href="/{{ role.username }}/{{ role.name }}/">
                         <div class="header">
-                            <div class="title">{{ role.name }}</div>
+                            <div class="title"><a ng-href="/{{ role.username }}/{{ role.name }}/">{{ role.name }}</a></div>
                             <div><a ng-href="/{{ role.username }}/">{{ role.username }}</a></div>
                         </div>
                         <div class="body">
@@ -109,7 +108,6 @@
                                 </div>
                             </div>
                         </div>
-                        </a>
                     </div><!-- result -->
                 </div><!-- results -->
                 <ng-include src="'/static/partials/paginateWidget.html'"></ng-include>
