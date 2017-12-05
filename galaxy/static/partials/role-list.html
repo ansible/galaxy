@@ -48,19 +48,12 @@
                                     <td class="key">Type</td>
                                     <td class="value">{{ role.display_type_title }}</td>
                                 </tr>
-                                <tr class="stat-row" ng-if="role.platforms.length" >
-                                    <td class="key">OS</td>
-                                    <td class="value" ng-bind="role.platforms.join(', ')"></td>
-                                </tr>
-                                <tr class="stat-row"  ng-if="role.cloud_platforms.length" >
-                                    <td class="key">Clouds</td>
-                                    <td class="value" ng-bind="role.cloud_platforms.join(', ')"></td>
-                                </tr>
-                                <tr class="stat-row" ng-if="role.tags.length" >
-                                    <td class="key">Tags</td>
-                                    <td class="value" ng-bind="role.tags.join(', ') + ' '"></td>
-                                </tr>
                             </table>
+                            <div class="tags-container">
+                                <a href="" ng-repeat="item in role.platforms">{{ item }}</a>
+                                <a href="" ng-repeat="item in role.cloud_platforms">{{ item }}</a>
+                                <a href="" ng-repeat="item in role.tags">{{ item }}</a>
+                            </div>
                         </div>
                         <div class="footer">
                             <div class="img-container" ng-if="role.travis_status_url">
