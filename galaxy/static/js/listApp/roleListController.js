@@ -170,7 +170,7 @@
         return;
 
         function _getTopTags() {
-            suggestions.tags({ page: 1, page_size: 9999, order: '-roles' }).$promise.then(function(data) {
+            suggestions.tags({ page: 1, page_size: 15, order: '-roles' }).$promise.then(function(data) {
                 $scope.topTags = data.results;
             });
         }

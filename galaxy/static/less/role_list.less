@@ -57,69 +57,26 @@
         }
     }
 
-    #role-tags-container {
-        background-color: #e1e1e1;
+    .tags-sidebar{
         border-radius: 2px;
-        overflow-y: none;
-        .header {
-            height: 40px;
-            padding-top: 10px;
-            border-bottom: 1px solid @white;
-            .title {
-                color: @ansible-dark-grey;
-                font-size: 14px;
-                text-align: center;
-            }
-        }
-        .body-wrapper {
-            height: 310px;
-            overflow: hidden;
-        }
-        .body {
-            padding: 10px;
+        border: 1px solid #e1e1e1;
+        margin-bottom: 1em;
+        overflow: hidden;
+
+        .title {
+            padding: 0.5em 0 0.5em 0;
+            text-transform: uppercase;
             text-align: center;
-            height: 300px;
-            overflow-y: auto;
-            .tag {
-                font-size: 12px;
-                font-weight: normal;
-                margin-bottom: 5px;
-                .tag-name {
-                    display: inline-block;
-                    vertical-align: top;
-                    width: 65%;
-                    border-radius: 2px;
-                    background-color: #b7b7b7;
-                    color: @white;
-                    padding: 3px 6px;
-                    text-align: left;
-                    margin-right: 5px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-                .tag-name:hover {
-                    background-color: @blue;
-                    cursor: pointer;                
-                }
-                .tag-name.active {
-                    background-color: @blue;
-                }
-                .tag-roles {
-                    display: inline-block;
-                    vertical-align: top;
-                    border-radius: 2px;
-                    background-color: @ansible-dark-grey;
-                    color: @white;
-                    padding: 3px 6px;
-                    width: 25%;
-                    text-align: center;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-            }
+            font-weight: bold;
+            color: @ansible-dark-grey;
+            background-color: #e1e1e1;
         }
+
+        .tags-container {
+            padding-left: 0.3em;
+            justify-content: space-evenly;
+        }
+
     }
 
     @media (max-width: 768px) {
@@ -245,7 +202,7 @@
             display: inline-block;
             background-color: #f1f8ff;
             padding: 0.3em 0.9em;
-            margin: 0.3em 0.9em 0.3em 0;
+            margin: 0.3em 0.5em 0.3em 0;
         }
     }
 

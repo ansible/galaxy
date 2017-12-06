@@ -20,7 +20,7 @@
 
 <div class="container" id="galaxy-role-list">
     <div class="row" id="search-control-container">
-        <div class="col-lg-10 col-md-9 col-sm-9" id="results-column">
+        <div class="col-lg-9 col-md-9 col-sm-9" id="results-column">
             <div id="search-controls-container">
                 <div id="role-list-search">
                     <autocomplete
@@ -102,17 +102,23 @@
                 </div><!-- results outer container -->
             </div><!-- search-controls-container -->
         </div>
-        <div class="col-lg-2 col-md-3 col-sm-3">
-            <div id="role-tags-container">
-                <div class="header">
-                     <div class="title">POPULAR TAGS</div>
+        <div class="col-lg-3 col-md-3 col-sm-3">
+            <div id="role-tags-container" class="tags-sidebar">
+                <div class="title">Popular Tags</div>
+                <div class="tags-container">
+                    <a ng-repeat="tag in topTags" ng-click="activateTag(tag)" ng-class="{ active: tag.active }">{{ tag.tag }}</a>
                 </div>
-                <div class="body-wrapper">
-                    <div class="body">
-                        <div class="tag" ng-repeat="tag in topTags">
-                            <div class="tag-name" ng-click="activateTag(tag)" ng-class="{ active: tag.active }">{{ tag.tag }}</div>
-                        </div>
-                    </div>
+            </div>
+            <div class="tags-sidebar">
+                <div class="title">Popular Clouds</div>
+                <div class="tags-container">
+                    <a >TBD</a>
+                </div>
+            </div>
+            <div class="tags-sidebar">
+                <div class="title">Popular OS</div>
+                <div class="tags-container">
+                    <a >TBD</a>
                 </div>
             </div>
         </div>
