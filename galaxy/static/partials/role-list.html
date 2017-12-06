@@ -50,8 +50,8 @@
                                 </tr>
                             </table>
                             <div class="tags-container">
-                                <a href="" ng-repeat="item in role.platforms">{{ item }}</a>
-                                <a href="" ng-repeat="item in role.cloud_platforms">{{ item }}</a>
+                                <a href="" ng-repeat="item in role.platforms"><i class="fa fa-desktop"></i>&nbsp;{{ item }}</a>
+                                <a href="" ng-repeat="item in role.cloud_platforms"><i class="fa fa-cloud"></i>&nbsp;{{ item }}</a>
                                 <a href="" ng-repeat="item in role.tags">{{ item }}</a>
                             </div>
                         </div>
@@ -111,7 +111,6 @@
                     <div class="body">
                         <div class="tag" ng-repeat="tag in topTags">
                             <div class="tag-name" ng-click="activateTag(tag)" ng-class="{ active: tag.active }">{{ tag.tag }}</div>
-                            <div class="tag-roles">{{ tag.roles }}</div>
                         </div>
                     </div>
                 </div>
