@@ -37,62 +37,31 @@
                 <div id="results-outer-container">
                 <div id="results-container">
                     <div class="result" ng-repeat="role in roles">
-                        <div class="header">
-                            <div class="title"><a ng-href="/{{ role.username }}/{{ role.name }}/">{{ role.name }}</a></div>
-                            <div><a ng-href="/{{ role.username }}/">{{ role.username }}</a></div>
-                        </div>
-                        <div class="body">
-                            <div class="description" dot-dot-dot ng-if="role.description">{{ role.description }}</div>
-                            <table class="stats-table">
-                                <tr class="stat-row">
-                                    <td class="key">Type</td>
-                                    <td class="value">{{ role.display_type_title }}</td>
-                                </tr>
-                            </table>
-                            <div class="tags-container">
-                                <a href="" ng-repeat="item in role.platforms"><i class="fa fa-desktop"></i>&nbsp;{{ item }}</a>
-                                <a href="" ng-repeat="item in role.cloud_platforms"><i class="fa fa-cloud"></i>&nbsp;{{ item }}</a>
-                                <a href="" ng-repeat="item in role.tags">{{ item }}</a>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <div class="img-container" ng-if="role.travis_status_url">
-                                <a ng-href="{{ role.travis_build_url }}" target="_blank">
+                        <h2 class="title">
+                            <a ng-href="/{{ role.username }}/{{ role.name }}/">{{ role.name }}</a>
+                            <span class="author"><a ng-href="/{{ role.username }}/">{{ role.username }}</a></span>
+                            <!--span style="font-size: 12px">&lt;{{ role.display_type_title }}&gt;</span-->
+                        </h2>
+                        <div class="description" dot-dot-dot ng-if="role.description">{{ role.description }}</div>
+                        <!--div class="build-status" ng-if="role.travis_status_url">
+                            <a ng-href="{{ role.travis_build_url }}" target="_blank">
                                 <img ng-src="{{ role.travis_status_url }}" tooltip-placement="top" uib-tooltip="Travis Build Status" class="travis-status-img" />
-                                </a>
-                            </div>
-                            <div class="counts">
-                                <div class="downloads">
-                                    <div class="btn btn-default btn-xs">
-                                        <i class="fa fa-download"></i> Downloads {{ role.download_count }}
-                                    </div>
-                                </div>
-                                <div class="subscribe">
-                                    <a href="" ng-if="!role.user_is_subscriber" ng-click="subscribe(role)"
-                                        class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
-                                        <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Watch &nbsp;{{ role.watchers_count }}
-                                    </a>
-                                    <a href="" ng-if="role.user_is_subscriber" ng-click="unsubscribe(role)"
-                                        class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
-                                        <i class="fa fa-eye" ng-show="!role.subscribing"></i><i class="fa fa-spinner fa-spin" ng-show="role.subscribing"></i> Unwatch &nbsp;{{ role.watchers_count }}
-                                    </a>
-                                </div>
-                                <div class="stargaze">
-                                    <a href="" ng-if="!role.user_is_stargazer" ng-click="star(role)"
-                                        class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
-                                        <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Star {{ role.stargazers_count }}
-                                    </a>
-                                    <a href="" ng-if="role.user_is_stargazer" ng-click="unstar(role)"
-                                        class="btn btn-default btn-xs" ng-disabled="!is_authenticated">
-                                        <i class="fa fa-star" ng-show="!role.starring"></i><i class="fa fa-spinner fa-spin" ng-show="role.starring"></i> Unstar {{ role.stargazers_count }}
-                                    </a>
-                                </div>
-                                <div style="display: inline-block" ng-if="role.last_commit_date">
-                                    Commited
-                                    <time datetime="{{ role.last_commit_date }}Z" title="{{ role.last_commit_date | date : 'MMM d, yyyy h:mm:ss a' }} UTC">
-                                        {{ role.last_commit_date | timeFromNow }}
-                                    </time>
-                                </div>
+                            </a>
+                        </div-->
+                        <div class="tags-container">
+                            <a href="" ng-repeat="item in role.platforms"><i class="fa fa-desktop"></i>&nbsp;{{ item }}</a>
+                            <a href="" ng-repeat="item in role.cloud_platforms"><i class="fa fa-cloud"></i>&nbsp;{{ item }}</a>
+                            <a href="" ng-repeat="item in role.tags">{{ item }}</a>
+                        </div>
+                        <div class="counters-container">
+                            <div class="counter"><i class="fa fa-download"></i>&nbsp;{{ role.download_count }}</div>
+                            <div class="counter"><i class="fa fa-eye"></i>&nbsp;{{ role.watchers_count }}</div>
+                            <div class="counter"><i class="fa fa-star"></i>&nbsp;{{ role.stargazers_count }}</div>
+                            <div ng-if="role.last_commit_date">
+                                Committed
+                                <time datetime="{{ role.last_commit_date }}Z" title="{{ role.last_commit_date | date : 'MMM d, yyyy h:mm:ss a' }} UTC">
+                                    {{ role.last_commit_date | timeFromNow }}
+                                </time>
                             </div>
                         </div>
                     </div><!-- result -->
@@ -116,7 +85,7 @@
                 </div>
             </div>
             <div class="tags-sidebar">
-                <div class="title">Popular OS</div>
+                <div class="title">Popular Platforms</div>
                 <div class="tags-container">
                     <a >TBD</a>
                 </div>

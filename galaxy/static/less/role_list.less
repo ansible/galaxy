@@ -88,102 +88,50 @@
     #results-container {
 
         .result {
-            //display: inline-block;
-            //vertical-align: top;
             padding: 10px;
-            border: 1px solid #ccc; 
-            border-radius: 2px;
-            font-size: 12px;
-            margin-right: 6px;
-            margin-bottom: 6px;
+            border-bottom: 1px solid #ccc;
 
-            .header {
-                .title {
-                    display:inline-block;
-                    width: 75%;
-                    font-size: 14px;
-                    color: @blue;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-                .badge {
-                    display:inline-block;
-                    float: right;
-                    background-color: #b7b7b7;
-                    font-weight: normal;
-                }
+            h2 {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 0.5em;
             }
 
-            hr {
-                margin: 0 -10px 10px -10px;
-                border-color: #e1e1e1;
-            } 
-            
-            .body {
-                .description {
-                    height: 40px;
-                    overflow: hidden;
-                    color: @ansible-dark-grey;
-                }
-                .description.na {
-                    color: @ansible-dark-grey;
-                }
-                .stats-table {
-                    .key,.value {
-                        padding: 3px 0 3px 5px;
-                    }
-                    .key {
-                        width: 100px;
-                        //background-color: #f6f6f6;
-                        color: @ansible-dark-grey;
-                    }
-                    .value {
-                        display: block;
-                        width: 230px;
-                        // background-color: #f6f6f6;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        color: @black;
-                        .badge {
-                            background-color: white;
-                            font-weight: normal;
-                            color: @ansible-dark-grey;
-                            border: 1px solid #b7b7b7;
-                            font-size: 10px;
-                        }
-                    }
-                    .value.na {
-                        color: @ansible-dark-grey;
-                    }
-                }              
-                .result-label {
-                    color: @ansible-color;
-                    padding-right: 6px;
-                    font-weight: bold;
-                }
+            .author {
+                font-size: 18px;
+                font-weight: 500;
             }
-            .footer {
-                margin-top: 5px;
-                .img-container {
+
+            .description {
+                color: @ansible-dark-grey;
+                margin-bottom: 0.5em;
+            }
+
+            .build-status img {
+                width: 90px;
+            }
+
+            .result-label {
+                color: @ansible-color;
+                padding-right: 6px;
+                font-weight: bold;
+            }
+
+            .tags-container {
+                margin-bottom: 0.5em;
+            }
+
+            .counters-container {
+                .counter {
+                    font-size: 120%;
+                }
+
+                > div {
+                    color: @ansible-dark-grey;
                     display: inline-block;
-                    margin-left: 15px;
-                    img {
-                        width: 90px;
-                    }
+                    margin-right: 1em;
                 }
-                .counts {
-                    .stargaze, .subscribe, .downloads {
-                        display: inline-block;
-                        btn {
-                            margin-right: 3px;
-                        }
-                    }
-                    .subscribe {
-                        margin-right: 5px;
-                    }
-                }
+
             }
         }
 
@@ -203,6 +151,7 @@
             background-color: #f1f8ff;
             padding: 0.3em 0.9em;
             margin: 0.3em 0.5em 0.3em 0;
+            font-size: 85%;
         }
     }
 
