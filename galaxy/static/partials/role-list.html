@@ -81,13 +81,13 @@
             <div class="tags-sidebar">
                 <div class="title">Popular Clouds</div>
                 <div class="tags-container">
-                    <a >TBD</a>
+                    <a ng-repeat="tag in topCloudTags">{{ tag.name }}</a>
                 </div>
             </div>
             <div class="tags-sidebar">
                 <div class="title">Popular Platforms</div>
                 <div class="tags-container">
-                    <a >TBD</a>
+                    <a ng-repeat="tag in topPlatformTags">{{ tag.name }}</a>
                 </div>
             </div>
         </div>

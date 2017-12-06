@@ -119,6 +119,8 @@
         $scope.viewing_roles = 1;
         $scope.display_user_info = 1;
         $scope.topTags = [];
+        $scope.topCloudTags = [];
+        $scope.topPlatformTags = [];
         
         // autocomplete functions
         $scope.search = _search;
@@ -153,6 +155,8 @@
         $scope.list_data = angular.extend({}, $scope.list_data, _getQueryParams(restored_query));
 
         _getTopTags();
+        _getTopCloudTags();
+        _getTopPlatformTags();
         _refresh();
 
         $timeout(function() {
@@ -174,6 +178,19 @@
                 $scope.topTags = data.results;
             });
         }
+
+        function _getTopCloudTags() {
+            suggestions.cloud_platforms({ page: 1, page_size: 15}).$promise.then(function(data) {
+                $scope.topCloudTags = data.results;
+            });
+        }
+
+        function _getTopPlatformTags() {
+            suggestions.platforms({ page: 1, page_size: 15, order: '-roles' }).$promise.then(function(data) {
+                $scope.topPlatformTags = data.results;
+            });
+        }
+
 
         function _changeOrderby() {
             _refresh();
