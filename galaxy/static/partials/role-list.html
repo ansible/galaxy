@@ -49,9 +49,9 @@
                             </a>
                         </div-->
                         <div class="tags-container">
-                            <a ng-repeat="item in role.platforms"><i class="fa fa-desktop"></i>&nbsp;{{ item }}</a>
-                            <a ng-repeat="item in role.cloud_platforms"><i class="fa fa-cloud"></i>&nbsp;{{ item }}</a>
-                            <a ng-repeat="item in role.tags">{{ item }}</a>
+                            <a ng-repeat="item in role.platforms" ng-click="activatePlatform(item)"><i class="fa fa-desktop"></i>&nbsp;{{ item }}</a>
+                            <a ng-repeat="item in role.cloud_platforms" ng-click="activateCloudPlatform(item)"><i class="fa fa-cloud"></i>&nbsp;{{ item }}</a>
+                            <a ng-repeat="item in role.tags" ng-click="activateTag(item)">{{ item }}</a>
                         </div>
                         <div class="counters-container">
                             <div class="counter"><i class="fa fa-download"></i>&nbsp;{{ role.download_count }}</div>
@@ -75,19 +75,19 @@
             <div id="role-tags-container" class="tags-sidebar">
                 <div class="title">Popular Tags</div>
                 <div class="tags-container">
-                    <a ng-repeat="tag in topTags" ng-click="activateTag(tag)" ng-class="{ active: tag.active }">{{ tag.tag }}</a>
+                    <a ng-repeat="tag in topTags" ng-click="activateTag(tag.tag)">{{ tag.tag }}</a>
                 </div>
             </div>
             <div class="tags-sidebar">
                 <div class="title">Popular Clouds</div>
                 <div class="tags-container">
-                    <a ng-repeat="tag in topCloudTags">{{ tag.name }}</a>
+                    <a ng-repeat="tag in topCloudTags" ng-click="activateCloudPlatform(tag.name)">{{ tag.name }}</a>
                 </div>
             </div>
             <div class="tags-sidebar">
                 <div class="title">Popular Platforms</div>
                 <div class="tags-container">
-                    <a ng-repeat="tag in topPlatformTags">{{ tag.name }}</a>
+                    <a ng-repeat="tag in topPlatformTags" ng-click="activatePlatform(tag.name)">{{ tag.name }}</a>
                 </div>
             </div>
         </div>

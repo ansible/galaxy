@@ -128,6 +128,8 @@
         $scope.searchSuggesions = [];
 
         $scope.activateTag = _activateTag;
+        $scope.activatePlatform = _activatePlatform;
+        $scope.activateCloudPlatform = _activateCloudPlatform;
         $scope.changeOrderby = _changeOrderby;
         
         $scope.$on('endlessScroll:next', _loadNextPage);
@@ -301,20 +303,25 @@
             }
         }
 
-        function _activateTag(tag) {
-            tag.active = !tag.active;
-            if (tag.active) {
-                $log.debug('Add tag: ' + tag.tag);
-                autocompleteService.addKey({ type: 'Tag', value: tag.tag });
-            } else {
-                $log.debug('Remove tag: ' + tag.tag);
-                autocompleteService.removeKey({ type: 'Tag', value: tag.tag });
-            }
-            $scope.list_data.tags = autocompleteService.getKeywords().filter(function(key) {
-                return (key.type === 'Tag');
+        function _doActivateTag(name, tagType, listDataAttr) {
+            autocompleteService.addKey({ type: tagType, value: name });
+            $scope.list_data[listDataAttr] = autocompleteService.getKeywords().filter(function(key) {
+                return (key.type === tagType);
             }).map(function(tag) { return tag.value; }).join(' ');
             $log.debug($scope.list_data);
             _refresh();
+        }
+
+        function _activateTag(name) {
+            _doActivateTag(name, 'Tag', 'tags');
+        }
+
+        function _activatePlatform(name) {
+            _doActivateTag(name, 'Platform', 'platforms');
+        }
+
+        function _activateCloudPlatform(name) {
+            _doActivateTag(name, 'Cloud Platform', 'cloud_platforms');
         }
 
         function _search(_keywords, _orderby) {
