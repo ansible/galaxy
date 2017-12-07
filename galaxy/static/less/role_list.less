@@ -93,6 +93,7 @@
         .result {
             padding: 1.5em;
             border-bottom: 1px solid #ccc;
+            display: flex;
 
             .title {
                 font-size: 24px;
@@ -115,8 +116,15 @@
                 margin-bottom: 0.5em;
             }
 
-            .build-status img {
-                width: 90px;
+            .result-wrapper {
+                flex-grow: 1;
+            }
+
+            .build-status {
+                align-self: center;
+                img {
+                    width: 90px;
+                }
             }
 
             .tags-container {
