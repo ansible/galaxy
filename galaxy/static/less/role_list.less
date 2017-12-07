@@ -1,7 +1,11 @@
 /*
  * role_list.less
  */
- 
+
+@tag-color: #f1f8ff;
+@tag-color-hover: #cce6ff;
+
+
 #galaxy-role-list {
 
     #search-control-container {
@@ -90,7 +94,7 @@
             padding: 1.5em;
             border-bottom: 1px solid #ccc;
 
-            h2 {
+            .title {
                 font-size: 24px;
                 font-weight: bold;
                 margin-bottom: 0.5em;
@@ -99,9 +103,11 @@
             .author {
                 font-size: 16px;
                 font-weight: 500;
-                a {
-                    color: @ansible-dark-grey;
-                }
+                color: @ansible-dark-grey;
+            }
+
+            .author:hover {
+                color: #3c3f44;
             }
 
             .description {
@@ -150,10 +156,15 @@
 
         a {
             display: inline-block;
-            background-color: #f1f8ff;
+            background-color: @tag-color;
             padding: 0.3em 0.9em;
             margin: 0.3em 0.5em 0.3em 0;
             font-size: 85%;
+            cursor: pointer;
+        }
+
+        a:hover {
+            background-color: @tag-color-hover;
         }
     }
 

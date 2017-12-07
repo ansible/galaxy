@@ -37,9 +37,9 @@
                 <div id="results-outer-container">
                 <div id="results-container">
                     <div class="result" ng-repeat="role in roles">
-                        <h2 class="title">
-                            <a ng-href="/{{ role.username }}/{{ role.name }}/">{{ role.name }}</a>
-                            <span class="author"><a ng-href="/{{ role.username }}/">{{ role.username }}</a></span>
+                        <h2>
+                            <a class="title" ng-href="/{{ role.username }}/{{ role.name }}/">{{ role.name }}</a>
+                            <a class="author" ng-href="/{{ role.username }}/">{{ role.username }}</a>
                             <!--span style="font-size: 12px">&lt;{{ role.display_type_title }}&gt;</span-->
                         </h2>
                         <div class="description" dot-dot-dot ng-if="role.description">{{ role.description }}</div>
@@ -49,9 +49,9 @@
                             </a>
                         </div-->
                         <div class="tags-container">
-                            <a href="" ng-repeat="item in role.platforms"><i class="fa fa-desktop"></i>&nbsp;{{ item }}</a>
-                            <a href="" ng-repeat="item in role.cloud_platforms"><i class="fa fa-cloud"></i>&nbsp;{{ item }}</a>
-                            <a href="" ng-repeat="item in role.tags">{{ item }}</a>
+                            <a ng-repeat="item in role.platforms"><i class="fa fa-desktop"></i>&nbsp;{{ item }}</a>
+                            <a ng-repeat="item in role.cloud_platforms"><i class="fa fa-cloud"></i>&nbsp;{{ item }}</a>
+                            <a ng-repeat="item in role.tags">{{ item }}</a>
                         </div>
                         <div class="counters-container">
                             <div class="counter"><i class="fa fa-download"></i>&nbsp;{{ role.download_count }}</div>
