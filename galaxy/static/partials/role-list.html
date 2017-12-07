@@ -41,7 +41,7 @@
                             <h2>
                                 <a class="title" ng-href="/{{ role.username }}/{{ role.name }}/">{{ role.name }}</a>
                                 <a class="author" ng-href="/{{ role.username }}/">{{ role.username }}</a>
-                                <!--span style="font-size: 12px">&lt;{{ role.display_type_title }}&gt;</span-->
+                                <span class="role-type">{{ role.display_type_title }}</span>
                             </h2>
                             <div class="description" dot-dot-dot ng-if="role.description">{{ role.description }}</div>
                             <div class="tags-container">
