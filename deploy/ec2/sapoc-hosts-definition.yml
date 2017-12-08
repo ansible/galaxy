@@ -14,7 +14,7 @@ galaxy_hosts:
 
 # master database
 - count: 1
-  type: m3.large
+  type: t2.medium
   subnet: "{{ galaxy_subnets[0] }}"
   volumes:
     - device_name: /dev/sda1
@@ -30,7 +30,7 @@ galaxy_hosts:
 
 # replication database
 - count: 1
-  type: m3.large
+  type: t2.medium
   subnet: "{{ galaxy_subnets[1] }}"
   volumes:
     - device_name: /dev/sda1
