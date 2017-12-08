@@ -83,13 +83,13 @@
             <div class="tags-sidebar">
                 <div class="title">Popular Clouds</div>
                 <div class="tags-container">
-                    <a ng-repeat="tag in topCloudTags" ng-click="activateCloudPlatform(tag.name)">{{ tag.name }}</a>
+                    <a ng-repeat="tag in topCloudTags" ng-click="activateCloudPlatform(tag.name)"><i class="fa fa-cloud"></i>&nbsp;{{ tag.name }}</a>
                 </div>
             </div>
             <div class="tags-sidebar">
                 <div class="title">Popular Platforms</div>
                 <div class="tags-container">
-                    <a ng-repeat="tag in topPlatformTags" ng-click="activatePlatform(tag.name)">{{ tag.name }}</a>
+                    <a ng-repeat="tag in topPlatformTags" ng-click="activatePlatform(tag.name)"><i class="fa fa-desktop"></i>&nbsp;{{ tag.name }}</a>
                 </div>
             </div>
         </div>
