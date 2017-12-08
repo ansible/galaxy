@@ -37,34 +37,32 @@
                 <div id="results-outer-container">
                 <div id="results-container">
                     <div class="result" ng-repeat="role in roles">
-                        <div class="result-wrapper">
-                            <h2>
-                                <a class="title" ng-href="/{{ role.username }}/{{ role.name }}/">{{ role.name }}</a>
-                                <a class="author" ng-href="/{{ role.username }}/">{{ role.username }}</a>
-                                <span class="role-type">{{ role.display_type_title }}</span>
-                            </h2>
-                            <div class="description" dot-dot-dot ng-if="role.description">{{ role.description }}</div>
-                            <div class="tags-container">
-                                <a ng-repeat="item in role.platforms" ng-click="activatePlatform(item)"><i class="fa fa-desktop"></i>&nbsp;{{ item }}</a>
-                                <a ng-repeat="item in role.cloud_platforms" ng-click="activateCloudPlatform(item)"><i class="fa fa-cloud"></i>&nbsp;{{ item }}</a>
-                                <a ng-repeat="item in role.tags" ng-click="activateTag(item)">{{ item }}</a>
-                            </div>
-                            <div class="counters-container">
-                                <div class="counter"><i class="fa fa-download"></i>&nbsp;{{ role.download_count }}</div>
-                                <div class="counter"><i class="fa fa-eye"></i>&nbsp;{{ role.watchers_count }}</div>
-                                <div class="counter"><i class="fa fa-star"></i>&nbsp;{{ role.stargazers_count }}</div>
-                                <div ng-if="role.last_commit_date">
-                                    Committed
-                                    <time datetime="{{ role.last_commit_date }}Z" title="{{ role.last_commit_date | date : 'MMM d, yyyy h:mm:ss a' }} UTC">
-                                        {{ role.last_commit_date | timeFromNow }}
-                                    </time>
-                                </div>
-                            </div>
-                        </div> <!-- result-wrapper -->
+                        <h2>
+                            <a class="title" ng-href="/{{ role.username }}/{{ role.name }}/">{{ role.name }}</a>
+                            <a class="author" ng-href="/{{ role.username }}/">{{ role.username }}</a>
+                            <span class="role-type">{{ role.display_type_title }}</span>
+                        </h2>
+                        <div class="description" dot-dot-dot ng-if="role.description">{{ role.description }}</div>
                         <div class="build-status" ng-if="role.travis_status_url">
                             <a ng-href="{{ role.travis_build_url }}" target="_blank">
                                 <img ng-src="{{ role.travis_status_url }}" tooltip-placement="top" uib-tooltip="Travis Build Status" class="travis-status-img" />
                             </a>
+                        </div>
+                        <div class="tags-container">
+                            <a ng-repeat="item in role.platforms" ng-click="activatePlatform(item)"><i class="fa fa-desktop"></i>&nbsp;{{ item }}</a>
+                            <a ng-repeat="item in role.cloud_platforms" ng-click="activateCloudPlatform(item)"><i class="fa fa-cloud"></i>&nbsp;{{ item }}</a>
+                            <a ng-repeat="item in role.tags" ng-click="activateTag(item)">{{ item }}</a>
+                        </div>
+                        <div class="counters-container">
+                            <div class="counter"><i class="fa fa-download"></i>&nbsp;{{ role.download_count }}</div>
+                            <div class="counter"><i class="fa fa-eye"></i>&nbsp;{{ role.watchers_count }}</div>
+                            <div class="counter"><i class="fa fa-star"></i>&nbsp;{{ role.stargazers_count }}</div>
+                            <div ng-if="role.last_commit_date">
+                                Committed
+                                <time datetime="{{ role.last_commit_date }}Z" title="{{ role.last_commit_date | date : 'MMM d, yyyy h:mm:ss a' }} UTC">
+                                    {{ role.last_commit_date | timeFromNow }}
+                                </time>
+                            </div>
                         </div>
                     </div><!-- result -->
                 </div><!-- results -->
