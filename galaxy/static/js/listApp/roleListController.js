@@ -71,21 +71,6 @@
         $scope.page_title = 'Search';
         $scope.version = GLOBAL_VERSION;
         
-        $scope.list_data = {
-            'num_pages'          : 1,
-            'page'               : 1,
-            'page_size'          : '10',
-            'page_range'         : [],
-            'tags'               : '',
-            'platforms'          : '',
-            'cloud_platforms'    : '',
-            'users'              : '',
-            'role_type'          : '',
-            'autocomplete'       : '',
-            'order'              : '',
-            'refresh'            : _refresh
-        };
-
         $scope.orderOptions = [
             { value:"name,username", title:"Name" },
             { value:"username,name", title:"Author" },
@@ -103,6 +88,22 @@
             'Tag',
             'Role Type'
         ];
+
+
+        $scope.list_data = {
+            'num_pages'          : 1,
+            'page'               : 1,
+            'page_size'          : '10',
+            'page_range'         : [],
+            'tags'               : '',
+            'platforms'          : '',
+            'cloud_platforms'    : '',
+            'users'              : '',
+            'role_type'          : '',
+            'autocomplete'       : '',
+            'order'              : $scope.orderOptions[5].value,
+            'refresh'            : _refresh
+        };
 
         $scope.searchRoleTypes = [
             { value: "CON", title: "Container Enabled" },

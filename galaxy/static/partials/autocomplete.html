@@ -55,9 +55,8 @@
             <div id="autocomplete-order-by" class="form-inline">
                 <div class="form-group">
                     <label class="hidden-xs">SORT</label>
-                    <select name="orderby" id="orderby" ng-model="searchOrder" class="form-control input-sm" ng-options="option.title for option in searchOrderOptions" ng-change="changeOrder()" tabindex="3">
-                        <option value="">Relevance</option>
-                    </select>
+                    <select name="orderby" id="orderby" ng-model="searchOrder" class="form-control input-sm"
+                            ng-options="option.title for option in searchOrderOptions" ng-change="changeOrder()" tabindex="3"></select>
                 </div>
             </div>
             <div class="filter-toggle pull-right" ng-show="searchKeys && searchKeys.length">
