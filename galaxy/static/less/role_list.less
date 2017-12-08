@@ -1,14 +1,17 @@
 /*
  * role_list.less
  */
- 
+
+@tag-color: #f1f8ff;
+@tag-color-hover: #cce6ff;
+
+
 #galaxy-role-list {
-    overflow-y: hidden;
-    
+
     #search-control-container {
         overflow-y: hidden;
     }
-    
+
     #galaxy-page-title {
         position: fixed;
         left: 0;
@@ -19,10 +22,6 @@
     #galaxy-page-row {
         padding-top: 15px;
         padding-bottom: 15px;
-    }
-
-    #role-list-container {
-        margin-top: 150px;
     }
 
     #simple-galaxy-copyright {
@@ -40,8 +39,7 @@
         padding-top: 5px;
         border-radius: 2px;
         background-color: #e1e1e1;
-        margin-bottom: 20px;
-        
+
         #role-order-by {
             display: inline-block;
             margin-left: 15px;
@@ -62,198 +60,98 @@
         }
     }
 
-    #role-tags-container {
-        background-color: #e1e1e1;
+    .tags-sidebar {
         border-radius: 2px;
-        overflow-y: none; 
-        .header {
-            height: 40px;
-            padding-top: 10px;
-            border-bottom: 1px solid @white;
-            .title {
-                color: @ansible-dark-grey;
-                font-size: 14px;
-                text-align: center;
-            }
-        }
-        .body-wrapper {
-            height: 310px;
-            overflow: hidden;
-        }
-        .body {
-            padding: 10px;
+        border: 1px solid #e1e1e1;
+        margin-bottom: 1em;
+        overflow: hidden;
+
+        .title {
+            padding: 0.5em 0 0.5em 0;
+            text-transform: uppercase;
             text-align: center;
-            height: 300px;
-            overflow-y: auto;
-            .tag {
-                font-size: 12px;
-                font-weight: normal;
-                margin-bottom: 5px;
-                .tag-name {
-                    display: inline-block;
-                    vertical-align: top;
-                    width: 65%;
-                    border-radius: 2px;
-                    background-color: #b7b7b7;
-                    color: @white;
-                    padding: 3px 6px;
-                    text-align: left;
-                    margin-right: 5px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-                .tag-name:hover {
-                    background-color: @blue;
-                    cursor: pointer;                
-                }
-                .tag-name.active {
-                    background-color: @blue;
-                }
-                .tag-roles {
-                    display: inline-block;
-                    vertical-align: top;
-                    border-radius: 2px;
-                    background-color: @ansible-dark-grey;
-                    color: @white;
-                    padding: 3px 6px;
-                    width: 25%;
-                    text-align: center;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-            }
+            font-weight: bold;
+            color: @ansible-dark-grey;
+            background-color: #e1e1e1;
         }
+
+        .tags-container {
+            padding-left: 0.3em;
+            justify-content: space-evenly;
+        }
+
     }
 
     @media (max-width: 768px) {
-        #role-tags-container {
+        .tags-sidebar {
             display: none;
         }
     }
 
-    #results-outer-container {
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
-
     #results-container {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        //align-items: center;
-        //align-content: center;
 
         .result {
-            //display: inline-block;
-            //vertical-align: top;
-            width: 350px;
-            height: 260px;
-            padding: 10px;
-            border: 1px solid #ccc; 
-            border-radius: 2px;
-            font-size: 12px;
-            margin-right: 6px;
-            margin-bottom: 6px;
-            cursor: pointer;
+            padding: 1.5em calc(~"1.5em + 90px") 1.5em 1.5em;
+            border-bottom: 1px solid #ccc;
 
-            -webkit-box-shadow: 2px 2px 2px 0 #ccc;
-            -moz-box-shadow:    2px 2px 2px 0 #ccc;
-            box-shadow:         2px 2px 3px 0 #ccc;
-        
-            .header {
-                .title {
-                    display:inline-block;
-                    width: 75%;
-                    font-size: 14px;
-                    color: @blue;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
+            .title {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 0.5em;
+            }
+
+            .author {
+                font-size: 16px;
+                font-weight: 500;
+                color: @ansible-dark-grey;
+            }
+
+            .role-type {
+                font-size: 11px;
+                padding: 2px 7px;
+                background-color: #b7b7b7;
+                color: @white;
+                border-radius: 10px;
+            }
+
+            .author:hover {
+                color: #3c3f44;
+            }
+
+            .description {
+                color: #606060;
+                margin-bottom: 0.5em;
+            }
+
+            .build-status {
+                margin-bottom: 0.5em;
+
+                @media(min-width: 768px) {
+                    position: absolute;
+                    transform: translateY(-50%);
+                    right: calc(~"1.5em + 15px");
+                    width: 90px;
                 }
-                .badge {
-                    display:inline-block;
-                    float: right;
-                    background-color: #b7b7b7;
-                    font-weight: normal;
+                img {
+                    width: 90px;
                 }
             }
 
-            hr {
-                margin: 0 -10px 10px -10px;
-                border-color: #e1e1e1;
-            } 
-            
-            .body {
-                .description {
-                    height: 40px;
-                    overflow: hidden;
-                    color: @ansible-dark-grey;
-                }
-                .description.na {
-                    color: @ansible-dark-grey;
-                }
-                .stats-table {
-                    .key,.value {
-                        padding: 3px 0 3px 5px;
-                    }
-                    .key {
-                        width: 100px;
-                        //background-color: #f6f6f6;
-                        color: @ansible-dark-grey;
-                    }
-                    .value {
-                        display: block;
-                        width: 230px;
-                        // background-color: #f6f6f6;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        color: @black;
-                        .badge {
-                            background-color: white;
-                            font-weight: normal;
-                            color: @ansible-dark-grey;
-                            border: 1px solid #b7b7b7;
-                            font-size: 10px;
-                        }
-                    }
-                    .value.na {
-                        color: @ansible-dark-grey;
-                    }
-                }              
-                .result-label {
-                    color: @ansible-color;
-                    padding-right: 6px;
-                    font-weight: bold;
-                }
+            .tags-container {
+                margin-bottom: 0.5em;
             }
-            .footer {
-                margin-top: 5px;
-                .img-container {
-                    display: inline-block;
-                    margin-left: 15px;
-                    img {
-                        width: 90px;
-                    }
+
+            .counters-container {
+                .counter {
+                    font-size: 120%;
                 }
-                .counts {
+
+                > div {
+                    color: @ansible-dark-grey;
                     display: inline-block;
-                    float: right;
-                    margin-right: 15px;
-                    text-align: right;
-                    .stargaze, .subscribe {
-                        display: inline-block;
-                        btn {
-                            margin-right: 3px;
-                        }
-                    }
-                    .subscribe {
-                        margin-right: 5px;
-                    }
+                    margin-right: 1em;
                 }
+
             }
         }
 
@@ -261,6 +159,24 @@
             label {
                 padding-top: 0;
             }
+        }
+    }
+
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+
+        a {
+            display: inline-block;
+            background-color: @tag-color;
+            padding: 0.3em 0.9em;
+            margin: 0.3em 0.5em 0.3em 0;
+            font-size: 85%;
+            cursor: pointer;
+        }
+
+        a:hover {
+            background-color: @tag-color-hover;
         }
     }
 

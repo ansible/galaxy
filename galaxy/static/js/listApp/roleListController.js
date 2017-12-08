@@ -65,30 +65,12 @@
         githubClickService) {
 
         $('#bs-example-navbar-collapse-1').removeClass('in');  //force collapse of mobile navbar
-        $('#galaxy-navbar-container, #galaxy-page-title-container').removeClass('container').addClass('container-fluid');
         $('#galaxy-copyright').hide();
         $('#galaxy-footer-blue-line').hide();
-        $('body').css({ 'overflow-y': 'hidden', 'height': 'auto' });
-        
-        $scope.galaxy_page_title_fluid = true;
+
         $scope.page_title = 'Search';
         $scope.version = GLOBAL_VERSION;
         
-        $scope.list_data = {
-            'num_pages'          : 1,
-            'page'               : 1,
-            'page_size'          : '10',
-            'page_range'         : [],
-            'tags'               : '',
-            'platforms'          : '',
-            'cloud_platforms'    : '',
-            'users'              : '',
-            'role_type'          : '',
-            'autocomplete'       : '',
-            'order'              : '',
-            'refresh'            : _refresh
-        };
-
         $scope.orderOptions = [
             { value:"name,username", title:"Name" },
             { value:"username,name", title:"Author" },
@@ -107,6 +89,22 @@
             'Role Type'
         ];
 
+
+        $scope.list_data = {
+            'num_pages'          : 1,
+            'page'               : 1,
+            'page_size'          : '10',
+            'page_range'         : [],
+            'tags'               : '',
+            'platforms'          : '',
+            'cloud_platforms'    : '',
+            'users'              : '',
+            'role_type'          : '',
+            'autocomplete'       : '',
+            'order'              : $scope.orderOptions[5].value,
+            'refresh'            : _refresh
+        };
+
         $scope.searchRoleTypes = [
             { value: "CON", title: "Container Enabled" },
             { value: "APP", title: "Container App" }
@@ -122,6 +120,8 @@
         $scope.viewing_roles = 1;
         $scope.display_user_info = 1;
         $scope.topTags = [];
+        $scope.topCloudTags = [];
+        $scope.topPlatformTags = [];
         
         // autocomplete functions
         $scope.search = _search;
@@ -129,6 +129,8 @@
         $scope.searchSuggesions = [];
 
         $scope.activateTag = _activateTag;
+        $scope.activatePlatform = _activatePlatform;
+        $scope.activateCloudPlatform = _activateCloudPlatform;
         $scope.changeOrderby = _changeOrderby;
         
         $scope.$on('endlessScroll:next', _loadNextPage);
@@ -155,38 +157,43 @@
         var restored_query = queryStorageFactory.restore_state(_getQueryParams($scope.list_data));
         $scope.list_data = angular.extend({}, $scope.list_data, _getQueryParams(restored_query));
 
-        var lazy_resize = _.debounce(function() { 
-            _windowResize();
-        }, 500);
-
-        $($window).resize(lazy_resize);
-       
         _getTopTags();
-        _refresh().then(lazy_resize);
-        
+        _getTopCloudTags();
+        _getTopPlatformTags();
+        _refresh();
+
         $timeout(function() {
             // Match the autocomplete widget to query params
-            _windowResize();
             _setSearchTerms($scope.list_data);
             _setOrderBy();
             _updateTopTags();
-            $('#galaxy-page-title-container').removeClass('container').addClass('container-fluid');
         }, 500);
 
         $scope.$on('$destroy', function() {
-            $('#galaxy-navbar-container').removeClass('container-fluid').addClass('container');
             $('#galaxy-copyright').show();
             $('#galaxy-footer-blue-line').show();
-            $('body').css({ 'overflow-y': 'auto', 'height': '100%' });
         });
         
         return;
 
         function _getTopTags() {
-            suggestions.tags({ page: 1, page_size: 9999, order: '-roles' }).$promise.then(function(data) {
+            suggestions.tags({ page: 1, page_size: 15, order: '-roles' }).$promise.then(function(data) {
                 $scope.topTags = data.results;
             });
         }
+
+        function _getTopCloudTags() {
+            suggestions.cloud_platforms({ page: 1, page_size: 15}).$promise.then(function(data) {
+                $scope.topCloudTags = data.results;
+            });
+        }
+
+        function _getTopPlatformTags() {
+            suggestions.platforms({ page: 1, page_size: 15, order: '-roles' }).$promise.then(function(data) {
+                $scope.topPlatformTags = data.results;
+            });
+        }
+
 
         function _changeOrderby() {
             _refresh();
@@ -287,7 +294,6 @@
                     $scope.list_data.page_range = [];
                     $scope.setPageRange();
                     _resizeSearchControls();
-                    $timeout(_windowResize, 500);
                 });
         }
 
@@ -298,20 +304,25 @@
             }
         }
 
-        function _activateTag(tag) {
-            tag.active = !tag.active;
-            if (tag.active) {
-                $log.debug('Add tag: ' + tag.tag);
-                autocompleteService.addKey({ type: 'Tag', value: tag.tag });
-            } else {
-                $log.debug('Remove tag: ' + tag.tag);
-                autocompleteService.removeKey({ type: 'Tag', value: tag.tag });
-            }
-            $scope.list_data.tags = autocompleteService.getKeywords().filter(function(key) {
-                return (key.type === 'Tag');
+        function _doActivateTag(name, tagType, listDataAttr) {
+            autocompleteService.addKey({ type: tagType, value: name });
+            $scope.list_data[listDataAttr] = autocompleteService.getKeywords().filter(function(key) {
+                return (key.type === tagType);
             }).map(function(tag) { return tag.value; }).join(' ');
             $log.debug($scope.list_data);
             _refresh();
+        }
+
+        function _activateTag(name) {
+            _doActivateTag(name, 'Tag', 'tags');
+        }
+
+        function _activatePlatform(name) {
+            _doActivateTag(name, 'Platform', 'platforms');
+        }
+
+        function _activateCloudPlatform(name) {
+            _doActivateTag(name, 'Cloud Platform', 'cloud_platforms');
         }
 
         function _search(_keywords, _orderby) {
@@ -555,15 +566,6 @@
 
         function _clearRoleTypes() {
             $scope.searchSuggestions = [];
-        }
-
-        function _windowResize() {            
-            var windowHeight = $($window).height();
-            var searchHeight = $('#role-list-search').outerHeight() + 20;
-            var footerHeight = 40;
-            var newHeight = windowHeight - 140 - searchHeight - footerHeight;
-            $log.debug('searchHeight: ' + searchHeight + ' footerHeight: ' + footerHeight);
-            $('#results-outer-container').height(newHeight);
         }
 
         function _resizeSearchControls() {
