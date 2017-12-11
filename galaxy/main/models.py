@@ -15,19 +15,14 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-# standard python libs
-
-# django libs
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms.models import model_to_dict
 from django.utils.timezone import now
 
-# postgresql specific
 from django.contrib.postgres.fields import ArrayField
 
-# local stuff
 from galaxy.main.fields import LooseVersionField, TruncatingCharField
 from galaxy.main.mixins import DirtyMixin
 
@@ -38,20 +33,10 @@ __all__ = [
     'Subscription', 'Stargazer', 'Namespace', 'ContentBlock'
 ]
 
-###################################################################################
-# Our custom user class, brought in here so it can be used commonly throughout
-# the rest of the codebase
-
-# User = get_user_model()
-
-###################################################################################
-# Abstract models that form a base for all real models
-
 
 class BaseModel(models.Model, DirtyMixin):
-    '''
-    common model for objects not needing name, description, active attributes
-    '''
+    """Common model for objects not needing name, description,
+    active attributes."""
 
     class Meta:
         abstract = True
@@ -81,9 +66,7 @@ class BaseModel(models.Model, DirtyMixin):
 
 
 class PrimordialModel(BaseModel):
-    '''
-    base model for CommonModel and CommonModelNameNotUnique
-    '''
+    """Base model for CommonModel and CommonModelNameNotUnique."""
 
     class Meta:
         abstract = True
@@ -92,7 +75,7 @@ class PrimordialModel(BaseModel):
     active = models.BooleanField(default=True, db_index=True)
 
     def mark_inactive(self, save=True):
-        '''Use instead of delete to rename and mark inactive.'''
+        """Use instead of delete to rename and mark inactive."""
 
         if self.active:
             if 'name' in self._meta.get_all_field_names():
@@ -103,10 +86,10 @@ class PrimordialModel(BaseModel):
                 self.save()
 
     def mark_active(self, save=True):
-        '''
+        """
         If previously marked inactive, this function reverses the
-        renaming and sets the active flag to true
-        '''
+        renaming and sets the active flag to true.
+        """
 
         if not self.active:
             if self.original_name != "":
@@ -118,7 +101,7 @@ class PrimordialModel(BaseModel):
 
 
 class CommonModel(PrimordialModel):
-    # a base model where the name is unique '''
+    """A base model where the name is unique."""
 
     class Meta:
         abstract = True
@@ -128,7 +111,7 @@ class CommonModel(PrimordialModel):
 
 
 class CommonModelNameNotUnique(PrimordialModel):
-    # a base model where the name is not unique '''
+    """A base model where the name is not unique."""
 
     class Meta:
         abstract = True
@@ -136,14 +119,14 @@ class CommonModelNameNotUnique(PrimordialModel):
     name = models.CharField(max_length=512, unique=False, db_index=True)
     original_name = models.CharField(max_length=512)
 
-###################################################################################
-# Actual models
 
+# Actual models
+# -----------------------------------------------------------------------------
 
 class Category(CommonModel):
-    #
-    # a class represnting the valid categories (formerly tags) that can be
-    # assigned to a role
+    """A class represnting the valid categories (formerly tags) that can be
+    assigned to a role.
+    """
 
     class Meta:
         ordering = ['name']
@@ -155,13 +138,9 @@ class Category(CommonModel):
     def get_absolute_url(self):
         return reverse('api:category_detail', args=(self.pk,))
 
-    # def get_num_roles(self):
-    #    return self.roles.filter(active=True, owner__is_active=True).count()
-
 
 class Tag(CommonModel):
-    #
-    # a class representing the tags that have been assigned to roles
+    """A class representing the tags that have been assigned to roles."""
 
     class Meta:
         ordering = ['name']
@@ -178,7 +157,7 @@ class Tag(CommonModel):
 
 
 class Platform(CommonModelNameNotUnique):
-    # a class representing the valid platforms a role supports '''
+    """A class representing the valid platforms a role supports."""
 
     class Meta:
         ordering = ['name', 'release']
@@ -202,9 +181,8 @@ class Platform(CommonModelNameNotUnique):
 
 
 class CloudPlatform(CommonModel):
-    """
-    A model representing the valid cloud platforms for role.
-    """
+    """A model representing the valid cloud platforms for role."""
+
     class Meta:
         ordering = ['name']
 
@@ -216,9 +194,9 @@ class CloudPlatform(CommonModel):
 
 
 class UserAlias(models.Model):
-    #
-    # a class representing a mapping between users and aliases
-    # to allow for user renaming without breaking deps
+    """A class representing a mapping between users and aliases
+    to allow for user renaming without breaking deps.
+    """
 
     class Meta:
         verbose_name_plural = "UserAliases"
@@ -258,7 +236,7 @@ class Video(PrimordialModel):
 
 
 class Role(CommonModelNameNotUnique):
-    # a class representing a user role
+    """A class representing a user role."""
 
     class Meta:
         unique_together = [
@@ -267,9 +245,8 @@ class Role(CommonModelNameNotUnique):
         ]
         ordering = ['namespace', 'name']
 
-    #
-    #  ------------------------------------------------------------------------------
-    # foreign keys
+    # Foreign keys
+    # -------------------------------------------------------------------------
 
     dependencies = models.ManyToManyField(
         'Role',
@@ -312,9 +289,9 @@ class Role(CommonModelNameNotUnique):
     )
     categories.help_text = ""
 
-    #
-    # ------------------------------------------------------------------------------
-    # regular fields
+    # Regular fields
+    # -------------------------------------------------------------------------
+
     ANSIBLE = 'ANS'
     CONTAINER = 'CON'
     CONTAINER_APP = 'APP'
@@ -464,11 +441,8 @@ class Role(CommonModelNameNotUnique):
         verbose_name="Laste Commit DateTime"
     )
 
-    #
-    # #tags = ArrayField(models.CharField(max_length=256), null=True, editable=True, size=100)
-
-    # ------------------------------------------------------------------------------
-    # fields calculated by a celery task or signal, not set
+    # Fields calculated by a celery task or signal, not set
+    # -------------------------------------------------------------------------
 
     bayesian_score = models.FloatField(
         default=0.0,
@@ -481,8 +455,8 @@ class Role(CommonModelNameNotUnique):
         default=0.0,
     )
 
-    # ------------------------------------------------------------------------------
-    # other functions and properties
+    # Other functions and properties
+    # -------------------------------------------------------------------------
 
     def __unicode__(self):
         return "%s.%s" % (self.namespace, self.name)
@@ -578,18 +552,16 @@ class RoleVersion(CommonModelNameNotUnique):
     class Meta:
         ordering = ('-loose_version',)
 
-    #
-    # ------------------------------------------------------------------------------
-    # foreign keys
+    # Foreign keys
+    # -------------------------------------------------------------------------
 
     role = models.ForeignKey(
         Role,
         related_name='versions',
     )
 
-    #
-    # ------------------------------------------------------------------------------
-    # regular fields
+    # Regular fields
+    # -------------------------------------------------------------------------
 
     release_date = models.DateTimeField(
         blank=True,
@@ -600,9 +572,8 @@ class RoleVersion(CommonModelNameNotUnique):
         db_index=True,
     )
 
-    #
-    # ------------------------------------------------------------------------------
-    # other functions and properties
+    # Other functions and properties
+    # -------------------------------------------------------------------------
 
     def __unicode__(self):
         return "%s.%s-%s" % (self.role.namespace, self.role.name, self.name)
@@ -619,9 +590,8 @@ class RoleRating(PrimordialModel):
     class Meta:
         unique_together = ('owner', 'role')
 
-    #
-    # ------------------------------------------------------------------------------
-    # foreign keys
+    # Foreign keys
+    # -------------------------------------------------------------------------
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -632,9 +602,8 @@ class RoleRating(PrimordialModel):
         related_name='ratings',
     )
 
-    #
-    # ------------------------------------------------------------------------------
-    # regular fields
+    # Regular fields
+    # -------------------------------------------------------------------------
 
     comment = models.TextField(
         blank=True,
@@ -645,9 +614,8 @@ class RoleRating(PrimordialModel):
         db_index=True,
     )
 
-    #
-    # ------------------------------------------------------------------------------
-    # other functions and properties
+    # Other functions and properties
+    # -------------------------------------------------------------------------
 
     def __unicode__(self):
         return "%s.%s -> %s" % (self.role.namespace, self.role.name, self.score)
