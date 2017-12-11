@@ -57,6 +57,7 @@
                             <div class="counter"><i class="fa fa-download"></i>&nbsp;{{ role.download_count }}</div>
                             <div class="counter"><i class="fa fa-eye"></i>&nbsp;{{ role.watchers_count }}</div>
                             <div class="counter"><i class="fa fa-star"></i>&nbsp;{{ role.stargazers_count }}</div>
+                            <div class="counter"><i class="fa fa-code-fork"></i>&nbsp;{{ role.forks_count }}</div>
                             <div ng-if="role.last_commit_date">
                                 Committed
                                 <time datetime="{{ role.last_commit_date }}Z" title="{{ role.last_commit_date | date : 'MMM d, yyyy h:mm:ss a' }} UTC">
