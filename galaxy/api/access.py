@@ -20,7 +20,7 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from galaxy.main.models import (Role, RoleRating, ImportTask,
+from galaxy.main.models import (Role, ImportTask,
                                 ImportTaskMessage, RoleVersion,
                                 NotificationSecret, Notification,
                                 Subscription, Stargazer)
@@ -163,18 +163,6 @@ class RoleAccess(BaseAccess):
 
     def can_attach(self, obj, sub_obj, relationship, data,
                    skip_sub_obj_read_check=False):
-
-        # unauthenticated users can never attach
-        if not self.user.is_authenticated:
-            return False
-
-        if isinstance(sub_obj, RoleRating):
-            if obj.owner.id == self.user.id:
-                # people cannot rate their own roles
-                return False
-            else:
-                # but everyone else can
-                return True
         return False
 
     def get_queryset(self):

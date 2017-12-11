@@ -40,7 +40,6 @@ from rest_framework import views
 # local
 from galaxy.api.access import check_user_access
 from galaxy.api.utils import get_object_or_400, camelcase_to_underscore
-from galaxy.main.models import RoleRating
 
 # FIXME: machinery for auto-adding audit trail logs to all CREATE/EDITS
 
@@ -412,15 +411,8 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         sub_id = request.DATA.get('id', None)
         data = request.DATA
 
-        # FIXME: We have special case handling for RoleRatings
-        #        which would probably be better moved into
-        #        a new class and overridden completely
-        is_role_rating = isinstance(parent, RoleRating)
-        # logger.debug('SubListCreateAPIView.attach: parent=%s', parent.__class__.__name__)
-
         # Create the sub object if an ID is not provided.
-        # We never create objects when attaching to a RoleRating
-        if not sub_id and not is_role_rating:
+        if not sub_id:
             try:
                 response = self.create(request, *args, **kwargs)
                 if response.status_code != status.HTTP_201_CREATED:
@@ -432,16 +424,14 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
                 except KeyError:
                     location = None
                 created = True
-            except:
-                # logger.debug('SubListCreateAPIView.attach: not sub_id and not is_role_rating threw Permission Denied')
+            except Exception:
                 raise PermissionDenied()
 
         # Retrive the sub object (whether created or by ID).
         sub = get_object_or_400(self.model, pk=sub_id)
 
         # likewise with creation, we never try and update
-        # the sub-object if we're dealing with a RoleRating
-        if not created and not is_role_rating:
+        if not created:
             # Update the object to make sure the data is correct, but
             # verify we have permission to edit before trying to update
             if not check_user_access(request.user, self.model, 'change', sub, data):
@@ -463,24 +453,6 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
         if sub not in relationship.all():
             relationship.add(sub)
             attached = True
-
-        # SPECIAL CASE
-        # FIXME: the base view for objects with mutually exclusive
-        #        relationship should probably be split off into a
-        #        new view, which codifies the mutually exclusive things
-        # if attached and is_role_rating:
-            """
-            Up/down votes are mutually exclusive. If we've attached
-            the user to one of the lists, we need to make sure we
-            remove them from the other (if they're in it).
-            """
-            # mux_relationship = None
-            # if self.relationship == 'up_votes':
-            #    mux_relationship = getattr(parent, 'down_votes')
-            # elif self.relationship == 'down_votes':
-            #    mux_relationship = getattr(parent, 'up_votes')
-            # if mux_relationship and sub in mux_relationship.all():
-            #    mux_relationship.remove(sub)
 
         if created:
             headers = {}

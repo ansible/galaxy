@@ -126,12 +126,3 @@ if settings.SITE_ENV == 'DEV':
             'loose_version': generators.StaticGenerator("0.0"),
         }
     register(RoleVersion, RoleVersionAutoFixture)
-
-    # class RoleRatingAutoFixture(AutoFixture):
-    #     field_values = {
-    #         'reliability': generators.IntegerGenerator(min_value=1, max_value=5),
-    #         'documentation': generators.IntegerGenerator(min_value=1, max_value=5),
-    #         'code_quality': generators.IntegerGenerator(min_value=1, max_value=5),
-    #         'wow_factor': generators.IntegerGenerator(min_value=1, max_value=5),
-    #     }
-    # register(RoleRating, RoleRatingAutoFixture)

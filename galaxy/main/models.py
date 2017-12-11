@@ -28,7 +28,7 @@ from galaxy.main.mixins import DirtyMixin
 
 __all__ = [
     'PrimordialModel', 'Platform', 'CloudPlatform', 'Category', 'Tag',
-    'Role', 'ImportTask', 'ImportTaskMessage', 'RoleRating', 'RoleVersion',
+    'Role', 'ImportTask', 'ImportTaskMessage', 'RoleVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
     'Subscription', 'Stargazer', 'Namespace', 'ContentBlock'
 ]
@@ -583,64 +583,6 @@ class RoleVersion(CommonModelNameNotUnique):
         # values in the other rating fields
         self.loose_version = self.name
         super(RoleVersion, self).save(*args, **kwargs)
-
-
-class RoleRating(PrimordialModel):
-
-    class Meta:
-        unique_together = ('owner', 'role')
-
-    # Foreign keys
-    # -------------------------------------------------------------------------
-
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name='ratings',
-    )
-    role = models.ForeignKey(
-        Role,
-        related_name='ratings',
-    )
-
-    # Regular fields
-    # -------------------------------------------------------------------------
-
-    comment = models.TextField(
-        blank=True,
-        null=True,
-    )
-    score = models.IntegerField(
-        default=0,
-        db_index=True,
-    )
-
-    # Other functions and properties
-    # -------------------------------------------------------------------------
-
-    def __unicode__(self):
-        return "%s.%s -> %s" % (self.role.namespace, self.role.name, self.score)
-
-    def save(self, *args, **kwargs):
-        def clamp_range(value):
-            value = int(value)
-            if value > 5:
-                return 5
-            elif value < 1:
-                return 1
-            else:
-                return value
-
-        self.score = clamp_range(self.score)
-
-        if len(self.comment) > 5000:
-            self.comment = self.comment[:5000]
-        super(RoleRating, self).save(*args, **kwargs)
-
-    def get_absolute_url(self):
-        if self.pk:
-            return reverse('api:rating_detail', args=(self.pk,))
-        else:
-            return ""
 
 
 class ImportTask(PrimordialModel):
