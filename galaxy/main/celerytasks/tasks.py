@@ -121,8 +121,6 @@ def update_user_repos(github_repos, user):
                     github_user=name[0],
                     github_repo=name[1],
                     defaults={
-                        u'github_user': name[0],
-                        u'github_repo': name[1],
                         u'is_enabled': enabled
                     })
                 repo_dict[repo.full_name] = True
