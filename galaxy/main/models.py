@@ -240,8 +240,7 @@ class Role(CommonModelNameNotUnique):
 
     class Meta:
         unique_together = [
-            ('namespace', 'name'),
-            ('github_user', 'github_repo'),
+            ('namespace', 'name')
         ]
         ordering = ['namespace', 'name']
 
@@ -289,6 +288,13 @@ class Role(CommonModelNameNotUnique):
     )
     categories.help_text = ""
 
+    repository = models.ForeignKey(
+        'Repository',
+        related_name='role',
+        editable=False,
+        on_delete=models.PROTECT
+    )
+
     # Regular fields
     # -------------------------------------------------------------------------
 
@@ -314,14 +320,6 @@ class Role(CommonModelNameNotUnique):
         blank=True,
         null=True,
         verbose_name="Namespace",
-    )
-    github_user = models.CharField(
-        max_length=256,
-        verbose_name="Github Username",
-    )
-    github_repo = models.CharField(
-        max_length=256,
-        verbose_name="Github Repository",
     )
     github_branch = models.CharField(
         max_length=256,
@@ -460,6 +458,14 @@ class Role(CommonModelNameNotUnique):
 
     def __unicode__(self):
         return "%s.%s" % (self.namespace, self.name)
+
+    @property
+    def github_user(self):
+        return self.repository.github_user
+
+    @property
+    def github_repo(self):
+        return self.repository.github_repo
 
     def get_last_import(self):
         try:
