@@ -413,10 +413,14 @@ class ImportTaskList(ListCreateAPIView):
                        "and github_repo."))
 
         response = dict(results=[])
-        if Role.objects.filter(github_user=github_user, github_repo=github_repo, active=True).count() > 1:
+        if Role.objects.filter(
+                repository__github_user=github_user,
+                repository__github_repo=github_repo,
+                active=True).count() > 1:
             # multiple roles match github_user/github_repo
             for role in Role.objects.filter(
-                    github_user=github_user, github_repo=github_repo,
+                    repository__github_user=github_user,
+                    repository__github_repo=github_repo,
                     active=True):
                 task = create_import_task(
                     github_user, github_repo, github_reference, role,
@@ -426,15 +430,17 @@ class ImportTaskList(ListCreateAPIView):
                 serializer = self.get_serializer(instance=task)
                 response['results'].append(serializer.data)
         else:
-            role, created = Role.objects.get_or_create(
+            repository, created = Repository.objects.get_or_create(
                 github_user=github_user,
                 github_repo=github_repo,
+                defaults={'is_enabled': False}
+            )
+            role, created = Role.objects.get_or_create(
+                repository=repository,
                 active=True,
                 defaults={
                     'namespace': github_user,
                     'name': name,
-                    'github_user': github_user,
-                    'github_repo': github_repo,
                     'is_valid': False,
                 }
             )
@@ -561,7 +567,8 @@ class StargazerList(ListCreateAPIView):
             raise ValidationError(dict(detail=msg))
 
         role = Role.objects.get(
-            github_user=github_user, github_repo=github_repo)
+            repository__github_user=github_user,
+            repository__github_repo=github_repo)
         star = role.stars.create(owner=request.user)
         role.stargazers_count = gh_repo.stargazers_count + 1
         role.save()
@@ -621,8 +628,8 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
 
         obj.delete()
 
-        role = Role.objects.get(github_user=obj.role.github_user,
-                                github_repo=obj.role.github_repo)
+        role = Role.objects.get(repository__github_user=obj.role.github_user,
+                                repository__github_repo=obj.role.github_repo)
         role.stargazers_count = max(0, gh_repo.stargazers_count - 1)
         role.save()
 
@@ -692,7 +699,9 @@ class SubscriptionList(ListCreateAPIView):
         for s in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        for role in Role.objects.filter(github_user=github_user, github_repo=github_repo):
+        for role in Role.objects.filter(
+                repository__github_user=github_user,
+                repository__github_repo=github_repo):
             role.watchers_count = sub_count
             role.save()
 
@@ -759,7 +768,9 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
         for sub in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        for role in Role.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo):
+        for role in Role.objects.filter(
+                repository__github_user=obj.github_user,
+                repository__github_repo=obj.github_repo):
             role.watchers_count = sub_count
             role.save()
 
@@ -917,9 +928,16 @@ class NotificationList(ListCreateAPIView):
             commit=payload['commit']
         )
 
-        if Role.objects.filter(github_user=github_user, github_repo=github_repo, active=True).count() > 1:
+        # FIXME(cutwater): Pair of github_user and github_repo is now unique
+        if Role.objects.filter(
+                repository__github_user=github_user,
+                repository__github_repo=github_repo,
+                active=True).count() > 1:
             # multiple roles associated with github_user/github_repo
-            for role in Role.objects.filter(github_user=github_user, github_repo=github_repo, active=True):
+            for role in Role.objects.filter(
+                    repository__github_user=github_user,
+                    repository__github_repo=github_repo,
+                    active=True):
                 notification.roles.add(role)
                 role.travis_status_url = travis_status_url
                 role.travis_build_url = payload['build_url']
@@ -940,15 +958,17 @@ class NotificationList(ListCreateAPIView):
                 # Remove ansible-, ansible-role, role-. from repo name
                 name = regex.sub('', name)
 
-            role, created = Role.objects.get_or_create(
+            repository, created = Repository.objects.get_or_create(
                 github_user=github_user,
                 github_repo=github_repo,
+                defaults={'is_enabled': False}
+            )
+            role, created = Role.objects.get_or_create(
+                repository=repository,
                 active=True,
                 defaults={
                     'namespace': github_user,
                     'name': name,
-                    'github_user': github_user,
-                    'github_repo': github_repo,
                     'github_default_branch': 'master',
                     'travis_status_url': travis_status_url,
                     'travis_build_url': payload['build_url'],
@@ -1316,7 +1336,9 @@ class RemoveRole(APIView):
             ('status', '')
         ])
 
-        roles = Role.objects.filter(github_user=gh_user, github_repo=gh_repo)
+        roles = Role.objects.filter(
+            repository__github_user=gh_user,
+            repository__github_repo=gh_repo)
         cnt = len(roles)
         if cnt == 0:
             response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user, gh_repo)
@@ -1350,7 +1372,10 @@ class RemoveRole(APIView):
             repo.is_enabled = False
             repo.save()
 
-        Role.objects.filter(github_user=gh_user, github_repo=gh_repo).delete()
+        Role.objects.filter(
+            repository__github_user=gh_user,
+            repository__github_repo=gh_repo
+        ).delete()
         ImportTask.objects.filter(github_user=gh_user, github_repo=gh_repo).delete()
 
         return Response(response)
