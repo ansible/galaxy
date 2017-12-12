@@ -807,15 +807,18 @@ class Notification(PrimordialModel):
     )
 
 
-class Repository (PrimordialModel):
+class Repository(BaseModel):
     class Meta:
-        unique_together = ('owner', 'github_user', 'github_repo')
+        unique_together = ('github_user', 'github_repo')
         ordering = ('github_user', 'github_repo')
 
-    owner = models.ForeignKey(
+    # Foreign keys
+    owners = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        related_name='repositories',
+        related_name='repositories'
     )
+
+    # Fields
     github_user = models.CharField(
         max_length=256,
         verbose_name="Github Username",
@@ -824,9 +827,7 @@ class Repository (PrimordialModel):
         max_length=256,
         verbose_name="Github Repository",
     )
-    is_enabled = models.BooleanField(
-        default=False
-    )
+    is_enabled = models.BooleanField(default=False)
 
 
 class Subscription (PrimordialModel):
