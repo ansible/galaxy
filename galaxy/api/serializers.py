@@ -458,7 +458,7 @@ class RoleVersionSerializer(BaseSerializer):
 class RepositorySerializer(BaseSerializer):
     class Meta:
         model = Repository
-        fields = ('id', 'owner', 'github_user', 'github_repo', 'is_enabled')
+        fields = ('id', 'owners', 'github_user', 'github_repo', 'is_enabled')
 
     def get_url(self, obj):
         if obj is None:
@@ -467,15 +467,6 @@ class RepositorySerializer(BaseSerializer):
             return reverse('api:repository_detail', args=(obj.pk,))
         else:
             return obj.get_absolute_url()
-
-    def get_related(self, obj):
-        if obj is None:
-            return {}
-        res = super(RepositorySerializer, self).get_related(obj)
-        res.update(dict(
-            owner=reverse('api:user_detail', args=(obj.owner.id,)),
-        ))
-        return res
 
     def get_summary_fields(self, obj):
         if obj is None:
@@ -488,7 +479,9 @@ class RepositorySerializer(BaseSerializer):
                 ('github_repo', s.github_repo),
                 ('source', s.source),
                 ('secret', '******' + s.secret[-4:]),
-            ]) for s in NotificationSecret.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo)
+            ]) for s in NotificationSecret.objects.filter(
+                github_user=obj.github_user,
+                github_repo=obj.github_repo)
         ]
         d['roles'] = [
             OrderedDict([
@@ -496,10 +489,14 @@ class RepositorySerializer(BaseSerializer):
                 ('namespace', r.namespace),
                 ('name', r.name),
                 ('last_import', dict())
-            ]) for r in Role.objects.filter(github_user=obj.github_user, github_repo=obj.github_repo)
+            ]) for r in Role.objects.filter(
+                repository__github_user=obj.github_user,
+                repository__github_repo=obj.github_repo)
         ]
         for role in d['roles']:
-            tasks = list(ImportTask.objects.filter(role__id=role['id']).order_by('-id'))
+            tasks = list(
+                ImportTask.objects.filter(role__id=role['id'])
+                .order_by('-id'))
             if len(tasks) > 0:
                 role['last_import']['id'] = tasks[0].id
                 role['last_import']['state'] = tasks[0].state

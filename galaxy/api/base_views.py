@@ -136,8 +136,9 @@ class GenericAPIView(generics.GenericAPIView, APIView):
         qs = self.model.objects.all().distinct()
         if hasattr(self.model, "is_active"):
             return qs.filter(is_active=True)
-        else:
+        elif hasattr(self.model, "active"):
             return qs.filter(active=True)
+        return qs
 
     def get_description_context(self):
         # Set instance attributes needed to get serializer metadata.
