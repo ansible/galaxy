@@ -269,19 +269,18 @@
             // Update the query string
             queryStorageFactory.save_state(_queryParams($scope.list_data));
 
+            const ROLE_TYPES = {
+                ANS: 'Ansible',
+                CON: 'Container Enabled',
+                APP: 'Container App',
+                DEM: 'Demo'
+            };
+
             return roleSearchService.get(params)
                 .$promise.then(function(data) {
                     angular.forEach(data.results, function(row) {
-                        if (row.role_type == 'ANS') {
-                            row.display_type = 'ANS';
-                            row.display_type_title = 'Ansible';
-                        } else if (row.role_type == 'CON') {
-                            row.display_type = 'CON';
-                            row.display_type_title = 'Container Enabled';
-                        } else if (row.role_type == 'APP') {
-                            row.display_type = 'APP';
-                            row.display_type_title = 'Container App';
-                        }
+                        row.display_type = row.role_type;
+                        row.display_type_title = ROLE_TYPES[row.role_type];
                     });
                     $scope.roles = data.results;
                     $scope.status = "";
