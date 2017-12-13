@@ -115,14 +115,13 @@ def update_user_repos(github_repos, user):
                 logger.info("Create or Update repo {0}".format(repo.full_name))
                 name = repo.full_name.split('/')
                 cnt = Role.objects.filter(
-                    github_user=name[0], github_repo=name[1]).count()
+                    repository__github_user=name[0],
+                    repository__github_repo=name[1]).count()
                 enabled = cnt > 0
                 user.repositories.update_or_create(
                     github_user=name[0],
                     github_repo=name[1],
                     defaults={
-                        u'github_user': name[0],
-                        u'github_repo': name[1],
                         u'is_enabled': enabled
                     })
                 repo_dict[repo.full_name] = True
@@ -147,7 +146,7 @@ def refresh_existing_user_repos(token, github_user):
                 .format(github_user.login))
     remove_roles = []
 
-    for role in Role.objects.filter(github_user=github_user.login):
+    for role in Role.objects.filter(repository__github_user=github_user.login):
         full_name = "{0}/{1}".format(role.github_user, role.github_repo)
         try:
             repo = get_repo_raw(token, full_name)
@@ -923,7 +922,9 @@ def refresh_user_stars(user, token):
     user.subscriptions.all().delete()
     for s in subscriptions:
         name = s.full_name.split('/')
-        cnt = Role.objects.filter(github_user=name[0], github_repo=name[1]).count()
+        cnt = Role.objects.filter(
+            repository__github_user=name[0],
+            repository__github_repo=name[1]).count()
         if cnt > 0:
             user.subscriptions.get_or_create(
                 github_user=name[0],
@@ -953,7 +954,8 @@ def refresh_user_stars(user, token):
     for github_user, github_repo in to_add:
         try:
             role = Role.objects.get(
-                github_user=github_user, github_repo=github_repo)
+                repository__github_user=github_user,
+                repository__github_repo=github_repo)
         except Role.DoesNotExist:
             continue
         user.starred.create(role=role)

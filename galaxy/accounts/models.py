@@ -142,8 +142,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
 
     def get_stargazer(self, github_user, github_repo):
         try:
-            star = self.starred.get(role__github_user=github_user,
-                                    role__github_repo=github_repo)
+            star = self.starred.get(role__repository__github_user=github_user,
+                                    role__repository__github_repo=github_repo)
             return star
         except exceptions.ObjectDoesNotExist:
             return None
