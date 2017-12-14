@@ -570,7 +570,8 @@ class StargazerList(ListCreateAPIView):
             repository__github_user=github_user,
             repository__github_repo=github_repo)
         star = role.stars.create(owner=request.user)
-        role.stargazers_count = gh_repo.stargazers_count + 1
+        role.repository.stargazers_count = gh_repo.stargazers_count + 1
+        role.repository.save()
         role.save()
 
         return Response(dict(
@@ -628,10 +629,10 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
 
         obj.delete()
 
-        role = Role.objects.get(repository__github_user=obj.role.github_user,
-                                repository__github_repo=obj.role.github_repo)
-        role.stargazers_count = max(0, gh_repo.stargazers_count - 1)
-        role.save()
+        repo = Repository.objects.get(github_user=obj.role.github_user,
+                                      github_repo=obj.role.github_repo)
+        repo.stargazers_count = max(0, gh_repo.stargazers_count - 1)
+        repo.save()
 
         return Response(status=status.HTTP_202_ACCEPTED)
 
@@ -699,11 +700,10 @@ class SubscriptionList(ListCreateAPIView):
         for s in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        for role in Role.objects.filter(
-                repository__github_user=github_user,
-                repository__github_repo=github_repo):
-            role.watchers_count = sub_count
-            role.save()
+        repo = Repository.objects.get(github_user=github_user,
+                                      github_repo=github_repo)
+        repo.watchers_count = sub_count
+        repo.save()
 
         return Response(dict(
             result=dict(
@@ -768,11 +768,10 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
         for sub in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        for role in Role.objects.filter(
-                repository__github_user=obj.github_user,
-                repository__github_repo=obj.github_repo):
-            role.watchers_count = sub_count
-            role.save()
+        repo = Repository.objects.get(github_user=obj.github_user,
+                                      github_repo=obj.github_repo)
+        repo.watchers_count = sub_count
+        repo.save()
 
         result = "unsubscribed {0} from {1}/{2}.".format(request.user.github_user,
                                                          obj.github_user,
