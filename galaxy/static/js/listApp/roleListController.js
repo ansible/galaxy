@@ -269,7 +269,7 @@
             // Update the query string
             queryStorageFactory.save_state(_queryParams($scope.list_data));
 
-            const ROLE_TYPES = {
+            var ROLE_TYPES = {
                 ANS: 'Ansible',
                 CON: 'Container Enabled',
                 APP: 'Container App',
