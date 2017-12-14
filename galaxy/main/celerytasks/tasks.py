@@ -131,7 +131,7 @@ def update_user_repos(github_repos, user):
         full_name = "{0}/{1}".format(repo.github_user, repo.github_repo)
         if not repo_dict.get(full_name):
             logger.info("Remove from cache {0}".format(full_name))
-            repo.delete()
+            user.repositories.remove(repo)
 
     logger.info("Finished update_user_repos for user {0}"
                 .format(user.username))
@@ -736,16 +736,19 @@ def import_role(task_id):
     sub_count = 0
     for sub in repo.get_subscribers():
         sub_count += 1   # only way to get subscriber count via pygithub
-    role.stargazers_count = repo.stargazers_count
-    role.watchers_count = sub_count
-    role.forks_count = repo.forks_count
-    role.open_issues_count = repo.open_issues_count
+
+    repository = role.repository
+
+    repository.stargazers_count = repo.stargazers_count
+    repository.watchers_count = sub_count
+    repository.forks_count = repo.forks_count
+    repository.open_issues_count = repo.open_issues_count
 
     last_commit = repo.get_commits(sha=branch)[0].commit
-    role.commit = last_commit.sha
-    role.commit_message = last_commit.message[:255]
-    role.commit_url = last_commit.html_url
-    role.commit_created = last_commit.committer.date.replace(tzinfo=pytz.UTC)
+    repository.commit = last_commit.sha
+    repository.commit_message = last_commit.message[:255]
+    repository.commit_url = last_commit.html_url
+    repository.commit_created = last_commit.committer.date.replace(tzinfo=pytz.UTC)
 
     # Update the import task in the event the role is left in an invalid state.
     import_task.stargazers_count = repo.stargazers_count
@@ -838,6 +841,7 @@ def import_role(task_id):
         role.imported = timezone.now()
         role.is_valid = True
         role.save()
+        repository.save()
         transaction.commit()
     except Exception, e:
         fail_import_task(import_task, u"Error saving role: %s" % e.message)

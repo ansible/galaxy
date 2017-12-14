@@ -409,36 +409,6 @@ class Role(CommonModelNameNotUnique):
         default=0
     )
 
-    # GitHub repo attributes
-    stargazers_count = models.IntegerField(
-        default=0
-    )
-    watchers_count = models.IntegerField(
-        default=0
-    )
-    forks_count = models.IntegerField(
-        default=0
-    )
-    open_issues_count = models.IntegerField(
-        default=0
-    )
-    commit = models.CharField(
-        max_length=256,
-        blank=True
-    )
-    commit_message = models.CharField(
-        max_length=256,
-        blank=True
-    )
-    commit_url = models.CharField(
-        max_length=256,
-        blank=True
-    )
-    commit_created = models.DateTimeField(
-        null=True,
-        verbose_name="Laste Commit DateTime"
-    )
-
     # Fields calculated by a celery task or signal, not set
     # -------------------------------------------------------------------------
 
@@ -466,6 +436,39 @@ class Role(CommonModelNameNotUnique):
     @property
     def github_repo(self):
         return self.repository.github_repo
+
+    # GitHub repo attributes
+    @property
+    def stargazers_count(self):
+        return self.repository.stargazers_count
+
+    @property
+    def watchers_count(self):
+        return self.repository.watchers_count
+
+    @property
+    def forks_count(self):
+        return self.repository.forks_count
+
+    @property
+    def open_issues_count(self):
+        return self.repository.open_issues_count
+
+    @property
+    def commit(self):
+        return self.repository.commit
+
+    @property
+    def commit_message(self):
+        return self.repository.commit_message
+
+    @property
+    def commit_url(self):
+        return self.repository.commit_url
+
+    @property
+    def commit_created(self):
+        return self.repository.commit_created
 
     def get_last_import(self):
         try:
@@ -834,6 +837,17 @@ class Repository(BaseModel):
         verbose_name="Github Repository",
     )
     is_enabled = models.BooleanField(default=False)
+
+    # Repository attributes
+    commit = models.CharField(max_length=256, blank=True, default='')
+    commit_message = models.CharField(max_length=256, blank=True, default='')
+    commit_url = models.CharField(max_length=256, blank=True, default='')
+    commit_created = models.DateTimeField(
+        null=True, verbose_name="Laste Commit DateTime")
+    stargazers_count = models.IntegerField(default=0)
+    watchers_count = models.IntegerField(default=0)
+    forks_count = models.IntegerField(default=0)
+    open_issues_count = models.IntegerField(default=0)
 
 
 class Subscription (PrimordialModel):
