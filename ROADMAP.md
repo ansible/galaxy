@@ -1,6 +1,11 @@
 # Roadmap
 
-## [Release 2.4](https://github.com/ansible/galaxy/milestone/2) (Current Development)
+## [Release 2.4.1](https://github.com/ansible/galaxy/milestone/4) (Current development)
+
+- Search page re-design. [#185](https://github.com/ansible/galaxy/issues/185)
+- Internal SA POC kickoff. Deploying an instance of Galaxy for internal use. Only visible changes will be the addition of deployment playbooks and roles for creating the new environment. [#192](https://github.com/ansible/galaxy/issues/192)
+
+## Release 2.4 (Completed)
 
 - Determine scope of supporting private GitHub repos [#161](https://github.com/ansible/galaxy/issues/161)
 - Add OpenShift as an install option [#160](https://github.com/ansible/galaxy/issues/160)

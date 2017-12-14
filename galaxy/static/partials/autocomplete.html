@@ -18,7 +18,7 @@
 
 <div id="galaxy-search">
     <div class="row">
-        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-7">
+        <div class="col-lg-8 col-md-8 col-sm-7 col-xs-7">
             <div class="input-group input-group-sm autocomplete-search-group">
                 <div class="input-group-btn">
                     <button type="button" class="btn btn-default btn-sm dropdown-toggle" id="search-type-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="1">{{ searchType }} <span class="caret"></span></button>
@@ -27,10 +27,10 @@
                     </ul>
                 </div><!-- /btn-group -->
                 <input type="text" class="form-control" name="autocomplete" id="autocomplete-text-input"
-                    ng-model="searchValue" 
-                    ng-keyup="searchKeyup($event)" 
-                    placeholder="{{ searchPlaceholder }}" 
-                    ng-keydown="searchKeydown($event)" 
+                    ng-model="searchValue"
+                    ng-keyup="searchKeyup($event)"
+                    placeholder="{{ searchPlaceholder }}"
+                    ng-keydown="searchKeydown($event)"
                     ng-focus="searchFocus($event)"
                     ng-blur="searchBlur($event)"
                     tabindex="2">
@@ -51,13 +51,12 @@
             </div><!-- /input-group -->
         </div>
 
-        <div class="col-lg-8 col-md-6 col-sm-6 col-xs-5"> <!-- order by -->
+        <div class="col-lg-4 col-md-4 col-sm-5 col-xs-5"> <!-- order by -->
             <div id="autocomplete-order-by" class="form-inline">
                 <div class="form-group">
                     <label class="hidden-xs">SORT</label>
-                    <select name="orderby" id="orderby" ng-model="searchOrder" class="form-control input-sm" ng-options="option.title for option in searchOrderOptions" ng-change="changeOrder()" tabindex="3">
-                        <option value="">Relevance</option>
-                    </select>
+                    <select name="orderby" id="orderby" ng-model="searchOrder" class="form-control input-sm"
+                            ng-options="option.title for option in searchOrderOptions" ng-change="changeOrder()" tabindex="3"></select>
                 </div>
             </div>
             <div class="filter-toggle pull-right" ng-show="searchKeys && searchKeys.length">
