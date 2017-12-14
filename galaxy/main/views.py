@@ -28,7 +28,7 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 # local stuff
-from galaxy.main.models import Content, Namespace, ContentBlock
+from galaxy.main.models import Content, ProviderNamespace, ContentBlock
 
 # rst2html5-tools
 from html5css3 import Writer
@@ -311,12 +311,12 @@ class RoleListView(ListView):
 
         ns = None
         context['namespace'] = None
-        if Namespace.objects.filter(namespace=self.namespace).count() > 0:
-            ns = Namespace.objects.get(namespace=self.namespace)
+        if ProviderNamespace.objects.filter(namespace=self.namespace).count() > 0:
+            ns = ProviderNamespace.objects.get(namespace=self.namespace)
         else:
             try:
                 roles = list(self.get_queryset())
-                ns = Namespace.objects.get(namespace=roles[0].github_user)
+                ns = ProviderNamespace.objects.get(namespace=roles[0].github_user)
             except:
                 pass
 
@@ -358,7 +358,7 @@ class RoleDetailView(DetailView):
         context = super(RoleDetailView, self).get_context_data(**kwargs)
 
         try:
-            ns = Namespace.objects.get(namespace=self.namespace)
+            ns = ProviderNamespace.objects.get(namespace=self.namespace)
             context['namespace'] = dict(
                 avatar_url=ns.avatar_url,
                 location=ns.location,
