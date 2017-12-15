@@ -287,9 +287,9 @@ class UserListSerializer(BaseSerializer):
         d['starred'] = [
             OrderedDict([
                 ('id', g.id),
-                ('github_user', g.role.github_user),
-                ('github_repo', g.role.github_repo)
-            ]) for g in obj.starred.select_related('role').all()]
+                ('github_user', g.repository.github_user),
+                ('github_repo', g.repository.github_repo)
+            ]) for g in obj.starred.select_related('repository').all()]
         return d
 
     def get_email(self, obj):
@@ -374,9 +374,9 @@ class UserDetailSerializer(BaseSerializer):
         d['starred'] = [
             OrderedDict([
                 ('id', g.id),
-                ('github_user', g.role.github_user),
-                ('github_repo', g.role.github_repo)
-            ]) for g in obj.starred.select_related('role').all()]
+                ('github_user', g.repository.github_user),
+                ('github_repo', g.repository.github_repo)
+            ]) for g in obj.starred.select_related('repository').all()]
         return d
 
     def get_email(self, obj):

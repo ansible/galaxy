@@ -946,8 +946,8 @@ def refresh_user_stars(user, token):
         raise Exception(msg)
 
     new_starred = {(s.owner.login, s.name) for s in starred}
-    old_starred = {(s.role.github_user, s.role.github_repo): s.id
-                   for s in user.starred.select_related('role').all()}
+    old_starred = {(s.repository.github_user, s.repository.github_repo): s.id
+                   for s in user.starred.select_related('repository').all()}
 
     to_remove = [v for k, v in old_starred.iteritems()
                  if k not in new_starred]

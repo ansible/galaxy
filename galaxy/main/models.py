@@ -889,18 +889,19 @@ class Subscription (PrimordialModel):
     )
 
 
-class Stargazer(PrimordialModel):
+class Stargazer(BaseModel):
     class Meta:
-        unique_together = ('owner', 'role')
+        unique_together = ('owner', 'repository')
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='starred',
     )
 
-    role = models.ForeignKey(
-        Content,
-        related_name='stars')
+    repository = models.ForeignKey(
+        Repository,
+        related_name='stars'
+    )
 
 
 class RefreshRoleCount (PrimordialModel):
