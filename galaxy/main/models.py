@@ -409,20 +409,6 @@ class Role(CommonModelNameNotUnique):
         default=0
     )
 
-    # Fields calculated by a celery task or signal, not set
-    # -------------------------------------------------------------------------
-
-    bayesian_score = models.FloatField(
-        default=0.0,
-        editable=False,
-    )
-    num_ratings = models.IntegerField(
-        default=0,
-    )
-    average_score = models.FloatField(
-        default=0.0,
-    )
-
     # Other functions and properties
     # -------------------------------------------------------------------------
 
