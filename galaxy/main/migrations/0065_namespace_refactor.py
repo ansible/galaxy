@@ -30,9 +30,9 @@ WHERE a.github_user not in (SELECT name FROM main_providernamespace WHERE name =
 ADD_ROLE_NAMESPACE = """
 INSERT INTO main_providernamespace (created, modified, active, name, description)
 SELECT created, modified, true, a.namespace, a.namespace 
-FROM main_role as a INNER JOIN
+FROM main_content as a INNER JOIN
   (SELECT namespace, min(id) as id
-   FROM main_role
+   FROM main_content
    GROUP BY namespace) as b ON a.namespace = b.namespace and a.id = b.id
 WHERE a.namespace not in (SELECT name FROM main_providernamespace WHERE name = a.namespace)   
 """
