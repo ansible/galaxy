@@ -72,11 +72,16 @@ class Command(BaseCommand):
             doc = PlatformDoc(
                 name=search_name,
                 releases=release_list,
-                roles=Content.objects.filter(active=True, is_valid=True, platforms__name=platform.name)
-                                  .order_by('namespace', 'name')
-                                  .distinct('namespace', 'name').count(),
+                roles=(Content.objects
+                       .filter(active=True, is_valid=True,
+                               platforms__name=platform.name)
+                       .order_by('namespace', 'name')
+                       .distinct('namespace', 'name').count()),
                 alias=alias_list,
-                autocomplete="%s %s %s" % (search_name, ' '.join(release_list), ' '.join(alias_list))
+                autocomplete="%s %s %s" % (
+                    search_name,
+                    ' '.join(release_list),
+                    ' '.join(alias_list))
             )
             doc.save()
 
@@ -92,11 +97,11 @@ class Command(BaseCommand):
                 name=platform.name,
                 roles=(
                     Content.objects
-                        .filter(
-                            active=True, is_valid=True,
-                            cloud_platforms__name=platform.name)
-                        .order_by('namespace', 'name')
-                        .distinct('namespace', 'name').count()),
+                    .filter(
+                        active=True, is_valid=True,
+                        cloud_platforms__name=platform.name)
+                    .order_by('namespace', 'name')
+                    .distinct('namespace', 'name').count()),
                 autocomplete=platform.name,
             )
             doc.save()
