@@ -41,6 +41,6 @@ class ContentBlockAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Platform, PlatformAdmin)
 admin.site.register(models.CloudPlatform, CloudPlatformAdmin)
-admin.site.register(models.Role, RoleAdmin)
-admin.site.register(models.RoleVersion, RoleVersionAdmin)
+admin.site.register(models.Content, RoleAdmin)
+admin.site.register(models.ContentVersion, RoleVersionAdmin)
 admin.site.register(models.ContentBlock, ContentBlockAdmin)

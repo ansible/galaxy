@@ -21,7 +21,7 @@ from django.core.management.base import BaseCommand
 from elasticsearch_dsl import Index
 
 # local
-from galaxy.main.models import Platform, CloudPlatform, Tag, Role
+from galaxy.main.models import Platform, CloudPlatform, Tag, Content
 from galaxy.main.search_models import (
     TagDoc, CloudPlatformDoc, PlatformDoc, UserDoc)
 
@@ -41,7 +41,7 @@ class Command(BaseCommand):
         galaxy_users.delete(ignore=404)
         galaxy_users.create()
 
-        for role in Role.objects.filter(active=True, is_valid=True).order_by('namespace').distinct('namespace').all():
+        for role in Content.objects.filter(active=True, is_valid=True).order_by('namespace').distinct('namespace').all():
             doc = UserDoc(username=role.namespace)
             doc.save()
 
@@ -72,7 +72,7 @@ class Command(BaseCommand):
             doc = PlatformDoc(
                 name=search_name,
                 releases=release_list,
-                roles=Role.objects.filter(active=True, is_valid=True, platforms__name=platform.name)
+                roles=Content.objects.filter(active=True, is_valid=True, platforms__name=platform.name)
                                   .order_by('namespace', 'name')
                                   .distinct('namespace', 'name').count(),
                 alias=alias_list,
@@ -91,7 +91,7 @@ class Command(BaseCommand):
             doc = CloudPlatformDoc(
                 name=platform.name,
                 roles=(
-                    Role.objects
+                    Content.objects
                         .filter(
                             active=True, is_valid=True,
                             cloud_platforms__name=platform.name)

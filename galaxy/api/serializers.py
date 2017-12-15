@@ -37,9 +37,9 @@ from galaxy.main.models import (Platform,
                                 CloudPlatform,
                                 Category,
                                 Tag,
-                                Role,
+                                Content,
                                 ImportTask,
-                                RoleVersion,
+                                ContentVersion,
                                 NotificationSecret,
                                 Notification,
                                 Repository,
@@ -404,7 +404,7 @@ class SubscriptionSerializer(BaseSerializer):
 
 class StargazerRoleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Role
+        model = Content
         fields = ('id', 'namespace', 'name', 'github_repo', 'github_user')
 
 
@@ -451,7 +451,7 @@ class CloudPlatformSerializer(BaseSerializer):
 
 class RoleVersionSerializer(BaseSerializer):
     class Meta:
-        model = RoleVersion
+        model = ContentVersion
         fields = ('id', 'name', 'release_date',)
 
 
@@ -489,7 +489,7 @@ class RepositorySerializer(BaseSerializer):
                 ('namespace', r.namespace),
                 ('name', r.name),
                 ('last_import', dict())
-            ]) for r in Role.objects.filter(
+            ]) for r in Content.objects.filter(
                 repository__github_user=obj.github_user,
                 repository__github_repo=obj.github_repo)
         ]
@@ -701,7 +701,7 @@ class ImportTaskLatestSerializer(BaseSerializer):
             return {}
         d = super(ImportTaskLatestSerializer, self).get_summary_fields(obj)
         g = ImportTask.objects.get(id=obj['last_id'])
-        r = Role.objects.get(id=g.role.id)
+        r = Content.objects.get(id=g.role.id)
         d['details'] = OrderedDict([
             ('id', g.id),
             ('state', g.state),
@@ -743,7 +743,7 @@ class RoleListSerializer(BaseSerializer):
     readme_html = serializers.SerializerMethodField()
 
     class Meta:
-        model = Role
+        model = Content
         fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid', 'github_user', 'github_repo',
                                 'github_branch', 'min_ansible_version', 'issue_tracker_url',
                                 'license', 'company', 'description', 'readme', 'readme_html',
@@ -770,7 +770,7 @@ class RoleListSerializer(BaseSerializer):
     def get_url(self, obj):
         if obj is None:
             return ''
-        elif isinstance(obj, Role):
+        elif isinstance(obj, Content):
             return reverse('api:role_detail', args=(obj.pk,))
         else:
             return obj.get_absolute_url()
@@ -798,7 +798,7 @@ class RoleListSerializer(BaseSerializer):
 class RoleTopSerializer(BaseSerializer):
 
     class Meta:
-        model = Role
+        model = Content
         fields = BASE_FIELDS + ('github_user',
                                 'github_repo',
                                 'min_ansible_version',
@@ -821,7 +821,7 @@ class RoleTopSerializer(BaseSerializer):
     def get_url(self, obj):
         if obj is None:
             return ''
-        elif isinstance(obj, Role):
+        elif isinstance(obj, Content):
             return reverse('api:role_detail', args=(obj.pk,))
         else:
             return obj.get_absolute_url()
@@ -832,7 +832,7 @@ class RoleDetailSerializer(BaseSerializer):
     tags = serializers.SerializerMethodField()
 
     class Meta:
-        model = Role
+        model = Content
         fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid', 'github_user', 'github_repo', 'github_branch',
                                 'min_ansible_version', 'issue_tracker_url', 'license', 'company', 'description',
                                 'readme', 'readme_html', 'tags', 'travis_status_url', 'stargazers_count',
@@ -857,7 +857,7 @@ class RoleDetailSerializer(BaseSerializer):
     def get_url(self, obj):
         if obj is None:
             return ''
-        elif isinstance(obj, Role):
+        elif isinstance(obj, Content):
             return reverse('api:role_detail', args=(obj.pk,))
         else:
             return obj.get_absolute_url()

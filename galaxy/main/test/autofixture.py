@@ -15,7 +15,7 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from galaxy.main.models import Role
+from galaxy.main.models import Content
 from autofixture import generators, register, AutoFixture
 
 
@@ -27,4 +27,4 @@ class RoleAutoFixture(AutoFixture):
     }
 
 
-register(Role, RoleAutoFixture)
+register(Content, RoleAutoFixture)
