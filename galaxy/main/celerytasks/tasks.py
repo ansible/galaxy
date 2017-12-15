@@ -41,7 +41,8 @@ from galaxy.main.models import (Platform,
                                 Content,
                                 ImportTask,
                                 ContentVersion,
-                                Namespace)
+                                ProviderNamespace)
+
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 
 
@@ -184,14 +185,14 @@ def refresh_existing_user_repos(token, github_user):
 def update_namespace(repo):
     # Use GitHub repo to update namespace attributes
     if repo.owner.type == 'Organization':
-        namespace, created = Namespace.objects.get_or_create(namespace=repo.organization.login, defaults={
-                                                             'name': repo.organization.name,
-                                                             'avatar_url': repo.organization.avatar_url,
-                                                             'location': repo.organization.location,
-                                                             'company': repo.organization.company,
-                                                             'email': repo.organization.email,
-                                                             'html_url': repo.organization.html_url,
-                                                             'followers': repo.organization.followers})
+        namespace, created = ProviderNamespace.objects.get_or_create(namespace=repo.organization.login, defaults={
+            'name': repo.organization.name,
+            'avatar_url': repo.organization.avatar_url,
+            'location': repo.organization.location,
+            'company': repo.organization.company,
+            'email': repo.organization.email,
+            'html_url': repo.organization.html_url,
+            'followers': repo.organization.followers})
         if not created:
             namespace.avatar_url = repo.organization.avatar_url
             namespace.location = repo.organization.location
@@ -202,14 +203,14 @@ def update_namespace(repo):
             namespace.save()
 
     else:
-        namespace, created = Namespace.objects.get_or_create(namespace=repo.owner.login, defaults={
-                                                             'name': repo.owner.name,
-                                                             'avatar_url': repo.owner.avatar_url,
-                                                             'location': repo.owner.location,
-                                                             'company': repo.owner.company,
-                                                             'email': repo.owner.email,
-                                                             'html_url': repo.owner.html_url,
-                                                             'followers': repo.owner.followers})
+        namespace, created = ProviderNamespace.objects.get_or_create(namespace=repo.owner.login, defaults={
+            'name': repo.owner.name,
+            'avatar_url': repo.owner.avatar_url,
+            'location': repo.owner.location,
+            'company': repo.owner.company,
+            'email': repo.owner.email,
+            'html_url': repo.owner.html_url,
+            'followers': repo.owner.followers})
         if not created:
             namespace.avatar_url = repo.owner.avatar_url
             namespace.location = repo.owner.location

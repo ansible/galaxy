@@ -30,7 +30,8 @@ __all__ = [
     'PrimordialModel', 'Platform', 'CloudPlatform', 'Category', 'Tag',
     'Content', 'ImportTask', 'ImportTaskMessage', 'ContentVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
-    'Subscription', 'Stargazer', 'Namespace', 'ContentBlock'
+    'Subscription', 'Stargazer', 'Namespace', 'Provider', 'ProviderNamespace',
+    'ContentBlock'
 ]
 
 
@@ -124,8 +125,8 @@ class CommonModelNameNotUnique(PrimordialModel):
 # -----------------------------------------------------------------------------
 
 class Category(CommonModel):
-    """A class represnting the valid categories (formerly tags) that can be
-    assigned to a role.
+    """
+    A class represnting the valid categories (formerly tags) that can be assigned to a role.
     """
 
     class Meta:
@@ -194,8 +195,8 @@ class CloudPlatform(CommonModel):
 
 
 class UserAlias(models.Model):
-    """A class representing a mapping between users and aliases
-    to allow for user renaming without breaking deps.
+    """
+    A class representing a mapping between users and aliases to allow for user renaming without breaking deps.
     """
 
     class Meta:
@@ -491,27 +492,25 @@ class Content(CommonModelNameNotUnique):
                     raise Exception("Content %s value exceeeds max length of %s." % (field.name, field.max_length))
 
 
-class Namespace(PrimordialModel):
+class Namespace(CommonModel):
+    """
+    Represents the aggregation of multiple namespaces across providers.
+    """
 
     class Meta:
-        ordering = ('namespace',)
+        ordering = ('name',)
 
-    namespace = models.CharField(
-        max_length=256,
-        unique=True,
-        verbose_name="GitHub namespace"
-    )
-    name = models.CharField(
-        max_length=256,
-        blank=True,
-        null=True,
-        verbose_name="GitHub name"
+    owners = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='+',
+        null=False,
+        editable=True,
     )
     avatar_url = models.CharField(
         max_length=256,
         blank=True,
         null=True,
-        verbose_name="GitHub Avatar URL"
+        verbose_name="Avatar URL"
     )
     location = models.CharField(
         max_length=256,
@@ -523,22 +522,110 @@ class Namespace(PrimordialModel):
         max_length=256,
         blank=True,
         null=True,
-        verbose_name="Location"
+        verbose_name="Company Name"
     )
     email = models.CharField(
         max_length=256,
         blank=True,
         null=True,
-        verbose_name="Location"
+        verbose_name="Email Address"
     )
     html_url = models.CharField(
         max_length=256,
         blank=True,
         null=True,
-        verbose_name="URL"
+        verbose_name="Web Site URL"
+    )
+
+
+class Provider(CommonModel):
+    """
+    Valid SCM providers (e.g., GitHub, GitLab, etc.)
+    """
+
+    class Meta:
+        ordering = ('name',)
+
+
+class ProviderNamespace(PrimordialModel):
+    """
+    A one-to-one mapping to namespaces within each provider.
+    """
+
+    class Meta:
+        ordering = ('provider', 'name')
+        unique_together = [
+            ('provider', 'name'),
+            ('namespace', 'provider', 'name'),
+        ]
+
+    name = models.CharField(
+        max_length=256,
+        verbose_name="Name",
+        editable=True,
+        null=False
+    )
+    namespace = models.ForeignKey(
+        'Namespace',
+        related_name='namespaces',
+        editable=False,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name='Namespace'
+    )
+    provider = models.ForeignKey(
+        'Provider',
+        related_name='provider',
+        editable=True,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name='Provider'
+    )
+    display_name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=False,
+        verbose_name="Display Name"
+    )
+    avatar_url = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=False,
+        verbose_name="Avatar URL"
+    )
+    location = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=False,
+        verbose_name="Location"
+    )
+    company = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=False,
+        verbose_name="Company Name"
+    )
+    email = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=False,
+        verbose_name="Email Address"
+    )
+    html_url = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=False,
+        verbose_name="Web Site URL"
     )
     followers = models.IntegerField(
         null=True,
+        editable=False,
         verbose_name="Followers"
     )
 
