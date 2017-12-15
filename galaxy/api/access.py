@@ -20,8 +20,8 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from galaxy.main.models import (Role, ImportTask,
-                                ImportTaskMessage, RoleVersion,
+from galaxy.main.models import (Content, ImportTask,
+                                ImportTaskMessage, ContentVersion,
                                 NotificationSecret, Notification,
                                 Subscription, Stargazer)
 
@@ -159,7 +159,7 @@ class UserAccess(BaseAccess):
 
 
 class RoleAccess(BaseAccess):
-    model = Role
+    model = Content
 
     def can_attach(self, obj, sub_obj, relationship, data,
                    skip_sub_obj_read_check=False):
@@ -170,7 +170,7 @@ class RoleAccess(BaseAccess):
 
 
 class RoleVersionAccess(BaseAccess):
-    model = RoleVersion
+    model = ContentVersion
 
     def get_queryset(self):
         return self.model.objects.filter(active=True, role__active=True).distinct()
@@ -264,8 +264,8 @@ class StargazerAccess(BaseAccess):
 
 
 register_access(User, UserAccess)
-register_access(Role, RoleAccess)
-register_access(RoleVersion, RoleVersionAccess)
+register_access(Content, RoleAccess)
+register_access(ContentVersion, RoleVersionAccess)
 register_access(ImportTask, ImportTaskAccess)
 register_access(ImportTaskMessage, ImportTaskMessageAccess)
 register_access(NotificationSecret, NotificationSecretAccess)

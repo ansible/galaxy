@@ -18,7 +18,7 @@
 import json
 
 from haystack import indexes
-from galaxy.main.models import Role
+from galaxy.main.models import Content
 
 
 class RoleIndex(indexes.SearchIndex, indexes.Indexable):
@@ -59,7 +59,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     download_count = indexes.IntegerField(model_attr='download_count')
 
     def get_model(self):
-        return Role
+        return Content
 
     def index_queryset(self, using=None):
         # Used when the entire index for model is updated

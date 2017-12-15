@@ -38,9 +38,9 @@ from ansible.errors import AnsibleError
 from galaxy.main.models import (Platform,
                                 CloudPlatform,
                                 Tag,
-                                Role,
+                                Content,
                                 ImportTask,
-                                RoleVersion,
+                                ContentVersion,
                                 Namespace)
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 
@@ -114,7 +114,7 @@ def update_user_repos(github_repos, user):
             if meta_data:
                 logger.info("Create or Update repo {0}".format(repo.full_name))
                 name = repo.full_name.split('/')
-                cnt = Role.objects.filter(
+                cnt = Content.objects.filter(
                     repository__github_user=name[0],
                     repository__github_repo=name[1]).count()
                 enabled = cnt > 0
@@ -146,7 +146,7 @@ def refresh_existing_user_repos(token, github_user):
                 .format(github_user.login))
     remove_roles = []
 
-    for role in Role.objects.filter(repository__github_user=github_user.login):
+    for role in Content.objects.filter(repository__github_user=github_user.login):
         full_name = "{0}/{1}".format(role.github_user, role.github_repo)
         try:
             repo = get_repo_raw(token, full_name)
@@ -170,7 +170,7 @@ def refresh_existing_user_repos(token, github_user):
 
     for role_id in remove_roles:
         try:
-            role = Role.objects.get(id=role_id)
+            role = Content.objects.get(id=role_id)
             logger.info(u'DELETING: {0}/{1}'.format(role.namespace, role.name))
             role.delete()
         except Exception as exc:
@@ -431,7 +431,7 @@ def add_dependencies(import_task, dependencies, role):
                 namespace = names[0]
                 name = names[1]
             try:
-                dep_role = Role.objects.get(namespace=namespace, name=name)
+                dep_role = Content.objects.get(namespace=namespace, name=name)
                 role.dependencies.add(dep_role)
                 dep_names.append(dep_parsed['name'])
             except Exception as exc:
@@ -593,7 +593,7 @@ def import_role(task_id):
         fail_import_task(None, u"Failed to get task id: %d" % int(task_id))
 
     try:
-        role = Role.objects.get(id=import_task.role.id)
+        role = Content.objects.get(id=import_task.role.id)
     except:
         fail_import_task(import_task, u"Failed to get role for task id: %d" % int(task_id))
 
@@ -681,16 +681,16 @@ def import_role(task_id):
     elif container_yml:
         add_message(import_task, u"INFO", u"Found meta/container.yml")
         add_message(import_task, u"INFO", u"Setting role type to Container")
-        role.role_type = Role.CONTAINER
+        role.role_type = Content.CONTAINER
         role.container_yml = container_yml
     elif ansible_container_yml:
         add_message(import_task, u"INFO", u"Found container.yml")
         add_message(import_task, u"INFO", u"Setting role type to Container App")
-        role.role_type = Role.CONTAINER_APP
+        role.role_type = Content.CONTAINER_APP
         role.container_yml = ansible_container_yml
     elif galaxy_info.get('demo', False):
         add_message(import_task, u"INFO", u"Setting role type to Demo")
-        role.role_type = Role.DEMO
+        role.role_type = Content.DEMO
     else:
         role.role_type = role.ANSIBLE
         role.container_yml = None
@@ -788,7 +788,7 @@ def import_role(task_id):
     try:
         git_tag_list = repo.get_tags()
         for tag in git_tag_list:
-            rv, created = RoleVersion.objects.get_or_create(name=tag.name, role=role)
+            rv, created = ContentVersion.objects.get_or_create(name=tag.name, role=role)
             rv.release_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
             rv.save()
     except Exception as exc:
@@ -812,7 +812,7 @@ def import_role(task_id):
         if remove_versions:
             try:
                 for version_name in remove_versions:
-                    RoleVersion.objects.filter(name=version_name, role=role).delete()
+                    ContentVersion.objects.filter(name=version_name, role=role).delete()
             except Exception as exc:
                 fail_import_task(import_task, u"Error removing tags from role: %s" % unicode(exc))
     try:
@@ -926,7 +926,7 @@ def refresh_user_stars(user, token):
     user.subscriptions.all().delete()
     for s in subscriptions:
         name = s.full_name.split('/')
-        cnt = Role.objects.filter(
+        cnt = Content.objects.filter(
             repository__github_user=name[0],
             repository__github_repo=name[1]).count()
         if cnt > 0:
@@ -957,10 +957,10 @@ def refresh_user_stars(user, token):
 
     for github_user, github_repo in to_add:
         try:
-            role = Role.objects.get(
+            role = Content.objects.get(
                 repository__github_user=github_user,
                 repository__github_repo=github_repo)
-        except Role.DoesNotExist:
+        except Content.DoesNotExist:
             continue
         user.starred.create(role=role)
 
@@ -976,7 +976,7 @@ def refresh_role_counts(start, end, token, tracker):
     failed = 0
     deleted = 0
     updated = 0
-    for role in Role.objects.filter(is_valid=True, active=True, id__gt=start, id__lte=end):
+    for role in Content.objects.filter(is_valid=True, active=True, id__gt=start, id__lte=end):
         full_name = "%s/%s" % (role.github_user, role.github_repo)
         try:
             repo = get_repo_raw(token, full_name)
