@@ -1366,7 +1366,7 @@ class RemoveRole(APIView):
 
         # Update the repository cache
         repo = Repository.objects.filter(
-                github_user=gh_user, github_repo=gh_repo).first()
+            github_user=gh_user, github_repo=gh_repo).first()
         if repo:
             repo.is_enabled = False
             repo.save()
