@@ -108,6 +108,7 @@ from galaxy.main.models import (Platform,
                                 Category,
                                 Tag,
                                 Content,
+                                ContentType,
                                 ImportTask,
                                 ContentVersion,
                                 NotificationSecret,
@@ -436,6 +437,8 @@ class ImportTaskList(ListCreateAPIView):
                 defaults={'is_enabled': False}
             )
             role, created = Content.objects.get_or_create(
+                # FIXME(cutwater): Use in-memory cache for content types
+                content_type=ContentType.get(ContentType.ROLE),
                 repository=repository,
                 active=True,
                 defaults={
@@ -962,7 +965,10 @@ class NotificationList(ListCreateAPIView):
                 github_repo=github_repo,
                 defaults={'is_enabled': False}
             )
+
             role, created = Content.objects.get_or_create(
+                # FIXME(cutwater): Use in-memory cache for content types
+                content_type=ContentType.get(ContentType.ROLE),
                 repository=repository,
                 active=True,
                 defaults={

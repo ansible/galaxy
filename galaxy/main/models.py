@@ -30,7 +30,7 @@ __all__ = [
     'PrimordialModel', 'Platform', 'CloudPlatform', 'Category', 'Tag',
     'Content', 'ImportTask', 'ImportTaskMessage', 'ContentVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
-    'Subscription', 'Stargazer', 'Namespace', 'ContentBlock'
+    'Subscription', 'Stargazer', 'Namespace', 'ContentBlock', 'ContentType'
 ]
 
 
@@ -235,12 +235,38 @@ class Video(PrimordialModel):
     role.help_text = ""
 
 
+class ContentType(BaseModel):
+    """A model that represents content type (e.g. role, module, etc.)."""
+    ROLE = 'role'
+    MODULE = 'module'
+    ACTION_PLUGIN = 'action_plugin'
+    CACHE_PLUGIN = 'cache_plugin'
+    CALLBACK_PLUGIN = 'callback_plugin'
+    CLICONF_PLUGIN = 'cliconf_plugin'
+    CONNECTION_PLUGIN = 'connection_plugin'
+    FILTER_PLUGIN = 'filter_plugin'
+    INVENTORY_PLUGIN = 'inventory_plugin'
+    LOOKUP_PLUGIN = 'lookup_plugin'
+    NETCONF_PLUGIN = 'netconf_plugin'
+    SHELL_PLUGIN = 'shell_plugin'
+    STRATEGY_PLUGIN = 'strategy_plugin'
+    TERMINAL_PLUGIN = 'terminal_plugin'
+    TEST_PLUGIN = 'test_plugin'
+
+    name = models.CharField(max_length=512, unique=True, db_index=True)
+    description = TruncatingCharField(max_length=255, blank=True, default='')
+
+    @classmethod
+    def get(cls, content_type):
+        return cls.objects.get(name=content_type.value)
+
+
 class Content(CommonModelNameNotUnique):
     """A class representing a user role."""
 
     class Meta:
         unique_together = [
-            ('namespace', 'name')
+            ('content_type', 'namespace', 'name')
         ]
         ordering = ['namespace', 'name']
 
@@ -293,6 +319,13 @@ class Content(CommonModelNameNotUnique):
         related_name='role',
         editable=False,
         on_delete=models.PROTECT
+    )
+
+    content_type = models.ForeignKey(
+        'ContentType',
+        related_name='content_objects',
+        editable=False,
+        on_delete=models.PROTECT,
     )
 
     # Regular fields
