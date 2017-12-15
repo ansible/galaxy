@@ -63,7 +63,7 @@ namespace_id = (
 )
 """
 
-NAMESPACE_OWNERS = """
+ADD_NAMESPACE_OWNERS = """
 INSERT INTO main_namespace_owners
 ( customuser_id, namespace_id)
 SELECT u.id, n.id
@@ -76,12 +76,11 @@ INSERT INTO main_provider (created, modified, description, name, original_name, 
 VALUES (CURRENT_DATE, CURRENT_DATE, 'Public GitHub', 'GitHub', 'GitHub', true)
 """
 
-
 class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('main', '0061_role_repo_ref'),
+        ('main', '0064_rename_role'),
     ]
 
     operations = [
@@ -161,29 +160,13 @@ class Migration(migrations.Migration):
         ),
 
         migrations.RunSQL(
-            sql=ADD_REPO_GITHUB_USERS,
-            reverse_sql=migrations.RunSQL.noop
+            sql=(
+              ADD_GITHUB_PROVIDER,
+              ADD_REPO_GITHUB_USERS,
+              ADD_ROLE_NAMESPACE,
+              NAMESPACE_FROM_PROVIDER_NAMESPACE,
+              SET_PROVIDER_NAMESPACE_FK,
+              ADD_NAMESPACE_OWNERS
+            )
         ),
-
-        migrations.RunSQL(
-            sql=ADD_ROLE_NAMESPACE,
-            reverse_sql=migrations.RunSQL.noop
-        ),
-
-        migrations.RunSQL(
-            sql=NAMESPACE_FROM_PROVIDER_NAMESPACE,
-            reverse_sql=migrations.RunSQL.noop
-        ),
-        migrations.RunSQL(
-            sql=ADD_GITHUB_PROVIDER,
-            reverse_sql=migrations.RunSQL.noop
-        ),
-        migrations.RunSQL(
-            sql=SET_PROVIDER_NAMESPACE_FK,
-            reverse_sql=migrations.RunSQL.noop
-        ),
-        migrations.RunSQL(
-            sql=NAMESPACE_OWNERS,
-            reverse_sql=migrations.RunSQL.noop
-        )
     ]
