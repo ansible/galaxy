@@ -107,9 +107,9 @@ from galaxy.main.models import (Platform,
                                 CloudPlatform,
                                 Category,
                                 Tag,
-                                Role,
+                                Content,
                                 ImportTask,
-                                RoleVersion,
+                                ContentVersion,
                                 NotificationSecret,
                                 Notification,
                                 Repository,
@@ -213,7 +213,7 @@ class RoleTypes(APIView):
     view_name = 'Role Types'
 
     def get(self, request, format=None):
-        roles = [role for role in Role.ROLE_TYPE_CHOICES
+        roles = [role for role in Content.ROLE_TYPE_CHOICES
                  if role[0] in settings.ROLE_TYPES_ENABLED]
         return Response(roles)
 
@@ -298,9 +298,9 @@ class CloudPlatformDetail(RetrieveAPIView):
 
 
 class RoleDependenciesList(SubListAPIView):
-    model = Role
+    model = Content
     serializer_class = RoleDetailSerializer
-    parent_model = Role
+    parent_model = Content
     relationship = 'dependencies'
 
     def get_queryset(self):
@@ -311,7 +311,7 @@ class RoleDependenciesList(SubListAPIView):
 class RoleUsersList(SubListAPIView):
     model = User
     serializer_class = UserDetailSerializer
-    parent_model = Role
+    parent_model = Content
     relationship = 'created_by'
 
     def get_queryset(self):
@@ -322,35 +322,35 @@ class RoleUsersList(SubListAPIView):
 class RoleNotificationList(SubListAPIView):
     model = Notification
     serializer_class = NotificationSerializer
-    parent_model = Role
+    parent_model = Content
     relationship = 'notifications'
 
 
 class RoleImportTaskList(SubListAPIView):
     model = ImportTask
     serializer_class = ImportTaskSerializer
-    parent_model = Role
+    parent_model = Content
     relationship = 'import_tasks'
 
 
 class RoleVersionsList(SubListAPIView):
-    model = RoleVersion
+    model = ContentVersion
     serializer_class = RoleVersionSerializer
-    parent_model = Role
+    parent_model = Content
     relationship = 'versions'
 
 
 class RoleDownloads(APIView):
 
     def post(self, request, pk):
-        obj = get_object_or_404(Role, pk=pk)
+        obj = get_object_or_404(Content, pk=pk)
         obj.download_count += 1
         obj.save()
         return Response(status=status.HTTP_201_CREATED)
 
 
 class RoleList(ListAPIView):
-    model = Role
+    model = Content
     serializer_class = RoleListSerializer
     throttle_scope = 'download_count'
 
@@ -379,7 +379,7 @@ class RoleList(ListAPIView):
 
 
 class RoleDetail(RetrieveAPIView):
-    model = Role
+    model = Content
     serializer_class = RoleDetailSerializer
 
     def get_object(self, qs=None):
@@ -413,12 +413,12 @@ class ImportTaskList(ListCreateAPIView):
                        "and github_repo."))
 
         response = dict(results=[])
-        if Role.objects.filter(
+        if Content.objects.filter(
                 repository__github_user=github_user,
                 repository__github_repo=github_repo,
                 active=True).count() > 1:
             # multiple roles match github_user/github_repo
-            for role in Role.objects.filter(
+            for role in Content.objects.filter(
                     repository__github_user=github_user,
                     repository__github_repo=github_repo,
                     active=True):
@@ -435,7 +435,7 @@ class ImportTaskList(ListCreateAPIView):
                 github_repo=github_repo,
                 defaults={'is_enabled': False}
             )
-            role, created = Role.objects.get_or_create(
+            role, created = Content.objects.get_or_create(
                 repository=repository,
                 active=True,
                 defaults={
@@ -487,7 +487,7 @@ class UserRepositoriesList(SubListAPIView):
 
 
 class UserRolesList(SubListAPIView):
-    model = Role
+    model = Content
     serializer_class = RoleDetailSerializer
     parent_model = User
     relationship = 'roles'
@@ -566,11 +566,12 @@ class StargazerList(ListCreateAPIView):
                 "for {0}/{1}. {2} - {3}".format(github_user, github_repo, e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
-        role = Role.objects.get(
+        role = Content.objects.get(
             repository__github_user=github_user,
             repository__github_repo=github_repo)
         star = role.stars.create(owner=request.user)
-        role.stargazers_count = gh_repo.stargazers_count + 1
+        role.repository.stargazers_count = gh_repo.stargazers_count + 1
+        role.repository.save()
         role.save()
 
         return Response(dict(
@@ -628,10 +629,10 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
 
         obj.delete()
 
-        role = Role.objects.get(repository__github_user=obj.role.github_user,
-                                repository__github_repo=obj.role.github_repo)
-        role.stargazers_count = max(0, gh_repo.stargazers_count - 1)
-        role.save()
+        repo = Repository.objects.get(github_user=obj.role.github_user,
+                                      github_repo=obj.role.github_repo)
+        repo.stargazers_count = max(0, gh_repo.stargazers_count - 1)
+        repo.save()
 
         return Response(status=status.HTTP_202_ACCEPTED)
 
@@ -699,11 +700,10 @@ class SubscriptionList(ListCreateAPIView):
         for s in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        for role in Role.objects.filter(
-                repository__github_user=github_user,
-                repository__github_repo=github_repo):
-            role.watchers_count = sub_count
-            role.save()
+        repo = Repository.objects.get(github_user=github_user,
+                                      github_repo=github_repo)
+        repo.watchers_count = sub_count
+        repo.save()
 
         return Response(dict(
             result=dict(
@@ -768,11 +768,10 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
         for sub in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        for role in Role.objects.filter(
-                repository__github_user=obj.github_user,
-                repository__github_repo=obj.github_repo):
-            role.watchers_count = sub_count
-            role.save()
+        repo = Repository.objects.get(github_user=obj.github_user,
+                                      github_repo=obj.github_repo)
+        repo.watchers_count = sub_count
+        repo.save()
 
         result = "unsubscribed {0} from {1}/{2}.".format(request.user.github_user,
                                                          obj.github_user,
@@ -929,12 +928,12 @@ class NotificationList(ListCreateAPIView):
         )
 
         # FIXME(cutwater): Pair of github_user and github_repo is now unique
-        if Role.objects.filter(
+        if Content.objects.filter(
                 repository__github_user=github_user,
                 repository__github_repo=github_repo,
                 active=True).count() > 1:
             # multiple roles associated with github_user/github_repo
-            for role in Role.objects.filter(
+            for role in Content.objects.filter(
                     repository__github_user=github_user,
                     repository__github_repo=github_repo,
                     active=True):
@@ -963,7 +962,7 @@ class NotificationList(ListCreateAPIView):
                 github_repo=github_repo,
                 defaults={'is_enabled': False}
             )
-            role, created = Role.objects.get_or_create(
+            role, created = Content.objects.get_or_create(
                 repository=repository,
                 active=True,
                 defaults={
@@ -1042,7 +1041,7 @@ class NotificationDetail(RetrieveAPIView):
 
 
 class NotificationRolesList(SubListAPIView):
-    model = Role
+    model = Content
     serializer_class = RoleDetailSerializer
     parent_model = Notification
     relationship = 'roles'
@@ -1100,11 +1099,11 @@ class UserList(ListAPIView):
 
 
 class TopContributorsList(ListAPIView):
-    model = Role
+    model = Content
     serializer_class = TopContributorsSerializer
 
     def list(self, request, *args, **kwargs):
-        qs = Role.objects.values('namespace').annotate(count=Count('id')).order_by('-count', 'namespace')
+        qs = Content.objects.values('namespace').annotate(count=Count('id')).order_by('-count', 'namespace')
         page = self.paginate_queryset(qs)
         if page is not None:
             serializer = self.get_pagination_serializer(page)
@@ -1127,7 +1126,7 @@ class UserMeList(RetrieveAPIView):
 
 
 class RoleSearchView(HaystackViewSet):
-    index_models = [Role]
+    index_models = [Content]
     serializer_class = RoleSearchSerializer
     url_path = ''
     lookup_sep = ','
@@ -1336,7 +1335,7 @@ class RemoveRole(APIView):
             ('status', '')
         ])
 
-        roles = Role.objects.filter(
+        roles = Content.objects.filter(
             repository__github_user=gh_user,
             repository__github_repo=gh_repo)
         cnt = len(roles)
@@ -1367,12 +1366,12 @@ class RemoveRole(APIView):
 
         # Update the repository cache
         repo = Repository.objects.filter(
-                github_user=gh_user, github_repo=gh_repo).first()
+            github_user=gh_user, github_repo=gh_repo).first()
         if repo:
             repo.is_enabled = False
             repo.save()
 
-        Role.objects.filter(
+        Content.objects.filter(
             repository__github_user=gh_user,
             repository__github_repo=gh_repo
         ).delete()

@@ -28,7 +28,7 @@ from galaxy.main.mixins import DirtyMixin
 
 __all__ = [
     'PrimordialModel', 'Platform', 'CloudPlatform', 'Category', 'Tag',
-    'Role', 'ImportTask', 'ImportTaskMessage', 'RoleVersion',
+    'Content', 'ImportTask', 'ImportTaskMessage', 'ContentVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
     'Subscription', 'Stargazer', 'Namespace', 'ContentBlock'
 ]
@@ -227,7 +227,7 @@ class Video(PrimordialModel):
     url.help_text = ""
 
     role = models.ForeignKey(
-        'Role',
+        'Content',
         related_name='videos',
         on_delete=models.CASCADE,
         null=True
@@ -235,7 +235,7 @@ class Video(PrimordialModel):
     role.help_text = ""
 
 
-class Role(CommonModelNameNotUnique):
+class Content(CommonModelNameNotUnique):
     """A class representing a user role."""
 
     class Meta:
@@ -248,7 +248,7 @@ class Role(CommonModelNameNotUnique):
     # -------------------------------------------------------------------------
 
     dependencies = models.ManyToManyField(
-        'Role',
+        'Content',
         related_name='+',
         blank=True,
         editable=False,
@@ -409,50 +409,6 @@ class Role(CommonModelNameNotUnique):
         default=0
     )
 
-    # GitHub repo attributes
-    stargazers_count = models.IntegerField(
-        default=0
-    )
-    watchers_count = models.IntegerField(
-        default=0
-    )
-    forks_count = models.IntegerField(
-        default=0
-    )
-    open_issues_count = models.IntegerField(
-        default=0
-    )
-    commit = models.CharField(
-        max_length=256,
-        blank=True
-    )
-    commit_message = models.CharField(
-        max_length=256,
-        blank=True
-    )
-    commit_url = models.CharField(
-        max_length=256,
-        blank=True
-    )
-    commit_created = models.DateTimeField(
-        null=True,
-        verbose_name="Laste Commit DateTime"
-    )
-
-    # Fields calculated by a celery task or signal, not set
-    # -------------------------------------------------------------------------
-
-    bayesian_score = models.FloatField(
-        default=0.0,
-        editable=False,
-    )
-    num_ratings = models.IntegerField(
-        default=0,
-    )
-    average_score = models.FloatField(
-        default=0.0,
-    )
-
     # Other functions and properties
     # -------------------------------------------------------------------------
 
@@ -466,6 +422,39 @@ class Role(CommonModelNameNotUnique):
     @property
     def github_repo(self):
         return self.repository.github_repo
+
+    # GitHub repo attributes
+    @property
+    def stargazers_count(self):
+        return self.repository.stargazers_count
+
+    @property
+    def watchers_count(self):
+        return self.repository.watchers_count
+
+    @property
+    def forks_count(self):
+        return self.repository.forks_count
+
+    @property
+    def open_issues_count(self):
+        return self.repository.open_issues_count
+
+    @property
+    def commit(self):
+        return self.repository.commit
+
+    @property
+    def commit_message(self):
+        return self.repository.commit_message
+
+    @property
+    def commit_url(self):
+        return self.repository.commit_url
+
+    @property
+    def commit_created(self):
+        return self.repository.commit_created
 
     def get_last_import(self):
         try:
@@ -499,7 +488,7 @@ class Role(CommonModelNameNotUnique):
         for field in self._meta.get_fields():
             if not field.is_relation and field.get_internal_type() == 'CharField':
                 if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
-                    raise Exception("Role %s value exceeeds max length of %s." % (field.name, field.max_length))
+                    raise Exception("Content %s value exceeeds max length of %s." % (field.name, field.max_length))
 
 
 class Namespace(PrimordialModel):
@@ -554,15 +543,15 @@ class Namespace(PrimordialModel):
     )
 
 
-class RoleVersion(CommonModelNameNotUnique):
+class ContentVersion(CommonModelNameNotUnique):
     class Meta:
         ordering = ('-loose_version',)
 
     # Foreign keys
     # -------------------------------------------------------------------------
 
-    role = models.ForeignKey(
-        Role,
+    content = models.ForeignKey(
+        Content,
         related_name='versions',
     )
 
@@ -582,13 +571,14 @@ class RoleVersion(CommonModelNameNotUnique):
     # -------------------------------------------------------------------------
 
     def __unicode__(self):
-        return "%s.%s-%s" % (self.role.namespace, self.role.name, self.name)
+        return "%s.%s-%s" % (self.content.namespace,
+                             self.content.name, self.name)
 
     def save(self, *args, **kwargs):
         # the value of score is based on the
         # values in the other rating fields
         self.loose_version = self.name
-        super(RoleVersion, self).save(*args, **kwargs)
+        super(ContentVersion, self).save(*args, **kwargs)
 
 
 class ImportTask(PrimordialModel):
@@ -612,7 +602,7 @@ class ImportTask(PrimordialModel):
         default=''
     )
     role = models.ForeignKey(
-        Role,
+        Content,
         related_name='import_tasks',
         db_index=True,
     )
@@ -795,7 +785,7 @@ class Notification(PrimordialModel):
         blank=True
     )
     roles = models.ManyToManyField(
-        Role,
+        Content,
         related_name='notifications',
         verbose_name='Roles',
         editable=False
@@ -835,6 +825,17 @@ class Repository(BaseModel):
     )
     is_enabled = models.BooleanField(default=False)
 
+    # Repository attributes
+    commit = models.CharField(max_length=256, blank=True, default='')
+    commit_message = models.CharField(max_length=256, blank=True, default='')
+    commit_url = models.CharField(max_length=256, blank=True, default='')
+    commit_created = models.DateTimeField(
+        null=True, verbose_name="Laste Commit DateTime")
+    stargazers_count = models.IntegerField(default=0)
+    watchers_count = models.IntegerField(default=0)
+    forks_count = models.IntegerField(default=0)
+    open_issues_count = models.IntegerField(default=0)
+
 
 class Subscription (PrimordialModel):
     class Meta:
@@ -865,7 +866,7 @@ class Stargazer(PrimordialModel):
     )
 
     role = models.ForeignKey(
-        Role,
+        Content,
         related_name='stars')
 
 

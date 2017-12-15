@@ -28,7 +28,7 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 # local stuff
-from galaxy.main.models import Role, Namespace, ContentBlock
+from galaxy.main.models import Content, Namespace, ContentBlock
 
 # rst2html5-tools
 from html5css3 import Writer
@@ -232,7 +232,7 @@ def detail_category(request, category=None, page=1):
         ]
     context["use_menu_controller"] = True
     context["load_angular"] = True
-    context["page_title"] = "Role Details"
+    context["page_title"] = "Content Details"
     return render_to_response('list_category.html', context)
 
 
@@ -252,7 +252,7 @@ def handle_500_view(request):
 
 
 class NamespaceListView(ListView):
-    model = 'Role'
+    model = 'Content'
     template_name = 'namespace_list.html'
     context_object_name = 'namespaces'
     paginate_by = 20
@@ -260,9 +260,9 @@ class NamespaceListView(ListView):
     def get_queryset(self):
         author = self.request.GET.get('author')
         if author:
-            qs = Role.objects.filter(active=True, is_valid=True, namespace__icontains=author).order_by('namespace').distinct('namespace')
+            qs = Content.objects.filter(active=True, is_valid=True, namespace__icontains=author).order_by('namespace').distinct('namespace')
         else:
-            qs = Role.objects.filter(active=True, is_valid=True).order_by('namespace').distinct('namespace')
+            qs = Content.objects.filter(active=True, is_valid=True).order_by('namespace').distinct('namespace')
         return qs
 
     def get_context_data(self, **kwargs):
@@ -297,13 +297,13 @@ class RoleListView(ListView):
     def get_queryset(self):
         self.namespace = self.args[0]
         name = self.request.GET.get('role', None)
-        if Role.objects.filter(namespace=self.args[0]).count() == 0:
+        if Content.objects.filter(namespace=self.args[0]).count() == 0:
             raise Http404()
         if name:
-            qs = Role.objects.filter(active=True, is_valid=True, namespace=self.args[0],
-                                     name__icontains=name)
+            qs = Content.objects.filter(active=True, is_valid=True, namespace=self.args[0],
+                                        name__icontains=name)
         else:
-            qs = Role.objects.filter(active=True, is_valid=True, namespace=self.args[0])
+            qs = Content.objects.filter(active=True, is_valid=True, namespace=self.args[0])
         return qs
 
     def get_context_data(self, **kwargs):
@@ -343,12 +343,15 @@ class RoleListView(ListView):
 
 class RoleDetailView(DetailView):
     template_name = 'role_detail.html'
-    context_obj_name = 'role'
+    model = Content
+    context_object_name = 'role'
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         self.namespace = self.args[0]
         self.name = self.args[1]
-        self.role = get_object_or_404(Role, namespace=self.namespace, name=self.name, active=True, is_valid=True)
+        self.role = get_object_or_404(Content, namespace=self.namespace,
+                                      name=self.name, active=True,
+                                      is_valid=True)
         return self.role
 
     def get_context_data(self, **kwargs):
@@ -373,7 +376,7 @@ class RoleDetailView(DetailView):
         context['name'] = self.name
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False
-        context["meta_description"] = "Role %s.%s - %s" % (self.role.namespace, self.role.name, self.role.description)
+        context["meta_description"] = "Content %s.%s - %s" % (self.role.namespace, self.role.name, self.role.description)
 
         try:
             gh_user = User.objects.get(github_user=self.role.github_user)
@@ -413,14 +416,14 @@ class RoleDetailView(DetailView):
                 'state': imp_task.state
             })
 
-        for type in Role.ROLE_TYPE_CHOICES:
+        for type in Content.ROLE_TYPE_CHOICES:
             if type[0] == role.role_type:
                 context['role_type'] = type[1]
-        if role.role_type == Role.ANSIBLE:
+        if role.role_type == Content.ANSIBLE:
             context['install_command'] = 'ansible-galaxy install'
-        elif role.role_type == Role.CONTAINER:
+        elif role.role_type == Content.CONTAINER:
             context['install_command'] = 'ansible-container install'
-        elif role.role_type == Role.CONTAINER_APP:
+        elif role.role_type == Content.CONTAINER_APP:
             context['install_command'] = 'ansible-container init'
         context['versions'] = []
         for ver in role.versions.all().order_by('-release_date'):
