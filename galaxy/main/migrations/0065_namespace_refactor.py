@@ -9,8 +9,10 @@ import galaxy.main.fields
 
 COPY_NAMESPACE_DATA = """
 INSERT INTO main_providernamespace (
-description, created, modified, active, name, display_name, avatar_url, location, company, email, html_url) 
-SELECT description, created, modified, active, a.namespace, name, avatar_url, location, company, email, html_url
+description, created, modified, active, name, display_name, avatar_url, location,
+company, email, html_url, followers) 
+SELECT description, created, modified, active, a.namespace, name, avatar_url, location,
+company, email, html_url, followers
 FROM main_namespace as a INNER JOIN
   (SELECT namespace, min(id) as id
    FROM main_namespace
@@ -117,8 +119,11 @@ class Migration(migrations.Migration):
                 ('company', models.CharField(max_length=256, null=True, verbose_name=b'Company', blank=True)),
                 ('email', models.CharField(max_length=256, null=True, verbose_name=b'Email', blank=True)),
                 ('html_url', models.CharField(max_length=256, null=True, verbose_name=b'Web Site', blank=True)),
-                ('namespace', models.ForeignKey(related_name='provider_namespaces', editable=False, to='main.Namespace', null=True, verbose_name=b'Namespace')),
-                ('provider', models.ForeignKey(related_name='provider_namespaces', verbose_name=b'Provider', to='main.Provider', null=True)),
+                ('followers', models.IntegerField(null=True, editable=False, verbose_name="Followers")),
+                ('namespace', models.ForeignKey(related_name='provider_namespaces', editable=False, to='main.Namespace',
+                                                null=True, verbose_name=b'Namespace')),
+                ('provider', models.ForeignKey(related_name='provider_namespaces', verbose_name=b'Provider',
+                                               to='main.Provider', null=True)),
             ],
             options={
                 'ordering': ('provider', 'name',),
