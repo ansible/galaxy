@@ -108,6 +108,7 @@ from galaxy.main.models import (Platform,
                                 Category,
                                 Tag,
                                 Content,
+                                ContentType,
                                 ImportTask,
                                 ContentVersion,
                                 NotificationSecret,
@@ -436,6 +437,8 @@ class ImportTaskList(ListCreateAPIView):
                 defaults={'is_enabled': False}
             )
             role, created = Content.objects.get_or_create(
+                # FIXME(cutwater): Use in-memory cache for content types
+                content_type=ContentType.get(ContentType.ROLE),
                 repository=repository,
                 active=True,
                 defaults={
@@ -566,20 +569,18 @@ class StargazerList(ListCreateAPIView):
                 "for {0}/{1}. {2} - {3}".format(github_user, github_repo, e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
-        role = Content.objects.get(
-            repository__github_user=github_user,
-            repository__github_repo=github_repo)
-        star = role.stars.create(owner=request.user)
-        role.repository.stargazers_count = gh_repo.stargazers_count + 1
-        role.repository.save()
-        role.save()
+        repo = Repository.objects.get(github_user=github_user,
+                                      github_repo=github_repo)
+        star = repo.stars.create(owner=request.user)
+        repo.stargazers_count = gh_repo.stargazers_count + 1
+        repo.save()
 
         return Response(dict(
             result=dict(
                 id=star.id,
-                github_user=role.github_user,
-                github_repo=role.github_repo,
-                stargazers_count=role.stargazers_count)),
+                github_user=repo.github_user,
+                github_repo=repo.github_repo,
+                stargazers_count=repo.stargazers_count)),
             status=status.HTTP_201_CREATED)
 
 
@@ -962,7 +963,10 @@ class NotificationList(ListCreateAPIView):
                 github_repo=github_repo,
                 defaults={'is_enabled': False}
             )
+
             role, created = Content.objects.get_or_create(
+                # FIXME(cutwater): Use in-memory cache for content types
+                content_type=ContentType.get(ContentType.ROLE),
                 repository=repository,
                 active=True,
                 defaults={

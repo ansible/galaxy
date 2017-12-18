@@ -129,9 +129,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     def get_starred(self):
         return [{
             'id': g.id,
-            'github_user': g.role.github_user,
-            'github_repo': g.role.github_repo,
-        } for g in self.starred.select_related('role').all()]
+            'github_user': g.repository.github_user,
+            'github_repo': g.repository.github_repo,
+        } for g in self.starred.select_related('repository').all()]
 
     def get_subscriber(self, github_user, github_repo):
         try:
@@ -142,8 +142,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
 
     def get_stargazer(self, github_user, github_repo):
         try:
-            star = self.starred.get(role__repository__github_user=github_user,
-                                    role__repository__github_repo=github_repo)
+            star = self.starred.get(repository__github_user=github_user,
+                                    repository__github_repo=github_repo)
             return star
         except exceptions.ObjectDoesNotExist:
             return None
