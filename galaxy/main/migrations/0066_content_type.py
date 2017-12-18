@@ -38,7 +38,7 @@ UPDATE main_content SET content_type_id = (
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0064_rename_role'),
+        ('main', '0065_namespace_refactor'),
     ]
 
     operations = [

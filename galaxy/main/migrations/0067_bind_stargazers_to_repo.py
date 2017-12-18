@@ -20,7 +20,7 @@ WHERE s.repository_id = c.repository_id
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0065_content_type'),
+        ('main', '0066_content_type'),
     ]
 
     operations = [
