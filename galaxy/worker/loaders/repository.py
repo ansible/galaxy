@@ -49,13 +49,14 @@ class RepositoryLoader(object):
         ('message', '%B'),
     ]
 
-    def __init__(self, path, name=None):
+    def __init__(self, path, name=None, logger=None):
         """
         :param str path: Path to the repository directory.
         """
         self.path = path
         self.name = name
         self.metadata = None
+        self.log = logger or None
 
         self._current_branch = None
         self._last_commit = None
@@ -92,10 +93,10 @@ class RepositoryLoader(object):
         return self._current_branch
 
     @classmethod
-    def from_remote(cls, remote_url, clone_dir, name, branch=None):
+    def from_remote(cls, remote_url, clone_dir, name, branch=None, logger=None):
         utils.clone_repository(
             remote_url, directory=clone_dir, branch=branch)
-        return cls(path=clone_dir, name=name)
+        return cls(path=clone_dir, name=name, logger=logger)
 
     def load(self):
         meta_loaders = self._find_from_metadata()
@@ -111,12 +112,12 @@ class RepositoryLoader(object):
             "Cannot load content from repository.")
 
     def _find_from_metadata(self):
-        LOG.debug('Content search - Looking for {0}'
-                  .format(self.REPO_META_FILENAME))
+        self.log.debug('Content search - Looking for {0}'
+                       .format(self.REPO_META_FILENAME))
         metadata_file = os.path.join(self.path, self.REPO_META_FILENAME)
         if not os.path.exists(metadata_file):
-            LOG.debug('Content search - File {0} not found'
-                      .format(self.REPO_META_FILENAME))
+            self.log.debug('Content search - File {0} not found'
+                           .format(self.REPO_META_FILENAME))
             return None
         with open(metadata_file) as fp:
             self.metadata = yaml.safe_load(fp)
@@ -126,21 +127,24 @@ class RepositoryLoader(object):
             for content in self.metadata[name]:
                 path = content['path'].rstrip('/')
                 for path in glob.glob(path):
-                    loaders.append(loader_cls(path))
+                    loaders.append(loader_cls(path, logger=self.log))
         return loaders
 
     def _find_toplevel_role(self):
-        LOG.debug('Content search - Looking for top level role metadata file')
+        self.log.debug(
+            'Content search - Looking for top level role metadata file')
         for meta_file in self.ROLE_META_FILES:
             if os.path.exists(os.path.join(self.path, meta_file)):
                 return role_loader.RoleLoader(
                     path=self.path,
                     name=self.name,
-                    meta_file=meta_file)
+                    meta_file=meta_file,
+                    logger=self.log)
         return None
 
     def _find_from_repository(self):
-        LOG.debug('Content search - Analyzing repository structure')
+        self.log.debug(
+            'Content search - Analyzing repository structure')
         loaders = []
         for loader_name, loader_cls in self.REPO_LOADERS:
             contents_path = os.path.join(self.path, loader_name)
@@ -152,5 +156,5 @@ class RepositoryLoader(object):
                 if not os.path.isdir(filename):
                     continue
 
-                loaders.append(loader_cls(path=filename))
+                loaders.append(loader_cls(path=filename, logger=self.log))
         return loaders

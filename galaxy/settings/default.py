@@ -20,6 +20,7 @@ import os
 
 import djcelery
 
+
 djcelery.setup_loader()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
@@ -366,6 +367,11 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
+        },
+        'import_task': {
+            'level': 'DEBUG',
+            'class': 'galaxy.worker.logging.ImportTaskHandler',
+            'formatter': 'simple',
         }
     },
 
@@ -402,6 +408,11 @@ LOGGING = {
         },
         'galaxy.worker': {
             'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'galaxy.worker.tasks.import_repository': {
+            'handlers': ['import_task'],
             'level': 'DEBUG',
             'propagate': True,
         },

@@ -97,7 +97,7 @@ from .base_views import (APIView,
                          RetrieveUpdateDestroyAPIView)
 
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
-from galaxy.main.celerytasks.tasks import import_role, update_user_repos, refresh_existing_user_repos
+from galaxy.main.celerytasks.tasks import import_repository, update_user_repos, refresh_existing_user_repos
 from galaxy.main.models import (Platform,
                                 CloudPlatform,
                                 Category,
@@ -200,18 +200,19 @@ def filter_rating_queryset(qs):
 
 
 def create_import_task(
-        github_branch, repository, user,
-        travis_status_url='', travis_build_url='', alternate_role_name=None):
+        repository, user,
+        import_branch=None, repository_alt_name=None,
+        travis_status_url='', travis_build_url=''):
     task = ImportTask.objects.create(
-        github_reference=github_branch,
-        alternate_role_name=alternate_role_name,
-        travis_status_url=travis_status_url,
-        travis_build_url=travis_build_url,
         repository=repository,
         owner=user,
+        import_branch=import_branch,
+        repository_alt_name=repository_alt_name,
+        travis_status_url=travis_status_url,
+        travis_build_url=travis_build_url,
         state=ImportTask.STATE_PENDING
     )
-    import_role.delay(task.id)
+    import_repository.delay(task.id)
     return task
 
 # --------------------------------------------------------------------------------
@@ -449,46 +450,29 @@ class ImportTaskList(ListCreateAPIView):
         github_reference = request.data.get('github_reference', '')
         alternate_role_name = request.data.get('alternate_role_name', None)
 
-        name = alternate_role_name if alternate_role_name else github_repo
-
         if not github_user or not github_repo:
-            # FIXME(cutwater): Why dict is needed?
             raise ValidationError(dict(
                 detail="Invalid request. Expecting github_user "
                        "and github_repo."))
 
-        response = dict(results=[])
-        provider_namespace = ProviderNamespace.objects.get(
+        namespace = ProviderNamespace.objects.get(
             provider__name=constants.PROVIDER_GITHUB,
             name=github_user
         )
-        repository, _ = Repository.objects.get_or_create(
-            provider_namespace=provider_namespace,
+        repository, created = Repository.objects.get_or_create(
+            provider_namespace=namespace,
             name=github_repo,
-            defaults={
-                'is_enabled': False,
-                'original_name': github_repo,
-            }
-        )
-        role, _ = Content.objects.get_or_create(
-            # FIXME(cutwater): Use in-memory cache for content types
-            content_type=ContentType.get(constants.ContentType.ROLE),
-            repository=repository,
-            active=True,
-            defaults={
-                'namespace': provider_namespace.namespace,
-                'name': name,
-                'original_name': name,
-                'is_valid': False,
-            }
+            defaults={'is_enabled': False,
+                      'original_name': github_repo}
         )
         task = create_import_task(
-            github_reference, repository, request.user,
-            travis_status_url='', travis_build_url='',
-            alternate_role_name=alternate_role_name)
+            repository, request.user,
+            import_branch=github_reference,
+            repository_alt_name=alternate_role_name)
         serializer = self.get_serializer(instance=task)
-        response['results'].append(serializer.data)
-        return Response(response, status=status.HTTP_201_CREATED,
+        response = {'results': [serializer.data]}
+        return Response(response,
+                        status=status.HTTP_201_CREATED,
                         headers=self.get_success_headers(response))
 
 
@@ -977,7 +961,8 @@ class NotificationList(ListCreateAPIView):
         repository, _ = Repository.objects.get_or_create(
             github_user=github_user,
             github_repo=github_repo,
-            defaults={'is_enabled': False})
+            defaults={'is_enabled': False,
+                      'original_name': github_repo})
 
         role, _ = Content.objects.update_or_create(
             # FIXME(cutwater): Use in-memory cache for content types
@@ -996,7 +981,7 @@ class NotificationList(ListCreateAPIView):
         notification.roles.add(role)
 
         task = create_import_task(
-            github_branch=None, repository=role.repository, user=owner,
+            role.repository, owner,
             travis_status_url=travis_status_url,
             travis_build_url=payload['build_url'])
         notification.imports.add(task)

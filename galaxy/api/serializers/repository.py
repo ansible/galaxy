@@ -27,7 +27,6 @@ __all__ = [
 
 
 class RepositorySerializer(BaseSerializer):
-
     class Meta:
         model = Repository
         fields = (
@@ -45,6 +44,10 @@ class RepositorySerializer(BaseSerializer):
             'watchers_count',
             'forks_count',
             'open_issues_count',
+            # TODO(cutwater): github_user and github_repo are obsolete and
+            # will be removed
+            'github_user',
+            'github_repo',
         )
 
     def get_related(self, instance):

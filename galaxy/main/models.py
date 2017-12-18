@@ -20,6 +20,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms.models import model_to_dict
 from django.contrib.postgres.fields import ArrayField
+from django.utils import timezone
 
 from galaxy.main import constants
 from galaxy.main.fields import LooseVersionField, TruncatingCharField
@@ -32,6 +33,9 @@ __all__ = [
     'Subscription', 'Stargazer', 'Namespace', 'Provider', 'ProviderNamespace',
     'ContentBlock', 'ContentType'
 ]
+
+# TODO(cutwater): Split models.py into multiple modules
+# (e.g. models/base.py, models/content.py, etc.)
 
 
 class BaseModel(models.Model, DirtyMixin):
@@ -267,7 +271,6 @@ class Content(CommonModelNameNotUnique):
         'Repository',
         related_name='content_objects',
         editable=False,
-        on_delete=models.PROTECT
     )
 
     content_type = models.ForeignKey(
@@ -339,6 +342,7 @@ class Content(CommonModelNameNotUnique):
         null=True,
         verbose_name="Min Ansible Container Version",
     )
+    # TODO: Move to Repotisotry?
     issue_tracker_url = models.CharField(
         max_length=256,
         blank=True,
@@ -364,12 +368,14 @@ class Content(CommonModelNameNotUnique):
         default=False,
         editable=False,
     )
+    # TODO: Move to Repository
     travis_status_url = models.CharField(
         max_length=256,
         blank=True,
         default='',
         verbose_name="Travis Build Status"
     )
+    # TODO: Move to Repository
     travis_build_url = models.CharField(
         max_length=256,
         blank=True,
@@ -427,11 +433,48 @@ class Content(CommonModelNameNotUnique):
     def get_tags(self):
         return [tag.name for tag in self.tags.filter(active=True)]
 
-    def validate_char_lengths(self):
-        for field in self._meta.get_fields():
-            if not field.is_relation and field.get_internal_type() == 'CharField':
-                if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
-                    raise Exception("Content %s value exceeeds max length of %s." % (field.name, field.max_length))
+    # FIXME(cutwater): Refactor me
+    def clean(self):
+        if self.company != "" and len(self.company) > 50:
+            # add_message(import_task, u"WARNING", u"galaxy_info.company exceeds max length of 50 in meta data")
+            self.company = self.company[:50]
+
+        if not self.description:
+            # add_message(import_task, u"ERROR", u"missing description. Add a description to GitHub repo or meta data.")
+            pass
+        elif len(self.description) > 255:
+            # add_message(import_task, u"WARNING", u"galaxy_info.description exceeds max length of 255 in meta data")
+            self.description = self.description[:255]
+
+        if not self.license:
+            # add_message(import_task, u"ERROR", u"galaxy_info.license missing value in meta data")
+            pass
+        elif len(self.license) > 50:
+            # add_message(import_task, u"WARNING", u"galaxy_info.license exceeds max length of 50 in meta data")
+            self.license = self.license[:50]
+
+        if (not self.min_ansible_version
+                and self.role_type in (constants.RoleType.CONTAINER,
+                                       constants.RoleType.ANSIBLE)):
+            # LOG.warn('Minimum Ansible version is not set, '
+            #          'setting it to "1.9"')
+            self.min_ansible_version = u'1.9'
+
+        if (not self.min_ansible_container_version
+                and self.role_type == constants.RoleType.CONTAINER_APP):
+            # LOG.warn(u'Minimum Ansible Container version is not set, '
+            #          u'setting it to "0.2.0"')
+            self.min_ansible_container_version = u'0.2.0'
+
+        if not self.issue_tracker_url:
+            # add_message(import_task, u"WARNING", u"No issue tracker defined. Enable issue tracker in repo settings, or provide an issue tracker in meta data.")
+            pass
+        else:
+            from six.moves import urllib_parse
+            parsed_url = urllib_parse.urlparse(self.issue_tracker_url)
+            if parsed_url.scheme == '' or parsed_url.netloc == '' or parsed_url.path == '':
+                # add_message(import_task, u"WARNING", u"Invalid URL found in meta data for issue tracker ")
+                self.issue_tracker_url = ""
 
 
 class Namespace(CommonModel):
@@ -663,19 +706,15 @@ class ImportTask(PrimordialModel):
         related_name='import_tasks',
         db_index=True,
     )
-
-    github_reference = models.CharField(
+    import_branch = models.CharField(
         max_length=256,
-        verbose_name="Github Reference",
         null=True,
-        blank=True,
-        default=''
+        blank=False,
     )
-    alternate_role_name = models.CharField(
+    repository_alt_name = models.CharField(
         max_length=256,
-        verbose_name="Alternate Role Name",
         null=True,
-        blank=True,
+        blank=False,
     )
     celery_task_id = models.CharField(
         max_length=100,
@@ -724,12 +763,31 @@ class ImportTask(PrimordialModel):
         verbose_name="Travis Build URL"
     )
 
-    def validate_char_lengths(self):
-        for field in self._meta.get_fields():
-            if not field.is_relation and field.get_internal_type() == 'CharField':
-                # print "%s %s" % (field.name, field.max_length)
-                if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
-                    raise Exception("Import Task %s value exceeeds max length of %s." % (field.name, field.max_length))
+    def __unicode__(self):
+        return u'{}-{}'.format(self.id, self.state)
+
+    def start(self):
+        self.state = ImportTask.STATE_RUNNING
+        self.started = timezone.now()
+        self.save()
+
+    def finish_success(self, message=None):
+        self.state = ImportTask.STATE_SUCCESS
+        self.finished = timezone.now()
+        if message:
+            self.messages.create(message_type=ImportTaskMessage.TYPE_SUCCESS,
+                                 message_text=message)
+        self.save()
+
+    def finish_failed(self, reason=None):
+        self.state = ImportTask.STATE_FAILED
+        self.finished = timezone.now()
+        if reason:
+            # FIXME(cutwater): Remove truncating reason to 256 chars.
+            # Use TruncatingCharField or TextField for message field
+            self.messages.create(message_type=ImportTaskMessage.TYPE_FAILED,
+                                 message_text=str(reason)[:256])
+        self.save()
 
 
 class NotificationSecret(PrimordialModel):
@@ -862,8 +920,8 @@ class Repository(BaseModel):
     @property
     def clone_url(self):
         return "https://github.com/{user}/{repo}.git".format(
-            user=self.github_user,
-            repo=self.github_repo
+            user=self.provider_namespace.name,
+            repo=self.original_name
         )
 
     @property
@@ -872,7 +930,7 @@ class Repository(BaseModel):
 
     @property
     def github_repo(self):
-        return self.name
+        return self.original_name
 
     def get_absolute_url(self):
         return reverse('api:repository_detail', args=(self.pk,))
@@ -887,6 +945,7 @@ class Subscription(PrimordialModel):
         settings.AUTH_USER_MODEL,
         related_name='subscriptions',
     )
+    # TODO(cutwater): Replace with reference to a Repository model
     github_user = models.CharField(
         max_length=256,
         verbose_name="Github Username",

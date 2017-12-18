@@ -17,7 +17,7 @@
 
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from galaxy.main.celerytasks.tasks import import_role
+from galaxy.main.celerytasks.tasks import import_repository
 from galaxy.main.models import Content, ImportTask
 
 User = get_user_model()
@@ -36,10 +36,8 @@ class Command(BaseCommand):
         task = ImportTask.objects.create(
             github_user=role.github_user,
             github_repo=role.github_repo,
-            github_reference=role.github_branch,
-            alternate_role_name=last_task.alternate_role_name,
             role=role,
             owner=last_task.owner,
             state='PENDING'
         )
-        import_role.delay(task.id)
+        import_repository.delay(task.id)

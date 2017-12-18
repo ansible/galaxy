@@ -28,6 +28,7 @@ from ansible.playbook.role import requirement as ansible_req
 from galaxy.main import constants
 from galaxy.worker import exceptions as exc
 from galaxy.worker.loaders import base
+from galaxy.worker import logging as wlog
 
 LOG = logging.getLogger(__name__)
 
@@ -79,13 +80,13 @@ class RoleMetaParser(object):
         'youtube': 'https://www.youtube.com/embed/{0}',
     }
 
-    def __init__(self, metadata):
+    def __init__(self, metadata, logger=None):
         self.metadata = metadata
+        self.log = logger or LOG
 
-    @classmethod
-    def _validate_tag(cls, tag):
-        if not re.match(cls.TAG_REGEXP, tag):
-            LOG.warn('"{}" is not a valid tag. Skipping.'.format(tag))
+    def _validate_tag(self, tag):
+        if not re.match(self.TAG_REGEXP, tag):
+            self.log.warn('"{}" is not a valid tag. Skipping.'.format(tag))
             return False
         return True
 
@@ -96,15 +97,16 @@ class RoleMetaParser(object):
         if isinstance(galaxy_tags, list):
             tags += galaxy_tags
         else:
-            LOG.warn('Expected "categories" in meta data to be a list')
+            self.log.warn('Expected "categories" in meta data to be a list')
 
         if 'categories' in self.metadata:
-            LOG.warn('Found "categories" in metadata. Update the metadata '
-                     'to use "galaxy_tags" rather than categories.')
+            self.log.warn(
+                'Found "categories" in metadata. Update the metadata '
+                'to use "galaxy_tags" rather than categories.')
             if isinstance(self.metadata['categories'], list):
                 tags += self.metadata['categories']
             else:
-                LOG.warn('Expected "categories" in meta data to be a list')
+                self.log.warn('Expected "categories" in meta data to be a list')
 
         tags = list(filter(self._validate_tag, tags))
 
@@ -123,8 +125,8 @@ class RoleMetaParser(object):
             try:
                 name = platform['name']
             except KeyError:
-                LOG.warn('No name specified for platform [{0}], skipping'
-                         .format(idx))
+                self.log.warn('No name specified for platform [{0}], skipping'
+                              .format(idx))
                 continue
 
             versions = platform.get('versions', ['all'])
@@ -170,11 +172,11 @@ class RoleMetaParser(object):
         meta_videos = self.metadata.get('video_links', [])
         for video in meta_videos:
             if not isinstance(video, dict):
-                LOG.warn('Expected item in video_links to be dictionary')
+                self.log.warn('Expected item in video_links to be dictionary')
                 continue
             if set(video) != {'url', 'title'}:
-                LOG.warn("Expected item in video_links to contain only "
-                         "keys 'url' and 'title'")
+                self.log.warn("Expected item in video_links to contain only "
+                              "keys 'url' and 'title'")
                 continue
             for name, expr in six.iteritems(self.VIDEO_REGEXP):
                 match = expr.match(video['url'])
@@ -184,9 +186,10 @@ class RoleMetaParser(object):
                     videos.append(VideoLink(embed_url, video['title']))
                     break
             else:
-                LOG.warn("URL format '{0}' is not recognized. "
-                         "Expected it be a shared link from Vimeo, YouTube, "
-                         "or Google Drive.".format(video['url']))
+                self.log.warn(
+                    "URL format '{0}' is not recognized. "
+                    "Expected it be a shared link from Vimeo, YouTube, "
+                    "or Google Drive.".format(video['url']))
                 continue
         return videos
 
@@ -209,20 +212,22 @@ class RoleLoader(object):
     CONTAINER_META_FILE = 'meta/container.yml'
     ANSIBLE_CONTAINER_META_FILE = 'container.yml'
 
-    def __init__(self, path, name=None, meta_file=None):
+    def __init__(self, path, name=None, meta_file=None, logger=None):
         """
         :param str path: Path to role directory within repository
         """
         self.path = path
         self.name = name or os.path.basename(self.path)
         self.meta_file = meta_file
+        self.log = wlog.ContentTypeAdapter(logger or LOG, 'role', self.name)
+
         self._container_yml_type = None
 
     def load(self):
         data = {'name': self.name, 'path': self.path}
 
         metadata = self._load_metadata()
-        meta_parser = RoleMetaParser(metadata)
+        meta_parser = RoleMetaParser(metadata, logger=self.log)
 
         # TODO: Refactoring required
         data.update(self._load_string_attrs(metadata))
@@ -259,7 +264,9 @@ class RoleLoader(object):
     def _load_metadata(self):
         meta_file = self.meta_file
 
-        if not meta_file:
+        if meta_file:
+            meta_file = os.path.join(self.path, meta_file)
+        else:
             meta_file = self._find_metadata()
 
         if not meta_file:
@@ -280,7 +287,7 @@ class RoleLoader(object):
                 raise exc.ContentLoadError(
                     "Invalid 'galaxy_info' field format, dict expected.")
         else:
-            LOG.warn("Missing 'galaxy_info' field in metadata.")
+            self.log.warn("Missing 'galaxy_info' field in metadata.")
             galaxy_info = {}
         return galaxy_info
 

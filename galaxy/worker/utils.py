@@ -15,29 +15,36 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+from __future__ import absolute_import
+
+import contextlib
+import errno
 import datetime as dt
+import shutil
 import subprocess
+import tempfile
 
 import github
-import requests
 import pytz
+import six
+import requests
 
 from . import exceptions as exc
 
-try:
-    from tempfile import TemporaryDirectory
-except ImportError:
-    import contextlib
-    import tempfile
-    import shutil
 
-    @contextlib.contextmanager
-    def TemporaryDirectory(suffix="", prefix=tempfile.template, dir=None):
-        path = tempfile.mkdtemp(suffix, prefix, dir)
+@contextlib.contextmanager
+def WorkerCloneDir(basedir=None):
+    path = tempfile.mkdtemp(dir=basedir)
+    try:
+        yield path
+    finally:
         try:
-            yield path
-        finally:
             shutil.rmtree(path)
+        except OSError as e:
+            # Note(cutwater): Temporary directory may be deleted by git
+            # process in case of error while cloning repository
+            if e.errno != errno.ENOENT:
+                raise
 
 
 def clone_repository(clone_url, directory, branch=None):
@@ -76,14 +83,15 @@ def parse_git_date_raw(date):
         int(date.strip().split(' ', 1)[0]), tz=pytz.utc)
 
 
-def get_readme(token, repo):
+def get_readme(token, repo, branch=None):
     """
     Retrieve README from the repo and sanitize by removing all markup.
 
     Should preserve unicode characters.
     """
+    data = {'ref': branch} if branch else {}
     try:
-        readme = repo.get_readme()
+        readme = repo.get_readme(**data)
     except github.UnknownObjectException:
         raise exc.WorkerError("Failed to get README file")
     readme_raw = readme.decoded_content
@@ -100,7 +108,7 @@ def get_readme(token, repo):
     headers = {'Authorization': 'token %s' % token,
                'Accept': 'application/vnd.github.VERSION.html'}
     url = "https://api.github.com/repos/%s/readme" % repo.full_name
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, data=data)
     response.raise_for_status()
     readme_html = response.text
 
@@ -108,4 +116,6 @@ def get_readme(token, repo):
 
 
 class Context(object):
-    pass
+    def __init__(self, **kwargs):
+        for arg, value in six.iteritems(kwargs):
+            setattr(self, arg, value)
