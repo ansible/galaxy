@@ -1,6 +1,7 @@
 language: python
-dist: xenial
+dist: trusy 
 sudo: required
+group: deprecated-2017Q4
 
 services:
 - docker
@@ -14,6 +15,8 @@ install:
 - pip install ansible flake8
 
 script:
+- python -c 'import os,sys,fcntl; flags = fcntl.fcntl(sys.stdout, fcntl.F_GETFL); fcntl.fcntl(sys.stdout, fcntl.F_SETFL, flags&~os.O_NONBLOCK);'
+
 # run flake8
 - make test/flake8
 
