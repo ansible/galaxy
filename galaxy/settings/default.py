@@ -291,7 +291,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['r_emailaddress']
     },
     'github': {
-        'SCOPE': ['user:email', 'public_repo']
+        'SCOPE': ['user:email', 'public_repo', 'read:org']
     },
 }
 
@@ -356,7 +356,7 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         },
         'console': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         }

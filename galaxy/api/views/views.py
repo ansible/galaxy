@@ -15,73 +15,57 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-# standard python libraries
-import sys
-import math
-import requests
-import logging
 import base64
 import json
+import logging
+import math
 import re
-
-from urlparse import parse_qs
-from hashlib import sha256
+# standard python libraries
+import sys
 from collections import OrderedDict
+from hashlib import sha256
+from urlparse import parse_qs
 
-# Github
-from github import Github
-from github.GithubException import GithubException
-
-# rest framework stuff
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from rest_framework.authtoken.models import Token
-from rest_framework.exceptions import ValidationError
-
-# django stuff
-from django.contrib.auth.models import AnonymousUser
-from django.db import IntegrityError
-from django.db.models import Count, Max
-from django.http import Http404, HttpResponseBadRequest
-from django.apps import apps
-from django.utils.dateparse import parse_datetime
-from django.utils import timezone
-from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied
-from django.conf import settings
-from django.shortcuts import get_object_or_404
-
+import requests
+from OpenSSL.crypto import Error as SignatureError
+# OpenSSL
+from OpenSSL.crypto import verify, load_publickey, FILETYPE_PEM, X509
 # allauth
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.models import SocialToken
-
+from django.apps import apps
+from django.conf import settings
+# django stuff
+from django.contrib.auth.models import AnonymousUser
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
+from django.db import IntegrityError
+from django.db.models import Count, Max
+from django.http import Http404, HttpResponseBadRequest
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 # haystack
 from drf_haystack.viewsets import HaystackViewSet
-from galaxy.api.filters import HaystackFilter
-from haystack.query import SearchQuerySet
-
 # elasticsearch dsl
 from elasticsearch_dsl import Search, Q
-
-# OpenSSL
-from OpenSSL.crypto import verify, load_publickey, FILETYPE_PEM, X509
-from OpenSSL.crypto import Error as SignatureError
-
-# local stuff
+# TODO move all github interactions to githubapi
+# Github
+from github import Github
+from github.GithubException import GithubException
+from haystack.query import SearchQuerySet
+# rest framework stuff
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
+from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 
 from galaxy.accounts.models import CustomUser as User
-
 from galaxy.api.access import check_user_access
-
-from galaxy.api.base_views import (APIView,
-                                   ListAPIView,
-                                   ListCreateAPIView,
-                                   SubListAPIView,
-                                   RetrieveAPIView,
-                                   RetrieveUpdateDestroyAPIView)
-
+from galaxy.api.filters import HaystackFilter
+from galaxy.api.permissions import ModelAccessPermission
 from galaxy.api.serializers import (MeSerializer,
                                     UserListSerializer,
                                     UserDetailSerializer,
@@ -98,11 +82,21 @@ from galaxy.api.serializers import (MeSerializer,
                                     NotificationSerializer,
                                     ImportTaskSerializer,
                                     ImportTaskLatestSerializer,
+                                    ProviderSerializer,
                                     RoleListSerializer,
                                     RoleDetailSerializer,
                                     RoleSearchSerializer,
                                     ElasticSearchDSLSerializer)
 
+from .base_views import (APIView,
+                         ListAPIView,
+                         ListCreateAPIView,
+                         SubListAPIView,
+                         RetrieveAPIView,
+                         RetrieveUpdateDestroyAPIView)
+
+from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
+from galaxy.main.celerytasks.tasks import import_role, update_user_repos, refresh_existing_user_repos
 from galaxy.main.models import (Platform,
                                 CloudPlatform,
                                 Category,
@@ -113,18 +107,76 @@ from galaxy.main.models import (Platform,
                                 ContentVersion,
                                 NotificationSecret,
                                 Notification,
+                                Provider,
                                 Repository,
                                 Subscription,
-                                Stargazer)
-
+                                Stargazer, )
 from galaxy.main.utils import camelcase_to_underscore
-from galaxy.api.permissions import ModelAccessPermission
-from galaxy.main.celerytasks.tasks import (
-    import_role, update_user_repos, refresh_existing_user_repos)
-from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 
+# local stuff
 
 logger = logging.getLogger(__name__)
+
+__all__ = [
+    'ActiveProviderDetail',
+    'ActiveProviderList',
+    'ApiRootView',
+    'ApiV1ReposView',
+    'ApiV1RootView',
+    'ApiV1SearchView',
+    'CategoryDetail',
+    'CategoryList',
+    'CloudPlatformDetail',
+    'CloudPlatformList',
+    'CloudPlatformsSearchView',
+    'FacetedView',
+    'ImportTaskDetail',
+    'ImportTaskLatestList',
+    'ImportTaskList',
+    'ImportTaskNotificationList',
+    'NotificationDetail',
+    'NotificationImportsList',
+    'NotificationList',
+    'NotificationRolesList',
+    'NotificationSecretDetail',
+    'NotificationSecretList',
+    'PlatformDetail',
+    'PlatformList',
+    'PlatformsSearchView',
+    'ProviderRootView',
+    'RefreshUserRepos',
+    'RemoveRole',
+    'RepositoryDetail',
+    'RepositoryList',
+    'RoleDependenciesList',
+    'RoleDetail',
+    'RoleDownloads',
+    'RoleImportTaskList',
+    'RoleList',
+    'RoleNotificationList',
+    'RoleSearchView',
+    'RoleTypes',
+    'RoleUsersList',
+    'RoleVersionsList',
+    'StargazerDetail',
+    'StargazerList',
+    'SubscriptionDetail',
+    'SubscriptionList',
+    'TagDetail',
+    'TagList',
+    'TagsSearchView',
+    'TokenView',
+    'TopContributorsList',
+    'UserDetail',
+    'UserList',
+    'UserMeList',
+    'UserNotificationSecretList',
+    'UserRepositoriesList',
+    'UserRolesList',
+    'UserSearchView',
+    'UserStarredList',
+    'UserSubscriptionList',
+]
 
 # --------------------------------------------------------------------------------
 # Helper functions
@@ -201,12 +253,43 @@ class ApiV1RootView(APIView):
         data['imports'] = reverse('api:import_task_list')
         data['repos'] = reverse('api:repos_view')
         data['latest imports'] = reverse('api:import_task_latest_list')
+        data['namespaces'] = reverse('api:namespace_list')
         data['notification secrets'] = reverse('api:notification_secret_list')
         data['notifications'] = reverse('api:notification_list')
+        data['providers'] = reverse('api:provider_root_view')
         data['tokens'] = reverse('api:token')
         data['search'] = reverse('api:search_view')
         data['remove role'] = reverse('api:remove_role')
         return Response(data)
+
+
+class ProviderRootView(APIView):
+    """ Provider resources """
+    permission_classes = (AllowAny,)
+
+    def get(self, request, format=None):
+        data = OrderedDict()
+        data['active'] = reverse('api:active_provider_list')
+        data['sources'] = reverse('api:provider_source_list')
+        return Response(data)
+
+
+class ActiveProviderList(ListAPIView):
+    """ Active providers """
+    model = Provider
+    serializer_class = ProviderSerializer
+
+    def get_queryset(self):
+        return self.model.objects.filter(active=True)
+
+
+class ActiveProviderDetail(RetrieveAPIView):
+    """ Active providers """
+    model = Provider
+    serializer_class = ProviderSerializer
+
+    def get_queryset(self):
+        return self.model.objects.filter(active=True)
 
 
 class RoleTypes(APIView):
@@ -1413,7 +1496,7 @@ class RefreshUserRepos(APIView):
             msg = "Failed to connect to GitHub account for Galaxy user {0} ".format(request.user.username) + \
                   "You must first authenticate with GitHub."
             logger.error(msg)
-            raise HttpResponseBadRequest({'detail': msg})
+            return HttpResponseBadRequest({'detail': msg})
 
         try:
             gh_api = Github(token.token)
@@ -1422,20 +1505,20 @@ class RefreshUserRepos(APIView):
             msg = "Failed to connect to GitHub API. This is most likely a temporary error, " + \
                   "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
             logger.error(msg)
-            raise HttpResponseBadRequest({'detail': msg})
+            return HttpResponseBadRequest({'detail': msg})
 
         try:
             ghu = gh_api.get_user()
         except:
             msg = "Failed to get GitHub authorized user."
             logger.error(msg)
-            raise HttpResponseBadRequest({'detail': msg})
+            return HttpResponseBadRequest({'detail': msg})
         try:
             user_repos = ghu.get_repos()
         except:
             msg = "Failed to get user repositories from GitHub."
             logger.error(msg)
-            raise HttpResponseBadRequest({'detail': msg})
+            return HttpResponseBadRequest({'detail': msg})
 
         try:
             refresh_existing_user_repos(token.token, ghu)
@@ -1540,10 +1623,10 @@ def get_response(*args, **kwargs):
 # Create view functions for all of the class-based views to simplify inclusion
 # in URL patterns and reverse URL lookups, converting CamelCase names to
 # lowercase_with_underscore (e.g. MyView.as_view() becomes my_view).
-
 this_module = sys.modules[__name__]
 for attr, value in locals().items():
     if isinstance(value, type) and issubclass(value, APIView):
         name = camelcase_to_underscore(attr)
         view = value.as_view()
         setattr(this_module, name, view)
+

@@ -20,14 +20,17 @@
 
 (function(angular) {
 
-    var mod = angular.module('userService', ['ngResource']);
+    var mod = angular.module('namespaceService', ['ngResource', 'galaxyUtilities']);
 
-    mod.factory('userService', ['$resource', _factory]);
+    mod.factory('namespaceService', ['$resource', 'getCSRFToken', _factory]);
 
-    function _factory($resource) {
-        return $resource('/api/v1/users/', null, {
-            'get':    {method:'GET'},
-            'query':  {method:'GET', isArray:false},
+    function _factory($resource, getCSRFToken) {
+        var token = getCSRFToken();
+        return $resource('/api/v1/namespaces/:id', {id: '@id'}, {
+            'get':     {method:'GET'},
+            'query':   {method:'GET', isArray:false},
+            'save':    {method:'POST', headers: {"X-CSRFToken": token}},
+            'delete':  {method: 'DELETE', headers: {"X-CSRFToken": token}}
         });
     }
 
