@@ -38,12 +38,12 @@ urlpatterns = [
     url(r'^stars$', views.stars_list_view, name='stars-list'),
 
     # Logged in/secured URLs
+    url(r'^namespaces', views.my_namespaces_view, name='my-namespaces'),
     url(r'^accounts/connect/$', views.accounts_connect),
     url(r'^accounts/connect/success/$', views.accounts_connect_success,
         name='accounts-connect-success'),
     url(r'^accounts/profile/$', views.accounts_profile,
         name='accounts-profile'),
-
     url(r'^authors/$', views.NamespaceListView.as_view(),
         name='namespace-list'),
     url(r'^([\w\-._+]+)/$', views.RoleListView.as_view(), name='role-list'),

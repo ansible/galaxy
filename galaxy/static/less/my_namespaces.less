@@ -1,0 +1,145 @@
+/*
+ * my_namespaces.less
+ */
+
+ #galaxy-my-namespaces {
+
+    .instructions .text {
+        line-height: normal;
+        padding: 15px 0;
+        font-size: 16px;
+    }
+
+    .btn-default[disabled="disabled"]:hover {
+        background-color: #f2f2f2;
+    }
+
+    .namespace-list {
+        padding-bottom: 60px;
+
+        .title-container {
+            margin-bottom: 20px;
+            .title {
+                font-size: 32px;
+                color: @ansible-dark-grey;
+            }
+            .tools {
+                text-align: right;
+            }
+            .search-namespaces {
+                display: inline-block;
+                width: 75%;
+                margin-right: 10px;
+                position: relative;
+                left: 0;
+                top: 0;
+                input {
+                    padding-right: 15px;
+                }
+                .search-icon {
+                    display: inline-block;
+                    position: absolute;
+                    right: 6px;
+                    top: 5px;
+                    color: @ansible-dark-grey;
+                    .fa-times:hover {
+                        cursor: pointer;
+                    }
+                }
+            }
+            @media(max-width: 768px) {
+                .tools {
+                    text-align: left;
+                    margin-top: 10px;
+                }
+            }
+        }
+
+        .namespace {
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e1e1e1;
+
+            .ats-switch,
+            .name,
+            .state,
+            .settings {
+                display: inline-block;
+                vertical-align: middle;
+                line-height: normal;
+            }
+            .settings {
+                margin-right: 5px;
+                margin-left: 20px;
+                .btn {
+                    color: @ansible-dark-grey;
+                }
+            }
+            .name {
+                color: @ansible-dark-grey;
+                width: 45%;
+                a, a:active, a:visited {
+                    color: @blue;
+                }
+                a:hover {
+                    color: @ansible-color;
+                }
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .tools-container {
+                text-align: right;
+            }
+            .tools {
+                display: inline-block;
+                .state {
+                    text-align: left;
+                    display: inline-block;
+                    width: 86px;
+                    margin-right: 20px;
+
+                    a.succeeded, a.succeeded:active, a.succeeded:visited {
+                       i { color: @green }
+                       .text { color: @blue }
+                    }
+                    a.succeeded:hover {
+                       i { color: @green }
+                       .text { color: #23527c; }
+                    }
+
+                    a.failed, a.failed:active, a.failed:visited {
+                       i { color: @red }
+                       .text { color: @blue }
+                    }
+                    a.failed:hover {
+                       i { color: @red }
+                       .text { color: #23527c; }
+                    }
+                }
+                .btn {
+                    color: @ansible-dark-grey;
+                }
+            }
+
+            @media (max-width: 446px) {
+                .tools-container {
+                    text-align: left;
+                    padding-top: 10px;
+                    padding-left: 115px;
+                }
+            }
+
+            @media (min-width: 990px) {
+                .name {
+                    width: 80%;
+                }
+            }
+        }
+        .namespace.loading {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    }
+ }

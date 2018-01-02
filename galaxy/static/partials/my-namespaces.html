@@ -1,0 +1,76 @@
+<!-- (c) 2012-2018, Ansible by Red Hat
+
+ This file is part of Ansible Galaxy
+
+ Ansible Galaxy is free software: you can redistribute it and/or modify
+ it under the terms of the Apache License as published by
+ the Apache Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+
+ Ansible Galaxy is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ Apache License for more details.
+
+ You should have received a copy of the Apache License
+ along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+-->
+
+<div id="galaxy-my-namespaces">
+
+    <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
+
+    <div class="container">
+
+        <div class="inner-container">
+            <div class="instructions">
+                <h2>Manage Your Galaxy Namespaces</h2>
+                <div class="text">
+                    <p>Add some instructions here. Maybe.</p>
+                </div>
+            </div>
+
+            <div class="no-github-auth" ng-if="!github_auth">
+                <p>Managing namespaces requires authentication. <a href="/accounts/social/connections/">Log into Galaxy in order to continue</a>.</p>
+            </div>
+
+            <div class="namespace-list" ng-if="github_auth">
+                <div class="row title-container">
+                    <div class="col-sm-6 title">
+                        <a href="#/namespaces/add"
+                                class="btn btn-md btn-success"
+                                tooltip-placement="right"
+                                uib-tooltip="Create a namespace"><i class="fa fa-plus"></i> ADD</a>
+                    </div>
+                    <div class="col-sm-6 tools">
+                        <div class="search-namespaces">
+                            <input type="text" placeholder="Search" class="form-control input-sm" ng-model="searchText" ng-disabled="!namespaces.length">
+                            <div class="search-icon"><i class="fa fa-search" ng-show="!searchText"></i></div>
+                            <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row namespace" ng-repeat="namespace in namespaces | filter:searchText">
+                    <div class="col-sm-9">
+                        <div class="name">
+                            {{ namespace.name }}
+                        </div>
+                    </div>
+                    <div class="col-sm-3 tools-container">
+                        <div class="tools">
+                            <button type="button"
+                                    class="btn btn-default btn-sm"
+                                    tooltip-placement="left"
+                                    uib-tooltip="Delete the namespace"
+                                    ng-click="namespaceDelete(namespace)"><i class="fa fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="namespace loading" ng-show="namespaces.length == 0">
+                    You do not have any namespaces. Click the +Add button to create one.
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

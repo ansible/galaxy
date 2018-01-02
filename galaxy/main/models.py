@@ -570,6 +570,9 @@ class Namespace(CommonModel):
         verbose_name="Web Site URL"
     )
 
+    def get_absolute_url(self):
+        return reverse('api:namespace_detail', args=(self.pk,))
+
 
 class Provider(CommonModel):
     """
@@ -600,7 +603,7 @@ class ProviderNamespace(PrimordialModel):
     )
     namespace = models.ForeignKey(
         'Namespace',
-        related_name='namespaces',
+        related_name='provider_namespaces',
         editable=False,
         null=True,
         on_delete=models.CASCADE,
@@ -608,7 +611,7 @@ class ProviderNamespace(PrimordialModel):
     )
     provider = models.ForeignKey(
         'Provider',
-        related_name='provider',
+        related_name='provider_namespaces',
         editable=True,
         null=True,
         on_delete=models.CASCADE,
