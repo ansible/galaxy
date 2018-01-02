@@ -1,0 +1,298 @@
+<div class="container">
+    <div class="inner-container">
+
+        <div class="no-github-auth" ng-if="!github_auth">
+            <p>Managing namespaces requires authentication. <a href="/accounts/social/connections/">Log into Galaxy in order to continue</a>.</p>
+        </div>
+
+        <div ng-if="github_auth">
+            <div class="row form-container">
+                <div class="col-sm-12">
+                    <h2>{{ page_subtitle }}</h2>
+
+                    <div class="alert alert-danger alert-dismissable" ng-show="hasApiErrors() && alert.show">
+                        <button type="button" class="close" ng-click="alert.show = false;">
+                            <span class="pficon pficon-close"></span>
+                        </button>
+                        <span class="pficon pficon-error-circle-o"></span>
+                        <span>{{ alert.msg }}</span>
+                    </div>
+
+                    <form name="forms.nsAddForm">
+                        <div class="form-container">
+                            <div class="form-group">
+                                <label for="name">Name <span class="required">*</span></label>
+                                <input type="text" name="name"
+                                       class="form-control"
+                                       ng-maxlength="255"
+                                       ng-class="{'has-error': forms.nsAddForm.name.$invalid || apiError['name']}"
+                                       ng-model="namespace.name"
+                                       required placeholder="Name"
+                                       ng-change="clearError('name', null)">
+                                <div class="error" ng-show="forms.nsAddForm.name.$dirty && forms.nsAddForm.name.$error.required">
+                                    Value is required
+                                </div>
+                                <div class="error" ng-show="forms.nsAddForm.name.$error.maxlength">
+                                    Maximum text length exceeded
+                                </div>
+                                <div class="error" ng-show="apiError['name']">
+                                    {{ apiError['name'] }}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description <span class="required">*</span></label>
+                                <input type="text" name="description"
+                                       class="form-control"
+                                       ng-maxlength="255"
+                                       ng-model="namespace.description"
+                                       ng-class="{'has-error': forms.nsAddForm.description.$invalid || apiError['description']}"
+                                       required
+                                       placeholder="Description">
+                                <div class="error" ng-show="forms.nsAddForm.description.$dirty && forms.nsAddForm.description.$error.required">
+                                    Value is required
+                                </div>
+                                <div class="error" ng-show="forms.nsAddForm.description.$error.maxlength">
+                                    Maximum text length exceeded
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="company">Company</label>
+                                <input type="text" name="company"
+                                       class="form-control"
+                                       ng-maxlength="255"
+                                       ng-model="namespace.company"
+                                       ng-class="{'has-error': forms.nsAddForm.company.$invalid}"
+                                       ng-required
+                                       placeholder="Company name">
+                                <div class="error" ng-show="forms.nsAddForm.company.$error.maxlength">
+                                    Maximum text length exceeded
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Location</label>
+                                <input type="text" name="location"
+                                       class="form-control"
+                                       ng-maxlength="255"
+                                       ng-model="namespace.location"
+                                       ng-class="{'has-error': forms.nsAddForm.location.$invalid}"
+                                       ng-required
+                                       placeholder="City, State/Provence Country">
+                                <div class="error" ng-show="forms.nsAddForm.location.$error.maxlength">
+                                    Maximum text length exceeded
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="avatar_url">Avatar</label>
+                                <input type="url" name="avatarUrl"
+                                       class="form-control"
+                                       ng-maxlength="255"
+                                       ng-model="namespace.avatar_url"
+                                       ng-class="{'has-error': forms.nsAddForm.avatarUrl.$invalid}"
+                                       placeholder="Avatar URL">
+                                <div class="error" ng-show="forms.nsAddForm.avatarUrl.$error.maxlength">
+                                    Maximum text length exceeded
+                                </div>
+                                <div class="error" ng-show="forms.nsAddForm.avatarUrl.$invalid">
+                                    Not valid url!
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" name="email"
+                                       class="form-control"
+                                       ng-maxlength="255"
+                                       ng-model="namespace.email"
+                                       ng-class="{'has-error': forms.nsAddForm.email.$invalid}"
+                                       placeholder="Email address">
+                                <div class="error" ng-show="forms.nsAddForm.email.$error.maxlength">
+                                    Maximum text length exceeded
+                                </div>
+                                <div class="error" ng-show="forms.nsAddForm.email.$error.email">
+                                    Not a valid email address
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="html_url">Web Site</label>
+                                <input type="text" name="htmlUrl"
+                                       class="form-control"
+                                       ng-maxlength="255"
+                                       ng-model="namespace.html_url"
+                                       ng-class="{'has-error': forms.nsAddForm.htmlUrl.$invalid}"
+                                       placeholder="Web site URL">
+                                <div class="error" ng-show="forms.nsAddForm.htmlUrl.$error.maxlength">
+                                    Maximum text length exceeded
+                                </div>
+                                <div class="error" ng-show="forms.nsAddForm.htmlUrl.$invalid">
+                                    Not a valid url!
+                                </div>
+                            </div>
+                            <label>Owners <span class="pficon-info" uib-popover="Add namespace owners. Each owner will have admin access."></span></label>
+                            <div class="container-fluid">
+                                <div class="row toolbar-pf">
+                                    <div class="col-sm-12">
+                                         <form class="toolbar-pf-actions">
+                                            <div class="form-group toolbar-pf-filter" style="width: 40%;">
+                                               <label class="sr-only">User</label>
+                                               <div class="input-group">
+                                                    <ui-select allow-clear
+                                                               ng-model="selected.owner"
+                                                               spinner-enabled="true"
+                                                               >
+                                                      <ui-select-match placeholder="Select or search by username...">{{$select.selected.username}}</ui-select-match>
+                                                      <ui-select-choices refresh="lookupUsers($select.search)"
+                                                                         refresh_delay="200"
+                                                                         repeat="item in galaxy_users | filter:{username: $select.search}">
+                                                        <span ng-bind-html="item.username | highlight: $select.search"></span>
+                                                        <span class="select-options github-user" ng-if="item.github_user">(@{{item.github_user}})</span>
+                                                      </ui-select-choices>
+                                                    </ui-select>
+                                                    <span class="input-group-btn">
+                                                      <button type="button" ng-click="addOwner()" class="btn btn-default" ng-disabled="!selected.owner">
+                                                        <i class="fa fa-plus"></i> Add
+                                                      </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                         </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="list-group list-view-pf list-view-pf-view">
+                                            <div ng-repeat="owner in namespace.owners track by $index">
+                                                <div class="list-group-item">
+                                                    <div class="list-view-pf-actions">
+                                                      <button class="btn btn-default"
+                                                              ng-click="removeOwner($index, forms.nsAddForm)"
+                                                              tooltip-placement="top"
+                                                              uib-tooltip="Remove user from namespace owners"
+                                                              ng-disabled="user_id == owner.id"><i class="fa fa-trash"></i> delete</button>
+                                                    </div>
+                                                    <div class="list-view-pf-main-info">
+                                                        <div class="list-view-pf-left" ng-if="owner['github_avatar']">
+                                                            <img ng-src="{{ owner.github_avatar }}" class="github-avatar">
+                                                        </div>
+                                                         <div class="list-view-pf-left" ng-if="!owner['github_avatar']">
+                                                            <img src="/static/img/avatar.png" class="github-avatar">
+                                                        </div>
+                                                        <div class="list-view-pf-body">
+                                                            <div class="list-view-pf-description">
+                                                                <div class="list-group-item-heading">
+                                                                {{ owner.username }}
+                                                                </div>
+                                                                <div class="list-group-item-text" ng-if="owner['github_user']">
+                                                                   <a target="_blank" ng-href="https://github.com/{{ owner.github_user }}"
+                                                                      tooltip-placement="top"
+                                                                      uib-tooltip="View user on GitHub">@{{ owner.github_user }}</i></a>
+                                                                   <div class="owner-error" ng-if="fieldHasApiError('owners', $index)">
+                                                                       {{ apiError.owners[$index] }}
+                                                                   </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="provider-namespace-group">
+                                <label>Provider Namespaces <span class="pficon-info" uib-popover="Add SCM provider namespaces. A minimum of one is required."></span></label>
+                                <div class="container-fluid">
+                                    <div class="row toolbar-pf">
+                                        <div class="col-sm-12">
+                                             <form class="toolbar-pf-actions">
+                                                <div class="form-group toolbar-pf-filter" style="width: 40%;">
+                                                   <div class="input-group">
+                                                        <ui-select allow-clear
+                                                                   ng-model="selected.provider_namespace"
+                                                                   spinner-enabled="true">
+                                                          <ui-select-match placeholder="Select or search by name...">{{$select.selected.name}}</ui-select-match>
+                                                          <ui-select-choices refresh="lookupNamespaces()"
+                                                                             refresh_delay="200"
+                                                                             repeat="item in provider_namespaces | filter:{name: $select.search}">
+                                                            <span ng-bind-html="item.name | highlight: $select.search"></span>
+                                                            <span class="select-options github-user" ng-if="item.display_name">({{item.display_name}})</span>
+
+                                                          </ui-select-choices>
+                                                        </ui-select>
+                                                        <span class="input-group-btn">
+                                                          <button type="button" ng-click="addNamespace()" class="btn btn-default" ng-disabled="!selected.provider_namespace">
+                                                            <i class="fa fa-plus"></i> add
+                                                          </button>
+                                                        </span>
+                                                   </div>
+                                                </div>
+                                             </form>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="list-group list-view-pf list-view-pf-view">
+                                                <div ng-repeat="provider in namespace.provider_namespaces track by $index">
+                                                    <div class="list-group-item">
+                                                        <div class="list-view-pf-actions">
+                                                          <button class="btn btn-default"
+                                                                  ng-click="removeNamespace($index, forms.nsAddForm)"
+                                                                  tooltip-placement="top"
+                                                                  uib-tooltip="Remove provider namespace"><i class="fa fa-trash"></i> delete</button>
+                                                        </div>
+                                                        <div class="list-view-pf-main-info">
+                                                            <div class="list-view-pf-left" ng-if="provider.avatar_url">
+                                                                <img ng-src="{{ provider.avatar_url }}" class="github-avatar">
+                                                            </div>
+                                                             <div class="list-view-pf-left" ng-if="!provider.avatar_url">
+                                                                <img src="/static/img/avatar.png" class="github-avatar">
+                                                            </div>
+                                                            <div class="list-view-pf-body">
+                                                                <div class="list-view-pf-description">
+                                                                    <div class="list-group-item-heading" data="{{ provider.location }}" ng-if="provider.display_name">
+                                                                        {{ provider.display_name }}
+                                                                    </div>
+                                                                    <div class="list-group-item-heading" ng-if="!provider.display_name">
+                                                                        {{ provider.name }}
+                                                                    </div>
+                                                                    <div class="list-group-item-text">
+                                                                       {{ provider.description }} <a target="_blank" ng-href="https://github.com/{{ provider.name }}"
+                                                                          tooltip-placement="top"
+                                                                          uib-tooltip="View the {{ provider.provider }} page">@{{ provider.name }}</i></a>
+                                                                        <div class="provider-namespace-error" ng-if="fieldHasApiError('provider_namespaces', $index)">
+                                                                            {{ apiError.provider_namespaces[$index] }}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row form-buttons">
+                <div class="col-sm-12">
+                    <button type="submit" class="btn btn-primary btn-lg"
+                            tooltip-placement="top"
+                            uib-tooltip="Save the new namespace"
+                            ng-disabled="!forms.nsAddForm.$dirty || forms.nsAddForm.$invalid || !validNamespaces() || hasApiErrors()"
+                            ng-click="saveNamespace()"><i class="fa fa-check"></i> Save</button>
+                    <a href="#/namspaces" class="btn btn-default btn-lg"
+                            tooltip-placement="top"
+                            uib-tooltip="Return to the previous page"><i class="fa fa-times"></i> CANCEL</a>
+                    <div class="form-message">
+                        <span class="required">*</span> Indicates a required field. Provide a value for all required fields, and correct any indicated errors before continuing.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -56,6 +56,8 @@ common_services = [
     'js/commonServices/githubRepoService.js',
     'js/commonServices/importService.js',
     'js/commonServices/githubClickService.js',
+    'js/commonServices/namespaceService.js',
+    'js/commonServices/providerSourceService.js',
 ]
 
 # ------------------------------------------------------------------------------
@@ -574,3 +576,32 @@ def accounts_profile(request):
         del request.session["transient"]
 
     return render_to_response('account/profile.html', context)
+
+
+@login_required
+def my_namespaces_view(request):
+    context = build_standard_context(request)
+    context["ng_app"] = "namespaceApp"
+    context["extra_css"] = []
+
+    if settings.SITE_ENV == 'DEV':
+        context["extra_js"] = [
+            'js/namespaceApp/namespaceApp.js',
+            'js/namespaceApp/namespaceController.js',
+            'js/namespaceApp/namespaceAddController.js',
+            'js/namespaceApp/namespaceEditController.js',
+            'js/namespaceApp/namespaceFormService.js',
+            'js/namespaceApp/menuController.js',
+        ] + common_services
+    else:
+        context["extra_js"] = [
+            'dist/galaxy.userStarredApp.min.js'
+        ]
+
+    if request.session.get("transient"):
+        context["transient"] = request.session["transient"]
+        del request.session["transient"]
+
+    context["load_angular"] = True
+    context["page_title"] = "My Namespaces"
+    return render_to_response('ng_view.html', context)

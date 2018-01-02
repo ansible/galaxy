@@ -19,7 +19,7 @@
 'use strict';
 
 (function(angular) {
-    
+
     var mod = angular.module('roleAddController', []);
 
     mod.controller('RoleAddCtrl', [
@@ -50,7 +50,7 @@
         repositories,
         notificationSecretService) {
 
-        
+
         $scope.page_title = 'My Content';
         $scope.loading = true;
         $scope.repositories = repositories;
@@ -58,6 +58,7 @@
         $scope.auth_orgs_url = currentUserService.auth_orgs_url;
         $scope.toggleRepository = _toggleRepository;
         $scope.refreshing = false;
+        $scope.toggleActive = true;
         $scope.refreshRepos = _refresh;
         $scope.showIntegrations = _showIntegrations;
         $scope.cancelIntegrations = _cancelIntegrations;
@@ -78,7 +79,7 @@
             $scope.loading = false;
             return;
         }
-        
+
         if (currentUserService.cache_refreshed) {
             $scope.loading = false;
             _setup();
@@ -88,7 +89,7 @@
 
         return;
 
-        
+
         function _waitForRefresh() {
             var stop = $interval(function() {
                 currentUserService.update().then(function(userData) {
@@ -179,7 +180,7 @@
         }
 
         function _showIntegrations(_repo) {
-            _repo.show_integrations = !_repo.show_integrations; 
+            _repo.show_integrations = !_repo.show_integrations;
             _repo.github_secret_type = "password";
             _repo.travis_token_type = "password";
             if (_repo.show_integrations) {
@@ -290,15 +291,17 @@
                 });
             }
         }
-        
+
         function _refresh() {
             if ($scope.loading || $scope.refreshing) {
-                return 
+                return
             }
             $scope.refreshing = true;
+            $scope.toggleActive = false;
             githubRepoService.refresh().$promise.then(function(response) {
                 $timeout(function() {
                     $scope.refreshing = false;
+                    $scope.toggleActive = true;
                     $scope.$apply();
                 },1000);
                 $scope.repositories = response;
@@ -335,7 +338,9 @@
             _repo.show_enable_failed=false;
 
             if (_repo.is_enabled) {
-                _importRepository(_repo);
+                if (_repo.state != 'RUNNING' && _repo.state != 'PENDING') {
+                    _importRepository(_repo);
+                }
             } else {
                 _repo.show_delete_warning = true;
             }
@@ -375,7 +380,7 @@
             var stop = $interval(function(_id) {
                 importService.imports.query({ id: _id}).$promise.then(function(response) {
                     $scope.repositories.every(function(repo) {
-                        if (repo.github_user == response.results[0].github_user && 
+                        if (repo.github_user == response.results[0].github_user &&
                             repo.github_repo === response.results[0].github_repo) {
                             repo.state = response.results[0].state;
                             repo.role_id = response.results[0].role;
@@ -407,5 +412,5 @@
     }
 
 })(angular);
- 
+
 

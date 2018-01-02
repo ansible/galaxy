@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 # Python
+
 import inspect
 import warnings
 import logging
@@ -38,8 +39,8 @@ from rest_framework import status
 from rest_framework import views
 
 # local
-from galaxy.api.access import check_user_access
-from galaxy.api.utils import get_object_or_400, camelcase_to_underscore
+from ..access import check_user_access
+from ..utils import get_object_or_400, camelcase_to_underscore
 
 # FIXME: machinery for auto-adding audit trail logs to all CREATE/EDITS
 
