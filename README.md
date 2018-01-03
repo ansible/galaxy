@@ -10,7 +10,11 @@ View the [install guide](./INSTALL.md) to setup and run your very own Galaxy sit
 
 ## Roadmap
 
-To see what we're working on, and where we're headed, view the [road map](./ROADMAP.md)
+To see what we're working on, and where we're headed, view the [road map](./ROADMAP.md
+
+## Trello Board
+
+To see the progress of the current release, visit our [public Trello board](https://trello.com/b/QrxNkpgt).
 
 ## Contributing
 
