@@ -1,6 +1,7 @@
 language: python
-dist: trusty
+dist: xenial
 sudo: required
+group: deprecated-2017Q4
 
 services:
 - docker

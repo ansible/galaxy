@@ -23,6 +23,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/galaxy.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/animate.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/angular-toggle-switch-bootstrap-3.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/select.min.css' %}" />
 
     {% for extra in extra_css %}<link href="{% static extra %}" rel='stylesheet' type='text/css' />{% endfor %}
 
@@ -42,6 +43,8 @@
     <script type="text/javascript" src="{% static 'vendorjs/angulartics.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'vendorjs/angulartics-ga.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'vendorjs/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendorjs/select.min.js' %}"></script>
+
 
     <script>
         var GLOBAL_DEBUG = "{{ debug }}";
