@@ -1,5 +1,5 @@
 language: python
-dist: trusy 
+dist: trusty 
 sudo: required
 group: deprecated-2017Q4
 
