@@ -185,41 +185,19 @@ def refresh_existing_user_repos(token, github_user):
 def update_namespace(repo):
     # Use GitHub repo to update namespace attributes
     if repo.owner.type == 'Organization':
-        namespace, created = ProviderNamespace.objects.get_or_create(namespace=repo.organization.login, defaults={
-            'name': repo.organization.name,
-            'avatar_url': repo.organization.avatar_url,
-            'location': repo.organization.location,
-            'company': repo.organization.company,
-            'email': repo.organization.email,
-            'html_url': repo.organization.html_url,
-            'followers': repo.organization.followers})
-        if not created:
-            namespace.avatar_url = repo.organization.avatar_url
-            namespace.location = repo.organization.location
-            namespace.company = repo.organization.company
-            namespace.email = repo.organization.email
-            namespace.html_url = repo.organization.html_url
-            namespace.followers = repo.organization.followers
-            namespace.save()
-
+        owner = repo.organization
     else:
-        namespace, created = ProviderNamespace.objects.get_or_create(namespace=repo.owner.login, defaults={
-            'name': repo.owner.name,
-            'avatar_url': repo.owner.avatar_url,
-            'location': repo.owner.location,
-            'company': repo.owner.company,
-            'email': repo.owner.email,
-            'html_url': repo.owner.html_url,
-            'followers': repo.owner.followers})
-        if not created:
-            namespace.avatar_url = repo.owner.avatar_url
-            namespace.location = repo.owner.location
-            namespace.company = repo.owner.company
-            namespace.email = repo.owner.email
-            namespace.html_url = repo.owner.html_url
-            namespace.followers = repo.owner.followers
-            namespace.save()
-    return True
+        owner = repo.owner
+    ProviderNamespace.objects.update_or_create(
+        name=repo.owner.login,
+        defaults={
+            'name': owner.name,
+            'avatar_url': owner.avatar_url,
+            'location': owner.location,
+            'company': owner.company,
+            'email': owner.email,
+            'html_url': owner.html_url,
+            'followers': owner.followers})
 
 
 def fail_import_task(import_task, msg):
@@ -236,7 +214,8 @@ def fail_import_task(import_task, msg):
             transaction.commit()
     except Exception as e:
         transaction.rollback()
-        logger.error(u"Error updating import task state %s: %s" % (import_task.role.name, str(e)))
+        logger.error(u"Error updating import task state %s: %s" % (
+            import_task.id, str(e)))
     logger.error(msg)
     raise Exception(msg)
 
@@ -261,8 +240,8 @@ def add_message(import_task, msg_type, msg_text):
         transaction.commit()
     except Exception as e:
         transaction.rollback()
-        logger.error(u"Error adding message to import task for role %s: %s" % (import_task.role.name, e.message))
-    logger.info(u"Role %d: %s - %s" % (import_task.role.id, msg_type, msg_text))
+        logger.error(u"Error adding message to import task %s: %s" % (import_task.id, e.message))
+    logger.info(u"Task %d: %s - %s" % (import_task.id, msg_type, msg_text))
 
 
 def get_readme(import_task, repo, branch, token):
@@ -581,7 +560,8 @@ def update_role_videos(import_task, role, videos=None):
                 role.videos.create(url=video['embed_url'], description=video['description'])
 
 
-@task(name="galaxy.main.celerytasks.tasks.import_role", throws=(Exception,))
+@task(name="galaxy.main.celerytasks.tasks.import_role",
+      throws=(Exception,))
 def import_role(task_id):
     try:
         logger.info(u"Starting task: %d" % int(task_id))
@@ -593,9 +573,8 @@ def import_role(task_id):
     except:
         fail_import_task(None, u"Failed to get task id: %d" % int(task_id))
 
-    try:
-        role = Content.objects.get(id=import_task.role.id)
-    except:
+    role = Content.objects.filter(repository=import_task.repository).first()
+    if not role:
         fail_import_task(import_task, u"Failed to get role for task id: %d" % int(task_id))
 
     repo_full_name = role.github_user + "/" + role.github_repo
@@ -1026,7 +1005,8 @@ def clear_stuck_imports():
     try:
         for ri in ImportTask.objects.filter(created__lte=one_hours_ago, state__in=['PENDING', 'RUNNING']):
             logger.info(u"Clear Stuck Imports: {0} - {1}.{2}"
-                        .format(ri.id, ri.role.namespace, ri.role.name))
+                        .format(ri.id, ri.repository.github_user,
+                                ri.repository.github_repo))
             ri.state = u"FAILED"
             ri.messages.create(
                 message_type=u"ERROR",
