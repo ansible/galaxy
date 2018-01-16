@@ -321,6 +321,13 @@ ADMIN_URL_PATTERN = r'^admin/'
 
 ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
 
+WORKER_DIR_BASE = None
+"""
+A base directory used by repository import task to clone repositories into.
+
+If set to `None`, system temporary directory is used.
+"""
+
 # =========================================================
 # Logging
 # =========================================================
@@ -389,6 +396,11 @@ LOGGING = {
             'propagate': True,
         },
         'galaxy.main': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'galaxy.worker': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,

@@ -32,3 +32,5 @@ psycopg2
 gevent>=0.13
 dj-database-url
 enum34
+six
+pytest
