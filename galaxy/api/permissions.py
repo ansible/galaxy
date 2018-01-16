@@ -26,9 +26,10 @@ from django.http import Http404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import permissions
 
-# AWX
-from galaxy.api.access import check_user_access
-from galaxy.api.utils import get_object_or_400
+# galaxy
+from .access import check_user_access
+from .utils import get_object_or_400
+from galaxy.main.models import Namespace
 
 logger = logging.getLogger('galaxy.api.permissions')
 
@@ -101,7 +102,7 @@ class ModelAccessPermission(permissions.BasePermission):
         active = getattr(obj, 'active', getattr(obj, 'is_active', True))
         if callable(active):
             active = active()
-        if not active and not isinstance(obj, AnonymousUser):
+        if not active and not isinstance(obj, AnonymousUser) and not isinstance(obj, Namespace):
             raise Http404()
 
         # Don't allow inactive users (and respond with a 403).

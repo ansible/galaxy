@@ -20,15 +20,19 @@
 
 (function(angular) {
 
-    var mod = angular.module('userService', ['ngResource']);
+    var mod = angular.module('menuController', []);
 
-    mod.factory('userService', ['$resource', _factory]);
+    mod.controller('MenuCtrl', ['$scope', '$log', '$location', '$window', _controller]);
 
-    function _factory($resource) {
-        return $resource('/api/v1/users/', null, {
-            'get':    {method:'GET'},
-            'query':  {method:'GET', isArray:false},
-        });
+    function _controller($scope, $log, $location, $window) {
+        $scope.redirectToSignin = _redirectToSignin;
+
+        function _redirectToSignin() {
+            var new_path = '/accounts/login/?next=' + encodeURIComponent('/list#' + $location.url());
+            $log.debug('Set next to: ' + new_path);
+            $window.location = new_path;
+        }
     }
+
 
 })(angular);

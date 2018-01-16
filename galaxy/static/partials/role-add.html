@@ -20,7 +20,7 @@
     <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
 
     <div class="container">
-        
+
         <div class="inner-container">
             <div class="instructions">
                 <h2>Import Your Content from GitHub</h2>
@@ -44,7 +44,7 @@
                     </div>
                     <div class="col-sm-6 tools">
                         <div class="search-roles">
-                            <input type="text" placeholder="Search" class="form-control input-sm" ng-model="searchText" ng-disabled="!repositories.length">
+                            <input type="text" placeholder="Search" class="form-control" ng-model="searchText" ng-disabled="!repositories.length">
                             <div class="search-icon"><i class="fa fa-search" ng-show="!searchText"></i></div>
                             <div class="search-icon"><i class="fa fa-times" ng-show="searchText" ng-click="searchText='';"></i></div>
                         </div>
@@ -63,14 +63,28 @@
                 <div class="row repository" ng-repeat="repo in repositories | filter:searchText">
                     <!-- http://jumplink.github.io/angular-toggle-switch/ -->
                     <div class="col-sm-9">
-                        <toggle-switch
+                        <input bs-switch
+                            ng-model="repo.is_enabled"
+                            type="checkbox"
+                            switch-readonly="{{ isReadonly }}"
+                            switch-size="{{ size }}"
+                            switch-animate="true"
+                            switch-label="{{ label }}"
+                            switch-icon="fa-check"
+                            switch-on-text="ON"
+                            switch-off-text="OFF"
+                            switch-active="{{ toggleActive }}"
+                            ng-change="toggleRepository(repo)"
+                            >
+                        <!--
+
+                            toggle-switch
                             class="switch-success switch-mini"
                             html="true"
                             ng-model="repo.is_enabled"
                             on-label='<i class="fa fa-check"></i>'
                             off-label='<i class="fa fa-times"></i>'
-                            ng-change="toggleRepository(repo)"
-                            is-disabled="repo.state == 'PENDING' || repo.state == 'RUNNING' || refreshing"></toggle-switch>
+                            ng-change="toggleRepository(repo)"></toggle-switch -->
                         <div class="settings">
                             <a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Role Settings" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a>
                         </div>

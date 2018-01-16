@@ -1,0 +1,29 @@
+{
+  "name": "galaxy",
+  "version": "2.5.0",
+  "description": "Galaxy UI",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "galaxy"
+  },
+  "keywords": [
+    "galaxy"
+  ],
+  "author": "Ansible by Red Hat",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "angular-bootstrap-switch": "^0.5.2",
+    "angular-cookies": "1.5",
+    "angular-patternfly": "^4.14.2",
+    "angular-resource": "1.5",
+    "angular-route": "1.5",
+    "angulartics": "^1.5.0",
+    "angulartics-google-analytics": "^0.4.0",
+    "ui-select": "^0.19.8",
+    "underscore": "^1.8.3"
+  }
+}

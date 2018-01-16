@@ -31,12 +31,12 @@
       'roleAddController',
       'githubRepoService',
       'currentUserService',
-      'toggle-switch',
       'importService',
       'roleService',
       'notificationSecretService',
-      'angulartics', 
-      'angulartics.google.analytics'
+      'angulartics',
+      'angulartics.google.analytics',
+      'frapontillo.bootstrap-switch'
     ]);
 
     accountsApp.config(['$routeProvider','$logProvider', '$resourceProvider', _config]);
