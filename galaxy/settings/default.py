@@ -373,6 +373,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'django.db': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
         'galaxy.api': {
             'handlers': ['console'],
             'level': 'DEBUG',
