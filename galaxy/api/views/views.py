@@ -19,7 +19,7 @@ import base64
 import json
 import logging
 import math
-import re
+
 # standard python libraries
 import sys
 from collections import OrderedDict
@@ -200,16 +200,14 @@ def filter_rating_queryset(qs):
 
 
 def create_import_task(
-        github_user, github_repo, github_branch, role, user,
+        github_branch, repository, user,
         travis_status_url='', travis_build_url='', alternate_role_name=None):
     task = ImportTask.objects.create(
-        github_user=github_user,
-        github_repo=github_repo,
         github_reference=github_branch,
         alternate_role_name=alternate_role_name,
         travis_status_url=travis_status_url,
         travis_build_url=travis_build_url,
-        role=role,
+        repository=repository,
         owner=user,
         state='PENDING'
     )
@@ -497,46 +495,30 @@ class ImportTaskList(ListCreateAPIView):
                        "and github_repo."))
 
         response = dict(results=[])
-        if Content.objects.filter(
-                repository__github_user=github_user,
-                repository__github_repo=github_repo,
-                active=True).count() > 1:
-            # multiple roles match github_user/github_repo
-            for role in Content.objects.filter(
-                    repository__github_user=github_user,
-                    repository__github_repo=github_repo,
-                    active=True):
-                task = create_import_task(
-                    github_user, github_repo, github_reference, role,
-                    request.user, travis_status_url='', travis_build_url='',
-                    alternate_role_name=alternate_role_name)
-                import_role.delay(task.id)
-                serializer = self.get_serializer(instance=task)
-                response['results'].append(serializer.data)
-        else:
-            repository, created = Repository.objects.get_or_create(
-                github_user=github_user,
-                github_repo=github_repo,
-                defaults={'is_enabled': False}
-            )
-            role, created = Content.objects.get_or_create(
-                # FIXME(cutwater): Use in-memory cache for content types
-                content_type=ContentType.get(ContentType.ROLE),
-                repository=repository,
-                active=True,
-                defaults={
-                    'namespace': github_user,
-                    'name': name,
-                    'is_valid': False,
-                }
-            )
-            task = create_import_task(
-                github_user, github_repo, github_reference, role, request.user,
-                travis_status_url='', travis_build_url='',
-                alternate_role_name=alternate_role_name)
-            serializer = self.get_serializer(instance=task)
-            response['results'].append(serializer.data)
-        return Response(response, status=status.HTTP_201_CREATED, headers=self.get_success_headers(response))
+        repository, _ = Repository.objects.get_or_create(
+            github_user=github_user,
+            github_repo=github_repo,
+            defaults={'is_enabled': False}
+        )
+        role, _ = Content.objects.get_or_create(
+            # FIXME(cutwater): Use in-memory cache for content types
+            content_type=ContentType.get(ContentType.ROLE),
+            repository=repository,
+            active=True,
+            defaults={
+                'namespace': github_user,
+                'name': name,
+                'is_valid': False,
+            }
+        )
+        task = create_import_task(
+            github_reference, repository, request.user,
+            travis_status_url='', travis_build_url='',
+            alternate_role_name=alternate_role_name)
+        serializer = self.get_serializer(instance=task)
+        response['results'].append(serializer.data)
+        return Response(response, status=status.HTTP_201_CREATED,
+                        headers=self.get_success_headers(response))
 
 
 class ImportTaskDetail(RetrieveAPIView):
@@ -562,7 +544,14 @@ class ImportTaskLatestList(ListAPIView):
     serializer_class = ImportTaskLatestSerializer
 
     def get_queryset(self):
-        return ImportTask.objects.values('owner_id', 'github_user', 'github_repo').annotate(last_id=Max('id')).order_by('owner_id', 'github_user', 'github_repo')
+        return (
+            ImportTask.objects
+            .values('owner_id', 'repository__github_user',
+                    'repository__github_repo')
+            .annotate(last_id=Max('id'))
+            .order_by('owner_id', 'repository__github_user',
+                      'repository__github_repo')
+        )
 
 
 class UserRepositoriesList(SubListAPIView):
@@ -1011,74 +1000,38 @@ class NotificationList(ListCreateAPIView):
             commit=payload['commit']
         )
 
-        # FIXME(cutwater): Pair of github_user and github_repo is now unique
-        if Content.objects.filter(
-                repository__github_user=github_user,
-                repository__github_repo=github_repo,
-                active=True).count() > 1:
-            # multiple roles associated with github_user/github_repo
-            for role in Content.objects.filter(
-                    repository__github_user=github_user,
-                    repository__github_repo=github_repo,
-                    active=True):
-                notification.roles.add(role)
-                role.travis_status_url = travis_status_url
-                role.travis_build_url = payload['build_url']
-                role.save()
-                task = create_import_task(
-                    role.github_user,
-                    role.github_repo,
-                    None,
-                    role,
-                    owner,
-                    travis_status_url,
-                    payload['build_url'])
-                notification.imports.add(task)
-        else:
-            regex = re.compile(r'^(ansible[-_.+]*)*(role[-_.+]*)*')
-            name = github_repo.strip().replace(".", "_")
-            if name in ['ansible', 'Ansible']:
-                # Remove ansible-, ansible-role, role-. from repo name
-                name = regex.sub('', name)
+        repository, _ = Repository.objects.get_or_create(
+            github_user=github_user,
+            github_repo=github_repo,
+            defaults={'is_enabled': False})
 
-            repository, created = Repository.objects.get_or_create(
-                github_user=github_user,
-                github_repo=github_repo,
-                defaults={'is_enabled': False}
-            )
+        role, _ = Content.objects.update_or_create(
+            # FIXME(cutwater): Use in-memory cache for content types
+            content_type=ContentType.get(ContentType.ROLE),
+            repository=repository,
+            active=True,
+            defaults={
+                'namespace': github_user,
+                'name': github_repo,
+                'github_default_branch': 'master',
+                'travis_status_url': travis_status_url,
+                'travis_build_url': payload['build_url'],
+                'is_valid': False,
+            }
+        )
+        notification.roles.add(role)
 
-            role, created = Content.objects.get_or_create(
-                # FIXME(cutwater): Use in-memory cache for content types
-                content_type=ContentType.get(ContentType.ROLE),
-                repository=repository,
-                active=True,
-                defaults={
-                    'namespace': github_user,
-                    'name': name,
-                    'github_default_branch': 'master',
-                    'travis_status_url': travis_status_url,
-                    'travis_build_url': payload['build_url'],
-                    'is_valid': False,
-                }
-            )
-            notification.roles.add(role)
-            role.travis_status_url = travis_status_url
-            role.travis_build_url = payload['build_url']
-            role.save()
-            task = create_import_task(
-                role.github_user,
-                role.github_repo,
-                None,
-                role,
-                owner,
-                travis_status_url,
-                payload['build_url'])
-            notification.imports.add(task)
-
+        task = create_import_task(
+            github_branch=None, repository=role.repository, user=owner,
+            travis_status_url=travis_status_url,
+            travis_build_url=payload['build_url'])
+        notification.imports.add(task)
         notification.save()
+
         serializer = self.get_serializer(instance=notification)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
     def _check_authorized(self, signature, public_key, payload):
         """
@@ -1452,16 +1405,12 @@ class RemoveRole(APIView):
                                         platforms=role.get_unique_platforms())
 
         # Update the repository cache
-        repo = Repository.objects.filter(github_user=gh_user, github_repo=gh_repo).first()
-        if repo:
-            repo.is_enabled = False
-            repo.save()
+        repo = Repository.objects.get(github_user=gh_user, github_repo=gh_repo)
+        repo.is_enabled = False
+        repo.save()
 
-        Content.objects.filter(
-            repository__github_user=gh_user,
-            repository__github_repo=gh_repo
-        ).delete()
-        ImportTask.objects.filter(github_user=gh_user, github_repo=gh_repo).delete()
+        Content.objects.filter(repository=repo).delete()
+        ImportTask.objects.filter(repository=repo).delete()
 
         return Response(response)
 

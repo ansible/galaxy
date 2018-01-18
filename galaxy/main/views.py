@@ -412,7 +412,8 @@ class RoleDetailView(DetailView):
         context['videos'] = role.videos.all()
 
         context['imports'] = []
-        for imp_task in role.import_tasks.all().order_by('-id')[:10]:
+        for imp_task in (role.repository.import_tasks
+                         .all().order_by('-id')[:10]):
             context['imports'].append({
                 'finished': imp_task.finished,
                 'state': imp_task.state

@@ -493,13 +493,11 @@ class RepositorySerializer(BaseSerializer):
                 ('namespace', r.namespace),
                 ('name', r.name),
                 ('last_import', dict())
-            ]) for r in Content.objects.filter(
-                repository__github_user=obj.github_user,
-                repository__github_repo=obj.github_repo)
+            ]) for r in Content.objects.filter(repository=obj)
         ]
         for role in d['roles']:
             tasks = list(
-                ImportTask.objects.filter(role__id=role['id'])
+                ImportTask.objects.filter(repository=obj)
                 .order_by('-id'))
             if len(tasks) > 0:
                 role['last_import']['id'] = tasks[0].id
@@ -608,15 +606,17 @@ class NotificationSerializer(BaseSerializer):
 
 
 class ImportTaskSerializer(BaseSerializer):
+    github_user = serializers.SerializerMethodField()
+    github_repo = serializers.SerializerMethodField()
+
     class Meta:
         model = ImportTask
         fields = (
             'id',
+            'github_reference',
             'github_user',
             'github_repo',
-            'github_reference',
-            'github_branch',
-            'role',
+            'repository',
             'owner',
             'alternate_role_name',
             'celery_task_id',
@@ -626,10 +626,6 @@ class ImportTaskSerializer(BaseSerializer):
             'modified',
             'created',
             'active',
-            'stargazers_count',
-            'watchers_count',
-            'forks_count',
-            'open_issues_count',
             'commit',
             'commit_message',
             'commit_url',
@@ -654,7 +650,7 @@ class ImportTaskSerializer(BaseSerializer):
             return {}
         res = super(ImportTaskSerializer, self).get_related(obj)
         res.update(dict(
-            role=reverse('api:role_detail', args=(obj.role_id,)),
+            role=reverse('api:repository_detail', args=(obj.repository_id,)),
             notifications=reverse('api:import_task_notification_list', args=(obj.pk,)),
         ))
         return res
@@ -663,14 +659,6 @@ class ImportTaskSerializer(BaseSerializer):
         if obj is None:
             return {}
         d = super(ImportTaskSerializer, self).get_summary_fields(obj)
-        d['role'] = OrderedDict([
-            ('id', obj.role.id),
-            ('namespace', obj.role.namespace),
-            ('name', obj.role.name),
-            ('is_valid', obj.role.is_valid),
-            ('active', obj.role.active),
-        ])
-
         d['notifications'] = [OrderedDict([
             ('id', n.id),
             ('travis_build_url', n.travis_build_url),
@@ -686,10 +674,18 @@ class ImportTaskSerializer(BaseSerializer):
         ]) for g in obj.messages.all().order_by('id')]
         return d
 
+    def get_github_user(self, obj):
+        return obj.repository.github_user
+
+    def get_github_repo(self, obj):
+        return obj.repository.github_repo
+
 
 class ImportTaskLatestSerializer(BaseSerializer):
     id = serializers.SerializerMethodField()
     owner_id = serializers.SerializerMethodField()
+    github_user = serializers.SerializerMethodField()
+    github_repo = serializers.SerializerMethodField()
 
     class Meta:
         model = ImportTask
@@ -705,28 +701,14 @@ class ImportTaskLatestSerializer(BaseSerializer):
             return {}
         d = super(ImportTaskLatestSerializer, self).get_summary_fields(obj)
         g = ImportTask.objects.get(id=obj['last_id'])
-        r = Content.objects.get(id=g.role.id)
         d['details'] = OrderedDict([
             ('id', g.id),
             ('state', g.state),
-            ('github_user', g.github_user),
-            ('github_repo', g.github_repo),
+            ('github_user', g.repository.github_user),
+            ('github_repo', g.repository.github_repo),
             ('github_reference', g.github_reference),
-            ('github_branch', g.github_branch),
-            ('role', g.role.id),
             ('modified', g.modified),
             ('created', g.created),
-            ('stargazers_count', g.stargazers_count),
-            ('watchers_count', g.watchers_count),
-            ('forks_count', g.forks_count),
-            ('open_issues_count', g.open_issues_count),
-            ('commit', g.commit),
-            ('commit_message', g.commit_message),
-            ('commit_url', g.commit_url)
-        ])
-        d['role'] = OrderedDict([
-            ('id', r.id),
-            ('is_valid', r.is_valid),
         ])
         return d
 
@@ -741,6 +723,12 @@ class ImportTaskLatestSerializer(BaseSerializer):
 
     def get_owner_id(self, obj):
         return obj['owner_id']
+
+    def get_github_user(self, obj):
+        return obj['repository__github_user']
+
+    def get_github_repo(self, obj):
+        return obj['repository__github_repo']
 
 
 class RoleListSerializer(BaseSerializer):

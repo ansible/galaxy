@@ -257,9 +257,9 @@ class ContentType(BaseModel):
     name = models.CharField(max_length=512, unique=True, db_index=True)
     description = TruncatingCharField(max_length=255, blank=True, default='')
 
-    # @classmethod
-    # def get(cls, content_type):
-    #     return cls.objects.get(name=content_type.value)
+    @classmethod
+    def get(cls, content_type):
+        return cls.objects.get(name=content_type)
 
 
 class Content(CommonModelNameNotUnique):
@@ -492,7 +492,8 @@ class Content(CommonModelNameNotUnique):
 
     def get_last_import(self):
         try:
-            return model_to_dict(self.import_tasks.latest(), fields=('id', 'state'))
+            return model_to_dict(self.repository.import_tasks.latest(),
+                                 fields=('id', 'state'))
         except:
             return dict()
 
@@ -709,30 +710,22 @@ class ImportTask(PrimordialModel):
         ordering = ('-id',)
         get_latest_by = 'created'
 
-    github_user = models.CharField(
-        max_length=256,
-        verbose_name="Github Username",
+    repository = models.ForeignKey(
+        'Repository',
+        related_name='import_tasks',
     )
-    github_repo = models.CharField(
-        max_length=256,
-        verbose_name="Github Repository",
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='import_tasks',
+        db_index=True,
     )
+
     github_reference = models.CharField(
         max_length=256,
         verbose_name="Github Reference",
         null=True,
         blank=True,
         default=''
-    )
-    role = models.ForeignKey(
-        Content,
-        related_name='import_tasks',
-        db_index=True,
-    )
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name='import_tasks',
-        db_index=True,
     )
     alternate_role_name = models.CharField(
         max_length=256,
@@ -761,18 +754,6 @@ class ImportTask(PrimordialModel):
     )
 
     # GitHub repo attributes at time of import
-    stargazers_count = models.IntegerField(
-        default=0
-    )
-    watchers_count = models.IntegerField(
-        default=0
-    )
-    forks_count = models.IntegerField(
-        default=0
-    )
-    open_issues_count = models.IntegerField(
-        default=0
-    )
     github_branch = models.CharField(
         max_length=256,
         blank=True,
@@ -803,9 +784,6 @@ class ImportTask(PrimordialModel):
         default='',
         verbose_name="Travis Build URL"
     )
-
-    def __unicode__(self):
-        return "%d-%s" % (self.id, self.started.strftime("%Y%m%d-%H%M%S-%Z"))
 
     def validate_char_lengths(self):
         for field in self._meta.get_fields():
