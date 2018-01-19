@@ -237,7 +237,7 @@ class Migration(migrations.Migration):
                     max_length=256, null=True,
                     verbose_name=b'Web Site URL', blank=True)),
                 ('owners', models.ManyToManyField(
-                    related_name='+', to=settings.AUTH_USER_MODEL)),
+                    related_name='namespaces', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'ordering': ('name',),
