@@ -69,7 +69,6 @@ class CommonModel(PrimordialModel):
         abstract = True
 
     name = models.CharField(max_length=512, unique=True, db_index=True)
-    original_name = models.CharField(max_length=512)
 
 
 class CommonModelNameNotUnique(PrimordialModel):
@@ -79,7 +78,6 @@ class CommonModelNameNotUnique(PrimordialModel):
         abstract = True
 
     name = models.CharField(max_length=512, unique=False, db_index=True)
-    original_name = models.CharField(max_length=512)
 
 
 # Actual models
