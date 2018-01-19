@@ -51,20 +51,6 @@ class BaseModel(models.Model, DirtyMixin):
         else:
             return u'%s-%s' % (self._meta.verbose_name, self.id)
 
-    def save(self, *args, **kwargs):
-        # For compatibility with Django 1.4.x, attempt to handle any calls to
-        # save that pass update_fields.
-        try:
-            super(BaseModel, self).save(*args, **kwargs)
-        except TypeError:
-            if 'update_fields' not in kwargs:
-                raise
-            kwargs.pop('update_fields')
-            super(BaseModel, self).save(*args, **kwargs)
-
-    def hasattr(self, attr):
-        return hasattr(self, attr)
-
 
 class PrimordialModel(BaseModel):
     """Base model for CommonModel and CommonModelNameNotUnique."""
@@ -74,31 +60,6 @@ class PrimordialModel(BaseModel):
 
     description = TruncatingCharField(max_length=255, blank=True, default='')
     active = models.BooleanField(default=True, db_index=True)
-
-    def mark_inactive(self, save=True):
-        """Use instead of delete to rename and mark inactive."""
-
-        if self.active:
-            if 'name' in self._meta.get_all_field_names():
-                self.original_name = self.name
-                self.name = "_deleted_%s_%s" % (now().isoformat(), self.name)
-            self.active = False
-            if save:
-                self.save()
-
-    def mark_active(self, save=True):
-        """
-        If previously marked inactive, this function reverses the
-        renaming and sets the active flag to true.
-        """
-
-        if not self.active:
-            if self.original_name != "":
-                self.name = self.original_name
-                self.original_name = ""
-            self.active = True
-            if save:
-                self.save()
 
 
 class CommonModel(PrimordialModel):

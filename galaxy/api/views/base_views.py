@@ -15,38 +15,30 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-# Python
-
 import inspect
 import warnings
 import logging
 
-# Django
 from django.http import Http404
 from django.core.paginator import InvalidPage
-from django.db import transaction, IntegrityError
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
-# Django REST Framework
 from rest_framework.authentication import get_authorization_header
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import generics
-from rest_framework.response import Response
 from rest_framework.request import clone_request
-from rest_framework import status
 from rest_framework import views
 
-# local
-from ..access import check_user_access
-from ..utils import get_object_or_400, camelcase_to_underscore
+from galaxy.api.access import check_user_access
+from galaxy.api.utils import camelcase_to_underscore
+
 
 # FIXME: machinery for auto-adding audit trail logs to all CREATE/EDITS
-
 __all__ = [
     'APIView', 'GenericAPIView', 'ListAPIView', 'ListCreateAPIView',
-    'SubListAPIView', 'SubListCreateAPIView', 'RetrieveAPIView',
+    'SubListAPIView', 'RetrieveAPIView',
     'RetrieveUpdateAPIView', 'RetrieveUpdateDestroyAPIView',
 ]
 
@@ -54,10 +46,10 @@ logger = logging.getLogger('galaxy.api.base_views')
 
 
 def get_view_name(cls, suffix=None):
-    '''
+    """
     Wrapper around REST framework get_view_name() to support get_name() method
     and view_name property on a view class.
-    '''
+    """
     name = ''
     if hasattr(cls, 'get_name') and callable(cls.get_name):
         name = cls().get_name()
@@ -72,10 +64,10 @@ def get_view_name(cls, suffix=None):
 
 
 def get_view_description(cls, html=False):
-    '''
+    """
     Wrapper around REST framework get_view_description() to support
     get_description() method and view_description property on a view class.
-    '''
+    """
     if hasattr(cls, 'get_description') and callable(cls.get_description):
         desc = cls().get_description(html=html)
         cls = type(cls.__name__, (object,), {'__doc__': desc})
@@ -106,7 +98,8 @@ class APIView(views.APIView):
             req_hdr = get_authorization_header(request)
             if not req_hdr:
                 continue
-            if resp_hdr.split()[0] and resp_hdr.split()[0] == req_hdr.split()[0]:
+            if (resp_hdr.split()[0]
+                    and resp_hdr.split()[0] == req_hdr.split()[0]):
                 return resp_hdr
         return super(APIView, self).get_authenticate_header(request)
 
@@ -127,11 +120,12 @@ class APIView(views.APIView):
 
 
 class GenericAPIView(generics.GenericAPIView, APIView):
-    # Base class for all model-based views.
+    """Base class for all model-based views.
 
-    # Subclasses should define:
-    #   model = ModelClass
-    #   serializer_class = SerializerClass
+    Subclasses should define:
+      model = ModelClass
+      serializer_class = SerializerClass
+    """
 
     def get_queryset(self):
         qs = self.model.objects.all().distinct()
@@ -149,17 +143,19 @@ class GenericAPIView(generics.GenericAPIView, APIView):
             self.format_kwarg = 'format'
         d = super(GenericAPIView, self).get_description_context()
         d.update({
-            'model_verbose_name': unicode(self.model._meta.verbose_name),
-            'model_verbose_name_plural': unicode(self.model._meta.verbose_name_plural),
+            'model_verbose_name': unicode(
+                self.model._meta.verbose_name),
+            'model_verbose_name_plural': unicode(
+                self.model._meta.verbose_name_plural),
             'serializer_fields': self.get_serializer().metadata(),
         })
         return d
 
     def metadata(self, request):
-        '''
+        """
         Add field information for GET requests (so field names/labels are
         available even when we can't POST/PUT).
-        '''
+        """
         ret = super(GenericAPIView, self).metadata(request)
         actions = ret.get('actions', {})
         # Remove read only fields from PUT/POST data.
@@ -189,7 +185,8 @@ class GenericAPIView(generics.GenericAPIView, APIView):
                 pass
             else:
                 # If user has appropriate permissions for the view, include
-                # appropriate metadata about the fields that should be supplied.
+                # appropriate metadata about the fields that
+                # should be supplied.
                 serializer = self.get_serializer()
                 actions['GET'] = serializer.metadata()
         if actions:
@@ -218,13 +215,6 @@ class GenericAPIView(generics.GenericAPIView, APIView):
             page_size = self.get_paginate_by()
             if not page_size:
                 return None
-        # if not self.allow_empty:
-        #      warnings.warn(
-        #          'The `allow_empty` parameter is due to be deprecated. '
-        #          'To use `allow_empty=False` style behavior, You should override '
-        #          '`get_queryset()` and explicitly raise a 404 on empty querysets.',
-        #          PendingDeprecationWarning, stacklevel=2
-        #      )
 
         paginator = self.paginator_class(queryset, page_size,
                                          allow_empty_first_page=True)
@@ -237,7 +227,8 @@ class GenericAPIView(generics.GenericAPIView, APIView):
             if page == 'last':
                 page_number = paginator.num_pages
             else:
-                raise Http404("Page is not 'last', nor can it be converted to an int.")
+                raise Http404("Page is not 'last', nor can it be "
+                              "converted to an int.")
         try:
             page = paginator.page(page_number)
         except InvalidPage as e:
@@ -260,7 +251,7 @@ class GenericAPIView(generics.GenericAPIView, APIView):
 
 
 class ListAPIView(generics.ListAPIView, GenericAPIView):
-    # Base class for a read-only list view.
+    """Base class for a read-only list view."""
 
     def get_description_context(self):
         opts = self.model._meta
@@ -285,7 +276,7 @@ class ListAPIView(generics.ListAPIView, GenericAPIView):
 
 
 class ListCreateAPIView(ListAPIView, generics.ListCreateAPIView):
-    # Base class for a list view that allows creating new objects.
+    """Base class for a list view that allows creating new objects."""
 
     def pre_save(self, obj):
         if hasattr(self.model, 'owner'):
@@ -293,22 +284,25 @@ class ListCreateAPIView(ListAPIView, generics.ListCreateAPIView):
 
 
 class SubListAPIView(ListAPIView):
-    # Base class for a read-only sublist view.
+    """Base class for a read-only sublist view.
 
-    # Subclasses should define at least:
-    #   model = ModelClass
-    #   serializer_class = SerializerClass
-    #   parent_model = ModelClass
-    #   relationship = 'rel_name_from_parent_to_model'
-    # And optionally (user must have given access permission on parent object
-    # to view sublist):
-    #   parent_access = 'read'
+    Subclasses should define at least:
+      model = ModelClass
+      serializer_class = SerializerClass
+      parent_model = ModelClass
+      relationship = 'rel_name_from_parent_to_model'
+    And optionally (user must have given access permission on parent object
+    to view sublist):
+      parent_access = 'read'
+    """
 
     def get_description_context(self):
         d = super(SubListAPIView, self).get_description_context()
         d.update({
-            'parent_model_verbose_name': unicode(self.parent_model._meta.verbose_name),
-            'parent_model_verbose_name_plural': unicode(self.parent_model._meta.verbose_name_plural),
+            'parent_model_verbose_name': unicode(
+                self.parent_model._meta.verbose_name),
+            'parent_model_verbose_name_plural': unicode(
+                self.parent_model._meta.verbose_name_plural),
         })
         return d
 
@@ -326,7 +320,8 @@ class SubListAPIView(ListAPIView):
         else:
             args = (parent_access, parent, None)
         if not check_user_access(self.request.user, self.parent_model, *args):
-            # logger.debug('check_parent_access: parent_access=%s parent=%s', parent_access, parent.__class__.__name__)
+            # logger.debug('check_parent_access: parent_access=%s parent=%s',
+            # parent_access, parent.__class__.__name__)
             raise PermissionDenied()
 
     def get_queryset(self):
@@ -335,173 +330,6 @@ class SubListAPIView(ListAPIView):
         qs = self.model.objects.all().distinct()
         sublist_qs = getattr(parent, self.relationship).distinct()
         return qs & sublist_qs
-
-
-class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
-    # Base class for a sublist view that allows for creating subobjects and
-    # attaching/detaching them from the parent.
-
-    # In addition to SubListAPIView properties, subclasses may define (if the
-    # sub_obj requires a foreign key to the parent):
-    #   parent_key = 'field_on_model_referring_to_parent'
-
-    def get_description_context(self):
-        d = super(SubListCreateAPIView, self).get_description_context()
-        d.update({
-            'parent_key': getattr(self, 'parent_key', None),
-        })
-        return d
-
-    def create(self, request, *args, **kwargs):
-        # If the object ID was not specified, it probably doesn't exist in the
-        # DB yet. We want to see if we can create it.  The URL may choose to
-        # inject it's primary key into the object because we are posting to a
-        # subcollection. Use all the normal access control mechanisms.
-
-        # Make a copy of the data provided (since it's readonly) in order to
-        # inject additional data.
-
-        if hasattr(request.DATA, 'dict'):
-            data = request.DATA.dict()
-        else:
-            data = request.DATA
-
-        # add the parent key to the post data using the pk from the URL
-        parent_key = getattr(self, 'parent_key', None)
-        # logger.debug('SubListCreateAPIView.create: parent_key=%s', parent_key)
-        if parent_key:
-            data[parent_key] = self.kwargs['pk']
-        # logger.debug('SubListCreateAPIView.create: data.parent_key=%s', data[parent_key])
-
-        # attempt to deserialize the object
-        try:
-            serializer = self.serializer_class(data=data)
-            if not serializer.is_valid():
-                # logger.debug('SubListCreateAPIView.create: serializer failed validation')
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Exception, e:
-            # logger.debug('SubListCreateAPIView.create: serializer threw an error')
-            return Response("serializer errors", status=status.HTTP_400_BAD_REQUEST)
-
-        # Verify we have permission to add the object as given.
-        if not check_user_access(request.user, self.model, 'add', serializer.validated_data):
-            # logger.debug('SubListCreateAPIView.create: permission denied user=%s model=%s action=add',
-            #             request.user, self.model._meta.verbose_name)
-            raise PermissionDenied()
-
-        # save the object through the serializer, reload and return the saved
-        # object deserialized
-
-        try:
-            self.pre_save(serializer.validated_data)
-            obj = serializer.save()
-            data = self.serializer_class(obj).data
-        except IntegrityError, e:
-            return Response("database integrity conflict", status=status.HTTP_409_CONFLICT)
-        except Exception, e:
-            return Response("unknown error: %s" % str(e), status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(data, status=status.HTTP_201_CREATED)
-
-    @transaction.atomic
-    def attach(self, request, *args, **kwargs):
-        attached = False
-        created = False
-        modified = False
-        parent = self.get_parent_object()
-        relationship = getattr(parent, self.relationship)
-        sub_id = request.DATA.get('id', None)
-        data = request.DATA
-
-        # Create the sub object if an ID is not provided.
-        if not sub_id:
-            try:
-                response = self.create(request, *args, **kwargs)
-                if response.status_code != status.HTTP_201_CREATED:
-                    return response
-                sub_id = response.data['id']
-                data = response.data
-                try:
-                    location = response['Location']
-                except KeyError:
-                    location = None
-                created = True
-            except Exception:
-                raise PermissionDenied()
-
-        # Retrive the sub object (whether created or by ID).
-        sub = get_object_or_400(self.model, pk=sub_id)
-
-        # likewise with creation, we never try and update
-        if not created:
-            # Update the object to make sure the data is correct, but
-            # verify we have permission to edit before trying to update
-            if not check_user_access(request.user, self.model, 'change', sub, data):
-                raise PermissionDenied()
-            else:
-                sub.__dict__.update(data)
-                if sub.is_dirty:
-                    sub.save()
-                    modified = True
-
-        # Verify we have permission to attach.
-        if not check_user_access(request.user, self.parent_model,
-                                 'attach', parent, sub,
-                                 self.relationship, data,
-                                 skip_sub_obj_read_check=created):
-            raise PermissionDenied()
-
-        # Attach the object to the collection.
-        if sub not in relationship.all():
-            relationship.add(sub)
-            attached = True
-
-        if created:
-            headers = {}
-            if location:
-                headers['Location'] = location
-            return Response(data, status=status.HTTP_201_CREATED, headers=headers)
-        elif modified or attached:
-            return Response(data, status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def unattach(self, request, *args, **kwargs):
-        sub_id = request.DATA.get('id', None)
-        if not sub_id:
-            data = dict(msg='"id" is required to disassociate')
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-        parent = self.get_parent_object()
-        parent_key = getattr(self, 'parent_key', None)
-        relationship = getattr(parent, self.relationship)
-        sub = get_object_or_400(self.model, pk=sub_id)
-
-        # if not request.user.can_access(self.parent_model, 'unattach', parent,
-        if not check_user_access(request.user, self.parent_model, 'unattach',
-                                 parent, sub, self.relationship):
-            raise PermissionDenied()
-
-        if parent_key:
-            # sub object has a ForeignKey to the parent, so we can't remove it
-            # from the set, only mark it as inactive.
-            sub.mark_inactive()
-        else:
-            relationship.remove(sub)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def post(self, request, *args, **kwargs):
-        if not isinstance(request.DATA, dict):
-            return Response('invalid type for post data',
-                            status=status.HTTP_400_BAD_REQUEST)
-        if 'disassociate' in request.DATA:
-            return self.unattach(request, *args, **kwargs)
-        else:
-            return self.attach(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
 
 
 class RetrieveAPIView(generics.RetrieveAPIView, GenericAPIView):
@@ -517,27 +345,19 @@ class RetrieveUpdateAPIView(RetrieveAPIView, generics.RetrieveUpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         self.update_filter(request, *args, **kwargs)
-        return super(RetrieveUpdateAPIView, self).update(request, *args, **kwargs)
+        return super(RetrieveUpdateAPIView, self).update(
+            request, *args, **kwargs)
 
     def update_filter(self, request, *args, **kwargs):
-        ''' scrub any fields the user cannot/should not put/patch, based on user context.  This runs after read-only serialization filtering '''
+        """Scrub any fields the user cannot/should not put/patch,
+        based on user context.
+
+        This runs after read-only serialization filtering.
+        """
         pass
 
 
-class RetrieveUpdateDestroyAPIView(RetrieveUpdateAPIView, generics.RetrieveUpdateDestroyAPIView):
+class RetrieveUpdateDestroyAPIView(
+        RetrieveUpdateAPIView,
+        generics.RetrieveUpdateDestroyAPIView):
     pass
-#     def destroy(self, request, *args, **kwargs):
-#         # somewhat lame that delete has to call it's own permissions check
-#         obj = self.get_object()
-#         # FIXME: Why isn't the active check being caught earlier by RBAC?
-#         if getattr(obj, 'active', True) == False:
-#             raise Http404()
-#         if getattr(obj, 'is_active', True) == False:
-#             raise Http404()
-#         if not check_user_access(request.user, self.model, 'delete', obj):
-#             raise PermissionDenied()
-#         if hasattr(obj, 'mark_inactive'):
-#             obj.mark_inactive()
-#         else:
-#             raise NotImplementedError('destroy() not implemented yet for %s' % obj)
-#         return HttpResponse(status=204)

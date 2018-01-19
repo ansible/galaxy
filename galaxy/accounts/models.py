@@ -83,16 +83,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     def __unicode__(self):
         return self.username
 
-    def mark_inactive(self, save=True):
-        '''Use instead of delete to rename and mark inactive.'''
-
-        if self.is_active:
-            if 'username' in self._meta.get_all_field_names():
-                self.name = "_deleted_%s_%s" % (timezone.now().isoformat(), self.username)
-            self.is_active = False
-            if save:
-                self.save()
-
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.username)
 
