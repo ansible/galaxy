@@ -91,6 +91,32 @@ VALUES
   (CURRENT_DATE, CURRENT_DATE, 'Public GitHub', 'GitHub', 'GitHub', true)
 """
 
+ADD_MISSING_OWNERS = """
+INSERT INTO main_namespace_owners (
+  namespace_id,
+  customuser_id
+)
+SELECT DISTINCT
+  a.namespace_id,
+  a.customuser_id
+FROM (
+  SELECT
+    c.id AS namespace_id,
+    a.customuser_id AS customuser_id
+  FROM 
+    main_repository_owners a,
+    main_repository b,
+    main_namespace c
+  WHERE 
+    a.repository_id = b.id
+    AND b.github_user = c.name
+) AS a
+LEFT JOIN main_namespace_owners AS b
+    ON a.namespace_id = b.namespace_id
+    AND a.customuser_id = b.customuser_id
+WHERE b.namespace_id IS NULL
+"""
+
 
 class Migration(migrations.Migration):
 
@@ -219,14 +245,13 @@ class Migration(migrations.Migration):
             bases=(models.Model, galaxy.main.mixins.DirtyMixin),
         ),
 
-        migrations.RunSQL(
-            sql=(
-              ADD_GITHUB_PROVIDER,
-              ADD_REPO_GITHUB_USERS,
-              ADD_ROLE_NAMESPACE,
-              NAMESPACE_FROM_PROVIDER_NAMESPACE,
-              SET_PROVIDER_NAMESPACE_FK,
-              ADD_NAMESPACE_OWNERS
-            )
-        ),
+        migrations.RunSQL(sql=(
+            ADD_GITHUB_PROVIDER,
+            ADD_REPO_GITHUB_USERS,
+            ADD_ROLE_NAMESPACE,
+            NAMESPACE_FROM_PROVIDER_NAMESPACE,
+            SET_PROVIDER_NAMESPACE_FK,
+            ADD_NAMESPACE_OWNERS,
+            ADD_MISSING_OWNERS,
+        )),
     ]
