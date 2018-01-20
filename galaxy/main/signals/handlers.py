@@ -20,15 +20,14 @@ import logging
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.exceptions import ObjectDoesNotExist
 
 # allauth
 from allauth.account.signals import user_logged_in
-from allauth.socialaccount.models import SocialToken
+from allauth.socialaccount.models import SocialAccount
 
 # local
-from galaxy.main.models import ImportTask
-from galaxy.main.celerytasks.tasks import refresh_user_repos, refresh_user_stars
+from galaxy.main.models import ImportTask, Namespace, Provider, ProviderNamespace
 
 
 logger = logging.getLogger(__name__)
@@ -38,34 +37,40 @@ User = get_user_model()
 
 @receiver(user_logged_in)
 def user_logged_in_handler(request, user, **kwargs):
-    if user.repositories.count() > 1:
-        # User has entries in cache already, so no need to delay the login process.
-        user.cache_refreshed = True
-        user.save()
+    if user.namespaces.count():
+        # User is associated with one or more namespaces. Even though the Namespaces may be inactive, we'll
+        # assume the user has been here before, and knows how to manage Namespaces
+        return
+
+    # User is not associated with any Namespaces, so we'll attempt to create one, along with associated Provider
+    # Namespaces
+    namespace = None
+    for provider in Provider.objects.all():
         try:
-            token = SocialToken.objects.get(account__user=user, account__provider='github')
-            refresh_user_stars.delay(user, token.token)
+            social = SocialAccount.objects.get(provider__iexact=provider.name.lower(), user=user)
         except ObjectDoesNotExist:
-            logger.error(u'GitHub token not found for user: {}'.format(user.username))
-        except MultipleObjectsReturned:
-            logger.error(u'Found multiple GitHub tokens for user: {}'.format(user.username))
-    else:
-        # No entries found in cache, wait for a refresh to happen.
-        user.cache_refreshed = False
-        user.save()
-        try:
-            # Kick off a refresh
-            token = SocialToken.objects.get(account__user=user, account__provider='github')
-            refresh_user_repos.delay(user, token.token)
-            refresh_user_stars.delay(user, token.token)
-        except ObjectDoesNotExist:
-            logger.error(u'GitHub token not found for user: {}'.format(user.username))
-            user.cache_refreshed = True
-            user.save()
-        except MultipleObjectsReturned:
-            logger.error(u'Found multiple GitHub tokens for user: {}'.format(user.username))
-            user.cache_refreshed = True
-            user.save()
+            continue
+
+        if provider.name.lower() == 'github':
+            login = social.extra_data.get('login')
+            name = social.extra_data.get('name')
+            defaults = {
+                'description': name,
+                'avatar_url': social.extra_data.get('avatar_url'),
+                'location': social.extra_data.get('location'),
+                'company': social.extra_data.get('company'),
+                'email': social.extra_data.get('email'),
+                'html_url': social.extra_data.get('blog'),
+            }
+            if not namespace:
+                # Only create one Namespace
+                namespace, _ = Namespace.objects.get_or_create(name=login, defaults=defaults)
+                namespace.owners.add(user)
+            defaults['description'] = social.extra_data.get('bio')
+            defaults['followers'] = social.extra_data.get('followers')
+            defaults['display_name'] = social.extra_data.get('name')
+            ProviderNamespace.objects.get_or_create(namespace=namespace, name=login, provider=provider,
+                                                    defaults=defaults)
 
 
 @receiver(post_save, sender=ImportTask)
