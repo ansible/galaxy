@@ -19,9 +19,10 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms.models import model_to_dict
-
 from django.contrib.postgres.fields import ArrayField
+from django.utils import timezone
 
+from galaxy.main import constants
 from galaxy.main.fields import LooseVersionField, TruncatingCharField
 from galaxy.main.mixins import DirtyMixin
 
@@ -196,27 +197,14 @@ class Video(PrimordialModel):
 
 class ContentType(BaseModel):
     """A model that represents content type (e.g. role, module, etc.)."""
-    ROLE = 'role'
-    MODULE = 'module'
-    ACTION_PLUGIN = 'action_plugin'
-    CACHE_PLUGIN = 'cache_plugin'
-    CALLBACK_PLUGIN = 'callback_plugin'
-    CLICONF_PLUGIN = 'cliconf_plugin'
-    CONNECTION_PLUGIN = 'connection_plugin'
-    FILTER_PLUGIN = 'filter_plugin'
-    INVENTORY_PLUGIN = 'inventory_plugin'
-    LOOKUP_PLUGIN = 'lookup_plugin'
-    NETCONF_PLUGIN = 'netconf_plugin'
-    SHELL_PLUGIN = 'shell_plugin'
-    STRATEGY_PLUGIN = 'strategy_plugin'
-    TERMINAL_PLUGIN = 'terminal_plugin'
-    TEST_PLUGIN = 'test_plugin'
-
-    name = models.CharField(max_length=512, unique=True, db_index=True)
+    name = models.CharField(max_length=512, unique=True, db_index=True,
+                            choices=constants.ContentType.choices())
     description = TruncatingCharField(max_length=255, blank=True, default='')
 
     @classmethod
     def get(cls, content_type):
+        if isinstance(content_type, constants.ContentType):
+            content_type = content_type.value
         return cls.objects.get(name=content_type)
 
 
@@ -275,7 +263,7 @@ class Content(CommonModelNameNotUnique):
 
     repository = models.ForeignKey(
         'Repository',
-        related_name='role',
+        related_name='content_objects',
         editable=False,
         on_delete=models.PROTECT
     )
@@ -290,19 +278,16 @@ class Content(CommonModelNameNotUnique):
     # Regular fields
     # -------------------------------------------------------------------------
 
-    ANSIBLE = 'ANS'
-    CONTAINER = 'CON'
-    CONTAINER_APP = 'APP'
-    DEMO = 'DEM'
-    ROLE_TYPE_CHOICES = (
-        (ANSIBLE, 'Ansible'),
-        (CONTAINER, 'Container Enabled'),
-        (CONTAINER_APP, 'Container App'),
-        (DEMO, 'Demo')
-    )
+    # TODO(cutwater): Constants left for compatibility reasons. Should be
+    # removed in future.
+    ANSIBLE = constants.RoleType.ANSIBLE.value
+    CONTAINER = constants.RoleType.CONTAINER.value
+    CONTAINER_APP = constants.RoleType.CONTAINER_APP.value
+    DEMO = constants.RoleType.DEMO.value
+
     role_type = models.CharField(
         max_length=3,
-        choices=ROLE_TYPE_CHOICES,
+        choices=constants.RoleType.choices(),
         default=ANSIBLE,
         blank=False,
         editable=False,
@@ -663,10 +648,40 @@ class ContentVersion(CommonModelNameNotUnique):
         super(ContentVersion, self).save(*args, **kwargs)
 
 
+class ImportTaskMessage(PrimordialModel):
+    TYPE_INFO = constants.ImportTaskMessageType.INFO.value
+    TYPE_WARNING = constants.ImportTaskMessageType.WARNING.value
+    TYPE_SUCCESS = constants.ImportTaskMessageType.SUCCESS.value
+    # FIXME(cutwater): ERROR and FAILED types seem to be redundant
+    TYPE_FAILED = constants.ImportTaskMessageType.FAILED.value
+    TYPE_ERROR = constants.ImportTaskMessageType.ERROR.value
+
+    task = models.ForeignKey(
+        'ImportTask',
+        related_name='messages',
+    )
+    message_type = models.CharField(
+        max_length=10,
+        choices=constants.ImportTaskMessageType.choices(),
+    )
+    message_text = models.CharField(
+        max_length=256,
+    )
+
+    def __unicode__(self):
+        return "%d-%s-%s" % (self.task.id, self.message_type, self.message_text)
+
+
 class ImportTask(PrimordialModel):
     class Meta:
         ordering = ('-id',)
         get_latest_by = 'created'
+
+    # TODO(cutwater): Constants left for backward compatibility, to be removed
+    STATE_PENDING = constants.ImportTaskState.PENDING.value
+    STATE_RUNNING = constants.ImportTaskState.RUNNING.value
+    STATE_FAILED = constants.ImportTaskState.FAILED.value
+    STATE_SUCCESS = constants.ImportTaskState.SUCCESS.value
 
     repository = models.ForeignKey(
         'Repository',
@@ -698,7 +713,8 @@ class ImportTask(PrimordialModel):
     )
     state = models.CharField(
         max_length=20,
-        default='PENDING',
+        default=STATE_PENDING,
+        choices=constants.ImportTaskState.choices()
     )
     started = models.DateTimeField(
         auto_now_add=False,
@@ -749,22 +765,6 @@ class ImportTask(PrimordialModel):
                 # print "%s %s" % (field.name, field.max_length)
                 if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
                     raise Exception("Import Task %s value exceeeds max length of %s." % (field.name, field.max_length))
-
-
-class ImportTaskMessage(PrimordialModel):
-    task = models.ForeignKey(
-        ImportTask,
-        related_name='messages',
-    )
-    message_type = models.CharField(
-        max_length=10,
-    )
-    message_text = models.CharField(
-        max_length=256,
-    )
-
-    def __unicode__(self):
-        return "%d-%s-%s" % (self.task.id, self.message_type, self.message_text)
 
 
 class NotificationSecret(PrimordialModel):
