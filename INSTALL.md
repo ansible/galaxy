@@ -386,6 +386,7 @@ You will need the following installed on the host where Galaxy will be deployed:
 
 - [Docker](https://docs.docker.com/engine/installation/)
 - [docker-py](https://github.com/docker/docker-py) Python module
+- [docker-compose](https://github.com/docker/docker-compose) Python module
 
 Note: After installing Docker, the Docker service must be started. 
 
