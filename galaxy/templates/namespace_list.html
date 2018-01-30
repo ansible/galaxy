@@ -34,8 +34,8 @@
         <tbody>
         {% for item in object_list %}
         <tr>
-            <td><a href="/{{ item.namespace }}" class="namespace">{{ item.namespace }}</a></td>
-            <td class="text-center"><a href="https://github.com/{{ item.github_user }}" target="_blank" class="btn btn-default"><i class="fa fa-github"></i> View on GitHub</a></td>
+            <td><a href="/{{ item.name }}" class="namespace">{{ item.name }}</a></td>
+            <td class="text-center"><a href="https://github.com/{{ item.original_name }}" target="_blank" class="btn btn-default"><i class="fa fa-github"></i> View on GitHub</a></td>
         </tr>
         {% endfor %}
         {% if object_list.count == 0 %}

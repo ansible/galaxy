@@ -15,19 +15,16 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from django.core.management.base import BaseCommand
+import elasticsearch_dsl as es_dsl
+from django.core.management import base
 
-# elasticsearch
-from elasticsearch_dsl import Index
-
-# local
-from galaxy.main.models import Platform, CloudPlatform, Tag, Content
-from galaxy.main.search_models import (
-    TagDoc, CloudPlatformDoc, PlatformDoc, UserDoc)
+from galaxy.main import models
+from galaxy.main import search_models
 
 
-class Command(BaseCommand):
-    help = 'Rebuild custom elasticsearch indexes: galaxy_platforms, galaxy_tags'
+class Command(base.BaseCommand):
+    help = ('Rebuild custom elasticsearch indexes: '
+            'galaxy_platforms, galaxy_tags')
 
     def handle(self, *args, **options):
         self.rebuild_tags()
@@ -36,47 +33,65 @@ class Command(BaseCommand):
         self.rebuild_users()
 
     def rebuild_users(self):
-        galaxy_users = Index('galaxy_users')
-        galaxy_users.doc_type(UserDoc)
+        galaxy_users = es_dsl.Index('galaxy_users')
+        galaxy_users.doc_type(search_models.UserDoc)
         galaxy_users.delete(ignore=404)
         galaxy_users.create()
 
-        for role in Content.objects.filter(active=True, is_valid=True).order_by('namespace').distinct('namespace').all():
-            doc = UserDoc(username=role.namespace)
+        for role in (models.Content.objects
+                     .filter(active=True, is_valid=True)
+                     .order_by('namespace__name')
+                     .distinct('namespace__name').all()):
+            doc = search_models.UserDoc(username=role.namespace.name)
             doc.save()
 
     def rebuild_tags(self):
-        galaxy_tags = Index('galaxy_tags')
-        galaxy_tags.doc_type(TagDoc)
+        galaxy_tags = es_dsl.Index('galaxy_tags')
+        galaxy_tags.doc_type(search_models.TagDoc)
         galaxy_tags.delete(ignore=404)
         galaxy_tags.create()
 
-        for tag in Tag.objects.filter(active=True).all():
-            doc = TagDoc(tag=tag.name, roles=tag.get_num_roles())
+        for tag in models.Tag.objects.filter(active=True).all():
+            doc = search_models.TagDoc(tag=tag.name, roles=tag.get_num_roles())
             doc.meta.id = tag.id
             doc.save()
 
     def rebuild_platforms(self):
-        galaxy_platforms = Index('galaxy_platforms')
+        galaxy_platforms = es_dsl.Index('galaxy_platforms')
 
-        galaxy_platforms.doc_type(PlatformDoc)
+        galaxy_platforms.doc_type(search_models.PlatformDoc)
         galaxy_platforms.delete(ignore=404)
         galaxy_platforms.create()
 
-        for platform in Platform.objects.filter(active=True).distinct('name').all():
-            alias_list = [alias for alias in self.get_platform_search_terms(platform.name)]
+        for platform in (
+                models.Platform.objects.filter(active=True)
+                .distinct('name').all()):
+            alias_list = [alias for alias in
+                          self.get_platform_search_terms(platform.name)]
             alias_list = '' if len(alias_list) == 0 else alias_list
-            release_list = [p.release for p in Platform.objects.filter(active=True, name=platform.name)
-                            .order_by('release').distinct('release').all()]
-            search_name = 'Enterprise_Linux' if platform.name == 'EL' else platform.name
-            doc = PlatformDoc(
+
+            platforms = (
+                models.Platform.objects.filter(active=True, name=platform.name)
+                .order_by('release').distinct('release').all())
+            release_list = [p.release for p in platforms]
+
+            if platform.name == 'EL':
+                search_name = 'Enterprise_Linux'
+            else:
+                search_name = platform.name
+
+            roles_count = (
+                models.Content.objects.filter(
+                    active=True, is_valid=True, platforms__name=platform.name)
+                .order_by('namespace__name', 'content_type__name', 'name')
+                .distinct('namespace__name', 'content_type__name', 'name')
+                .count()
+            )
+
+            doc = search_models.PlatformDoc(
                 name=search_name,
                 releases=release_list,
-                roles=(Content.objects
-                       .filter(active=True, is_valid=True,
-                               platforms__name=platform.name)
-                       .order_by('namespace', 'name')
-                       .distinct('namespace', 'name').count()),
+                roles=roles_count,
                 alias=alias_list,
                 autocomplete="%s %s %s" % (
                     search_name,
@@ -86,32 +101,32 @@ class Command(BaseCommand):
             doc.save()
 
     def rebuild_cloud_platforms(self):
-        index = Index('galaxy_cloud_platforms')
+        index = es_dsl.Index('galaxy_cloud_platforms')
 
-        index.doc_type(CloudPlatformDoc)
+        index.doc_type(search_models.CloudPlatformDoc)
         index.delete(ignore=404)
         index.create()
 
-        for platform in CloudPlatform.objects.filter(active=True).all():
-            doc = CloudPlatformDoc(
-                name=platform.name,
-                roles=(
-                    Content.objects
-                    .filter(
-                        active=True, is_valid=True,
+        for platform in models.CloudPlatform.objects.filter(active=True).all():
+            roles_count = (
+                models.Content.objects
+                .filter(active=True, is_valid=True,
                         cloud_platforms__name=platform.name)
-                    .order_by('namespace', 'name')
-                    .distinct('namespace', 'name').count()),
+                .order_by('namespace__name', 'content_type__name', 'name')
+                .distinct('namespace__name', 'content_type__name', 'name')
+                .count())
+            doc = search_models.CloudPlatformDoc(
+                name=platform.name,
+                roles=roles_count,
                 autocomplete=platform.name,
             )
             doc.save()
 
     def get_platform_search_terms(self, name):
-        '''
-        Fetch the unique set of aliases for a given platform
-        '''
+        """Fetch the unique set of aliases for a given platform"""
         terms = []
-        for platform in Platform.objects.filter(active=True, name=name).all():
+        for platform in models.Platform.objects.filter(
+                active=True, name=name).all():
             if platform.alias:
                 terms += platform.alias.split(' ')
         return set(terms)

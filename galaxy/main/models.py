@@ -20,7 +20,6 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms.models import model_to_dict
 from django.contrib.postgres.fields import ArrayField
-from django.utils import timezone
 
 from galaxy.main import constants
 from galaxy.main.fields import LooseVersionField, TruncatingCharField
@@ -207,15 +206,18 @@ class ContentType(BaseModel):
             content_type = content_type.value
         return cls.objects.get(name=content_type)
 
+    def __str__(self):
+        return self.name
+
 
 class Content(CommonModelNameNotUnique):
     """A class representing a user role."""
 
     class Meta:
         unique_together = [
-            ('content_type', 'namespace', 'name')
+            ('namespace', 'content_type', 'name')
         ]
-        ordering = ['namespace', 'name']
+        ordering = ['namespace', 'content_type', 'name']
 
     # Foreign keys
     # -------------------------------------------------------------------------
@@ -274,6 +276,10 @@ class Content(CommonModelNameNotUnique):
         editable=False,
         on_delete=models.PROTECT,
     )
+    namespace = models.ForeignKey(
+        'Namespace',
+        related_name='content_objects',
+    )
 
     # Regular fields
     # -------------------------------------------------------------------------
@@ -292,17 +298,9 @@ class Content(CommonModelNameNotUnique):
         blank=False,
         editable=False,
     )
-    namespace = models.CharField(
+    original_name = models.CharField(
         max_length=256,
-        blank=True,
-        null=True,
-        verbose_name="Namespace",
-    )
-    github_branch = models.CharField(
-        max_length=256,
-        blank=True,
-        default='',
-        verbose_name="Github Branch"
+        null=False
     )
     github_default_branch = models.CharField(
         max_length=256,
@@ -399,39 +397,6 @@ class Content(CommonModelNameNotUnique):
     @property
     def github_repo(self):
         return self.repository.github_repo
-
-    # GitHub repo attributes
-    @property
-    def stargazers_count(self):
-        return self.repository.stargazers_count
-
-    @property
-    def watchers_count(self):
-        return self.repository.watchers_count
-
-    @property
-    def forks_count(self):
-        return self.repository.forks_count
-
-    @property
-    def open_issues_count(self):
-        return self.repository.open_issues_count
-
-    @property
-    def commit(self):
-        return self.repository.commit
-
-    @property
-    def commit_message(self):
-        return self.repository.commit_message
-
-    @property
-    def commit_url(self):
-        return self.repository.commit_url
-
-    @property
-    def commit_created(self):
-        return self.repository.commit_created
 
     def get_last_import(self):
         try:
@@ -728,12 +693,6 @@ class ImportTask(PrimordialModel):
     )
 
     # GitHub repo attributes at time of import
-    github_branch = models.CharField(
-        max_length=256,
-        blank=True,
-        default='',
-        verbose_name="Github Branch"
-    )
     commit = models.CharField(
         max_length=256,
         blank=True
@@ -864,24 +823,24 @@ class Notification(PrimordialModel):
 
 class Repository(BaseModel):
     class Meta:
-        unique_together = ('github_user', 'github_repo')
-        ordering = ('github_user', 'github_repo')
+        unique_together = ('provider_namespace', 'name')
+        ordering = ('provider_namespace', 'name')
 
     # Foreign keys
     owners = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='repositories'
     )
+    provider_namespace = models.ForeignKey(
+        ProviderNamespace,
+        related_name='repositories',
+    )
 
     # Fields
-    github_user = models.CharField(
-        max_length=256,
-        verbose_name="Github Username",
-    )
-    github_repo = models.CharField(
-        max_length=256,
-        verbose_name="Github Repository",
-    )
+    name = models.CharField(max_length=256)
+    original_name = models.CharField(max_length=256, null=False)
+
+    import_branch = models.CharField(max_length=256, null=True)
     is_enabled = models.BooleanField(default=False)
 
     # Repository attributes
@@ -895,8 +854,23 @@ class Repository(BaseModel):
     forks_count = models.IntegerField(default=0)
     open_issues_count = models.IntegerField(default=0)
 
+    @property
+    def clone_url(self):
+        return "https://github.com/{user}/{repo}.git".format(
+            user=self.github_user,
+            repo=self.github_repo
+        )
 
-class Subscription (PrimordialModel):
+    @property
+    def github_user(self):
+        return self.provider_namespace.name
+
+    @property
+    def github_repo(self):
+        return self.name
+
+
+class Subscription(PrimordialModel):
     class Meta:
         unique_together = ('owner', 'github_user', 'github_repo')
         ordering = ('owner', 'github_user', 'github_repo')
@@ -930,7 +904,7 @@ class Stargazer(BaseModel):
     )
 
 
-class RefreshRoleCount (PrimordialModel):
+class RefreshRoleCount(PrimordialModel):
     state = models.CharField(
         max_length=20
     )

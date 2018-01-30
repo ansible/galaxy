@@ -108,9 +108,12 @@ from galaxy.main.models import (Platform,
                                 NotificationSecret,
                                 Notification,
                                 Provider,
+                                ProviderNamespace,
                                 Repository,
                                 Subscription,
-                                Stargazer, )
+                                Stargazer)
+
+from galaxy.main import constants
 from galaxy.main.utils import camelcase_to_underscore
 
 # local stuff
@@ -209,7 +212,7 @@ def create_import_task(
         travis_build_url=travis_build_url,
         repository=repository,
         owner=user,
-        state='PENDING'
+        state=ImportTask.STATE_PENDING
     )
     import_role.delay(task.id)
     return task
@@ -295,7 +298,7 @@ class RoleTypes(APIView):
     view_name = 'Role Types'
 
     def get(self, request, format=None):
-        roles = [role for role in Content.ROLE_TYPE_CHOICES
+        roles = [role for role in constants.RoleType.choices()
                  if role[0] in settings.ROLE_TYPES_ENABLED]
         return Response(roles)
 
@@ -495,19 +498,27 @@ class ImportTaskList(ListCreateAPIView):
                        "and github_repo."))
 
         response = dict(results=[])
+        provider_namespace = ProviderNamespace.objects.get(
+            provider__name=constants.PROVIDER_GITHUB,
+            name=github_user
+        )
         repository, _ = Repository.objects.get_or_create(
-            github_user=github_user,
-            github_repo=github_repo,
-            defaults={'is_enabled': False}
+            provider_namespace=provider_namespace,
+            name=github_repo,
+            defaults={
+                'is_enabled': False,
+                'original_name': github_repo,
+            }
         )
         role, _ = Content.objects.get_or_create(
             # FIXME(cutwater): Use in-memory cache for content types
-            content_type=ContentType.get(ContentType.ROLE),
+            content_type=ContentType.get(constants.ContentType.ROLE),
             repository=repository,
             active=True,
             defaults={
-                'namespace': github_user,
+                'namespace': provider_namespace.namespace,
                 'name': name,
+                'original_name': name,
                 'is_valid': False,
             }
         )
@@ -546,12 +557,15 @@ class ImportTaskLatestList(ListAPIView):
     def get_queryset(self):
         return (
             ImportTask.objects
-            .values('owner_id', 'repository__github_user',
-                    'repository__github_repo')
-            .annotate(last_id=Max('id'))
-            .order_by('owner_id', 'repository__github_user',
-                      'repository__github_repo')
-        )
+            .values(
+                'owner_id',
+                'repository__provider_namespace__name',
+                'repository__name')
+            .order_by(
+                'owner_id',
+                'repository__provider_namespace__name',
+                'repository__name')
+            .annotate(last_id=Max('id')))
 
 
 class UserRepositoriesList(SubListAPIView):
@@ -1007,7 +1021,7 @@ class NotificationList(ListCreateAPIView):
 
         role, _ = Content.objects.update_or_create(
             # FIXME(cutwater): Use in-memory cache for content types
-            content_type=ContentType.get(ContentType.ROLE),
+            content_type=ContentType.get(constants.ContentType.ROLE),
             repository=repository,
             active=True,
             defaults={
@@ -1376,8 +1390,8 @@ class RemoveRole(APIView):
         ])
 
         roles = Content.objects.filter(
-            repository__github_user=gh_user,
-            repository__github_repo=gh_repo)
+            repository__provider_namespace__name=gh_user,
+            repository__name=gh_repo)
         cnt = len(roles)
         if cnt == 0:
             response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user, gh_repo)
@@ -1390,7 +1404,7 @@ class RemoveRole(APIView):
         for role in roles:
             response['deleted_roles'].append({
                 "id": role.id,
-                "namespace": role.namespace,
+                "namespace": role.namespace.name,
                 "name": role.name,
                 "github_user": role.github_user,
                 "github_repo": role.github_repo
@@ -1405,7 +1419,9 @@ class RemoveRole(APIView):
                                         platforms=role.get_unique_platforms())
 
         # Update the repository cache
-        repo = Repository.objects.get(github_user=gh_user, github_repo=gh_repo)
+        repo = Repository.objects.get(
+            provider_namespace__name=gh_user,
+            name=gh_repo)
         repo.is_enabled = False
         repo.save()
 

@@ -72,7 +72,7 @@
         <tbody>
             {% for role in roles %}
             <tr>
-                <td><a href="/{{ role.namespace }}/{{ role.name }}/">{{ role.name }}</a></td>
+                <td><a href="/{{ role.namespace.name }}/{{ role.name }}/">{{ role.name }}</a></td>
                 <td>
                     {{ role.description }}
                 </td>

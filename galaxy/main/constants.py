@@ -74,3 +74,6 @@ class ImportTaskState(DjangoEnum):
     RUNNING = ('RUNNING', 'RUNNING')
     FAILED = ('FAILED', 'FAILED')
     SUCCESS = ('SUCCESS', 'SUCCESS')
+
+
+PROVIDER_GITHUB = 'GitHub'

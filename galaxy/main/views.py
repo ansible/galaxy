@@ -28,7 +28,9 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 # local stuff
-from galaxy.main.models import Content, ProviderNamespace, ContentBlock
+from galaxy.main import constants
+from galaxy.main.models import (
+    Content, Namespace, ProviderNamespace, ContentBlock)
 
 # rst2html5-tools
 from html5css3 import Writer
@@ -254,17 +256,16 @@ def handle_500_view(request):
 
 
 class NamespaceListView(ListView):
-    model = 'Content'
+    model = 'Namespace'
     template_name = 'namespace_list.html'
     context_object_name = 'namespaces'
     paginate_by = 20
 
     def get_queryset(self):
         author = self.request.GET.get('author')
+        qs = Namespace.objects.filter(active=True)
         if author:
-            qs = Content.objects.filter(active=True, is_valid=True, namespace__icontains=author).order_by('namespace').distinct('namespace')
-        else:
-            qs = Content.objects.filter(active=True, is_valid=True).order_by('namespace').distinct('namespace')
+            qs = qs.filter(name__icontains=author)
         return qs
 
     def get_context_data(self, **kwargs):
@@ -297,28 +298,33 @@ class RoleListView(ListView):
     context_object_name = 'roles'
 
     def get_queryset(self):
-        self.namespace = self.args[0]
+        namespace = self.args[0]
+
+        self.namespace = get_object_or_404(Namespace, name=namespace)
         name = self.request.GET.get('role', None)
-        if Content.objects.filter(namespace=self.args[0]).count() == 0:
+        if Content.objects.filter(namespace=self.namespace).count() == 0:
             raise Http404()
         if name:
-            qs = Content.objects.filter(active=True, is_valid=True, namespace=self.args[0],
-                                        name__icontains=name)
+            qs = Content.objects.filter(
+                active=True, is_valid=True,
+                namespace=self.namespace,
+                name__icontains=name)
         else:
-            qs = Content.objects.filter(active=True, is_valid=True, namespace=self.args[0])
+            qs = Content.objects.filter(
+                active=True, is_valid=True,
+                namespace=self.namespace)
         return qs
 
     def get_context_data(self, **kwargs):
         context = super(RoleListView, self).get_context_data(**kwargs)
 
-        ns = None
         context['namespace'] = None
-        if ProviderNamespace.objects.filter(namespace=self.namespace).count() > 0:
-            ns = ProviderNamespace.objects.get(namespace=self.namespace)
-        else:
+        ns = ProviderNamespace.objects.filter(namespace=self.namespace).first()
+        if ns is None:
             try:
                 roles = list(self.get_queryset())
-                ns = ProviderNamespace.objects.get(namespace=roles[0].github_user)
+                ns = ProviderNamespace.objects.get(
+                    namespace=roles[0].github_user)
             except:
                 pass
 
@@ -334,12 +340,12 @@ class RoleListView(ListView):
                 description=ns.description
             )
 
-        context['namespace_name'] = self.namespace
+        context['namespace_name'] = self.namespace.name
         context['search_value'] = self.request.GET.get('role', '')
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False
         context["page_title"] = self.namespace
-        context["meta_description"] = "Roles contributed by %s." % self.namespace
+        context["meta_description"] = "Roles contributed by %s." % self.namespace.name
         return context
 
 
@@ -349,11 +355,13 @@ class RoleDetailView(DetailView):
     context_object_name = 'role'
 
     def get_object(self, queryset=None):
-        self.namespace = self.args[0]
+        namespace_name = self.args[0]
         self.name = self.args[1]
-        self.role = get_object_or_404(Content, namespace=self.namespace,
-                                      name=self.name, active=True,
-                                      is_valid=True)
+
+        self.namespace = get_object_or_404(Namespace, name=namespace_name)
+        self.role = get_object_or_404(
+            Content, namespace=self.namespace, name=self.name,
+            active=True, is_valid=True)
         return self.role
 
     def get_context_data(self, **kwargs):
@@ -378,7 +386,8 @@ class RoleDetailView(DetailView):
         context['name'] = self.name
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False
-        context["meta_description"] = "Content %s.%s - %s" % (self.role.namespace, self.role.name, self.role.description)
+        context["meta_description"] = "Content %s.%s - %s" % (
+            self.role.namespace.name, self.role.name, self.role.description)
 
         try:
             gh_user = User.objects.get(github_user=self.role.github_user)
@@ -419,9 +428,9 @@ class RoleDetailView(DetailView):
                 'state': imp_task.state
             })
 
-        for type in Content.ROLE_TYPE_CHOICES:
-            if type[0] == role.role_type:
-                context['role_type'] = type[1]
+        for tp in constants.RoleType.choices():
+            if tp[0] == role.role_type:
+                context['role_type'] = tp[1]
         if role.role_type == Content.ANSIBLE:
             context['install_command'] = 'ansible-galaxy install'
         elif role.role_type == Content.CONTAINER:
@@ -435,7 +444,7 @@ class RoleDetailView(DetailView):
                 'release_date': ver.release_date
             })
         context['import_date'] = role.imported
-        context['last_commit_date'] = role.commit_created
+        context['last_commit_date'] = role.repository.commit_created
         context['readme_html'] = readme_to_html(role)
         context['page_title'] = "%s.%s" % (self.namespace, self.name)
         return context

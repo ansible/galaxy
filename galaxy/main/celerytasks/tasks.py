@@ -560,8 +560,7 @@ def update_role_videos(import_task, role, videos=None):
                 role.videos.create(url=video['embed_url'], description=video['description'])
 
 
-@task(name="galaxy.main.celerytasks.tasks.import_role",
-      throws=(Exception,))
+@task(name="galaxy.main.celerytasks.tasks.import_role")
 def import_role(task_id):
     try:
         logger.info(u"Starting task: %d" % int(task_id))
@@ -608,8 +607,6 @@ def import_role(task_id):
     # determine which branch to use
     if import_task.github_reference:
         branch = import_task.github_reference
-    elif role.github_branch:
-        branch = role.github_branch
     else:
         branch = repo.default_branch
 
