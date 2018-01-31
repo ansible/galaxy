@@ -257,7 +257,8 @@ class NamespaceDetail(RetrieveUpdateDestroyAPIView):
                 setattr(instance, item, data[item])
         instance.save()
 
-        update_provider_namespaces(instance, data['provider_namespaces'])
+        if 'provider_namespaces' in data:
+            update_provider_namespaces(instance, data['provider_namespaces'])
 
         serializer = self.get_serializer(instance=instance)
         return Response(serializer.data)

@@ -22,7 +22,8 @@ import logging
 from django.contrib.auth import get_user_model
 from galaxy.main.models import (Content, ImportTask,
                                 ImportTaskMessage, ContentVersion,
-                                NotificationSecret, Notification,
+                                Namespace, NotificationSecret, Notification,
+                                ProviderNamespace,
                                 Subscription, Stargazer)
 
 logger = logging.getLogger('galaxy.api.access')
@@ -263,6 +264,28 @@ class StargazerAccess(BaseAccess):
         return self.user.is_authenticated()
 
 
+class NamespaceAccess(BaseAccess):
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, data):
+        return self.user.is_authenticated()
+
+    def can_delete(self, data):
+        return False
+
+
+class ProviderNamespaceAccess(BaseAccess):
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, data):
+        return self.user.is_authenticated()
+
+    def can_delete(self, data):
+        return False
+
+
 register_access(User, UserAccess)
 register_access(Content, RoleAccess)
 register_access(ContentVersion, RoleVersionAccess)
@@ -272,3 +295,5 @@ register_access(NotificationSecret, NotificationSecretAccess)
 register_access(Notification, NotificationAccess)
 register_access(Subscription, SubscriptionAccess)
 register_access(Stargazer, StargazerAccess)
+register_access(Namespace, NamespaceAccess)
+register_access(ProviderNamespace, ProviderNamespaceAccess)
