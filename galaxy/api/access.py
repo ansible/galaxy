@@ -24,6 +24,7 @@ from galaxy.main.models import (Content, ImportTask,
                                 ImportTaskMessage, ContentVersion,
                                 Namespace, NotificationSecret, Notification,
                                 ProviderNamespace,
+                                Repository,
                                 Subscription, Stargazer)
 
 logger = logging.getLogger('galaxy.api.access')
@@ -246,7 +247,7 @@ class SubscriptionAccess(BaseAccess):
     def can_add(self, data):
         return self.user.is_authenticated()
 
-    def can_change(self, data):
+    def can_change(self, obj, data):
         return False
 
     def can_delete(self, data):
@@ -257,7 +258,7 @@ class StargazerAccess(BaseAccess):
     def can_add(self, data):
         return self.user.is_authenticated()
 
-    def can_change(self, data):
+    def can_change(self, obj, data):
         return False
 
     def can_delete(self, data):
@@ -268,7 +269,7 @@ class NamespaceAccess(BaseAccess):
     def can_add(self, data):
         return self.user.is_authenticated()
 
-    def can_change(self, data):
+    def can_change(self, obj, data):
         return self.user.is_authenticated()
 
     def can_delete(self, data):
@@ -276,14 +277,31 @@ class NamespaceAccess(BaseAccess):
 
 
 class ProviderNamespaceAccess(BaseAccess):
+    def can_read(self, obj):
+        return True
+
     def can_add(self, data):
         return self.user.is_authenticated()
 
-    def can_change(self, data):
+    def can_change(self, obj, data):
         return self.user.is_authenticated()
 
     def can_delete(self, data):
-        return False
+        return self.user.is_authenticated()
+
+
+class RepositoryAccess(BaseAccess):
+    def can_read(self, obj):
+        return True
+
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, obj, data):
+        return self.user.is_authenticated()
+
+    def can_delete(self, data):
+        return self.user.is_authenticated()
 
 
 register_access(User, UserAccess)
@@ -297,3 +315,4 @@ register_access(Subscription, SubscriptionAccess)
 register_access(Stargazer, StargazerAccess)
 register_access(Namespace, NamespaceAccess)
 register_access(ProviderNamespace, ProviderNamespaceAccess)
+register_access(Repository, RepositoryAccess)

@@ -49,11 +49,13 @@ from django.utils.dateparse import parse_datetime
 from drf_haystack.viewsets import HaystackViewSet
 # elasticsearch dsl
 from elasticsearch_dsl import Search, Q
+
 # TODO move all github interactions to githubapi
 # Github
 from github import Github
 from github.GithubException import GithubException
 from haystack.query import SearchQuerySet
+
 # rest framework stuff
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
@@ -83,7 +85,6 @@ from galaxy.api.serializers import (MeSerializer,
                                     ImportTaskSerializer,
                                     ImportTaskLatestSerializer,
                                     ProviderSerializer,
-                                    RoleListSerializer,
                                     RoleDetailSerializer,
                                     RoleSearchSerializer,
                                     ElasticSearchDSLSerializer)
@@ -149,13 +150,9 @@ __all__ = [
     'ProviderRootView',
     'RefreshUserRepos',
     'RemoveRole',
-    'RepositoryDetail',
-    'RepositoryList',
     'RoleDependenciesList',
-    'RoleDetail',
     'RoleDownloads',
     'RoleImportTaskList',
-    'RoleList',
     'RoleNotificationList',
     'RoleSearchView',
     'RoleTypes',
@@ -252,12 +249,13 @@ class ApiV1RootView(APIView):
         data['platforms'] = reverse('api:platform_list')
         data['cloud_platforms'] = reverse('api:cloud_platform_list')
         data['imports'] = reverse('api:import_task_list')
-        data['repos'] = reverse('api:repos_view')
+        data['repositories'] = reverse('api:repository_list')
         data['latest imports'] = reverse('api:import_task_latest_list')
         data['namespaces'] = reverse('api:namespace_list')
         data['notification secrets'] = reverse('api:notification_secret_list')
         data['notifications'] = reverse('api:notification_list')
         data['providers'] = reverse('api:provider_root_view')
+        data['provider_namespaces'] = reverse('api:provider_namespace_list')
         data['tokens'] = reverse('api:token')
         data['search'] = reverse('api:search_view')
         data['remove role'] = reverse('api:remove_role')
@@ -279,6 +277,7 @@ class ActiveProviderList(ListAPIView):
     """ Active providers """
     model = Provider
     serializer_class = ProviderSerializer
+    permission_classes = (AllowAny,)
 
     def get_queryset(self):
         return self.model.objects.filter(active=True)
@@ -288,6 +287,7 @@ class ActiveProviderDetail(RetrieveAPIView):
     """ Active providers """
     model = Provider
     serializer_class = ProviderSerializer
+    permission_classes = (AllowAny,)
 
     def get_queryset(self):
         return self.model.objects.filter(active=True)
@@ -432,46 +432,6 @@ class RoleDownloads(APIView):
         obj.download_count += 1
         obj.save()
         return Response(status=status.HTTP_201_CREATED)
-
-
-class RoleList(ListAPIView):
-    model = Content
-    serializer_class = RoleListSerializer
-    throttle_scope = 'download_count'
-
-    def list(self, request, *args, **kwargs):
-        if request.query_params.get('owner__username'):
-            params = {}
-            for key, val in request.query_params.items():
-                if key == 'owner__username':
-                    params['namespace'] = val
-                else:
-                    params[key] = val
-            qs = self.get_queryset()
-            qs = qs.filter(**params)
-            page = self.paginate_queryset(qs)
-            if page is not None:
-                serializer = self.get_pagination_serializer(page)
-            else:
-                serializer = self.get_serializer(qs, many=True)
-            return Response(serializer.data)
-        return super(RoleList, self).list(self, request, *args, **kwargs)
-
-    def get_queryset(self):
-        qs = super(RoleList, self).get_queryset()
-        qs = qs.prefetch_related('platforms', 'tags', 'versions', 'dependencies')
-        return filter_role_queryset(qs)
-
-
-class RoleDetail(RetrieveAPIView):
-    model = Content
-    serializer_class = RoleDetailSerializer
-
-    def get_object(self, qs=None):
-        obj = super(RoleDetail, self).get_object()
-        if not obj.is_valid or not obj.active:
-            raise Http404()
-        return obj
 
 
 class ImportTaskList(ListCreateAPIView):
@@ -1431,19 +1391,19 @@ class RemoveRole(APIView):
         return Response(response)
 
 
-class RepositoryList(ListAPIView):
-    model = Repository
-    serializer_class = RepositorySerializer
-
-    def get_queryset(self):
-        qs = super(RepositoryList, self).get_queryset()
-        qs.select_related('owner')
-        return qs
-
-
-class RepositoryDetail(RetrieveAPIView):
-    model = Repository
-    serializer_class = RepositorySerializer
+# class RepositoryList(ListAPIView):
+#     model = Repository
+#     serializer_class = RepositorySerializer
+#
+#     def get_queryset(self):
+#         qs = super(RepositoryList, self).get_queryset()
+#         qs.select_related('owner')
+#         return qs
+#
+#
+# class RepositoryDetail(RetrieveAPIView):
+#     model = Repository
+#     serializer_class = RepositorySerializer
 
 
 class RefreshUserRepos(APIView):

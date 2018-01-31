@@ -491,6 +491,9 @@ class Provider(CommonModel):
     class Meta:
         ordering = ('name',)
 
+    def get_absolute_url(self):
+        return reverse('api:active_provider_detail', args=(self.pk,))
+
 
 class ProviderNamespace(PrimordialModel):
     """
@@ -537,42 +540,45 @@ class ProviderNamespace(PrimordialModel):
         max_length=256,
         blank=True,
         null=True,
-        editable=False,
+        editable=True,
         verbose_name="Avatar URL"
     )
     location = models.CharField(
         max_length=256,
         blank=True,
         null=True,
-        editable=False,
+        editable=True,
         verbose_name="Location"
     )
     company = models.CharField(
         max_length=256,
         blank=True,
         null=True,
-        editable=False,
+        editable=True,
         verbose_name="Company Name"
     )
     email = models.CharField(
         max_length=256,
         blank=True,
         null=True,
-        editable=False,
+        editable=True,
         verbose_name="Email Address"
     )
     html_url = models.CharField(
         max_length=256,
         blank=True,
         null=True,
-        editable=False,
+        editable=True,
         verbose_name="Web Site URL"
     )
     followers = models.IntegerField(
         null=True,
-        editable=False,
+        editable=True,
         verbose_name="Followers"
     )
+
+    def get_absolute_url(self):
+        return reverse('api:provider_namespace_detail', args=(self.pk,))
 
 
 class ContentVersion(CommonModelNameNotUnique):
@@ -839,7 +845,7 @@ class Repository(BaseModel):
     # Fields
     name = models.CharField(max_length=256)
     original_name = models.CharField(max_length=256, null=False)
-
+    description = TruncatingCharField(max_length=255, blank=True, default='')
     import_branch = models.CharField(max_length=256, null=True)
     is_enabled = models.BooleanField(default=False)
 
@@ -847,8 +853,7 @@ class Repository(BaseModel):
     commit = models.CharField(max_length=256, blank=True, default='')
     commit_message = models.CharField(max_length=256, blank=True, default='')
     commit_url = models.CharField(max_length=256, blank=True, default='')
-    commit_created = models.DateTimeField(
-        null=True, verbose_name="Laste Commit DateTime")
+    commit_created = models.DateTimeField(null=True, verbose_name="Last Commit DateTime")
     stargazers_count = models.IntegerField(default=0)
     watchers_count = models.IntegerField(default=0)
     forks_count = models.IntegerField(default=0)
@@ -868,6 +873,9 @@ class Repository(BaseModel):
     @property
     def github_repo(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('api:repository_detail', args=(self.pk,))
 
 
 class Subscription(PrimordialModel):

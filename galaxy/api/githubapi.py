@@ -15,6 +15,7 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import logging
 
 from github import Github
 from github.GithubException import GithubException
@@ -24,21 +25,27 @@ from django.core.exceptions import ObjectDoesNotExist
 from galaxy.main.models import Provider
 
 
+logger = logging.getLogger(__name__)
+
+
 class GithubAPI(object):
 
-    def __init__(self, user=None, provider_name=None):
+    def __init__(self, user=None):
         self.user = user
         self.client = self.get_client()
-        self.provider_name = provider_name if provider_name else self.get_provider_name()
+        provider = self.get_provider()
+        self.provider_name = provider.name
+        self.provider_id = provider.id
 
-    def get_provider_name(self):
+    @staticmethod
+    def get_provider():
         try:
             provider = Provider.objects.get(name__iexact='github', active=True)
         except ObjectDoesNotExist:
             raise Exception(
                 "No provider found for GitHub"
             )
-        return provider.name
+        return provider
 
     def get_client(self):
         try:
@@ -63,7 +70,7 @@ class GithubAPI(object):
             source = {
                 'name': gh_user.login,
                 'description': gh_user.bio,
-                'provider': self.provider_name,
+                'provider': self.provider_name.lower(),
                 'display_name': gh_user.name,
                 'avatar_url': gh_user.avatar_url,
                 'location': gh_user.location,
@@ -79,7 +86,7 @@ class GithubAPI(object):
                 source = {
                     'name': org.login,
                     'description': org.description if hasattr(org, 'description') else None,
-                    'provider': self.provider_name,
+                    'provider': self.provider_name.lower(),
                     'display_name': org.name,
                     'avatar_url': org.avatar_url,
                     'location': org.location,
@@ -94,3 +101,44 @@ class GithubAPI(object):
                 "Failed to access GitHub authorized user. {0} - {1}".format(exc.data, exc.status)
             )
         return result
+
+    def get_namespace_repositories(self, namespace, name=None):
+        """ Return a list of repositories for a given namespace """
+        gh_user = self.client.get_user()
+        repos = []
+        for gh_repo in gh_user.get_repos(type='public'):
+            if gh_repo.owner.login == namespace:
+                repo = {
+                    'provider_id': self.provider_id,
+                    'provider': self.provider_name.lower(),
+                    'provider_namespace': namespace,
+                    'name': gh_repo.name,
+                    'description': gh_repo.description,
+                    'default_branch': gh_repo.default_branch,
+                    'stargazers_count': gh_repo.stargazers_count,
+                    'open_issues_count': gh_repo.open_issues_count,
+                    'forks_count': gh_repo.forks_count
+                }
+
+                if not name:
+                    repos.append(repo)
+                elif gh_repo.name == name:
+                    try:
+                        commits = gh_repo.get_commits()
+                        commit = commits[0].commit
+                    except GithubException:
+                        repo['commit'] = None
+                        repo['commit_message'] = None
+                        repo['commit_url'] = None
+                        repo['commit_created'] = None
+                    else:
+                        repo['commit'] = commit.sha
+                        repo['commit_message'] = commit.message
+                        repo['commit_url'] = commit.url
+                        repo['commit_created'] = commit.author.date
+                    repo['watchers_count'] = 0
+                    for _ in gh_repo.get_subscribers():
+                        repo['watchers_count'] += 1
+                    repos.append(repo)
+                    break
+        return repos
