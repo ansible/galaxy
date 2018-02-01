@@ -126,14 +126,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     def get_subscriber(self, github_user, github_repo):
         try:
             return self.subscriptions.get(
-                github_user=github_user, github_repo=github_repo)
+                github_user=github_user,
+                github_repo=github_repo)
         except exceptions.ObjectDoesNotExist:
             return None
 
     def get_stargazer(self, github_user, github_repo):
         try:
-            star = self.starred.get(repository__github_user=github_user,
-                                    repository__github_repo=github_repo)
+            star = self.starred.get(
+                repository__provider_namespace__name=github_user,
+                repository__name=github_repo)
             return star
         except exceptions.ObjectDoesNotExist:
             return None

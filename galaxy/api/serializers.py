@@ -460,6 +460,9 @@ class RoleVersionSerializer(BaseSerializer):
 
 
 class RepositorySerializer(BaseSerializer):
+    github_user = serializers.SerializerMethodField()
+    github_repo = serializers.SerializerMethodField()
+
     class Meta:
         model = Repository
         fields = ('id', 'owners', 'github_user', 'github_repo', 'is_enabled')
@@ -490,7 +493,7 @@ class RepositorySerializer(BaseSerializer):
         d['roles'] = [
             OrderedDict([
                 ('id', r.id),
-                ('namespace', r.namespace),
+                ('namespace', r.namespace.name),
                 ('name', r.name),
                 ('last_import', dict())
             ]) for r in Content.objects.filter(repository=obj)
@@ -503,6 +506,12 @@ class RepositorySerializer(BaseSerializer):
                 role['last_import']['id'] = tasks[0].id
                 role['last_import']['state'] = tasks[0].state
         return d
+
+    def get_github_user(self, obj):
+        return obj.provider_namespace.name
+
+    def get_github_repo(self, obj):
+        return obj.name
 
 
 class TopContributorsSerializer(serializers.BaseSerializer):
@@ -725,10 +734,10 @@ class ImportTaskLatestSerializer(BaseSerializer):
         return obj['owner_id']
 
     def get_github_user(self, obj):
-        return obj['repository__github_user']
+        return obj['repository__provider_namespace__name']
 
     def get_github_repo(self, obj):
-        return obj['repository__github_repo']
+        return obj['repository__name']
 
 
 class RoleListSerializer(BaseSerializer):
