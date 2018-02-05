@@ -15,7 +15,6 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import markdown
 import json
 
 from rest_framework import serializers
@@ -32,7 +31,6 @@ from drf_haystack.serializers import HaystackSerializer
 
 # galaxy
 from galaxy.main.search_indexes import RoleIndex
-from galaxy.api.utils import html_decode
 from galaxy.main.models import (Platform,
                                 CloudPlatform,
                                 Category,
@@ -40,18 +38,11 @@ from galaxy.main.models import (Platform,
                                 Content,
                                 ImportTask,
                                 ContentVersion,
-                                Namespace,
                                 NotificationSecret,
                                 Notification,
-                                Provider,
-                                Repository,
                                 Subscription,
                                 Stargazer
                                 )
-
-# rst2html5-tools
-from html5css3 import Writer
-from docutils.core import publish_string
 
 __all__ = [
     'BaseSerializer',
@@ -61,22 +52,18 @@ __all__ = [
     'SubscriptionSerializer',
     'StargazerSerializer',
     'CategorySerializer',
+    'CloudPlatformSerializer',
     'TagSerializer',
     'PlatformSerializer',
     'RoleVersionSerializer',
-    'RepositorySerializer',
     'TopContributorsSerializer',
-    'NamespaceSerializer',
     'NotificationSecretSerializer',
     'NotificationSerializer',
     'ImportTaskSerializer',
     'ImportTaskLatestSerializer',
-    'ProviderSerializer',
-    'RoleListSerializer',
     'RoleTopSerializer',
-    'RoleDetailSerializer',
     'RoleSearchSerializer',
-    'ElasticSearchDSLSerializer'
+    'ElasticSearchDSLSerializer',
 ]
 
 
@@ -91,33 +78,6 @@ SUMMARIZABLE_FK_FIELDS = {
     'owner': ('id', 'url', 'username', 'full_name', 'avatar_url'),
     'role': ('id', 'url', 'name',),
 }
-
-
-def readme_to_html(obj):
-    if obj is None or obj.readme is None:
-        return ''
-    content = ''
-    if obj.readme_type is None or obj.readme_type == 'md':
-        try:
-            content = markdown.markdown(html_decode(obj.readme), extensions=['extra'])
-        except:
-            content = "Failed to convert README to HTML. Galaxy now stores the GitHub generated HTML for your " \
-                      "README. If you re-import this role, the HTML will show up, and this message will go away."
-
-    if obj.readme_type == 'rst':
-        settings = {'input_encoding': 'utf8'}
-        try:
-            content = publish_string(
-                source=obj.readme,
-                writer=Writer(),
-                writer_name='html5css3',
-                settings_overrides=settings,
-            ).decode('utf8')
-        except:
-            content = "Failed to convert README to HTML. Galaxy now stores the GitHub generated HTML for your " \
-                      "README. If you re-import this role, the HTML will show up, and this message will go away."
-
-    return content
 
 
 class BaseSerializer(serializers.ModelSerializer):
@@ -227,10 +187,10 @@ class BaseSerializer(serializers.ModelSerializer):
             except AttributeError:
                 return None
 
-    def validate_description(self, attrs, source):
-        # Description should always be empty string, never null.
-        attrs[source] = attrs.get(source, None) or ''
-        return attrs
+    # def validate_description(self, attrs, source):
+    #     # Description should always be empty string, never null.
+    #     attrs[source] = attrs.get(source, None) or ''
+    #     return attrs
 
 
 class MeSerializer(BaseSerializer):
@@ -459,59 +419,59 @@ class RoleVersionSerializer(BaseSerializer):
         fields = ('id', 'name', 'release_date',)
 
 
-class RepositorySerializer(BaseSerializer):
-    github_user = serializers.SerializerMethodField()
-    github_repo = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Repository
-        fields = ('id', 'owners', 'github_user', 'github_repo', 'is_enabled')
-
-    def get_url(self, obj):
-        if obj is None:
-            return ''
-        elif isinstance(obj, Repository):
-            return reverse('api:repository_detail', args=(obj.pk,))
-        else:
-            return obj.get_absolute_url()
-
-    def get_summary_fields(self, obj):
-        if obj is None:
-            return {}
-        d = super(RepositorySerializer, self).get_summary_fields(obj)
-        d['notification_secrets'] = [
-            OrderedDict([
-                ('id', s.id),
-                ('github_user', s.github_user),
-                ('github_repo', s.github_repo),
-                ('source', s.source),
-                ('secret', '******' + s.secret[-4:]),
-            ]) for s in NotificationSecret.objects.filter(
-                github_user=obj.github_user,
-                github_repo=obj.github_repo)
-        ]
-        d['roles'] = [
-            OrderedDict([
-                ('id', r.id),
-                ('namespace', r.namespace.name),
-                ('name', r.name),
-                ('last_import', dict())
-            ]) for r in Content.objects.filter(repository=obj)
-        ]
-        for role in d['roles']:
-            tasks = list(
-                ImportTask.objects.filter(repository=obj)
-                .order_by('-id'))
-            if len(tasks) > 0:
-                role['last_import']['id'] = tasks[0].id
-                role['last_import']['state'] = tasks[0].state
-        return d
-
-    def get_github_user(self, obj):
-        return obj.provider_namespace.name
-
-    def get_github_repo(self, obj):
-        return obj.name
+# class RepositorySerializer(BaseSerializer):
+#     github_user = serializers.SerializerMethodField()
+#     github_repo = serializers.SerializerMethodField()
+#
+#     class Meta:
+#         model = Repository
+#         fields = ('id', 'owners', 'github_user', 'github_repo', 'is_enabled')
+#
+#     def get_url(self, obj):
+#         if obj is None:
+#             return ''
+#         elif isinstance(obj, Repository):
+#             return reverse('api:repository_detail', args=(obj.pk,))
+#         else:
+#             return obj.get_absolute_url()
+#
+#     def get_summary_fields(self, obj):
+#         if obj is None:
+#             return {}
+#         d = super(RepositorySerializer, self).get_summary_fields(obj)
+#         d['notification_secrets'] = [
+#             OrderedDict([
+#                 ('id', s.id),
+#                 ('github_user', s.github_user),
+#                 ('github_repo', s.github_repo),
+#                 ('source', s.source),
+#                 ('secret', '******' + s.secret[-4:]),
+#             ]) for s in NotificationSecret.objects.filter(
+#                 github_user=obj.github_user,
+#                 github_repo=obj.github_repo)
+#         ]
+#         d['roles'] = [
+#             OrderedDict([
+#                 ('id', r.id),
+#                 ('namespace', r.namespace.name),
+#                 ('name', r.name),
+#                 ('last_import', dict())
+#             ]) for r in Content.objects.filter(repository=obj)
+#         ]
+#         for role in d['roles']:
+#             tasks = list(
+#                 ImportTask.objects.filter(repository=obj)
+#                 .order_by('-id'))
+#             if len(tasks) > 0:
+#                 role['last_import']['id'] = tasks[0].id
+#                 role['last_import']['state'] = tasks[0].state
+#         return d
+#
+#     def get_github_user(self, obj):
+#         return obj.provider_namespace.name
+#
+#     def get_github_repo(self, obj):
+#         return obj.name
 
 
 class TopContributorsSerializer(serializers.BaseSerializer):
@@ -740,62 +700,6 @@ class ImportTaskLatestSerializer(BaseSerializer):
         return obj['repository__name']
 
 
-class RoleListSerializer(BaseSerializer):
-    readme_html = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Content
-        fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid', 'github_user', 'github_repo',
-                                'github_branch', 'min_ansible_version', 'issue_tracker_url',
-                                'license', 'company', 'description', 'readme', 'readme_html',
-                                'travis_status_url', 'stargazers_count', 'watchers_count',
-                                'forks_count', 'open_issues_count', 'commit', 'commit_message',
-                                'commit_url', 'download_count')
-
-    def to_native(self, obj):
-        ret = super(RoleListSerializer, self).to_native(obj)
-        return ret
-
-    def get_related(self, obj):
-        if obj is None:
-            return {}
-        res = super(RoleListSerializer, self).get_related(obj)
-        res.update(dict(
-            dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports=reverse('api:role_import_task_list', args=(obj.pk,)),
-            versions=reverse('api:role_versions_list', args=(obj.pk,)),
-            notifications=reverse('api:role_notification_list', args=(obj.pk,)),
-        ))
-        return res
-
-    def get_url(self, obj):
-        if obj is None:
-            return ''
-        elif isinstance(obj, Content):
-            return reverse('api:role_detail', args=(obj.pk,))
-        else:
-            return obj.get_absolute_url()
-
-    def get_summary_fields(self, obj):
-        if obj is None:
-            return {}
-        d = super(RoleListSerializer, self).get_summary_fields(obj)
-        d['dependencies'] = [str(g) for g in obj.dependencies.all()]
-        d['platforms'] = [
-            dict(name=g.name, release=g.release) for g in obj.platforms.all()]
-        d['tags'] = [
-            dict(name=g.name) for g in obj.tags.all()]
-        d['versions'] = [
-            dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
-        d['videos'] = [dict(url=v.url, description=v.description) for v in obj.videos.all()]
-        return d
-
-    def get_readme_html(self, obj):
-        if obj.readme_html:
-            return obj.readme_html
-        return readme_to_html(obj)
-
-
 class RoleTopSerializer(BaseSerializer):
 
     class Meta:
@@ -826,61 +730,6 @@ class RoleTopSerializer(BaseSerializer):
             return reverse('api:role_detail', args=(obj.pk,))
         else:
             return obj.get_absolute_url()
-
-
-class RoleDetailSerializer(BaseSerializer):
-    readme_html = serializers.SerializerMethodField()
-    tags = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Content
-        fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid', 'github_user', 'github_repo', 'github_branch',
-                                'min_ansible_version', 'issue_tracker_url', 'license', 'company', 'description',
-                                'readme', 'readme_html', 'tags', 'travis_status_url', 'stargazers_count',
-                                'watchers_count', 'forks_count', 'open_issues_count', 'commit', 'commit_message',
-                                'commit_url', 'created', 'modified', 'download_count', 'imported')
-
-    def to_native(self, obj):
-        ret = super(RoleDetailSerializer, self).to_native(obj)
-        return ret
-
-    def get_related(self, obj):
-        if obj is None:
-            return {}
-        res = super(RoleDetailSerializer, self).get_related(obj)
-        res.update(dict(
-            dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports=reverse('api:role_import_task_list', args=(obj.pk,)),
-            versions=reverse('api:role_versions_list', args=(obj.pk,)),
-        ))
-        return res
-
-    def get_url(self, obj):
-        if obj is None:
-            return ''
-        elif isinstance(obj, Content):
-            return reverse('api:role_detail', args=(obj.pk,))
-        else:
-            return obj.get_absolute_url()
-
-    def get_tags(self, obj):
-        return [t for t in obj.get_tags()]
-
-    def get_summary_fields(self, obj):
-        if obj is None:
-            return {}
-        d = super(RoleDetailSerializer, self).get_summary_fields(obj)
-        d['dependencies'] = [dict(id=g.id, name=str(g)) for g in obj.dependencies.all()]
-        d['platforms'] = [dict(name=g.name, release=g.release) for g in obj.platforms.all()]
-        d['tags'] = [dict(name=g.name) for g in obj.tags.all()]
-        d['versions'] = [dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
-        d['videos'] = [dict(url=v.url, description=v.description) for v in obj.videos.all()]
-        return d
-
-    def get_readme_html(self, obj):
-        if obj.readme_html:
-            return obj.readme_html
-        return readme_to_html(obj)
 
 
 class RoleSearchSerializer(HaystackSerializer):
@@ -1008,58 +857,3 @@ class ElasticSearchDSLSerializer(serializers.BaseSerializer):
                 else:
                     result[key] = obj[key]
         return result
-
-
-class NamespaceSerializer(BaseSerializer):
-
-    class Meta:
-        model = Namespace
-        fields = (
-            'id',
-            'name',
-            'description',
-            'avatar_url',
-            'location',
-            'company',
-            'email',
-            'html_url',
-        )
-
-    def get_summary_fields(self, instance):
-        owners = [{
-            'id': u.id,
-            'github_user': u.github_user,
-            'github_avatar': u.github_avatar,
-            'username': u.username
-        } for u in instance.owners.all()]
-        provider_namespaces = [{
-            'id': pn.id,
-            'name': pn.name,
-            'display_name': pn.display_name,
-            'avatar_url': pn.avatar_url,
-            'location': pn.location,
-            'compay': pn.company,
-            'description': pn.description,
-            'email': pn.email,
-            'html_url': pn.html_url,
-            'provider': pn.provider.name,
-        } for pn in instance.provider_namespaces.all()]
-        return {
-            'owners': owners,
-            'provider_namespaces': provider_namespaces
-        }
-
-
-class ProviderSerializer(BaseSerializer):
-
-    class Meta:
-        model = Provider
-        fields = (
-            'id',
-            'name',
-            'original_name',
-            'description',
-        )
-
-    def get_url(self, obj):
-        return reverse('api:active_provider_detail', args=(obj.pk,)) if obj else ''

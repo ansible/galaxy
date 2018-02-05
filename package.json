@@ -27,7 +27,7 @@
     "node-notifier": "*",
     "connect-history-api-fallback": "^1.1.0",
     "less": "<3.0.0",
-    "gulp": "*",
+    "gulp": "latest",
     "gulp-less": "latest",
     "gulp-dest": "latest",
     "gulp-watch": "latest",

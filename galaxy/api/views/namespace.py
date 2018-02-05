@@ -88,9 +88,9 @@ def check_providers(data_providers, parent=None):
             errors[i] = "Attribute 'provider' is required"
             continue
         try:
-            provider = Provider.objects.get(name__iexact=pns['provider'].lower())
+            provider = Provider.objects.get(pk=pns['provider'])
         except ObjectDoesNotExist:
-            errors[i] = "The 'provider' attribute contains an invalid provider name"
+            errors[i] = "The 'provider' attribute contains an invalid provider"
             continue
         if provider:
             existing_namespaces = ProviderNamespace.objects.filter(
@@ -116,7 +116,7 @@ def update_provider_namespaces(namespace, provider_namespaces):
         pns_attributes['description'] = pns['description'] if pns.get('description') is not None else ''
 
         try:
-            provider = Provider.objects.get(name__iexact=pns['provider'].lower())
+            provider = Provider.objects.get(pk=pns['provider'])
         except ObjectDoesNotExist:
             pass
         else:
@@ -225,12 +225,9 @@ class NamespaceDetail(RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         data = request.data
+        instance = self.get_object()
         errors = {}
         owners = []
-
-        instance = request.user.namespaces.filter(pk=data['id']).first()
-        if not instance:
-            raise APIException('Requested object does not exist, or you are not authorized.')
 
         check_basic(data, errors)
 
