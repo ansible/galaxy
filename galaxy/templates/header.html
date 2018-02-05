@@ -17,79 +17,81 @@
 
     <!-- CSS -->
     <!-- PatternFly Styles -->
-    <link rel="stylesheet" type="text/css" href="{% static 'node_modules/patternfly/dist/css/patternfly.min.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'node_modules/patternfly/dist/css/patternfly-additions.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/patternfly/css/patternfly.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/patternfly/css/patternfly-additions.min.css' %}" />
 
     <link rel="stylesheet" type="text/css" href="{% static 'fontawesome/css/font-awesome.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/loaders.min.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'css/animate.min.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'node_modules/ui-select/dist/select.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/ui-select/select.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/galaxy.min.css' %}" />
 
     {% for extra in extra_css %}<link href="{% static extra %}" rel='stylesheet' type='text/css' />{% endfor %}
 
     <!-- JS -->
     <!-- jQuery -->
-    <script type="text/javascript" src="{% static 'node_modules/jquery/dist/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
 
-    <!-- Bootstrap JS -->
-    <script type="text/javascript" src="{% static 'node_modules/angular/angular.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <!-- Angular -->
+    <script type="text/javascript" src="{% static 'vendor/angular/angular.min.js' %}"></script>
+
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
 
     <!-- C3, D3 - Charting Libraries -->
-    <!-- script type="text/javascript" src="{% static 'node_modules/c3/c3.min.js' %}"></script -->
-    <!-- script type="text/javascript" src="{% static 'node_modules/d3/d3.min.js' %}"></script -->
+    <!-- script type="text/javascript" src="vendor/c3/c3.min.js"></script -->
+    <!-- script type="text/javascript" src="vendor/d3/d3.min.js"></script -->
 
     <!-- Datatables, jQuery Grid Component -->
     <!-- Note: jquery.dataTables.js must occur in the html source before patternfly*.js.-->
-    <!-- script type="text/javascript" src="{% static 'node_modules/datatables/media/js/jquery.dataTables.min.js' %}"></script -->
-    <!-- script type="text/javascript" src="{% static 'node_modules/drmonty-datatables-colvis/js/dataTables.colVis.js' %}"></script -->
-    <!-- script type="text/javascript" src="{% static 'node_modules/datatables.net-colreorder/js/dataTables.colReorder.js' %}"></script -->
+    <!-- script type="text/javascript" src="vendor/datatables/media/js/jquery.dataTables.min.js"></script -->
+    <!-- script type="text/javascript" src="vendor/drmonty-datatables-colvis/js/dataTables.colVis.js"></script -->
+    <!-- script type="text/javascript" src="vendor/datatables.net-colreorder/js/dataTables.colReorder.js"></script -->
 
-    <script type="text/javascript" src="{% static 'node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/patternfly/dist/js/patternfly.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/patternfly-bootstrap-combobox/js/bootstrap-combobox.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/angular-ui-bootstrap/ui-bootstrap-tpls.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/patternfly/js/patternfly.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/patternfly-bootstrap-combobox/js/bootstrap-combobox.js' %}"></script>
 
     <!-- Bootstrap Date Picker -->
-    <!-- script type="text/javascript" src="{% static 'node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
+    <!-- script type="text/javascript" src="vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 
     <!-- Moment - required by Bootstrap Date Time Picker -->
-    <script type="text/javascript" src="{% static 'node_modules/moment/min/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/moment/moment.min.js' %}"></script>
 
     <!-- Bootstrap Date Time Picker - requires Moment -->
-    <!-- script type="text/javascript" src="{% static 'node_modules/patternfly/node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <!-- script type="text/javascript" src="vendor/patternfly/node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
 
     <!-- Bootstrap Select -->
-    <script type="text/javascript" src="{% static 'node_modules/bootstrap-select/dist/js/bootstrap-select.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/bootstrap-select/js/bootstrap-select.min.js' %}"></script>
 
     <!-- Bootstrap Switch -->
-    <script type="text/javascript" src="{% static 'node_modules/bootstrap-switch/dist/js/bootstrap-switch.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/bootstrap-switch/js/bootstrap-switch.min.js' %}"></script>
 
     <!-- Bootstrap Touchspin -->
-    <script type="text/javascript" src="{% static 'node_modules/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js' %}"></script>
+    <!-- script type="text/javascript" src="vendor/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js"></script -->
 
     <!-- Bootstrap Tree View -->
-    <!-- script type="text/javascript" src="{% static 'node_modules/patternfly-bootstrap-treeview/dist/bootstrap-treeview.min.js' %}"></script -->
+    <!-- script type="text/javascript" src="vendor/patternfly-bootstrap-treeview/dist/bootstrap-treeview.min.js"></script -->
 
     <!-- Google Code Prettify - Syntax highlighting of code snippets -->
-    <!-- script type="text/javascript" src="{% static 'node_modules/google-code-prettify/bin/prettify.min.js' %}"></script -->
+    <!-- script type="text/javascript" src="vendor/google-code-prettify/bin/prettify.min.js"></script -->
 
     <!-- MatchHeight - Used to make sure dashboard cards are the same height -->
-    <!--script type="text/javascript" src="{% static 'node_modules/jquery-match-height/jquery.matchHeight-min.js' %}"></script -->
+    <!--script type="text/javascript" src="vendor/jquery-match-height/jquery.matchHeight-min.js"></script -->
 
     <!-- Angular Application? You May Want to Consider Pulling Angular-PatternFly And Angular-UI Bootstrap instead of bootstrap.js -->
     <!-- See https://github.com/patternfly/angular-patternfly for more information -->
 
-    <script type="text/javascript" src="{% static 'node_modules/angular-resource/angular-resource.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/angular-route/angular-route.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/angular-sanitize/angular-sanitize.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/angular-cookies/angular-cookies.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/angular-animate/angular-animate.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/underscore/underscore-min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/angulartics/dist/angulartics.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/angulartics-google-analytics/dist/angulartics-ga.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/angular-bootstrap-switch/dist/angular-bootstrap-switch.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'node_modules/ui-select/dist/select.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/angular-resource.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/angular-route.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/angular-sanitize.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/angular-cookies.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/angular-animate.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/underscore-min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/angulartics/angulartics.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/angulartics-google-analytics/angulartics-ga.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/angular-bootstrap-switch/angular-bootstrap-switch.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/ui-select/select.min.js' %}"></script>
 
     <script>
         var GLOBAL_DEBUG = "{{ debug }}";
