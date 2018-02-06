@@ -1,3 +1,4 @@
+from __future__ import print_function
 # (c) 2012-2016, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
@@ -87,14 +88,14 @@ class Command(BaseCommand):
                 if not obj.state == 'FINISHED':
                     finished = False
                 else:
-                    print u"{0} Total: {1} Passed: {2} Failed: {3} Deleted: {4} Updated: {5}".format(
+                    print(u"{0} Total: {1} Passed: {2} Failed: {3} Deleted: {4} Updated: {5}".format(
                         obj.description,
                         obj.failed + obj.passed + obj.deleted + obj.updated,
                         obj.passed,
                         obj.failed,
                         obj.deleted,
                         obj.updated
-                    )
+                    ))
                     obj.state = 'COMPLETED'
                     obj.save()
             time.sleep(60)

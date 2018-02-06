@@ -1,3 +1,4 @@
+from __future__ import print_function
 # (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
@@ -533,14 +534,14 @@ class StargazerList(ListCreateAPIView):
         try:
             gh_api = Github(token.token)
             gh_api.get_api_status()
-        except GithubException, e:
+        except GithubException as e:
             msg = "Failed to connect to GitHub API. This is most likely a temporary error, " + \
                   "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_repo = gh_api.get_repo(github_user + '/' + github_repo)
-        except GithubException, e:
+        except GithubException as e:
             msg = "GitHub API failed to return repo for {0}/{1}. {2} - {3}".format(github_user,
                                                                                    github_repo,
                                                                                    e.data,
@@ -591,7 +592,7 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
         try:
             gh_api = Github(token.token)
             gh_api.get_api_status()
-        except GithubException, e:
+        except GithubException as e:
             msg = "Failed to connect to GitHub API. This is most likely a temporary " + \
                 "error, please try again in a few minutes. {0} - {1}".format(e.data, e.status)
             raise ValidationError(dict(detail=msg))
@@ -599,7 +600,7 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
         try:
             gh_repo = gh_api.get_repo(
                 obj.role.github_user + '/' + obj.role.github_repo)
-        except GithubException, e:
+        except GithubException as e:
             msg = "GitHub API failed to return repo for {0}/{1}. {2} - {3}".format(obj.github_user,
                                                                                    obj.github_repo,
                                                                                    e.data,
@@ -608,13 +609,13 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
 
         try:
             gh_user = gh_api.get_user()
-        except GithubException, e:
+        except GithubException as e:
             msg = "GitHub API failed to return authorized user. {0} - {1}".format(e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_user.remove_from_starred(gh_repo)
-        except GithubException, e:
+        except GithubException as e:
             msg = "GitHub API failed to remove user {0} from stargazers ".format(request.user.github_user) + \
                 "for {0}/{1}. {2} - {3}".format(obj.github_user, obj.github_repo, e.data, e.status)
             raise ValidationError(dict(detail=msg))
@@ -650,14 +651,14 @@ class SubscriptionList(ListCreateAPIView):
         try:
             gh_api = Github(token.token)
             gh_api.get_api_status()
-        except GithubException, e:
+        except GithubException as e:
             msg = "Failed to connect to GitHub API. This is most likely a temporary error, please try " + \
                   "again in a few minutes. {0} - {1}".format(e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_repo = gh_api.get_repo(github_user + '/' + github_repo)
-        except GithubException, e:
+        except GithubException as e:
             msg = "GitHub API failed to return repo for {0}/{1}. {2} - {3}".format(github_user,
                                                                                    github_repo,
                                                                                    e.data,
@@ -666,13 +667,13 @@ class SubscriptionList(ListCreateAPIView):
 
         try:
             gh_user = gh_api.get_user()
-        except GithubException, e:
+        except GithubException as e:
             msg = "GitHub API failed to return authorized user. {0} - {1}".format(e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_user.add_to_subscriptions(gh_repo)
-        except GithubException, e:
+        except GithubException as e:
             msg = "GitHub API failed to subscribe user {0} to for {1}/{2}".format(request.user.github_user,
                                                                                   github_user,
                                                                                   github_repo)
@@ -723,14 +724,14 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
         try:
             gh_api = Github(token.token)
             gh_api.get_api_status()
-        except GithubException, e:
+        except GithubException as e:
             msg = "Failed to connect to GitHub API. This is most likely a temporary error, " + \
                   "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_repo = gh_api.get_repo(obj.github_user + '/' + obj.github_repo)
-        except GithubException, e:
+        except GithubException as e:
             msg = "GitHub API failed to return repo for {0}/{1}. {2} - {3}".format(obj.github_user,
                                                                                    obj.github_repo,
                                                                                    e.data,
@@ -739,13 +740,13 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
 
         try:
             gh_user = gh_api.get_user()
-        except GithubException, e:
+        except GithubException as e:
             msg = "GitHub API failed to return authorized user. {0} - {1}".format(e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_user.remove_from_subscriptions(gh_repo)
-        except GithubException, e:
+        except GithubException as e:
             msg = "GitHub API failed to unsubscribe {0} from {1}/{2}. {3} - {4}".format(request.user.github_user,
                                                                                         obj.github_user,
                                                                                         obj.github_repo,
@@ -1288,7 +1289,7 @@ class RemoveRole(APIView):
             try:
                 gh_api = Github(token.token)
                 gh_api.get_api_status()
-            except GithubException, e:
+            except GithubException as e:
                 msg = "Failed to connect to GitHub API. This is most likely a temporary error, " + \
                       "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
                 raise ValidationError(dict(detail=msg))
@@ -1389,7 +1390,7 @@ class RefreshUserRepos(APIView):
         try:
             gh_api = Github(token.token)
             gh_api.get_api_status()
-        except GithubException, e:
+        except GithubException as e:
             msg = "Failed to connect to GitHub API. This is most likely a temporary error, " + \
                   "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
             logger.error(msg)

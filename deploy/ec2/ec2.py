@@ -127,6 +127,7 @@ destination_format_tags: Name,clusterid,deployment,private_dns_name
 These settings would produce a destination_format as the following:
 'webserver-ansible-blue-172.31.0.1'
 '''
+from __future__ import print_function
 
 # (c) 2012, Peter Sankauskas
 #

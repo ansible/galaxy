@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import datetime
 from south.db import db
 from south.v2 import DataMigration
@@ -22,7 +23,7 @@ class Migration(DataMigration):
                         role.original_name = new_name
                         role.save()
             except:
-                print "failed to rename role: %s/%s (id=%d)" % (role.name, role.owner.username, role.pk) 
+                print("failed to rename role: %s/%s (id=%d)" % (role.name, role.owner.username, role.pk)) 
 
 
     def backwards(self, orm):
