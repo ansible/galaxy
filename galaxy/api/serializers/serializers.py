@@ -419,61 +419,6 @@ class RoleVersionSerializer(BaseSerializer):
         fields = ('id', 'name', 'release_date',)
 
 
-# class RepositorySerializer(BaseSerializer):
-#     github_user = serializers.SerializerMethodField()
-#     github_repo = serializers.SerializerMethodField()
-#
-#     class Meta:
-#         model = Repository
-#         fields = ('id', 'owners', 'github_user', 'github_repo', 'is_enabled')
-#
-#     def get_url(self, obj):
-#         if obj is None:
-#             return ''
-#         elif isinstance(obj, Repository):
-#             return reverse('api:repository_detail', args=(obj.pk,))
-#         else:
-#             return obj.get_absolute_url()
-#
-#     def get_summary_fields(self, obj):
-#         if obj is None:
-#             return {}
-#         d = super(RepositorySerializer, self).get_summary_fields(obj)
-#         d['notification_secrets'] = [
-#             OrderedDict([
-#                 ('id', s.id),
-#                 ('github_user', s.github_user),
-#                 ('github_repo', s.github_repo),
-#                 ('source', s.source),
-#                 ('secret', '******' + s.secret[-4:]),
-#             ]) for s in NotificationSecret.objects.filter(
-#                 github_user=obj.github_user,
-#                 github_repo=obj.github_repo)
-#         ]
-#         d['roles'] = [
-#             OrderedDict([
-#                 ('id', r.id),
-#                 ('namespace', r.namespace.name),
-#                 ('name', r.name),
-#                 ('last_import', dict())
-#             ]) for r in Content.objects.filter(repository=obj)
-#         ]
-#         for role in d['roles']:
-#             tasks = list(
-#                 ImportTask.objects.filter(repository=obj)
-#                 .order_by('-id'))
-#             if len(tasks) > 0:
-#                 role['last_import']['id'] = tasks[0].id
-#                 role['last_import']['state'] = tasks[0].state
-#         return d
-#
-#     def get_github_user(self, obj):
-#         return obj.provider_namespace.name
-#
-#     def get_github_repo(self, obj):
-#         return obj.name
-
-
 class TopContributorsSerializer(serializers.BaseSerializer):
 
     def to_representation(self, obj):

@@ -536,7 +536,7 @@
         elem.find('.fa-spin').show();
         var count = parseInt(elem.find('.count').text());
 
-        $.ajax('/api/v1/repos/stargazers/', {
+        $.ajax('/api/v1/repositories/stargazers/', {
             'method': 'POST',
             'data': {
                 'github_user': user,
@@ -570,7 +570,7 @@
         elem.find('.fa-spin').show();
         var count = parseInt(elem.find('.count').text());
 
-        $.ajax('/api/v1/repos/stargazers/' + id + '/', {
+        $.ajax('/api/v1/repositories/stargazers/' + id + '/', {
             'method': 'DELETE',
             'headers': { 'X-CSRFToken': get_token() },
             'success': function(data) {
@@ -598,7 +598,7 @@
         elem.find('.fa-spin').show();
         var count = parseInt(elem.find('.count').text());
 
-        $.ajax('/api/v1/repos/subscriptions/', {
+        $.ajax('/api/v1/repositories/subscriptions/', {
             'method': 'POST',
             'data': {
                 'github_user': user,
@@ -632,7 +632,7 @@
         elem.find('.fa-spin').show();
         var count = parseInt(elem.find('.count').text());
         
-        $.ajax('/api/v1/repos/subscriptions/' + id + '/', {
+        $.ajax('/api/v1/repositories/subscriptions/' + id + '/', {
             'method': 'DELETE',
             'headers': { 'X-CSRFToken': get_token() },
             'success': function(data) {

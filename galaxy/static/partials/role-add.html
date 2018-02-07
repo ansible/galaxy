@@ -89,8 +89,8 @@
                             <a href="" ng-click="showIntegrations(repo)" tooltip-placement="top" uib-tooltip="Role Settings" class="btn btn-xs btn-default"><i class="fa fa-gear"></i></a>
                         </div>
                         <div class="name">
-                            <a ng-href="{{ repo.role_namespace }}/{{repo.role_name }}" ng-if="repo.is_enabled && repo.role_id" tooltip-placement="top" uib-tooltip="{{ 'Role: ' + repo.role_namespace + '.' + repo.role_name }}">{{ repo.github_user + '/' + repo.github_repo }}</a>
-                            <span ng-if="!repo.is_enabled || !repo.role_id">{{ repo.github_user + '/' + repo.github_repo }}</span>
+                            <a ng-href="{{ repo.provider_namespace }}/{{ repo.name }}" ng-if="repo.is_enabled" tooltip-placement="top" uib-tooltip="{{ 'Role: ' + repo.provider_namespace + '.' + repo.name }}">{{ repo.provider_namespace + '/' + repo.name }}</a>
+                            <span ng-if="!repo.is_enabled">{{ repo.provider_namespace+ '/' + repo.name }}</span>
                         </div>
                         <div uib-collapse="!repo.show_delete_warning" class="delete-container">
                             <p>Are you sure you want to delete this role?</p><p>Download count and other statistics will be lost.</p>
