@@ -28,7 +28,9 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 # local stuff
-from galaxy.main.models import Role, Namespace, ContentBlock
+from galaxy.main import constants
+from galaxy.main.models import (
+    Content, Namespace, ProviderNamespace, ContentBlock)
 
 # rst2html5-tools
 from html5css3 import Writer
@@ -56,6 +58,8 @@ common_services = [
     'js/commonServices/githubRepoService.js',
     'js/commonServices/importService.js',
     'js/commonServices/githubClickService.js',
+    'js/commonServices/namespaceService.js',
+    'js/commonServices/providerSourceService.js',
 ]
 
 # ------------------------------------------------------------------------------
@@ -232,7 +236,7 @@ def detail_category(request, category=None, page=1):
         ]
     context["use_menu_controller"] = True
     context["load_angular"] = True
-    context["page_title"] = "Role Details"
+    context["page_title"] = "Content Details"
     return render_to_response('list_category.html', context)
 
 
@@ -252,17 +256,16 @@ def handle_500_view(request):
 
 
 class NamespaceListView(ListView):
-    model = 'Role'
+    model = 'Namespace'
     template_name = 'namespace_list.html'
     context_object_name = 'namespaces'
     paginate_by = 20
 
     def get_queryset(self):
         author = self.request.GET.get('author')
+        qs = Namespace.objects.filter(active=True)
         if author:
-            qs = Role.objects.filter(active=True, is_valid=True, namespace__icontains=author).order_by('namespace').distinct('namespace')
-        else:
-            qs = Role.objects.filter(active=True, is_valid=True).order_by('namespace').distinct('namespace')
+            qs = qs.filter(name__icontains=author)
         return qs
 
     def get_context_data(self, **kwargs):
@@ -295,28 +298,33 @@ class RoleListView(ListView):
     context_object_name = 'roles'
 
     def get_queryset(self):
-        self.namespace = self.args[0]
+        namespace = self.args[0]
+
+        self.namespace = get_object_or_404(Namespace, name=namespace)
         name = self.request.GET.get('role', None)
-        if Role.objects.filter(namespace=self.args[0]).count() == 0:
+        if Content.objects.filter(namespace=self.namespace).count() == 0:
             raise Http404()
         if name:
-            qs = Role.objects.filter(active=True, is_valid=True, namespace=self.args[0],
-                                     name__icontains=name)
+            qs = Content.objects.filter(
+                active=True, is_valid=True,
+                namespace=self.namespace,
+                name__icontains=name)
         else:
-            qs = Role.objects.filter(active=True, is_valid=True, namespace=self.args[0])
+            qs = Content.objects.filter(
+                active=True, is_valid=True,
+                namespace=self.namespace)
         return qs
 
     def get_context_data(self, **kwargs):
         context = super(RoleListView, self).get_context_data(**kwargs)
 
-        ns = None
         context['namespace'] = None
-        if Namespace.objects.filter(namespace=self.namespace).count() > 0:
-            ns = Namespace.objects.get(namespace=self.namespace)
-        else:
+        ns = ProviderNamespace.objects.filter(namespace=self.namespace).first()
+        if ns is None:
             try:
                 roles = list(self.get_queryset())
-                ns = Namespace.objects.get(namespace=roles[0].github_user)
+                ns = ProviderNamespace.objects.get(
+                    namespace=roles[0].github_user)
             except:
                 pass
 
@@ -332,30 +340,35 @@ class RoleListView(ListView):
                 description=ns.description
             )
 
-        context['namespace_name'] = self.namespace
+        context['namespace_name'] = self.namespace.name
         context['search_value'] = self.request.GET.get('role', '')
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False
         context["page_title"] = self.namespace
-        context["meta_description"] = "Roles contributed by %s." % self.namespace
+        context["meta_description"] = "Roles contributed by %s." % self.namespace.name
         return context
 
 
 class RoleDetailView(DetailView):
     template_name = 'role_detail.html'
-    context_obj_name = 'role'
+    model = Content
+    context_object_name = 'role'
 
-    def get_object(self):
-        self.namespace = self.args[0]
+    def get_object(self, queryset=None):
+        namespace_name = self.args[0]
         self.name = self.args[1]
-        self.role = get_object_or_404(Role, namespace=self.namespace, name=self.name, active=True, is_valid=True)
+
+        self.namespace = get_object_or_404(Namespace, name=namespace_name)
+        self.role = get_object_or_404(
+            Content, namespace=self.namespace, name=self.name,
+            active=True, is_valid=True)
         return self.role
 
     def get_context_data(self, **kwargs):
         context = super(RoleDetailView, self).get_context_data(**kwargs)
 
         try:
-            ns = Namespace.objects.get(namespace=self.namespace)
+            ns = ProviderNamespace.objects.get(namespace=self.namespace)
             context['namespace'] = dict(
                 avatar_url=ns.avatar_url,
                 location=ns.location,
@@ -373,7 +386,8 @@ class RoleDetailView(DetailView):
         context['name'] = self.name
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False
-        context["meta_description"] = "Role %s.%s - %s" % (self.role.namespace, self.role.name, self.role.description)
+        context["meta_description"] = "Content %s.%s - %s" % (
+            self.role.namespace.name, self.role.name, self.role.description)
 
         try:
             gh_user = User.objects.get(github_user=self.role.github_user)
@@ -407,20 +421,21 @@ class RoleDetailView(DetailView):
         context['videos'] = role.videos.all()
 
         context['imports'] = []
-        for imp_task in role.import_tasks.all().order_by('-id')[:10]:
+        for imp_task in (role.repository.import_tasks
+                         .all().order_by('-id')[:10]):
             context['imports'].append({
                 'finished': imp_task.finished,
                 'state': imp_task.state
             })
 
-        for type in Role.ROLE_TYPE_CHOICES:
-            if type[0] == role.role_type:
-                context['role_type'] = type[1]
-        if role.role_type == Role.ANSIBLE:
+        for tp in constants.RoleType.choices():
+            if tp[0] == role.role_type:
+                context['role_type'] = tp[1]
+        if role.role_type == Content.ANSIBLE:
             context['install_command'] = 'ansible-galaxy install'
-        elif role.role_type == Role.CONTAINER:
+        elif role.role_type == Content.CONTAINER:
             context['install_command'] = 'ansible-container install'
-        elif role.role_type == Role.CONTAINER_APP:
+        elif role.role_type == Content.CONTAINER_APP:
             context['install_command'] = 'ansible-container init'
         context['versions'] = []
         for ver in role.versions.all().order_by('-release_date'):
@@ -429,7 +444,7 @@ class RoleDetailView(DetailView):
                 'release_date': ver.release_date
             })
         context['import_date'] = role.imported
-        context['last_commit_date'] = role.commit_created
+        context['last_commit_date'] = role.repository.commit_created
         context['readme_html'] = readme_to_html(role)
         context['page_title'] = "%s.%s" % (self.namespace, self.name)
         return context
@@ -571,3 +586,32 @@ def accounts_profile(request):
         del request.session["transient"]
 
     return render_to_response('account/profile.html', context)
+
+
+@login_required
+def my_namespaces_view(request):
+    context = build_standard_context(request)
+    context["ng_app"] = "namespaceApp"
+    context["extra_css"] = []
+
+    if settings.SITE_ENV == 'DEV':
+        context["extra_js"] = [
+            'js/namespaceApp/namespaceApp.js',
+            'js/namespaceApp/namespaceController.js',
+            'js/namespaceApp/namespaceAddController.js',
+            'js/namespaceApp/namespaceEditController.js',
+            'js/namespaceApp/namespaceFormService.js',
+            'js/namespaceApp/menuController.js',
+        ] + common_services
+    else:
+        context["extra_js"] = [
+            'dist/galaxy.userStarredApp.min.js'
+        ]
+
+    if request.session.get("transient"):
+        context["transient"] = request.session["transient"]
+        del request.session["transient"]
+
+    context["load_angular"] = True
+    context["page_title"] = "My Namespaces"
+    return render_to_response('ng_view.html', context)

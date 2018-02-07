@@ -123,20 +123,38 @@ notification_urls = [
         name='notification_imports_list'),
 ]
 
+namespace_urls = [
+    url(r'^$', views.NamespaceList.as_view(), name='namespace_list'),
+    url(r'^(?P<pk>[0-9]+)/$', views.NamespaceDetail.as_view(), name='namespace_detail'),
+]
+
+provider_namespace_urls = [
+    url(r'^$', views.ProviderNamespaceList.as_view(), name='provider_namespace_list'),
+    url(r'^(?P<pk>[0-9]+)/$', views.ProviderNamespaceDetail.as_view(), name='provider_namespace_detail'),
+]
+
+provider_urls = [
+    url(r'^$', views.ProviderRootView.as_view(), name='provider_root_view'),
+    url(r'^active/$', views.ActiveProviderList.as_view(), name='active_provider_list'),
+    url(r'^active/(?P<pk>[0-9]+)/$', views.ActiveProviderDetail.as_view(), name='active_provider_detail'),
+    url(r'^sources/$', views.ProviderSourceList.as_view(), name='provider_source_list'),
+    url(r'^sources/(?P<provider_name>[A-Za-z0-9_-]+)/(?P<provider_namespace>[A-Za-z0-9_-]+)/$',
+        views.RepositorySourceList.as_view(), name='repository_source_list'),
+    url(r'^sources/(?P<provider_name>[A-Za-z0-9_-]+)/(?P<provider_namespace>[A-Za-z0-9_-]+)/'
+        '(?P<repo_name>[A-Za-z0-9_-]+)/$',
+        views.RepositorySourceDetail.as_view(), name='repository_source_detail'),
+]
+
 repo_urls = [
-    url(r'^$', views.ApiV1ReposView.as_view(), name="repos_view"),
-    url(r'list/$', views.RepositoryList.as_view(), name='repository_list'),
-    url(r'list/(?P<pk>[0-9]+)/$', views.RepositoryDetail.as_view(),
-        name='repository_detail'),
-    url(r'refresh/$', views.RefreshUserRepos.as_view(),
-        name='refresh_user_repos'),
+    url(r'^$', views.RepositoryList.as_view(), name='repository_list'),
+    url(r'^(?P<pk>[0-9]+)/$', views.RepositoryDetail.as_view(), name='repository_detail'),
     url(r'stargazers/$', views.StargazerList.as_view(), name='stargazer_list'),
     url(r'stargazers/(?P<pk>[0-9]+)/$', views.StargazerDetail.as_view(),
         name='stargazer_detail'),
     url(r'subscriptions/$', views.SubscriptionList.as_view(),
         name='subscription_list'),
     url(r'subscriptions/(?P<pk>[0-9]+)/$', views.SubscriptionDetail.as_view(),
-        name='subscription_detail'),
+        name='subscription_detail')
 ]
 
 v1_urls = [
@@ -152,9 +170,12 @@ v1_urls = [
     url(r'^imports/', include(import_task_urls)),
     url(r'^tokens/', views.TokenView.as_view(), name='token'),
     url(r'^removerole/', views.RemoveRole.as_view(), name='remove_role'),
+    url(r'^namespaces/', include(namespace_urls)),
     url(r'^notification_secrets/', include(notification_secret_urls)),
     url(r'^notifications/', include(notification_urls)),
-    url(r'^repos/', include(repo_urls)),
+    url(r'^providers/', include(provider_urls)),
+    url(r'^provider_namespaces/', include(provider_namespace_urls)),
+    url(r'^repositories/', include(repo_urls)),
     url(r'^search/', include(search_urls)),
 ]
 

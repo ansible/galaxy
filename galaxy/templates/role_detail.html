@@ -24,7 +24,7 @@
 
     <div class="row">
         <div class="col-xs-6">
-            <h2 class="rolename"><a href="/{{ role.namespace }}">{{ role.namespace }}</a>.{{role.name}}</h2>
+            <h2 class="rolename"><a href="/{{ role.namespace.name }}">{{ role.namespace.name }}</a>.{{ role.name }}</h2>
             <div class="description">{{role.description}}</div>
         </div>
         {% if namespace and namespace.avatar_url %}
@@ -99,7 +99,7 @@
                                         <a href="" id="unsubscribe-btn"
                                             class="btn btn-default btn-md"
                                             data-id="{{ subscriber_id }}"
-                                            data-namespace="{{ role.namespace }}"
+                                            data-namespace="{{ role.namespace.name }}"
                                             data-name="{{ role.name }}"
                                             data-user="{{ role.github_user }}" 
                                             data-repo="{{ role.github_repo }}" 
@@ -111,7 +111,7 @@
                                             <span class="count">{{ role.watchers_count }}</span>
                                         </a>
                                         <a href="" id="subscribe-btn" 
-                                            data-namespace="{{ role.namespace }}"
+                                            data-namespace="{{ role.namespace.name }}"
                                             data-name="{{ role.name }}"
                                             data-user="{{ role.github_user }}" 
                                             data-repo="{{ role.github_repo }}" 
@@ -128,7 +128,7 @@
                                         <a href="" id="unstar-btn"
                                             class="btn btn-default btn-md"
                                             data-id="{{ stargazer_id }}"
-                                            data-namespace="{{ role.namespace }}"
+                                            data-namespace="{{ role.namespace.name }}"
                                             data-name="{{ role.name }}"
                                             data-user="{{ role.github_user }}" 
                                             data-repo="{{ role.github_repo }}" 
@@ -142,7 +142,7 @@
                                         </a>
                                         <a href="" id="star-btn"
                                             class="btn btn-default btn-md"
-                                            data-namespace="{{ role.namespace }}"
+                                            data-namespace="{{ role.namespace.name }}"
                                             data-name="{{ role.name }}"
                                             data-user="{{ role.github_user }}" 
                                             data-repo="{{ role.github_repo }}" 
@@ -187,7 +187,7 @@
                                     {% if role.role_type != role.DEMO %}
                                     <tr>
                                         <td class="key">Installation</td>
-                                        <td class="value"><code>$ {{ install_command }} {{role.namespace}}.{{role.name}}</code></td>
+                                        <td class="value"><code>$ {{ install_command }} {{ role.namespace.name }}.{{ role.name }}</code></td>
                                     </tr>
                                     {% endif %}
                                     {% if tags %}
@@ -346,7 +346,7 @@
                                             <tbody>
                                             {% for dependency in dependencies %}
                                             <tr>
-                                                <td><a href="/{{ dependency.namespace }}/{{ dependency.name }}">{{ dependency.namespace }}.{{ dependency.name }}</a></td>
+                                                <td><a href="/{{ dependency.namespace.name }}/{{ dependency.name }}">{{ dependency.namespace.name }}.{{ dependency.name }}</a></td>
                                             </tr>
                                             {% endfor %}
                                             {% if dependencies.count == 0 %}
@@ -497,7 +497,7 @@
             'method': 'DELETE',
             'headers': { 'X-CSRFToken': get_token() },
             success: function() {
-                window.location = '/{{ role.namespace }}/'
+                window.location = '/{{ role.namespace.name }}/'
             }
         });
     }

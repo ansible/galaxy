@@ -18,7 +18,7 @@
 from celery import task
 
 # local
-from galaxy.main.models import Platform, Role, Tag
+from galaxy.main.models import Platform, Content, Tag
 from galaxy.main.search_models import (
     TagDoc, PlatformDoc, CloudPlatformDoc, UserDoc)
 from galaxy.main.utils.memcache_lock import (
@@ -80,7 +80,8 @@ def update_platforms(platforms, logger):
         platform_name = 'Enterprise_Linux' if platform == 'EL' else platform
         try:
             with memcache_lock("platform_%s" % platform):
-                cnt = Role.objects.filter(active=True, is_valid=True, platforms__name=platform) \
+                cnt = Content.objects.filter(
+                    active=True, is_valid=True, platforms__name=platform) \
                     .order_by('namespace', 'name') \
                     .distinct('namespace', 'name').count()
                 es_platforms = PlatformDoc.search().query('match', name=platform_name).execute()
@@ -128,7 +129,7 @@ def update_cloud_platforms(cloud_platforms, logger):
         try:
             with memcache_lock("cloud_platform_%s" % platform):
                 cnt = (
-                    Role.objects.filter(
+                    Content.objects.filter(
                         active=True, is_valid=True,
                         cloud_platforms__name=platform)
                     .order_by('namespace', 'name')

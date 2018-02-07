@@ -291,7 +291,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['r_emailaddress']
     },
     'github': {
-        'SCOPE': ['user:email', 'public_repo']
+        'SCOPE': ['user:email', 'public_repo', 'read:org']
     },
 }
 
@@ -320,6 +320,13 @@ WAIT_FOR = []
 ADMIN_URL_PATTERN = r'^admin/'
 
 ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
+
+WORKER_DIR_BASE = None
+"""
+A base directory used by repository import task to clone repositories into.
+
+If set to `None`, system temporary directory is used.
+"""
 
 # =========================================================
 # Logging
@@ -356,7 +363,7 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         },
         'console': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         }
@@ -373,6 +380,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'django.db': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
         'galaxy.api': {
             'handlers': ['console'],
             'level': 'DEBUG',
@@ -384,6 +396,11 @@ LOGGING = {
             'propagate': True,
         },
         'galaxy.main': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'galaxy.worker': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,

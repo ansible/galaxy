@@ -52,7 +52,7 @@ clean:
 	rm -fv galaxy/static/dist/*.js
 	find . -type f -name "*.pyc" -delete
 
-.PHONT: createsuperuser
+.PHONY: createsuperuser
 	@echo Create super user
 	${VENV_BIN}/python ./manage.py createsuperuser
 
@@ -132,7 +132,10 @@ dev/flake8:
 .PHONY: dev/test
 dev/test:
 	@echo "Running tests"
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py test --noinput
+        # TODO:  Revert to $(DOCKER_COMPOSE)
+        # Currently `docker exec` offers -e option for setting Env variables, and `docker-compose exec` does not.
+        # Setting the postgres connetion string to use postgres user, to have authority to create and destroy the test database.
+	docker exec -e GALAXY_DB_URL=postgres://postgres:postgres@postgres:5432/galaxy galaxy_galaxy_1 /var/lib/galaxy/venv/bin/python ./manage.py test --noinput
 
 .PHONY: dev/waitenv
 dev/waitenv:

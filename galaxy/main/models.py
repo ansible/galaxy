@@ -19,18 +19,18 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms.models import model_to_dict
-from django.utils.timezone import now
-
 from django.contrib.postgres.fields import ArrayField
 
+from galaxy.main import constants
 from galaxy.main.fields import LooseVersionField, TruncatingCharField
 from galaxy.main.mixins import DirtyMixin
 
 __all__ = [
     'PrimordialModel', 'Platform', 'CloudPlatform', 'Category', 'Tag',
-    'Role', 'ImportTask', 'ImportTaskMessage', 'RoleVersion',
+    'Content', 'ImportTask', 'ImportTaskMessage', 'ContentVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
-    'Subscription', 'Stargazer', 'Namespace', 'ContentBlock'
+    'Subscription', 'Stargazer', 'Namespace', 'Provider', 'ProviderNamespace',
+    'ContentBlock', 'ContentType'
 ]
 
 
@@ -50,20 +50,6 @@ class BaseModel(models.Model, DirtyMixin):
         else:
             return u'%s-%s' % (self._meta.verbose_name, self.id)
 
-    def save(self, *args, **kwargs):
-        # For compatibility with Django 1.4.x, attempt to handle any calls to
-        # save that pass update_fields.
-        try:
-            super(BaseModel, self).save(*args, **kwargs)
-        except TypeError:
-            if 'update_fields' not in kwargs:
-                raise
-            kwargs.pop('update_fields')
-            super(BaseModel, self).save(*args, **kwargs)
-
-    def hasattr(self, attr):
-        return hasattr(self, attr)
-
 
 class PrimordialModel(BaseModel):
     """Base model for CommonModel and CommonModelNameNotUnique."""
@@ -74,31 +60,6 @@ class PrimordialModel(BaseModel):
     description = TruncatingCharField(max_length=255, blank=True, default='')
     active = models.BooleanField(default=True, db_index=True)
 
-    def mark_inactive(self, save=True):
-        """Use instead of delete to rename and mark inactive."""
-
-        if self.active:
-            if 'name' in self._meta.get_all_field_names():
-                self.original_name = self.name
-                self.name = "_deleted_%s_%s" % (now().isoformat(), self.name)
-            self.active = False
-            if save:
-                self.save()
-
-    def mark_active(self, save=True):
-        """
-        If previously marked inactive, this function reverses the
-        renaming and sets the active flag to true.
-        """
-
-        if not self.active:
-            if self.original_name != "":
-                self.name = self.original_name
-                self.original_name = ""
-            self.active = True
-            if save:
-                self.save()
-
 
 class CommonModel(PrimordialModel):
     """A base model where the name is unique."""
@@ -107,7 +68,6 @@ class CommonModel(PrimordialModel):
         abstract = True
 
     name = models.CharField(max_length=512, unique=True, db_index=True)
-    original_name = models.CharField(max_length=512)
 
 
 class CommonModelNameNotUnique(PrimordialModel):
@@ -117,15 +77,14 @@ class CommonModelNameNotUnique(PrimordialModel):
         abstract = True
 
     name = models.CharField(max_length=512, unique=False, db_index=True)
-    original_name = models.CharField(max_length=512)
 
 
 # Actual models
 # -----------------------------------------------------------------------------
 
 class Category(CommonModel):
-    """A class represnting the valid categories (formerly tags) that can be
-    assigned to a role.
+    """
+    A class represnting the valid categories (formerly tags) that can be assigned to a role.
     """
 
     class Meta:
@@ -194,8 +153,8 @@ class CloudPlatform(CommonModel):
 
 
 class UserAlias(models.Model):
-    """A class representing a mapping between users and aliases
-    to allow for user renaming without breaking deps.
+    """
+    A class representing a mapping between users and aliases to allow for user renaming without breaking deps.
     """
 
     class Meta:
@@ -227,7 +186,7 @@ class Video(PrimordialModel):
     url.help_text = ""
 
     role = models.ForeignKey(
-        'Role',
+        'Content',
         related_name='videos',
         on_delete=models.CASCADE,
         null=True
@@ -235,21 +194,36 @@ class Video(PrimordialModel):
     role.help_text = ""
 
 
-class Role(CommonModelNameNotUnique):
+class ContentType(BaseModel):
+    """A model that represents content type (e.g. role, module, etc.)."""
+    name = models.CharField(max_length=512, unique=True, db_index=True,
+                            choices=constants.ContentType.choices())
+    description = TruncatingCharField(max_length=255, blank=True, default='')
+
+    @classmethod
+    def get(cls, content_type):
+        if isinstance(content_type, constants.ContentType):
+            content_type = content_type.value
+        return cls.objects.get(name=content_type)
+
+    def __str__(self):
+        return self.name
+
+
+class Content(CommonModelNameNotUnique):
     """A class representing a user role."""
 
     class Meta:
         unique_together = [
-            ('namespace', 'name'),
-            ('github_user', 'github_repo'),
+            ('namespace', 'content_type', 'name')
         ]
-        ordering = ['namespace', 'name']
+        ordering = ['namespace', 'content_type', 'name']
 
     # Foreign keys
     # -------------------------------------------------------------------------
 
     dependencies = models.ManyToManyField(
-        'Role',
+        'Content',
         related_name='+',
         blank=True,
         editable=False,
@@ -289,45 +263,44 @@ class Role(CommonModelNameNotUnique):
     )
     categories.help_text = ""
 
+    repository = models.ForeignKey(
+        'Repository',
+        related_name='content_objects',
+        editable=False,
+        on_delete=models.PROTECT
+    )
+
+    content_type = models.ForeignKey(
+        'ContentType',
+        related_name='content_objects',
+        editable=False,
+        on_delete=models.PROTECT,
+    )
+    namespace = models.ForeignKey(
+        'Namespace',
+        related_name='content_objects',
+    )
+
     # Regular fields
     # -------------------------------------------------------------------------
 
-    ANSIBLE = 'ANS'
-    CONTAINER = 'CON'
-    CONTAINER_APP = 'APP'
-    DEMO = 'DEM'
-    ROLE_TYPE_CHOICES = (
-        (ANSIBLE, 'Ansible'),
-        (CONTAINER, 'Container Enabled'),
-        (CONTAINER_APP, 'Container App'),
-        (DEMO, 'Demo')
-    )
+    # TODO(cutwater): Constants left for compatibility reasons. Should be
+    # removed in future.
+    ANSIBLE = constants.RoleType.ANSIBLE.value
+    CONTAINER = constants.RoleType.CONTAINER.value
+    CONTAINER_APP = constants.RoleType.CONTAINER_APP.value
+    DEMO = constants.RoleType.DEMO.value
+
     role_type = models.CharField(
         max_length=3,
-        choices=ROLE_TYPE_CHOICES,
+        choices=constants.RoleType.choices(),
         default=ANSIBLE,
         blank=False,
         editable=False,
     )
-    namespace = models.CharField(
+    original_name = models.CharField(
         max_length=256,
-        blank=True,
-        null=True,
-        verbose_name="Namespace",
-    )
-    github_user = models.CharField(
-        max_length=256,
-        verbose_name="Github Username",
-    )
-    github_repo = models.CharField(
-        max_length=256,
-        verbose_name="Github Repository",
-    )
-    github_branch = models.CharField(
-        max_length=256,
-        blank=True,
-        default='',
-        verbose_name="Github Branch"
+        null=False
     )
     github_default_branch = models.CharField(
         max_length=256,
@@ -411,59 +384,24 @@ class Role(CommonModelNameNotUnique):
         default=0
     )
 
-    # GitHub repo attributes
-    stargazers_count = models.IntegerField(
-        default=0
-    )
-    watchers_count = models.IntegerField(
-        default=0
-    )
-    forks_count = models.IntegerField(
-        default=0
-    )
-    open_issues_count = models.IntegerField(
-        default=0
-    )
-    commit = models.CharField(
-        max_length=256,
-        blank=True
-    )
-    commit_message = models.CharField(
-        max_length=256,
-        blank=True
-    )
-    commit_url = models.CharField(
-        max_length=256,
-        blank=True
-    )
-    commit_created = models.DateTimeField(
-        null=True,
-        verbose_name="Laste Commit DateTime"
-    )
-
-    # Fields calculated by a celery task or signal, not set
-    # -------------------------------------------------------------------------
-
-    bayesian_score = models.FloatField(
-        default=0.0,
-        editable=False,
-    )
-    num_ratings = models.IntegerField(
-        default=0,
-    )
-    average_score = models.FloatField(
-        default=0.0,
-    )
-
     # Other functions and properties
     # -------------------------------------------------------------------------
 
     def __unicode__(self):
         return "%s.%s" % (self.namespace, self.name)
 
+    @property
+    def github_user(self):
+        return self.repository.github_user
+
+    @property
+    def github_repo(self):
+        return self.repository.github_repo
+
     def get_last_import(self):
         try:
-            return model_to_dict(self.import_tasks.latest(), fields=('id', 'state'))
+            return model_to_dict(self.repository.import_tasks.latest(),
+                                 fields=('id', 'state'))
         except:
             return dict()
 
@@ -493,30 +431,28 @@ class Role(CommonModelNameNotUnique):
         for field in self._meta.get_fields():
             if not field.is_relation and field.get_internal_type() == 'CharField':
                 if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
-                    raise Exception("Role %s value exceeeds max length of %s." % (field.name, field.max_length))
+                    raise Exception("Content %s value exceeeds max length of %s." % (field.name, field.max_length))
 
 
-class Namespace(PrimordialModel):
+class Namespace(CommonModel):
+    """
+    Represents the aggregation of multiple namespaces across providers.
+    """
 
     class Meta:
-        ordering = ('namespace',)
+        ordering = ('name',)
 
-    namespace = models.CharField(
-        max_length=256,
-        unique=True,
-        verbose_name="GitHub namespace"
-    )
-    name = models.CharField(
-        max_length=256,
-        blank=True,
-        null=True,
-        verbose_name="GitHub name"
+    owners = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='namespaces',
+        null=False,
+        editable=True,
     )
     avatar_url = models.CharField(
         max_length=256,
         blank=True,
         null=True,
-        verbose_name="GitHub Avatar URL"
+        verbose_name="Avatar URL"
     )
     location = models.CharField(
         max_length=256,
@@ -528,35 +464,132 @@ class Namespace(PrimordialModel):
         max_length=256,
         blank=True,
         null=True,
-        verbose_name="Location"
+        verbose_name="Company Name"
     )
     email = models.CharField(
         max_length=256,
         blank=True,
         null=True,
-        verbose_name="Location"
+        verbose_name="Email Address"
     )
     html_url = models.CharField(
         max_length=256,
         blank=True,
         null=True,
-        verbose_name="URL"
+        verbose_name="Web Site URL"
+    )
+
+    def get_absolute_url(self):
+        return reverse('api:namespace_detail', args=(self.pk,))
+
+
+class Provider(CommonModel):
+    """
+    Valid SCM providers (e.g., GitHub, GitLab, etc.)
+    """
+
+    class Meta:
+        ordering = ('name',)
+
+    def get_absolute_url(self):
+        return reverse('api:active_provider_detail', args=(self.pk,))
+
+
+class ProviderNamespace(PrimordialModel):
+    """
+    A one-to-one mapping to namespaces within each provider.
+    """
+
+    class Meta:
+        ordering = ('provider', 'name')
+        unique_together = [
+            ('provider', 'name'),
+            ('namespace', 'provider', 'name'),
+        ]
+
+    name = models.CharField(
+        max_length=256,
+        verbose_name="Name",
+        editable=True,
+        null=False
+    )
+    namespace = models.ForeignKey(
+        'Namespace',
+        related_name='provider_namespaces',
+        editable=False,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name='Namespace'
+    )
+    provider = models.ForeignKey(
+        'Provider',
+        related_name='provider_namespaces',
+        editable=True,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name='Provider'
+    )
+    display_name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=False,
+        verbose_name="Display Name"
+    )
+    avatar_url = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=True,
+        verbose_name="Avatar URL"
+    )
+    location = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=True,
+        verbose_name="Location"
+    )
+    company = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=True,
+        verbose_name="Company Name"
+    )
+    email = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=True,
+        verbose_name="Email Address"
+    )
+    html_url = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        editable=True,
+        verbose_name="Web Site URL"
     )
     followers = models.IntegerField(
         null=True,
+        editable=True,
         verbose_name="Followers"
     )
 
+    def get_absolute_url(self):
+        return reverse('api:provider_namespace_detail', args=(self.pk,))
 
-class RoleVersion(CommonModelNameNotUnique):
+
+class ContentVersion(CommonModelNameNotUnique):
     class Meta:
         ordering = ('-loose_version',)
 
     # Foreign keys
     # -------------------------------------------------------------------------
 
-    role = models.ForeignKey(
-        Role,
+    content = models.ForeignKey(
+        Content,
         related_name='versions',
     )
 
@@ -576,13 +609,38 @@ class RoleVersion(CommonModelNameNotUnique):
     # -------------------------------------------------------------------------
 
     def __unicode__(self):
-        return "%s.%s-%s" % (self.role.namespace, self.role.name, self.name)
+        return "%s.%s-%s" % (self.content.namespace,
+                             self.content.name, self.name)
 
     def save(self, *args, **kwargs):
         # the value of score is based on the
         # values in the other rating fields
         self.loose_version = self.name
-        super(RoleVersion, self).save(*args, **kwargs)
+        super(ContentVersion, self).save(*args, **kwargs)
+
+
+class ImportTaskMessage(PrimordialModel):
+    TYPE_INFO = constants.ImportTaskMessageType.INFO.value
+    TYPE_WARNING = constants.ImportTaskMessageType.WARNING.value
+    TYPE_SUCCESS = constants.ImportTaskMessageType.SUCCESS.value
+    # FIXME(cutwater): ERROR and FAILED types seem to be redundant
+    TYPE_FAILED = constants.ImportTaskMessageType.FAILED.value
+    TYPE_ERROR = constants.ImportTaskMessageType.ERROR.value
+
+    task = models.ForeignKey(
+        'ImportTask',
+        related_name='messages',
+    )
+    message_type = models.CharField(
+        max_length=10,
+        choices=constants.ImportTaskMessageType.choices(),
+    )
+    message_text = models.CharField(
+        max_length=256,
+    )
+
+    def __unicode__(self):
+        return "%d-%s-%s" % (self.task.id, self.message_type, self.message_text)
 
 
 class ImportTask(PrimordialModel):
@@ -590,30 +648,28 @@ class ImportTask(PrimordialModel):
         ordering = ('-id',)
         get_latest_by = 'created'
 
-    github_user = models.CharField(
-        max_length=256,
-        verbose_name="Github Username",
+    # TODO(cutwater): Constants left for backward compatibility, to be removed
+    STATE_PENDING = constants.ImportTaskState.PENDING.value
+    STATE_RUNNING = constants.ImportTaskState.RUNNING.value
+    STATE_FAILED = constants.ImportTaskState.FAILED.value
+    STATE_SUCCESS = constants.ImportTaskState.SUCCESS.value
+
+    repository = models.ForeignKey(
+        'Repository',
+        related_name='import_tasks',
     )
-    github_repo = models.CharField(
-        max_length=256,
-        verbose_name="Github Repository",
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='import_tasks',
+        db_index=True,
     )
+
     github_reference = models.CharField(
         max_length=256,
         verbose_name="Github Reference",
         null=True,
         blank=True,
         default=''
-    )
-    role = models.ForeignKey(
-        Role,
-        related_name='import_tasks',
-        db_index=True,
-    )
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name='import_tasks',
-        db_index=True,
     )
     alternate_role_name = models.CharField(
         max_length=256,
@@ -628,7 +684,8 @@ class ImportTask(PrimordialModel):
     )
     state = models.CharField(
         max_length=20,
-        default='PENDING',
+        default=STATE_PENDING,
+        choices=constants.ImportTaskState.choices()
     )
     started = models.DateTimeField(
         auto_now_add=False,
@@ -642,24 +699,6 @@ class ImportTask(PrimordialModel):
     )
 
     # GitHub repo attributes at time of import
-    stargazers_count = models.IntegerField(
-        default=0
-    )
-    watchers_count = models.IntegerField(
-        default=0
-    )
-    forks_count = models.IntegerField(
-        default=0
-    )
-    open_issues_count = models.IntegerField(
-        default=0
-    )
-    github_branch = models.CharField(
-        max_length=256,
-        blank=True,
-        default='',
-        verbose_name="Github Branch"
-    )
     commit = models.CharField(
         max_length=256,
         blank=True
@@ -685,31 +724,12 @@ class ImportTask(PrimordialModel):
         verbose_name="Travis Build URL"
     )
 
-    def __unicode__(self):
-        return "%d-%s" % (self.id, self.started.strftime("%Y%m%d-%H%M%S-%Z"))
-
     def validate_char_lengths(self):
         for field in self._meta.get_fields():
             if not field.is_relation and field.get_internal_type() == 'CharField':
                 # print "%s %s" % (field.name, field.max_length)
                 if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
                     raise Exception("Import Task %s value exceeeds max length of %s." % (field.name, field.max_length))
-
-
-class ImportTaskMessage(PrimordialModel):
-    task = models.ForeignKey(
-        ImportTask,
-        related_name='messages',
-    )
-    message_type = models.CharField(
-        max_length=10,
-    )
-    message_text = models.CharField(
-        max_length=256,
-    )
-
-    def __unicode__(self):
-        return "%d-%s-%s" % (self.task.id, self.message_type, self.message_text)
 
 
 class NotificationSecret(PrimordialModel):
@@ -789,7 +809,7 @@ class Notification(PrimordialModel):
         blank=True
     )
     roles = models.ManyToManyField(
-        Role,
+        Content,
         related_name='notifications',
         verbose_name='Roles',
         editable=False
@@ -807,29 +827,58 @@ class Notification(PrimordialModel):
     )
 
 
-class Repository (PrimordialModel):
+class Repository(BaseModel):
     class Meta:
-        unique_together = ('owner', 'github_user', 'github_repo')
-        ordering = ('github_user', 'github_repo')
+        unique_together = ('provider_namespace', 'name')
+        ordering = ('provider_namespace', 'name')
 
-    owner = models.ForeignKey(
+    # Foreign keys
+    owners = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
+        related_name='repositories'
+    )
+    provider_namespace = models.ForeignKey(
+        ProviderNamespace,
         related_name='repositories',
     )
-    github_user = models.CharField(
-        max_length=256,
-        verbose_name="Github Username",
-    )
-    github_repo = models.CharField(
-        max_length=256,
-        verbose_name="Github Repository",
-    )
-    is_enabled = models.BooleanField(
-        default=False
-    )
+
+    # Fields
+    name = models.CharField(max_length=256)
+    original_name = models.CharField(max_length=256, null=False)
+    description = TruncatingCharField(max_length=255, blank=True, default='')
+    import_branch = models.CharField(max_length=256, null=True)
+    is_enabled = models.BooleanField(default=False)
+
+    # Repository attributes
+    commit = models.CharField(max_length=256, blank=True, default='')
+    commit_message = models.CharField(max_length=256, blank=True, default='')
+    commit_url = models.CharField(max_length=256, blank=True, default='')
+    commit_created = models.DateTimeField(null=True, verbose_name="Last Commit DateTime")
+    stargazers_count = models.IntegerField(default=0)
+    watchers_count = models.IntegerField(default=0)
+    forks_count = models.IntegerField(default=0)
+    open_issues_count = models.IntegerField(default=0)
+
+    @property
+    def clone_url(self):
+        return "https://github.com/{user}/{repo}.git".format(
+            user=self.github_user,
+            repo=self.github_repo
+        )
+
+    @property
+    def github_user(self):
+        return self.provider_namespace.name
+
+    @property
+    def github_repo(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('api:repository_detail', args=(self.pk,))
 
 
-class Subscription (PrimordialModel):
+class Subscription(PrimordialModel):
     class Meta:
         unique_together = ('owner', 'github_user', 'github_repo')
         ordering = ('owner', 'github_user', 'github_repo')
@@ -848,21 +897,22 @@ class Subscription (PrimordialModel):
     )
 
 
-class Stargazer(PrimordialModel):
+class Stargazer(BaseModel):
     class Meta:
-        unique_together = ('owner', 'role')
+        unique_together = ('owner', 'repository')
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='starred',
     )
 
-    role = models.ForeignKey(
-        Role,
-        related_name='stars')
+    repository = models.ForeignKey(
+        Repository,
+        related_name='stars'
+    )
 
 
-class RefreshRoleCount (PrimordialModel):
+class RefreshRoleCount(PrimordialModel):
     state = models.CharField(
         max_length=20
     )

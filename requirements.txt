@@ -3,7 +3,7 @@ django==1.8.3
 djangorestframework==3.0.5
 pexpect
 decorator
-django-allauth
+django-allauth==0.34.0
 django-autofixture
 # django-avatar
 celery==3.1.24
@@ -31,3 +31,6 @@ pyOpenSSL
 psycopg2
 gevent>=0.13
 dj-database-url
+enum34
+six
+pytest

@@ -38,10 +38,11 @@ from ansible.errors import AnsibleError
 from galaxy.main.models import (Platform,
                                 CloudPlatform,
                                 Tag,
-                                Role,
+                                Content,
                                 ImportTask,
-                                RoleVersion,
-                                Namespace)
+                                ContentVersion,
+                                ProviderNamespace)
+
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 
 
@@ -114,15 +115,14 @@ def update_user_repos(github_repos, user):
             if meta_data:
                 logger.info("Create or Update repo {0}".format(repo.full_name))
                 name = repo.full_name.split('/')
-                cnt = Role.objects.filter(
-                    github_user=name[0], github_repo=name[1]).count()
+                cnt = Content.objects.filter(
+                    repository__github_user=name[0],
+                    repository__github_repo=name[1]).count()
                 enabled = cnt > 0
                 user.repositories.update_or_create(
                     github_user=name[0],
                     github_repo=name[1],
                     defaults={
-                        u'github_user': name[0],
-                        u'github_repo': name[1],
                         u'is_enabled': enabled
                     })
                 repo_dict[repo.full_name] = True
@@ -132,7 +132,7 @@ def update_user_repos(github_repos, user):
         full_name = "{0}/{1}".format(repo.github_user, repo.github_repo)
         if not repo_dict.get(full_name):
             logger.info("Remove from cache {0}".format(full_name))
-            repo.delete()
+            user.repositories.remove(repo)
 
     logger.info("Finished update_user_repos for user {0}"
                 .format(user.username))
@@ -147,7 +147,7 @@ def refresh_existing_user_repos(token, github_user):
                 .format(github_user.login))
     remove_roles = []
 
-    for role in Role.objects.filter(github_user=github_user.login):
+    for role in Content.objects.filter(repository__github_user=github_user.login):
         full_name = "{0}/{1}".format(role.github_user, role.github_repo)
         try:
             repo = get_repo_raw(token, full_name)
@@ -171,7 +171,7 @@ def refresh_existing_user_repos(token, github_user):
 
     for role_id in remove_roles:
         try:
-            role = Role.objects.get(id=role_id)
+            role = Content.objects.get(id=role_id)
             logger.info(u'DELETING: {0}/{1}'.format(role.namespace, role.name))
             role.delete()
         except Exception as exc:
@@ -185,41 +185,19 @@ def refresh_existing_user_repos(token, github_user):
 def update_namespace(repo):
     # Use GitHub repo to update namespace attributes
     if repo.owner.type == 'Organization':
-        namespace, created = Namespace.objects.get_or_create(namespace=repo.organization.login, defaults={
-                                                             'name': repo.organization.name,
-                                                             'avatar_url': repo.organization.avatar_url,
-                                                             'location': repo.organization.location,
-                                                             'company': repo.organization.company,
-                                                             'email': repo.organization.email,
-                                                             'html_url': repo.organization.html_url,
-                                                             'followers': repo.organization.followers})
-        if not created:
-            namespace.avatar_url = repo.organization.avatar_url
-            namespace.location = repo.organization.location
-            namespace.company = repo.organization.company
-            namespace.email = repo.organization.email
-            namespace.html_url = repo.organization.html_url
-            namespace.followers = repo.organization.followers
-            namespace.save()
-
+        owner = repo.organization
     else:
-        namespace, created = Namespace.objects.get_or_create(namespace=repo.owner.login, defaults={
-                                                             'name': repo.owner.name,
-                                                             'avatar_url': repo.owner.avatar_url,
-                                                             'location': repo.owner.location,
-                                                             'company': repo.owner.company,
-                                                             'email': repo.owner.email,
-                                                             'html_url': repo.owner.html_url,
-                                                             'followers': repo.owner.followers})
-        if not created:
-            namespace.avatar_url = repo.owner.avatar_url
-            namespace.location = repo.owner.location
-            namespace.company = repo.owner.company
-            namespace.email = repo.owner.email
-            namespace.html_url = repo.owner.html_url
-            namespace.followers = repo.owner.followers
-            namespace.save()
-    return True
+        owner = repo.owner
+    ProviderNamespace.objects.update_or_create(
+        name=repo.owner.login,
+        defaults={
+            'name': owner.name,
+            'avatar_url': owner.avatar_url,
+            'location': owner.location,
+            'company': owner.company,
+            'email': owner.email,
+            'html_url': owner.html_url,
+            'followers': owner.followers})
 
 
 def fail_import_task(import_task, msg):
@@ -236,7 +214,8 @@ def fail_import_task(import_task, msg):
             transaction.commit()
     except Exception as e:
         transaction.rollback()
-        logger.error(u"Error updating import task state %s: %s" % (import_task.role.name, str(e)))
+        logger.error(u"Error updating import task state %s: %s" % (
+            import_task.id, str(e)))
     logger.error(msg)
     raise Exception(msg)
 
@@ -261,8 +240,8 @@ def add_message(import_task, msg_type, msg_text):
         transaction.commit()
     except Exception as e:
         transaction.rollback()
-        logger.error(u"Error adding message to import task for role %s: %s" % (import_task.role.name, e.message))
-    logger.info(u"Role %d: %s - %s" % (import_task.role.id, msg_type, msg_text))
+        logger.error(u"Error adding message to import task %s: %s" % (import_task.id, e.message))
+    logger.info(u"Task %d: %s - %s" % (import_task.id, msg_type, msg_text))
 
 
 def get_readme(import_task, repo, branch, token):
@@ -432,7 +411,7 @@ def add_dependencies(import_task, dependencies, role):
                 namespace = names[0]
                 name = names[1]
             try:
-                dep_role = Role.objects.get(namespace=namespace, name=name)
+                dep_role = Content.objects.get(namespace=namespace, name=name)
                 role.dependencies.add(dep_role)
                 dep_names.append(dep_parsed['name'])
             except Exception as exc:
@@ -581,7 +560,7 @@ def update_role_videos(import_task, role, videos=None):
                 role.videos.create(url=video['embed_url'], description=video['description'])
 
 
-@task(name="galaxy.main.celerytasks.tasks.import_role", throws=(Exception,))
+@task(name="galaxy.main.celerytasks.tasks.import_role")
 def import_role(task_id):
     try:
         logger.info(u"Starting task: %d" % int(task_id))
@@ -593,9 +572,8 @@ def import_role(task_id):
     except:
         fail_import_task(None, u"Failed to get task id: %d" % int(task_id))
 
-    try:
-        role = Role.objects.get(id=import_task.role.id)
-    except:
+    role = Content.objects.filter(repository=import_task.repository).first()
+    if not role:
         fail_import_task(import_task, u"Failed to get role for task id: %d" % int(task_id))
 
     repo_full_name = role.github_user + "/" + role.github_repo
@@ -629,8 +607,6 @@ def import_role(task_id):
     # determine which branch to use
     if import_task.github_reference:
         branch = import_task.github_reference
-    elif role.github_branch:
-        branch = role.github_branch
     else:
         branch = repo.default_branch
 
@@ -682,16 +658,16 @@ def import_role(task_id):
     elif container_yml:
         add_message(import_task, u"INFO", u"Found meta/container.yml")
         add_message(import_task, u"INFO", u"Setting role type to Container")
-        role.role_type = Role.CONTAINER
+        role.role_type = Content.CONTAINER
         role.container_yml = container_yml
     elif ansible_container_yml:
         add_message(import_task, u"INFO", u"Found container.yml")
         add_message(import_task, u"INFO", u"Setting role type to Container App")
-        role.role_type = Role.CONTAINER_APP
+        role.role_type = Content.CONTAINER_APP
         role.container_yml = ansible_container_yml
     elif galaxy_info.get('demo', False):
         add_message(import_task, u"INFO", u"Setting role type to Demo")
-        role.role_type = Role.DEMO
+        role.role_type = Content.DEMO
     else:
         role.role_type = role.ANSIBLE
         role.container_yml = None
@@ -737,16 +713,19 @@ def import_role(task_id):
     sub_count = 0
     for sub in repo.get_subscribers():
         sub_count += 1   # only way to get subscriber count via pygithub
-    role.stargazers_count = repo.stargazers_count
-    role.watchers_count = sub_count
-    role.forks_count = repo.forks_count
-    role.open_issues_count = repo.open_issues_count
+
+    repository = role.repository
+
+    repository.stargazers_count = repo.stargazers_count
+    repository.watchers_count = sub_count
+    repository.forks_count = repo.forks_count
+    repository.open_issues_count = repo.open_issues_count
 
     last_commit = repo.get_commits(sha=branch)[0].commit
-    role.commit = last_commit.sha
-    role.commit_message = last_commit.message[:255]
-    role.commit_url = last_commit.html_url
-    role.commit_created = last_commit.committer.date.replace(tzinfo=pytz.UTC)
+    repository.commit = last_commit.sha
+    repository.commit_message = last_commit.message[:255]
+    repository.commit_url = last_commit.html_url
+    repository.commit_created = last_commit.committer.date.replace(tzinfo=pytz.UTC)
 
     # Update the import task in the event the role is left in an invalid state.
     import_task.stargazers_count = repo.stargazers_count
@@ -786,7 +765,7 @@ def import_role(task_id):
     try:
         git_tag_list = repo.get_tags()
         for tag in git_tag_list:
-            rv, created = RoleVersion.objects.get_or_create(name=tag.name, role=role)
+            rv, created = ContentVersion.objects.get_or_create(name=tag.name, role=role)
             rv.release_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
             rv.save()
     except Exception as exc:
@@ -810,7 +789,7 @@ def import_role(task_id):
         if remove_versions:
             try:
                 for version_name in remove_versions:
-                    RoleVersion.objects.filter(name=version_name, role=role).delete()
+                    ContentVersion.objects.filter(name=version_name, role=role).delete()
             except Exception as exc:
                 fail_import_task(import_task, u"Error removing tags from role: %s" % unicode(exc))
     try:
@@ -839,6 +818,7 @@ def import_role(task_id):
         role.imported = timezone.now()
         role.is_valid = True
         role.save()
+        repository.save()
         transaction.commit()
     except Exception, e:
         fail_import_task(import_task, u"Error saving role: %s" % e.message)
@@ -923,7 +903,9 @@ def refresh_user_stars(user, token):
     user.subscriptions.all().delete()
     for s in subscriptions:
         name = s.full_name.split('/')
-        cnt = Role.objects.filter(github_user=name[0], github_repo=name[1]).count()
+        cnt = Content.objects.filter(
+            repository__github_user=name[0],
+            repository__github_repo=name[1]).count()
         if cnt > 0:
             user.subscriptions.get_or_create(
                 github_user=name[0],
@@ -941,8 +923,8 @@ def refresh_user_stars(user, token):
         raise Exception(msg)
 
     new_starred = {(s.owner.login, s.name) for s in starred}
-    old_starred = {(s.role.github_user, s.role.github_repo): s.id
-                   for s in user.starred.select_related('role').all()}
+    old_starred = {(s.repository.github_user, s.repository.github_repo): s.id
+                   for s in user.starred.select_related('repository').all()}
 
     to_remove = [v for k, v in old_starred.iteritems()
                  if k not in new_starred]
@@ -952,9 +934,10 @@ def refresh_user_stars(user, token):
 
     for github_user, github_repo in to_add:
         try:
-            role = Role.objects.get(
-                github_user=github_user, github_repo=github_repo)
-        except Role.DoesNotExist:
+            role = Content.objects.get(
+                repository__github_user=github_user,
+                repository__github_repo=github_repo)
+        except Content.DoesNotExist:
             continue
         user.starred.create(role=role)
 
@@ -970,7 +953,7 @@ def refresh_role_counts(start, end, token, tracker):
     failed = 0
     deleted = 0
     updated = 0
-    for role in Role.objects.filter(is_valid=True, active=True, id__gt=start, id__lte=end):
+    for role in Content.objects.filter(is_valid=True, active=True, id__gt=start, id__lte=end):
         full_name = "%s/%s" % (role.github_user, role.github_repo)
         try:
             repo = get_repo_raw(token, full_name)
@@ -1019,7 +1002,8 @@ def clear_stuck_imports():
     try:
         for ri in ImportTask.objects.filter(created__lte=one_hours_ago, state__in=['PENDING', 'RUNNING']):
             logger.info(u"Clear Stuck Imports: {0} - {1}.{2}"
-                        .format(ri.id, ri.role.namespace, ri.role.name))
+                        .format(ri.id, ri.repository.github_user,
+                                ri.repository.github_repo))
             ri.state = u"FAILED"
             ri.messages.create(
                 message_type=u"ERROR",

@@ -31,7 +31,7 @@
         return {
             get: function(params) {
                 params = (params) ? params : {};
-                params.owner = currentUserService.id;
+                params.owners = currentUserService.id;
                 return $resource('/api/v1/repos/list/?page_size=1000').get(params);
             },
             refresh: function(params) {
