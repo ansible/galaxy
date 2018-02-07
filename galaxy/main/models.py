@@ -15,6 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import six
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -46,7 +48,7 @@ class BaseModel(models.Model, DirtyMixin):
 
     def __unicode__(self):
         if hasattr(self, 'name'):
-            return unicode("%s-%s" % (self.name, self.id))
+            return six.u("%s-%s" % (self.name, self.id))
         else:
             return u'%s-%s' % (self._meta.verbose_name, self.id)
 
@@ -212,7 +214,7 @@ class UserAlias(models.Model):
     )
 
     def __unicode__(self):
-        return unicode("%s (alias of %s)" % (self.alias_name, self.alias_of.username))
+        return six.u("%s (alias of %s)" % (self.alias_name, self.alias_of.username))
 
 
 class Video(PrimordialModel):
@@ -492,7 +494,7 @@ class Role(CommonModelNameNotUnique):
     def validate_char_lengths(self):
         for field in self._meta.get_fields():
             if not field.is_relation and field.get_internal_type() == 'CharField':
-                if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
+                if isinstance(getattr(self, field.name), six.string_types) and len(getattr(self, field.name)) > field.max_length:
                     raise Exception("Role %s value exceeeds max length of %s." % (field.name, field.max_length))
 
 
@@ -692,7 +694,7 @@ class ImportTask(PrimordialModel):
         for field in self._meta.get_fields():
             if not field.is_relation and field.get_internal_type() == 'CharField':
                 # print "%s %s" % (field.name, field.max_length)
-                if isinstance(getattr(self, field.name), basestring) and len(getattr(self, field.name)) > field.max_length:
+                if isinstance(getattr(self, field.name), six.string_types) and len(getattr(self, field.name)) > field.max_length:
                     raise Exception("Import Task %s value exceeeds max length of %s." % (field.name, field.max_length))
 
 

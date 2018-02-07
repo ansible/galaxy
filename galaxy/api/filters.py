@@ -17,6 +17,8 @@
 
 import re
 
+import six
+
 # Django
 from django.core.exceptions import FieldError, ValidationError, ObjectDoesNotExist
 from django.contrib.auth import get_user_model
@@ -86,7 +88,7 @@ class FieldLookupBackend(BaseFilterBackend):
         return field
 
     def to_python_boolean(self, value, allow_none=False):
-        value = unicode(value)
+        value = six.u(value)
         if value.lower() in ('true', '1'):
             return True
         elif value.lower() in ('false', '0'):
@@ -94,10 +96,10 @@ class FieldLookupBackend(BaseFilterBackend):
         elif allow_none and value.lower() in ('none', 'null'):
             return None
         else:
-            raise ValueError(u'Unable to convert "%s" to boolean' % unicode(value))
+            raise ValueError(u'Unable to convert "%s" to boolean' % six.u(value))
 
     def to_python_related(self, value):
-        value = unicode(value)
+        value = six.u(value)
         if value.lower() in ('none', 'null'):
             return None
         else:
