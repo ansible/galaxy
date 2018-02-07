@@ -1,4 +1,3 @@
-from __future__ import print_function
 # (c) 2012-2016, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
@@ -15,6 +14,8 @@ from __future__ import print_function
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+
+from __future__ import print_function
 
 import time
 import logging

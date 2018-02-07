@@ -1,4 +1,3 @@
-from __future__ import print_function
 # (c) 2012-2018, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
@@ -17,6 +16,8 @@ from __future__ import print_function
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 # standard python libraries
+from __future__ import print_function
+
 import sys
 import math
 import requests
