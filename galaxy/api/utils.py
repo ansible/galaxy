@@ -41,9 +41,9 @@ def get_object_or_400(klass, *args, **kwargs):
     queryset = _get_queryset(klass)
     try:
         return queryset.get(*args, **kwargs)
-    except queryset.model.DoesNotExist, e:
+    except queryset.model.DoesNotExist as e:
         raise ParseError(*e.args)
-    except queryset.model.MultipleObjectsReturned, e:
+    except queryset.model.MultipleObjectsReturned as e:
         raise ParseError(*e.args)
 
 
@@ -56,9 +56,9 @@ def get_object_or_403(klass, *args, **kwargs):
     queryset = _get_queryset(klass)
     try:
         return queryset.get(*args, **kwargs)
-    except queryset.model.DoesNotExist, e:
+    except queryset.model.DoesNotExist as e:
         raise PermissionDenied(*e.args)
-    except queryset.model.MultipleObjectsReturned, e:
+    except queryset.model.MultipleObjectsReturned as e:
         raise PermissionDenied(*e.args)
 
 

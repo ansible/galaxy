@@ -377,7 +377,7 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
             if not serializer.is_valid():
                 # logger.debug('SubListCreateAPIView.create: serializer failed validation')
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Exception, e:
+        except Exception as e:
             # logger.debug('SubListCreateAPIView.create: serializer threw an error')
             return Response("serializer errors", status=status.HTTP_400_BAD_REQUEST)
 
@@ -394,9 +394,9 @@ class SubListCreateAPIView(SubListAPIView, ListCreateAPIView):
             self.pre_save(serializer.validated_data)
             obj = serializer.save()
             data = self.serializer_class(obj).data
-        except IntegrityError, e:
+        except IntegrityError as e:
             return Response("database integrity conflict", status=status.HTTP_409_CONFLICT)
-        except Exception, e:
+        except Exception as e:
             return Response("unknown error: %s" % str(e), status=status.HTTP_400_BAD_REQUEST)
 
         return Response(data, status=status.HTTP_201_CREATED)

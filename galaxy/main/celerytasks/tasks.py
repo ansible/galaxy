@@ -840,7 +840,7 @@ def import_role(task_id):
         role.is_valid = True
         role.save()
         transaction.commit()
-    except Exception, e:
+    except Exception as e:
         fail_import_task(import_task, u"Error saving role: %s" % e.message)
 
     # Update ES indexes
