@@ -121,57 +121,35 @@
                 repo.name_pattern_error = false;
                 repo.show_enable_failed = false;
                 repo.show_enable_failed_msg = '';
-                if (repo.summary_fields) {
-                    repo.summary_fields.notification_secrets.forEach(function(secret) {
-                        if (secret.source == 'travis') {
-                            repo.travis_id = secret.id;
-                            repo.travis_token = secret.secret;
-                        } else {
-                            repo.github_id = secret.id;
-                            repo.github_secret = secret.secret;
-                        }
-                    });
-                }
-                if (repo.summary_fields && repo.summary_fields.roles.length) {
-                    repo.role_id = repo.summary_fields.roles[0].id;
-                    repo.role_name = repo.summary_fields.roles[0].name;
-                    repo.role_namespace = repo.summary_fields.roles[0].namespace;
-                    if (repo.summary_fields.roles[0].last_import['state']) {
-                        repo.state = repo.summary_fields.roles[0].last_import.state;
-                    } else {
-                        repo.state = repo.summary_fields.roles[0].last_import.state = null;
-                    }
-                    repo.master_role_name = repo.role_name;
+
+                var new_name = null;
+                if (repo.original_name === 'ansible') {
+                    new_name = repo.original_name;
                 } else {
-                    var new_name;
-                    if (repo.github_repo === 'ansible') {
-                        new_name = repo.github_repo;
-                    } else {
-                        repo.github_repo.replace(/^(ansible[-_+.]*)*(role[-_+.]*)*/g, function(match, p1, p2, offset, str) {
-                            var result = str;
-                            if (p1) {
-                                result = result.replace(new RegExp(p1,'g'), '');
-                            }
-                            if (p2) {
-                                result = result.replace(new RegExp(p2,'g'), '');
-                            }
-                            result = result.replace(/^-/,'');
-                            new_name = result;
-                        });
-                        if (!new_name) {
-                            new_name = repo.github_repo;
+                    repo.original_name.replace(/^(ansible[-_+.]*)*(role[-_+.]*)*/g, function(match, p1, p2, offset, str) {
+                        var result = str;
+                        if (p1) {
+                            result = result.replace(new RegExp(p1,'g'), '');
                         }
+                        if (p2) {
+                            result = result.replace(new RegExp(p2,'g'), '');
+                        }
+                        result = result.replace(/^-/,'');
+                        new_name = result;
+                    });
+                    if (!new_name) {
+                        new_name = repo.original_name;
                     }
-                    repo.role_namespace = repo.github_user
-                    repo.role_name = new_name;
-                    repo.master_role_name = repo.role_name;
                 }
+                repo.provider_namespace = repo.summary_fields.provider_namespace.name;
+                repo.role_name = new_name;
+                repo.master_role_name = repo.role_name;
             });
         }
 
         function _resetRepo(_repo) {
             // Restore repo values
-            _repo.role_name = _repo.master_role_name
+            _repo.role_name = _repo.master_role_name;
             _repo.travis_id = $scope.master.travis_id;
             _repo.travis_token = $scope.master.travis_token;
             _repo.github_id = $scope.master.github_id;
