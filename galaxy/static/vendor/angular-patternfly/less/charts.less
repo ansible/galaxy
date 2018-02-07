@@ -1,0 +1,315 @@
+pf-c3-chart {
+  display: block;
+}
+.empty-chart-content {
+  text-align: center;
+  .pficon {
+    font-size: 24px;
+  }
+  span {
+    vertical-align: middle;
+    width: 100%;
+  }
+}
+.utilization-trend-chart-pf {
+  .donut-chart-pf {
+    float: left;
+    padding-top: 15px;
+    width: 100%;
+  }
+  h3 {
+    font-weight: 400;
+  }
+  .current-values {
+    border-bottom: 1px solid @color-pf-black-300;
+    float: left;
+    padding: 0 5px 10px 0;
+    width: 100%;
+  }
+  .available-count {
+    margin: 3px 0;
+    padding-left: 0;
+    padding-right: 5px;
+  }
+  .available-text {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 14px;
+    margin: 2px 0;
+    padding: 0 5px;
+  }
+  .radial-chart {
+    float: left;
+    padding-top: 10px;
+    width: 100%;
+  }
+  .sparkline-chart {
+    float: left;
+    margin-left: -5px;
+    margin-right: -5px;
+    width: 100%;
+  }
+  .legend-text {
+    color: inherit;
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    margin-left: 0;
+  }
+}
+.utilization-trend-chart-pf.data-unavailable-pf {
+  .current-values {
+    color: transparent;
+  }
+}
+
+.trend-card-compact-pf {
+  .col-sm-2:not(.col-sm-push-10) {
+    padding-right: 0;
+  }
+  .col-sm-10:not(.col-sm-pull-2) {
+    padding-left: 0;
+  }
+}
+
+.trend-flat-details {
+  display: table;
+  margin-top: 5px;
+}
+
+@media (min-width: 768px) {
+  .trend-flat-details {
+    margin-top: 25px;
+  }
+}
+
+.trend-flat-details-cell {
+  display: table-cell;
+  min-width: 70px;
+  vertical-align: bottom;
+}
+.trend-header-compact-pf {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+}
+.trend-title-compact-big-pf {
+  font-size: 36px;
+  font-weight: 300;
+  line-height: 1;
+}
+.trend-title-compact-small-pf {
+  font-size: 12px;
+  font-weight: 400;
+}
+.trend-title-flat-big-pf {
+  font-size: 26px;
+  font-weight: 300;
+  line-height: 1;
+  margin-right: 15px;
+}
+.trend-label-flat-pf {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+}
+.trend-label-flat-strong-pf {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+.trend-footer-pf {
+  color: #333333;
+  font-size: 10px;
+  font-weight: 400;
+  margin-left: 10px;
+}
+
+.data-unavailable-pf[class*="trend-title-"] {
+  color: transparent;
+}
+.data-unavailable-pf[class*="trend-label-"] {
+  color: transparent;
+}
+.data-unavailable-pf {
+  .trend-footer-pf {
+    color: transparent;
+  }
+}
+
+.utilization-bar-chart-pf {
+  .progress-bar {
+    -moz-transition: width .75s ease-in-out;
+    -o-transition: width .75s ease-in-out;
+    -webkit-transition: width .75s ease-in-out;
+    transition: width .75s ease-in-out;
+  }
+  .progress-bar.animate {
+    width: 0% !important;
+  }
+}
+.heatmap-pf-container {
+  position: relative;
+  .heatmap-container {
+    margin-left: -1px;
+  }
+}
+.heatmap-pf-container-pf {
+  .loading {
+    position: absolute;
+    right: 50%;
+    top: 100px;
+    z-index: 10;
+  }
+}
+.heatmap-pf-svg {
+  height: 100%;
+  width: 100%;
+}
+.heatmap-pf-legend-container {
+  list-style-type: none;
+  margin-top: 5px;
+  overflow: auto;
+  padding: 0;
+}
+.heatmap-pf-legend-items {
+  float: left;
+}
+.legend-pf-color-box {
+  display: inline-block;
+  height: 11px;
+  margin-left: 5px;
+  margin-right: 5px;
+  width: 11px;
+  &:first-of-type {
+    margin-left: 0px;
+  }
+}
+.legend-pf-text {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 11px;
+  padding-right: 5px;
+}
+.camelcase {
+  text-transform: capitalize;
+}
+
+pf-topology {
+  display: block;
+  user-select: none;
+}
+
+.container-topology pf-topology {
+  height: 500px;
+  position: relative;
+}
+.container-topology .canvas {
+  position: absolute;
+}
+
+.container-topology .popup {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: #fff;
+  width: 180px;
+  border: 1px #ccc solid;
+  border-radius: 6px;
+  box-shadow: #333 2px 2px 4px;
+  padding: 6px;
+  font-size: 14px;
+}
+
+.container-topology .popup h5 {
+  font-weight: bold;
+}
+
+.container-topology .popup p {
+  margin: 0 0 4px;
+}
+
+.container-topology .popup p:hover {
+  color : #0099cc;
+  cursor: pointer;
+}
+
+
+.container-topology label.checkbox-inline {
+  font-size: 14px;
+}
+
+.pf-topology-svg g {
+  font-family: PatternFlyIcons-webfont;
+  font-size: 18px;
+  text-anchor: middle;
+  cursor: pointer;
+}
+
+.pf-topology-svg g text {
+  stroke: none;
+  stroke-width: 0px;
+}
+
+.pf-topology-svg g.weak use {
+  opacity: .6;
+}
+
+.pf-topology-svg g circle {
+  stroke: #aaa;
+  fill: #fff;
+}
+
+.pf-topology-svg g.fixed use {
+  stroke-width: 2px;
+}
+
+.pf-topology-svg g.selected use,
+.pf-topology-svg g.selected circle {
+  stroke-width: 4px;
+}
+
+.pf-topology-svg line {
+  stroke: #aaa;
+  stroke-width: 1;
+}
+
+.pf-topology-svg g text.attached-label {
+  display: none;
+}
+
+.pf-topology-svg g text.attached-label.visible {
+  font-size: 12px;
+  fill: black;
+  display: block;
+}
+
+.pf-topology-svg g.selected {
+  stroke-width: 4px;
+}
+
+.pf-topology-svg g circle {
+  stroke-width: 2px;
+}
+
+.pf-topology-svg g circle.success {
+  stroke: #3F9C35;
+}
+
+.pf-topology-svg g circle.error {
+  stroke: #CC0000;
+}
+
+.pf-topology-svg g circle.warning {
+  stroke: #EC7A08;
+}
+
+.pf-topology-svg g circle.unknown {
+  stroke: #bbb;
+}
+
+.pf-topology-svg g text.glyph {
+  font-size: 20px;
+  fill: #1186C1;
+}
