@@ -27,10 +27,11 @@ instead use a distributed/replicated store like couchbase.
 This allows us to guarantee that
 """
 
-import time
-import logging
 import contextlib
+import logging
 import random
+import time
+
 from django.core.cache import cache as django_cache
 
 
@@ -53,7 +54,7 @@ def memcache_lock(key, attempts=1, expires=120):
 
 
 def _acquire_lock(key, attempts, expires):
-    for i in xrange(0, attempts):
+    for i in range(0, attempts):
         stored = django_cache.add(key, 1, expires)
         if stored:
             return True
