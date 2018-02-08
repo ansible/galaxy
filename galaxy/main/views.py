@@ -597,7 +597,8 @@ def my_namespaces_view(request):
     if settings.SITE_ENV == 'DEV':
         context["extra_js"] = [
             'js/namespaceApp/namespaceApp.js',
-            'js/namespaceApp/namespaceController.js',
+            'js/namespaceApp/list/list.controller.js',
+            'js/namespaceApp/list/listExpansion.component.js',
             'js/namespaceApp/namespaceAddController.js',
             'js/namespaceApp/namespaceEditController.js',
             'js/namespaceApp/namespaceFormService.js',
