@@ -1,0 +1,115 @@
+.card-view-pf {
+  overflow: auto;
+  padding-left: 2px;
+  padding-top: 20px;
+  .card {
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .175);
+    background: @color-pf-white;
+    border-top: 2px solid transparent;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.175);
+    display: block;
+    float: left;
+    height: 290px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    padding: 10px;
+    position: relative;
+    text-align: center;
+    width: 260px;
+    .card-check-box {
+      left: 10px;
+      position: absolute;
+      top: 8px;
+      visibility: hidden;
+      width: 20px;
+      z-index: 3;
+    }
+    &:hover {
+      -moz-box-shadow: 0px 3px 10px -2px rgba(0,0,0,0.24);
+      -webkit-box-shadow: 0px 3px 10px -2px rgba(0,0,0,0.24);
+      border: 1px solid @color-pf-black-300;
+      box-shadow: 0px 3px 10px -2px rgba(0,0,0,0.24);
+      .card-check-box {
+        visibility: visible;
+      }
+    }
+    &:focus {
+      -moz-box-shadow: 0px 3px 10px -2px rgba(0,0,0,0.24);
+      -webkit-box-shadow: 0px 3px 10px -2px rgba(0,0,0,0.24);
+      border: 1px solid @color-pf-black-300;
+      box-shadow: 0px 3px 10px -2px rgba(0,0,0,0.24);
+    }
+  }
+  .card-content {
+    height: 100%;
+    margin: 2px 0 10px 0;
+    overflow: auto;
+    width: 100%;
+  }
+  .card-title {
+    color: #1186C1;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.1;
+    margin-top: 0px;
+  }
+  .card.active {
+    border: solid 3px @color-pf-blue-300;
+    &:hover {
+      border: solid 3px @color-pf-blue-300;
+      .pficon {
+        color: @color-pf-white;
+      }
+    }
+    &:focus {
+      border: solid 3px @color-pf-blue-300;
+      .pficon {
+        color: @color-pf-white;
+      }
+    }
+    .pficon {
+      color: @color-pf-white;
+    }
+    .card-check-box {
+      visibility: visible;
+    }
+  }
+  .card.disabled {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    border: 1px solid @color-pf-black-200;
+    box-shadow: none;
+    color: @color-pf-black-500;
+    cursor: not-allowed;
+  }
+}
+.card.disabled {
+  &:hover {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    border: 1px solid @color-pf-black-200;
+    box-shadow: none;
+    color: @color-pf-black-500;
+    cursor: not-allowed;
+  }
+  &:focus {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    border: 1px solid @color-pf-black-200;
+    box-shadow: none;
+    color: @color-pf-black-500;
+    cursor: not-allowed;
+  }
+}
+/* overriding pf base so that blank slate fills entire parent container */
+.blank-slate-pf {
+  height:100%;
+  margin-bottom: 0px;
+  button {
+    margin-right: 4px;
+  }
+}
+/* overriding pf base so that buttons have spaces between them */
+.pf-expand-placeholder {
+  margin-right: 15px;
+}

@@ -1,0 +1,161 @@
+.card-pf-aggregate-status-alt {
+  .card-pf-body {
+    padding-bottom: 20px;
+  }
+  .card-pf-title {
+    font-weight: 300;
+    line-height: 22px;
+    margin: 20px 0 10px 0;
+  }
+  .card-pf-aggregate-status-count {
+    font-size: 24px;
+  }
+  .card-pf-aggregate-status-title {
+    display: block;
+    font-size: 12px;
+  }
+  .card-pf-aggregate-status-notifications {
+    .card-pf-aggregate-status-notification {
+      border-left: none;
+    }
+    .fa {
+      position: relative;
+      top: -1px;
+    }
+    .pficon {
+      position: relative;
+      top: -1px;
+    }
+  }
+}
+
+.card-pf.card-pf-aggregate-status .card-pf-body .spinner-container {
+  position: static;
+}
+
+.card-pf {
+  .hide-for-spinner {
+    opacity: 0;
+  }
+  .card-pf-body {
+    &.show-spinner {
+      position: relative;
+    }
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: -20px;
+      bottom: 0;
+
+      .loading-indicator {
+        align-items: center;
+        justify-content: center;
+        display: flex;
+
+        .loading-text {
+          font-size: 16px;
+          margin-left: 10px;
+        }
+
+        .spinner.spinner-lg {
+          display: inline-block;
+        }
+      }
+    }
+  }
+}
+
+.card-pf-info-status .card-pf-body .spinner-container{
+  top: 0px;
+  height: 100%;
+  &.with-title {
+    top: 12px;
+  }
+}
+
+.card-pf-aggregate-status-mini {
+  .card-pf-body {
+    &.show-spinner {
+      height: 40px;
+    }
+    .spinner-container {
+      top: -22px;
+    }
+  }
+}
+
+.card-pf-heading-no-bottom {
+  margin: 0 -20px 0px;
+  padding: 0 20px 0;
+}
+
+.card-pf-icon-image {
+  height: 18px;
+  margin: 0 5px 5px;
+}
+
+.trend-card-large-pf {
+  .trend-header-pf {
+    display: block;
+    font-size: 16px;
+    font-weight: 400;
+    margin-left: 10px;
+  }
+  .trend-title-big-pf {
+    font-size: 26px;
+    font-weight: 300;
+    margin-left: 10px;
+  }
+  .trend-title-small-pf {
+    font-size: 12px;
+    font-weight: 400;
+  }
+}
+
+.trend-card-small-pf {
+  .trend-header-pf {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    margin-left: 10px;
+  }
+  .trend-title-big-pf {
+    font-size: 17px;
+    font-weight: 400;
+    margin-left: 10px;
+  }
+  .trend-title-small-pf {
+    font-size: 10px;
+    font-weight: 400;
+  }
+}
+
+.card-pf-info-status {
+  display: flex;
+  .card-pf-info-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction:column;
+    margin-right: 15px;
+    .info-icon {
+      font-size: 50px;
+    }
+    .info-img {
+      max-height: 50px;
+    }
+  }
+  .card-pf-info-content {
+    margin: 10px 0;
+    .card-pf-title{
+      margin-top: 10px;
+      margin-bottom: 15px;
+    }
+  }
+  .show-spinner {
+    width: 100%;
+  }
+}

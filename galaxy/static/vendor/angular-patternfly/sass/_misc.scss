@@ -1,0 +1,19 @@
+.navbar-brand-txt {
+  line-height: 34px;
+}
+uib-accordion > .panel-group, accordion > .panel-group {
+  .panel-default {
+    .panel-title > a {
+      &:before {
+        content: "\f105";
+      }
+    }
+  }
+  .panel-open {
+    .panel-title > a {
+      &:before {
+        content: "\f107";
+      }
+    }
+  }
+}

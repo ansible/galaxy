@@ -1,0 +1,109 @@
+.filter-pf {
+  .category-select {
+    display: flex;
+  }
+  .category-select-value {
+    border-left-width: 0 !important;
+  }
+}
+.filter-pf.filter-fields {
+  .form-group {
+    width: 275px;
+  }
+}
+.filter-select {
+  .btn-default {
+    background-color: $color-pf-white;
+    background-image: none;
+    color: $color-pf-black-500;
+    font-size: 12px;
+    font-style: italic;
+    font-weight: 400;
+  }
+}
+
+pf-filter-panel {
+  .dropdown > .dropdown-menu, .input-group-btn > .dropdown-menu {
+    margin-top: 5px;
+  }
+  input {
+    &:-moz-placeholder            { font-style: italic; padding-left: 10px; } // Firefox 4-18
+    &::-moz-placeholder           { font-style: italic; padding-left: 10px; } // Firefox 19+
+    &:-ms-input-placeholder       { font-style: italic; padding-left: 10px; } // Internet Explorer 10+
+    &::-webkit-input-placeholder  { font-style: italic; padding-left: 10px;} // Safari and Chrome
+  }
+  .inline-filter-pf > .dropdown {
+    margin-right: 10px;
+  }
+  .filter-panel-container {
+    padding: 10px;
+    .keyword-filter {
+      margin-bottom: 10px;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 16px;
+    }
+    .category {
+      font-size: 15px;
+      font-weight: 400;
+
+      .category-option-label {
+        font-size: 12px;
+        vertical-align: text-bottom;
+      }
+    }
+  }
+}
+
+.filter-pf-active-label {
+  margin-right: 5px;
+}
+
+.filter-pf-category-item {
+  margin-bottom: 5px;
+}
+
+.pf-filter-category-label {
+  font-weight: 700;
+  padding: 5px 0 6px 5px;
+  margin-right: 5px;
+
+  &.multiples {
+    background-color: $color-pf-blue-300;
+    padding-right: 5px;
+  }
+}
+
+.filter-pf-category-values.list-inline {
+  margin-left: 0;
+  > li {
+    margin-left: 5px;
+    padding: 0;
+  }
+}
+
+
+.filter-pf {
+  &.inline-filter-pf {
+    pf-filter-fields,
+    pf-filter-results,
+    pf-filter-panel-results {
+      display: inline-block;
+    }
+    pf-filter-fields {
+      vertical-align: middle;
+    }
+
+    .filter-fields {
+      > .form-group {
+        margin-bottom: 3px;
+        margin-right: 15px;
+      }
+    }
+    .toolbar-pf-results {
+      border-top: none;
+      margin-top: 0;
+    }
+  }
+}
