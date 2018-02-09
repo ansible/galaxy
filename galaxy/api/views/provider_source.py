@@ -52,12 +52,28 @@ class ProviderSourceList(ListAPIView):
                 for source in sources:
                     source['provider'] = provider.id
                     source['provider_name'] = provider.name.lower()
+                    provider_namespace = None
                     try:
                         provider_namespace = ProviderNamespace.objects.get(provider=provider,
                                                                            name__iexact=source['name'])
-                        source['provider_namespace'] = provider_namespace.id
+                        source['provider_namespace'] = {
+                            'id': provider_namespace.id,
+                            'name': provider_namespace.name
+                        }
+                        source['provider_namespace_url'] = provider_namespace.get_absolute_url()
                     except ObjectDoesNotExist:
-                        source['provider_namespace'] = None
+                        source['provider_namespace'] = {}
+                        source['provider_namespace_url'] = None
+
+                    if provider_namespace and provider_namespace.namespace:
+                        source['namespace'] = {
+                            'id': provider_namespace.namespace.pk,
+                            'name': provider_namespace.namespace.name
+                        }
+                        source['namespace_url'] = provider_namespace.namespace.get_absolute_url()
+                    else:
+                        source['namespace'] = {}
+                        source['namespace_url'] = None
 
         serializer = self.get_serializer(sources, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
