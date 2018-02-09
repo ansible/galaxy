@@ -1,38 +1,23 @@
-- name: Confirm the web server up 
+- name: Confirm the web server up
   hosts: localhost
   gather_facts: no
   connection: local
-  vars: 
+  vars:
     galaxy_host: 0.0.0.0
     galaxy_port: 8000
 
   tasks:
-    - name: Wait for server to start  
+    - name: Wait for server to start
       wait_for:
-        port: '{{ galaxy_port }}' 
-        timeout: 120 
-        delay: 60 
- 
-    - name: Check container status
-      command: docker ps -a
-      register: output
-
-    - debug: var=output.stdout_lines
-
-    - name: Check django logs
-      command: docker-compose -f ../../scripts/compose-dev.yml -p galaxy logs galaxy
-      register: output 
-
-    - debug: var=output.stdout_lines
+        timeout: 300
 
     - name: Access the home page
-      uri: 
+      uri:
         url: "http://{{ galaxy_host }}:{{ galaxy_port }}"
         return_content: yes
-      register: homeout 
-       
+      register: homeout
+
     - name: Assert expected output found
       assert:
         that:
-          - "'Jump-start your automation project' in homeout.content"
-
+          - "'<title>Ansible Galaxy</title>' in homeout.content"

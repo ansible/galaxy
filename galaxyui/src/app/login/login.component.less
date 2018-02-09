@@ -1,0 +1,41 @@
+.cards-pf {
+    background-color: #fff;
+}
+.custom {
+    &-card {
+        &-btn-link {
+            display: inline-flex;
+            font-size: 14px;
+            &:hover {
+                text-decoration: none;
+            }
+        }
+        &-combobox {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            width: 50%;
+        }
+        .card-pf {
+            height: 440px;
+        }
+        .card-pf-body {
+            height: 375px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+    }
+    &-blank-slate {
+        &-card {
+            padding: 30px 30px 30px;
+            text-align: center;
+            p {
+                margin-bottom: 20px;
+                margin-top: 20px;
+                &:first-child { margin-top: -20px; }
+                &:last-child { margin-top: 40px; }
+            }
+        }
+        &-icon { font-size: 5em; }
+    }
+}

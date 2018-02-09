@@ -6,6 +6,11 @@ set -o errexit
 cd /galaxy
 
 make waitenv
+make build/static
+
+cd /galaxy/galaxyui
+yarn install
+cd /galaxy
 
 if [ "${TEST}" != "1" ]; then
     make migrate
