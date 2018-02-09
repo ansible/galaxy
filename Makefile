@@ -24,6 +24,15 @@ celery:
 gulp:
 	/usr/local/bin/gulp
 
+.PHONY: ng_server
+ng_server:
+	cd /galaxy/galaxyui; ng serve --host '0.0.0.0' --port '8000' --poll '5000' --watch --verbose --proxy-config proxy.conf.js --environment dev
+
+.PHONY: ng_build
+ng_build:
+	cd /galaxy/galaxyui; yarn install
+	cd /galaxy/galaxyui; ng build --prod
+
 .PHONY: waitenv
 waitenv:
 	@echo "Waiting for services to start..."
@@ -184,7 +193,7 @@ dev/tmux_noattach:
 		 new-window -n celery \; \
 		 send-keys "scripts/docker-dev/entrypoint.sh make celery" Enter \; \
 		 new-window -n gulp \; \
-		 send-keys "make gulp" Enter
+		 send-keys "make ng_server" Enter
 
 .PHONY: dev/tmux
 dev/tmux:

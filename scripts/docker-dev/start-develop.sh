@@ -6,6 +6,7 @@ set -o errexit
 cd /galaxy
 
 make waitenv
+make ng_build
 
 if [ "${TEST}" != "1" ]; then
     make migrate
