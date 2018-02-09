@@ -18,6 +18,8 @@
 from collections import OrderedDict
 from django.core.urlresolvers import reverse
 from rest_framework import serializers
+from galaxy.main.models import Namespace, ProviderNamespace
+
 
 __all__ = [
     'ProviderSourceSerializer',
@@ -51,11 +53,19 @@ class ProviderSourceSerializer(serializers.BaseSerializer):
                                                                                  'provider_namespace': name.lower()})
         }
 
+        if instance.get('provider_namespace_url'):
+            result['related']['provider_namespace'] = instance['provider_namespace_url']
+
+        if instance.get('namespace_url'):
+            result['related']['namespace'] = instance['namespace_url']
+
         result['summary_fields'] = {
             'provider': {
                 'name': provider_name,
                 'id': provider
-            }
+            },
+            'provider_namespace': instance['provider_namespace'],
+            'namespace': instance['namespace']
         }
 
         for field in self.fields:
