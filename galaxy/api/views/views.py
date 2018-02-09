@@ -20,17 +20,7 @@ from __future__ import print_function
 import base64
 import json
 import logging
-/* Fixes custom expansion for repos on My Content page. */
-.repos-container {
-    margin-top: 30px;
-    .list-pf-item:first-child {
-        border: none;
 
-    }
-    .list-pf-container {
-        border-top: 1px solid #ededed;
-    }
-}
 # standard python libraries
 import sys
 from collections import OrderedDict

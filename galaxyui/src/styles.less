@@ -1,0 +1,65 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'variables';
+
+.color-green {
+    color: @green;
+}
+.color-red {
+    color: @red;
+}
+.color-orange {
+    color: @warning;
+}
+
+/* Patternfly modal indexes are too low, when used with vertical nav */
+.modal {
+    z-index: 1250;
+}
+.modal-backdrop {
+    z-index: 1249;
+}
+
+/* The following applies to my-content detail */
+.item-select {
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .toolbar-pf-results {
+        border-top: none;
+        border-bottom: 1px solid #bbb;
+        margin-top: 5px;
+    }
+    .filter-pf .form-group {
+        margin-bottom: 0;
+    }
+    .filter-pf.filter-fields .form-group {
+        width: 100%;
+    }
+}
+
+.navbar-pf-vertical .navbar-brand .navbar-brand-icon {
+    max-height: 35px;
+    width: 120px;
+    height: 35px;
+}
+
+
+/* About dialog */
+.about-modal-pf {
+    .modal-body {
+        font-size: 14px;
+        h1 {
+            font-size: 36px;
+            font-weight: 400;
+        }
+        .trademark-pf {
+            font-size: 14px;
+        }
+    }
+    .modal-footer img {
+        height: 70px;
+        width: 240px;
+    }
+}
