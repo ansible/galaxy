@@ -57,6 +57,7 @@ class NamespaceSerializer(BaseSerializer):
             'email': pn.email,
             'html_url': pn.html_url,
             'provider': pn.provider.id,
+            'provider_name': pn.provider.name.lower()
         } for pn in instance.provider_namespaces.all()]
         return {
             'owners': owners,
