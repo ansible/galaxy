@@ -17,14 +17,14 @@
 
 from collections import OrderedDict
 from django.core.urlresolvers import reverse
-from rest_framework import serializers
+from rest_framework.serializers import BaseSerializer
 
 __all__ = [
     'RepositorySourceSerializer',
 ]
 
 
-class RepositorySourceSerializer(serializers.BaseSerializer):
+class RepositorySourceSerializer(BaseSerializer):
 
     fields = [
         'name',
@@ -48,39 +48,37 @@ class RepositorySourceSerializer(serializers.BaseSerializer):
             return {}
 
         result = OrderedDict()
-        provider_id = instance['provider_id']
-        provider = instance['provider']
-        provider_namespace = instance.get('provider_namespace')
-        provider_namespace_id = instance.get('provider_namespace_id')
-        namespace = instance.get('namespace')
-        namespace_id = instance.get('namespace_id')
-
+        provider_id = instance['provider']['id']
+        provider_name = instance['provider']['name']
+        source_namespace = instance['source_namespace']
         name = instance['name'].replace('.', '-')
 
         result['related'] = {
             'provider': reverse('api:active_provider_detail', kwargs={'pk': provider_id}),
             'source_repository': reverse('api:repository_source_detail', kwargs={
-                'provider_name': provider,
-                'provider_namespace': provider_namespace,
+                'provider_name': provider_name,
+                'provider_namespace': source_namespace,
                 'repo_name': name
             })
         }
 
-        if namespace_id:
-            result['related']['namespace'] = reverse('api:namespace_detail', kwargs={'pk': namespace_id})
-
-        # TODO add link to provider_namespace, if available in DB
+        if instance.get('namespace_url'):
+            result['related']['namespace'] = instance['namespace_url']
+        if instance.get('provider_namespace_url'):
+            result['related']['provider_namespace'] = instance['provider_namespace_url']
+        if instance.get('repository_url'):
+            result['related']['repository'] = instance['repository_url']
 
         result['summary_fields'] = {
-            'provider_namespace': {
-                'name': provider_namespace,
-                'id': provider_namespace_id
-            },
-            'namespace': {
-                'name': namespace,
-                'id': namespace_id
-            }
+            'provider': instance['provider'],
         }
+
+        if instance.get('provider_namespace'):
+            result['summary_fields']['provider_namespace'] = instance['provider_namespace']
+        if instance.get('namespace'):
+            result['summary_fields']['namespace'] = instance['namespace']
+        if instance.get('repository'):
+            result['summary_fields']['repository'] = instance['repository']
 
         for field in self.fields:
             result[field] = instance.get(field)
