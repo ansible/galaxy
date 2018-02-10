@@ -50,19 +50,21 @@ class ProviderSourceList(ListAPIView):
             if provider.name.lower() == 'github':
                 sources += GithubAPI(user=request.user).user_namespaces()
                 for source in sources:
-                    source['provider'] = provider.id
-                    source['provider_name'] = provider.name.lower()
-                    provider_namespace = None
+                    source['provider'] = {
+                        'id': provider.pk,
+                        'name': provider.name.lower()
+                    }
                     try:
                         provider_namespace = ProviderNamespace.objects.get(provider=provider,
                                                                            name__iexact=source['name'])
                         source['provider_namespace'] = {
                             'id': provider_namespace.id,
-                            'name': provider_namespace.name
+                            'name': provider_namespace.name.lower()
                         }
                         source['provider_namespace_url'] = provider_namespace.get_absolute_url()
                     except ObjectDoesNotExist:
-                        source['provider_namespace'] = {}
+                        provider_namespace = None
+                        source['provider_namespace'] = None
                         source['provider_namespace_url'] = None
 
                     if provider_namespace and provider_namespace.namespace:
@@ -72,7 +74,7 @@ class ProviderSourceList(ListAPIView):
                         }
                         source['namespace_url'] = provider_namespace.namespace.get_absolute_url()
                     else:
-                        source['namespace'] = {}
+                        source['namespace'] = None
                         source['namespace_url'] = None
 
         serializer = self.get_serializer(sources, many=True)

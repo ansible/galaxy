@@ -17,8 +17,7 @@
 
 from collections import OrderedDict
 from django.core.urlresolvers import reverse
-from rest_framework import serializers
-from galaxy.main.models import Namespace, ProviderNamespace
+from rest_framework.serializers import BaseSerializer
 
 
 __all__ = [
@@ -26,7 +25,7 @@ __all__ = [
 ]
 
 
-class ProviderSourceSerializer(serializers.BaseSerializer):
+class ProviderSourceSerializer(BaseSerializer):
 
     fields = [
         'name',
@@ -38,37 +37,37 @@ class ProviderSourceSerializer(serializers.BaseSerializer):
         'email',
         'html_url',
         'followers',
-        'provider'
     ]
 
     def to_representation(self, instance):
         result = OrderedDict()
         name = instance['name']
-        provider_name = instance['provider_name']
-        provider = instance['provider']
+        provider_name = instance['provider']['name']
+        provider_id = instance['provider']['id']
 
         result['related'] = {
-            'provider': reverse('api:active_provider_detail', kwargs={'pk': provider}),
+            'provider': reverse('api:active_provider_detail', kwargs={'pk': provider_id}),
             'source_repositories': reverse('api:repository_source_list', kwargs={'provider_name': provider_name.lower(),
                                                                                  'provider_namespace': name.lower()})
         }
 
         if instance.get('provider_namespace_url'):
             result['related']['provider_namespace'] = instance['provider_namespace_url']
-
         if instance.get('namespace_url'):
             result['related']['namespace'] = instance['namespace_url']
 
         result['summary_fields'] = {
-            'provider': {
-                'name': provider_name,
-                'id': provider
-            },
-            'provider_namespace': instance['provider_namespace'],
-            'namespace': instance['namespace']
+            'provider': instance['provider'],
         }
+
+        if instance.get('provider_namespace'):
+            result['summary_fields']['provider_namespace'] = instance['provider_namespace']
+        if instance.get('namespace'):
+            result['summary_fields']['namespace'] = instance['namespace']
 
         for field in self.fields:
             result[field] = instance[field]
+
+        result['provider'] = instance['provider']['name']
 
         return result

@@ -25,7 +25,7 @@ from rest_framework.exceptions import APIException
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from galaxy.main.models import Provider, ProviderNamespace
+from galaxy.main.models import Provider, ProviderNamespace, Repository
 from .base_views import ListAPIView
 from ..githubapi import GithubAPI
 from ..serializers import RepositorySourceSerializer
@@ -63,14 +63,42 @@ class RepositorySourceList(ListAPIView):
             repos = GithubAPI(user=request.user).get_namespace_repositories(request_namespace)
 
         for repo in repos:
-            repo['provider_namespace_id'] = None
-            repo['namespace_name'] = None
-            repo['namespace_id'] = None
+            repo['source_namespace'] = request_namespace
+            repo['provider_namespace'] = None
+            repo['provider_namespace_url'] = None
+            repo['namespace'] = None
+            repo['namespace_url'] = None
+            repo['repository'] = None
+            repo['repository_url'] = None
+
+            repo['provider'] = {
+                'id': provider.pk,
+                'name': provider.name.lower()
+            }
+
             if provider_namespace:
-                repo['provider_namespace_id'] = provider_namespace.id
-            if provider_namespace and provider_namespace.namespace:
-                repo['namespace'] = provider_namespace.namespace.name
-                repo['namespace_id'] = provider_namespace.namespace.id
+                try:
+                    repository_obj = Repository.objects.get(provider_namespace=provider_namespace, original_name=repo['name'])
+                except ObjectDoesNotExist:
+                    repository_obj = None
+
+                if repository_obj:
+                    repo['provider_namespace'] = {
+                        'id': provider_namespace.pk,
+                        'name': provider_namespace.name
+                    }
+                    repo['provider_namespace_url'] = provider_namespace.get_absolute_url()
+                    repo['namespace'] = {
+                        'id': provider_namespace.namespace.pk,
+                        'name': provider_namespace.namespace.name
+                    }
+                    repo['namespace_url'] = provider_namespace.namespace.get_absolute_url()
+                    repo['repository'] = {
+                        'id': repository_obj.pk,
+                        'name': repository_obj.name,
+                        'original_name': repository_obj.original_name
+                    }
+                    repo['repository_url'] = repository_obj.get_absolute_url()
 
         serializer = self.get_serializer(repos, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -105,14 +133,43 @@ class RepositorySourceDetail(ListAPIView):
                 repo = repos[0]
 
         if repo.get('name'):
-            repo['provider_namespace_id'] = None
-            repo['namespace_name'] = None
-            repo['namespace_id'] = None
+            repo['source_namespace'] = request_namespace
+            repo['provider_namespace'] = None
+            repo['provider_namespace_url'] = None
+            repo['namespace'] = None
+            repo['namespace_url'] = None
+            repo['repository'] = None
+            repo['repository_url'] = None
+
+            repo['provider'] = {
+                'id': provider.pk,
+                'name': provider.name.lower()
+            }
+
             if provider_namespace:
-                repo['provider_namespace_id'] = provider_namespace.id
-            if provider_namespace and provider_namespace.namespace:
-                repo['namespace'] = provider_namespace.namespace.name
-                repo['namespace_id'] = provider_namespace.namespace.id
+                try:
+                    repository_obj = Repository.objects.get(provider_namespace=provider_namespace,
+                                                            original_name=repo['name'])
+                except ObjectDoesNotExist:
+                    repository_obj = None
+
+                if repository_obj:
+                    repo['provider_namespace'] = {
+                        'id': provider_namespace.pk,
+                        'name': provider_namespace.name
+                    }
+                    repo['provider_namespace_url'] = provider_namespace.get_absolute_url()
+                    repo['namespace'] = {
+                        'id': provider_namespace.namespace.pk,
+                        'name': provider_namespace.namespace.name
+                    }
+                    repo['namespace_url'] = provider_namespace.namespace.get_absolute_url()
+                    repo['repository'] = {
+                        'id': repository_obj.pk,
+                        'name': repository_obj.name,
+                        'original_name': repository_obj.original_name
+                    }
+                    repo['repository_url'] = repository_obj.get_absolute_url()
 
         serializer = self.get_serializer(repo, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
