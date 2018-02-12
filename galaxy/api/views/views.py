@@ -35,7 +35,6 @@ from OpenSSL.crypto import verify, load_publickey, FILETYPE_PEM, X509
 # allauth
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.models import SocialToken
-from django.apps import apps
 from django.conf import settings
 # django stuff
 from django.contrib.auth.models import AnonymousUser
@@ -56,7 +55,6 @@ from elasticsearch_dsl import Search, Q
 # Github
 from github import Github
 from github.GithubException import GithubException
-from haystack.query import SearchQuerySet
 
 # rest framework stuff
 from rest_framework import status
@@ -136,7 +134,6 @@ __all__ = [
     'CloudPlatformDetail',
     'CloudPlatformList',
     'CloudPlatformsSearchView',
-    'FacetedView',
     'ImportTaskDetail',
     'ImportTaskLatestList',
     'ImportTaskList',
@@ -318,8 +315,6 @@ class ApiV1SearchView(APIView):
         data['roles'] = reverse('api:search-roles-list')
         data['tags'] = reverse('api:tags_search_view')
         data['users'] = reverse('api:user_search_view')
-        # data['faceted_platforms'] = reverse('api:faceted_platforms_view')
-        # data['faceted_tags'] = reverse('api:faceted_tags_view')
         data['top_contributors'] = reverse('api:top_contributors_list')
         return Response(data)
 
@@ -1144,25 +1139,6 @@ class RoleSearchView(HaystackViewSet):
         else:
             serializer = self.get_serializer(instance, many=True)
         return Response(serializer.data)
-
-
-class FacetedView(APIView):
-
-    def get(self, request, *agrs, **kwargs):
-        facet_key = kwargs.get('facet_key')
-        models = [apps.get_model(app_label='main', model_name=kwargs.get('model'))]
-        qs = SearchQuerySet().models(*models)
-        fkwargs = {
-            u'order': u'count',
-            u'size': 20
-        }
-        for key, val in request.GET.items():
-            if key == 'order':
-                fkwargs['order'] = val
-            if key == 'size':
-                fkwargs['size'] = val
-        qs = qs.facet(facet_key, **fkwargs)
-        return Response(qs.facet_counts())
 
 
 class UserSearchView(APIView):
