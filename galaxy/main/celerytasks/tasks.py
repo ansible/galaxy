@@ -153,27 +153,6 @@ def _get_social_token(import_task):
             u"You must first authenticate with GitHub.".format(user.username))
 
 
-def _get_github_repo_info(import_task, token, repo_full_name):
-    try:
-        gh_api = github.Github(token.token)
-        gh_api.get_api_status()
-    except Exception:
-        raise exc.TaskError(
-            u'Failed to connect to the GitHub API. '
-            u'This is most likely a temporary error, '
-            u'please retry your import in a few minutes.')
-
-    try:
-        repo = gh_api.get_repo(repo_full_name)
-    except Exception as e:
-        raise exc.TaskError(
-            u"Failed to get repo: {0} - {1}".format(repo_full_name, e.message))
-
-    if not repo:
-        raise exc.TaskError(u"Failed to find repo: {0}".format(repo_full_name))
-    return repo
-
-
 def _update_repository(repository, gh_repo, commit_info):
     repository.stargazers_count = gh_repo.stargazers_count
     repository.watchers_count = gh_repo.subscribers_count
