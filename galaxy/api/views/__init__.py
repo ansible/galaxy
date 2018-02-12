@@ -15,11 +15,12 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from .content import *  # noqa: F401, F403
+from .content import *              # noqa
 from .namespace import *            # noqa
 from .repository import *           # noqa
 from .provider_source import *      # noqa
 from .repository_source import *    # noqa
 from .provider_namespace import *   # noqa
 from .roles import *                # noqa
+from .search import *               # noqa
 from .views import *                # noqa

@@ -20,7 +20,6 @@ from __future__ import print_function
 import base64
 import json
 import logging
-import math
 
 # standard python libraries
 import sys
@@ -47,9 +46,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 # haystack
-from drf_haystack.viewsets import HaystackViewSet
 # elasticsearch dsl
-from elasticsearch_dsl import Search, Q
 
 # TODO move all github interactions to githubapi
 # Github
@@ -66,7 +63,6 @@ from rest_framework.response import Response
 
 from galaxy.accounts.models import CustomUser as User
 from galaxy.api.access import check_user_access
-from galaxy.api.filters import HaystackFilter
 from galaxy.api.permissions import ModelAccessPermission
 from galaxy.api.serializers import (MeSerializer,
                                     UserListSerializer,
@@ -85,9 +81,7 @@ from galaxy.api.serializers import (MeSerializer,
                                     ImportTaskSerializer,
                                     ImportTaskLatestSerializer,
                                     ProviderSerializer,
-                                    RoleDetailSerializer,
-                                    RoleSearchSerializer,
-                                    ElasticSearchDSLSerializer)
+                                    RoleDetailSerializer)
 
 from .base_views import (APIView,
                          ListAPIView,
@@ -128,12 +122,10 @@ __all__ = [
     'ApiRootView',
     'ApiV1ReposView',
     'ApiV1RootView',
-    'ApiV1SearchView',
     'CategoryDetail',
     'CategoryList',
     'CloudPlatformDetail',
     'CloudPlatformList',
-    'CloudPlatformsSearchView',
     'ImportTaskDetail',
     'ImportTaskLatestList',
     'ImportTaskList',
@@ -146,7 +138,6 @@ __all__ = [
     'NotificationSecretList',
     'PlatformDetail',
     'PlatformList',
-    'PlatformsSearchView',
     'ProviderRootView',
     'RefreshUserRepos',
     'RemoveRole',
@@ -154,7 +145,6 @@ __all__ = [
     'RoleDownloads',
     'RoleImportTaskList',
     'RoleNotificationList',
-    'RoleSearchView',
     'RoleTypes',
     'RoleUsersList',
     'RoleVersionsList',
@@ -164,7 +154,6 @@ __all__ = [
     'SubscriptionList',
     'TagDetail',
     'TagList',
-    'TagsSearchView',
     'TokenView',
     'TopContributorsList',
     'UserDetail',
@@ -173,7 +162,6 @@ __all__ = [
     'UserNotificationSecretList',
     'UserRepositoriesList',
     'UserRolesList',
-    'UserSearchView',
     'UserStarredList',
     'UserSubscriptionList',
 ]
@@ -302,21 +290,6 @@ class RoleTypes(APIView):
         roles = [role for role in constants.RoleType.choices()
                  if role[0] in settings.ROLE_TYPES_ENABLED]
         return Response(roles)
-
-
-class ApiV1SearchView(APIView):
-    permission_classes = (AllowAny,)
-    view_name = 'Search'
-
-    def get(self, request, *args, **kwargs):
-        data = OrderedDict()
-        data['platforms'] = reverse('api:platforms_search_view')
-        data['cloud_platforms'] = reverse('api:cloud_platforms_search_view')
-        data['roles'] = reverse('api:search-roles-list')
-        data['tags'] = reverse('api:tags_search_view')
-        data['users'] = reverse('api:user_search_view')
-        data['top_contributors'] = reverse('api:top_contributors_list')
-        return Response(data)
 
 
 class ApiV1ReposView(APIView):
@@ -1122,145 +1095,6 @@ class UserMeList(RetrieveAPIView):
         return obj
 
 
-class RoleSearchView(HaystackViewSet):
-    index_models = [Content]
-    serializer_class = RoleSearchSerializer
-    url_path = ''
-    lookup_sep = ','
-    filter_backends = [HaystackFilter]
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        print(queryset)
-        instance = self.filter_queryset(queryset)
-        page = self.paginate_queryset(instance)
-        if page is not None:
-            serializer = self.get_pagination_serializer(page)
-        else:
-            serializer = self.get_serializer(instance, many=True)
-        return Response(serializer.data)
-
-
-class UserSearchView(APIView):
-    def get(self, request, *args, **kwargs):
-        q = None
-        page = 0
-        page_size = 10
-        order_fields = []
-        for key, value in request.GET.items():
-            if key in ('username', 'content', 'autocomplete'):
-                q = Q('match', username=value)
-            if key == 'page':
-                page = int(value) - 1 if int(value) > 0 else 0
-            if key == 'page_size':
-                page_size = int(value)
-            if key in ('order', 'order_by'):
-                order_fields = value.split(',')
-        if page_size > 1000:
-            page_size = 1000
-        s = Search(index='galaxy_users')
-        s = s.query(q) if q else s
-        s = s.sort(*order_fields) if len(order_fields) > 0 else s
-        s = s[page * page_size:page * page_size + page_size]
-        result = s.execute()
-        serializer = ElasticSearchDSLSerializer(result.hits, many=True)
-        response = get_response(request=request, result=result, view='api:user_search_view')
-        response['results'] = serializer.data
-        return Response(response)
-
-
-class PlatformsSearchView(APIView):
-    def get(self, request, *args, **kwargs):
-        q = None
-        page = 0
-        page_size = 10
-        order_fields = []
-        for key, value in request.GET.items():
-            if key == 'name':
-                q = Q('match', name=value)
-            if key == 'releases':
-                q = Q('match', releases=value)
-            if key in ('content', 'autocomplete'):
-                q = Q('match', autocomplete=value)
-            if key == 'page':
-                page = int(value) - 1 if int(value) > 0 else 0
-            if key == 'page_size':
-                page_size = int(value)
-            if key in ('order', 'order_by'):
-                order_fields = value.split(',')
-        if page_size > 1000:
-            page_size = 1000
-        s = Search(index='galaxy_platforms')
-        s = s.query(q) if q else s
-        s = s.sort(*order_fields) if len(order_fields) > 0 else s
-        s = s[page * page_size:page * page_size + page_size]
-        result = s.execute()
-        serializer = ElasticSearchDSLSerializer(result.hits, many=True)
-        response = get_response(request=request, result=result,
-                                view='api:platforms_search_view')
-        response['results'] = serializer.data
-        return Response(response)
-
-
-class CloudPlatformsSearchView(APIView):
-    def get(self, request, *args, **kwargs):
-        q = None
-        page = 0
-        page_size = 10
-        order_fields = []
-        for key, value in request.GET.items():
-            if key == 'name':
-                q = Q('match', name=value)
-            if key in ('content', 'autocomplete'):
-                q = Q('match', autocomplete=value)
-            if key == 'page':
-                page = int(value) - 1 if int(value) > 0 else 0
-            if key == 'page_size':
-                page_size = int(value)
-            if key in ('order', 'order_by'):
-                order_fields = value.split(',')
-        if page_size > 1000:
-            page_size = 1000
-        s = Search(index='galaxy_cloud_platforms')
-        s = s.query(q) if q else s
-        s = s.sort(*order_fields) if len(order_fields) > 0 else s
-        s = s[page * page_size:page * page_size + page_size]
-        result = s.execute()
-        serializer = ElasticSearchDSLSerializer(result.hits, many=True)
-        response = get_response(request=request, result=result,
-                                view='api:cloud_platforms_search_view')
-        response['results'] = serializer.data
-        return Response(response)
-
-
-class TagsSearchView(APIView):
-    def get(self, request, *args, **kwargs):
-        q = None
-        page = 0
-        page_size = 10
-        order_fields = []
-        for key, value in request.GET.items():
-            if key in ('tag', 'content', 'autocomplete'):
-                q = Q('match', tag=value)
-            if key == 'page':
-                page = int(value) - 1 if int(value) > 0 else 0
-            if key == 'page_size':
-                page_size = int(value)
-            if key in ('order', 'orderby'):
-                order_fields = value.split(',')
-        if page_size > 1000:
-            page_size = 1000
-        s = Search(index='galaxy_tags')
-        s = s.query(q) if q else s
-        s = s.sort(*order_fields) if len(order_fields) > 0 else s
-        s = s[page * page_size:page * page_size + page_size]
-        result = s.execute()
-        serializer = ElasticSearchDSLSerializer(result.hits, many=True)
-        response = get_response(request=request, result=result, view='api:tags_search_view')
-        response['results'] = serializer.data
-        return Response(response)
-
-
 class RemoveRole(APIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -1469,43 +1303,6 @@ class TokenView(APIView):
             token.save()
         result = dict(token=token.key, username=user.username)
         return Response(result, status=status.HTTP_200_OK)
-
-
-def get_response(*args, **kwargs):
-    """
-    Create a response object with paging, count and timing attributes for search result views.
-    """
-    page = 0
-    page_size = 10
-    response = OrderedDict()
-
-    request = kwargs.pop('request', None)
-    result = kwargs.pop('result', None)
-    view = kwargs.pop('view', None)
-
-    for key, value in request.GET.items():
-        if key == 'page':
-            page = int(value) - 1 if int(value) > 0 else 0
-        if key == 'page_size':
-            page_size = int(value)
-    if result:
-        num_pages = int(math.ceil(result.hits.total / float(page_size)))
-        cur_page = page + 1
-        response['cur_page'] = cur_page
-        response['num_pages'] = num_pages
-        response['page_size'] = page_size
-
-        if view:
-            if num_pages > 1 and cur_page < num_pages:
-                response['next_page'] = "%s?&page=%s" % (reverse(view), page + 2)
-            if num_pages > 1 and cur_page > 1:
-                response['prev_page'] = "%s?&page=%s" % (reverse(view), cur_page - 1)
-
-        response['count'] = result.hits.total
-        response['respose_time'] = result.took
-        response['success'] = result.success()
-
-    return response
 
 
 # ------------------------------------------------------------------------
