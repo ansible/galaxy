@@ -210,7 +210,7 @@ class ContentType(BaseModel):
             content_type = content_type.value
         return cls.objects.get(name=content_type)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
 
@@ -403,6 +403,9 @@ class Content(CommonModelNameNotUnique):
     @property
     def github_repo(self):
         return self.repository.github_repo
+
+    def get_absolute_url(self):
+        return reverse('api:content_detail', args=(self.pk,))
 
     def get_last_import(self):
         try:

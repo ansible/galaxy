@@ -159,11 +159,30 @@ repo_urls = [
         name='subscription_detail')
 ]
 
+content_urls = [
+    url(r'^$',
+        views.ContentList.as_view(),
+        name='content_list'),
+
+    url(r'^(?P<pk>[0-9]+)/$',
+        views.ContentDetail.as_view(),
+        name='content_detail'),
+
+    url(r'^(?P<pk>[0-9]+)/dependencies/$',
+        views.RoleDependenciesList.as_view(),
+        name='content_dependencies_list'),
+
+    url(r'^(?P<pk>[0-9]+)/versions/$',
+        views.RoleVersionsList.as_view(),
+        name='content_versions_list'),
+]
+
 v1_urls = [
     url(r'^$', views.ApiV1RootView.as_view(), name='api_v1_root_view'),
     url(r'^me/$', views.UserMeList.as_view(), name='user_me_list'),
     url(r'^users/', include(user_urls)),
     url(r'^roles/', include(role_urls)),
+    url(r'^content/', include(content_urls)),
     url(r'^role_types/', views.RoleTypes.as_view(), name='role_types'),
     url(r'^categories/', include(category_urls)),
     url(r'^tags/', include(tag_urls)),
