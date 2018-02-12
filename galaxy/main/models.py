@@ -909,7 +909,8 @@ class Repository(BaseModel):
 
     # Repository attributes
     commit = models.CharField(max_length=256, blank=True, default='')
-    commit_message = models.CharField(max_length=256, blank=True, default='')
+    commit_message = TruncatingCharField(
+        max_length=256, blank=True, default='')
     commit_url = models.CharField(max_length=256, blank=True, default='')
     commit_created = models.DateTimeField(null=True, verbose_name="Last Commit DateTime")
     stargazers_count = models.IntegerField(default=0)
