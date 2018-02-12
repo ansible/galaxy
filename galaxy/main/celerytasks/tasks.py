@@ -23,6 +23,7 @@ import github
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 from allauth.socialaccount.models import SocialToken
 
 from galaxy.main.models import (Content,
@@ -56,10 +57,13 @@ def update_user_repos(github_repos, user):
 
         LOG.info("Create or Update repo {0}".format(repo.full_name))
         repo_user, repo_name = repo.full_name.split('/')
-        provider_ns = models.ProviderNamespace.objects.get(
-            provider__name=constants.PROVIDER_GITHUB,
-            name=repo_user,
-        )
+        try:
+            provider_ns = models.ProviderNamespace.objects.get(
+                provider__name=constants.PROVIDER_GITHUB,
+                name=repo_user,
+            )
+        except ObjectDoesNotExist:
+            continue
         db_repo, created = models.Repository.objects.get_or_create(
             provider_namespace=provider_ns, name=repo_name,
             defaults={'is_enabled': False,
