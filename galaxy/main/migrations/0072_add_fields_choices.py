@@ -16,7 +16,6 @@ class Migration(migrations.Migration):
             name='repository',
             field=models.ForeignKey(
                 related_name='content_objects',
-                on_delete=django.db.models.deletion.PROTECT,
                 editable=False,
                 to='main.Repository'),
         ),
@@ -72,7 +71,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 max_length=10,
                 choices=[('ERROR', 'ERROR'), ('FAILED', 'FAILED'),
-                         ('INFO', 'INFO'), ('SUCEESS', 'SUCCESS'),
+                         ('INFO', 'INFO'), ('SUCCESS', 'SUCCESS'),
                          ('WARNING', 'WARNING')]),
         ),
 

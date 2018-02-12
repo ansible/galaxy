@@ -148,6 +148,8 @@ provider_urls = [
 repo_urls = [
     url(r'^$', views.RepositoryList.as_view(), name='repository_list'),
     url(r'^(?P<pk>[0-9]+)/$', views.RepositoryDetail.as_view(), name='repository_detail'),
+    url(r'refresh/$', views.RefreshUserRepos.as_view(),
+        name='refresh_user_repos'),
     url(r'stargazers/$', views.StargazerList.as_view(), name='stargazer_list'),
     url(r'stargazers/(?P<pk>[0-9]+)/$', views.StargazerDetail.as_view(),
         name='stargazer_detail'),

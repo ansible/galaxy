@@ -527,12 +527,10 @@ class ImportTaskSerializer(BaseSerializer):
         model = ImportTask
         fields = (
             'id',
-            'github_reference',
             'github_user',
             'github_repo',
             'repository',
             'owner',
-            'alternate_role_name',
             'celery_task_id',
             'state',
             'started',
@@ -620,7 +618,7 @@ class ImportTaskLatestSerializer(BaseSerializer):
             ('state', g.state),
             ('github_user', g.repository.github_user),
             ('github_repo', g.repository.github_repo),
-            ('github_reference', g.github_reference),
+            ('github_reference', g.repository.import_branch),
             ('modified', g.modified),
             ('created', g.created),
         ])

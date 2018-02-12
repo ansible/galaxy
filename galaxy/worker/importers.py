@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import logging
 
 import pytz
@@ -17,6 +19,7 @@ class RoleImporter(object):
     def __init__(self, context, loader):
         self.ctx = context
         self.loader = loader
+        self.log = self.loader.log
 
     def import_content(self):
         data = self.loader.load()
@@ -32,21 +35,19 @@ class RoleImporter(object):
         return role
 
     def _create_content(self, data):
+        self.log.debug(
+            'Creating Content instance: content_type="{}", name="{}"'.format(
+                data.content_type.value, data.name))
+
         repository = self.ctx.repository
-
-        LOG.debug('Creating Content instance: content_type={0}, '
-                  'namespace={1}, name={2}'
-                  .format(data.content_type.value,
-                          repository.github_user,
-                          data.name))
-
-        obj, is_created = models.Content.objects.get_or_create(
+        namespace = repository.provider_namespace.namespace
+        obj, _ = models.Content.objects.get_or_create(
             # FIXME(cutwater): Use in-memory cache for content types
+            namespace=namespace,
             content_type=models.ContentType.get(data.content_type),
-            repository=repository,
             name=data.name,
             defaults={
-                'namespace': repository.github_user,
+                'repository': repository,
                 'is_valid': False,
             }
         )
@@ -88,16 +89,20 @@ class RoleImporter(object):
 
     def _add_tags(self, role, tags):
         if not tags:
-            LOG.warn('No galaxy tags found in metadata')
+            self.log.warning('No galaxy tags found in metadata')
         elif len(tags) > self.MAX_TAGS_COUNT:
-            LOG.warn('Found more than {0} galaxy tags in metadata. '
-                     'Only first {0} will be used'.format(self.MAX_TAGS_COUNT))
+            self.log.warning(
+                'Found more than {0} galaxy tags in metadata. '
+                'Only first {0} will be used'
+                .format(self.MAX_TAGS_COUNT))
             tags = role.tags[:self.MAX_TAGS_COUNT]
 
         for tag in tags:
-            role.tags.get_or_create(
+            db_tag, _ = models.Tag.objects.get_or_create(
                 name=tag,
-                defaults={'description': tag, 'active': True})
+                defaults={'description': tag, 'active': True}
+            )
+            role.tags.add(db_tag)
 
         # Remove tags no longer listed in the metadata
         for tag in role.tags.all():
@@ -108,7 +113,7 @@ class RoleImporter(object):
         if role.role_type not in (role.CONTAINER, role.ANSIBLE):
             return
         if not platforms:
-            LOG.warn('No platforms found in meta data')
+            self.log.warning('No platforms found in metadata')
             return
 
         new_platforms = []
@@ -118,8 +123,8 @@ class RoleImporter(object):
             if 'all' in versions:
                 platform_objs = models.Platform.objects.filter(name=name)
                 if not platform_objs:
-                    LOG.warn(u'Invalid platform: "{}-all", skipping.'
-                             .format(name))
+                    self.log.warning(
+                        u'Invalid platform: "{}-all", skipping.'.format(name))
                     continue
                 for p in platform_objs:
                     role.platforms.add(p)
@@ -130,8 +135,9 @@ class RoleImporter(object):
                 try:
                     p = models.Platform.objects.get(name=name, release=version)
                 except models.Platform.DoesNotExist:
-                    LOG.warn(u'Invalid platform: "{}-{}", skipping.'
-                             .format(name, version))
+                    self.log.warning(
+                        u'Invalid platform: "{}-{}", skipping.'
+                        .format(name, version))
                 else:
                     role.platforms.add(p)
                     new_platforms.append((name, p.release))
@@ -155,8 +161,8 @@ class RoleImporter(object):
             try:
                 platform = models.CloudPlatform.objects.get(name=name)
             except models.CloudPlatform.DoesNotExist:
-                LOG.warn(u'Invalid cloud platform: "{0}", skipping'
-                         .format(name))
+                self.log.warning(
+                    u'Invalid cloud platform: "{0}", skipping'.format(name))
                 continue
             role.cloud_platforms.add(platform)
 
@@ -175,13 +181,14 @@ class RoleImporter(object):
                     role.dependencies.add(dep_role)
                     new_deps.append(dep)
                 except Exception as e:
-                    LOG.error(
+                    self.log.error(
                         u"Error loading dependencies {}".format(e))
                     raise Exception(
                         u"Role dependency not found: {}.{}".format(
                             dep.namespace, dep.name))
             except Exception as e:
-                LOG.warn(u'Error parsing dependency {}'.format(e))
+                self.log.warning(
+                    u'Error parsing dependency {}'.format(e))
 
         for dep in role.dependencies.all():
             if (dep.namespace, dep.name) not in new_deps:
@@ -195,20 +202,20 @@ class RoleImporter(object):
         role.readme_type = readme_type
 
     def _update_role_versions(self, role):
-        LOG.info('Adding repo tags as role versions')
+        self.log.info('Adding repo tags as role versions')
         repo = self.ctx.github_repo
         git_tag_list = []
         try:
             git_tag_list = repo.get_tags()
             for tag in git_tag_list:
                 rv, created = models.ContentVersion.objects.get_or_create(
-                    name=tag.name, role=role)
+                    name=tag.name, content=role)
                 rv.release_date = tag.commit.commit.author.date.replace(
                     tzinfo=pytz.UTC)
                 rv.save()
         except Exception as e:
-            LOG.warn(u"An error occurred while importing repo tags: {}"
-                     .format(e))
+            self.log.warning(
+                u"An error occurred while importing repo tags: {}".format(e))
 
         if git_tag_list:
             remove_versions = []

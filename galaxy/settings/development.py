@@ -44,6 +44,9 @@ INSTALLED_APPS += (  # noqa: F405
 # Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
 DATABASES = {'default': dj_database_url.config(env='GALAXY_DB_URL', conn_max_age=None)}
 
+# Create default alias for worker logging
+DATABASES['logging'] = DATABASES['default'].copy()
+
 # Set the test database name
 DATABASES['default']['TEST'] = {'NAME': 'test_galaxy'}
 

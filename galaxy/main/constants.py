@@ -18,6 +18,10 @@
 from __future__ import unicode_literals
 
 import enum
+import logging
+
+
+PROVIDER_GITHUB = 'GitHub'
 
 
 class DjangoEnum(enum.Enum):
@@ -61,12 +65,25 @@ class ContentType(DjangoEnum):
 
 
 class ImportTaskMessageType(DjangoEnum):
+    DEBUG = ('DEBUG', 'DEBUG')
     INFO = ('INFO', 'INFO')
     WARNING = ('WARNING', 'WARNING')
-    SUCCESS = ('SUCEESS', 'SUCCESS')
+    SUCCESS = ('SUCCESS', 'SUCCESS')
     # FIXME(cutwater): ERROR and FAILED types seem to be redundant
     FAILED = ('FAILED', 'FAILED')
     ERROR = ('ERROR', 'ERROR')
+
+    @classmethod
+    def from_logging_level(cls, level):
+        if level == logging.INFO:
+            return cls.INFO
+        elif level == logging.WARNING:
+            return cls.WARNING
+        elif level == logging.ERROR:
+            return cls.ERROR
+        else:
+            # Note(cutwater): Fallback to DEBUG level
+            return cls.DEBUG
 
 
 class ImportTaskState(DjangoEnum):
@@ -74,6 +91,3 @@ class ImportTaskState(DjangoEnum):
     RUNNING = ('RUNNING', 'RUNNING')
     FAILED = ('FAILED', 'FAILED')
     SUCCESS = ('SUCCESS', 'SUCCESS')
-
-
-PROVIDER_GITHUB = 'GitHub'
