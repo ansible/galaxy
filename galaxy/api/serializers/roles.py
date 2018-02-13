@@ -28,16 +28,48 @@ __all__ = [
 ]
 
 
-class RoleListSerializer(BaseSerializer):
+class RepositoryMovedFieldsMixin(object):
+    REPOSITORY_MOVED_FIELDS = (
+        'github_user',
+        'github_repo',
+        ('github_branch', 'import_branch'),
+        'stargazers_count',
+        'forks_count',
+        'open_issues_count',
+        'commit',
+        'commit_message',
+        'commit_url'
+    )
+
+    def _get_repository_moved_fields(self, instance):
+        result = {}
+        repository = instance.repository
+        for name in self.REPOSITORY_MOVED_FIELDS:
+            if isinstance(name, tuple):
+                old_name, new_name = name
+            else:
+                old_name = new_name = name
+            result[old_name] = getattr(repository, new_name)
+        return result
+
+    def to_representation(self, instance):
+        result = (
+            super(RepositoryMovedFieldsMixin, self)
+            .to_representation(instance))
+        result.update(self._get_repository_moved_fields(instance))
+        return result
+
+
+class RoleListSerializer(RepositoryMovedFieldsMixin, BaseSerializer):
 
     class Meta:
         model = Content
-        fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid', 'github_user', 'github_repo',
-                                'github_branch', 'min_ansible_version', 'issue_tracker_url',
-                                'license', 'company', 'description', 'readme', 'readme_html',
-                                'travis_status_url', 'stargazers_count', 'watchers_count',
-                                'forks_count', 'open_issues_count', 'commit', 'commit_message',
-                                'commit_url', 'download_count')
+        fields = BASE_FIELDS + (
+            'role_type', 'namespace', 'is_valid',
+            'min_ansible_version', 'issue_tracker_url',
+            'license', 'company', 'description', 'readme', 'readme_html',
+            'travis_status_url', 'download_count'
+        )
 
     def to_native(self, obj):
         ret = super(RoleListSerializer, self).to_native(obj)
@@ -78,16 +110,17 @@ class RoleListSerializer(BaseSerializer):
         return d
 
 
-class RoleDetailSerializer(BaseSerializer):
+class RoleDetailSerializer(RepositoryMovedFieldsMixin, BaseSerializer):
     tags = SerializerMethodField()
 
     class Meta:
         model = Content
-        fields = BASE_FIELDS + ('role_type', 'namespace', 'is_valid', 'github_user', 'github_repo', 'github_branch',
-                                'min_ansible_version', 'issue_tracker_url', 'license', 'company', 'description',
-                                'readme', 'readme_html', 'tags', 'travis_status_url', 'stargazers_count',
-                                'watchers_count', 'forks_count', 'open_issues_count', 'commit', 'commit_message',
-                                'commit_url', 'created', 'modified', 'download_count', 'imported')
+        fields = BASE_FIELDS + (
+            'role_type', 'namespace', 'is_valid',
+            'min_ansible_version', 'issue_tracker_url', 'license', 'company',
+            'description',
+            'readme', 'readme_html', 'tags', 'travis_status_url',
+            'created', 'modified', 'download_count', 'imported')
 
     def to_native(self, obj):
         ret = super(RoleDetailSerializer, self).to_native(obj)
@@ -119,9 +152,14 @@ class RoleDetailSerializer(BaseSerializer):
         if obj is None:
             return {}
         d = super(RoleDetailSerializer, self).get_summary_fields(obj)
-        d['dependencies'] = [dict(id=g.id, name=str(g)) for g in obj.dependencies.all()]
-        d['platforms'] = [dict(name=g.name, release=g.release) for g in obj.platforms.all()]
+        d['dependencies'] = [dict(id=g.id, name=str(g))
+                             for g in obj.dependencies.all()]
+        d['platforms'] = [dict(name=g.name, release=g.release)
+                          for g in obj.platforms.all()]
         d['tags'] = [dict(name=g.name) for g in obj.tags.all()]
-        d['versions'] = [dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
-        d['videos'] = [dict(url=v.url, description=v.description) for v in obj.videos.all()]
+        d['versions'] = [dict(id=g.id, name=g.name,
+                              release_date=g.release_date)
+                         for g in obj.versions.all()]
+        d['videos'] = [dict(url=v.url, description=v.description)
+                       for v in obj.videos.all()]
         return d
