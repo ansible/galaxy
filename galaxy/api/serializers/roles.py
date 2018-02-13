@@ -28,7 +28,7 @@ __all__ = [
 ]
 
 
-class RepositoryMovedFieldsMixin(object):
+class BaseRoleSerializer(BaseSerializer):
     REPOSITORY_MOVED_FIELDS = (
         'github_user',
         'github_repo',
@@ -54,13 +54,13 @@ class RepositoryMovedFieldsMixin(object):
 
     def to_representation(self, instance):
         result = (
-            super(RepositoryMovedFieldsMixin, self)
+            super(BaseRoleSerializer, self)
             .to_representation(instance))
         result.update(self._get_repository_moved_fields(instance))
         return result
 
 
-class RoleListSerializer(RepositoryMovedFieldsMixin, BaseSerializer):
+class RoleListSerializer(BaseRoleSerializer):
 
     class Meta:
         model = Content
@@ -105,12 +105,14 @@ class RoleListSerializer(RepositoryMovedFieldsMixin, BaseSerializer):
         d['tags'] = [
             dict(name=g.name) for g in obj.tags.all()]
         d['versions'] = [
-            dict(id=g.id, name=g.name, release_date=g.release_date) for g in obj.versions.all()]
-        d['videos'] = [dict(url=v.url, description=v.description) for v in obj.videos.all()]
+            dict(id=g.id, name=g.name, release_date=g.release_date)
+            for g in obj.versions.all()]
+        d['videos'] = [dict(url=v.url, description=v.description)
+                       for v in obj.videos.all()]
         return d
 
 
-class RoleDetailSerializer(RepositoryMovedFieldsMixin, BaseSerializer):
+class RoleDetailSerializer(BaseRoleSerializer):
     tags = SerializerMethodField()
 
     class Meta:
