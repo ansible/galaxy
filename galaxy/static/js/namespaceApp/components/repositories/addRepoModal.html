@@ -1,0 +1,68 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="add-repo-modal-title">Add Repositories</h3>
+</div>
+<div class="modal-body add-repo-modal-body" id="add-repo-modal-body">
+
+    <div class="continer-fluid">
+        <div class="toolbar-pf add-repo-modal-toolbar">
+            <form class="toolbar-pf-actions">
+                <div class="form-group add-repo-modal-dropdown-group">
+                    <div class="dropdown btn-group" uib-dropdown is-open="status.isopen">
+                        <button id="add-repo-modal-dropdown-button" type="button" class="btn btn-default add-repo-modal-dropdown-button" uib-dropdown-toggle ng-disabled="disabled">
+                            {{ $ctrl.selectedPNS.name }} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                            <li role="menuitem" ng-repeat="pns in $ctrl.providerNamespaces"><a ng-click="$ctrl.selectProviderNamespace(pns)">{{ pns.name }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="form-group toolbar-pf-filter">
+                    <label class="sr-only" for="add-repo-modal-filter">Name</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="add-repo-modal-filter" placeholder="Filter By Name..."
+                               ng-model="$ctrl.nameFilterInput">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="loader" ng-if="$ctrl.selectedPNS.loading">
+            <div class="loader-inner line-scale">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+
+        <div class="list-group list-view-pf list-view-pf-view add-repo-modal-list">
+            <div class="list-group-item" ng-repeat="repo in $ctrl.selectedPNS.repoSources | filter:$ctrl.nameFilter">
+                <div class="list-view-pf-checkbox">
+                    <input type="checkbox"
+                           name="selected-repos[]"
+                           value="{{ $ctrl.selectedPNS.provider_name }}/{{ $ctrl.selectedPNS.name }}/{{ repo.name }}"
+                           ng-model="repo.selected">
+                </div>
+                <div class="list-view-pf-main-info">
+                    <div class="list-view-pf-left">
+                        <i class="pficon-repository"></i>
+                    </div>
+                    <div class="list-view-pf-body">
+                        <div class="list-view-pf-description">
+                            <div class="list-group-item-text">
+                                {{ $ctrl.selectedPNS.name }}/{{ repo.name }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+</div>

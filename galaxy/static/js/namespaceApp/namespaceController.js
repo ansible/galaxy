@@ -25,11 +25,11 @@
     mod.controller('NamespaceCtrl', [
         '$scope',
         '$routeParams',
-        '$location',
         '$timeout',
         '$resource',
         '$window',
         '$log',
+        '$location',
         '$uibModal',
         'Empty',
         'currentUserService',
@@ -41,61 +41,176 @@
     function _NamespaceCtrl(
         $scope,
         $routeParams,
-        $location,
         $timeout,
         $resource,
         $window,
         $log,
+        $location,
         $uibModal,
         Empty,
         currentUserService,
         namespaceService,
         namespaces) {
 
-        $scope.namespaces = namespaces
-        $scope.page_title = 'My Namespaces';
+        $scope.namespaces = namespaces;
+
+        $scope.namespaces.forEach(function(item) {
+            item.expandField = null;
+            item.isExpanded = false;
+        });
+
+        $scope.items = namespaces;
+
+        $scope.page_title = 'My Content';
         $scope.version = GLOBAL_VERSION;
         $scope.github_auth = true;
         $scope.openWarning = _openWarning;
         $scope.toggleNamespace = _toggleNamespace;
-        $scope.toggleSortReverse = _toggleSortReverse;
-        $scope.refresh = _refresh
-        $scope.reset = _reset
-        $scope.selectSort = _selectSort;
+        $scope.enableButtonForItemFn = _enableButtonForItemFn;
+        $scope.updateMenuActionForItemFn = _updateMenuActionForItemFn;
+        $scope.addNamespace = _addNamespace;
+        $scope.refresh = _refresh;
 
-        $scope.sort = {
-            selected: {name: 'name', label: 'Name'},
-            reverse: false,
-            options: [{name: 'name', label: 'Name'},{name:'description', label: 'Description'}, {name: 'modified', label: 'Last Modified'}]
-        }
+
+        $scope.customScope = {
+            toggleExpandItemField: _toggleExpandItemField,
+            collapseItem: _collapseItem,
+            isItemExpanded: _isItemExpanded
+        };
+
+        $scope.actionButtons = [
+            {
+                name: 'Add Content',
+                title: 'Update namespace content',
+                actionFn: _addContent
+            }
+        ];
+
+        $scope.menuActions = [
+            {
+                name: 'Edit Properties',
+                title: 'Edit namespace properties',
+                actionFn: _editProperties
+            },
+            {
+                name: 'Disable',
+                title: 'Disable the namespace and its content',
+                actionFn: _toggleNamespace
+            },
+            {
+                name: 'Enable',
+                title: 'Enable the namespace and its content',
+                actionFn: _toggleNamespace
+            }
+        ];
+
+        $scope.listConfig = {
+            showSelectBox: false,
+            itemsAvailable: true,
+            useExpandingRows: true,
+            compoundExpansionOnly: true
+        };
+
+        $scope.toolbarConfig = {
+            filterConfig: {
+                fields: [{
+                    id: 'name',
+                    title: 'Name',
+                    placeholder: 'Filter by name',
+                    filterType: 'text'
+                },
+                    {
+                        id: 'description',
+                        title: 'Description',
+                        placeholder: 'Filter on description',
+                        filterType: 'text'
+                    }],
+                appliedFilters: [],
+                resultsCount: $scope.items.length,
+                totalCount: $scope.namespaces.length,
+                onFilterChange: _filterChange
+            },
+            sortConfig: {
+                fields: [{
+                    id: 'name',
+                    title: 'Name',
+                    sortType: 'alpha'
+                },
+                    {
+                        id: 'description',
+                        title: 'Description',
+                        sortType: 'alpha'
+                    }],
+                onSortChange: _sortChange
+            },
+            actionsConfig: {
+                actionsInclude: true
+            }
+        };
 
         $scope.refreshing = false;
-
-        $scope.search = {text: ''};
 
         if (!(currentUserService.authenticated && currentUserService.connected_to_github)) {
             $scope.github_auth = false;
         }
 
-        function _selectSort(item) {
-            $scope.sort.selected = item;
+        function _enableButtonForItemFn(action, item) {
+            return item.active;
         }
 
-        function _toggleSortReverse() {
-            $scope.sort.reverse = !$scope.sort.reverse;
+        function _updateMenuActionForItemFn(action, item) {
+            if ((action.name === 'Edit Properties') || (action.name === 'Disable' && item.active) ||
+                (action.name === 'Enable' && !item.active)) {
+                action.isVisible = true;
+            } else {
+                action.isVisible = false;
+            }
         }
 
-        function _reset() {
-            $scope.sort.selected = {name: 'name', label: 'Name'};
-            $scope.sort.reverse = false;
-            $scope.search.text = '';
+        function _editProperties(action, item) {
+            $location.path('/namespaces/' + item.id);
         }
 
-        function _namespaceRefresh() {
-            namespaceService.get({owners: currentUserService.id}).$promise.then(function(response) {
-                $scope.namespaces = response.results;
+        function _toggleExpandItemField(item, field) {
+            if (item.isExpanded && item.expandField === field) {
+                item.isExpanded = false;
+            } else {
+                item.isExpanded = true;
+                item.expandField = field;
+            }
+        }
+
+        function _collapseItem(item) {
+            item.isExpanded = false;
+        }
+
+        function _isItemExpanded(item, field) {
+            return item.isExpanded && item.expandField === field;
+        }
+
+        function _emptyStateAction(action, item) {
+            console.log(item.name + " : " + action.name);
+        }
+
+        function _addContent(action, item) {
+            var modalInstance = $uibModal.open({
+                animation: true,
+                component: 'addRepoModal',
+                resolve: {
+                    namespace: function () {
+                        return item;
+                    }
+                }
             });
         }
+
+
+
+//        function _namespaceRefresh() {
+//            namespaceService.get({owners: currentUserService.id}).$promise.then(function(response) {
+//                $scope.namespaces = response.results;
+//            });
+//        }
 
         function _refresh() {
             $scope.refreshing = true;
@@ -116,21 +231,20 @@
             );
         }
 
-        function _toggleNamespace(obj) {
-             if (!obj.active) {
-                 // user deactivated the namespaces
-                 let modalInstance = _openWarning();
-                 modalInstance.result.then(function(result) {
-                     if (result) {
-                         // user clicked OK
-                         _updateNamespace(obj);
-                     } else {
-                         obj.active = !obj.active;
-                     }
-                 });
-             } else {
-                _updateNamespace(obj);
-             }
+        function _toggleNamespace(action, item) {
+            if (action.name === 'Disable') {
+                let modalInstance = _openWarning();
+                modalInstance.result.then(function(result) {
+                    if (result) {
+                        // user clicked OK
+                        item.active = false;
+                        _updateNamespace(item);
+                    }
+                });
+            } else {
+                item.active = true;
+                _updateNamespace(item);
+            }
         }
 
         function _openWarning(size, parentSelector) {
@@ -147,6 +261,78 @@
 
             return modalInstance;
         }
+
+        function _matchesFilter(item, filter) {
+            var match = true;
+            var re = new RegExp(filter.value, 'i');
+
+            if (filter.id === 'name') {
+                match = item.name.match(re) !== null;
+            } else if (filter.id === 'description') {
+                match = item.description.match(re) !== null;
+            }
+            return match;
+        }
+
+        function _matchesFilters(item, filters) {
+            var matches = true;
+            filters.forEach(function(filter) {
+                if (!_matchesFilter(item, filter)) {
+                    matches = false;
+                    return false;
+                }
+            });
+            return matches;
+        }
+
+        function _applyFilters(filters) {
+            $scope.items = [];
+            if (filters && filters.length > 0) {
+                $scope.namespaces.forEach(function (item) {
+                    if (_matchesFilters(item, filters)) {
+                        $scope.items.push(item);
+                    }
+                });
+            } else {
+                $scope.items = $scope.namespaces;
+            }
+            $scope.toolbarConfig.resultsCount = $scope.items.length;
+        }
+
+        function _filterChange(filters) {
+            $scope.filtersText = "";
+            filters.forEach(function (filter) {
+                $scope.filtersText += filter.title + " : ";
+                if (filter.value.filterCategory) {
+                    $scope.filtersText += ((filter.value.filterCategory.title || filter.value.filterCategory)
+                        + filter.value.filterDelimiter + (filter.value.filterValue.title || filter.value.filterValue));
+                } else if (filter.value.title){
+                    $scope.filtersText += filter.value.title;
+                } else {
+                    $scope.filtersText += filter.value;
+                }
+                $scope.filtersText += "\n";
+            });
+            _applyFilters(filters);
+        }
+
+        function _compareFn(item1, item2) {
+            let compValue = 0;
+            let field = $scope.toolbarConfig.sortConfig.currentField.id
+            compValue = item1[field].localeCompare(item2[field]);
+            if (!$scope.toolbarConfig.sortConfig.isAscending) {
+                compValue = compValue * -1;
+            }
+            return compValue;
+        }
+
+        function _sortChange(sortId, isAscending) {
+            $scope.items.sort(_compareFn);
+        }
+
+        function _addNamespace() {
+            $location.path('/namespaces/add');
+        }
     }
 
     mod.controller('namespaceAlertCtrl', ['$scope', '$uibModalInstance', _namespaceAlertCtrl]);
@@ -159,7 +345,7 @@
             text: '<p>This will deactivate the Namespace along with any associated content. The content ' +
                   'will <i>NOT</i> be accessible, which means it cannot be downloaded, until it is once again ' +
                   'associated with an active Namespace.</p><p>Do you want to continue?</p>'
-        }
+        };
 
         function _ok() {
             $uibModalInstance.close(true);

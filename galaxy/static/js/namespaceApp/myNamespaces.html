@@ -1,0 +1,122 @@
+<!-- (c) 2012-2018, Ansible by Red Hat
+
+ This file is part of Ansible Galaxy
+
+ Ansible Galaxy is free software: you can redistribute it and/or modify
+ it under the terms of the Apache License as published by
+ the Apache Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+
+ Ansible Galaxy is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ Apache License for more details.
+
+ You should have received a copy of the Apache License
+ along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+-->
+
+<div id="galaxy-my-namespaces">
+
+    <ng-include src="'/static/partials/pageHeaderWidget.html'"></ng-include>
+
+    <div class="container">
+
+        <div class="blank-slate-pf " ng-if="!namespaces.length">
+            <div class="blank-slate-pf-icon">
+                <span class="pficon pficon pficon-add-circle-o"></span>
+            </div>
+            <h1>
+                My Content
+            </h1>
+            <p>
+                Before you can import your Ansible content into Galaxy, you need to have at least one Namespace. Creating a Namespace allows you to associate
+                your SCM Provider Namespaces with Galaxy, and import and organize your content. Click the Add button below to create one.
+            </p>
+            <div class="blank-slate-pf-main-action">
+                <a href="#/namespaces/add"
+                   class="btn btn-primary btn-lg"
+                   tooltip-placement="right"
+                   uib-tooltip="Create a namespace"><i class="fa fa-plus"></i> ADD</a>
+            </div>
+        </div>
+
+        <div class="inner-container" ng-if="namespaces.length">
+
+            <h2>Manage Your Galaxy Content</h2>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <pf-toolbar config="toolbarConfig">
+                        <actions>
+                            <button class="btn btn-default primary-action"
+                                    type="button"
+                                    ng-click="refresh()"
+                                    tooltip-placement="top"
+                                    uib-tooltip="Reload data"
+                                    tooltip-append-to-body="true">
+                                <span class="fa fa-spinner"></span> Refresh
+                            </button>
+                            <button class="btn btn-primary primary-action"
+                                    type="button"
+                                    ng-click="addNamespace()"
+                                    tooltip-placement="top"
+                                    uib-tooltip="Create a namespace"
+                                    tooltip-append-to-body="true">
+                                <span class="fa fa-plus"></span> Add
+                            </button>
+                        </actions>
+                    </pf-toolbar>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <pf-list-view
+                            items="items"
+                            config="listConfig"
+                            action-buttons="actionButtons"
+                            menu-actions="menuActions"
+                            enable-button-for-item-fn="enableButtonForItemFn"
+                            update-menu-action-for-item-fn="updateMenuActionForItemFn"
+                            custom-scope="customScope">
+                        <div class="list-view-pf-expand" ng-click="$ctrl.customScope.toggleExpandItemField(item, 'repos')">
+                            <span class="fa fa-angle-right" ng-class="{'fa-angle-down': $ctrl.customScope.isItemExpanded(item, 'repos')}"></span>
+                        </div>
+                        <div class="list-view-pf-left">
+                            <i class="fa fa-folder-o list-view-pf-icon-sm" ng-class="{enabled: item.active, disabled: !item.active }"></i>
+                        </div>
+                        <div class="list-view-pf-body">
+                            <div class="list-view-pf-description">
+                                <div class="list-group-item-heading">{{ item.name }}</div>
+                                <div class="list-group-item-text">{{ item.description }}</div>
+                            </div>
+                            <div class="list-view-pf-additional-info">
+                                <div class="list-view-pf-additional-info-item">
+                                    <div class="list-view-pf-expand" ng-click="$ctrl.customScope.toggleExpandItemField(item, 'owners')">
+                                        <span class="fa fa-angle-right" ng-class="{'fa-angle-down': $ctrl.customScope.isItemExpanded(item, 'owners')}"></span>
+                                        <span class="fa fa-users"></span>
+                                        <strong>{{ item.summary_fields.owners.length }}</strong> Owners
+                                    </div>
+                                </div>
+                                <div class="list-view-pf-additional-info-item">
+                                    <div class="list-view-pf-expand" ng-click="$ctrl.customScope.toggleExpandItemField(item, 'provider_namespaces')">
+                                        <span class="fa fa-angle-right" ng-class="{'fa-angle-down': $ctrl.customScope.isItemExpanded(item, 'provider_namespaces')}"></span>
+                                        <span class="fa fa-list"></span>
+                                        <strong>{{ item.summary_fields.provider_namespaces.length }}</strong> Provider Namespaces
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <list-expanded-content>
+                            <div class="close">
+                                <span class="pficon pficon-close" ng-click="$parent.$ctrl.customScope.collapseItem($parent.item)"></span>
+                            </div>
+                            <namespace-list-item-expansion item="$parent.item"></namespace-list-item-expansion>
+                        </list-expanded-content>
+                    </pf-list-view>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

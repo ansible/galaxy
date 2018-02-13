@@ -24,8 +24,30 @@
 
     mod.factory('providerSourceService', ['$resource', 'getCSRFToken', _factory]);
 
-    function _factory($resource, getCSRFToken) {
-        return $resource('/api/v1/providers/sources/');
+    function _factory($resource, currentUserService, getCSRFToken) {
+
+        return {
+            getRepoSources: function(params) {
+                params = (params) ? params : {};
+                params.owners = currentUserService.id;
+                return $resource('/api/v1/providers/sources/:providerName/:name', {
+                    providerName: params.providerName,
+                    name: params.name
+                }, {
+                    get: {
+                        method: 'GET',
+                        isArray: true
+                    }
+                }).get(params);
+            },
+            query: function(params) {
+                console.log('query');
+                console.log(params);
+                return $resource('/api/v1/providers/sources/', null, {
+                    'get': { method: 'GET', isArray: true }
+                }).get(params);
+            }
+        }
     }
 
 })(angular);

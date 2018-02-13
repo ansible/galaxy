@@ -66,7 +66,7 @@ def user_logged_in_handler(request, user, **kwargs):
                 # Only create one Namespace
                 namespace, _ = Namespace.objects.get_or_create(name=login, defaults=defaults)
                 namespace.owners.add(user)
-            defaults['description'] = social.extra_data.get('bio')
+            defaults['description'] = social.extra_data.get('bio') or name
             defaults['followers'] = social.extra_data.get('followers')
             defaults['display_name'] = social.extra_data.get('name')
             ProviderNamespace.objects.get_or_create(namespace=namespace, name=login, provider=provider,
