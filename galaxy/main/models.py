@@ -302,8 +302,9 @@ class Content(CommonModelNameNotUnique):
     role_type = models.CharField(
         max_length=3,
         choices=constants.RoleType.choices(),
-        default=ANSIBLE,
+        null=True,
         blank=False,
+        default=None,
         editable=False,
     )
     original_name = models.CharField(
@@ -453,7 +454,7 @@ class Content(CommonModelNameNotUnique):
 
     # FIXME(cutwater): Refactor me
     def clean(self):
-        if self.company != "" and len(self.company) > 50:
+        if self.company and len(self.company) > 50:
             # add_message(import_task, u"WARNING",
             # u"galaxy_info.company exceeds max length of 50 in meta data")
             self.company = self.company[:50]

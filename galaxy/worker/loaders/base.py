@@ -16,8 +16,11 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import abc
+import logging
 
 import six
+
+LOG = logging.getLogger(__name__)
 
 
 class ContentData(object):
@@ -25,11 +28,15 @@ class ContentData(object):
     _fields = frozenset([
         'name',
         'path',
-        'dependencies',
         'content_type',
+        'description',
+        'dependencies',
+        'metadata',
     ])
 
     def __init__(self, **kwargs):
+        kwargs.setdefault('metadata', {})
+
         for k in self._fields:
             v = kwargs.pop(k, None)
             setattr(self, k, v)
@@ -41,8 +48,9 @@ class ContentData(object):
 @six.add_metaclass(abc.ABCMeta)
 class BaseLoader(object):
 
-    def __init__(self, path):
+    def __init__(self, path, logger=None):
         self.path = path
+        self.log = logger or LOG
 
     @abc.abstractmethod
     def load(self):

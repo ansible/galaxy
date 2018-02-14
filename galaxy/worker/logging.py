@@ -30,7 +30,7 @@ class ImportTaskAdapter(logging.LoggerAdapter):
 class ContentTypeAdapter(logging.LoggerAdapter):
     def __init__(self, logger, content_type, content_name):
         super(ContentTypeAdapter, self).__init__(logger, {
-            'content_type': content_type.capitalize(),
+            'content_type': content_type,
             'content_name': content_name,
         })
 

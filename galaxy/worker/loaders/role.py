@@ -32,6 +32,11 @@ from galaxy.worker import logging as wlog
 
 LOG = logging.getLogger(__name__)
 
+ROLE_META_FILES = [
+    'meta/main.yml', 'meta/main.yaml',
+    'meta.yml', 'meta.yaml'
+]
+
 
 class RoleData(base.ContentData):
     _fields = base.ContentData._fields | frozenset([
@@ -194,7 +199,7 @@ class RoleMetaParser(object):
         return videos
 
 
-class RoleLoader(object):
+class RoleLoader(base.BaseLoader):
     STRING_ATTRS = [
         ('description', ''),
         ('author', ''),
@@ -205,10 +210,6 @@ class RoleLoader(object):
         ('issue_tracker_url', ''),
         ('github_branch', ''),
     ]
-    ROLE_META_FILES = [
-        'meta/main.yml', 'meta/main.yaml',
-        'meta.yml', 'meta.yaml'
-    ]
     CONTAINER_META_FILE = 'meta/container.yml'
     ANSIBLE_CONTAINER_META_FILE = 'container.yml'
 
@@ -216,10 +217,13 @@ class RoleLoader(object):
         """
         :param str path: Path to role directory within repository
         """
-        self.path = path
-        self.name = name or os.path.basename(self.path)
+        name = name or os.path.basename(path)
+        logger = wlog.ContentTypeAdapter(logger or LOG, 'Role', name)
+
+        super(RoleLoader, self).__init__(path, logger=logger)
+
+        self.name = name
         self.meta_file = meta_file
-        self.log = wlog.ContentTypeAdapter(logger or LOG, 'role', self.name)
 
         self._container_yml_type = None
 
@@ -255,7 +259,7 @@ class RoleLoader(object):
         return attrs
 
     def _find_metadata(self):
-        for filename in self.ROLE_META_FILES:
+        for filename in ROLE_META_FILES:
             meta_file = os.path.join(self.path, filename)
             if os.path.exists(meta_file):
                 return meta_file
