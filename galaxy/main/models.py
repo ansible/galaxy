@@ -19,11 +19,11 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms.models import model_to_dict
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres import fields as psql_fields
 from django.utils import timezone
 
 from galaxy.main import constants
-from galaxy.main.fields import LooseVersionField, TruncatingCharField
+from galaxy.main import fields
 from galaxy.main.mixins import DirtyMixin
 
 __all__ = [
@@ -61,7 +61,8 @@ class PrimordialModel(BaseModel):
     class Meta:
         abstract = True
 
-    description = TruncatingCharField(max_length=255, blank=True, default='')
+    description = fields.TruncatingCharField(
+        max_length=255, blank=True, default='')
     active = models.BooleanField(default=True, db_index=True)
 
 
@@ -202,7 +203,8 @@ class ContentType(BaseModel):
     """A model that represents content type (e.g. role, module, etc.)."""
     name = models.CharField(max_length=512, unique=True, db_index=True,
                             choices=constants.ContentType.choices())
-    description = TruncatingCharField(max_length=255, blank=True, default='')
+    description = fields.TruncatingCharField(
+        max_length=255, blank=True, default='')
 
     @classmethod
     def get(cls, content_type):
@@ -305,6 +307,7 @@ class Content(CommonModelNameNotUnique):
         max_length=256,
         null=False
     )
+    metadata = fields.JSONField()
     github_default_branch = models.CharField(
         max_length=256,
         default='master',
@@ -646,7 +649,7 @@ class ContentVersion(CommonModelNameNotUnique):
         blank=True,
         null=True,
     )
-    loose_version = LooseVersionField(
+    loose_version = fields.LooseVersionField(
         editable=False,
         db_index=True,
     )
@@ -881,7 +884,7 @@ class Notification(PrimordialModel):
         verbose_name='Tasks',
         editable=False
     )
-    messages = ArrayField(
+    messages = psql_fields.ArrayField(
         models.CharField(max_length=256),
         default=list,
         editable=False
@@ -906,13 +909,14 @@ class Repository(BaseModel):
     # Fields
     name = models.CharField(max_length=256)
     original_name = models.CharField(max_length=256, null=False)
-    description = TruncatingCharField(max_length=255, blank=True, default='')
+    description = fields.TruncatingCharField(
+        max_length=255, blank=True, default='')
     import_branch = models.CharField(max_length=256, null=True)
     is_enabled = models.BooleanField(default=False)
 
     # Repository attributes
     commit = models.CharField(max_length=256, blank=True, default='')
-    commit_message = TruncatingCharField(
+    commit_message = fields.TruncatingCharField(
         max_length=256, blank=True, default='')
     commit_url = models.CharField(max_length=256, blank=True, default='')
     commit_created = models.DateTimeField(null=True, verbose_name="Last Commit DateTime")
