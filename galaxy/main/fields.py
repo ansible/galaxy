@@ -47,10 +47,7 @@ class LooseVersionField(models.Field):
         return self.get_prep_value(value)
 
     def to_python(self, value):
-        try:
-            return LooseVersion(value)
-        except:
-            return value
+        return LooseVersion(value)
 
     def get_prep_value(self, value):
         return str(value)
