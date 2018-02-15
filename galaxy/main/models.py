@@ -89,7 +89,8 @@ class CommonModelNameNotUnique(PrimordialModel):
 
 class Category(CommonModel):
     """
-    A class represnting the valid categories (formerly tags) that can be assigned to a role.
+    A class represnting the valid categories (formerly tags)
+    that can be assigned to a role.
     """
 
     class Meta:
@@ -159,7 +160,8 @@ class CloudPlatform(CommonModel):
 
 class UserAlias(models.Model):
     """
-    A class representing a mapping between users and aliases to allow for user renaming without breaking deps.
+    A class representing a mapping between users and aliases to allow
+    for user renaming without breaking deps.
     """
 
     class Meta:
@@ -176,7 +178,8 @@ class UserAlias(models.Model):
     )
 
     def __unicode__(self):
-        return unicode("%s (alias of %s)" % (self.alias_name, self.alias_of.username))
+        return unicode("%s (alias of %s)" % (
+            self.alias_name, self.alias_of.username))
 
 
 class Video(PrimordialModel):
@@ -307,7 +310,10 @@ class Content(CommonModelNameNotUnique):
         max_length=256,
         null=False
     )
-    metadata = fields.JSONField()
+    metadata = fields.JSONField(
+        null=False,
+        default={}
+    )
     github_default_branch = models.CharField(
         max_length=256,
         default='master',
@@ -418,18 +424,24 @@ class Content(CommonModelNameNotUnique):
             return dict()
 
     def get_unique_platforms(self):
-        return [platform.name for platform in self.platforms.filter(active=True).order_by('name').distinct('name')]
+        return [platform.name for platform in
+                self.platforms.filter(active=True)
+                    .order_by('name').distinct('name')]
 
     def get_cloud_platforms(self):
         return [cp.name for cp in self.cloud_platforms.filter(active=True)]
 
     def get_unique_platform_versions(self):
-        return [platform.release for platform in self.platforms.filter(active=True).order_by('release').distinct('release')]
+        return [platform.release for platform in
+                self.platforms.filter(active=True)
+                    .order_by('release').distinct('release')]
 
     def get_unique_platform_search_terms(self):
         # Fetch the unique set of aliases
         terms = []
-        for platform in self.platforms.filter(active=True).exclude(alias__isnull=True).exclude(alias__exact='').all():
+        for platform in (
+                self.platforms.filter(active=True)
+                .exclude(alias__isnull=True).exclude(alias__exact='').all()):
             terms += platform.alias.split(' ')
         return set(terms)
 
@@ -442,21 +454,28 @@ class Content(CommonModelNameNotUnique):
     # FIXME(cutwater): Refactor me
     def clean(self):
         if self.company != "" and len(self.company) > 50:
-            # add_message(import_task, u"WARNING", u"galaxy_info.company exceeds max length of 50 in meta data")
+            # add_message(import_task, u"WARNING",
+            # u"galaxy_info.company exceeds max length of 50 in meta data")
             self.company = self.company[:50]
 
         if not self.description:
-            # add_message(import_task, u"ERROR", u"missing description. Add a description to GitHub repo or meta data.")
+            # add_message(import_task, u"ERROR",
+            # u"missing description. Add a description to GitHub
+            # repo or meta data.")
             pass
         elif len(self.description) > 255:
-            # add_message(import_task, u"WARNING", u"galaxy_info.description exceeds max length of 255 in meta data")
+            # add_message(import_task, u"WARNING",
+            # u"galaxy_info.description exceeds max length
+            # of 255 in meta data")
             self.description = self.description[:255]
 
         if not self.license:
-            # add_message(import_task, u"ERROR", u"galaxy_info.license missing value in meta data")
+            # add_message(import_task, u"ERROR",
+            # u"galaxy_info.license missing value in meta data")
             pass
         elif len(self.license) > 50:
-            # add_message(import_task, u"WARNING", u"galaxy_info.license exceeds max length of 50 in meta data")
+            # add_message(import_task, u"WARNING",
+            # u"galaxy_info.license exceeds max length of 50 in meta data")
             self.license = self.license[:50]
 
         if (not self.min_ansible_version
@@ -473,13 +492,18 @@ class Content(CommonModelNameNotUnique):
             self.min_ansible_container_version = u'0.2.0'
 
         if not self.issue_tracker_url:
-            # add_message(import_task, u"WARNING", u"No issue tracker defined. Enable issue tracker in repo settings, or provide an issue tracker in meta data.")
+            # add_message(import_task, u"WARNING", u"No issue tracker
+            #  defined. Enable issue tracker in repo settings,
+            # or provide an issue tracker in meta data.")
             pass
         else:
             from six.moves import urllib_parse
             parsed_url = urllib_parse.urlparse(self.issue_tracker_url)
-            if parsed_url.scheme == '' or parsed_url.netloc == '' or parsed_url.path == '':
-                # add_message(import_task, u"WARNING", u"Invalid URL found in meta data for issue tracker ")
+            if (parsed_url.scheme == ''
+                    or parsed_url.netloc == ''
+                    or parsed_url.path == ''):
+                # add_message(import_task, u"WARNING",
+                # u"Invalid URL found in meta data for issue tracker ")
                 self.issue_tracker_url = ""
 
 
@@ -689,7 +713,8 @@ class ImportTaskMessage(PrimordialModel):
     )
 
     def __unicode__(self):
-        return "%d-%s-%s" % (self.task.id, self.message_type, self.message_text)
+        return "%d-%s-%s" % (
+            self.task.id, self.message_type, self.message_text)
 
 
 class ImportTask(PrimordialModel):
@@ -919,7 +944,8 @@ class Repository(BaseModel):
     commit_message = fields.TruncatingCharField(
         max_length=256, blank=True, default='')
     commit_url = models.CharField(max_length=256, blank=True, default='')
-    commit_created = models.DateTimeField(null=True, verbose_name="Last Commit DateTime")
+    commit_created = models.DateTimeField(
+        null=True, verbose_name="Last Commit DateTime")
     stargazers_count = models.IntegerField(default=0)
     watchers_count = models.IntegerField(default=0)
     forks_count = models.IntegerField(default=0)
