@@ -39,6 +39,7 @@
                 $ctrl.tooltipText = _tooltipText();
                 $ctrl.viewImportLink = 'imports#/?github_user=' + $ctrl.repository.summary_fields.provider_namespace.name +
                                                 '&github_repo=' + $ctrl.repository.original_name;
+                _queryStatus();
             }
 
             function _tooltipText() {
@@ -61,6 +62,7 @@
             }
 
             function _importRepository() {
+                $ctrl.importInProgress = true;
                 importService.imports.save({
                     'github_user': $ctrl.repository.github_user,
                     'github_repo': $ctrl.repository.github_repo,
@@ -91,7 +93,10 @@
                     if (response.results.length > 0) {
                         $ctrl.import = response.results[0];
                         if ($ctrl.import.state === 'FAILED' || $ctrl.import.state === 'SUCCESS') {
+                            $ctrl.importInProgress = false;
                             $interval.cancel(intervalTimer);
+                        } else {
+                            $ctrl.importInProgress = true;
                         }
                     } else {
                         $ctrl.import = null;
@@ -100,9 +105,10 @@
             }
 
             function _deleteRepository() {
+                $ctrl.deleteInProgress = true;
                 githubRepoService.delete({id: $ctrl.repository.id}).$promise.then(function() {
                     $rootScope.$emit('namespace.update', $ctrl.repository.summary_fields.namespace);
-                })
+                });
             }
         }
     });

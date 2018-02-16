@@ -1,4 +1,4 @@
-<div class="list-group-item tree-child-item">
+<div class="list-group-item tree-child-item" ng-class="{'disabled': $ctrl.deleteInProgress}">
     <div class="list-view-pf-main-info">
         <div class="list-view-pf-left">
             <i class="pficon-repository"></i>
@@ -19,24 +19,28 @@
                     <span ng-switch-when="PENDING"><i class="pficon-pending"></i> Import Pending</span>
                     <span ng-switch-when="RUNNING"><i class="pficon-in-progress fa-spin"></i> Import Running</span>
                     <span ng-switch-when="FAILED"><i class="pficon-error-circle-o"></i> Import Error</span>
-                    <span ng-switch-when="SUCCESS"><i class="pficon-ok"></i> Import Successful</span>
+                    <span ng-switch-when="SUCCESS"><i class="pficon-ok"></i> Import Successful ({{ $ctrl.finished | timeFromNow }})</span>
                 </a>
             </div>
         </div>
     </div>
     <div class="list-view-pf-actions">
-        <button class="btn btn-default" title="Import" ng-click="$ctrl.importRepository()">
+        <button class="btn btn-default" title="Import" ng-click="$ctrl.importRepository()" ng-disabled="$ctrl.deleteInProgress || $ctrl.importInProgress">
             <i class="fa fa-upload"></i>
         </button>
-        <a class="btn btn-default" title="View Import Status" href="{{ $ctrl.viewImportLink }}">
+        <a class="btn btn-default" title="View Import Status" href="{{ $ctrl.viewImportLink }}" ng-disabled="$ctrl.deleteInProgress">
             <i class="fa fa-external-link"></i>
         </a>
 
         <div class="dropdown pull-right dropdown-kebab-pf">
-            <button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-link dropdown-toggle"
+                    type="button" data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    ng-disabled="$ctrl.deleteInProgress">
                 <span class="fa fa-ellipsis-v"></span>
             </button>
-            <ul class="dropdown-menu dropdown-menu-right" >
+            <ul class="dropdown-menu dropdown-menu-right">
                 <li><a href="#">Edit Properties</a></li>
                 <li><a href ng-click="$ctrl.deleteRepository()">Delete</a></li>
             </ul>
