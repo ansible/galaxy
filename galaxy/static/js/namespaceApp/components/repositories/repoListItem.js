@@ -44,12 +44,20 @@
             function _tooltipText() {
                 var linkText = $ctrl.repository.summary_fields.provider_namespace.name + '/' + $ctrl.repository.original_name;
                 var linkHref = '';
+                var stars = $ctrl.repository.stargazers_count;
+                var forks = $ctrl.repository.forks_count;
+                var fullCommit = $ctrl.repository.commit;
+                var commit = fullCommit ? fullCommit.substring(0, 7) : '';
+                var commitMsg = $ctrl.repository.commit_message;
 
                 if ($ctrl.repository.summary_fields.provider.name.toLowerCase() === 'github') {
                     linkHref = "https://github.com/" + linkText;
                 }
 
-                return $sce.trustAsHtml('<a target="_blank" href="' + linkHref + '">' + linkText + '</a>');
+                return $sce.trustAsHtml('<p><a target="_blank" href="' + linkHref + '">' + linkText + '</a></p>' +
+                    '<p>Stars: ' + stars + '</p>' +
+                    '<p>Forks: ' + forks + '</p>' +
+                    '<p>Last Commit: (' + commit + ') ' + commitMsg + '</p>');
             }
 
             function _importRepository() {
@@ -92,7 +100,6 @@
             }
 
             function _deleteRepository() {
-                console.log("_deleteRepository");
                 githubRepoService.delete({id: $ctrl.repository.id}).$promise.then(function() {
                     $rootScope.$emit('namespace.update', $ctrl.repository.summary_fields.namespace);
                 })
