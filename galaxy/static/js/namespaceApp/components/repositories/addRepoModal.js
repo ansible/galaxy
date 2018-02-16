@@ -46,26 +46,35 @@
             };
 
             $ctrl.ok = function () {
-                var promises = [];
-                angular.forEach($ctrl.selectedPNS.repoSources, function (repo) {
-                    if (repo.selected) {
-                        promises.push(_saveRepo($ctrl.selectedPNS, repo).$promise);
-                    }
-                });
-
-                $q.all(promises).then(function(repositories) {
-                    console.log(repositories);
-                    angular.forEach(repositories, function (repo) {
-                        importService.imports.save({
-                            'github_user': repo.github_user,
-                            'github_repo': repo.github_repo,
-                            'alternate_role_name': repo.role_name
-                        });
-                    });
+                _saveRepos().then(_importRepos).then(function() {
                     $rootScope.$emit('namespace.update', $ctrl.namespace);
                 });
                 $ctrl.close({$value: 'ok'});
             };
+
+            function _saveRepos() {
+                var saveRepoPromises = [];
+                angular.forEach($ctrl.selectedPNS.repoSources, function (repo) {
+                    if (repo.selected) {
+                        saveRepoPromises.push(_saveRepo($ctrl.selectedPNS, repo).$promise);
+                    }
+                });
+
+                return $q.all(saveRepoPromises)
+            }
+
+            function _importRepos(repos) {
+                var importRepoPromises = [];
+                angular.forEach(repos, function (repo) {
+                    importRepoPromises.push(importService.imports.save({
+                        'github_user': repo.github_user,
+                        'github_repo': repo.github_repo,
+                        'alternate_role_name': repo.role_name
+                    }).$promise);
+                });
+
+                return $q.all(importRepoPromises)
+            }
 
             $ctrl.cancel = function () {
                 $ctrl.dismiss({$value: 'cancel'});
