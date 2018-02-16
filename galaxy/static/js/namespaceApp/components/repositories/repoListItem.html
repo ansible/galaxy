@@ -19,7 +19,7 @@
                     <span ng-switch-when="PENDING"><i class="pficon-pending"></i> Import Pending</span>
                     <span ng-switch-when="RUNNING"><i class="pficon-in-progress fa-spin"></i> Import Running</span>
                     <span ng-switch-when="FAILED"><i class="pficon-error-circle-o"></i> Import Error</span>
-                    <span ng-switch-when="SUCCESS"><i class="pficon-ok"></i> Import Successful ({{ $ctrl.finished | timeFromNow }})</span>
+                    <span ng-switch-when="SUCCESS"><i class="pficon-ok"></i> Import Successful ({{ $ctrl.import.finished | timeFromNow }})</span>
                 </a>
             </div>
         </div>
