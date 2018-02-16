@@ -27,7 +27,7 @@
             close: '&',
             dismiss: '&'
         },
-        controller: function ($q, $rootScope, providerSourceService, githubRepoService) {
+        controller: function ($q, $rootScope, providerSourceService, githubRepoService, importService) {
             var $ctrl = this;
 
             $ctrl.selectProviderNamespace = _selectProviderNamespace;
@@ -53,7 +53,15 @@
                     }
                 });
 
-                $q.all(promises).then(function(data) {
+                $q.all(promises).then(function(repositories) {
+                    console.log(repositories);
+                    angular.forEach(repositories, function (repo) {
+                        importService.imports.save({
+                            'github_user': repo.github_user,
+                            'github_repo': repo.github_repo,
+                            'alternate_role_name': repo.role_name
+                        });
+                    });
                     $rootScope.$emit('namespace.update', $ctrl.namespace);
                 });
                 $ctrl.close({$value: 'ok'});

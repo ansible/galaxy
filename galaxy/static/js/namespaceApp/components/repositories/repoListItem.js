@@ -39,7 +39,12 @@
                 $ctrl.tooltipText = _tooltipText();
                 $ctrl.viewImportLink = 'imports#/?github_user=' + $ctrl.repository.summary_fields.provider_namespace.name +
                                                 '&github_repo=' + $ctrl.repository.original_name;
-                _queryStatus();
+                _queryStatus().then(function() {
+                    if ($ctrl.import.state !== 'FAILED' && $ctrl.import.state !== 'SUCCESS') {
+                        $ctrl.importInProgress = true;
+                        _pollImportState();
+                    }
+                });
             }
 
             function _tooltipText() {
