@@ -193,8 +193,7 @@ def _import_repository(import_task, workdir, logger):
         repository=repository,
         github_token=token,
         github_client=gh_api,
-        github_repo=gh_repo,
-    )
+        github_repo=gh_repo)
     repo_loader = loaders.RepositoryLoader.from_remote(
         remote_url=import_task.repository.clone_url,
         clone_dir=workdir,
@@ -204,15 +203,19 @@ def _import_repository(import_task, workdir, logger):
     new_content_objs = []
 
     for loader in repo_loader.load():
-        assert isinstance(loader, loaders.RoleLoader)
+        data = loader.load()
 
-        importer = importers.RoleImporter(context, loader)
-        role = importer.import_content()
-        new_content_objs.append(role.id)
+        importer_cls = importers.get_importer(data.content_type)
+        importer = importer_cls(context, data, logger=loader.log)
+        content = importer.do_import()
+
+        new_content_objs.append(content.id)
+
+        # TODO(cutwater): Move to RoleImporter class
         update_custom_indexes.delay(
-            username=role.namespace, tags=role.get_tags(),
-            platforms=role.get_unique_platforms(),
-            cloud_platforms=role.get_cloud_platforms())
+            username=content.namespace, tags=content.get_tags(),
+            platforms=content.get_unique_platforms(),
+            cloud_platforms=content.get_cloud_platforms())
 
     for obj in repository.content_objects.exclude(id__in=new_content_objs):
         logger.info(

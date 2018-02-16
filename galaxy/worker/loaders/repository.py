@@ -23,17 +23,15 @@ import subprocess
 import yaml
 
 from galaxy.worker import utils
-from galaxy.worker.loaders import role as role_loader
 from galaxy.worker import exceptions as exc
+from galaxy.worker.loaders import role as role_loader
+from galaxy.worker.loaders import apb as apb_loader
 
 LOG = logging.getLogger(__name__)
 
 
 class RepositoryLoader(object):
-    ROLE_META_FILES = [
-        'meta/main.yml', 'meta/main.yaml',
-        'meta.yml', 'meta.yaml'
-    ]
+    APB_META_FILES = ['apb.yml', 'apb.yaml']
     REPO_META_FILENAME = '.ansible-galaxy.yml'
     REPO_LOADERS = [
         ('roles', role_loader.RoleLoader)
@@ -99,17 +97,24 @@ class RepositoryLoader(object):
         return cls(path=clone_dir, name=name, logger=logger)
 
     def load(self):
-        meta_loaders = self._find_from_metadata()
-        if meta_loaders:
-            return meta_loaders
-        toplevel_role = self._find_toplevel_role()
-        if toplevel_role:
-            return [toplevel_role]
-        repo_loaders = self._find_from_repository()
-        if repo_loaders:
-            return repo_loaders
+        for finder in [self._find_from_metadata,
+                       self._try_load_apb,
+                       self._find_toplevel_role,
+                       self._find_from_repository]:
+            loaders = finder()
+            if loaders:
+                return loaders
         raise exc.ContentLoadError(
             "Cannot load content from repository.")
+
+    def _try_load_apb(self):
+        self.log.debug('Content search - Looking for apb.yml')
+        for filename in self.APB_META_FILES:
+            metadata_file = os.path.join(self.path, filename)
+            if os.path.exists(metadata_file):
+                return [apb_loader.APBLoader(
+                    self.path, self.name, filename, logger=self.log)]
+        return None
 
     def _find_from_metadata(self):
         self.log.debug('Content search - Looking for {0}'
@@ -133,7 +138,7 @@ class RepositoryLoader(object):
     def _find_toplevel_role(self):
         self.log.debug(
             'Content search - Looking for top level role metadata file')
-        for meta_file in self.ROLE_META_FILES:
+        for meta_file in role_loader.ROLE_META_FILES:
             if os.path.exists(os.path.join(self.path, meta_file)):
                 return role_loader.RoleLoader(
                     path=self.path,

@@ -11,21 +11,21 @@ UPGRADE_INSERT_CONTENT_TYPES = """
 INSERT INTO main_contenttype 
   (name, description, created, modified)
 VALUES
-    ('action_plugin', 'Action_plugin', now(), now()),
-    ('cache_plugin', 'Cache plugin', now(), now()),
-    ('callback_plugin', 'Callback plugin', now(), now()),
-    ('cliconf_plugin', 'CLI config plugin', now(), now()),
-    ('connection_plugin', 'Connection plugin', now(), now()),
-    ('filter_plugin', 'Filter plugin', now(), now()),
-    ('inventory_plugin', 'Inventory plugin', now(), now()),
-    ('lookup_plugin', 'Lookup plugin', now(), now()),
+    ('action_plugin', 'Action Plugin', now(), now()),
+    ('cache_plugin', 'Cache Plugin', now(), now()),
+    ('callback_plugin', 'Callback Plugin', now(), now()),
+    ('cliconf_plugin', 'CLI Conf Plugin', now(), now()),
+    ('connection_plugin', 'Connection Plugin', now(), now()),
+    ('filter_plugin', 'Filter Plugin', now(), now()),
+    ('inventory_plugin', 'Inventory Plugin', now(), now()),
+    ('lookup_plugin', 'Lookup Plugin', now(), now()),
     ('module', 'Module', now(), now()),
-    ('netconf_plugin', 'Netconf plugin', now(), now()),
+    ('netconf_plugin', 'Netconf Plugin', now(), now()),
     ('role', 'Role', now(), now()),
-    ('shell_plugin', 'Shell plugin', now(), now()),
-    ('strategy_plugin', 'Strategy plugin', now(), now()),
-    ('terminal_plugin', 'Terminal plugin', now(), now()),
-    ('test_plugin', 'Test plugin', now(), now())
+    ('shell_plugin', 'Shell Plugin', now(), now()),
+    ('strategy_plugin', 'Strategy Plugin', now(), now()),
+    ('terminal_plugin', 'Terminal Plugin', now(), now()),
+    ('test_plugin', 'Test Plugin', now(), now())
 """
 
 UPGRADE_SET_ROLES_CONTENT_TYPE = """

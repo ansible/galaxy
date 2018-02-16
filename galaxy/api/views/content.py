@@ -46,7 +46,7 @@ class ContentList(base.ListAPIView):
     def get_queryset(self):
         return (
             super(ContentList, self).get_queryset()
-            .only(self.QUERY_FIELDS)
+            .only(*self.QUERY_FIELDS)
             .select_related(
                 'namespace__name',
                 'content_type__name',
@@ -68,4 +68,5 @@ class ContentDetail(base.RetrieveAPIView):
     QUERY_FIELDS = ContentList.QUERY_FIELDS + (
         'readme',
         'readme_html',
+        'metadata',
     )

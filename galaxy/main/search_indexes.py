@@ -25,7 +25,7 @@ class RoleIndex(indexes.SearchIndex, indexes.Indexable):
     role_id = indexes.IntegerField(model_attr='id')
 
     content_type = indexes.CharField(model_attr='content_type__name')
-    role_type = indexes.CharField(model_attr='role_type')
+    role_type = indexes.CharField(model_attr='role_type', null=True)
     username = indexes.CharField(model_attr='namespace__name')
     name = indexes.CharField(model_attr='name', faceted=True)
     description = indexes.CharField(model_attr='description')

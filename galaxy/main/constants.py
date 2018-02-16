@@ -38,6 +38,9 @@ class DjangoEnum(enum.Enum):
     def choices(cls):
         return [item._value_ for item in cls]
 
+    def __str__(self):
+        return self.value
+
 
 class RoleType(DjangoEnum):
     ANSIBLE = ('ANS', 'Ansible')
@@ -49,6 +52,7 @@ class RoleType(DjangoEnum):
 class ContentType(DjangoEnum):
     ROLE = ('role', 'Role')
     MODULE = ('module', 'Module')
+    APB = ('apb', 'Ansible Playbook Bundle')
     ACTION_PLUGIN = ('action_plugin', 'Action Plugin')
     CACHE_PLUGIN = ('cache_plugin', 'Cache Plugin')
     CALLBACK_PLUGIN = ('callback_plugin', 'Callback Plugin')

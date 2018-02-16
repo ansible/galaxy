@@ -15,6 +15,18 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from .apb import APBLoader  # noqa: F401
-from .role import RoleLoader, RoleData  # noqa: F401
-from .repository import RepositoryLoader  # noqa: F401
+from galaxy.main import constants
+
+from .base import ContentImporter
+from .apb import APBImporter
+from .role import RoleImporter
+
+
+IMPORTERS = {
+    constants.ContentType.APB: APBImporter,
+    constants.ContentType.ROLE: RoleImporter,
+}
+
+
+def get_importer(content_type):
+    return IMPORTERS.get(content_type, ContentImporter)

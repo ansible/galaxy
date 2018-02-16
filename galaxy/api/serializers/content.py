@@ -109,5 +109,6 @@ class ContentDetailSerializer(ContentSerializer):
     class Meta(ContentSerializer.Meta):
         fields = ContentSerializer.Meta.fields + (
             'readme',
-            'readme_html'
+            'readme_html',
+            'metadata',
         )

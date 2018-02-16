@@ -1,84 +1,62 @@
+# (c) 2012-2018, Ansible by Red Hat
+#
+# This file is part of Ansible Galaxy
+#
+# Ansible Galaxy is free software: you can redistribute it and/or modify
+# it under the terms of the Apache License as published by
+# the Apache Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# Ansible Galaxy is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# Apache License for more details.
+#
+# You should have received a copy of the Apache License
+# along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+
 from __future__ import absolute_import
 
-import logging
-
 import pytz
-from django.utils import timezone
 
 from galaxy.main import models
-from galaxy.worker import utils
 from galaxy.worker import exceptions as exc
 
+from . import base
 
-LOG = logging.getLogger(__name__)
 
-
-class RoleImporter(object):
+class RoleImporter(base.ContentImporter):
     MAX_TAGS_COUNT = 20
 
-    def __init__(self, context, loader):
-        self.ctx = context
-        self.loader = loader
-        self.log = self.loader.log
-
-    def import_content(self):
-        data = self.loader.load()
-        role = self._create_content(data)
-
-        self._update_role(role, data)
-
-        role.is_valid = True
-        role.imported = timezone.now()
-        role.clean()
-        role.save()
-
-        return role
-
-    def _create_content(self, data):
-        self.log.debug(
-            'Creating Content instance: content_type="{}", name="{}"'.format(
-                data.content_type.value, data.name))
-
-        repository = self.ctx.repository
-        namespace = repository.provider_namespace.namespace
-        obj, _ = models.Content.objects.get_or_create(
-            # FIXME(cutwater): Use in-memory cache for content types
-            namespace=namespace,
-            content_type=models.ContentType.get(data.content_type),
-            name=data.name,
-            defaults={
-                'repository': repository,
-                'is_valid': False,
-            }
-        )
-        return obj
-
-    def _update_role(self, role, role_data):
+    def update_content(self, content):
+        super(RoleImporter, self).update_content(content)
         gh_repo = self.ctx.github_repo
 
-        role.description = role_data.description or gh_repo.description
-        role.author = role_data.author
-        role.company = role_data.company
-        role.license = role_data.license
-        role.min_ansible_version = role_data.min_ansible_version
-        role.min_ansible_container_version = \
-            role_data.min_ansible_container_version
-        role.github_branch = role_data.github_branch
-        role.github_default_branch = gh_repo.default_branch
-        role.role_type = role_data.role_type.value
-        role.container_yml = role_data.container_yml
-        role.issue_tracker_url = role_data.issue_tracker_url
+        if not content.description:
+            content.description = gh_repo.description
 
-        if role.issue_tracker_url == "" and gh_repo.has_issues:
-            role.issue_tracker_url = gh_repo.html_url + '/issues'
+        content.author = self.data.author
+        content.company = self.data.company
+        content.license = self.data.license
+        content.min_ansible_version = self.data.min_ansible_version
+        content.min_ansible_container_version = \
+            self.data.min_ansible_container_version
+        content.github_branch = self.data.github_branch
+        content.github_default_branch = gh_repo.default_branch
+        content.role_type = self.data.role_type.value
+        content.container_yml = self.data.container_yml
+        content.issue_tracker_url = self.data.issue_tracker_url
 
-        self._add_role_videos(role, role_data.video_links)
-        self._add_tags(role, role_data.tags)
-        self._add_platforms(role, role_data.platforms)
-        self._add_cloud_platforms(role, role_data.cloud_platforms)
-        self._add_dependencies(role, role_data.dependencies)
-        self._add_readme(role)
-        self._update_role_versions(role)
+        if content.issue_tracker_url == "" and gh_repo.has_issues:
+            content.issue_tracker_url = gh_repo.html_url + '/issues'
+
+        self._add_role_videos(content, self.data.video_links)
+        self._add_tags(content, self.data.tags)
+        self._add_platforms(content, self.data.platforms)
+        self._add_cloud_platforms(content, self.data.cloud_platforms)
+        self._add_dependencies(content, self.data.dependencies)
+        self._add_readme(content)
+        self._update_role_versions(content)
 
     def _add_role_videos(self, role, videos):
         role.videos.all().delete()
@@ -193,13 +171,6 @@ class RoleImporter(object):
         for dep in role.dependencies.all():
             if (dep.namespace, dep.name) not in new_deps:
                 role.dependencies.remove(dep)
-
-    def _add_readme(self, role):
-        readme, readme_html, readme_type = utils.get_readme(
-            self.ctx.github_token, self.ctx.github_repo)
-        role.readme = readme
-        role.readme_html = readme_html
-        role.readme_type = readme_type
 
     def _update_role_versions(self, role):
         self.log.info('Adding repo tags as role versions')

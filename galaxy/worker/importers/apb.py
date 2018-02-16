@@ -15,6 +15,11 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from .apb import APBLoader  # noqa: F401
-from .role import RoleLoader, RoleData  # noqa: F401
-from .repository import RepositoryLoader  # noqa: F401
+from . import base
+
+
+class APBImporter(base.ContentImporter):
+
+    def update_content(self, content):
+        super(APBImporter, self).update_content(content)
+        self._add_readme(content)
