@@ -46,118 +46,73 @@
             <h2>Manage Your Galaxy Namespaces</h2>
 
             <div class="container-fluid">
-                <div class="row toolbar-pf">
-                  <div class="col-sm-12">
-                    <form class="toolbar-pf-actions">
-                      <div class="form-group">
-                        <label class="sr-only" for="filter">Name</label>
-                        <input type="text" class="form-control" id="filter" placeholder="Filter By Name..." ng-model="search.text">
-                      </div>
-
-                      <div class="form-group">
-                        <div class="btn-group" uib-dropdown>
-                          <button type="button" id="filter-button" class="btn btn-default"
-                                  uib-dropdown-toggle
-                                  tooltip-placement="top"
-                                  uib-tooltip="Sort option"
-                                  tooltip-append-to-body="true">{{ sort.selected.label }} <span class="caret"></span></button>
-                          <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="filter-button">
-                              <li ng-repeat="item in sort.options"><a href="" ng-click="selectSort(item)">{{ item.label}}</a></li>
-                          </ul>
-                        </div>
-                        <button class="btn btn-link" type="button"
-                                ng-click="toggleSortReverse()"
-                                uib-tooltip="Reverse sort order"
-                                tooltip-placement="top"
-                                tooltip-append-to-body="true">
-                          <i class="fa fa-sort-alpha-asc" ng-if="!sort.reverse"></i>
-                          <i class="fa fa-sort-alpha-desc" ng-if="sort.reverse"></i>
-                        </button>
-                      </div>
-
-                      <div class="form-group">
-                        <button class="btn btn-default" type="button"
-                                tooltip-placement="top"
-                                uib-tooltip="Reset filter and sort options"
-                                tooltip-append-to-body="true" ng-click="reset()"><i class="fa fa-undo"></i> reset</button>
-
-                        <button class="btn btn-default" type="button"
-                                tooltip-placement="top"
-                                uib-tooltip="Refresh results"
-                                tooltip-append-to-body="true" ng-click="refresh()" ng-disabled="refreshing"><i class="fa fa-refresh"></i> refresh</button>
-                      </div>
-
-                      <div class="form-group">
-                            <a href="#/namespaces/add"
-                                class="btn btn-primary"
-                                tooltip-placement="top"
-                                uib-tooltip="Create a namespace"
-                                tooltip-append-to-body="true"><i class="fa fa-plus"></i> ADD</a>
-                      </div>
-
-                    </form>
-                    <div class="row toolbar-pf-results">
-                        <div class="col-sm-12">
-                            <h5>{{ namespaces.length }} Results</h5>
-                        </div>
-                    </div>
-                  </div><!-- /col -->
-                </div><!-- /row -->
-            </div><!-- /container -->
-
-            <div class="container-fluid">
-                <div class="list-group list-view-pf list-view-pf-view">
-
-                    <div class="list-group-item" ng-repeat="namespace in namespaces | filter:{name: search.text} | orderBy : sort.selected.name : sort.reverse track by namespace.id">
-                      <div class="list-view-pf-actions">
-                          <div tooltip-placement="left"
-                               uib-tooltip="Enable or disable the namespace">
-                              <input bs-switch
-                                       ng-model="namespace.active"
-                                       type="checkbox"
-                                       switch-size="small"
-                                       switch-animate="true"
-                                       switch-active="true"
-                                       switch-off-text=" "
-                                       switch-on-text=" "
-                                       ng-change="toggleNamespace(namespace)"
-                                       >
-                          </div>
-                      </div>
-
-                      <div class="list-view-pf-main-info">
-                          <div class="list-view-pf-left">
-                              <a ng-href="#/namespaces/{{ namespace.id }}"
-                                    tooltip-placement="top"
-                                    uib-tooltip="Click to edit">
-                                    <i class="fa fa-folder-o list-view-pf-icon-sm"></i></a>
-                          </div>
-                          <div class="list-view-pf-body">
-                            <div class="list-view-pf-description">
-                              <div class="list-group-item-heading">
-                                <a ng-href="#/namespaces/{{ namespace.id }}"
-                                    tooltip-placement="top"
-                                    uib-tooltip="Click to edit">{{ namespace.name }}</a>
-                              </div>
-                              <div class="list-group-item-text">
-                                {{ namespace.description }} <div class="modified">Modified {{ namespace.modified | timeFromNow }}</div>
-                              </div>
-                            </div>
-                            <div class="list-view-pf-additional-info">
-                              <div class="list-view-pf-additional-info-item">
-                                <i class="fa fa-list fa-lg"></i>
-                                <strong>{{ namespace.summary_fields.provider_namespaces.length }}</strong> Provider Namespaces
-                              </div>
-                              <div class="list-view-pf-additional-info-item">
-                                <i class="fa fa-user fa-lg"></i>
-                                <strong>{{ namespace.summary_fields.owners.length }}</strong> Owners
-                              </div>
-                            </div>
-                          </div>
-                      </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <pf-toolbar
+                            config="toolbarConfig">
+                            <actions>
+                                <button class="btn btn-default primary-action"
+                                        type="button"
+                                        ng-click="refresh()"
+                                        tooltip-placement="top"
+                                        uib-tooltip="Reload data"
+                                        tooltip-append-to-body="true">
+                                    <span class="fa fa-spinner"></span> Refresh
+                                </button>
+                                <button class="btn btn-primary primary-action"
+                                        type="button"
+                                        ng-click="addNamespace()"
+                                        tooltip-placement="top"
+                                        uib-tooltip="Create a namespace"
+                                        tooltip-append-to-body="true">
+                                    <span class="fa fa-plus"></span> Add
+                                </button>
+                            </actions>
+                        </pf-toolbar>
                     </div>
                 </div>
             </div>
+
+            <pf-list-view
+                items="items"
+                config="listConfig"
+                action-buttons="actionButtons"
+                menu-actions="menuActions"
+                enable-button-for-item-fn="enableButtonForItemFn"
+                update-menu-action-for-item-fn="updateMenuActionForItemFn"
+                custom-scope="customScope">
+                <div class="list-view-pf-left">
+                    <i class="fa fa-folder-o list-view-pf-icon-sm" ng-class="{enabled: item.active, disabled: !item.active }"></i>
+                </div>
+                <div class="list-view-pf-body">
+                    <div class="list-view-pf-description">
+                        <div class="list-group-item-heading">{{ item.name }}</div>
+                        <div class="list-group-item-text">{{ item.description }}</div>
+                    </div>
+                    <div class="list-view-pf-additional-info">
+                        <div class="list-view-pf-additional-info-item">
+                            <div class="list-view-pf-expand" ng-click="$ctrl.customScope.toggleExpandItemField(item, 'owners')">
+                                <span class="fa fa-angle-right" ng-class="{'fa-angle-down': $ctrl.customScope.isItemExpanded(item, 'owners')}"></span>
+                                <span class="fa fa-users"></span>
+                                <strong>{{ item.summary_fields.owners.length }}</strong> Owners
+                            </div>
+                        </div>
+                        <div class="list-view-pf-additional-info-item">
+                            <div class="list-view-pf-expand" ng-click="$ctrl.customScope.toggleExpandItemField(item, 'provider_namespaces')">
+                                <span class="fa fa-angle-right" ng-class="{'fa-angle-down': $ctrl.customScope.isItemExpanded(item, 'provider_namespaces')}"></span>
+                                <span class="fa fa-list"></span>
+                                <strong>{{ item.summary_fields.provider_namespaces.length }}</strong> Provider Namespaces
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <list-expanded-content>
+                    <div class="close">
+                        <span class="pficon pficon-close" ng-click="$parent.$ctrl.customScope.collapseItem($parent.item)"></span>
+                    </div>
+                    <list-expansion item="$parent.item"></list-expansion>
+                </list-expanded-content>
+            </pf-list-view>
 
         </div>
     </div>

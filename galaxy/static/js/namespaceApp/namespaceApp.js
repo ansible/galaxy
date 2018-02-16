@@ -36,7 +36,9 @@
         'namespaceEditController',
         'namespaceFormService',
         'providerSourceService',
-        'frapontillo.bootstrap-switch'
+        'patternfly.views',
+        'patternfly.toolbars',
+        'listExpansionComponent'
     ]);
 
     namespaceApp.config(['$routeProvider', '$logProvider', '$resourceProvider', 'uiSelectConfig', _config]);
