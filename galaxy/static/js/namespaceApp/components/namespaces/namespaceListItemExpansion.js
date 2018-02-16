@@ -23,7 +23,8 @@
     angular.module('namespaceComponents').component('namespaceListItemExpansion', {
         templateUrl: '/static/js/namespaceApp/components/namespaces/namespaceListItemExpansion.html',
         bindings: {
-            item: '<'
+            item: '<',
+            repoFilter: '<'
         },
         controller: function () {
 

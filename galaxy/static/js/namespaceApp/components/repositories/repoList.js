@@ -23,7 +23,8 @@
     angular.module('repoComponents').component('repoList', {
         templateUrl: '/static/js/namespaceApp/components/repositories/repoList.html',
         bindings: {
-            namespace: '<'
+            namespace: '<',
+            repoFilter: '<'
         },
         controller: function RepoListController($rootScope, $q, githubRepoService) {
             var $ctrl = this;

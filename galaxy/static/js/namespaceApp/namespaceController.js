@@ -23,6 +23,7 @@
     var mod = angular.module('namespaceController', []);
 
     mod.controller('NamespaceCtrl', [
+        '$rootScope',
         '$scope',
         '$routeParams',
         '$timeout',
@@ -39,6 +40,7 @@
     ]);
 
     function _NamespaceCtrl(
+        $rootScope,
         $scope,
         $routeParams,
         $timeout,
@@ -113,18 +115,20 @@
 
         $scope.toolbarConfig = {
             filterConfig: {
-                fields: [{
-                    id: 'name',
-                    title: 'Name',
-                    placeholder: 'Filter by name',
-                    filterType: 'text'
-                },
+                fields: [
+                    {
+                        id: 'name',
+                        title: 'Name',
+                        placeholder: 'Filter by name',
+                        filterType: 'text'
+                    },
                     {
                         id: 'description',
                         title: 'Description',
                         placeholder: 'Filter on description',
                         filterType: 'text'
-                    }],
+                    }
+                ],
                 appliedFilters: [],
                 resultsCount: $scope.items.length,
                 totalCount: $scope.namespaces.length,
@@ -204,23 +208,17 @@
             });
         }
 
-
-
-//        function _namespaceRefresh() {
-//            namespaceService.get({owners: currentUserService.id}).$promise.then(function(response) {
-//                $scope.namespaces = response.results;
-//            });
-//        }
-
         function _refresh() {
             $scope.refreshing = true;
-            namespaceService.query({owners: currentUserService.id, page_size: 100}).$promise.then(
-                function(response) {
+            namespaceService.query({owners: currentUserService.id}).$promise.then(
+                function (response) {
                     $scope.refreshing = false;
                     $scope.namespaces = response.results;
-                }
-            );
-        }
+                    angular.forEach(response.results, function (namespace) {
+                        $rootScope.$emit('namespace.update', namespace);
+                    });
+                });
+        };
 
         function _updateNamespace(obj) {
             namespaceService.update(obj).$promise.then(

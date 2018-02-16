@@ -13,5 +13,5 @@
 </div>
 
 <div class="list-group list-view-pf list-view-pf-view" >
-    <repo-list-item repository="repo" ng-repeat="repo in $ctrl.repositories"></repo-list-item>
+    <repo-list-item repository="repo" repo-filter="$ctrl.repoFilter" ng-repeat="repo in $ctrl.repositories"></repo-list-item>
 </div>

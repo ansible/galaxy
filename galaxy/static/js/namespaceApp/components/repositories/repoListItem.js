@@ -23,13 +23,15 @@
     angular.module('repoComponents').component('repoListItem', {
         templateUrl: '/static/js/namespaceApp/components/repositories/repoListItem.html',
         bindings: {
-            repository: "="
+            repository: "=",
+            repoFilter: '<'
         },
         controller: function RepoListItemController($rootScope, $interval, $sce, githubRepoService, importService) {
             var $ctrl = this;
             var intervalTimer;
 
             $ctrl.$onInit = _init;
+            $ctrl.showRepository = _showRepository;
             $ctrl.importRepository = _importRepository;
             $ctrl.deleteRepository = _deleteRepository;
 
@@ -64,6 +66,10 @@
                     '<p>Stars: ' + stars + '</p>' +
                     '<p>Forks: ' + forks + '</p>' +
                     '<p>Last Commit: (' + commit + ') ' + commitMsg + '</p>');
+            }
+
+            function _showRepository() {
+                return !$ctrl.repoFilter || $ctrl.repository.name.toLowerCase().indexOf($ctrl.repoFilter.toLowerCase()) >= 0;
             }
 
             function _importRepository() {

@@ -45,28 +45,39 @@
 
             <h2>Manage Your Galaxy Content</h2>
 
-            <div class="row">
+            <div class="row toolbar-pf">
                 <div class="col-sm-12">
-                    <pf-toolbar config="toolbarConfig">
-                        <actions>
-                            <button class="btn btn-default primary-action"
-                                    type="button"
-                                    ng-click="refresh()"
-                                    tooltip-placement="top"
-                                    uib-tooltip="Reload data"
-                                    tooltip-append-to-body="true">
-                                <span class="fa fa-spinner"></span> Refresh
+                    <form class="toolbar-pf-actions" _lpchecked="1">
+                        <div class="form-group toolbar-pf-filter">
+                            <label class="sr-only" for="repoFilter">Name</label>
+                            <div class="input-group">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Name <span class="caret"></span></button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href>Name</a></li>
+                                    </ul>
+                                </div>
+                                <input type="text" class="form-control" id="repoFilter" placeholder="Filter By Name..." ng-model="$ctrl.customScope.repoFilter">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="dropdown btn-group">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Name <span class="caret"></span></button>
+                                <ul class="dropdown-menu">
+                                    <li class="selected"><a href="#">Name</a></li>
+                                    <li><a href="#">Type</a></li>
+                                    <li><a href="#">Last Modified</a></li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-link" type="button">
+                                <span class="fa fa-sort-alpha-asc"></span>
                             </button>
-                            <button class="btn btn-primary primary-action"
-                                    type="button"
-                                    ng-click="addNamespace()"
-                                    tooltip-placement="top"
-                                    uib-tooltip="Create a namespace"
-                                    tooltip-append-to-body="true">
-                                <span class="fa fa-plus"></span> Add
-                            </button>
-                        </actions>
-                    </pf-toolbar>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-default" type="button" ng-click="refresh()"><span class="fa fa-spinner"></span> Refresh</button>
+                            <button class="btn btn-primary primary-action" type="button" ng-click="addNamespace()"><span class="fa fa-plus"></span> Add</button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -112,7 +123,7 @@
                             <div class="close">
                                 <span class="pficon pficon-close" ng-click="$parent.$ctrl.customScope.collapseItem($parent.item)"></span>
                             </div>
-                            <namespace-list-item-expansion item="$parent.item"></namespace-list-item-expansion>
+                            <namespace-list-item-expansion item="$parent.item" repo-filter="$ctrl.customScope.repoFilter"></namespace-list-item-expansion>
                         </list-expanded-content>
                     </pf-list-view>
                 </div>

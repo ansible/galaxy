@@ -1,5 +1,5 @@
 <div ng-if="$ctrl.item.expandField == 'repos'" class="ns-expansion repo-sub-list">
-    <repo-list namespace="$ctrl.item"></repo-list>
+    <repo-list namespace="$ctrl.item" repo-filter="$ctrl.repoFilter"></repo-list>
 </div>
 
 <div ng-if="$ctrl.item.expandField == 'owners'">
