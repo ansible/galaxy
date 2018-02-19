@@ -27,12 +27,17 @@ from galaxy.worker import exceptions as exc
 from galaxy.worker.loaders import role as role_loader
 from galaxy.worker.loaders import apb as apb_loader
 
+
 LOG = logging.getLogger(__name__)
 
 
 class RepositoryLoader(object):
     APB_META_FILES = ['apb.yml', 'apb.yaml']
     REPO_META_FILENAME = '.ansible-galaxy.yml'
+
+    # NOTE(cutwater): APBLoader should not be included in this list,
+    # because APB is a single-content repository and cannot be nested
+    # into repository along with other content types.
     REPO_LOADERS = [
         ('roles', role_loader.RoleLoader)
     ]
@@ -136,8 +141,8 @@ class RepositoryLoader(object):
         return loaders
 
     def _find_toplevel_role(self):
-        self.log.debug(
-            'Content search - Looking for top level role metadata file')
+        self.log.debug('Content search - Looking for top level role '
+                       'metadata file')
         for meta_file in role_loader.ROLE_META_FILES:
             if os.path.exists(os.path.join(self.path, meta_file)):
                 return [role_loader.RoleLoader(
@@ -148,18 +153,12 @@ class RepositoryLoader(object):
         return None
 
     def _find_from_repository(self):
-        self.log.debug(
-            'Content search - Analyzing repository structure')
+        self.log.debug('Content search - Analyzing repository structure')
         loaders = []
         for loader_name, loader_cls in self.REPO_LOADERS:
             contents_path = os.path.join(self.path, loader_name)
-            if not os.path.isdir(contents_path):
+            if not os.path.exists(contents_path):
                 continue
-
-            for filename in os.listdir(contents_path):
-                filename = os.path.join(contents_path, filename)
-                if not os.path.isdir(filename):
-                    continue
-
-                loaders.append(loader_cls(path=filename, logger=self.log))
+            loaders.extend(loader_cls.find_content(
+                contents_path, logger=self.log))
         return loaders

@@ -199,7 +199,7 @@ class RoleMetaParser(object):
         return videos
 
 
-class RoleLoader(base.BaseLoader):
+class RoleLoader(base.DirectoryContentMixin, base.BaseLoader):
     STRING_ATTRS = [
         ('description', ''),
         ('author', ''),

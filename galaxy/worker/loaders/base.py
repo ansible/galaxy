@@ -16,7 +16,9 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import abc
+import glob
 import logging
+import os
 
 import six
 
@@ -55,3 +57,37 @@ class BaseLoader(object):
     @abc.abstractmethod
     def load(self):
         pass
+
+    @classmethod
+    def find_content(cls, content_path, logger=None):
+        raise NotImplementedError
+
+
+class FileContentMixin(object):
+    """Finds content (modules, plugins) provided by python modules"""
+    @classmethod
+    def find_content(cls, content_path, logger=None):
+        for dir_ in cls._get_dirs(content_path):
+            for file_path in glob.glob(dir_ + '/*.py'):
+                file_name = os.path.basename(file_path)
+                if not os.path.isfile(file_path) or file_name == '__init__.py':
+                    continue
+                yield cls(path=file_path, logger=logger)
+
+    @staticmethod
+    def _get_dirs(content_path):
+        content_dirs = (
+            glob.glob(content_path + '/*')
+            + glob.glob(content_path + '/*/*'))
+        return filter(os.path.isdir, content_dirs)
+
+
+class DirectoryContentMixin(object):
+    """Finds content (e.g. roles) provided by directories"""
+    @classmethod
+    def find_content(cls, content_path, logger=None):
+        for name in os.listdir(content_path):
+            path = os.path.join(content_path, name)
+            if not os.path.isdir(path):
+                continue
+            yield cls(path=path, logger=logger)
