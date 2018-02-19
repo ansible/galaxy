@@ -17,7 +17,7 @@
 
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from galaxy.main.celerytasks.tasks import import_repository
+from galaxy.worker.tasks import import_repository
 from galaxy.main.models import Content, ImportTask
 
 User = get_user_model()

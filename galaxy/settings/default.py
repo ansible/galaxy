@@ -239,6 +239,7 @@ BROKER_URL = None
 
 CELERY_IMPORTS = (
     'galaxy.main.celerytasks.tasks',
+    'galaxy.worker.tasks',
 )
 
 CELERY_TRACK_STARTED = True
