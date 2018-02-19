@@ -140,11 +140,11 @@ class RepositoryLoader(object):
             'Content search - Looking for top level role metadata file')
         for meta_file in role_loader.ROLE_META_FILES:
             if os.path.exists(os.path.join(self.path, meta_file)):
-                return role_loader.RoleLoader(
-                    path=self.path,
-                    name=self.name,
+                return [role_loader.RoleLoader(
+                    path=self.path, name=self.name,
                     meta_file=meta_file,
-                    logger=self.log)
+                    logger=self.log
+                )]
         return None
 
     def _find_from_repository(self):
