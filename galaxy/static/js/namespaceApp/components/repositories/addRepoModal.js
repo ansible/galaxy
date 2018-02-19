@@ -46,35 +46,11 @@
             };
 
             $ctrl.ok = function () {
-                _saveRepos().then(_importRepos).then(function() {
+                _saveSelectedRepos().finally(function() {
                     $rootScope.$emit('namespace.update', $ctrl.namespace);
                 });
                 $ctrl.close({$value: 'ok'});
             };
-
-            function _saveRepos() {
-                var saveRepoPromises = [];
-                angular.forEach($ctrl.selectedPNS.repoSources, function (repo) {
-                    if (repo.selected) {
-                        saveRepoPromises.push(_saveRepo($ctrl.selectedPNS, repo).$promise);
-                    }
-                });
-
-                return $q.all(saveRepoPromises)
-            }
-
-            function _importRepos(repos) {
-                var importRepoPromises = [];
-                angular.forEach(repos, function (repo) {
-                    importRepoPromises.push(importService.imports.save({
-                        'github_user': repo.github_user,
-                        'github_repo': repo.github_repo,
-                        'alternate_role_name': repo.role_name
-                    }).$promise);
-                });
-
-                return $q.all(importRepoPromises)
-            }
 
             $ctrl.cancel = function () {
                 $ctrl.dismiss({$value: 'cancel'});
@@ -98,13 +74,46 @@
                 });
             }
 
+            function _saveSelectedRepos() {
+                var saveRepoPromises = [];
+
+                angular.forEach($ctrl.selectedPNS.repoSources, function (repo) {
+                    if (repo.selected) {
+                        saveRepoPromises.push(_saveAndImportRepo($ctrl.selectedPNS, repo));
+                    }
+                });
+
+                return $q.all(saveRepoPromises);
+            }
+
+            function _saveAndImportRepo(providerNamespace, repoSource) {
+                var deferred = $q.defer(); //need to return resolve instead of reject for $q.all
+
+                _saveRepo(providerNamespace, repoSource).then(_importRepo).finally(function() {
+                    deferred.resolve();
+                });
+
+                return deferred.promise;
+            }
+
             function _saveRepo(providerNamespace, repoSource) {
                 var params = {};
                 params.name = repoSource.name;
                 params.original_name = repoSource.name;
                 params.provider_namespace = providerNamespace.id;
                 params.is_enabled = true;
-                return githubRepoService.save(params);
+
+                //TODO report error
+                return githubRepoService.save(params).$promise
+            }
+
+            function _importRepo(repository) {
+                //TODO report error
+                return importService.imports.save({
+                    'github_user': repository.github_user,
+                    'github_repo': repository.github_repo,
+                    'alternate_role_name': repository.role_name
+                }).$promise
             }
 
             function _selectProviderNamespace(providerNamespace) {

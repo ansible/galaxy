@@ -40,6 +40,10 @@
                 }
             });
 
+            //TODO $rootScope.$on('repository.delete', function(repository) {
+            //  remove repo from list
+            //});
+
             function _loadRepos() {
                 var promises = [];
                 if (!$ctrl.repositories || $ctrl.repositories.length === 0) {

@@ -42,7 +42,7 @@
                 $ctrl.viewImportLink = 'imports#/?github_user=' + $ctrl.repository.summary_fields.provider_namespace.name +
                                                 '&github_repo=' + $ctrl.repository.original_name;
                 _queryStatus().then(function() {
-                    if ($ctrl.import.state !== 'FAILED' && $ctrl.import.state !== 'SUCCESS') {
+                    if ($ctrl.import && $ctrl.import.state !== 'FAILED' && $ctrl.import.state !== 'SUCCESS') {
                         $ctrl.importInProgress = true;
                         _pollImportState();
                     }
@@ -103,7 +103,7 @@
                     $ctrl.queryStatusInProgress = false;
                     if (response.results.length > 0) {
                         $ctrl.import = response.results[0];
-                        if ($ctrl.import.state === 'FAILED' || $ctrl.import.state === 'SUCCESS') {
+                        if (!$ctrl.import || $ctrl.import.state === 'FAILED' || $ctrl.import.state === 'SUCCESS') {
                             $ctrl.importInProgress = false;
                             $interval.cancel(intervalTimer);
                         } else {
@@ -118,6 +118,7 @@
             function _deleteRepository() {
                 $ctrl.deleteInProgress = true;
                 githubRepoService.delete({id: $ctrl.repository.id}).$promise.then(function() {
+                    //TODO $rootScope.$emit('repository.delete', $ctrl.repository);
                     $rootScope.$emit('namespace.update', $ctrl.repository.summary_fields.namespace);
                 });
             }

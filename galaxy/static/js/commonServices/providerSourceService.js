@@ -41,8 +41,6 @@
                 }).get(params);
             },
             query: function(params) {
-                console.log('query');
-                console.log(params);
                 return $resource('/api/v1/providers/sources/', null, {
                     'get': { method: 'GET', isArray: true }
                 }).get(params);
