@@ -41,7 +41,7 @@
         namespace
         ) {
 
-        $scope.page_title = 'My Namespaces';
+        $scope.page_title = 'My Content';
         $scope.page_subtitle = 'Modify Galaxy Namespace';
 
         $scope.namespace  = {

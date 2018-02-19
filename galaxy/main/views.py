@@ -602,6 +602,12 @@ def my_namespaces_view(request):
             'js/namespaceApp/namespaceEditController.js',
             'js/namespaceApp/namespaceFormService.js',
             'js/namespaceApp/menuController.js',
+            'js/namespaceApp/components/namespaces/namespaceComponents.js',
+            'js/namespaceApp/components/namespaces/namespaceListItemExpansion.js',
+            'js/namespaceApp/components/repositories/repoComponents.js',
+            'js/namespaceApp/components/repositories/repoList.js',
+            'js/namespaceApp/components/repositories/repoListItem.js',
+            'js/namespaceApp/components/repositories/addRepoModal.js',
         ] + common_services
     else:
         context["extra_js"] = [
@@ -613,5 +619,5 @@ def my_namespaces_view(request):
         del request.session["transient"]
 
     context["load_angular"] = True
-    context["page_title"] = "My Namespaces"
+    context["page_title"] = "My Content"
     return render_to_response('ng_view.html', context)

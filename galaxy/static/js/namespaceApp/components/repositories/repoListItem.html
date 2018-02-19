@@ -1,0 +1,57 @@
+<div class="list-group-item tree-child-item" ng-class="{'disabled': $ctrl.deleteInProgress}" ng-show="$ctrl.showRepository()">
+    <div class="list-view-pf-main-info">
+        <div class="list-view-pf-left">
+            <i class="pficon-repository"></i>
+        </div>
+        <div class="list-view-pf-body">
+            <div class="list-view-pf-description">
+                <div class="list-group-item-heading">
+                    {{ $ctrl.repository.name }} <i class="pficon-info"
+                                                   uib-popover-html="$ctrl.tooltipText"
+                                                   popover-title="{{ $ctrl.tooltipTitle }}"
+                                                   popover-placement="right"
+                                                   popover-trigger="'mouseenter'"
+                                                   popover-popup-close-delay="1000"></i>
+                </div>
+            </div>
+            <div class="list-view-pf-additional-info">
+                <span ng-if="$ctrl.deleteInProgress"><i class="pficon-in-progress fa-spin"></i> Deleting...</span>
+
+                <a href="{{ $ctrl.viewImportLink }}" class="view-import-link" ng-if="!$ctrl.deleteInProgress" ng-switch="$ctrl.import.state">
+                    <span ng-switch-when="PENDING"><i class="pficon-pending"></i> Import Pending...</span>
+                    <span ng-switch-when="RUNNING"><i class="pficon-in-progress fa-spin"></i> Import Running...</span>
+                    <span ng-switch-when="FAILED"><i class="pficon-error-circle-o"></i> Import Error</span>
+                    <span ng-switch-when="SUCCESS"><i class="pficon-ok"></i> Import Successful ({{ $ctrl.import.finished | timeFromNow }})</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="list-view-pf-actions">
+        <button class="btn btn-default"
+                uib-tooltip="Import repository as content"
+                ng-click="$ctrl.importRepository()"
+                ng-disabled="$ctrl.deleteInProgress || $ctrl.importInProgress">
+            <i class="fa fa-upload"></i>
+        </button>
+        <a class="btn btn-default"
+           uib-tooltip="View Import Status"
+           href="{{ $ctrl.viewImportLink }}"
+           ng-disabled="$ctrl.deleteInProgress">
+            <i class="fa fa-external-link"></i>
+        </a>
+
+        <div class="dropdown pull-right dropdown-kebab-pf">
+            <button class="btn btn-link dropdown-toggle"
+                    type="button" data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    ng-disabled="$ctrl.deleteInProgress">
+                <span class="fa fa-ellipsis-v"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+                <li><a href="#">Edit Properties</a></li>
+                <li><a href ng-click="$ctrl.deleteRepository()">Delete</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

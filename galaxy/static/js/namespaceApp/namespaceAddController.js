@@ -37,7 +37,7 @@
         namespaceFormService
         ) {
 
-        $scope.page_title = 'My Namespaces';
+        $scope.page_title = 'My Content';
         $scope.page_subtitle = 'Add Galaxy Namespace';
 
         $scope.version = GLOBAL_VERSION;

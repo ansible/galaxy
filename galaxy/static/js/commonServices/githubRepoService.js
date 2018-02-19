@@ -27,12 +27,22 @@
     function _factory($resource, currentUserService, getCSRFToken) {
 
         var token = getCSRFToken();
-            
+
         return {
             get: function(params) {
                 params = (params) ? params : {};
                 params.owners = currentUserService.id;
                 return $resource('/api/v1/repositories/?page_size=1000').get(params);
+            },
+            save: function(params) {
+                return $resource('/api/v1/repositories/', {}, {
+                    'save': { 'method': 'POST', headers: { "X-CSRFToken": token }}
+                }).save(params);
+            },
+            delete: function(params) {
+                return $resource('/api/v1/repositories/:id/', null, {
+                    "delete": { method: 'DELETE', headers: { "X-CSRFToken": token }}
+                }).delete(params);
             },
             refresh: function(params) {
                 return $resource('/api/v1/repositories/refresh/', null, {

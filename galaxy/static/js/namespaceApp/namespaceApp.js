@@ -30,13 +30,15 @@
         'currentUserService',
         'userService',
         'paginateService',
+        'providerSourceService',
+        'patternfly',
+        'namespaceComponents',
         'namespaceService',
         'namespaceController',
         'namespaceAddController',
         'namespaceEditController',
         'namespaceFormService',
-        'providerSourceService',
-        'frapontillo.bootstrap-switch'
+        'repoComponents'
     ]);
 
     namespaceApp.config(['$routeProvider', '$logProvider', '$resourceProvider', 'uiSelectConfig', _config]);
@@ -49,11 +51,11 @@
         $resourceProvider.defaults.stripTrailingSlashes = false;
         $routeProvider.
             when('/namespaces/add', {
-                templateUrl: '/static/partials/my-namespace-detail.html',
+                templateUrl: '/static/js/namespaceApp/my-namespace-detail.html',
                 controller: 'NamespaceAddCtrl'
             }).
             when('/namespaces/:namespaceId', {
-                templateUrl: '/static/partials/my-namespace-detail.html',
+                templateUrl: '/static/js/namespaceApp/my-namespace-detail.html',
                 controller: 'NamespaceEditCtrl',
                 reloadOnSearch: false,
                 resolve: {
@@ -61,7 +63,7 @@
                 }
             }).
             when('/namespaces', {
-                templateUrl: '/static/partials/my-namespaces.html',
+                templateUrl: '/static/js/namespaceApp/myNamespaces.html',
                 controller: 'NamespaceCtrl',
                 reloadOnSearch: false,
                 resolve: {
@@ -74,18 +76,7 @@
     }
 
     function _run($rootScope, $location) {
-        $rootScope.$on('$routeChangeSuccess', _routeChange);
 
-        function _routeChange() {
-            if ($location.path() === '/namespaces') {
-                $('#nav-menu-browse-roles').addClass('active');
-                $('#nav-menu-browse-users').removeClass('active');
-            }
-            else {
-                $('#nav-menu-browse-roles').removeClass('active');
-                $('#nav-menu-browse-users').addClass('active');
-            }
-        }
     }
 
     function _getNamespace($route, namespaceService, currentUserService) {
