@@ -15,9 +15,11 @@
                 </div>
             </div>
             <div class="list-view-pf-additional-info">
-                <a href="{{ $ctrl.viewImportLink }}" class="view-import-link" ng-switch="$ctrl.import.state">
-                    <span ng-switch-when="PENDING"><i class="pficon-pending"></i> Import Pending</span>
-                    <span ng-switch-when="RUNNING"><i class="pficon-in-progress fa-spin"></i> Import Running</span>
+                <span ng-if="$ctrl.deleteInProgress"><i class="pficon-in-progress fa-spin"></i> Deleting...</span>
+
+                <a href="{{ $ctrl.viewImportLink }}" class="view-import-link" ng-if="!$ctrl.deleteInProgress" ng-switch="$ctrl.import.state">
+                    <span ng-switch-when="PENDING"><i class="pficon-pending"></i> Import Pending...</span>
+                    <span ng-switch-when="RUNNING"><i class="pficon-in-progress fa-spin"></i> Import Running...</span>
                     <span ng-switch-when="FAILED"><i class="pficon-error-circle-o"></i> Import Error</span>
                     <span ng-switch-when="SUCCESS"><i class="pficon-ok"></i> Import Successful ({{ $ctrl.import.finished | timeFromNow }})</span>
                 </a>
@@ -25,10 +27,16 @@
         </div>
     </div>
     <div class="list-view-pf-actions">
-        <button class="btn btn-default" title="Import" ng-click="$ctrl.importRepository()" ng-disabled="$ctrl.deleteInProgress || $ctrl.importInProgress">
+        <button class="btn btn-default"
+                uib-tooltip="Import repository as content"
+                ng-click="$ctrl.importRepository()"
+                ng-disabled="$ctrl.deleteInProgress || $ctrl.importInProgress">
             <i class="fa fa-upload"></i>
         </button>
-        <a class="btn btn-default" title="View Import Status" href="{{ $ctrl.viewImportLink }}" ng-disabled="$ctrl.deleteInProgress">
+        <a class="btn btn-default"
+           uib-tooltip="View Import Status"
+           href="{{ $ctrl.viewImportLink }}"
+           ng-disabled="$ctrl.deleteInProgress">
             <i class="fa fa-external-link"></i>
         </a>
 
