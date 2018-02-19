@@ -24,8 +24,9 @@ import yaml
 
 from galaxy.worker import utils
 from galaxy.worker import exceptions as exc
-from galaxy.worker.loaders import role as role_loader
 from galaxy.worker.loaders import apb as apb_loader
+from galaxy.worker.loaders import module as module_loader
+from galaxy.worker.loaders import role as role_loader
 
 
 LOG = logging.getLogger(__name__)
@@ -39,7 +40,8 @@ class RepositoryLoader(object):
     # because APB is a single-content repository and cannot be nested
     # into repository along with other content types.
     REPO_LOADERS = [
-        ('roles', role_loader.RoleLoader)
+        ('roles', role_loader.RoleLoader),
+        ('modules', module_loader.ModuleLoader),
     ]
     GIT_LOG_FORMAT_FIELDS = [
         ('sha', '%H'),

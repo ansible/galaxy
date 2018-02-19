@@ -15,26 +15,33 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import logging
 import os
+
+from galaxy.main import constants
+from galaxy.worker import logging as wlog
 
 from . import base
 
 
-class ModuleData(base.ContentData):
-    pass
+LOG = logging.getLogger(__name__)
 
 
-class ModuleLoader(base.BaseLoader):
+class ModuleLoader(base.FileContentMixin, base.BaseLoader):
 
-    def __init__(self, path):
-        super(ModuleLoader, self).__init__(path)
-        self.data = ModuleData()
-        self.data.path = self.path
-
-        name = os.path.basename(self.path)
-        if not os.path.isdir(self.path):
+    def __init__(self, path, logger=None):
+        name = os.path.basename(path)
+        if not os.path.isdir(path):
             name, _ = os.path.splitext(name)
-        self.data.name = name
+        logger = wlog.ContentTypeAdapter(logger or LOG, 'Module', name)
+
+        super(ModuleLoader, self).__init__(path, logger)
+
+        self.name = name
 
     def load(self):
-        pass
+        return base.ContentData(
+            name=self.name,
+            path=self.path,
+            content_type=constants.ContentType.MODULE
+        )

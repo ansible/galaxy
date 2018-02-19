@@ -71,7 +71,7 @@ class ContentImporter(object):
         return obj
 
     def update_content(self, content):
-        content.description = self.data.description
+        content.description = self.data.description or ''
         content.metadata = self.data.metadata
 
     def _add_readme(self, content):

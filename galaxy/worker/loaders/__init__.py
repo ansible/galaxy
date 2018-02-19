@@ -16,5 +16,6 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from .apb import APBLoader  # noqa: F401
+from .module import ModuleLoader  # noqa: F401
 from .role import RoleLoader, RoleData  # noqa: F401
 from .repository import RepositoryLoader  # noqa: F401
