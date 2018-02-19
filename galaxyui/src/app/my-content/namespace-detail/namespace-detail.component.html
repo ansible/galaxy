@@ -1,0 +1,97 @@
+<form [formGroup]="namespaceForm" (ngSubmit)="saveNamespace()" novalidate>
+    <div class="form-group">
+        <label for="nameInput">Name <span class="required">*</span></label>
+        <input type="text"
+               id="nameInput"
+               name="name"
+               class="form-control"
+               required
+               placeholder="Name"
+               formControlName="name">
+    </div>
+    <div class="form-group">
+        <label for="descriptionInput">Description <span class="required">*</span></label>
+        <input type="text"
+               id="descriptionInput"
+               name="description"
+               class="form-control"
+               required
+               placeholder="Description"
+               formControlName="description">
+    </div>
+    <div class="form-group">
+        <label for="companyInput">Company</label>
+        <input type="text"
+               id="companyInput"
+               name="company"
+               class="form-control"
+               placeholder="Company Name"
+               formControlName="company">
+    </div>
+    <div class="form-group">
+        <label for="locationInput">Location</label>
+        <input type="text"
+               id="locationInput"
+               name="location"
+               class="form-control"
+               placeholder="City, State/Provence Country"
+               formControlName="location">
+    </div>
+    <div class="form-group">
+        <label for="avatarUrlInput">Avatar URL</label>
+        <input type="url"
+               id="avatarUrlInput"
+               name="avatar_url"
+               class="form-control"
+               placeholder="Avatar URL"
+               formControlName="avatar_url">
+    </div>
+    <div class="form-group">
+        <label for="emailInput">Email</label>
+        <input type="email"
+               id="emailInput"
+               name="email"
+               class="form-control"
+               placeholder="City, State/Province Country"
+               formControlName="email">
+    </div>
+    <div class="form-group">
+        <label for="htmlUrlInput">Web Site</label>
+        <input type="url"
+               id="htmlUrlInput"
+               name="html_url"
+               class="form-control"
+               placeholder="Web Site URL"
+               formControlName="html_url">
+    </div>
+    <div class="form-group">
+        <label>Owners
+            <select class="form-control" multiple formControlName="owners">
+                <option *ngFor="let user of users" [value]="user">{{user.username}}</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label>Provider Namespaces
+            <select class="form-control" multiple formControlName="provider_namespaces">
+                <option *ngFor="let pns of providerSources" [value]="pns">{{pns.name}}</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="row form-buttons">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-primary btn-lg"
+                    tooltip-placement="top"
+                    uib-tooltip="Save the new namespace"
+                    [disabled]="!namespaceForm.valid"><i class="fa fa-check"></i> Save</button>
+            <a href="/my-content" class="btn btn-default btn-lg"
+               tooltip-placement="top"
+               uib-tooltip="Return to the previous page"><i class="fa fa-times"></i> Cancel</a>
+            <div class="form-message">
+                <span class="required">*</span> Indicates a required field. Provide a value for all required fields, and correct any indicated errors before continuing.
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,27 @@
+<div class="list-group list-view-pf list-view-pf-view">
+    <div *ngFor="let provider of item.summary_fields.provider_namespaces">
+        <div class="list-group-item">
+            <div class="list-view-pf-main-info">
+                <div class="list-view-pf-left" *ngIf="provider.avatar_url">
+                    <img src="{{ provider.avatar_url }}" class="github-avatar">
+                </div>
+                <div class="list-view-pf-left" *ngIf="!provider.avatar_url">
+                    <img src="/static/img/avatar.png" class="github-avatar">
+                </div>
+                <div class="list-view-pf-body">
+                    <div class="list-view-pf-description">
+                        <div class="list-group-item-heading" *ngIf="provider.display_name">
+                            {{ provider.display_name }}
+                        </div>
+                        <div class="list-group-item-heading" *ngIf="!provider.display_name">
+                            {{ provider.name }}
+                        </div>
+                        <div class="list-group-item-text">
+                            {{ provider.description }} <a target="_blank" href="https://github.com/{{ provider.name }}">@{{ provider.name }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

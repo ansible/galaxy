@@ -68,6 +68,7 @@ class ProviderSourceSerializer(BaseSerializer):
         for field in self.fields:
             result[field] = instance[field]
 
-        result['provider'] = instance['provider']['name']
+        result['provider'] = instance['provider']['id']
+        result['provider_name'] = instance['provider']['name']
 
         return result
