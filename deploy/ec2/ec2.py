@@ -147,6 +147,8 @@ These settings would produce a destination_format as the following:
 
 ######################################################################
 
+from __future__ import print_function
+
 import sys
 import os
 import argparse

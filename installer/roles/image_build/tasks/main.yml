@@ -64,8 +64,8 @@
   shell: '{% raw %}docker inspect -f "{{ .State.Running }}" galaxy-build{% endraw %}'
   register: builder_state
   until: builder_state.stdout == 'false'
-  retries: 5
-  delay: 15
+  retries: 100
+  delay: 30
   delegate_to: localhost
   tags:
   - start

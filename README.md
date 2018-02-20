@@ -12,9 +12,14 @@ View the [install guide](./INSTALL.md) to setup and run your very own Galaxy sit
 
 To see what we're working on, and where we're headed, view the [road map](./ROADMAP.md)
 
+## Trello Board
+
+To see the progress of the current release, visit our [public Trello board](https://trello.com/b/QrxNkpgt).
+
 ## Contributing
 
-If you're interested in jumping in and helping out, view the [contributing guide](./CONTRIBUTING.md).
+ * If you're interested in jumping in and helping out, view the [contributing guide](./CONTRIBUTING.md).
+ * Chat with us on irc.freenode.net: #ansible-galaxy
 
 ## Branch Information
 

@@ -52,7 +52,7 @@ class RoleDownloadCountThrottle(ScopedRateThrottle):
                         return True
                     role.download_count += 1
                     role.save()
-                except Exception, e:
+                except Exception as e:
                     self.logger.error('Error finding role %s.%s - %s' % (role_namespace,
                                                                          role_name,
                                                                          str(e.args)))

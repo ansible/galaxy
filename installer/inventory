@@ -22,6 +22,8 @@ host_port=80
 # Openshift Install. Uncomment the following variables to deploy to OpenShift.
 #openshift_project=galaxy
 #openshift_kubeconfig="${HOME}/.kube/config" 
+#openshift_host=127.0.0.1:8443
+#openshift_user=developer
 
 # Define if you want the local Galaxy image pushed to a registry.
 #docker_registry=172.30.1.1:5000

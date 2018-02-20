@@ -15,6 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+from __future__ import print_function
+
 import time
 import logging
 
@@ -87,14 +89,14 @@ class Command(BaseCommand):
                 if not obj.state == 'FINISHED':
                     finished = False
                 else:
-                    print u"{0} Total: {1} Passed: {2} Failed: {3} Deleted: {4} Updated: {5}".format(
+                    print(u"{0} Total: {1} Passed: {2} Failed: {3} Deleted: {4} Updated: {5}".format(
                         obj.description,
                         obj.failed + obj.passed + obj.deleted + obj.updated,
                         obj.passed,
                         obj.failed,
                         obj.deleted,
                         obj.updated
-                    )
+                    ))
                     obj.state = 'COMPLETED'
                     obj.save()
             time.sleep(60)
