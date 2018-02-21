@@ -5,7 +5,8 @@
   "description": "Find, reuse and share the best Ansible content",
   "main": "\\",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -22,19 +23,36 @@
     "url": "https://github.com/ansible/galaxy/issues"
   },
   "devDependencies": {
+    "angular": "1.4.8",
+    "angular-animate": "1.4.8",
+    "angular-cookies": "1.4.7",
+    "angular-resource": "1.4.7",
+    "angular-route": "1.4.7",
+    "angular-sanitize": "1.4.7",
+    "angular-ui-bootstrap": "0.14.3",
+    "angulartics": "^0.20.3",
+    "angulartics-google-analytics": "0.1.3",
+    "bootstrap": "3.3.5",
     "browser-sync": "latest",
-    "http-proxy-middleware": "latest",
-    "node-notifier": "*",
     "connect-history-api-fallback": "^1.1.0",
-    "less": "<3.0.0",
     "gulp": "*",
-    "gulp-less": "latest",
-    "gulp-dest": "latest",
-    "gulp-watch": "latest",
     "gulp-batch": "latest",
-    "gulp-uglify": "latest",
     "gulp-concat": "latest",
+    "gulp-dest": "latest",
+    "gulp-less": "latest",
     "gulp-rename": "latest",
-    "gulp-util": "latest"
+    "gulp-uglify": "latest",
+    "gulp-util": "latest",
+    "gulp-watch": "latest",
+    "http-proxy-middleware": "latest",
+    "jquery": "1.11.3",
+    "jquery-ui": "^1.12.1",
+    "jquery.dotdotdot": "1.7.4",
+    "less": "<3.0.0",
+    "moment": "^2.19.2",
+    "node-notifier": "*",
+    "uglifyjs-webpack-plugin": "^1.1.0",
+    "underscore": "1.8.3",
+    "webpack": "^3.8.1"
   }
 }

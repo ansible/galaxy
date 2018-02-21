@@ -197,16 +197,9 @@ def list_category(request, category=None, page=1):
     context = build_standard_context(request)
     context["ng_app"] = "listApp"
     context["extra_css"] = []
-    if settings.SITE_ENV == 'DEV':
-        context["extra_js"] = [
-            'js/listApp/listApp.js',
-            'js/listApp/roleListController.js',
-            'js/listApp/menuController.js',
-        ] + common_services
-    else:
-        context["extra_js"] = [
-            'dist/galaxy.listApp.min.js'
-        ]
+    context["extra_js"] = [
+        'dist/listApp.js'
+    ]
     context["use_menu_controller"] = True
     context["load_angular"] = True
     context["page_title"] = "Browse Roles"
@@ -458,17 +451,9 @@ def role_add_view(request):
     context = build_standard_context(request)
     context["ng_app"] = "roleAddApp"
     context["extra_css"] = []
-    if settings.SITE_ENV == 'DEV':
-        context["extra_js"] = [
-            'js/roleAddApp/roleAddApp.js',
-            'js/roleAddApp/roleAddController.js',
-            'js/detailApp/menuController.js',
-            'js/roleAddApp/notificationSecretService.js',
-        ] + common_services
-    else:
-        context["extra_js"] = [
-            'dist/galaxy.roleAddApp.min.js'
-        ]
+    context["extra_js"] = [
+        'dist/roleAddApp.js'
+    ]
     context["use_menu_controller"] = False
     context["load_angular"] = True
     context["page_title"] = "My Content"
@@ -552,19 +537,9 @@ def accounts_profile(request):
     context["ng_app"] = "accountsApp"
     context["extra_css"] = [
     ]
-    if settings.SITE_ENV == 'DEV':
-        context["extra_js"] = [
-            'js/commonServices/meService.js',
-            'js/commonServices/storageService.js',
-            'js/commonServices/relatedService.js',
-            'js/commonServices/galaxyUtilities.js',
-            'js/accountApp/myRolesController.js',
-            'js/accountApp/accountApp.js',
-        ]
-    else:
-        context["extra_js"] = [
-            'dist/galaxy.accountApp.min.js'
-        ]
+    context["extra_js"] = [
+        'dist/accountApp.js'
+    ]
 
     if request.session.get("transient"):
         context["transient"] = request.session["transient"]

@@ -1,0 +1,15 @@
+require('./commonServices/tagService');
+require('./commonServices/meService');
+require('./commonServices/ratingService');
+require('./commonServices/roleService');
+require('./commonServices/roleSearchService');
+require('./commonServices/storageService');
+require('./commonServices/userService');
+require('./commonServices/platformService');
+require('./commonServices/galaxyUtilities');
+require('./commonServices/searchService');
+require('./commonServices/relatedService');
+require('./commonServices/paginateService');
+require('./commonServices/githubRepoService');
+require('./commonServices/importService');
+require('./commonServices/githubClickService');
