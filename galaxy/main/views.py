@@ -30,7 +30,7 @@ from django.views.generic.detail import DetailView
 # local stuff
 from galaxy.main import constants
 from galaxy.main.models import (
-    Content, Namespace, ProviderNamespace, ContentBlock)
+    Content, Namespace, ProviderNamespace)
 
 # rst2html5-tools
 from html5css3 import Writer
@@ -148,16 +148,16 @@ def build_standard_context(request):
 # ------------------------------------------------------------------------------
 
 
-def home(request):
-    context = build_standard_context(request)
-    contentblocks = ContentBlock.objects.filter(name__in=[
-        'main-title',
-        'main-share',
-        'main-downloads',
-        'main-featured-blog'
-    ]).all()
-    context['contentblocks'] = {item.name: item for item in contentblocks}
-    return render_to_response('home.html', context)
+# def home(request):
+#     context = build_standard_context(request)
+#     contentblocks = ContentBlock.objects.filter(name__in=[
+#         'main-title',
+#         'main-share',
+#         'main-downloads',
+#         'main-featured-blog'
+#     ]).all()
+#     context['contentblocks'] = {item.name: item for item in contentblocks}
+#     return render_to_response('home.html', context)
 
 
 def explore(request):
