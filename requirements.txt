@@ -19,7 +19,6 @@ PyGithub
 markdown==2.4.1
 requests
 requests-oauthlib
-six
 bleach
 rst2html5-tools
 setuptools

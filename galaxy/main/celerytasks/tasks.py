@@ -21,7 +21,6 @@ import datetime
 import requests
 import logging
 import pytz
-import six
 
 from celery import task
 from github import Github
@@ -249,7 +248,7 @@ def strip_input(input):
     """
     if input is None:
         return ""
-    elif isinstance(input, six.string_types):
+    elif isinstance(input, basestring):
         return input.strip()
     else:
         return input
@@ -284,7 +283,7 @@ def get_readme(import_task, repo, branch, token):
         response.raise_for_status()
         readme_html = response.text
     except Exception as exc:
-        add_message(import_task, u"ERROR", u"Failed to get HTML version of README: %s" % six.u(exc))
+        add_message(import_task, u"ERROR", u"Failed to get HTML version of README: %s" % unicode(exc))
 
     readme = ''
     try:
@@ -312,7 +311,7 @@ def parse_yaml(import_task, file_name, file_contents):
     try:
         contents = yaml.safe_load(file_contents)
     except yaml.YAMLError as exc:
-        add_message(import_task, u"ERROR", u"YAML parse error: %s" % six.u(exc))
+        add_message(import_task, u"ERROR", u"YAML parse error: %s" % unicode(exc))
         fail_import_task(import_task, u"Failed to parse %s. Check YAML syntax." % file_name)
     return contents
 
@@ -326,7 +325,7 @@ def decode_file(import_task, repo, branch, file_name, return_yaml=False):
     try:
         contents = contents.content.decode('base64')
     except Exception as exc:
-        fail_import_task(import_task, u"Failed to decode %s - %s" % (file_name, six.u(exc)))
+        fail_import_task(import_task, u"Failed to decode %s - %s" % (file_name, unicode(exc)))
 
     if not return_yaml:
         return contents
@@ -336,7 +335,7 @@ def decode_file(import_task, repo, branch, file_name, return_yaml=False):
 def add_platforms(import_task, galaxy_info, role):
     add_message(import_task, u"INFO", u"Parsing platforms")
     meta_platforms = galaxy_info.get("platforms", None)
-    if isinstance(meta_platforms, six.string_types) or not hasattr(meta_platforms, '__iter__'):
+    if isinstance(meta_platforms, basestring) or not hasattr(meta_platforms, '__iter__'):
         add_message(import_task, u"ERROR", u"Expected platforms in meta data to be a list.")
         return
     platform_list = []
@@ -370,7 +369,7 @@ def add_platforms(import_task, galaxy_info, role):
                     add_message(import_task, u"ERROR", u"Invalid platform: %s-%s (skipping)" %
                                 (name, version))
         except Exception as exc:
-            add_message(import_task, u"ERROR", u"An unknown error occurred while adding platform: %s" % six.u(exc))
+            add_message(import_task, u"ERROR", u"An unknown error occurred while adding platform: %s" % unicode(exc))
 
     # Remove platforms/versions that are no longer listed in the metadata
     for platform in role.platforms.all():
@@ -382,7 +381,7 @@ def add_platforms(import_task, galaxy_info, role):
 def _add_cloud_platforms(import_task, galaxy_info, role):
     add_message(import_task, u"INFO", u"Parsing cloud platforms")
     cloud_platforms = galaxy_info.get('cloud_platforms', [])
-    if isinstance(cloud_platforms, six.string_types):
+    if isinstance(cloud_platforms, basestring):
         cloud_platforms = [cloud_platforms]
 
     if not cloud_platforms:
@@ -437,10 +436,10 @@ def add_dependencies(import_task, dependencies, role):
                 role.dependencies.add(dep_role)
                 dep_names.append(dep_parsed['name'])
             except Exception as exc:
-                logger.error("Error loading dependencies %s" % six.u(exc))
+                logger.error("Error loading dependencies %s" % unicode(exc))
                 raise Exception(u"Role dependency not found: %s.%s" % (namespace, name))
         except (AnsibleError, Exception) as exc:
-            add_message(import_task, u'ERROR', u'Error parsing dependency %s' % six.u(exc))
+            add_message(import_task, u'ERROR', u'Error parsing dependency %s' % unicode(exc))
 
     # Remove deps that are no longer listed in the metadata
     for dep in role.dependencies.all():
@@ -791,7 +790,7 @@ def import_role(task_id):
             rv.release_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
             rv.save()
     except Exception as exc:
-        add_message(import_task, u"ERROR", u"An error occurred while importing repo tags: %s" % six.u(exc))
+        add_message(import_task, u"ERROR", u"An error occurred while importing repo tags: %s" % unicode(exc))
 
     add_message(import_task, u"INFO", u"Removing old tags")
     if git_tag_list:
@@ -806,23 +805,23 @@ def import_role(task_id):
                 if not found:
                     remove_versions.append(version.name)
         except Exception as exc:
-            fail_import_task(import_task, u"Error identifying tags to remove: %s" % six.u(exc))
+            fail_import_task(import_task, u"Error identifying tags to remove: %s" % unicode(exc))
 
         if remove_versions:
             try:
                 for version_name in remove_versions:
                     RoleVersion.objects.filter(name=version_name, role=role).delete()
             except Exception as exc:
-                fail_import_task(import_task, u"Error removing tags from role: %s" % six.u(exc))
+                fail_import_task(import_task, u"Error removing tags from role: %s" % unicode(exc))
     try:
         role.validate_char_lengths()
     except Exception as exc:
-        add_message(import_task, u"ERROR", six.u(exc))
+        add_message(import_task, u"ERROR", unicode(exc))
 
     try:
         import_task.validate_char_lengths()
     except Exception as exc:
-        add_message(import_task, u"ERROR", six.u(exc))
+        add_message(import_task, u"ERROR", unicode(exc))
 
     # determine state of import task
     error_count = import_task.messages.filter(message_type="ERROR").count()
@@ -863,7 +862,7 @@ def refresh_user_repos(user, token):
     except GithubException as exc:
         user.cache_refreshed = True
         user.save()
-        msg = u"User {0} Repo Cache Refresh Error: {1}".format(user.username, six.u(exc))
+        msg = u"User {0} Repo Cache Refresh Error: {1}".format(user.username, unicode(exc))
         logger.error(msg)
         raise Exception(msg)
 
@@ -872,7 +871,7 @@ def refresh_user_repos(user, token):
     except GithubException as exc:
         user.cache_refreshed = True
         user.save()
-        msg = u"User {0} Repo Cache Refresh Error: {1}".format(user.username, six.u(exc))
+        msg = u"User {0} Repo Cache Refresh Error: {1}".format(user.username, unicode(exc))
         logger.error(msg)
         raise Exception(msg)
 
@@ -881,7 +880,7 @@ def refresh_user_repos(user, token):
     except GithubException as exc:
         user.cache_refreshed = True
         user.save()
-        msg = u"User {0} Repo Cache Refresh Error: {1}".foramt(user.username, six.u(exc))
+        msg = u"User {0} Repo Cache Refresh Error: {1}".foramt(user.username, unicode(exc))
         logger.error(msg)
         raise Exception(msg)
 
@@ -902,21 +901,21 @@ def refresh_user_stars(user, token):
     try:
         gh_api = Github(token)
     except GithubException as exc:
-        msg = u"User {0} Refresh Stars: {1}".format(user.username, six.u(exc))
+        msg = u"User {0} Refresh Stars: {1}".format(user.username, unicode(exc))
         logger.error(msg)
         raise Exception(msg)
 
     try:
         ghu = gh_api.get_user()
     except GithubException as exc:
-        msg = u"User {0} Refresh Stars: {1}" % (user.username, six.u(exc))
+        msg = u"User {0} Refresh Stars: {1}" % (user.username, unicode(exc))
         logger.error(msg)
         raise Exception(msg)
 
     try:
         subscriptions = ghu.get_subscriptions()
     except GithubException as exc:
-        msg = u"User {0} Refresh Stars: {1]" % (user.username, six.u(exc))
+        msg = u"User {0} Refresh Stars: {1]" % (user.username, unicode(exc))
         logger.error(msg)
         raise Exception(msg)
 
@@ -937,7 +936,7 @@ def refresh_user_stars(user, token):
     try:
         starred = ghu.get_starred()
     except GithubException as exc:
-        msg = u"User {0} Refresh Stars: {1}".format(user.username, six.u(exc))
+        msg = u"User {0} Refresh Stars: {1}".format(user.username, unicode(exc))
         logger.error(msg)
         raise Exception(msg)
 
@@ -998,7 +997,7 @@ def refresh_role_counts(start, end, token, tracker):
             role.delete()
             deleted += 1
         except Exception as exc:
-            logger.error(u"FAILED: {0} - {1}".format(full_name, six.u(exc)))
+            logger.error(u"FAILED: {0} - {1}".format(full_name, unicode(exc)))
             failed += 1
 
     tracker.state = 'FINISHED'
@@ -1030,5 +1029,5 @@ def clear_stuck_imports():
             ri.save()
             transaction.commit()
     except Exception as exc:
-        logger.error(u"Clear Stuck Imports ERROR: {}".format(six.u(exc)))
+        logger.error(u"Clear Stuck Imports ERROR: {}".format(unicode(exc)))
         raise
