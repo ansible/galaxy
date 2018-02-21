@@ -20,7 +20,7 @@ import logging
 
 import celery
 import github
-import six
+
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
@@ -268,7 +268,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = u"User {} Repo Cache Refresh Error: {}".format(
-            user.username, six.u(exc))
+            user.username, unicode(exc))
         LOG.error(msg)
         raise Exception(msg)
 
@@ -278,7 +278,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = u"User {} Repo Cache Refresh Error: {}".format(
-            user.username, six.u(exc))
+            user.username, unicode(exc))
         LOG.error(msg)
         raise Exception(msg)
 
@@ -288,7 +288,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = u"User {} Repo Cache Refresh Error: {}".foramt(
-            user.username, six.u(exc))
+            user.username, unicode(exc))
         LOG.error(msg)
         raise Exception(msg)
 
@@ -310,21 +310,21 @@ def refresh_user_stars(user, token):
     try:
         gh_api = github.Github(token)
     except github.GithubException as exc:
-        msg = u"User {} Refresh Stars: {}".format(user.username, six.u(exc))
+        msg = u"User {} Refresh Stars: {}".format(user.username, unicode(exc))
         LOG.error(msg)
         raise Exception(msg)
 
     try:
         ghu = gh_api.get_user()
     except github.GithubException as exc:
-        msg = u"User {} Refresh Stars: {}".format(user.username, six.u(exc))
+        msg = u"User {} Refresh Stars: {}".format(user.username, unicode(exc))
         LOG.error(msg)
         raise Exception(msg)
 
     try:
         subscriptions = ghu.get_subscriptions()
     except github.GithubException as exc:
-        msg = u"User {} Refresh Stars: {}".format(user.username, six.u(exc))
+        msg = u"User {} Refresh Stars: {}".format(user.username, unicode(exc))
         LOG.error(msg)
         raise Exception(msg)
 
@@ -347,7 +347,7 @@ def refresh_user_stars(user, token):
     try:
         starred = ghu.get_starred()
     except github.GithubException as exc:
-        msg = u"User {0} Refresh Stars: {1}".format(user.username, six.u(exc))
+        msg = u"User {0} Refresh Stars: {1}".format(user.username, unicode(exc))
         LOG.error(msg)
         raise Exception(msg)
 
@@ -410,7 +410,7 @@ def refresh_role_counts(start, end, token, tracker):
             else:
                 passed += 1
         except Exception as exc:
-            LOG.error(u"FAILED: {0} - {1}".format(full_name, six.u(exc)))
+            LOG.error(u"FAILED: {0} - {1}".format(full_name, unicode(exc)))
             failed += 1
 
     tracker.state = 'FINISHED'
@@ -449,5 +449,5 @@ def clear_stuck_imports():
             ri.save()
             transaction.commit()
     except Exception as exc:
-        LOG.error(u"Clear Stuck Imports ERROR: {}".format(six.u(exc)))
+        LOG.error(u"Clear Stuck Imports ERROR: {}".format(unicode(exc)))
         raise

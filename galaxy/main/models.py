@@ -15,8 +15,6 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import six
-
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -52,7 +50,7 @@ class BaseModel(models.Model, DirtyMixin):
 
     def __unicode__(self):
         if hasattr(self, 'name'):
-            return six.u("%s-%s" % (self.name, self.id))
+            return unicode("%s-%s" % (self.name, self.id))
         else:
             return u'%s-%s' % (self._meta.verbose_name, self.id)
 
@@ -180,7 +178,7 @@ class UserAlias(models.Model):
     )
 
     def __unicode__(self):
-        return six.u("%s (alias of %s)" % (
+        return unicode("%s (alias of %s)" % (
             self.alias_name, self.alias_of.username))
 
 

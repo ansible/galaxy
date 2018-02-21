@@ -17,8 +17,6 @@
 
 import json
 
-import six
-
 from rest_framework import serializers
 
 from django.contrib.auth.models import AnonymousUser
@@ -103,9 +101,9 @@ class BaseSerializer(serializers.ModelSerializer):
         ret = super(BaseSerializer, self).get_fields()
         for key, field in ret.items():
             if key == 'id' and not getattr(field, 'help_text', None):
-                field.help_text = 'Database ID for this %s.' % six.u(opts.verbose_name)
+                field.help_text = 'Database ID for this %s.' % unicode(opts.verbose_name)
             elif key == 'url':
-                field.help_text = 'URL for this %s.' % six.u(opts.verbose_name)
+                field.help_text = 'URL for this %s.' % unicode(opts.verbose_name)
                 field.type_label = 'string'
             elif key == 'related':
                 field.help_text = 'Data structure with URLs of related resources.'
@@ -114,10 +112,10 @@ class BaseSerializer(serializers.ModelSerializer):
                 field.help_text = 'Data structure with name/description for related resources.'
                 field.type_label = 'object'
             elif key == 'created':
-                field.help_text = 'Timestamp when this %s was created.' % six.u(opts.verbose_name)
+                field.help_text = 'Timestamp when this %s was created.' % unicode(opts.verbose_name)
                 field.type_label = 'datetime'
             elif key == 'modified':
-                field.help_text = 'Timestamp when this %s was last modified.' % six.u(opts.verbose_name)
+                field.help_text = 'Timestamp when this %s was last modified.' % unicode(opts.verbose_name)
                 field.type_label = 'datetime'
         return ret
 
