@@ -15,8 +15,11 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import ast
 import logging
 import os
+
+import yaml
 
 from galaxy.main import constants
 from galaxy.worker import logging as wlog
@@ -39,9 +42,69 @@ class ModuleLoader(base.FileContentMixin, base.BaseLoader):
 
         self.name = name
 
+        self.documentation = None
+        self.metdata = None
+
     def load(self):
+
+        self._parse_module()
+
+        description = ''
+        if self.documentation:
+            description = self.documentation.get('short_description', '')
+
         return base.ContentData(
             name=self.name,
             path=self.path,
-            content_type=constants.ContentType.MODULE
+            content_type=constants.ContentType.MODULE,
+            description=description,
+            metadata={
+                'ansible_metadata': self.metdata,
+                'documentation': self.documentation
+            }
         )
+
+    def _parse_module(self):
+        with open(self.path) as fp:
+            code = fp.read()
+
+        module = ast.parse(code)  # type: ast.Module
+        assert isinstance(module, ast.Module), 'Module expected'
+
+        for node in module.body:
+            if not isinstance(node, ast.Assign):
+                continue
+
+            name = node.targets[0].id
+
+            if name == 'ANSIBLE_METADATA':
+                self.metadata = self._parse_metdata(node)
+            elif name == 'DOCUMENTATION':
+                self.documentation = self._parse_doc(node)
+
+    def _parse_metdata(self, node):
+        # type (ast.Dict) -> dict
+        if not isinstance(node.value, ast.Dict):
+            self.log.warning('Cannot parse "ANSIBLE_METADATA" field, '
+                             'dict expected')
+            return
+
+        return ast.literal_eval(node.value)
+
+    def _parse_doc(self, node):
+        # type (ast.Str) -> dict
+        if not isinstance(node.value, ast.Str):
+            self.log.warning('Cannot parse "DOCUMENTATION" field, '
+                             'string expected')
+            return
+        try:
+            documentation = yaml.safe_load(node.value.s)
+        except yaml.YAMLError as e:
+            self.log.warning('Cannot parse "DOCUMENTATION" field: {}'
+                             .format(e))
+            return
+
+        if not isinstance(documentation, dict):
+            self.log.warning('Invalid "DOCUMENTATION" value, YAML document'
+                             'should be a dictionary')
+        return documentation
