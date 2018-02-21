@@ -30,22 +30,22 @@ This document provides a guide for installing Galaxy.
   - [Removing the project](#removing-the-project)
 - [Docker](#docker)
   - [Prerequisites](#prerequisites-2)
-  - [Pre-deployment steps](#pre-deployment-steps-2)
+  - [Pre-deployment steps](#pre-deployment-steps-1)
     - [Deploying to a remote host](#deploying-to-a-remote-host)
-    - [Inventory variables](#inventory-variables-2)
-      - [Docker registry](#docker-registry-2)
-      - [PostgreSQL](#postgresql-2)
-      - [Elasticsearch](#elasticsearch-2)
-      - [Proxy settings](#proxy-settings-2)
-  - [Start the installer](#start-the-installer-2)
-  - [Post build](#post-build-2)
-  - [Accessing Galaxy](#accessing-galaxy-2)
-  - [Configuring GitHub OAuth](#configure-github-oauth-1)
+    - [Inventory variables](#inventory-variables-1)
+      - [Docker registry](#docker-registry-1)
+      - [Proxy settings](#proxy-settings-1)
+      - [PostgreSQL](#postgresql-1)
+      - [Elasticsearch](#elasticsearch-1)
+  - [Start the installer](#start-the-installer-1)
+  - [Post build](#post-build-1)
+  - [Accessing Galaxy](#accessing-galaxy-1)
+  - [Configuring GitHub OAuth](#configuring-github-oauth-1)
     - [Create an admin account](#create-an-admin-account-1)
     - [Set the site name](#set-the-site-name-1)
     - [Create a GitHub social application](#create-a-github-social-application-1)
-  - [Loading platforms](#loading-platforms-2)
-  - [Stopping containers](#stopping-containers-2)
+  - [Loading platforms](#loading-platforms-1)
+  - [Stopping containers](#stopping-containers-1)
 
 ## Getting started
 
@@ -124,8 +124,6 @@ Deployment to OpenShift is done using the Ansible Kubernetes modules, which defa
 
 It's also possible to pass more granular authentication information (i.e., username, password, context, etc.) to the modules. However, the delivered playbook ([installer/roles/openshift/tasks/main.yml](./installer/roles/openshift/tasks/main.yml)) is not setup to accommodate these options.
 
-Prior to starting the installation, review your config file, and make sure the active context is correct, and the user token has not expired. Check the active context using `oc config current-context`, and if needed, change the context using the `oc config set-context` command. And to update the user token, simply login using `oc login`.
-
 #### Inventory variables
 
 Review the [inventory](./installer/inventory) file, and uncomment and provide values for the following variables found in the `[all:vars]` section:
@@ -136,9 +134,15 @@ Review the [inventory](./installer/inventory) file, and uncomment and provide va
 
 *openshift_kubeconfig*
 
-> Set the path to your config file. This value is required, and defaults to `${HOME}/.kube/config`.
+> Set the path to your config file. Required.
 
-openshift_kubeconfig="${HOME}/.kube/config"
+*openshift_host*
+
+> Set the server:port for accessing your OpenShift instance. Required.
+
+*openshift_user*
+
+> Set the login username. Required.
 
 #### Docker registry
 
@@ -150,11 +154,11 @@ If you wish to tag and push the built image to a Docker registry, set the follow
 
 *docker_registry_repository*
 
-> The repository namespace to use when pushing images to the registry. Defaults to *galaxy*.
+> The repository namespace to use when pushing images to the registry.
 
 *docker_registry_username*
 
-> Username of the user that will push images to the registry. Defaults to *developer*.
+> Username of the user that will push images to the registry.
 
 *docker_remove_local_images*
 
@@ -190,24 +194,24 @@ If you wish to use an external Elasticsearch cluster, set the value of `elastic_
 
 ### Start the installer
 
-If you are not pushing a locally built Galaxy image to a Docker registry, start the build by running the following:
+If you are not pushing a locally built Galaxy image to a Docker registry, run the following, replacing the value assigned to `openshift_password`:
 
 ```bash
 # Set the working directory to installer
 $ cd installer
 
 # Run the Ansible playbook
-$ ansible-playbook -i inventory galaxy.yml --tags start
+$ ansible-playbook -i inventory galaxy.yml -e openshift_password=developer --tags start
 ```
 
-If you wish to push the locally built Galaxy image to a repository, then use the `-e` option to pass the registry password as follows, replacing *password* with the password of the username assigned to `docker_registry_username` (note that you will also need to remove `dockerhub_base` and `dockerhub_version` from the inventory file):
+If you wish to push the locally built Galaxy image to a repository, run the following, replacing the values assigned to `openshift_password`, and `docker_registry_password`: 
 
 ```bash
 # Set the working directory to installer
 $ cd installer
 
 # Run the Ansible playbook
-$ ansible-playbook -i inventory galaxy.yml -e docker_registry_password=password --tags start
+$ ansible-playbook -i inventory galaxy.yml -e openshift_password=developer -e docker_registry_password=password --tags start
 ```
 
 ### Post build
@@ -386,6 +390,7 @@ You will need the following installed on the host where Galaxy will be deployed:
 
 - [Docker](https://docs.docker.com/engine/installation/)
 - [docker-py](https://github.com/docker/docker-py) Python module
+- [docker-compose](https://github.com/docker/docker-compose) Python module
 
 Note: After installing Docker, the Docker service must be started. 
 
@@ -495,7 +500,7 @@ $ cd installer
 $ ansible-playbook -i inventory galaxy.yml --tags start
 ```
 
-If you wish to push the locally built Galaxy image to a repository, then use the `-e` option to pass the registry password as follows, replacing *password* with the password of the username assigned to `docker_registry_username` (note that you will also need to remove `dockerhub_base` and `dockerhub_version` from the inventory file):
+If you wish to push the locally built Galaxy image to a repository, run the following, replacing the value assigned to `docker_registry_password`:
 
 ```bash
 # Set the working directory to installer

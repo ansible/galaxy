@@ -1,5 +1,8 @@
 # main.yml
 ---
+- name: Authenticate with OpenShift
+  shell: "oc login {{ openshift_host }} -u {{ openshift_user }} -p {{ openshift_password }}"
+
 - name: Create project
   openshift_v1_project:
       name: '{{ openshift_project }}'

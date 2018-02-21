@@ -17,6 +17,8 @@
 
 import re
 
+import six
+
 # Django
 from django.core.exceptions import FieldError, ValidationError, ObjectDoesNotExist
 from django.contrib.auth import get_user_model
@@ -86,7 +88,7 @@ class FieldLookupBackend(BaseFilterBackend):
         return field
 
     def to_python_boolean(self, value, allow_none=False):
-        value = unicode(value)
+        value = six.u(value)
         if value.lower() in ('true', '1'):
             return True
         elif value.lower() in ('false', '0'):
@@ -94,10 +96,10 @@ class FieldLookupBackend(BaseFilterBackend):
         elif allow_none and value.lower() in ('none', 'null'):
             return None
         else:
-            raise ValueError(u'Unable to convert "%s" to boolean' % unicode(value))
+            raise ValueError(u'Unable to convert "%s" to boolean' % six.u(value))
 
     def to_python_related(self, value):
-        value = unicode(value)
+        value = six.u(value)
         if value.lower() in ('none', 'null'):
             return None
         else:
@@ -125,7 +127,7 @@ class FieldLookupBackend(BaseFilterBackend):
         elif lookup.endswith('__regex') or lookup.endswith('__iregex'):
             try:
                 re.compile(value)
-            except re.error, e:
+            except re.error as e:
                 raise ValueError(e.args[0])
             return value
         else:
@@ -142,7 +144,7 @@ class FieldLookupBackend(BaseFilterBackend):
             try:
                 # try and lookup the user first, to see if it exists
                 GalaxyUser.objects.get(username=request.GET['owner__username'])
-            except ObjectDoesNotExist, e:
+            except ObjectDoesNotExist as e:
                 # if not, check to see if there's an alias for it
                 try:
                     alias_obj = UserAlias.objects.get(alias_name=request.GET['owner__username'])
@@ -157,7 +159,7 @@ class FieldLookupBackend(BaseFilterBackend):
                     # same object is being used with the overridden param.
                     # This may be fixed in later DRF versions?
                     request.GET = qp
-                except Exception, e:
+                except Exception as e:
                     # if not, we don't care, the later filtering
                     # means an empty set will be returned for this
                     pass
@@ -229,9 +231,9 @@ class FieldLookupBackend(BaseFilterBackend):
                         q = Q(**{k: v})
                     queryset = queryset.filter(q)
             return queryset.distinct()
-        except (FieldError, FieldDoesNotExist, ValueError), e:
+        except (FieldError, FieldDoesNotExist, ValueError) as e:
             raise ParseError(e.args[0])
-        except ValidationError, e:
+        except ValidationError as e:
             raise ParseError(e.messages)
 
 
@@ -258,7 +260,7 @@ class OrderByBackend(BaseFilterBackend):
                 except IndexError:
                     pass
             return queryset
-        except FieldError, e:
+        except FieldError as e:
             # Return a 400 for invalid field names.
             raise ParseError(*e.args)
 
@@ -277,6 +279,6 @@ class HaystackFilter(HaystackFilter):
             if order_by:
                 qs = qs.order_by(*order_by)
             return qs
-        except FieldError, e:
+        except FieldError as e:
             # Return a 400 for invalid field names.
             raise ParseError(*e.args)
