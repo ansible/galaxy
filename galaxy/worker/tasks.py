@@ -31,8 +31,8 @@ from galaxy.main import constants
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import importers
-from galaxy.worker import loaders
 from galaxy.worker import logging as wlog
+from galaxy.worker import repository as repo
 from galaxy.worker import utils
 
 
@@ -86,7 +86,7 @@ def _import_repository(import_task, workdir, logger):
         github_token=token,
         github_client=gh_api,
         github_repo=gh_repo)
-    repo_loader = loaders.RepositoryLoader.from_remote(
+    repo_loader = repo.RepositoryLoader.from_remote(
         remote_url=import_task.repository.clone_url,
         clone_dir=workdir,
         name=repository.original_name,
@@ -122,12 +122,12 @@ def _import_repository(import_task, workdir, logger):
     import_task.finish_success(u'Import completed')
 
 
-def _update_namespace(repo):
+def _update_namespace(repository):
     # Use GitHub repo to update namespace attributes
-    if repo.owner.type == 'Organization':
-        owner = repo.organization
+    if repository.owner.type == 'Organization':
+        owner = repository.organization
     else:
-        owner = repo.owner
+        owner = repository.owner
 
     models.ProviderNamespace.objects.update_or_create(
         provider__name=constants.PROVIDER_GITHUB,

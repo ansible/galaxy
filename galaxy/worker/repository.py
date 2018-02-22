@@ -15,6 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+from __future__ import absolute_import
+
 import glob
 import logging
 import os
@@ -24,9 +26,7 @@ import yaml
 
 from galaxy.worker import utils
 from galaxy.worker import exceptions as exc
-from galaxy.worker.loaders import apb as apb_loader
-from galaxy.worker.loaders import module as module_loader
-from galaxy.worker.loaders import role as role_loader
+from galaxy.worker import loaders
 
 
 LOG = logging.getLogger(__name__)
@@ -40,8 +40,8 @@ class RepositoryLoader(object):
     # because APB is a single-content repository and cannot be nested
     # into repository along with other content types.
     REPO_LOADERS = [
-        ('roles', role_loader.RoleLoader),
-        ('modules', module_loader.ModuleLoader),
+        ('roles', loaders.RoleLoader),
+        ('modules', loaders.ModuleLoader),
     ]
     GIT_LOG_FORMAT_FIELDS = [
         ('sha', '%H'),
@@ -57,11 +57,13 @@ class RepositoryLoader(object):
     def __init__(self, path, name=None, logger=None):
         """
         :param str path: Path to the repository directory.
+        :param str name: Repository name.
+        :param logging.Logger: Logger instance.
         """
         self.path = path
         self.name = name
         self.metadata = None
-        self.log = logger or None
+        self.log = logger or LOG
 
         self._current_branch = None
         self._last_commit = None
@@ -108,9 +110,9 @@ class RepositoryLoader(object):
                        self._try_load_apb,
                        self._find_toplevel_role,
                        self._find_from_repository]:
-            loaders = finder()
-            if loaders:
-                return loaders
+            loaders_ = finder()
+            if loaders_:
+                return loaders_
         raise exc.ContentLoadError(
             "Cannot load content from repository.")
 
@@ -119,7 +121,7 @@ class RepositoryLoader(object):
         for filename in self.APB_META_FILES:
             metadata_file = os.path.join(self.path, filename)
             if os.path.exists(metadata_file):
-                return [apb_loader.APBLoader(
+                return [loaders.APBLoader(
                     self.path, self.name, filename, logger=self.log)]
         return None
 
@@ -134,20 +136,20 @@ class RepositoryLoader(object):
         with open(metadata_file) as fp:
             self.metadata = yaml.safe_load(fp)
 
-        loaders = []
+        loaders_ = []
         for name, loader_cls in self.REPO_LOADERS:
             for content in self.metadata[name]:
                 path = content['path'].rstrip('/')
                 for path in glob.glob(path):
-                    loaders.append(loader_cls(path, logger=self.log))
-        return loaders
+                    loaders_.append(loader_cls(path, logger=self.log))
+        return loaders_
 
     def _find_toplevel_role(self):
         self.log.debug('Content search - Looking for top level role '
                        'metadata file')
-        for meta_file in role_loader.ROLE_META_FILES:
+        for meta_file in loaders.ROLE_META_FILES:
             if os.path.exists(os.path.join(self.path, meta_file)):
-                return [role_loader.RoleLoader(
+                return [loaders.RoleLoader(
                     path=self.path, name=self.name,
                     meta_file=meta_file,
                     logger=self.log
@@ -156,11 +158,11 @@ class RepositoryLoader(object):
 
     def _find_from_repository(self):
         self.log.debug('Content search - Analyzing repository structure')
-        loaders = []
+        loaders_ = []
         for loader_name, loader_cls in self.REPO_LOADERS:
             contents_path = os.path.join(self.path, loader_name)
             if not os.path.exists(contents_path):
                 continue
-            loaders.extend(loader_cls.find_content(
+            loaders_.extend(loader_cls.find_content(
                 contents_path, logger=self.log))
-        return loaders
+        return loaders_
