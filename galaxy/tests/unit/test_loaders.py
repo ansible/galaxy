@@ -119,7 +119,8 @@ class TestRoleParser(unittest.TestCase):
         }
         load_container_yml_mock.return_value = (None, None)
 
-        loader = loaders.RoleLoader('/tmp/repo/roles/test_role')
+        loader = loaders.RoleLoader('/tmp/repo/roles/test_role',
+                                    constants.ContentType.ROLE)
         role = loader.load()
 
         self.assertEqual(role.name, 'test_role')

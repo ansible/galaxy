@@ -24,6 +24,7 @@ import subprocess
 
 import yaml
 
+from galaxy.main import constants
 from galaxy.worker import utils
 from galaxy.worker import exceptions as exc
 from galaxy.worker import loaders
@@ -40,8 +41,36 @@ class RepositoryLoader(object):
     # because APB is a single-content repository and cannot be nested
     # into repository along with other content types.
     REPO_LOADERS = [
-        ('roles', loaders.RoleLoader),
-        ('modules', loaders.ModuleLoader),
+        ('roles', loaders.RoleLoader,
+         constants.ContentType.ROLE),
+        ('modules', loaders.ModuleLoader,
+         constants.ContentType.MODULE),
+        ('action_plugins', loaders.PluginLoader,
+         constants.ContentType.ACTION_PLUGIN),
+        ('cache_plugins', loaders.PluginLoader,
+         constants.ContentType.CACHE_PLUGIN),
+        ('callback_plugins', loaders.PluginLoader,
+         constants.ContentType.CALLBACK_PLUGIN),
+        ('cliconf_plugins', loaders.PluginLoader,
+         constants.ContentType.CLICONF_PLUGIN),
+        ('connection_plugins', loaders.PluginLoader,
+         constants.ContentType.CONNECTION_PLUGIN),
+        ('filter_plugins', loaders.PluginLoader,
+         constants.ContentType.FILTER_PLUGIN),
+        ('inventory_plugins', loaders.PluginLoader,
+         constants.ContentType.INVENTORY_PLUGIN),
+        ('lookup_plugins', loaders.PluginLoader,
+         constants.ContentType.LOOKUP_PLUGIN),
+        ('netconf_plugins', loaders.PluginLoader,
+         constants.ContentType.NETCONF_PLUGIN),
+        ('shell_plugins', loaders.PluginLoader,
+         constants.ContentType.SHELL_PLUGIN),
+        ('strategy_plugins', loaders.PluginLoader,
+         constants.ContentType.STRATEGY_PLUGIN),
+        ('terminal_plugins', loaders.PluginLoader,
+         constants.ContentType.TERMINAL_PLUGIN),
+        ('test_plugins', loaders.PluginLoader,
+         constants.ContentType.TEST_PLUGIN),
     ]
     GIT_LOG_FORMAT_FIELDS = [
         ('sha', '%H'),
@@ -118,11 +147,13 @@ class RepositoryLoader(object):
 
     def _try_load_apb(self):
         self.log.debug('Content search - Looking for apb.yml')
-        for filename in self.APB_META_FILES:
-            metadata_file = os.path.join(self.path, filename)
-            if os.path.exists(metadata_file):
-                return [loaders.APBLoader(
-                    self.path, self.name, filename, logger=self.log)]
+        for meta_file in self.APB_META_FILES:
+            meta_path = os.path.join(self.path, meta_file)
+            if not os.path.exists(meta_path):
+                continue
+            return [loaders.APBLoader(
+                self.path, constants.ContentType.APB, meta_file=meta_file,
+                name=self.name, logger=self.log)]
         return None
 
     def _find_from_metadata(self):
@@ -137,11 +168,12 @@ class RepositoryLoader(object):
             self.metadata = yaml.safe_load(fp)
 
         loaders_ = []
-        for name, loader_cls in self.REPO_LOADERS:
+        for name, content_type, loader_cls in self.REPO_LOADERS:
             for content in self.metadata[name]:
                 path = content['path'].rstrip('/')
                 for path in glob.glob(path):
-                    loaders_.append(loader_cls(path, logger=self.log))
+                    loaders_.append(loader_cls(
+                        path=path, content_type=content_type, logger=self.log))
         return loaders_
 
     def _find_toplevel_role(self):
@@ -150,19 +182,19 @@ class RepositoryLoader(object):
         for meta_file in loaders.ROLE_META_FILES:
             if os.path.exists(os.path.join(self.path, meta_file)):
                 return [loaders.RoleLoader(
-                    path=self.path, name=self.name,
-                    meta_file=meta_file,
-                    logger=self.log
+                    path=self.path, content_type=constants.ContentType.ROLE,
+                    name=self.name, meta_file=meta_file, logger=self.log
                 )]
         return None
 
     def _find_from_repository(self):
         self.log.debug('Content search - Analyzing repository structure')
         loaders_ = []
-        for loader_name, loader_cls in self.REPO_LOADERS:
-            contents_path = os.path.join(self.path, loader_name)
-            if not os.path.exists(contents_path):
+        for directory, loader_cls, content_type in self.REPO_LOADERS:
+            path = os.path.join(self.path, directory)
+            if not os.path.exists(path):
                 continue
+            self.log.debug('Found directory "{}"'.format(directory))
             loaders_.extend(loader_cls.find_content(
-                contents_path, logger=self.log))
+                path, content_type, logger=self.log))
         return loaders_

@@ -20,8 +20,6 @@ import logging
 
 import yaml
 
-from galaxy.main import constants
-from galaxy.worker import logging as wlog
 from galaxy.worker import exceptions as exc
 
 from . import base
@@ -30,16 +28,14 @@ LOG = logging.getLogger(__name__)
 
 
 class APBLoader(base.BaseLoader):
-    def __init__(self, path, name, metadata_file, logger=None):
-        logger = wlog.ContentTypeAdapter(logger or LOG, 'APB', name)
-        super(APBLoader, self).__init__(path, logger=logger)
-
-        self.name = name
-        self.metadata_file = metadata_file
+    def __init__(self, path, content_type, meta_file, name=None, logger=None):
+        super(APBLoader, self).__init__(path, content_type,
+                                        name=name, logger=logger)
+        self.meta_file = meta_file
 
     def load(self):
-        self.log.info('Loading metadata file: {0}'.format(self.metadata_file))
-        with open(os.path.join(self.path, self.metadata_file)) as fp:
+        self.log.info('Loading metadata file: {0}'.format(self.meta_file))
+        with open(os.path.join(self.path, self.meta_file)) as fp:
             metadata = yaml.safe_load(fp)
 
         try:
@@ -50,7 +46,7 @@ class APBLoader(base.BaseLoader):
         return base.ContentData(
             name=name,
             description=metadata.get('description'),
-            content_type=constants.ContentType.APB,
+            content_type=self.content_type,
             metadata={
                 'apb_metadata': metadata,
             },
