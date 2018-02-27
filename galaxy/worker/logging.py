@@ -28,16 +28,21 @@ class ImportTaskAdapter(logging.LoggerAdapter):
 
 
 class ContentTypeAdapter(logging.LoggerAdapter):
-    def __init__(self, logger, content_type, content_name):
+    def __init__(self, logger, content_type, content_name=None):
         super(ContentTypeAdapter, self).__init__(logger, {
             'content_type': content_type,
             'content_name': content_name,
         })
 
     def process(self, msg, kwargs):
-        msg = '[{}: {}] {}'.format(self.extra['content_type'],
-                                   self.extra['content_name'],
-                                   msg)
+        if self.extra['content_name']:
+            prefix = '{}: {}'.format(
+                self.extra['content_type'].name,
+                self.extra['content_name'])
+        else:
+            prefix = self.extra['content_type']
+
+        msg = '[{}] {}'.format(prefix, msg)
         return msg, kwargs
 
 

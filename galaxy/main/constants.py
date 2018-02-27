@@ -34,6 +34,10 @@ class DjangoEnum(enum.Enum):
     def value(self):
         return self._value_[0]
 
+    @property
+    def name(self):
+        return self._value_[1]
+
     @classmethod
     def choices(cls):
         return [item._value_ for item in cls]

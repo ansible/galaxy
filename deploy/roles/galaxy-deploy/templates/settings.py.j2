@@ -99,8 +99,8 @@ CELERY_ROUTES = {
     'galaxy.main.celerytasks.tasks.refresh_user_repos': {'queue': 'user_tasks'},
     'galaxy.main.celerytasks.tasks.refresh_user_stars': {'queue': 'star_tasks'},
     'galaxy.main.celerytasks.tasks.refresh_role_counts': {'queue': 'admin_tasks'},
-    'galaxy.main.celerytasks.tasks.import_repository': {'queue': 'import_tasks'},
     'galaxy.main.celerytasks.elastic_tasks.update_custom_indexes': {'queue': 'admin_tasks'},
+    'galaxy.worker.tasks.import_repository': {'queue': 'import_tasks'},
 }
 
 GITHUB_TASK_USERS = [{% for user in github_task_users %}"{{ user }}"{% if not loop.last %},{% endif %}{% endfor %}] 

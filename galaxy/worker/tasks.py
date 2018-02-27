@@ -20,99 +20,151 @@ from __future__ import absolute_import
 import logging
 
 import celery
-from django.conf import settings
+import github
 
+from django.conf import settings
+from django.db import transaction
+from allauth.socialaccount import models as auth_models
+
+from galaxy.main.celerytasks import elastic_tasks
+from galaxy.main import constants
 from galaxy.main import models
+from galaxy.worker import exceptions as exc
+from galaxy.worker import importers
+from galaxy.worker import logging as wlog
+from galaxy.worker import repository as repo
 from galaxy.worker import utils
-from galaxy.worker import loaders
 
 
 LOG = logging.getLogger(__name__)
 
 
-def _update_role_videos(role, videos):
-    # type: (models.Content, [loaders.role.VideoLink]) -> None
-    role.videos.all().delete()
-    for video in videos:
-        role.videos.create(
-            url=video['url'],
-            description=video['title'])
-
-
-def _update_platforms(role, platforms):
-    # type: (models.Content, [loaders.role.PlatformInfo]) -> None
-    old_platforms = {(p.name, p.release): p for p in role.platforms.all()}
-    new_platforms = {}
-    for platform in platforms:
-        if 'all' in platform.versions:
-            db_platforms = models.Platform.objects.filter(name=platform.name)
-            new_platforms.update({
-                (platform.name, p.release): p for p in db_platforms})
-        else:
-            for version in platform.versions:
-                try:
-                    p = models.Platform.objects.get(
-                        name=platform.name, release=version)
-                except models.Platform.DoesNotExist:
-                    LOG.warn("Invalid platform: {0}-{1}, skipping".format(
-                        platform.name, version))
-                    continue
-                new_platforms[(platform.name, version)] = p
-
-    for p in set(new_platforms) - set(old_platforms):
-        role.platforms.add(new_platforms[p])
-
-    for p in set(old_platforms) - set(new_platforms):
-        role.platforms.delete(old_platforms[p])
-
-
-def _update_role_metadata(role, data):
-    # type: (models.Content, loaders.RoleData) -> None
-    raw_attrs = (
-        'author'
-        'company',
-        'description',
-        'min_ansible_version',
-        'min_ansible_container_version',
-        'issue_tracker_url',
-    )
-    for attr in raw_attrs:
-        setattr(role, attr, getattr(data, attr))
-    _update_role_videos(role, data.video_links)
-    _update_platforms(role, data.platforms)
-    # _update_cloud_platforms(role, data.cloud_platforms)
-
-
-def _update_content(obj, data):
-    # type: (models.Content, loaders.RoleData) -> None
-    if isinstance(data, loaders.RoleData):
-        _update_role_metadata(obj, data)
-
-
-def _import_repository(task):
-    basedir = settings.WORKER_DIR_BASE
-    with utils.TemporaryDirectory(dir=basedir) as workdir:
-        utils.clone_repository(task.repository.clone_url, workdir)
-
-        loader = loaders.RepositoryLoader(workdir)
-        loader.load()
-        for data in loader.load_contents():
-            obj = models.Content.objects.get_or_create(
-                repository=task.repository,
-                content_type=models.ContentType.get(data.content_type),
-                name=data.name,
-            )
-            _update_content(obj, data)
-
-
 @celery.task
 def import_repository(task_id):
-    task = models.ImportTask.objects.get(id=task_id)
-    task.start()
+    LOG.info(u"Starting task: %d" % int(task_id))
 
     try:
-        _import_repository(task)
-    except Exception as e:
-        task.finish_failed(e)
-        LOG.exception(e)
+        import_task = models.ImportTask.objects.get(id=task_id)
+    except models.ImportTask.DoesNotExist:
+        LOG.error(u"Failed to get task id: %d" % int(task_id))
         raise
+
+    import_task.start()
+
+    logger = logging.getLogger('galaxy.worker.tasks.import_repository')
+    logger = wlog.ImportTaskAdapter(logger, task_id=import_task.id)
+
+    try:
+        with utils.WorkerCloneDir(settings.WORKER_DIR_BASE) as workdir:
+            _import_repository(import_task, workdir, logger)
+    except Exception as e:
+        LOG.exception(e)
+        import_task.finish_failed(
+            reason='Task "{}" failed: {}'.format(import_task.id, str(e)))
+        raise
+
+
+@transaction.atomic
+def _import_repository(import_task, workdir, logger):
+    repository = import_task.repository
+    repo_full_name = repository.github_user + "/" + repository.github_repo
+    logger.info(u'Starting import: task_id={}, repository={}'
+                .format(import_task.id, repo_full_name))
+
+    if import_task.repository_alt_name:
+        logging.info(u'Using repository name alias: "{}"'
+                     .format(import_task.repository_alt_name))
+        repository.name = import_task.repository_alt_name
+
+    token = _get_social_token(import_task)
+    gh_api = github.Github(token)
+    gh_repo = gh_api.get_repo(repo_full_name)
+
+    context = utils.Context(
+        workdir=workdir,
+        repository=repository,
+        github_token=token,
+        github_client=gh_api,
+        github_repo=gh_repo)
+    repo_loader = repo.RepositoryLoader.from_remote(
+        remote_url=import_task.repository.clone_url,
+        clone_dir=workdir,
+        name=repository.original_name,
+        logger=logger)
+
+    new_content_objs = []
+
+    for loader in repo_loader.load():
+        data = loader.load()
+
+        importer_cls = importers.get_importer(data.content_type)
+        importer = importer_cls(context, data, logger=loader.log)
+        content = importer.do_import()
+
+        new_content_objs.append(content.id)
+
+        # TODO(cutwater): Move to RoleImporter class
+        elastic_tasks.update_custom_indexes.delay(
+            username=content.namespace, tags=content.get_tags(),
+            platforms=content.get_unique_platforms(),
+            cloud_platforms=content.get_cloud_platforms())
+
+    for obj in repository.content_objects.exclude(id__in=new_content_objs):
+        logger.info(
+            'Deleting Content instance: content_type={0}, '
+            'namespace={1}, name={2}'.format(
+                obj.content_type, obj.namespace, obj.name))
+        obj.delete()
+
+    _update_namespace(gh_repo)
+    _update_repository(repository, gh_repo, repo_loader.last_commit_info)
+
+    import_task.finish_success(u'Import completed')
+
+
+def _update_namespace(repository):
+    # Use GitHub repo to update namespace attributes
+    if repository.owner.type == 'Organization':
+        owner = repository.organization
+    else:
+        owner = repository.owner
+
+    models.ProviderNamespace.objects.update_or_create(
+        provider__name=constants.PROVIDER_GITHUB,
+        name=owner.login,
+        defaults={
+            'display_name': owner.name,
+            'avatar_url': owner.avatar_url,
+            'location': owner.location,
+            'company': owner.company,
+            'email': owner.email,
+            'html_url': owner.html_url,
+            'followers': owner.followers
+        })
+
+
+def _get_social_token(import_task):
+    user = import_task.owner
+    try:
+        token = auth_models.SocialToken.objects.get(
+            account__user=user, account__provider='github')
+        return token.token
+    except Exception:
+        raise exc.TaskError(
+            u"Failed to get GitHub account for Galaxy user {0}. "
+            u"You must first authenticate with GitHub.".format(user.username))
+
+
+def _update_repository(repository, gh_repo, commit_info):
+    repository.stargazers_count = gh_repo.stargazers_count
+    repository.watchers_count = gh_repo.subscribers_count
+    repository.forks_count = gh_repo.forks_count
+    repository.open_issues_count = gh_repo.open_issues_count
+
+    repository.commit = commit_info['sha']
+    repository.commit_message = commit_info['message'][:255]
+    repository.commit_url = \
+        'https://api.github.com/repos/{0}/git/commits/{1}'.format(
+            gh_repo.full_name, commit_info['sha'])
+    repository.commit_created = commit_info['committer_date']
+    repository.save()

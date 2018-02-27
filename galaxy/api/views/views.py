@@ -99,7 +99,8 @@ from .base_views import (APIView,
                          RetrieveUpdateDestroyAPIView)
 
 from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
-from galaxy.main.celerytasks.tasks import import_repository, update_user_repos, refresh_existing_user_repos
+from galaxy.main.celerytasks.tasks import update_user_repos, refresh_existing_user_repos
+from galaxy.worker.tasks import import_repository
 from galaxy.main.models import (Platform,
                                 CloudPlatform,
                                 Category,

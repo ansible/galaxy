@@ -18,41 +18,32 @@
 import ast
 import logging
 
+import yaml
+
 from . import base
 from . import common
+
 
 LOG = logging.getLogger(__name__)
 
 
-class ModuleLoader(base.PythonModuleLoader):
+class PluginLoader(base.PythonModuleLoader):
 
     def __init__(self, path, content_type, name=None, logger=None):
-        super(ModuleLoader, self).__init__(path, content_type,
+        super(PluginLoader, self).__init__(path, content_type,
                                            name=name, logger=logger)
-
         self.documentation = None
-        self.metdata = None
 
     def load(self):
-
-        self._parse_module()
-
-        description = ''
-        if self.documentation:
-            description = self.documentation.get('short_description', '')
+        self._parse_plugin()
 
         return base.ContentData(
             name=self.name,
             path=self.path,
-            content_type=self.content_type,
-            description=description,
-            metadata={
-                'ansible_metadata': self.metdata,
-                'documentation': self.documentation
-            }
+            content_type=self.content_type
         )
 
-    def _parse_module(self):
+    def _parse_plugin(self):
         with open(self.path) as fp:
             code = fp.read()
 
@@ -65,20 +56,28 @@ class ModuleLoader(base.PythonModuleLoader):
 
             name = node.targets[0].id
 
-            if name == 'ANSIBLE_METADATA':
-                self.metadata = self._parse_metdata(node)
-            elif name == 'DOCUMENTATION':
+            if name == 'DOCUMENTATION':
                 try:
                     self.documentation = common.parse_ast_doc(node)
                 except ValueError as e:
                     self.log.warning('Cannot parse "DOCUMENTATION": {}'
                                      .format(e))
+                break
 
-    def _parse_metdata(self, node):
-        # type (ast.Dict) -> dict
-        if not isinstance(node.value, ast.Dict):
-            self.log.warning('Cannot parse "ANSIBLE_METADATA" field, '
-                             'dict expected')
+    def _parse_doc(self, node):
+        # type (ast.Str) -> dict
+        if not isinstance(node.value, ast.Str):
+            self.log.warning('Cannot parse "DOCUMENTATION" field, '
+                             'string expected')
+            return
+        try:
+            documentation = yaml.safe_load(node.value.s)
+        except yaml.YAMLError as e:
+            self.log.warning('Cannot parse "DOCUMENTATION" field: {}'
+                             .format(e))
             return
 
-        return ast.literal_eval(node.value)
+        if not isinstance(documentation, dict):
+            self.log.warning('Invalid "DOCUMENTATION" value, YAML document'
+                             'should be a dictionary')
+        return documentation

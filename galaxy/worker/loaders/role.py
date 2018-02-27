@@ -28,7 +28,6 @@ from ansible.playbook.role import requirement as ansible_req
 from galaxy.main import constants
 from galaxy.worker import exceptions as exc
 from galaxy.worker.loaders import base
-from galaxy.worker import logging as wlog
 
 LOG = logging.getLogger(__name__)
 
@@ -55,10 +54,6 @@ class RoleData(base.ContentData):
         'platforms',
         'cloud_platforms',
     ])
-
-    def __init__(self, **kwargs):
-        kwargs.setdefault('content_type', constants.ContentType.ROLE)
-        super(RoleData, self).__init__(**kwargs)
 
 
 PlatformInfo = collections.namedtuple(
@@ -199,7 +194,8 @@ class RoleMetaParser(object):
         return videos
 
 
-class RoleLoader(base.BaseLoader):
+class RoleLoader(base.DirectoryLoader):
+    # (attribute name, default value)
     STRING_ATTRS = [
         ('description', ''),
         ('author', ''),
@@ -213,22 +209,23 @@ class RoleLoader(base.BaseLoader):
     CONTAINER_META_FILE = 'meta/container.yml'
     ANSIBLE_CONTAINER_META_FILE = 'container.yml'
 
-    def __init__(self, path, name=None, meta_file=None, logger=None):
+    def __init__(self, path, content_type, name=None, meta_file=None, logger=None):
         """
         :param str path: Path to role directory within repository
         """
-        name = name or os.path.basename(path)
-        logger = wlog.ContentTypeAdapter(logger or LOG, 'Role', name)
+        super(RoleLoader, self).__init__(path, content_type,
+                                         name=name, logger=logger)
 
-        super(RoleLoader, self).__init__(path, logger=logger)
-
-        self.name = name
         self.meta_file = meta_file
 
         self._container_yml_type = None
 
     def load(self):
-        data = {'name': self.name, 'path': self.path}
+        data = {
+            'name': self.name,
+            'path': self.path,
+            'content_type': self.content_type
+        }
 
         metadata = self._load_metadata()
         meta_parser = RoleMetaParser(metadata, logger=self.log)
