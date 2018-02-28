@@ -24,8 +24,8 @@ export class RepositoryService {
                 private notificationService: NotificationService) {
     }
 
-    query(): Observable<Repository[]> {
-        return this.http.get<QueryResponse>(this.url)
+    query(params): Observable<Repository[]> {
+        return this.http.get<QueryResponse>(this.url, {params: params})
             .pipe(
                 map(response => response.results),
                 tap(_ => this.log('fetched repositories')),

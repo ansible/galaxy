@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 
+import { Namespace }                                   from "../../../../resources/namespaces/namespace";
+
 @Component({
     encapsulation: ViewEncapsulation.None,
     selector: 'provider-namespaces-content',
@@ -7,7 +9,7 @@ import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
     styleUrls: ['./provider-namespaces-content.component.less']
 })
 export class ProviderNamespacesContentComponent implements OnInit {
-    @Input() item: any;
+    @Input() namespace: Namespace;
 
     constructor() {
     }

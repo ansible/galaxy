@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
+import { Namespace }                                   from "../../../../resources/namespaces/namespace";
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -7,7 +8,7 @@ import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
     styleUrls: ['./owners-content.component.less']
 })
 export class OwnersContentComponent implements OnInit {
-    @Input() item: any;
+    @Input() namespace: Namespace;
 
     constructor() {
     }

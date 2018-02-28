@@ -101,11 +101,6 @@ export class AppComponent {
                 title: 'My Content',
                 iconStyleClass: 'fa fa-book',
                 url: '/my-content'
-            },
-            {
-                title: 'Experiment',
-                iconStyleClass: 'fa fa-flask',
-                url: '/experiment'
             }
         ];
         // TODO add unsecured API endpoint for retrieving Galaxy version

@@ -27,7 +27,6 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
 import { AppRoutingModule }           from './app-routing.module';
 import { HomeModule }                 from './home/home.module';
 import { MyContentModule }            from './my-content/my-content.module';
-import { ExperimentModule }           from './experiment/experiment.module';
 import { AuthService }                from './auth/auth.service';
 import { NotificationService }        from 'patternfly-ng/notification/notification-service/notification.service';
 import { NotificationModule }         from 'patternfly-ng/notification/notification.module';
@@ -50,7 +49,6 @@ import { NotificationModule }         from 'patternfly-ng/notification/notificat
         NotificationModule,
         HomeModule,
         MyContentModule,
-        ExperimentModule,
         ModalModule,
         AppRoutingModule
     ],
