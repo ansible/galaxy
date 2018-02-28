@@ -1,4 +1,4 @@
-export class QueryResponse {
+export class PagedResponse {
     count: number;
     cur_page: number;
     num_pages: number;

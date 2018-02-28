@@ -7,7 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { Repository }          from './repository';
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service'
-import { QueryResponse }       from "../query-response";
+import { PagedResponse }       from "../paged-response";
 
 const httpOptions = {
     headers: new HttpHeaders({
@@ -25,7 +25,7 @@ export class RepositoryService {
     }
 
     query(params): Observable<Repository[]> {
-        return this.http.get<QueryResponse>(this.url, {params: params})
+        return this.http.get<PagedResponse>(this.url, {params: params})
             .pipe(
                 map(response => response.results),
                 tap(_ => this.log('fetched repositories')),

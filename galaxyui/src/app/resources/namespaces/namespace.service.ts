@@ -9,7 +9,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { Namespace } from './namespace';
 
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service'
-import { QueryResponse }       from "../query-response";
+import { PagedResponse }       from "../paged-response";
 
 
 const httpOptions = {
@@ -28,7 +28,7 @@ export class NamespaceService {
     }
 
     query(): Observable<Namespace[]> {
-        return this.http.get<QueryResponse>(this.url)
+        return this.http.get<PagedResponse>(this.url)
             .pipe(
                 map(response => response.results),
                 tap(_ => this.log('fetched namespaces')),

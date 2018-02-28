@@ -14,10 +14,12 @@ import { EmptyStateConfig }  from 'patternfly-ng/empty-state/empty-state-config'
 import { ListEvent }         from 'patternfly-ng/list/list-event';
 import { ListConfig }        from 'patternfly-ng/list/basic-list/list-config';
 
-import { Namespace }         from "../../../../resources/namespaces/namespace";
-import { Repository }        from "../../../../resources/respositories/repository";
-import { RepositoryService } from "../../../../resources/respositories/repository.service";
-import { ProviderNamespace } from "../../../../resources/provider-namespaces/provider-namespace";
+import { Namespace }               from "../../../../resources/namespaces/namespace";
+import { Repository }              from "../../../../resources/respositories/repository";
+import { RepositoryService }       from "../../../../resources/respositories/repository.service";
+import { ProviderNamespace }       from "../../../../resources/provider-namespaces/provider-namespace";
+import { RepositoryImportService } from "../../../../resources/repository-imports/repository-import.service";
+import { RepositoryImport }        from "../../../../resources/repository-imports/repository-import";
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -36,7 +38,8 @@ export class RepositoriesContentComponent implements OnInit {
     selectType: string = 'checkbox';
     loading: boolean = false;
 
-    constructor(private repositoryService: RepositoryService) {
+    constructor(private repositoryService: RepositoryService,
+                private repositoryImportService: RepositoryImportService) {
     }
 
     ngOnInit(): void {
@@ -151,8 +154,8 @@ export class RepositoriesContentComponent implements OnInit {
                     let clonedRepo = cloneDeep(repo);
                     this.repositories.push(clonedRepo);
                     this.items.push(clonedRepo);
-                    this.loading = false;
                 });
+                this.loading = false;
             });
         });
 
@@ -160,5 +163,13 @@ export class RepositoriesContentComponent implements OnInit {
 
     private importRepository(repository: Repository) {
         console.log('importRepository', repository);
+        let repoImport: RepositoryImport = new RepositoryImport();
+        repoImport.github_user = repository.github_user;
+        repoImport.github_repo = repository.github_repo;
+        this.repositoryImportService
+            .save(repoImport)
+            .subscribe(_ => {
+                console.log();
+            });
     }
 }

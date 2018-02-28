@@ -22,14 +22,23 @@ import {
     ModalModule as BsModalModule
 } from 'ngx-bootstrap';
 
-import { AppComponent }               from './app.component';
-import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
-import { AppRoutingModule }           from './app-routing.module';
 import { HomeModule }                 from './home/home.module';
 import { MyContentModule }            from './my-content/my-content.module';
+import { NotificationModule }         from 'patternfly-ng/notification/notification.module';
+
 import { AuthService }                from './auth/auth.service';
 import { NotificationService }        from 'patternfly-ng/notification/notification-service/notification.service';
-import { NotificationModule }         from 'patternfly-ng/notification/notification.module';
+import { NamespaceService }           from './resources/namespaces/namespace.service';
+import { UserService }                from './resources/users/user.service';
+import { RepositoryService }          from './resources/respositories/repository.service';
+import { ProviderSourceService }      from './resources/provider-namespaces/provider-source.service';
+import { RepositoryImportService }    from './resources/repository-imports/repository-import.service';
+
+import { AppRoutingModule }           from './app-routing.module';
+
+import { AppComponent }               from './app.component';
+import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
+
 
 @NgModule({
     declarations: [
@@ -54,7 +63,12 @@ import { NotificationModule }         from 'patternfly-ng/notification/notificat
     ],
     providers: [
         AuthService,
-        NotificationService
+        NotificationService,
+        NamespaceService,
+        UserService,
+        ProviderSourceService,
+        RepositoryService,
+        RepositoryImportService
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA

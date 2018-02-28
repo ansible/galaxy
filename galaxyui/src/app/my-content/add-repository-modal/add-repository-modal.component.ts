@@ -60,7 +60,7 @@ export class AddRepositoryModalComponent implements OnInit {
                 newRepo.original_name = repoSource.name;
                 newRepo.provider_namespace = this.selectedPNS.id;
                 newRepo.is_enabled = true;
-                this.repositoryService.save(newRepo).subscribe(res => console.log(res));;
+                this.repositoryService.save(newRepo).subscribe(res => console.log(res));
             });
         this.bsModalRef.hide();
     }

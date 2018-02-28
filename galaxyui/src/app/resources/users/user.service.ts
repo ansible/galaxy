@@ -3,7 +3,7 @@ import { catchError, map, tap } from "rxjs/operators";
 import { NotificationService }  from "patternfly-ng/notification/notification-service/notification.service";
 import { Observable }           from "rxjs/Observable";
 import { HttpClient }           from "@angular/common/http";
-import { QueryResponse }        from "../query-response";
+import { PagedResponse }        from "../paged-response";
 import { User }                 from "./user";
 import { of }                   from "rxjs/observable/of";
 
@@ -18,7 +18,7 @@ export class UserService {
     }
 
     query(): Observable<User[]> {
-        return this.http.get<QueryResponse>(this.url)
+        return this.http.get<PagedResponse>(this.url)
             .pipe(
                 map(response => response.results as User[]),
                 tap(users => this.log('fetched users')),
