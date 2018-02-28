@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 
 import { cloneDeep } from 'lodash';
+import { flatten } from 'lodash';
 
 import { Action }            from 'patternfly-ng/action/action';
 import { ActionConfig }      from 'patternfly-ng/action/action-config';
@@ -20,6 +21,8 @@ import { RepositoryService }       from "../../../../resources/respositories/rep
 import { ProviderNamespace }       from "../../../../resources/provider-namespaces/provider-namespace";
 import { RepositoryImportService } from "../../../../resources/repository-imports/repository-import.service";
 import { RepositoryImport }        from "../../../../resources/repository-imports/repository-import";
+import { Observable }              from "rxjs/Observable";
+import { forkJoin } from 'rxjs/observable/forkJoin';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -145,24 +148,22 @@ export class RepositoriesContentComponent implements OnInit {
         this.loading = true;
         this.repositories = [];
         this.items = [];
-        //TODO forkjoin
+        let queries: Observable<Repository[]>[] = [];
         this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
-            this.repositoryService.query({
+            queries.push(this.repositoryService.query({
                 provider_namespace: pns.id
-            }).subscribe((repositories: Repository[]) => {
-                repositories.forEach((repo: Repository) => {
-                    let clonedRepo = cloneDeep(repo);
-                    this.repositories.push(clonedRepo);
-                    this.items.push(clonedRepo);
-                });
-                this.loading = false;
-            });
+            }));
+        });
+
+        forkJoin(queries).subscribe((results: Repository[][]) => {
+            this.repositories = flatten(results);
+            this.items = cloneDeep(this.repositories);
+            this.loading = false;
         });
 
     }
 
     private importRepository(repository: Repository) {
-        console.log('importRepository', repository);
         let repoImport: RepositoryImport = new RepositoryImport();
         repoImport.github_user = repository.github_user;
         repoImport.github_repo = repository.github_repo;

@@ -1,12 +1,16 @@
 import { Component, OnInit }     from '@angular/core';
 import { BsModalRef }            from 'ngx-bootstrap';
-import { Namespace }             from "../../resources/namespaces/namespace";
-import { ProviderNamespace }     from "../../resources/provider-namespaces/provider-namespace";
+import { Namespace }             from '../../resources/namespaces/namespace';
+import { ProviderNamespace }     from '../../resources/provider-namespaces/provider-namespace';
 import { cloneDeep }             from 'lodash';
-import { ProviderSourceService } from "../../resources/provider-namespaces/provider-source.service";
-import { Subject }               from 'rxjs';
-import { RepositoryService }     from "../../resources/respositories/repository.service";
-import { Repository }            from "../../resources/respositories/repository";
+import { ProviderSourceService }   from '../../resources/provider-namespaces/provider-source.service';
+import { Subject }                 from 'rxjs';
+import { forkJoin }                from 'rxjs/observable/forkJoin';
+import { Observable }              from 'rxjs/Observable';
+import { RepositoryService }       from '../../resources/respositories/repository.service';
+import { Repository }              from '../../resources/respositories/repository';
+import { RepositoryImport }        from '../../resources/repository-imports/repository-import';
+import { RepositoryImportService } from '../../resources/repository-imports/repository-import.service';
 
 
 @Component({
@@ -19,11 +23,13 @@ export class AddRepositoryModalComponent implements OnInit {
     selectedPNS: any;
     providerNamespaces: any[] = [];
     displayedRepos: any[] = [];
+    saveInProgress: boolean;
     private filterValue = new Subject<string>();
 
 
     constructor(public bsModalRef: BsModalRef,
                 private repositoryService: RepositoryService,
+                private repositoryImportService: RepositoryImportService,
                 private providerSourceService: ProviderSourceService) {
     }
 
@@ -51,18 +57,35 @@ export class AddRepositoryModalComponent implements OnInit {
     }
 
     saveRepos() {
+        this.saveInProgress = true;
+        let saveRequests: Observable<Repository>[] = [];
         this.selectedPNS.repoSources
-            .filter(repoSource => repoSource.isSelected)
+            .filter((repoSource) => repoSource.isSelected)
             .forEach(repoSource => {
-                console.log('Save repo', repoSource);
                 let newRepo = new Repository();
                 newRepo.name = repoSource.name;
                 newRepo.original_name = repoSource.name;
                 newRepo.provider_namespace = this.selectedPNS.id;
                 newRepo.is_enabled = true;
-                this.repositoryService.save(newRepo).subscribe(res => console.log(res));
+                saveRequests.push(this.repositoryService.save(newRepo));
+                //TODO catch errors from the save and ignore them or else forkjoin will fail.
             });
-        this.bsModalRef.hide();
+
+        forkJoin(saveRequests).subscribe((results: Repository[]) => {
+            this.saveInProgress = false;
+            this.bsModalRef.hide();
+
+            results.forEach((repository: Repository) => {
+                let repoImport: RepositoryImport = new RepositoryImport();
+                repoImport.github_user = repository.github_user;
+                repoImport.github_repo = repository.github_repo;
+                this.repositoryImportService
+                    .save(repoImport)
+                    .subscribe(_ => {
+                        console.log();
+                    });
+            });
+        });
     }
 
     private getRepoSources() {
