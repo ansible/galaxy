@@ -34,15 +34,20 @@ export class RepositoryService {
     }
 
     save(repository: Repository): Observable<Repository> {
-        console.log('RepositoryService.save', this.url, repository, httpOptions);
-        return this.http.post<Repository>(this.url, repository, httpOptions).pipe(
-            tap((newRepo: Repository) => console.log(`added repo w/ id=${newRepo.id}`)),
-            catchError(this.handleError<Repository>('addRepo'))
+        let httpResult: Observable<Object>;
+        if (repository.id) {
+            httpResult = this.http.put<Repository>(`${this.url}/${repository.id}`, repository, httpOptions);
+        } else {
+            httpResult = this.http.post<Repository>(`${this.url}/`, repository, httpOptions);
+        }
+
+        return httpResult.pipe(
+            tap((newRepo: Repository) => this.log(`Saved repository w/ id=${newRepo.id}`)),
+            catchError(this.handleError<Repository>('Save'))
         );
     }
 
     private handleError<T>(operation = '', result?: T) {
-        console.log('RepositoryService handleError', operation, result);
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} repository error: ${error.message}`);

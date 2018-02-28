@@ -53,7 +53,7 @@ export class NamespaceService {
         }
 
         return httpResult.pipe(
-            tap((namespace: Namespace) => this.log(`Saved namespace w/ id=${namespace.id}`)),
+            tap((newNamespace: Namespace) => this.log(`Saved namespace w/ id=${newNamespace.id}`)),
             catchError(this.handleError<Namespace>('Save'))
         );
     }
