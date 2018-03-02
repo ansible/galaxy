@@ -26,7 +26,6 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
-from django import urls
 
 # local stuff
 from galaxy.main import constants
@@ -99,38 +98,13 @@ def readme_to_html(obj):
     return content
 
 
-def get_url_parts(path):
-    """Creates URLs for breadcrumbs displayed in page headers"""
-    from galaxy.main import urls as main_urls
-
-    url_parts = path.split('/')
-    total_path = ""
-    url_items = [["home", "/"]]
-    for part in url_parts:
-        if not part:
-            continue
-
-        total_path += '/' + part
-        breadcrumb_url = None
-        for pattern in main_urls.urlpatterns:
-            if (isinstance(pattern, urls.RegexURLPattern)
-                    and pattern.regex.match(total_path[1:])):
-                breadcrumb_url = total_path
-                break
-        url_items.append([part, breadcrumb_url])
-    return url_items
-
-
 def build_standard_context(request):
-    url_items = get_url_parts(request.path)
     debug = 'on' if settings.DEBUG else 'off'
     context = dict(
         request=request,
         user=request.user,
         debug=debug,
         redirect_url=request.path,
-        url_items=url_items,
-        url_items_length=len(url_items),
         site_name=settings.SITE_NAME,
         use_menu_controller=False,
         load_angular=False,
