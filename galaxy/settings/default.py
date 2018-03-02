@@ -199,17 +199,15 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'galaxy.api.permissions.ModelAccessPermission',
     ),
-    'DEFAULT_PAGINATION_SERIALIZER_CLASS':
-        'galaxy.api.pagination.PaginationSerializer',
+    # TODO(cutwater): Update production settings
+    'DEFAULT_PAGINATION_CLASS':
+        'galaxy.api.pagination.PageNumberPagination',
     'DEFAULT_FILTER_BACKENDS': (
         'galaxy.api.filters.ActiveOnlyBackend',
         'galaxy.api.filters.FieldLookupBackend',
         'rest_framework.filters.SearchFilter',
         'galaxy.api.filters.OrderByBackend',
     ),
-    'PAGINATE_BY': 10,
-    'PAGINATE_BY_PARAM': 'page_size',
-    'MAX_PAGINATE_BY': 1000,
     'DEFAULT_THROTTLE_CLASSES': (
         'galaxy.api.throttling.RoleDownloadCountThrottle',
     ),

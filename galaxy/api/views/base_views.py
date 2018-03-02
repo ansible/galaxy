@@ -16,11 +16,9 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import inspect
-import warnings
 import logging
 
 from django.http import Http404
-from django.core.paginator import InvalidPage
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
@@ -194,60 +192,6 @@ class GenericAPIView(generics.GenericAPIView, APIView):
         if getattr(self, 'search_fields', None):
             ret['search_fields'] = self.search_fields
         return ret
-
-    def paginate_queryset(self, queryset, page_size=None):
-        """
-        Paginate a queryset if required, either returning a page object,
-        or `None` if pagination is not configured for this view.
-        """
-        deprecated_style = False
-        if page_size is not None:
-            warnings.warn('The `page_size` parameter to `paginate_queryset()` '
-                          'is due to be deprecated. '
-                          'Note that the return style of this method is also '
-                          'changed, and will simply return a page object '
-                          'when called without a `page_size` argument.',
-                          PendingDeprecationWarning, stacklevel=2)
-            deprecated_style = True
-        else:
-            # Determine the required page size.
-            # If pagination is not configured, simply return None.
-            page_size = self.get_paginate_by()
-            if not page_size:
-                return None
-
-        paginator = self.paginator_class(queryset, page_size,
-                                         allow_empty_first_page=True)
-        page_kwarg = self.kwargs.get(self.page_kwarg)
-        page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
-        page = page_kwarg or page_query_param or 1
-        try:
-            page_number = generics.strict_positive_int(page)
-        except ValueError:
-            if page == 'last':
-                page_number = paginator.num_pages
-            else:
-                raise Http404("Page is not 'last', nor can it be "
-                              "converted to an int.")
-        try:
-            page = paginator.page(page_number)
-        except InvalidPage as e:
-            # here is where we override the default paginator behavior
-            # rather than fail, try and return a valid page
-            try:
-                if page_number > paginator.num_pages:
-                    page = paginator.page(paginator.num_pages)
-                else:
-                    page = paginator.page(1)
-            except:
-                raise Http404('Invalid page (%(page_number)s): %(message)s' % {
-                    'page_number': page_number,
-                    'message': str(e)
-                })
-
-        if deprecated_style:
-            return (paginator, page, page.object_list, page.has_other_pages())
-        return page
 
 
 class ListAPIView(generics.ListAPIView, GenericAPIView):

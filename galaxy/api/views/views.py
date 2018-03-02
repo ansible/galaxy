@@ -1073,12 +1073,16 @@ class TopContributorsList(ListAPIView):
     serializer_class = TopContributorsSerializer
 
     def list(self, request, *args, **kwargs):
-        qs = Content.objects.values('namespace').annotate(count=Count('id')).order_by('-count', 'namespace')
+        qs = (Content.objects.values('namespace')
+              .annotate(count=Count('id'))
+              .order_by('-count', 'namespace'))
+
         page = self.paginate_queryset(qs)
         if page is not None:
-            serializer = self.get_pagination_serializer(page)
-        else:
-            serializer = self.get_serializer(qs, many=True)
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
 

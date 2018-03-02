@@ -15,70 +15,47 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-# Django REST Framework
-from rest_framework import serializers, pagination
-from rest_framework.templatetags.rest_framework import replace_query_param
+from collections import OrderedDict
+
+from rest_framework import pagination
+from rest_framework import response
+from rest_framework.utils.urls import remove_query_param, replace_query_param
 
 
-class NextPageField(pagination.NextPageField):
-    '''Pagination field to output URL path.'''
+class PageNumberPagination(pagination.PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
 
-    def to_representation(self, value):
-        if not value.has_next():
+    def get_next_link(self):
+        if not self.page.has_next():
             return None
-        page = value.next_page_number()
-        request = self.context.get('request')
-        url = request and request.get_full_path() or ''
-        # remove /api/v1 so ansible-galaxy pagination works
-        url = url.replace('/api/v1', '')
-        return replace_query_param(url, self.page_field, page)
+        url = self.request.get_full_path()
+        page_number = self.page.next_page_number()
+        return replace_query_param(url, self.page_query_param, page_number)
 
-
-class PreviousPageField(pagination.NextPageField):
-    '''Pagination field to output URL path.'''
-
-    def to_representation(self, value):
-        if not value.has_previous():
+    def get_previous_link(self):
+        if not self.page.has_previous():
             return None
-        page = value.previous_page_number()
-        request = self.context.get('request')
-        url = request and request.get_full_path() or ''
-        # remove /api/v1 so ansible-galaxy pagination works
-        url = url.replace('/api/v1', '')
-        return replace_query_param(url, self.page_field, page)
+        url = self.request.get_full_path()
+        page_number = self.page.previous_page_number()
+        if page_number == 1:
+            return remove_query_param(url, self.page_query_param)
+        return replace_query_param(url, self.page_query_param, page_number)
 
+    def get_paginated_response(self, data):
+        next_link = self.get_next_link()
+        next_page = (next_link.replace('/api/v1', '')
+                     if next_link is not None else None)
+        previous_link = self.get_previous_link()
+        previous_page = (previous_link.replace('/api/v1', '')
+                         if previous_link is not None else None)
 
-class NextLinkField(pagination.NextPageField):
-    '''Pagination field to output URL path.'''
-
-    def to_representation(self, value):
-        if not value.has_next():
-            return None
-        page = value.next_page_number()
-        request = self.context.get('request')
-        url = request and request.get_full_path() or ''
-        return replace_query_param(url, self.page_field, page)
-
-
-class PreviousLinkField(pagination.NextPageField):
-    '''Pagination field to output URL path.'''
-
-    def to_representation(self, value):
-        if not value.has_previous():
-            return None
-        page = value.previous_page_number()
-        request = self.context.get('request')
-        url = request and request.get_full_path() or ''
-        return replace_query_param(url, self.page_field, page)
-
-
-class PaginationSerializer(pagination.BasePaginationSerializer):
-    '''Custom pagination serializer to output only URL path (without host/port).'''
-
-    count = serializers.ReadOnlyField(source='paginator.count')
-    cur_page = serializers.ReadOnlyField(source='number')
-    num_pages = serializers.ReadOnlyField(source='paginator.num_pages')
-    next_link = NextLinkField(source='*')
-    previous_link = PreviousLinkField(source='*')
-    next = NextPageField(source='*')
-    previous = PreviousPageField(source='*')
+        return response.Response(OrderedDict([
+            ('count', self.page.paginator.count),
+            ('next', next_page),
+            ('next_link', next_link),
+            ('previous', previous_page),
+            ('previous_link', previous_link),
+            ('results', data),
+        ]))
