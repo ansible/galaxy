@@ -1189,21 +1189,6 @@ class RemoveRole(APIView):
         return Response(response)
 
 
-# class RepositoryList(ListAPIView):
-#     model = Repository
-#     serializer_class = RepositorySerializer
-#
-#     def get_queryset(self):
-#         qs = super(RepositoryList, self).get_queryset()
-#         qs.select_related('owner')
-#         return qs
-#
-#
-# class RepositoryDetail(RetrieveAPIView):
-#     model = Repository
-#     serializer_class = RepositorySerializer
-
-
 class RefreshUserRepos(APIView):
     '''
     Return user GitHub repos directly from GitHub. Use to refresh cache for the authenticated user.
