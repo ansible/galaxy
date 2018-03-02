@@ -108,7 +108,13 @@ def build_standard_context(request):
         site_name=settings.SITE_NAME,
         use_menu_controller=False,
         load_angular=False,
-        connected_to_github=False
+        connected_to_github=False,
+        ng_app=None,
+        ng_controller=None,
+        page_title=None,
+        extra_css=None,
+        extra_js=None,
+        auth_orgs_url=None,
     )
 
     if request.user.is_authenticated():
