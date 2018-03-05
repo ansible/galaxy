@@ -54,9 +54,9 @@ class RoleList(ListAPIView):
             qs = qs.filter(**params)
             page = self.paginate_queryset(qs)
             if page is not None:
-                serializer = self.get_pagination_serializer(page)
-            else:
-                serializer = self.get_serializer(qs, many=True)
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+            serializer = self.get_serializer(qs, many=True)
             return Response(serializer.data)
         return super(RoleList, self).list(self, request, *args, **kwargs)
 

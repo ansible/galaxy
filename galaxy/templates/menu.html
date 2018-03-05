@@ -1,14 +1,14 @@
 
 <ul class="nav navbar-nav navbar-right" id="galaxy-nav-items" {% if use_menu_controller %} ng-controller="MenuCtrl" {% endif %}>
-    <li {% if url_items.1.0 == 'explore' %} class="active" {% endif %}><a href="{% url 'main:explore' %}#/">Explore</a></li>
+    <li {% if '/explore' in request.path %} class="active" {% endif %}><a href="{% url 'main:explore' %}#/">Explore</a></li>
     <li id="nav-menu-browse-roles"><a href="{% url 'main:list-category' %}#/roles">Search</a></li>
     <li id="nav-menu-browse-authors"><a href="/authors/">Browse Authors</a></li>
     {% if not user.is_authenticated %}
         <li><a {% if not use_menu_controller %} href="/accounts/login/" {% endif %}
             {% if use_menu_controller %} href="" ng-click="redirectToSignin()" {% endif %}>Sign In</a></li>
     {% else %}
-        <li {% if url_items.1.0 == 'namespaces' %} class="active" {% endif %}><a type="button" href="/namespaces#/">My Content</a></li>
-        {% if url_items.1.0 == 'accounts' and url_items.2.0 == 'profile' or url_items.2.0 == 'email' %}
+        <li {% if '/namespaces' in request.path %} class="active" {% endif %}><a type="button" href="/namespaces#/">My Content</a></li>
+        {% if '/accounts' in request.path %}
             <li class="dropdown active">
         {% else %}
             <li id="nav-menu-dropdown" class="dropdown">

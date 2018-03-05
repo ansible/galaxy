@@ -98,42 +98,23 @@ def readme_to_html(obj):
     return content
 
 
-def get_url_parts(path):
-    import urls as main_urls
-    # create URLs for breadcrumbs displayed in page headers
-    url_parts = path.split('/')
-    total_path = ""
-    url_items = [["home", "/"]]
-    for part in url_parts:
-        if part != "":
-            total_path += "/%s" % part
-            breadcrumb_url = None
-            for up in main_urls.urlpatterns:
-                if up.__class__.__name__ == 'RegexURLPattern':
-                    try:
-                        up.regex.match(total_path[1:]).groups()
-                        breadcrumb_url = total_path
-                        break
-                    except:
-                        pass
-            url_items.append([part, breadcrumb_url])
-    return url_items
-
-
 def build_standard_context(request):
-    url_items = get_url_parts(request.path)
     debug = 'on' if settings.DEBUG else 'off'
     context = dict(
         request=request,
         user=request.user,
         debug=debug,
         redirect_url=request.path,
-        url_items=url_items,
-        url_items_length=len(url_items),
         site_name=settings.SITE_NAME,
         use_menu_controller=False,
         load_angular=False,
-        connected_to_github=False
+        connected_to_github=False,
+        ng_app=None,
+        ng_controller=None,
+        page_title=None,
+        extra_css=None,
+        extra_js=None,
+        auth_orgs_url=None,
     )
 
     if request.user.is_authenticated():

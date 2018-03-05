@@ -81,10 +81,6 @@ tag_urls = [
 
 search_urls = [
     url(r'^$', views.ApiV1SearchView.as_view(), name="search_view"),
-    # url(r'facetedplatforms/$',           FacetedView.as_view(),
-    #    kwargs={u'facet_key': u'platforms', u'model': u'Role'}, name="faceted_platforms_view"),
-    # url(r'facetedtags/$',                FacetedView.as_view(),
-    #    kwargs={u'facet_key': u'tags', u'model': u'Role'}, name="faceted_tags_view"),
     url(r'^platforms/$', views.PlatformsSearchView.as_view(),
         name='platforms_search_view'),
     url(r'^cloud_platforms/$', views.CloudPlatformsSearchView.as_view(),

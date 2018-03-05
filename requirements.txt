@@ -1,7 +1,9 @@
+django>=1.11,<2.0
+djangorestframework>=3.7,<3.8
+drf-haystack==1.7.1rc2
+
 gunicorn==19.7.1
-django==1.8.3
-djangorestframework==3.0.5
-pexpect
+
 decorator
 django-allauth==0.34.0
 django-autofixture
@@ -12,7 +14,7 @@ django-celery
 django-filter
 django-debug-toolbar
 django-haystack
-drf-haystack==1.5.6
+
 elasticsearch==2.4.1
 elasticsearch-dsl==2.2.0
 PyGithub
