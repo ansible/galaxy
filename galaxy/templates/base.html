@@ -18,6 +18,24 @@
         mod.factory('currentUserService', ['$resource', _factory]);
 
         function _factory($resource) {
+
+            {% if user.is_anonymous %}
+            var userData = {
+                "id": null,
+                "authenticasted": false,
+                "staff": false,
+                "username": '',
+                "created": null,
+                "modified": null,
+                "active": false,
+                "connected_to_github": false,
+                "cache_refreshed": false,
+                "auth_orgs_url": null,
+                "subscriptions": [],
+                "starred": [],
+                "update": null
+            };
+            {% else %}
             var userData = {
                 "id": ("{{ user.id }}" == "None") ? null : parseInt("{{ user.id }}"),
                 "authenticated": ("{{ user.is_authenticated }}" == "True") ? true : false, 
@@ -59,6 +77,7 @@
                     });
                 }
             };
+            {% endif %}
 
             return userData;
         }
