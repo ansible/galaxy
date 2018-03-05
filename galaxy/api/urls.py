@@ -21,10 +21,6 @@ from rest_framework import routers
 from galaxy.api import views
 
 
-router = routers.DefaultRouter()
-router.register('v1/search/roles', views.RoleSearchView,
-                base_name="search-roles")
-
 user_urls = [
     url(r'^$', views.UserList.as_view(), name='user_list'),
     url(r'^(?P<pk>[0-9]+)/$', views.UserDetail.as_view(), name='user_detail'),
@@ -81,6 +77,8 @@ tag_urls = [
 
 search_urls = [
     url(r'^$', views.ApiV1SearchView.as_view(), name="search_view"),
+    url(r'^roles/$', views.RoleSearchView.as_view(),
+        name='roles_search_view'),
     url(r'^platforms/$', views.PlatformsSearchView.as_view(),
         name='platforms_search_view'),
     url(r'^cloud_platforms/$', views.CloudPlatformsSearchView.as_view(),
@@ -200,5 +198,3 @@ urlpatterns = [
     url(r'^$', views.ApiRootView.as_view(), name='api_root_view'),
     url(r'^v1/', include(v1_urls)),
 ]
-
-urlpatterns += router.urls
