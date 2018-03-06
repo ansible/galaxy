@@ -448,6 +448,8 @@ class ImportTaskList(ListCreateAPIView):
 
 
 class ImportTaskDetail(RetrieveAPIView):
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (ModelAccessPermission,)
     model = ImportTask
     serializer_class = ImportTaskSerializer
 
@@ -466,21 +468,31 @@ class ImportTaskNotificationList(SubListAPIView):
 
 
 class ImportTaskLatestList(ListAPIView):
+    """ Return the most recent import for each of the user's repositories """
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated,)
     model = ImportTask
     serializer_class = ImportTaskLatestSerializer
 
-    def get_queryset(self):
-        return (
-            ImportTask.objects
-            .values(
-                'owner_id',
-                'repository__provider_namespace__name',
-                'repository__name')
-            .order_by(
-                'owner_id',
-                'repository__provider_namespace__name',
-                'repository__name')
-            .annotate(last_id=Max('id')))
+    def list(self, request, *args, **kwargs):
+        qs = ImportTask.objects.filter(
+            repository__provider_namespace__namespace__isnull=False,
+            repository__provider_namespace__namespace__owners=request.user
+            ).values(
+                'repository__provider_namespace__namespace__name',
+                'repository__name'
+            ).order_by(
+                'repository__provider_namespace__namespace__name',
+                'repository__name'
+            ).annotate(last_id=Max('id'))
+        qs = self.filter_queryset(qs)
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
 
 
 class UserRepositoriesList(SubListAPIView):

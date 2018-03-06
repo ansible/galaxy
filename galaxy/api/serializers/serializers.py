@@ -595,52 +595,49 @@ class ImportTaskSerializer(BaseSerializer):
 
 class ImportTaskLatestSerializer(BaseSerializer):
     id = serializers.SerializerMethodField()
-    owner_id = serializers.SerializerMethodField()
-    github_user = serializers.SerializerMethodField()
-    github_repo = serializers.SerializerMethodField()
+    namespace = serializers.SerializerMethodField()
+    repository_name = serializers.SerializerMethodField()
 
     class Meta:
         model = ImportTask
         fields = (
             'id',
-            'owner_id',
-            'github_user',
-            'github_repo',
+            'namespace',
+            'repository_name'
         )
 
-    def get_summary_fields(self, obj):
-        if obj is None:
-            return {}
-        d = super(ImportTaskLatestSerializer, self).get_summary_fields(obj)
-        g = ImportTask.objects.get(id=obj['last_id'])
-        d['details'] = OrderedDict([
-            ('id', g.id),
-            ('state', g.state),
-            ('github_user', g.repository.github_user),
-            ('github_repo', g.repository.github_repo),
-            ('github_reference', g.repository.import_branch),
-            ('modified', g.modified),
-            ('created', g.created),
-        ])
-        return d
-
     def get_url(self, obj):
-        if obj is None:
-            return ''
-        else:
-            return reverse('api:import_task_detail', args=(obj['last_id'],))
+        return reverse('api:import_task_detail', args=(obj['last_id'],))
 
     def get_id(self, obj):
         return obj['last_id']
 
-    def get_owner_id(self, obj):
-        return obj['owner_id']
+    def get_namespace(self, obj):
+        return obj['repository__provider_namespace__namespace__name']
 
-    def get_github_user(self, obj):
-        return obj['repository__provider_namespace__name']
-
-    def get_github_repo(self, obj):
+    def get_repository_name(self, obj):
         return obj['repository__name']
+
+    def get_active(self, obj):
+        try:
+            task = ImportTask.objects.get(pk=obj['last_id'])
+        except ObjectDoesNotExist:
+            return None
+        return task.active
+
+    def get_created(self, obj):
+        try:
+            task = ImportTask.objects.get(pk=obj['last_id'])
+        except ObjectDoesNotExist:
+            return None
+        return task.created
+
+    def get_modified(self, obj):
+        try:
+            task = ImportTask.objects.get(pk=obj['last_id'])
+        except ObjectDoesNotExist:
+            return None
+        return task.modified
 
 
 class RoleTopSerializer(BaseSerializer):
