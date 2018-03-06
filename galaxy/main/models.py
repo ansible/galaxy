@@ -455,6 +455,9 @@ class Content(CommonModelNameNotUnique):
     def get_username(self):
         return self.namespace
 
+    # TODO(cutwater): Active field is not used for tags anymore.
+    # get_tags() function should be replaced with tags property usage and
+    # removed as well as an `active` field from Tag model.
     def get_tags(self):
         return [tag.name for tag in self.tags.filter(active=True)]
 
