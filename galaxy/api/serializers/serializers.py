@@ -597,14 +597,22 @@ class ImportTaskLatestSerializer(BaseSerializer):
     id = serializers.SerializerMethodField()
     namespace = serializers.SerializerMethodField()
     repository_name = serializers.SerializerMethodField()
+    state = serializers.SerializerMethodField()
 
     class Meta:
         model = ImportTask
         fields = (
             'id',
             'namespace',
-            'repository_name'
+            'repository_name',
+            'state'
         )
+
+    def get_task_obj(self, task_id):
+        try:
+            return ImportTask.objects.get(pk=task_id)
+        except ObjectDoesNotExist:
+            return None
 
     def get_url(self, obj):
         return reverse('api:import_task_detail', args=(obj['last_id'],))
@@ -619,25 +627,20 @@ class ImportTaskLatestSerializer(BaseSerializer):
         return obj['repository__name']
 
     def get_active(self, obj):
-        try:
-            task = ImportTask.objects.get(pk=obj['last_id'])
-        except ObjectDoesNotExist:
-            return None
-        return task.active
+        task = self.get_task_obj(obj['last_id'])
+        return task.active if task else None
 
     def get_created(self, obj):
-        try:
-            task = ImportTask.objects.get(pk=obj['last_id'])
-        except ObjectDoesNotExist:
-            return None
-        return task.created
+        task = self.get_task_obj(obj['last_id'])
+        return task.created if task else None
 
     def get_modified(self, obj):
-        try:
-            task = ImportTask.objects.get(pk=obj['last_id'])
-        except ObjectDoesNotExist:
-            return None
-        return task.modified
+        task = self.get_task_obj(obj['last_id'])
+        return task.modified if task else None
+
+    def get_state(self, obj):
+        task = self.get_task_obj(obj['last_id'])
+        return task.state if task else None
 
 
 class RoleTopSerializer(BaseSerializer):
