@@ -480,13 +480,13 @@ class ImportTaskLatestList(ListAPIView):
         qs = ImportTask.objects.filter(
             repository__provider_namespace__namespace__isnull=False,
             repository__provider_namespace__namespace__owners=request.user
-            ).values(
-                'repository__provider_namespace__namespace__name',
-                'repository__name'
-            ).order_by(
-                'repository__provider_namespace__namespace__name',
-                'repository__name'
-            ).annotate(last_id=Max('id'))
+        ).values(
+            'repository__provider_namespace__namespace__name',
+            'repository__name'
+        ).order_by(
+            'repository__provider_namespace__namespace__name',
+            'repository__name'
+        ).annotate(last_id=Max('id'))
         qs = self.filter_queryset(qs)
         page = self.paginate_queryset(qs)
         if page is not None:
