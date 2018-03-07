@@ -422,9 +422,11 @@ class ImportTaskList(ListCreateAPIView):
         alternate_role_name = request.data.get('alternate_role_name', None)
 
         if not github_user or not github_repo:
-            raise ValidationError(dict(
-                detail="Invalid request. Expecting github_user "
-                       "and github_repo."))
+            raise ValidationError(
+                dict(detail="Invalid request. Expecting github_user and github_repo.")
+            )
+
+        repo_name = alternate_role_name or github_repo
 
         namespace = ProviderNamespace.objects.get(
             provider__name=constants.PROVIDER_GITHUB,
@@ -432,7 +434,7 @@ class ImportTaskList(ListCreateAPIView):
         )
         repository, created = Repository.objects.get_or_create(
             provider_namespace=namespace,
-            name=github_repo,
+            name=repo_name,
             defaults={'is_enabled': False,
                       'original_name': github_repo}
         )
