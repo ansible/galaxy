@@ -533,6 +533,7 @@ class ImportTaskSerializer(BaseSerializer):
             'modified',
             'created',
             'active',
+            'import_branch',
             'commit',
             'commit_message',
             'commit_url',
@@ -598,7 +599,9 @@ class ImportTaskSerializer(BaseSerializer):
         }
         summary['repository'] = {
             'id': obj.repository.id,
-            'name': obj.repository.name
+            'name': obj.repository.name,
+            'import_branch': obj.repository.import_branch,
+            'original_name': obj.repository.original_name
         }
         return summary
 
