@@ -45,6 +45,8 @@ from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
+# haystack
+# elasticsearch dsl
 
 # TODO move all github interactions to githubapi
 # Github
@@ -88,6 +90,7 @@ from .base_views import (APIView,
                          RetrieveAPIView,
                          RetrieveUpdateDestroyAPIView)
 
+from galaxy.main.celerytasks.elastic_tasks import update_custom_indexes
 from galaxy.main.celerytasks.tasks import update_user_repos, refresh_existing_user_repos
 from galaxy.worker.tasks import import_repository
 from galaxy.main.models import (Platform,
@@ -1185,6 +1188,11 @@ class RemoveRole(APIView):
 
             for notification in role.notifications.all():
                 notification.delete()
+
+            # update ES indexes
+            update_custom_indexes.delay(username=role.namespace,
+                                        tags=role.get_tags(),
+                                        platforms=role.get_unique_platforms())
 
         # Update the repository cache
         repo = Repository.objects.get(

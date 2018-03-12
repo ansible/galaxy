@@ -26,6 +26,7 @@ from django.conf import settings
 from django.db import transaction
 from allauth.socialaccount import models as auth_models
 
+from galaxy.main.celerytasks import elastic_tasks
 from galaxy.main import constants
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
@@ -101,6 +102,12 @@ def _import_repository(import_task, workdir, logger):
         content = importer.do_import()
 
         new_content_objs.append(content.id)
+
+        # TODO(cutwater): Move to RoleImporter class
+        elastic_tasks.update_custom_indexes.delay(
+            username=content.namespace, tags=content.get_tags(),
+            platforms=content.get_unique_platforms(),
+            cloud_platforms=content.get_cloud_platforms())
 
     for obj in repository.content_objects.exclude(id__in=new_content_objs):
         logger.info(

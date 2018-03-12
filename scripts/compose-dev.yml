@@ -15,11 +15,12 @@ services:
       - '8000:8000'
     links:
       - postgres
+      - elastic
       - memcache
       - rabbitmq
 
   postgres:
-    image: centos/postgresql-95-centos7
+    image: centos/postgresql-95-centos7 
     ports:
     - '2345:5432'
     environment:
@@ -27,6 +28,13 @@ services:
       - POSTGRESQL_USER=galaxy
       - POSTGRESQL_PASSWORD=galaxy
       - POSTGRESQL_ADMIN_PASSWORD=postgres
+
+  elastic:
+    user: elasticsearch
+    expose:
+    - 9200
+    - 9300
+    image: 'ansible/galaxy-elasticsearch:2.4.6'
 
   memcache:
     image: memcached:latest

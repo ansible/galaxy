@@ -27,6 +27,8 @@ The following environment variables are supported:
 * GALAXY_EMAIL_PORT
 * GALAXY_EMAIL_USER
 * GALAXY_EMAIL_PASSWORD
+* GALAXY_ELASTICSEARCH_HOST
+* GALAXY_ELASTICSEARCH_PORT
 * GALAXY_MEMCACHE_HOST
 * GALAXY_MEMCACHE_PORT
 * GALAXY_RABBITMQ_HOST
@@ -129,6 +131,32 @@ EMAIL_USE_TLS = True
 # Third Party Apps Settings
 # =========================================================
 
+# Elasticsearch settings
+# ---------------------------------------------------------
+
+ELASTICSEARCH = {
+    'default': {
+        'hosts': [
+            '{0}:{1}'.format(
+                os.environ.get('GALAXY_ELASTICSEARCH_HOST'),
+                os.environ.get('GALAXY_ELASTICSEARCH_PORT', 9200))
+        ],
+    },
+}
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'galaxy.main.elasticsearch_backend'
+                  '.ElasticsearchSearchEngine',
+        'URL': [
+            'http://{0}:{1}'.format(
+                os.environ.get('GALAXY_ELASTICSEARCH_HOST'),
+                os.environ.get('GALAXY_ELASTICSEARCH_PORT', 9200))
+        ],
+        'INDEX_NAME': 'haystack',
+    },
+}
+
 # Celery settings
 # ---------------------------------------------------------
 
@@ -163,6 +191,10 @@ WAIT_FOR = [
         'host': os.environ.get('GALAXY_MEMCACHE_HOST', ''),
         'port': int(os.environ.get('GALAXY_MEMCACHE_PORT', 11211))
     },
+    {
+        'host': os.environ.get('GALAXY_ELASTICSEARCH_HOST', ''),
+        'port': int(os.environ.get('GALAXY_ELASTICSEARCH_PORT', 9200)),
+    }
 ]
 
 ADMIN_URL_PATTERN = r'^%s/' % os.environ.get('GALAXY_ADMIN_PATH', 'admin')
