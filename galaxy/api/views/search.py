@@ -28,6 +28,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status as http_status
 
+from galaxy.accounts import models as auth_models
 from galaxy.api import filters
 from galaxy.api import serializers
 from galaxy.api.views import base_views as base
@@ -77,6 +78,7 @@ class ContentSearchView(base.ListAPIView):
         return (models.Content.objects.distinct()
                 .filter(content_type=role_type))
 
+    # TODO(cutwater): Use serializer to parse request arguments
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
@@ -102,15 +104,7 @@ class ContentSearchView(base.ListAPIView):
 
         queryset = self.add_relevance(queryset)
 
-        print(queryset.query)
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return self.make_response(queryset)
 
     @staticmethod
     def add_relevance(queryset):
@@ -186,11 +180,24 @@ class RoleSearchView(ContentSearchView):
         return queryset.filter(content_type=role_type)
 
 
-class UserSearchView(base.APIView):
-    def get(self, request, format=None):
-        return Response({
-            'error': 'Not implemented yet'
-        }, status=http_status.HTTP_501_NOT_IMPLEMENTED)
+# FIXME(cutwater): Keeping views compatible with ELK based.
+# Refactor request parameters parsing
+class UserSearchView(base.ListAPIView):
+
+    model = auth_models.CustomUser
+    serializer_class = serializers.UserListSerializer
+    filter_backends = [filters.OrderByFilter]
+
+    def list(self, request, *args, **kwargs):
+        match = None
+        for key, value in request.GET.items():
+            if key in ('username', 'content', 'autocomplete'):
+                match = value
+
+        queryset = self.filter_queryset(self.get_queryset())
+        if match:
+            queryset.filter(username__istartswith=match)
+        return self.make_response(queryset)
 
 
 class PlatformsSearchView(base.APIView):
