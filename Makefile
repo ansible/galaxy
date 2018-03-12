@@ -38,13 +38,6 @@ migrate:
 collectstatic:
 	python manage.py collectstatic --noinput --clear
 
-.PHONY: build_indexes
-build_indexes:
-	@echo "Rebuild Custom Indexes"
-	python ./manage.py rebuild_galaxy_indexes
-	@echo "Rebuild Search Index"
-	python ./manage.py rebuild_index --noinput
-
 .PHONY: clean
 clean:
 	rm -rfv dist build *.egg-info

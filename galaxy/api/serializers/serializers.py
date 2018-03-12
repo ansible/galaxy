@@ -15,8 +15,6 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import json
-
 from rest_framework import serializers
 
 from django.contrib.auth.models import AnonymousUser
@@ -26,11 +24,6 @@ from django.core.urlresolvers import reverse
 from collections import OrderedDict
 
 
-# haystack
-from drf_haystack.serializers import HaystackSerializer
-
-# galaxy
-from galaxy.main.search_indexes import RoleIndex
 from galaxy.main.models import (Platform,
                                 CloudPlatform,
                                 Category,
@@ -62,8 +55,6 @@ __all__ = [
     'ImportTaskSerializer',
     'ImportTaskLatestSerializer',
     'RoleTopSerializer',
-    'RoleSearchSerializer',
-    'ElasticSearchDSLSerializer',
 ]
 
 
@@ -686,130 +677,3 @@ class RoleTopSerializer(BaseSerializer):
             return reverse('api:role_detail', args=(obj.pk,))
         else:
             return obj.get_absolute_url()
-
-
-class RoleSearchSerializer(HaystackSerializer):
-    platforms = serializers.SerializerMethodField()
-    cloud_platforms = serializers.SerializerMethodField()
-    tags = serializers.SerializerMethodField()
-    versions = serializers.SerializerMethodField()
-    dependencies = serializers.SerializerMethodField()
-    platform_details = serializers.SerializerMethodField()
-    user_is_subscriber = serializers.SerializerMethodField()
-    user_is_stargazer = serializers.SerializerMethodField()
-
-    class Meta:
-        index_classes = [RoleIndex]
-        fields = (
-            "role_id",
-            "role_type",
-            "username",
-            "name",
-            "description",
-            "github_user",
-            "github_repo",
-            "github_branch",
-            "tags",
-            "platforms",
-            "cloud_platforms",
-            "platform_details",
-            "versions",
-            "dependencies",
-            "created",
-            "modified",
-            "imported",
-            "last_commit_date",
-            "text",
-            "autocomplete",
-            "platforms_autocomplete",
-            "cloud_platforms_autocomplete",
-            "tags_autocomplete",
-            "username_autocomplete",
-            "travis_status_url",
-            "travis_build_url",
-            "issue_tracker_url",
-            "stargazers_count",
-            "watchers_count",
-            "forks_count",
-            "open_issues_count",
-            "min_ansible_version",
-            "user_is_stargazer",
-            "user_is_subscriber",
-            "download_count",
-        )
-
-    def to_representation(self, instance):
-        ''' Show field in the order listed above. '''
-        rep = super(RoleSearchSerializer, self).to_representation(instance)
-        result = OrderedDict()
-        for fld in self.Meta.fields:
-            result[fld] = rep[fld]
-        return result
-
-    def get_platforms(self, instance):
-        if instance is None:
-            return []
-        # FIXME(cutwater): List comprehension is redundant
-        return [p for p in instance.platforms]
-
-    def get_cloud_platforms(self, instance):
-        return instance.cloud_platforms or []
-
-    def get_tags(self, instance):
-        if instance is None:
-            return []
-        return [t for t in instance.tags]
-
-    def get_versions(self, instance):
-        if instance is None:
-            return []
-        return json.loads(instance.versions)
-
-    def get_dependencies(self, instance):
-        if instance is None:
-            return []
-        return json.loads(instance.dependencies)
-
-    def get_platform_details(self, instance):
-        if instance is None:
-            return []
-        return json.loads(instance.platform_details)
-
-    def get_user_is_subscriber(self, instance):
-        # override user_is_subscriber found in ES
-        request = self.context.get('request', None)
-        if request is not None and request.user.is_authenticated():
-            try:
-                Subscription.objects.get(owner=request.user, github_user=instance.github_user, github_repo=instance.github_repo)
-                return True
-            except:
-                pass
-        return False
-
-    def get_user_is_stargazer(self, instance):
-        # override user_is_stargazer found in ES
-        request = self.context.get('request', None)
-        if request is not None:
-            try:
-                Stargazer.objects.get(
-                    owner=request.user,
-                    role=instance)
-                return True
-            except:
-                pass
-        return False
-
-
-class ElasticSearchDSLSerializer(serializers.BaseSerializer):
-    def to_representation(self, obj):
-        result = OrderedDict()
-        result['score'] = obj.meta.score
-        result['type'] = obj.meta.doc_type
-        result['id'] = obj.meta.id
-        for key in obj:
-            if key != 'meta':
-                if hasattr(obj[key], '__iter__'):
-                    result[key] = [itm for itm in obj[key]]
-                else:
-                    result[key] = obj[key]
-        return result

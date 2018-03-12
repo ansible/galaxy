@@ -9,8 +9,7 @@ make waitenv
 
 if [ "${TEST}" != "1" ]; then
     make migrate
-    make build_indexes
-fi 
+fi
 
 if [ "${TMUX}" == "1" ] || [ "${TEST}" == "1" ]; then 
     scripts/docker-dev/sleep.sh

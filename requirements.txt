@@ -1,22 +1,17 @@
+gunicorn==19.7.1
+
 django>=1.11,<2.0
 djangorestframework>=3.7,<3.8
-drf-haystack==1.7.1rc2
-
-gunicorn==19.7.1
 
 decorator
 django-allauth==0.34.0
 django-autofixture
-# django-avatar
 celery==3.1.24
 django-bootstrap-form
 django-celery
 django-filter
 django-debug-toolbar
-django-haystack
 
-elasticsearch==2.4.1
-elasticsearch-dsl==2.2.0
 PyGithub
 markdown==2.4.1
 requests
@@ -28,7 +23,6 @@ PyYAML
 python-memcached
 mock
 ansible
-# pyinotify
 pyOpenSSL
 psycopg2
 gevent>=0.13
