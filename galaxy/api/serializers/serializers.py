@@ -520,16 +520,11 @@ class NotificationSerializer(BaseSerializer):
 
 
 class ImportTaskSerializer(BaseSerializer):
-    github_user = serializers.SerializerMethodField()
-    github_repo = serializers.SerializerMethodField()
 
     class Meta:
         model = ImportTask
         fields = (
             'id',
-            'github_user',
-            'github_repo',
-            'repository',
             'owner',
             'celery_task_id',
             'state',
@@ -538,6 +533,7 @@ class ImportTaskSerializer(BaseSerializer):
             'modified',
             'created',
             'active',
+            'import_branch',
             'commit',
             'commit_message',
             'commit_url',
@@ -552,26 +548,32 @@ class ImportTaskSerializer(BaseSerializer):
     def get_url(self, obj):
         if obj is None:
             return ''
-        elif isinstance(obj, ImportTask):
+        if isinstance(obj, ImportTask):
             return reverse('api:import_task_detail', args=(obj.pk,))
-        else:
-            return obj.get_absolute_url()
+        return obj.get_absolute_url()
 
     def get_related(self, obj):
         if obj is None:
             return {}
         res = super(ImportTaskSerializer, self).get_related(obj)
-        res.update(dict(
-            role=reverse('api:repository_detail', args=(obj.repository_id,)),
-            notifications=reverse('api:import_task_notification_list', args=(obj.pk,)),
-        ))
+        res.update({
+            'provider': reverse('api:active_provider_detail',
+                                kwargs={'pk': obj.repository.provider_namespace.provider.pk}),
+            'repository': reverse('api:repository_detail', args=(obj.repository.pk,)),
+            'notifications': reverse('api:import_task_notification_list', args=(obj.pk,)),
+        })
+        if obj.repository.provider_namespace.namespace:
+            res.update({
+                'namespace': reverse('api:namespace_detail',
+                                     kwargs={'pk': obj.repository.provider_namespace.namespace.pk})
+            })
         return res
 
     def get_summary_fields(self, obj):
         if obj is None:
             return {}
-        d = super(ImportTaskSerializer, self).get_summary_fields(obj)
-        d['notifications'] = [OrderedDict([
+        summary = super(ImportTaskSerializer, self).get_summary_fields(obj)
+        summary['notifications'] = [OrderedDict([
             ('id', n.id),
             ('travis_build_url', n.travis_build_url),
             ('commit_message', n.commit_message),
@@ -579,68 +581,79 @@ class ImportTaskSerializer(BaseSerializer):
             ('commit', n.commit)
         ]) for n in obj.notifications.all().order_by('id')]
 
-        d['task_messages'] = [OrderedDict([
+        summary['task_messages'] = [OrderedDict([
             ('id', g.id),
             ('message_type', g.message_type),
             ('message_text', g.message_text)
         ]) for g in obj.messages.all().order_by('id')]
-        return d
 
-    def get_github_user(self, obj):
-        return obj.repository.github_user
-
-    def get_github_repo(self, obj):
-        return obj.repository.github_repo
+        summary['namespace'] = {}
+        if obj.repository.provider_namespace.namespace:
+            summary['namespace'] = {
+                'id': obj.repository.provider_namespace.namespace.id,
+                'name': obj.repository.provider_namespace.namespace.name
+            }
+        summary['provider_namespace'] = {
+            'id': obj.repository.provider_namespace.id,
+            'name': obj.repository.provider_namespace.name
+        }
+        summary['repository'] = {
+            'id': obj.repository.id,
+            'name': obj.repository.name,
+            'import_branch': obj.repository.import_branch,
+            'original_name': obj.repository.original_name
+        }
+        return summary
 
 
 class ImportTaskLatestSerializer(BaseSerializer):
     id = serializers.SerializerMethodField()
-    owner_id = serializers.SerializerMethodField()
-    github_user = serializers.SerializerMethodField()
-    github_repo = serializers.SerializerMethodField()
+    namespace = serializers.SerializerMethodField()
+    repository_name = serializers.SerializerMethodField()
+    state = serializers.SerializerMethodField()
 
     class Meta:
         model = ImportTask
         fields = (
             'id',
-            'owner_id',
-            'github_user',
-            'github_repo',
+            'namespace',
+            'repository_name',
+            'state'
         )
 
-    def get_summary_fields(self, obj):
-        if obj is None:
-            return {}
-        d = super(ImportTaskLatestSerializer, self).get_summary_fields(obj)
-        g = ImportTask.objects.get(id=obj['last_id'])
-        d['details'] = OrderedDict([
-            ('id', g.id),
-            ('state', g.state),
-            ('github_user', g.repository.github_user),
-            ('github_repo', g.repository.github_repo),
-            ('github_reference', g.repository.import_branch),
-            ('modified', g.modified),
-            ('created', g.created),
-        ])
-        return d
+    def get_task_obj(self, task_id):
+        try:
+            return ImportTask.objects.get(pk=task_id)
+        except ObjectDoesNotExist:
+            return None
 
     def get_url(self, obj):
-        if obj is None:
-            return ''
-        else:
-            return reverse('api:import_task_detail', args=(obj['last_id'],))
+        return reverse('api:import_task_detail', args=(obj['last_id'],))
 
     def get_id(self, obj):
         return obj['last_id']
 
-    def get_owner_id(self, obj):
-        return obj['owner_id']
+    def get_namespace(self, obj):
+        return obj['repository__provider_namespace__namespace__name']
 
-    def get_github_user(self, obj):
-        return obj['repository__provider_namespace__name']
-
-    def get_github_repo(self, obj):
+    def get_repository_name(self, obj):
         return obj['repository__name']
+
+    def get_active(self, obj):
+        task = self.get_task_obj(obj['last_id'])
+        return task.active if task else None
+
+    def get_created(self, obj):
+        task = self.get_task_obj(obj['last_id'])
+        return task.created if task else None
+
+    def get_modified(self, obj):
+        task = self.get_task_obj(obj['last_id'])
+        return task.modified if task else None
+
+    def get_state(self, obj):
+        task = self.get_task_obj(obj['last_id'])
+        return task.state if task else None
 
 
 class RoleTopSerializer(BaseSerializer):
