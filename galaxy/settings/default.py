@@ -68,6 +68,7 @@ INSTALLED_APPS = (
     'djcelery',
     'rest_framework',
     'rest_framework.authtoken',
+    'haystack',
 
     # Project apps
     'galaxy.accounts',
@@ -214,6 +215,20 @@ REST_FRAMEWORK = {
         'download_count': '1/day',
     }
 }
+
+# Elasticsearch
+# ---------------------------------------------------------
+
+ELASTICSEARCH = {}
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'galaxy.main.elasticsearch_backend'
+                  '.ElasticsearchSearchEngine',
+    },
+}
+
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 # Celery
 # ---------------------------------------------------------
