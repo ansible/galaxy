@@ -43,7 +43,7 @@ class RepositoryLoader(object):
     REPO_LOADERS = [
         ('roles', loaders.RoleLoader,
          constants.ContentType.ROLE),
-        ('modules', loaders.ModuleLoader,
+        ('library', loaders.ModuleLoader,
          constants.ContentType.MODULE),
         ('action_plugins', loaders.PluginLoader,
          constants.ContentType.ACTION_PLUGIN),
