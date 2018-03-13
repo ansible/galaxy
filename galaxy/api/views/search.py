@@ -82,6 +82,10 @@ class ContentSearchView(base.ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
+        # Content type
+        content_type = request.GET.get('content_type', '')
+        queryset = self.add_content_type(queryset, content_type)
+
         # Platforms
         platforms = request.GET.get('platforms', '').split()
         queryset = self.add_platforms_filter(queryset, platforms)
@@ -125,6 +129,11 @@ class ContentSearchView(base.ListAPIView):
                 output_field=db_fields.FloatField()),
             relevance=relevance_expr,
         )
+
+    @staticmethod
+    def add_content_type(queryset, content_type):
+        content_type = models.ContentType.get(content_type)
+        return queryset.filter(content_type=content_type)
 
     @staticmethod
     def add_tags_filter(queryset, tags):
