@@ -189,14 +189,14 @@ class UserSearchView(base.ListAPIView):
     filter_backends = [filters.OrderByFilter]
 
     def list(self, request, *args, **kwargs):
-        match = None
+        search_query = None
         for key, value in request.GET.items():
             if key in ('username', 'content', 'autocomplete'):
-                match = value
+                search_query = value
 
         queryset = self.filter_queryset(self.get_queryset())
-        if match:
-            queryset.filter(username__istartswith=match)
+        if search_query:
+            queryset.filter(username__istartswith=search_query)
         return self.make_response(queryset)
 
 
@@ -207,15 +207,42 @@ class PlatformsSearchView(base.APIView):
         }, status=http_status.HTTP_501_NOT_IMPLEMENTED)
 
 
-class CloudPlatformsSearchView(base.APIView):
-    def get(self, request, format=None):
-        return Response({
-            'error': 'Not implemented yet'
-        }, status=http_status.HTTP_501_NOT_IMPLEMENTED)
+class CloudPlatformsSearchView(base.ListAPIView):
+
+    model = models.CloudPlatform
+    serializer_class = serializers.CloudPlatformSerializer
+    filter_backends = [filters.OrderByFilter]
+
+    def get(self, request, *args, **kwargs):
+        match_query = None
+        search_query = None
+        for key, value in request.GET.items():
+            if key == 'name':
+                match_query = value
+            elif key in ('content', 'autocomplete'):
+                search_query = value
+
+        queryset = self.filter_queryset(self.get_queryset())
+        if match_query:
+            queryset = queryset.filter(name=match_query)
+        if search_query:
+            queryset = queryset.filter(name__istartswith=search_query)
+        return self.make_response(queryset)
 
 
-class TagsSearchView(base.APIView):
-    def get(self, request, format=None):
-        return Response({
-            'error': 'Not implemented yet'
-        }, status=http_status.HTTP_501_NOT_IMPLEMENTED)
+class TagsSearchView(base.ListAPIView):
+
+    model = models.Tag
+    serializer_class = serializers.TagSerializer
+    filter_backends = [filters.OrderByFilter]
+
+    def list(self, request, *args, **kwargs):
+        search_query = None
+        for key, value in request.GET.items():
+            if key in ('tag', 'content', 'autocomplete'):
+                search_query = value
+
+        queryset = self.filter_queryset(self.get_queryset())
+        if search_query:
+            queryset.filter(name_istartswith=search_query)
+        return self.make_response(queryset)
