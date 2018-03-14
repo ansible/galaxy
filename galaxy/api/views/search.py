@@ -26,7 +26,6 @@ from django.contrib.postgres import search as psql_search
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework import status as http_status
 
 from galaxy.accounts import models as auth_models
 from galaxy.api import filters
@@ -209,11 +208,41 @@ class UserSearchView(base.ListAPIView):
         return self.make_response(queryset)
 
 
-class PlatformsSearchView(base.APIView):
-    def get(self, request, format=None):
-        return Response({
-            'error': 'Not implemented yet'
-        }, status=http_status.HTTP_501_NOT_IMPLEMENTED)
+class PlatformsSearchView(base.ListAPIView):
+
+    model = models.Platform
+    serializer_class = serializers.PlatformSerializer
+    filter_backends = [filters.OrderByFilter]
+
+    def list(self, request, *args, **kwargs):
+        name = None
+        releases = None
+        autocomplete = None
+
+        for key, value in request.GET.items():
+            if key == 'name':
+                name = value
+            elif key == 'releases':
+                releases = value.split()
+            elif key in ('content', 'autocomplete'):
+                autocomplete = value
+
+        queryset = self.filter_queryset(self.get_queryset())
+        print(type(queryset), str(queryset.query))
+        if name:
+            queryset = queryset.filter(name=name)
+        if releases:
+            queryset = queryset.filter(release__in=releases)
+        if autocomplete:
+            where_clause = '''
+                to_tsvector(
+                    name || ' ' || release || ' ' || coalesce(alias, ''))
+                @@ to_tsquery(quote_literal(%s) || ':*')
+            '''
+            queryset = queryset.extra(where=[where_clause],
+                                      params=[autocomplete])
+        print(queryset.query)
+        return self.make_response(queryset)
 
 
 class CloudPlatformsSearchView(base.ListAPIView):
@@ -222,7 +251,7 @@ class CloudPlatformsSearchView(base.ListAPIView):
     serializer_class = serializers.CloudPlatformSerializer
     filter_backends = [filters.OrderByFilter]
 
-    def get(self, request, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
         match_query = None
         search_query = None
         for key, value in request.GET.items():
