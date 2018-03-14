@@ -15,7 +15,7 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from rest_framework.serializers import SerializerMethodField
+from rest_framework import serializers as drf_serializers
 from django.core.urlresolvers import reverse
 
 from galaxy.main.models import Content
@@ -24,7 +24,8 @@ from .serializers import BaseSerializer, BASE_FIELDS
 
 __all__ = [
     'RoleListSerializer',
-    'RoleDetailSerializer'
+    'RoleDetailSerializer',
+    'RoleSearchSerializer',
 ]
 
 
@@ -67,7 +68,7 @@ class RoleListSerializer(BaseRoleSerializer):
         fields = BASE_FIELDS + (
             'role_type', 'namespace', 'is_valid',
             'min_ansible_version', 'issue_tracker_url',
-            'license', 'company', 'description', 'readme', 'readme_html',
+            'license', 'company', 'description',
             'travis_status_url', 'download_count'
         )
 
@@ -113,7 +114,7 @@ class RoleListSerializer(BaseRoleSerializer):
 
 
 class RoleDetailSerializer(BaseRoleSerializer):
-    tags = SerializerMethodField()
+    tags = drf_serializers.SerializerMethodField()
 
     class Meta:
         model = Content
@@ -165,3 +166,17 @@ class RoleDetailSerializer(BaseRoleSerializer):
         d['videos'] = [dict(url=v.url, description=v.description)
                        for v in obj.videos.all()]
         return d
+
+
+class RoleSearchSerializer(RoleListSerializer):
+
+    relevance = drf_serializers.FloatField()
+    search_rank = drf_serializers.FloatField()
+    download_rank = drf_serializers.FloatField()
+
+    class Meta(RoleListSerializer.Meta):
+        fields = RoleListSerializer.Meta.fields + (
+            'relevance',
+            'search_rank',
+            'download_rank',
+        )

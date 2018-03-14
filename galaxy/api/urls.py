@@ -16,7 +16,6 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.conf.urls import include, url
-from rest_framework import routers
 
 from galaxy.api import views
 
@@ -77,6 +76,8 @@ tag_urls = [
 
 search_urls = [
     url(r'^$', views.ApiV1SearchView.as_view(), name="search_view"),
+    url(r'^content/$', views.ContentSearchView.as_view(),
+        name='content_search_view'),
     url(r'^roles/$', views.RoleSearchView.as_view(),
         name='roles_search_view'),
     url(r'^platforms/$', views.PlatformsSearchView.as_view(),

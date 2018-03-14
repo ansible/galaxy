@@ -247,6 +247,9 @@ class OrderByBackend(BaseFilterBackend):
                     else:
                         order_by = (value,)
             if order_by:
+                # FIXME(cutwater): Queryset should not be executed here.
+                # To validate order_by fields a list of model fields should
+                # be used.
                 queryset = queryset.order_by(*order_by)
                 # Fetch the first result to run the query, otherwise we don't
                 # always catch the FieldError for invalid field names.
@@ -258,3 +261,20 @@ class OrderByBackend(BaseFilterBackend):
         except FieldError as e:
             # Return a 400 for invalid field names.
             raise ParseError(*e.args)
+
+
+# NOTE(cutwater): This class partially duplicates OrderByBackend filter
+# and should be fixed in future. However it is not desirable to modify
+# OrderByBackend clss at the moment to be able to reuse it.
+class OrderByFilter(BaseFilterBackend):
+
+    def filter_queryset(self, request, queryset, view):
+        order_by = None
+        for key, value in request.GET.items():
+            if key in ('order', 'order_by'):
+                order_by = value.split(',')
+
+        if order_by:
+            queryset = queryset.order_by(*order_by)
+
+        return queryset

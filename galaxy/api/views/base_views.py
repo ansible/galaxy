@@ -27,6 +27,7 @@ from rest_framework.authentication import get_authorization_header
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import generics
 from rest_framework.request import clone_request
+from rest_framework.response import Response
 from rest_framework import views
 
 from galaxy.api.access import check_user_access
@@ -217,6 +218,15 @@ class ListAPIView(generics.ListAPIView, GenericAPIView):
                               'name', 'description', 'email'):
                 fields.append(field.name)
         return fields
+
+    def make_response(self, queryset):
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class ListCreateAPIView(ListAPIView, generics.ListCreateAPIView):

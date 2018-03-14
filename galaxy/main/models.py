@@ -20,6 +20,8 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms.models import model_to_dict
 from django.contrib.postgres import fields as psql_fields
+from django.contrib.postgres import search as psql_search
+from django.contrib.postgres import indexes as psql_indexes
 from django.utils import timezone
 
 from galaxy.main import constants
@@ -227,7 +229,9 @@ class Content(CommonModelNameNotUnique):
             ('namespace', 'content_type', 'name')
         ]
         ordering = ['namespace', 'content_type', 'name']
-
+        indexes = [
+            psql_indexes.GinIndex(fields=['search_vector'])
+        ]
     # Foreign keys
     # -------------------------------------------------------------------------
 
@@ -400,6 +404,8 @@ class Content(CommonModelNameNotUnique):
         default=0
     )
 
+    search_vector = psql_search.SearchVectorField()
+
     # Other functions and properties
     # -------------------------------------------------------------------------
 
@@ -449,6 +455,9 @@ class Content(CommonModelNameNotUnique):
     def get_username(self):
         return self.namespace
 
+    # TODO(cutwater): Active field is not used for tags anymore.
+    # get_tags() function should be replaced with tags property usage and
+    # removed as well as an `active` field from Tag model.
     def get_tags(self):
         return [tag.name for tag in self.tags.filter(active=True)]
 
@@ -519,7 +528,6 @@ class Namespace(CommonModel):
     owners = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='namespaces',
-        null=False,
         editable=True,
     )
     avatar_url = models.CharField(
