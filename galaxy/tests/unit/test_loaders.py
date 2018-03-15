@@ -18,7 +18,7 @@
 import unittest
 import mock
 
-from galaxy.main import constants
+from galaxy import constants
 from galaxy.worker import loaders
 from galaxy.worker.loaders import role as role_loader
 

@@ -25,7 +25,7 @@ import yaml
 
 from ansible.playbook.role import requirement as ansible_req
 
-from galaxy.main import constants
+from galaxy import constants
 from galaxy.worker import exceptions as exc
 from galaxy.worker.loaders import base
 

@@ -106,7 +106,7 @@ from galaxy.main.models import (Platform,
                                 Subscription,
                                 Stargazer)
 
-from galaxy.main import constants
+from galaxy import constants
 from galaxy.main.utils import camelcase_to_underscore
 
 # local stuff

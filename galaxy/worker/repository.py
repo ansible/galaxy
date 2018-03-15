@@ -24,7 +24,7 @@ import subprocess
 
 import yaml
 
-from galaxy.main import constants
+from galaxy import constants
 from galaxy.worker import utils
 from galaxy.worker import exceptions as exc
 from galaxy.worker import loaders

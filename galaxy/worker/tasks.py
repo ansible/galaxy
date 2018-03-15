@@ -26,7 +26,7 @@ from django.conf import settings
 from django.db import transaction
 from allauth.socialaccount import models as auth_models
 
-from galaxy.main import constants
+from galaxy import constants
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import importers

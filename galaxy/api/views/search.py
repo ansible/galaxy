@@ -27,12 +27,12 @@ from django.contrib.postgres import search as psql_search
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
+from galaxy import constants
 from galaxy.accounts import models as auth_models
 from galaxy.api import filters
 from galaxy.api import serializers
 from galaxy.api.views import base_views as base
 from galaxy.main import models
-from galaxy.main import constants
 
 __all__ = [
     'ApiV1SearchView',
