@@ -1052,14 +1052,14 @@ class UserDetail(RetrieveAPIView):
     def update_filter(self, request, *args, **kwargs):
         ''' make sure non-read-only fields that can only be edited by admins, are only edited by admins '''
         obj = User.objects.get(pk=kwargs['pk'])
-        can_change = check_user_access(request.user, User, 'change', obj, request.DATA)
-        can_admin = check_user_access(request.user, User, 'admin', obj, request.DATA)
+        can_change = check_user_access(request.user, User, 'change', obj, request.data)
+        can_admin = check_user_access(request.user, User, 'admin', obj, request.data)
         if can_change and not can_admin:
             admin_only_edit_fields = ('full_name', 'username', 'is_active', 'is_superuser')
             changed = {}
             for field in admin_only_edit_fields:
                 left = getattr(obj, field, None)
-                right = request.DATA.get(field, None)
+                right = request.data.get(field, None)
                 if left is not None and right is not None and left != right:
                     changed[field] = (left, right)
             if changed:
