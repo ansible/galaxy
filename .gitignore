@@ -21,3 +21,4 @@ provisioning/ec2_inventory
 galaxy.min.css
 .DS_Store
 ansible-deployment/
+galaxy/static/admin/

@@ -10,6 +10,7 @@ services:
     environment:
       - TMUX
       - TEST
+      - DJANGO_SETTINGS_MODULE=galaxy.settings.development
       - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
     ports:
       - '8000:8000'
