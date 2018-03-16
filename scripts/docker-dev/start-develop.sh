@@ -6,7 +6,12 @@ set -o errexit
 cd /galaxy
 
 make waitenv
+make collectstatic
 make build/static
+
+if [ -d /galaxy/build/static/admin ]; then
+    cp -R /galaxy/build/static/admin /galaxy/galaxy/static/
+fi
 
 cd /galaxy/galaxyui
 yarn install
