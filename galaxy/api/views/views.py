@@ -227,6 +227,7 @@ class ApiV1RootView(APIView):
     def get(self, request, format=None):
         # list top level resources
         data = OrderedDict()
+        data['me'] = reverse('api:user_me_list')
         data['users'] = reverse('api:user_list')
         data['roles'] = reverse('api:role_list')
         data['role_types'] = reverse('api:role_types')

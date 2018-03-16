@@ -178,14 +178,9 @@ class BaseSerializer(serializers.ModelSerializer):
             except AttributeError:
                 return None
 
-    # def validate_description(self, attrs, source):
-    #     # Description should always be empty string, never null.
-    #     attrs[source] = attrs.get(source, None) or ''
-    #     return attrs
-
 
 class MeSerializer(BaseSerializer):
-    authenticated = serializers.ReadOnlyField(source='is_authenticated')
+    authenticated = serializers.SerializerMethodField()
     staff = serializers.ReadOnlyField(source='is_staff')
 
     class Meta:
@@ -197,6 +192,9 @@ class MeSerializer(BaseSerializer):
             return {}
         d = super(MeSerializer, self).get_summary_fields(obj)
         return d
+
+    def get_authenticated(self, obj):
+        return obj.is_authenticated()
 
 
 class UserListSerializer(BaseSerializer):
