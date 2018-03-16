@@ -172,8 +172,15 @@ content_urls = [
         name='content_versions_list'),
 ]
 
+account_urls = [
+    url(r'logout',
+        views.LogoutView.as_view(),
+        name='account_logout_view'),
+]
+
 v1_urls = [
     url(r'^$', views.ApiV1RootView.as_view(), name='api_v1_root_view'),
+    url(r'^account/', include(account_urls)),
     url(r'^me/$', views.UserMeList.as_view(), name='user_me_list'),
     url(r'^users/', include(user_urls)),
     url(r'^roles/', include(role_urls)),

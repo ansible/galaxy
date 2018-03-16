@@ -485,6 +485,7 @@ class ImportTaskLatestList(ListAPIView):
             'repository__provider_namespace__namespace__name',
             'repository__name'
         ).annotate(last_id=Max('id'))
+
         qs = self.filter_queryset(qs)
         page = self.paginate_queryset(qs)
         if page is not None:
