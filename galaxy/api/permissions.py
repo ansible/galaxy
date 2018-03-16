@@ -66,7 +66,7 @@ class ModelAccessPermission(permissions.BasePermission):
             if obj:
                 return True
             if hasattr(view, 'model'):
-                return check_user_access(request.user, view.model, 'add', request.DATA)
+                return check_user_access(request.user, view.model, 'add', request.data)
             return True
 
     def check_put_permissions(self, request, view, obj=None):
@@ -77,10 +77,10 @@ class ModelAccessPermission(permissions.BasePermission):
 
         if getattr(view, 'is_variable_data', False):
             return check_user_access(request.user, view.model, 'change', obj,
-                                     dict(variables=request.DATA))
+                                     dict(variables=request.data))
         else:
             return check_user_access(request.user, view.model, 'change', obj,
-                                     request.DATA)
+                                     request.data)
 
     def check_patch_permissions(self, request, view, obj=None):
         return self.check_put_permissions(request, view, obj)
@@ -125,7 +125,7 @@ class ModelAccessPermission(permissions.BasePermission):
 
     def has_permission(self, request, view, obj=None):
         # logger.debug('has_permission(user=%s method=%s data=%r, %s, %r)',
-        #             request.user, request.method, request.DATA,
+        #             request.user, request.method, request.data,
         #             view.__class__.__name__, obj)
         try:
             response = self.check_permissions(request, view, obj)
