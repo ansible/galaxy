@@ -194,8 +194,8 @@
     semver-intersect "^1.1.2"
 
 "@swimlane/ngx-datatable@^11.1.7":
-  version "11.1.7"
-  resolved "https://registry.yarnpkg.com/@swimlane/ngx-datatable/-/ngx-datatable-11.1.7.tgz#d4ca01a3c0ee67071da214b739da198179a4d756"
+  version "11.2.0"
+  resolved "https://registry.yarnpkg.com/@swimlane/ngx-datatable/-/ngx-datatable-11.2.0.tgz#fdc353bdffb676a14c5dfd7834509427cb30060b"
 
 "@types/jasmine@*", "@types/jasmine@~2.8.3":
   version "2.8.6"
@@ -1070,8 +1070,8 @@ bytes@3.0.0:
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.0.0.tgz#d32815404d689699f85a4ea4fa8755dd13a96048"
 
 c3@^0.4.15, c3@~0.4.11:
-  version "0.4.18"
-  resolved "https://registry.yarnpkg.com/c3/-/c3-0.4.18.tgz#6f1c4409635263b8a3de607edbab4bdc678c62cb"
+  version "0.4.21"
+  resolved "https://registry.yarnpkg.com/c3/-/c3-0.4.21.tgz#61a2dc5a31c6a64e011d15b136c160c44fbb9631"
   dependencies:
     d3 "~3.5.0"
 
@@ -4335,12 +4335,12 @@ mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0:
     minimist "0.0.8"
 
 mobx-angular@>=1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/mobx-angular/-/mobx-angular-2.1.1.tgz#d5e36539acb200186dd5a1170806b4776b9a8b88"
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/mobx-angular/-/mobx-angular-3.0.1.tgz#881379acea563c0767550d1f7801ab3434449bb1"
 
 mobx@>=3:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.5.1.tgz#8e682ec535cf44e04005b9e37e2df66acc975a42"
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-4.1.0.tgz#e4a9679cdafbe215b20e32ef93a7031845b3f1af"
 
 module-deps@^4.0.8:
   version "4.1.1"
@@ -4369,8 +4369,8 @@ moment-timezone@^0.4.0, moment-timezone@^0.4.1:
     moment ">= 2.6.0"
 
 "moment@>= 2.6.0", moment@^2.10, moment@^2.19.1:
-  version "2.20.1"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.20.1.tgz#d6eb1a46cbcc14a2b2f9434112c1ff8907f313fd"
+  version "2.21.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.21.0.tgz#2a114b51d2a6ec9e6d83cf803f838a878d8a023a"
 
 move-concurrently@^1.0.1:
   version "1.0.1"
@@ -4443,8 +4443,8 @@ ng2-dragula@^1.5.0:
     dragula "^3.7.2"
 
 "ngx-bootstrap@^1.8.0 || ^2.0.0":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/ngx-bootstrap/-/ngx-bootstrap-2.0.2.tgz#6862b2ee4764bb6cfd34c66528873d0d050c2faa"
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/ngx-bootstrap/-/ngx-bootstrap-2.0.3.tgz#b8ca4be305be4e2e99f60d941cc8a3e906f198d7"
 
 no-case@^2.2.0:
   version "2.3.2"
@@ -5001,8 +5001,8 @@ patternfly-bootstrap-treeview@~2.1.0:
     jquery ">= 2.1.x"
 
 patternfly-ng@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/patternfly-ng/-/patternfly-ng-3.1.1.tgz#642fec9b476489328926aa04148015a60eab59eb"
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/patternfly-ng/-/patternfly-ng-3.1.3.tgz#30811bac41d6e82ee40f626e03e3f3a1c2861821"
   dependencies:
     lodash "^4.17.4"
     patternfly "^3.28.0"
@@ -5013,7 +5013,37 @@ patternfly-ng@^3.1.1:
     ng2-dragula "^1.5.0"
     ngx-bootstrap "^1.8.0 || ^2.0.0"
 
-patternfly@^3.28.0, patternfly@^3.38.1:
+patternfly@^3.28.0:
+  version "3.41.6"
+  resolved "https://registry.yarnpkg.com/patternfly/-/patternfly-3.41.6.tgz#e060cf75ad118bc51859a05d8e73061c880447ef"
+  dependencies:
+    bootstrap "~3.3.7"
+    font-awesome "^4.7.0"
+    jquery "~3.2.1"
+  optionalDependencies:
+    bootstrap-datepicker "^1.7.1"
+    bootstrap-sass "^3.3.7"
+    bootstrap-select "^1.12.2"
+    bootstrap-slider "^9.9.0"
+    bootstrap-switch "~3.3.4"
+    bootstrap-touchspin "~3.1.1"
+    c3 "~0.4.11"
+    d3 "~3.5.17"
+    datatables.net "^1.10.15"
+    datatables.net-colreorder "^1.4.1"
+    datatables.net-colreorder-bs "~1.3.2"
+    datatables.net-select "~1.2.0"
+    drmonty-datatables-colvis "~1.1.2"
+    eonasdan-bootstrap-datetimepicker "^4.17.47"
+    font-awesome-sass "^4.7.0"
+    google-code-prettify "~1.0.5"
+    jquery-match-height "^0.7.2"
+    moment "^2.19.1"
+    moment-timezone "^0.4.1"
+    patternfly-bootstrap-combobox "~1.1.7"
+    patternfly-bootstrap-treeview "~2.1.0"
+
+patternfly@^3.38.1:
   version "3.38.1"
   resolved "https://registry.yarnpkg.com/patternfly/-/patternfly-3.38.1.tgz#ffdc2fca41b18c9be481183b739f99a123cde314"
   dependencies:
