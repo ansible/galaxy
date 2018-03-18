@@ -17,7 +17,7 @@
 
 import logging
 
-from rest_framework.status import HTTP_200_OK
+from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -41,4 +41,4 @@ class LogoutView(CreateAPIView):
     def post(self, request, *args, **kwargs):
         adapter = get_adapter(self.request)
         adapter.logout(self.request)
-        return Response({}, status=HTTP_200_OK)
+        return Response({}, status=status.HTTP_200_OK)
