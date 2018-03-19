@@ -25,18 +25,12 @@ export class RepositoryService {
     }
 
     query(params): Observable<Repository[]> {
-        return this.http.get<Repository[]>(this.url, {params: params})
+        return this.http.get<PagedResponse>(this.url, {params: params})
             .pipe(
-                map(response => response),
-                tap(_ => this.log('fetched repositories')),
-                catchError(this.handleError('Query', []))
+                map(response => response.results),
+               tap(_ => this.log('fetched repositories')),
+               catchError(this.handleError('Query', []))
             );
-        //return this.http.get<PagedResponse>(this.url, {params: params})
-        //    .pipe(
-        //        map(response => response.results),
-        //        tap(_ => this.log('fetched repositories')),
-        //        catchError(this.handleError('Query', []))
-        //    );
     }
 
     save(repository: Repository): Observable<Repository> {

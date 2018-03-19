@@ -30,18 +30,12 @@ export class NamespaceService {
     encounteredErrors: boolean = false;
 
     query(): Observable<Namespace[]> {
-        return this.http.get<Namespace[]>(this.url)
+        return this.http.get<PagedResponse>(this.url)
             .pipe(
-                map(response => response),
+                map(response => response.results),
                 tap(_ => this.log('fetched namespaces')),
                 catchError(this.handleError('Query', []))
             );
-        //return this.http.get<PagedResponse>(this.url)
-        //    .pipe(
-        //        map(response => response.results),
-        //        tap(_ => this.log('fetched namespaces')),
-        //        catchError(this.handleError('Query', []))
-        //    );
     }
 
     get(id: number): Observable<Namespace> {

@@ -18,7 +18,6 @@ export class UserService {
     }
 
     query(params?: any): Observable<User[]> {
-        //return this.http.get<PagedResponse>(this.url)
         let userUrl = this.url;
         let userParams = null;
         if (params) {
@@ -28,9 +27,9 @@ export class UserService {
                 userParams = params;
             }
         }
-        return this.http.get<User[]>(userUrl, {'params':  userParams})
+        return this.http.get<PagedResponse>(userUrl, {'params':  userParams})
             .pipe(
-                //map(response => response.results as User[]),
+                map(response => response.results as User[]),
                 tap(_=> this.log('fetched users')),
                 catchError(this.handleError('Query', []))
             );
