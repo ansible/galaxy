@@ -12,7 +12,7 @@
 
 
 <div class="container" id="galaxy-namespace-page">
-    <h2>Galaxy Contributors</h2>     
+    <h2>Galaxy Contributors</h2>
     <div class="row">
         <div class="col-sm-offset-6 col-sm-6">
             <form method="GET" id="search-form" action="/authors/">
@@ -24,17 +24,18 @@
             </form>
         </div>
     </div>
-    <table class="table ga-table-striped" {% if object_list.count == 0 %} style="border-bottom-color: #fff;" {% endif %}>
+    <table class="table table-bordered table-striped" {% if object_list.count == 0 %} style="border-bottom-color: #fff;" {% endif %}>
         <thead>
             <tr>
-                <th colspan="2">Author</th>
+                <th>Author</th>
+                <th class="col-sm-1 text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
         {% for item in object_list %}
         <tr>
-            <td><a href="/{{ item.namespace }}" class="namespace">{{ item.namespace }}</a></td>
-            <td class="text-right"><a href="https://github.com/{{ item.github_user }}" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-github"></i> View on GitHub</a></td>
+            <td><a href="/{{ item.name }}" class="namespace">{{ item.name }}</a></td>
+            <td class="text-center"><a href="https://github.com/{{ item.original_name }}" target="_blank" class="btn btn-default"><i class="fa fa-github"></i> View on GitHub</a></td>
         </tr>
         {% endfor %}
         {% if object_list.count == 0 %}
@@ -90,7 +91,7 @@
 
 <script>
     $(document).ready(function() {
-        
+
         $('#galaxy-nav-items li').each(function() {
             t = $(this).find('a').text();
             if (t === 'Browse Authors') {

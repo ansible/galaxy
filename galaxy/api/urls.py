@@ -16,14 +16,9 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.conf.urls import include, url
-from rest_framework import routers
 
 from galaxy.api import views
 
-
-router = routers.DefaultRouter()
-router.register('v1/search/roles', views.RoleSearchView,
-                base_name="search-roles")
 
 user_urls = [
     url(r'^$', views.UserList.as_view(), name='user_list'),
@@ -81,10 +76,10 @@ tag_urls = [
 
 search_urls = [
     url(r'^$', views.ApiV1SearchView.as_view(), name="search_view"),
-    # url(r'facetedplatforms/$',           FacetedView.as_view(),
-    #    kwargs={u'facet_key': u'platforms', u'model': u'Role'}, name="faceted_platforms_view"),
-    # url(r'facetedtags/$',                FacetedView.as_view(),
-    #    kwargs={u'facet_key': u'tags', u'model': u'Role'}, name="faceted_tags_view"),
+    url(r'^content/$', views.ContentSearchView.as_view(),
+        name='content_search_view'),
+    url(r'^roles/$', views.RoleSearchView.as_view(),
+        name='roles_search_view'),
     url(r'^platforms/$', views.PlatformsSearchView.as_view(),
         name='platforms_search_view'),
     url(r'^cloud_platforms/$', views.CloudPlatformsSearchView.as_view(),
@@ -123,11 +118,31 @@ notification_urls = [
         name='notification_imports_list'),
 ]
 
+namespace_urls = [
+    url(r'^$', views.NamespaceList.as_view(), name='namespace_list'),
+    url(r'^(?P<pk>[0-9]+)/$', views.NamespaceDetail.as_view(), name='namespace_detail'),
+]
+
+provider_namespace_urls = [
+    url(r'^$', views.ProviderNamespaceList.as_view(), name='provider_namespace_list'),
+    url(r'^(?P<pk>[0-9]+)/$', views.ProviderNamespaceDetail.as_view(), name='provider_namespace_detail'),
+]
+
+provider_urls = [
+    url(r'^$', views.ProviderRootView.as_view(), name='provider_root_view'),
+    url(r'^active/$', views.ActiveProviderList.as_view(), name='active_provider_list'),
+    url(r'^active/(?P<pk>[0-9]+)/$', views.ActiveProviderDetail.as_view(), name='active_provider_detail'),
+    url(r'^sources/$', views.ProviderSourceList.as_view(), name='provider_source_list'),
+    url(r'^sources/(?P<provider_name>[A-Za-z0-9_-]+)/(?P<provider_namespace>[A-Za-z0-9_-]+)/$',
+        views.RepositorySourceList.as_view(), name='repository_source_list'),
+    url(r'^sources/(?P<provider_name>[A-Za-z0-9_-]+)/(?P<provider_namespace>[A-Za-z0-9_-]+)/'
+        '(?P<repo_name>[A-Za-z0-9_-]+)/$',
+        views.RepositorySourceDetail.as_view(), name='repository_source_detail'),
+]
+
 repo_urls = [
-    url(r'^$', views.ApiV1ReposView.as_view(), name="repos_view"),
-    url(r'list/$', views.RepositoryList.as_view(), name='repository_list'),
-    url(r'list/(?P<pk>[0-9]+)/$', views.RepositoryDetail.as_view(),
-        name='repository_detail'),
+    url(r'^$', views.RepositoryList.as_view(), name='repository_list'),
+    url(r'^(?P<pk>[0-9]+)/$', views.RepositoryDetail.as_view(), name='repository_detail'),
     url(r'refresh/$', views.RefreshUserRepos.as_view(),
         name='refresh_user_repos'),
     url(r'stargazers/$', views.StargazerList.as_view(), name='stargazer_list'),
@@ -136,14 +151,40 @@ repo_urls = [
     url(r'subscriptions/$', views.SubscriptionList.as_view(),
         name='subscription_list'),
     url(r'subscriptions/(?P<pk>[0-9]+)/$', views.SubscriptionDetail.as_view(),
-        name='subscription_detail'),
+        name='subscription_detail')
+]
+
+content_urls = [
+    url(r'^$',
+        views.ContentList.as_view(),
+        name='content_list'),
+
+    url(r'^(?P<pk>[0-9]+)/$',
+        views.ContentDetail.as_view(),
+        name='content_detail'),
+
+    url(r'^(?P<pk>[0-9]+)/dependencies/$',
+        views.RoleDependenciesList.as_view(),
+        name='content_dependencies_list'),
+
+    url(r'^(?P<pk>[0-9]+)/versions/$',
+        views.RoleVersionsList.as_view(),
+        name='content_versions_list'),
+]
+
+account_urls = [
+    url(r'logout',
+        views.LogoutView.as_view(),
+        name='account_logout_view'),
 ]
 
 v1_urls = [
     url(r'^$', views.ApiV1RootView.as_view(), name='api_v1_root_view'),
+    url(r'^account/', include(account_urls)),
     url(r'^me/$', views.UserMeList.as_view(), name='user_me_list'),
     url(r'^users/', include(user_urls)),
     url(r'^roles/', include(role_urls)),
+    url(r'^content/', include(content_urls)),
     url(r'^role_types/', views.RoleTypes.as_view(), name='role_types'),
     url(r'^categories/', include(category_urls)),
     url(r'^tags/', include(tag_urls)),
@@ -152,9 +193,12 @@ v1_urls = [
     url(r'^imports/', include(import_task_urls)),
     url(r'^tokens/', views.TokenView.as_view(), name='token'),
     url(r'^removerole/', views.RemoveRole.as_view(), name='remove_role'),
+    url(r'^namespaces/', include(namespace_urls)),
     url(r'^notification_secrets/', include(notification_secret_urls)),
     url(r'^notifications/', include(notification_urls)),
-    url(r'^repos/', include(repo_urls)),
+    url(r'^providers/', include(provider_urls)),
+    url(r'^provider_namespaces/', include(provider_namespace_urls)),
+    url(r'^repositories/', include(repo_urls)),
     url(r'^search/', include(search_urls)),
 ]
 
@@ -162,5 +206,3 @@ urlpatterns = [
     url(r'^$', views.ApiRootView.as_view(), name='api_root_view'),
     url(r'^v1/', include(v1_urls)),
 ]
-
-urlpatterns += router.urls

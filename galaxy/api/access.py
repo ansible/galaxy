@@ -20,9 +20,11 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from galaxy.main.models import (Role, ImportTask,
-                                ImportTaskMessage, RoleVersion,
-                                NotificationSecret, Notification,
+from galaxy.main.models import (Content, ImportTask,
+                                ImportTaskMessage, ContentVersion,
+                                Namespace, NotificationSecret, Notification,
+                                ProviderNamespace,
+                                Repository,
                                 Subscription, Stargazer)
 
 logger = logging.getLogger('galaxy.api.access')
@@ -159,7 +161,7 @@ class UserAccess(BaseAccess):
 
 
 class RoleAccess(BaseAccess):
-    model = Role
+    model = Content
 
     def can_attach(self, obj, sub_obj, relationship, data,
                    skip_sub_obj_read_check=False):
@@ -170,7 +172,7 @@ class RoleAccess(BaseAccess):
 
 
 class RoleVersionAccess(BaseAccess):
-    model = RoleVersion
+    model = ContentVersion
 
     def get_queryset(self):
         return self.model.objects.filter(active=True, role__active=True).distinct()
@@ -245,7 +247,7 @@ class SubscriptionAccess(BaseAccess):
     def can_add(self, data):
         return self.user.is_authenticated()
 
-    def can_change(self, data):
+    def can_change(self, obj, data):
         return False
 
     def can_delete(self, data):
@@ -256,19 +258,61 @@ class StargazerAccess(BaseAccess):
     def can_add(self, data):
         return self.user.is_authenticated()
 
-    def can_change(self, data):
+    def can_change(self, obj, data):
         return False
 
     def can_delete(self, data):
         return self.user.is_authenticated()
 
 
+class NamespaceAccess(BaseAccess):
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, obj, data):
+        return self.user.is_authenticated()
+
+    def can_delete(self, data):
+        return False
+
+
+class ProviderNamespaceAccess(BaseAccess):
+    def can_read(self, obj):
+        return True
+
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, obj, data):
+        return self.user.is_authenticated()
+
+    def can_delete(self, data):
+        return self.user.is_authenticated()
+
+
+class RepositoryAccess(BaseAccess):
+    def can_read(self, obj):
+        return True
+
+    def can_add(self, data):
+        return self.user.is_authenticated()
+
+    def can_change(self, obj, data):
+        return self.user.is_authenticated()
+
+    def can_delete(self, data):
+        return self.user.is_authenticated()
+
+
 register_access(User, UserAccess)
-register_access(Role, RoleAccess)
-register_access(RoleVersion, RoleVersionAccess)
+register_access(Content, RoleAccess)
+register_access(ContentVersion, RoleVersionAccess)
 register_access(ImportTask, ImportTaskAccess)
 register_access(ImportTaskMessage, ImportTaskMessageAccess)
 register_access(NotificationSecret, NotificationSecretAccess)
 register_access(Notification, NotificationAccess)
 register_access(Subscription, SubscriptionAccess)
 register_access(Stargazer, StargazerAccess)
+register_access(Namespace, NamespaceAccess)
+register_access(ProviderNamespace, ProviderNamespaceAccess)
+register_access(Repository, RepositoryAccess)

@@ -29,9 +29,6 @@ from django.db.models.fields.related import ForeignObjectRel
 from rest_framework.exceptions import ParseError
 from rest_framework.filters import BaseFilterBackend
 
-# drf-haystack
-from drf_haystack.filters import HaystackFilter
-
 # Galaxy
 from galaxy.main.models import UserAlias
 
@@ -77,7 +74,7 @@ class FieldLookupBackend(BaseFilterBackend):
             if name == 'pk':
                 field = model._meta.pk
             else:
-                field = model._meta.get_field_by_name(name)[0]
+                field = model._meta.get_field(name)
             if n < (len(parts) - 2):
                 if getattr(field, 'rel', None):
                     model = field.rel.to
@@ -250,6 +247,9 @@ class OrderByBackend(BaseFilterBackend):
                     else:
                         order_by = (value,)
             if order_by:
+                # FIXME(cutwater): Queryset should not be executed here.
+                # To validate order_by fields a list of model fields should
+                # be used.
                 queryset = queryset.order_by(*order_by)
                 # Fetch the first result to run the query, otherwise we don't
                 # always catch the FieldError for invalid field names.
@@ -263,20 +263,18 @@ class OrderByBackend(BaseFilterBackend):
             raise ParseError(*e.args)
 
 
-class HaystackFilter(HaystackFilter):
+# NOTE(cutwater): This class partially duplicates OrderByBackend filter
+# and should be fixed in future. However it is not desirable to modify
+# OrderByBackend clss at the moment to be able to reuse it.
+class OrderByFilter(BaseFilterBackend):
+
     def filter_queryset(self, request, queryset, view):
-        qs = super(HaystackFilter, self).filter_queryset(request, queryset, view)
-        try:
-            order_by = None
-            for key, value in request.GET.items():
-                if key in ('order', 'order_by'):
-                    if ',' in value:
-                        order_by = value.split(',')
-                    else:
-                        order_by = (value,)
-            if order_by:
-                qs = qs.order_by(*order_by)
-            return qs
-        except FieldError as e:
-            # Return a 400 for invalid field names.
-            raise ParseError(*e.args)
+        order_by = None
+        for key, value in request.GET.items():
+            if key in ('order', 'order_by'):
+                order_by = value.split(',')
+
+        if order_by:
+            queryset = queryset.order_by(*order_by)
+
+        return queryset

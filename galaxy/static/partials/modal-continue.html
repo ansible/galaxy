@@ -1,0 +1,8 @@
+<div class="modal-header" id="modal-continue">
+    <h3 class="modal-title" id="modal-title">{{ $modal.title }}</h3>
+</div>
+<div class="modal-body" id="modal-body" ng-bind-html="$modal.text"></div>
+<div class="modal-footer">
+    <button class="btn btn-primary btn-md" type="button" ng-click="$modal.ok()"><i class="fa fa-check"></i> OK</button>
+    <button class="btn btn-default btn-md" type="button" ng-click="$modal.cancel()"><i class="fa fa-times"></i> Cancel</button>
+</div>
