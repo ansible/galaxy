@@ -1,0 +1,40 @@
+{
+  "name": "galaxy",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Find, reuse and share the best Ansible content",
+  "main": "\\",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ansible/galaxy.git"
+  },
+  "keywords": [
+    "Galaxy",
+    "Ansible",
+    "Ansibleworks"
+  ],
+  "author": "Ansible",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ansible/galaxy/issues"
+  },
+  "devDependencies": {
+    "browser-sync": "latest",
+    "http-proxy-middleware": "latest",
+    "node-notifier": "*",
+    "connect-history-api-fallback": "^1.1.0",
+    "less": "<3.0.0",
+    "gulp": "latest",
+    "gulp-less": "latest",
+    "gulp-dest": "latest",
+    "gulp-watch": "latest",
+    "gulp-batch": "latest",
+    "gulp-uglify": "latest",
+    "gulp-concat": "latest",
+    "gulp-rename": "latest",
+    "gulp-util": "latest"
+  }
+}
