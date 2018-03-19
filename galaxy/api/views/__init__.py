@@ -15,6 +15,7 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+from .account import *              # noqa
 from .content import *              # noqa
 from .namespace import *            # noqa
 from .repository import *           # noqa

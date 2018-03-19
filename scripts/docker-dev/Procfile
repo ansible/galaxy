@@ -1,3 +1,3 @@
 celery:       make celery
 runserver:    make runserver
-gulp:         make gulp
+ng:           make ng_server

@@ -37,6 +37,7 @@ RUN virtualenv /var/lib/galaxy/venv \
 COPY scripts/docker-release/entrypoint.sh /entrypoint.sh
 COPY dist/ /tmp/dist
 COPY build/static /var/lib/galaxy/public/static
+COPY galaxyui/dist/ /var/lib/galaxy/public/static
 
 RUN ${VENV_BIN}/pip install $(readlink -f /tmp/dist/galaxy.whl) \
     && rm -rf /tmp/dist
