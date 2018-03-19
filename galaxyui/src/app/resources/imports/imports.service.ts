@@ -53,9 +53,9 @@ export class ImportsService {
     private url:string  = '/api/v1/imports';
 
     latest(): Observable<ImportLatest[]> {
-        return this.http.get<ImportLatest[]>(`${this.url}/latest/`)
+        return this.http.get<PagedResponse>(`${this.url}/latest/`)
             .pipe(
-                map(response => response),
+                map(response => response.results),
                 tap(_ => this.log('fetched latest imports')),
                 catchError(this.handleError('Query', []))
             );

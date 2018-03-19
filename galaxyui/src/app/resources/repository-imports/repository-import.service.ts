@@ -23,18 +23,12 @@ export class RepositoryImportService {
     }
 
     query(params): Observable<RepositoryImport[]> {
-        return this.http.get<RepositoryImport[]>(this.url, {params: params})
+        return this.http.get<PagedResponse>(this.url, {params: params})
             .pipe(
-                map(response => response),
+                map(response => response.results),
                 tap(_ => this.log('fetched repository imports')),
                 catchError(this.handleError('Query', []))
             );
-        //return this.http.get<PagedResponse>(this.url, {params: params})
-        //    .pipe(
-        //        map(response => response.results),
-        //        tap(_ => this.log('fetched repository imports')),
-        //        catchError(this.handleError('Query', []))
-        //    );
     }
 
     save(repositoryImport: RepositoryImport): Observable<RepositoryImport> {
