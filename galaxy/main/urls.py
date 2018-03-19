@@ -25,28 +25,40 @@ from galaxy.main import views
 
 
 urlpatterns = [
+    # Non-secure URLs
+    url(r'^$', views.home, name='home'),
+    url(r'^explore$', views.explore, name='explore'),
+    url(r'^intro$', views.intro, name='intro'),
     url(r'^accounts/landing[/]?$', views.accounts_landing,
         name='accounts-landing'),
+    url(r'^list$', views.list_category, name='list-category'),
+    url(r'^detail$', views.detail_category, name='detail-category'),
+    url(r'^roleadd$', views.role_add_view, name='role-add-category'),
+    url(r'^imports$', views.import_status_view, name='import-status'),
+    url(r'^stars$', views.stars_list_view, name='stars-list'),
 
     # Logged in/secured URLs
+    url(r'^namespaces', views.my_namespaces_view, name='my-namespaces'),
     url(r'^accounts/connect/$', views.accounts_connect),
     url(r'^accounts/connect/success/$', views.accounts_connect_success,
         name='accounts-connect-success'),
-    url(r'^accounts/profile/$', views.accounts_profile, name='accounts-profile'),
+    url(r'^accounts/profile/$', views.accounts_profile,
+        name='accounts-profile'),
+    url(r'^authors/$', views.NamespaceListView.as_view(),
+        name='namespace-list'),
+    url(r'^([\w\-._+]+)/$', views.RoleListView.as_view(), name='role-list'),
+    url(r'^([\w\-._+]+)/([\w\-._+]+)/$',
+        views.RoleDetailView.as_view(), name='role-detail'),
 ]
 
 # FIX
 if settings.DEBUG:
     urlpatterns += [
-        url(r'^static/(?P<path>.*)$', never_cache(serve_staticfiles))
+        url(r'^static/(?P<path>.*)$',
+            never_cache(serve_staticfiles))
     ]
 else:
     urlpatterns += [
-        url(r'^static/(?P<path>.*)$',
-            serve_static, kwargs={'document_root': settings.STATIC_ROOT}),
-        url(r'^(?P<path>.*[css|js|png|jpg|jpeg|ico|woff|woff2|svg|ttf])/?$',
-            serve_static, kwargs={'document_root': settings.STATIC_ROOT}),
-        url(r'^$',
-            serve_static, kwargs={'document_root': settings.STATIC_ROOT,
-                                  'path': 'index.html'})
+        url(r'^static/(?P<path>.*)$', serve_static,
+            kwargs={'document_root': settings.STATIC_ROOT})
     ]
