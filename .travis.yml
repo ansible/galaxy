@@ -38,6 +38,10 @@ script:
 - ansible-playbook -i inventory test.yml
 - popd
 
+# Check the logs
+- docker ps -a
+- docker-compose -f scripts/compose-dev.yml -p galaxy logs galaxy
+
 # Stop the application
 - make dev/down
 
