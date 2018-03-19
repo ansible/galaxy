@@ -74,7 +74,7 @@ class FieldLookupBackend(BaseFilterBackend):
             if name == 'pk':
                 field = model._meta.pk
             else:
-                field = model._meta.get_field_by_name(name)[0]
+                field = model._meta.get_field(name)
             if n < (len(parts) - 2):
                 if getattr(field, 'rel', None):
                     model = field.rel.to
