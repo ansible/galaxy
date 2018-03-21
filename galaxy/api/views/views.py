@@ -480,7 +480,8 @@ class ImportTaskLatestList(ListAPIView):
             repository__provider_namespace__namespace__owners=request.user
         ).values(
             'repository__provider_namespace__namespace__name',
-            'repository__name'
+            'repository__name',
+            'repository__id',
         ).order_by(
             'repository__provider_namespace__namespace__name',
             'repository__name'

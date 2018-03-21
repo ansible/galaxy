@@ -15,6 +15,9 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import json
+import logging
+
 from rest_framework import serializers
 
 from django.contrib.auth.models import AnonymousUser
@@ -57,6 +60,8 @@ __all__ = [
     'RoleTopSerializer',
 ]
 
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -599,6 +604,7 @@ class ImportTaskLatestSerializer(BaseSerializer):
     id = serializers.SerializerMethodField()
     namespace = serializers.SerializerMethodField()
     repository_name = serializers.SerializerMethodField()
+    repository_id = serializers.SerializerMethodField()
     state = serializers.SerializerMethodField()
 
     class Meta:
@@ -607,9 +613,15 @@ class ImportTaskLatestSerializer(BaseSerializer):
             'id',
             'namespace',
             'repository_name',
+            'repository_id',
             'state'
         )
 
+    def get_related(self, obj):
+        res = super(ImportTaskLatestSerializer, self).get_related(obj)
+        res.update({'repository': reverse('api:repository_detail', args=(obj['repository__id'],))})
+        return res
+        
     def get_task_obj(self, task_id):
         try:
             return ImportTask.objects.get(pk=task_id)
@@ -627,6 +639,9 @@ class ImportTaskLatestSerializer(BaseSerializer):
 
     def get_repository_name(self, obj):
         return obj['repository__name']
+    
+    def get_repository_id(self, obj):
+        return obj['repository__id']
 
     def get_active(self, obj):
         task = self.get_task_obj(obj['last_id'])
