@@ -17,7 +17,7 @@
 
 from django.core.urlresolvers import reverse
 
-from galaxy.main.models import Repository, ImportTask
+from galaxy.main.models import Repository
 from .serializers import BaseSerializer
 
 
@@ -55,7 +55,7 @@ class RepositorySerializer(BaseSerializer):
             return {}
         related = {
             'provider': reverse('api:active_provider_detail', kwargs={'pk': instance.provider_namespace.provider.pk}),
-            'imports' : '{0}?repository__id={1}'.format(reverse('api:import_task_list'), instance.id)
+            'imports': '{0}?repository__id={1}'.format(reverse('api:import_task_list'), instance.id)
         }
         if instance.provider_namespace.namespace:
             related['namespace'] = reverse('api:namespace_detail',
@@ -83,7 +83,7 @@ class RepositorySerializer(BaseSerializer):
         if instance.provider_namespace.namespace:
             namespace['name'] = instance.provider_namespace.namespace.name
             namespace['id'] = instance.provider_namespace.namespace.pk
-        
+
         latest_import = {}
         import_tasks = instance.import_tasks.order_by('-id')
         if len(import_tasks):

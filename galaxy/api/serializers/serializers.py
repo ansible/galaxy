@@ -15,7 +15,6 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import json
 import logging
 
 from rest_framework import serializers
@@ -621,7 +620,7 @@ class ImportTaskLatestSerializer(BaseSerializer):
         res = super(ImportTaskLatestSerializer, self).get_related(obj)
         res.update({'repository': reverse('api:repository_detail', args=(obj['repository__id'],))})
         return res
-        
+
     def get_task_obj(self, task_id):
         try:
             return ImportTask.objects.get(pk=task_id)
@@ -639,7 +638,7 @@ class ImportTaskLatestSerializer(BaseSerializer):
 
     def get_repository_name(self, obj):
         return obj['repository__name']
-    
+
     def get_repository_id(self, obj):
         return obj['repository__id']
 
