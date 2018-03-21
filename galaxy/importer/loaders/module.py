@@ -18,30 +18,36 @@
 import ast
 import logging
 
-from . import base
-from . import common
+from galaxy import constants
+from galaxy.importer import models
+from galaxy.importer.utils import ast as ast_utils
+from galaxy.importer.loaders import base
 
 LOG = logging.getLogger(__name__)
 
 
-class ModuleLoader(base.PythonModuleLoader):
+class ModuleLoader(base.BaseLoader):
 
-    def __init__(self, path, content_type, name=None, logger=None):
-        super(ModuleLoader, self).__init__(path, content_type,
-                                           name=name, logger=logger)
+    content_types = constants.ContentType.MODULE
+
+    def __init__(self, content_type, path, logger=None):
+        super(ModuleLoader, self).__init__(content_type, path, logger=logger)
 
         self.documentation = None
         self.metdata = None
 
-    def load(self):
+    @classmethod
+    def make_name(cls, path):
+        return base.make_module_name(path)
 
+    def load(self):
         self._parse_module()
 
         description = ''
         if self.documentation:
             description = self.documentation.get('short_description', '')
 
-        return base.ContentData(
+        return models.Content(
             name=self.name,
             path=self.path,
             content_type=self.content_type,
@@ -69,7 +75,7 @@ class ModuleLoader(base.PythonModuleLoader):
                 self.metadata = self._parse_metdata(node)
             elif name == 'DOCUMENTATION':
                 try:
-                    self.documentation = common.parse_ast_doc(node)
+                    self.documentation = ast_utils.parse_ast_doc(node)
                 except ValueError as e:
                     self.log.warning('Cannot parse "DOCUMENTATION": {}'
                                      .format(e))

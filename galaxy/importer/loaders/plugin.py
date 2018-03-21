@@ -18,29 +18,53 @@
 import ast
 import logging
 
-import yaml
+from galaxy import constants
+from galaxy.importer import models
+from galaxy.importer.utils import ast as ast_utils
 
 from . import base
-from . import common
 
 
 LOG = logging.getLogger(__name__)
 
 
-class PluginLoader(base.PythonModuleLoader):
+class PluginLoader(base.BaseLoader):
 
-    def __init__(self, path, content_type, name=None, logger=None):
-        super(PluginLoader, self).__init__(path, content_type,
-                                           name=name, logger=logger)
+    content_types = (
+        constants.ContentType.ACTION_PLUGIN,
+        constants.ContentType.CACHE_PLUGIN,
+        constants.ContentType.CALLBACK_PLUGIN,
+        constants.ContentType.CLICONF_PLUGIN,
+        constants.ContentType.CONNECTION_PLUGIN,
+        constants.ContentType.FILTER_PLUGIN,
+        constants.ContentType.INVENTORY_PLUGIN,
+        constants.ContentType.LOOKUP_PLUGIN,
+        constants.ContentType.NETCONF_PLUGIN,
+        constants.ContentType.SHELL_PLUGIN,
+        constants.ContentType.STRATEGY_PLUGIN,
+        constants.ContentType.TERMINAL_PLUGIN,
+        constants.ContentType.TEST_PLUGIN,
+    )
+
+    def __init__(self, content_type, path, logger=None):
+        super(PluginLoader, self).__init__(content_type, path, logger=logger)
+
         self.documentation = None
+
+    @classmethod
+    def make_name(cls, path):
+        return base.make_module_name(path)
 
     def load(self):
         self._parse_plugin()
 
-        return base.ContentData(
+        return models.Content(
             name=self.name,
             path=self.path,
-            content_type=self.content_type
+            content_type=self.content_type,
+            metadata={
+                'documentation': self.documentation
+            }
         )
 
     def _parse_plugin(self):
@@ -58,26 +82,8 @@ class PluginLoader(base.PythonModuleLoader):
 
             if name == 'DOCUMENTATION':
                 try:
-                    self.documentation = common.parse_ast_doc(node)
+                    self.documentation = ast_utils.parse_ast_doc(node)
                 except ValueError as e:
                     self.log.warning('Cannot parse "DOCUMENTATION": {}'
                                      .format(e))
                 break
-
-    def _parse_doc(self, node):
-        # type (ast.Str) -> dict
-        if not isinstance(node.value, ast.Str):
-            self.log.warning('Cannot parse "DOCUMENTATION" field, '
-                             'string expected')
-            return
-        try:
-            documentation = yaml.safe_load(node.value.s)
-        except yaml.YAMLError as e:
-            self.log.warning('Cannot parse "DOCUMENTATION" field: {}'
-                             .format(e))
-            return
-
-        if not isinstance(documentation, dict):
-            self.log.warning('Invalid "DOCUMENTATION" value, YAML document'
-                             'should be a dictionary')
-        return documentation

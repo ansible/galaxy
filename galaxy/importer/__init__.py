@@ -14,12 +14,3 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
-
-from .apb import APBLoader  # noqa: F401
-from .module import ModuleLoader  # noqa: F401
-from .plugin import PluginLoader  # noqa: F401
-from .role import (  # noqa: F401
-    RoleLoader,
-    RoleData,
-    ROLE_META_FILES
-)

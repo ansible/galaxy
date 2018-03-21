@@ -27,13 +27,12 @@ from django.db import transaction
 from allauth.socialaccount import models as auth_models
 
 from galaxy import constants
+from galaxy.importer import repository as r_imp
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import importers
 from galaxy.worker import logging as wlog
-from galaxy.worker import repository as repo
 from galaxy.worker import utils
-
 
 LOG = logging.getLogger(__name__)
 
@@ -85,22 +84,22 @@ def _import_repository(import_task, workdir, logger):
         github_token=token,
         github_client=gh_api,
         github_repo=gh_repo)
-    repo_loader = repo.RepositoryLoader.from_remote(
-        remote_url=import_task.repository.clone_url,
-        clone_dir=workdir,
-        name=repository.original_name,
+
+    repo_info = r_imp.import_repository(
+        repository.clone_url,
+        branch=repository.import_branch,
+        temp_dir=settings.WORKER_DIR_BASE,
         logger=logger)
 
     new_content_objs = []
+    for content_info in repo_info.contents:
+        content_logger = wlog.ContentTypeAdapter(
+            logger, content_info.content_type, content_info.name)
+        importer_cls = importers.get_importer(content_info.content_type)
+        importer = importer_cls(context, content_info, logger=content_logger)
 
-    for loader in repo_loader.load():
-        data = loader.load()
-
-        importer_cls = importers.get_importer(data.content_type)
-        importer = importer_cls(context, data, logger=loader.log)
-        content = importer.do_import()
-
-        new_content_objs.append(content.id)
+        content_obj = importer.do_import()
+        new_content_objs.append(content_obj.id)
 
     for obj in repository.content_objects.exclude(id__in=new_content_objs):
         logger.info(
@@ -110,7 +109,7 @@ def _import_repository(import_task, workdir, logger):
         obj.delete()
 
     _update_namespace(gh_repo)
-    _update_repository(repository, gh_repo, repo_loader.last_commit_info)
+    _update_repository(repository, gh_repo, repo_info.commit)
 
     import_task.finish_success(u'Import completed')
 
