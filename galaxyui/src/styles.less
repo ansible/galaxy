@@ -2,10 +2,16 @@
 
 @import 'variables';
 
-.color-green {
+.color-green,
+.succeeded,
+.running,
+a.running,
+a.succeeded {
     color: @green;
 }
-.color-red {
+.color-red,
+.failed,
+a.failed {
     color: @red;
 }
 .color-orange {
@@ -61,5 +67,12 @@
     .modal-footer img {
         height: 70px;
         width: 240px;
+    }
+}
+
+/* Import list page */
+#import-list-page {
+    .list-column .filter-pf.filter-fields .form-group {
+        width: 100%;
     }
 }

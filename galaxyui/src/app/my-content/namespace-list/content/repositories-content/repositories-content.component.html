@@ -1,41 +1,54 @@
 <div class="repos-container">
-    <div class="loading-repos-spinner-container" *ngIf="loading">
-        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-    </div>
-    <div *ngIf="!loading">
-        <pfng-list
-            [actionTemplate]="actionTemplate"
-            [config]="listConfig"
-            [items]="items"
-            [itemTemplate]="itemTemplate"
-            (onActionSelect)="handleAction($event, null)"
-            (onClick)="handleClick($event)"
-            (onDblClick)="handleDblClick($event)"
-            (onSelectionChange)="handleSelectionChange($event)">
-            <ng-template #itemTemplate let-item="item" let-index="index">
-                <div class="list-pf-left">
-                    <span class="pficon-repository list-pf-icon list-pf-icon-small"></span>
+    <pfng-list
+        [actionTemplate]="actionTemplate"
+        [config]="listConfig"
+        [items]="items"
+        [itemTemplate]="itemTemplate"
+        (onActionSelect)="handleAction($event, null)">
+        <ng-template #itemTemplate let-item="item" let-index="index">
+            <div class="list-pf-left">
+                <span class="pficon-repository list-pf-icon list-pf-icon-small"></span>
+            </div>
+            <div class="list-pf-content-wrapper">
+                <div class="list-pf-main-content">
+                    <div class="list-pf-title">{{ item.name }}</div>
+                    <div class="list-pf-description text-overflow-pf">{{ item.description }}</div>
                 </div>
-                <div class="list-pf-content-wrapper">
-                    <div class="list-pf-main-content">
-                        <div class="list-pf-title">{{ item.name }}</div>
-                        <div class="list-pf-description text-overflow-pf">{{ item.description }}</div>
+                <div class="list-pf-additional-content">
+                    <div *ngIf="item['latest_import'] && (item['latest_import']['state'] == 'PENDING' || item['latest_import']['state'] == 'RUNNING')">
+                        <a [routerLink]="['/my-imports']" [queryParams]="{namespace: namespace.name, repository_name: item.name}" class="running">
+                            <i class="fa fa-spin fa-spinner"></i> 
+                            <span class="text">{{ item['latest_import']['state'][0] + item['latest_import']['state'].substring(1, item['latest_import']['state'].length).toLowerCase() }} 
+                            {{ item['latest_import']['as_of_dt'] }}</span>
+                        </a>
                     </div>
-                    <div class="list-pf-additional-content"></div>
+                    <div *ngIf="item['latest_import'] && item['latest_import']['state'] == 'SUCCESS'">
+                        <a [routerLink]="['/my-imports']" [queryParams]="{namespace: namespace.name, repository_name: item.name}" class="succeeded">
+                            <i class="fa fa-circle"></i> <span class="text">Succeeded {{ item['latest_import']['as_of_dt'] }}</span>
+                        </a> 
+                    </div>   
+                    <div *ngIf="item['latest_import'] && item['latest_import']['state'] == 'FAILED'">
+                        <a [routerLink]="['/my-imports']" [queryParams]="{namespace: namespace.name, repository_name: item.name}" class="failed">
+                            <i class="fa fa-circle"></i> <span class="text">Failed {{ item['latest_import']['as_of_dt'] }}</span>
+                        </a>
+                    </div>   
                 </div>
-            </ng-template>
-            <ng-template #actionTemplate let-item="item" let-index="index">
-                <pfng-action class="list-pf-actions"
-                             [config]="getActionConfig(item, actionButtonTemplate, startButtonTemplate)"
-                             (onActionSelect)="handleAction($event, item)">
-                    <ng-template #actionButtonTemplate let-action="action">
-                        <span class="fa fa-plus">&nbsp;</span>{{action.title}}
-                    </ng-template>
-                    <ng-template #importButtonTemplate let-action="action">
-                        {{item.importing === true ? "Importing" : action.title}}
-                    </ng-template>
-                </pfng-action>
-            </ng-template>
+            </div>
+        </ng-template>
+        <ng-template #actionTemplate let-item="item" let-index="index">
+            <pfng-action class="list-pf-actions"
+                         [config]="getActionConfig(item, actionButtonTemplate, importButtonTemplate)"
+                         (onActionSelect)="handleAction($event, item)">
+                <ng-template #actionButtonTemplate let-action="action">
+                    <i class="fa fa-plus"></i> {{action.title}}
+                </ng-template>
+                <ng-template #importButtonTemplate let-action="action">
+                    <i class="fa fa-upload"></i> {{item.importing === true ? "Importing" : action.title}}
+                </ng-template>
+            </pfng-action>
+        </ng-template>
         </pfng-list>
-    </div>
+</div>
+<div class="content-loader" *ngIf="loading">
+    <i class="fa fa-spinner fa-spin fa-3x"></i>
 </div>

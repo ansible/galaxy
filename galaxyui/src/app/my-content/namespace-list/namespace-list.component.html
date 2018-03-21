@@ -7,8 +7,6 @@
                               [actionTemplate]="toolbarActionTemplate"
                               (onActionSelect)="handleToolbarAction($event)"
                               (onFilterChange)="filterChanged($event)"
-                              (onFilterFieldSelect)="filterFieldSelected($event)"
-                              (onFilterTypeAhead)="filterQueries($event)"
                               (onSortChange)="sortChanged($event)"
                               (onViewSelect)="viewSelected($event)">
                     <ng-template #toolbarActionTemplate>
@@ -65,10 +63,18 @@
                         </div>
                     </ng-template>
                     <ng-template #listActionTemplate let-item="item" let-index="index">
-                        <pfng-action class="list-pf-actions"
-                                     [config]="listActionConfig"
-                                     (onActionSelect)="handleListAction($event, item)">
-                        </pfng-action>
+                        <div *ngIf="item.active">
+                            <pfng-action class="list-pf-actions"
+                                         [config]="listActionConfig"
+                                         (onActionSelect)="handleListAction($event, item)">
+                            </pfng-action>
+                        </div>
+                        <div *ngIf="!item.active">
+                            <pfng-action class="list-pf-actions"
+                                         [config]="listActionConfigEnable"
+                                         (onActionSelect)="handleListAction($event, item)">
+                            </pfng-action>
+                        </div>
                     </ng-template>
                     <ng-template #listExpandTemplate let-item="item" let-index="index">
                         <repositories-content [namespace]="item" *ngIf="item.expandId === undefined"></repositories-content>

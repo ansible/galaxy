@@ -30,7 +30,7 @@ export class NamespaceService {
     encounteredErrors: boolean = false;
 
     query(): Observable<Namespace[]> {
-        return this.http.get<PagedResponse>(this.url)
+        return this.http.get<PagedResponse>(this.url + '/')
             .pipe(
                 map(response => response.results),
                 tap(_ => this.log('fetched namespaces')),
@@ -39,7 +39,7 @@ export class NamespaceService {
     }
 
     get(id: number): Observable<Namespace> {
-        const url = `${this.url}/${id}`;
+        const url = `${this.url}/${id}/`;
         return this.http.get<Namespace>(url).pipe(
             tap(_ => this.log(`fetched namespace id=${id}`)),
             catchError(this.handleError<Namespace>(`Get id=${id}`))
@@ -49,7 +49,7 @@ export class NamespaceService {
     save(namespace: Namespace): Observable<Namespace> {
         let httpResult: Observable<Object>;
         if (namespace.id) {
-            httpResult = this.http.put<Namespace>(`${this.url}/${namespace.id}`, namespace, httpOptions);
+            httpResult = this.http.put<Namespace>(`${this.url}/${namespace.id}/`, namespace, httpOptions);
         } else {
             httpResult = this.http.post<Namespace>(`${this.url}/`, namespace, httpOptions);
         }

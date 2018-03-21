@@ -1,14 +1,13 @@
 import {
     Component,
     OnInit,
+    OnDestroy,
     TemplateRef,
     ViewEncapsulation,
     Input,
 } from '@angular/core';
 
-import { cloneDeep } from 'lodash';
-import { flatten } from 'lodash';
-
+import { flatten }           from 'lodash';
 import { Action }            from 'patternfly-ng/action/action';
 import { ActionConfig }      from 'patternfly-ng/action/action-config';
 import { EmptyStateConfig }  from 'patternfly-ng/empty-state/empty-state-config';
@@ -21,8 +20,12 @@ import { RepositoryService }       from "../../../../resources/respositories/rep
 import { ProviderNamespace }       from "../../../../resources/provider-namespaces/provider-namespace";
 import { RepositoryImportService } from "../../../../resources/repository-imports/repository-import.service";
 import { RepositoryImport }        from "../../../../resources/repository-imports/repository-import";
+
 import { Observable }              from "rxjs/Observable";
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { forkJoin }                from 'rxjs/observable/forkJoin';
+
+import * as moment                 from 'moment';
+
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -30,20 +33,18 @@ import { forkJoin } from 'rxjs/observable/forkJoin';
     templateUrl: './repositories-content.component.html',
     styleUrls: ['./repositories-content.component.less']
 })
-export class RepositoriesContentComponent implements OnInit {
+export class RepositoriesContentComponent implements OnInit, OnDestroy {
     @Input() namespace: Namespace;
 
-    repositories: Repository[];
+    items: Repository[] = [new Repository()];   // init with one empty repo to preven EmptyState from flashing on the page
     emptyStateConfig: EmptyStateConfig;
-    items: Repository[];
-    itemsAvailable: boolean = true;
     listConfig: ListConfig;
     selectType: string = 'checkbox';
     loading: boolean = false;
+    polling = null;
 
     constructor(private repositoryService: RepositoryService,
-                private repositoryImportService: RepositoryImportService) {
-    }
+                private repositoryImportService: RepositoryImportService) {}
 
     ngOnInit(): void {
         this.emptyStateConfig = {
@@ -53,7 +54,7 @@ export class RepositoriesContentComponent implements OnInit {
             } as ActionConfig,
             iconStyleClass: 'pficon-warning-triangle-o',
             title: 'No Repositories',
-            info: 'Add repositories by adding content to this namespace',
+            info: "Add repositories by clicking the 'Add Content' button above.",
             helpLink: {}
         } as EmptyStateConfig;
 
@@ -67,14 +68,18 @@ export class RepositoriesContentComponent implements OnInit {
             useExpandItems: false
         } as ListConfig;
 
-        this.getRepositories()
+        this.getRepositories();
     }
 
-    ngDoCheck(): void {
+    ngDoCheck(): void {}
+
+    ngOnDestroy(): void {
+        if (this.polling)
+            this.polling.unsubscribe();
     }
 
-
-    getActionConfig(item: Repository, actionButtonTemplate: TemplateRef<any>,
+    getActionConfig(item: Repository,
+                    actionButtonTemplate: TemplateRef<any>,
                     importButtonTemplate: TemplateRef<any>): ActionConfig {
         let actionConfig = {
             primaryActions: [{
@@ -83,13 +88,7 @@ export class RepositoriesContentComponent implements OnInit {
                 tooltip: 'Import Repository',
                 template: importButtonTemplate
             }],
-            moreActions: [
-            //{
-            //     id: 'edit',
-            //     title: 'Edit',
-            //     tooltip: 'Edit Repository Properties'
-            // },
-            {
+            moreActions: [{
                 id: 'delete',
                 title: 'Delete',
                 tooltip: 'Delete Repository'
@@ -99,84 +98,124 @@ export class RepositoriesContentComponent implements OnInit {
         } as ActionConfig;
 
         // Set button disabled
-        // if (item.importing === true) {
-        //     actionConfig.primaryActions[0].disabled = true;
-        // }
-
+        if (item['latest_import'] && (item['latest_import']['state'] === 'PENDING' || item['latest_import']['state'] === 'RUNNING')) {
+            actionConfig.primaryActions[0].disabled = true;
+            actionConfig.moreActionsVisible = false;
+        }
         return actionConfig;
     }
 
     // Actions
 
     handleAction($event: Action, item: any): void {
-        console.log('handleAction', $event, item);
         if ($event.id === 'import' && item) {
             this.importRepository(item);
         }
         if ($event.id == 'delete' && item) {
-            console.log(`delete ${item.name}`);
+            this.deleteRepository(item);
         }
     }
 
-    handleSelectionChange($event: ListEvent): void {
-        console.log('handleSelectionChange', $event);
-    }
-
-    handleClick($event: ListEvent): void {
-        console.log('handleClick', $event);
-    }
-
-    handleDblClick($event: ListEvent): void {
-        console.log('handleDblClick', $event);
-    }
-
-    // Row selection
-
-    updateItemsAvailable(): void {
-        this.items = (this.itemsAvailable) ? cloneDeep(this.repositories) : [];
-    }
-
-    updateSelectionType(): void {
-        if (this.selectType === 'checkbox') {
-            this.listConfig.selectItems = false;
-            this.listConfig.showCheckbox = true;
-        } else if (this.selectType === 'row') {
-            this.listConfig.selectItems = true;
-            this.listConfig.showCheckbox = false;
-        } else {
-            this.listConfig.selectItems = false;
-            this.listConfig.showCheckbox = false;
-        }
-    }
+    // Private
 
     private getRepositories() {
         this.loading = true;
-        this.repositories = [];
-        this.items = [];
         let queries: Observable<Repository[]>[] = [];
         this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
-            queries.push(this.repositoryService.query({
-                provider_namespace: pns.id
-            }));
+            queries.push(this.repositoryService.query({'provider_namespace__id': pns.id}));
         });
 
         forkJoin(queries).subscribe((results: Repository[][]) => {
-            this.repositories = flatten(results);
-            this.items = cloneDeep(this.repositories);
+            let repositories = flatten(results);
+            repositories.forEach(item => {
+                item['latest_import'] = {};
+                if (item.summary_fields.latest_import) {
+                    item['latest_import'] = item.summary_fields.latest_import;
+                    item['latest_import']['as_of_dt'] =
+                        item['latest_import']['finished'] ? moment(item['latest_import']['finished']).fromNow() : moment(item['latest_import']['modified']).fromNow();
+                }
+            });
+            
+            this.items = JSON.parse(JSON.stringify(repositories));
             this.loading = false;
+
+            if (this.items.length) {
+                // Every 5 seconds, refresh the respository data
+                this.polling = Observable.interval(5000)
+                    .subscribe(_ => {
+                        this.refreshRepositories();
+                    });
+            }
+        });
+    }
+
+    private refreshRepositories() {
+        this.loading = true;
+        let queries: Observable<Repository[]>[] = [];
+        this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
+            queries.push(this.repositoryService.query({ 'provider_namespace__id': pns.id }));
         });
 
+        forkJoin(queries).subscribe((results: Repository[][]) => {
+            let repositories = flatten(results);
+            let match: boolean;
+            repositories.forEach(repo => {
+                match = false;
+                this.items.forEach(item => {
+                    // Update items in place, to avoid page bounce. Page bounce happens when all items are replaced. 
+                    if (item.id == repo.id) {
+                        match = true;
+                        if (repo.summary_fields.latest_import) {
+                            if (!item['latest_import']) {
+                                item['latest_import'] = {};
+                            }
+                            item['latest_import'] = repo.summary_fields.latest_import;
+                            item['latest_import']['as_of_dt'] =
+                                item['latest_import']['finished'] ? moment(item['latest_import']['finished']).fromNow() : moment(item['latest_import']['modified']).fromNow();
+                        } else {
+                            item['latest_import'] = {};
+                        }
+                    }
+                });
+                if (!match) {
+                    // repository doesn't exist, so add it
+                    repo['latest_import'] = {};
+                    if (repo.summary_fields.latest_import) {
+                        repo['latest_import'] = repo.summary_fields.latest_import;
+                        repo['latest_import']['as_of_dt'] =
+                            repo['latest_import']['finished'] ? moment(repo['latest_import']['finished']).fromNow() : moment(repo['latest_import']['modified']).fromNow();
+                    }
+                    this.items.push(repo);
+                }
+            });
+            this.loading = false;
+        });
     }
 
     private importRepository(repository: Repository) {
+        // Start an import
         let repoImport: RepositoryImport = new RepositoryImport();
         repoImport.github_user = repository.github_user;
         repoImport.github_repo = repository.github_repo;
+        repository['latest_import']['state'] = 'PENDING';
+        repository['latest_import']['as_of_dt'] = '';
         this.repositoryImportService.save(repoImport)
             .subscribe(
                 response => {
-                    console.log(response);
+                    console.log(`Fetched repoostiroy ${response.id}`);
                 }
             );
+    }
+
+    private deleteRepository(repository: Repository) {
+        this.loading = true;
+        this.repositoryService.destroy(repository).subscribe( _ =>{
+            this.items.forEach((item: Repository, idx: number) => {
+                if (item.id == repository.id) {
+                    this.items.splice(idx, 1);
+                    this.loading = false;
+                }
+            });
+        });
     }
 }

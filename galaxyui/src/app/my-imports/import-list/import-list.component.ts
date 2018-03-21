@@ -28,6 +28,8 @@ import { FilterField }   from 'patternfly-ng/filter/filter-field';
 import { FilterEvent }   from 'patternfly-ng/filter/filter-event';
 import { FilterQuery }   from 'patternfly-ng/filter/filter-query';
 import { FilterType }    from 'patternfly-ng/filter/filter-type';
+import { Filter }        from "patternfly-ng/filter/filter";
+
 import * as moment       from 'moment';
 
 @Component({
@@ -42,7 +44,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     listConfig: ListConfig;
     filterConfig: FilterConfig;
 
-    items: ImportLatest[];
+    items: ImportLatest[] = [];
     selected: Import = null;
     checking: boolean = false;
 
@@ -59,6 +61,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         this.route.data.subscribe(
             (data) => {
                 this.items = data['imports'];
+                this.prepareImports(this.items);
                 if (this.items.length) {
                     this.getImport(this.items[0].id);
                 } else {
@@ -66,6 +69,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 }
             }
         );
+
         this.listConfig = {
             dblClick: false,
             multiSelect: false,
@@ -73,6 +77,37 @@ export class ImportListComponent implements OnInit, AfterViewInit {
             showCheckbox: false,
             useExpandItems: false
         } as ListConfig;
+
+        this.filterConfig = {
+            fields: [{
+                id: 'repository_name',
+                title: 'Repository Name',
+                placeholder: 'Filter by Repository Name...',
+                type: FilterType.TEXT,
+            }, {
+                id: 'namespace',
+                title: 'Namespace',
+                placeholder: 'Filter by Namespace...',
+                type: FilterType.TEXT,
+            }] as FilterField[],
+            resultsCount: this.items.length,
+            appliedFilters: []
+        } as FilterConfig;
+
+        this.route.queryParams.subscribe(params => {
+            if (params['namespace']) {
+                this.filterConfig.appliedFilters.push({
+                    field: this.filterConfig.fields[1],
+                    value: params['namesspace']
+                });
+            }
+            if (params['repository_name']) {
+                this.filterConfig.appliedFilters.push({
+                    field: this.filterConfig.fields[0],
+                    value: params['repository_name']
+                });
+            }
+        });
     }
 
     ngAfterViewInit() {
@@ -129,5 +164,46 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                     this.selectItem(this.selected.id, deselectId);
                 }
             });
+    }
+
+    applyFilters(filters: FilterEvent): void {
+        console.log(filters);
+        if (filters.appliedFilters.length) {
+            let query = '';
+            filters.appliedFilters.forEach((filter: Filter, idx: number) => {
+                query += idx > 0 ? '&' : '';
+                if (filter.field.id == 'namespace' && filter.value) {
+                    query += `or__repository__provider_namespace__namespace__name__icontains=${filter.value.toLowerCase()}`;
+                } else if (filter.field.id == 'repository_name' && filter.value) {
+                    query += `or__repository__name__icontains=${filter.value.toLowerCase()}`;
+                }
+            });
+            this.searchImports(query);
+        } else {
+            this.searchImports();
+        }
+    }
+
+    // private 
+
+    private searchImports(query?: string): void {
+        this.pageLoading = true;
+        this.importsService.latest(query).subscribe(results => {
+            this.items = results;
+            this.prepareImports(this.items);
+            this.filterConfig.resultsCount = this.items.length;
+            if (this.items.length) {
+                this.getImport(this.items[0].id);
+            } else {
+                this.pageLoading = false;
+            }
+        });
+    }
+
+    private prepareImports(imports: ImportLatest[]): void {
+        imports.forEach(item => {
+            item.finished = moment(item.modified).fromNow();
+            item.state = item.state.charAt(0).toUpperCase() + item.state.slice(1).toLowerCase();
+        });
     }
 }

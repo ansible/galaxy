@@ -22,10 +22,10 @@ export class AddRepositoryModalComponent implements OnInit {
     namespace: Namespace;
     selectedPNS: any;
     providerNamespaces: any[] = [];
+    originalRepos: any[] = [];
     displayedRepos: any[] = [];
     saveInProgress: boolean;
-    private filterValue = new Subject<string>();
-
+    //private filterValue = new Subject<string>();
 
     constructor(public bsModalRef: BsModalRef,
                 private repositoryService: RepositoryService,
@@ -49,11 +49,28 @@ export class AddRepositoryModalComponent implements OnInit {
     }
 
     filterRepos(filterValue:string) {
-        this.filterValue.next(filterValue);
+        //this.filterValue.next(filterValue);
+        this.providerNamespaces.forEach(pns => {
+            if (filterValue) {
+                pns.displaySources = [];
+                pns.repoSources.forEach(repo => {
+                    if (repo.name.toLowerCase().match(filterValue.toLowerCase()) !== null) {
+                        pns.displaySources.push(JSON.parse(JSON.stringify(repo)));
+                    }
+                });
+            } else {
+                pns.displaySources = JSON.parse(JSON.stringify(pns.repoSources));
+            }
+        });
     }
 
     selectRepo(repo: any) {
         repo.isSelected = !repo.isSelected;
+        this.selectedPNS.repoSources.forEach(srcRepo => {
+            if (srcRepo.name == repo.name) {
+                srcRepo.isSelected = repo.isSelected;
+            }
+        });
     }
 
     saveRepos() {
@@ -65,6 +82,7 @@ export class AddRepositoryModalComponent implements OnInit {
                 let newRepo = new Repository();
                 newRepo.name = repoSource.name;
                 newRepo.original_name = repoSource.name;
+                newRepo.description = repoSource.description ? repoSource.description : repoSource.name;
                 newRepo.provider_namespace = this.selectedPNS.id;
                 newRepo.is_enabled = true;
                 saveRequests.push(this.repositoryService.save(newRepo));
@@ -77,8 +95,8 @@ export class AddRepositoryModalComponent implements OnInit {
 
             results.forEach((repository: Repository) => {
                 let repoImport: RepositoryImport = new RepositoryImport();
-                repoImport.github_user = repository.github_user;
-                repoImport.github_repo = repository.github_repo;
+                repoImport.github_user = repository.summary_fields.provider_namespace.name;
+                repoImport.github_repo = repository.original_name;
                 this.repositoryImportService
                     .save(repoImport)
                     .subscribe(_ => {
@@ -92,6 +110,7 @@ export class AddRepositoryModalComponent implements OnInit {
         this.providerNamespaces.forEach(pns => {
             pns.loading = true;
             pns.repoSources = [];
+            pns.displaySources = [];
             this.providerSourceService.getRepoSources({
                 providerName: pns.provider_name,
                 name: pns.name
@@ -101,6 +120,7 @@ export class AddRepositoryModalComponent implements OnInit {
                         pns.repoSources.push(repoSource);
                     }
                 });
+                pns.displaySources = JSON.parse(JSON.stringify(pns.repoSources));
                 pns.loading = false;
             });
         });

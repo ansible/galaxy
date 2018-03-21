@@ -33,7 +33,7 @@
             <div class="loading-repos-spinner-container" *ngIf="selectedPNS.loading">
                 <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
             </div>
-            <div class="list-group-item" *ngFor="let repo of selectedPNS.repoSources">
+            <div class="list-group-item" *ngFor="let repo of selectedPNS.displaySources">
                 <div class="list-view-pf-checkbox">
                     <input type="checkbox"
                            name="selected-repos-{{ selectedPNS.provider_name }}-{{ selectedPNS.name }}-{{ repo.name }}"
@@ -60,3 +60,4 @@
     <button class="btn btn-warning" type="button" (click)="bsModalRef.hide()">Cancel</button>
 </div>
 
+<app-page-loading [loading]="saveInProgress"></app-page-loading>

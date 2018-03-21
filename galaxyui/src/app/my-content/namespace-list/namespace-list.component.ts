@@ -40,13 +40,14 @@ import { FilterEvent }                 from "patternfly-ng/filter/filter-event";
     styleUrls: ['./namespace-list.component.less']
 })
 export class NamespaceListComponent implements OnInit {
-    items: Namespace[];
-    namespaces: Namespace[];
+    items: Namespace[] = [];
+    namespaces: Namespace[] = [];
 
     pageTitle: string = "My Content";
     pageLoading: boolean = true;
 
     toolbarActionConfig: ActionConfig;
+    listActionConfigEnable: ActionConfig;
     filterConfig: FilterConfig;
     filtersText: string = '';
     isAscendingSort: boolean = true;
@@ -70,26 +71,42 @@ export class NamespaceListComponent implements OnInit {
         this.route.data
             .subscribe((data: { namespaces: Namespace[] }) => {
                 this.items = this.prepForList(data.namespaces);
+                this.namespaces = JSON.parse(JSON.stringify(this.items));
                 this.pageLoading = false;
             });
 
         this.filterConfig = {
-            fields: [{
-                id: 'name',
-                title: 'Name',
-                placeholder: 'Filter by Name...',
-                type: FilterType.TEXT
-            }] as FilterField[],
+            fields: [
+                {
+                    id: 'name',
+                    title: 'Name',
+                    placeholder: 'Filter by Name...',
+                    type: FilterType.TEXT
+                },
+                {
+                    id: 'description',
+                    title: 'Description',
+                    placeholder: 'Filter by Description...',
+                    type: FilterType.TEXT
+                }
+            ] as FilterField[],
             resultsCount: this.items.length,
             appliedFilters: []
         } as FilterConfig;
 
         this.sortConfig = {
-            fields: [{
-                id: 'name',
-                title: 'Name',
-                sortType: 'alpha'
-            }],
+            fields: [
+                {
+                    id: 'name',
+                    title: 'Name',
+                    sortType: 'alpha'
+                },
+                {
+                    id: 'description',
+                    title: 'Description',
+                    sortType: 'alpha'
+                }
+            ],
             isAscending: this.isAscendingSort
         } as SortConfig;
 
@@ -108,7 +125,7 @@ export class NamespaceListComponent implements OnInit {
         this.listActionConfig = {
             primaryActions: [{
                 id: 'addContent',
-                styleClass: 'btn-primary',
+                styleClass: 'btn-primary primary-action-btn',
                 title: 'Add Content',
                 tooltip: 'Add roles, modules, apbs and other content from repositories'
             }],
@@ -117,12 +134,32 @@ export class NamespaceListComponent implements OnInit {
                 title: 'Edit Properties',
                 tooltip: 'Edit namespace properties'
             }, {
-                id: 'deleteNamespace',
-                title: 'Delete',
-                tooltip: 'Delete Namespace'
+                id: 'disableNamespace',
+                title: 'Disable',
+                tooltip: 'Disable namespace'
             }],
             moreActionsDisabled: false,
             moreActionsVisible: true
+        } as ActionConfig;
+
+        this.listActionConfigEnable = {
+            primaryActions: [{
+                id: 'enableNamespace',
+                styleClass: 'btn-primary primary-action-btn',
+                title: 'Enable',
+                tooltip: 'Enable namespace'
+            }],
+            moreActions: [{
+                id: 'editNamespaceProps',
+                title: 'Edit Properties',
+                tooltip: 'Edit namespace properties'
+            }, {
+                id: 'disableNamespace',
+                title: 'Disable',
+                tooltip: 'Disable namespace'
+            }],
+            moreActionsDisabled: true,
+            moreActionsVisible: false
         } as ActionConfig;
 
         this.listConfig = {
@@ -140,8 +177,13 @@ export class NamespaceListComponent implements OnInit {
     // Actions
 
     refreshNamespaces(): void {
+        this.pageLoading = true;
         this.namespaceService.query()
-            .subscribe(namespaces => this.items = namespaces);
+            .subscribe(namespaces => {
+                this.items = this.prepForList(namespaces);
+                this.namespaces = JSON.parse(JSON.stringify(this.items));
+                this.pageLoading = false;
+            });
     }
 
     handleToolbarAction(action: Action): void {
@@ -150,11 +192,10 @@ export class NamespaceListComponent implements OnInit {
 
     optionSelected(option: number): void {
         this.actionsText = 'Option ' + option + ' selected\n' + this.actionsText;
-        this.actionsText = 'Option ' + option + ' selected\n' + this.actionsText;
     }
 
-
     handleListAction($event: Action, item: any): void {
+        console.log($event);
         switch ($event.id) {
             case 'addContent': {
                 this.addContent(item);
@@ -164,8 +205,9 @@ export class NamespaceListComponent implements OnInit {
                 this.router.navigate([`/my-content/namespaces/${item.id}`]);
                 break;
             }
-            case 'deleteNamespace': {
-                this.deleteNamespace(item);
+            case 'disableNamespace': 
+            case 'enableNamespace': {
+                this.enableDisableNamespace(item);
                 break;
             }
             default: {
@@ -180,47 +222,34 @@ export class NamespaceListComponent implements OnInit {
         this.actionsText = $event.item.name + ' clicked\r\n' + this.actionsText;
     }
 
-    // Filter
-
-    applyFilters(filters: Filter[]): void {
+    filterChanged($event: FilterEvent): void {
+        // Handle filter changes
+        let filters = $event.appliedFilters;
         this.items = [];
-        if (filters && filters.length > 0) {
+        if (filters && filters.length > 0 && this.namespaces.length > 0) {
             this.namespaces.forEach((item) => {
                 if (this.matchesFilters(item, filters)) {
-                    this.items.push(item);
+                    this.items.push(JSON.parse(JSON.stringify(item)));
                 }
             });
         } else {
-            this.items = this.namespaces;
+            this.items = JSON.parse(JSON.stringify(this.namespaces));
         }
         this.toolbarConfig.filterConfig.resultsCount = this.items.length;
-    }
-
-    // Handle filter changes
-    filterChanged($event: FilterEvent): void {
-        this.filtersText = '';
-        $event.appliedFilters.forEach((filter) => {
-            this.filtersText += filter.field.title + ' : ' + filter.value + '\n';
-        });
-        this.applyFilters($event.appliedFilters);
-        this.filterFieldSelected($event);
-    }
-
-    // Reset filtered queries
-    filterFieldSelected($event: FilterEvent): void {
-        //TODO
     }
 
     matchesFilter(item: any, filter: Filter): boolean {
         let match = true;
         if (filter.field.id === 'name') {
-            match = item.name.match(filter.value) !== null;
+            match = item.name.toLowerCase().match(filter.value.toLowerCase()) !== null;
+        } else if (filter.field.id == 'description') {
+            match = item.description.toLowerCase().match(filter.value.toLowerCase()) !== null;
         }
-
         return match;
     }
 
     matchesFilters(item: any, filters: Filter[]): boolean {
+        // Return true if all filters match the item. 
         let matches = true;
         filters.forEach((filter) => {
             if (!this.matchesFilter(item, filter)) {
@@ -231,19 +260,11 @@ export class NamespaceListComponent implements OnInit {
         return matches;
     }
 
-    // Filter queries for type ahead
-    filterQueries($event: FilterEvent) {
-        return true;
-    }
 
     // Sort
-
     compare(item1: any, item2: any): number {
         let compValue = 0;
-        if (this.currentSortField.id === 'name') {
-            compValue = item1.name.localeCompare(item2.name);
-        }
-
+        compValue = item1[this.currentSortField.id].localeCompare(item2[this.currentSortField.id]);
         if (!this.isAscendingSort) {
             compValue = compValue * -1;
         }
@@ -281,10 +302,9 @@ export class NamespaceListComponent implements OnInit {
         this.bsModalRef = this.modalService.show(AddRepositoryModalComponent, {initialState});
     }
 
-    private deleteNamespace(namespace: Namespace) {
-        this.namespaceService.delete(namespace)
-            .subscribe(namespaces => {
-                this.refreshNamespaces()
-            });
+    private enableDisableNamespace(namespace: Namespace) {
+        namespace.active = !namespace.active;
+        this.namespaceService.save(namespace)
+            .subscribe(_ => { this.refreshNamespaces() });
     }
 }
