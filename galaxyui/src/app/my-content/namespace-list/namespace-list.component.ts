@@ -1,6 +1,7 @@
 import {
     Component,
-    OnInit,
+    OnInit,,
+    TemplateRef,
     ViewEncapsulation
 } from '@angular/core';
 
@@ -47,7 +48,6 @@ export class NamespaceListComponent implements OnInit {
     pageLoading: boolean = true;
 
     toolbarActionConfig: ActionConfig;
-    listActionConfigEnable: ActionConfig;
     filterConfig: FilterConfig;
     filtersText: string = '';
     isAscendingSort: boolean = true;
@@ -55,7 +55,6 @@ export class NamespaceListComponent implements OnInit {
     currentSortField: SortField;
     toolbarConfig: ToolbarConfig;
 
-    listActionConfig: ActionConfig;
     actionsText: string = '';
     listConfig: ListConfig;
     bsModalRef: BsModalRef;
@@ -72,7 +71,7 @@ export class NamespaceListComponent implements OnInit {
             .subscribe((data: { namespaces: Namespace[] }) => {
                 this.items = this.prepForList(data.namespaces);
                 this.namespaces = JSON.parse(JSON.stringify(this.items));
-                this.pageLoading = false;
+                this.cancelPageLoading();
             });
 
         this.filterConfig = {
@@ -122,12 +121,29 @@ export class NamespaceListComponent implements OnInit {
             views: []
         } as ToolbarConfig;
 
-        this.listActionConfig = {
+        this.listConfig = {
+            dblClick: false,
+            multiSelect: false,
+            selectItems: false,
+            selectionMatchProp: 'name',
+            showCheckbox: false,
+            useExpandItems: true
+        } as ListConfig;
+    }
+
+    ngDoCheck(): void {}
+
+    
+    // Action Button and Menu 
+
+    getActionConfig(item: Namespace, addContentButtonTemplate: TemplateRef<any>): ActionConfig {
+        let actionConfig = {
             primaryActions: [{
                 id: 'addContent',
-                styleClass: 'btn-primary primary-action-btn',
                 title: 'Add Content',
-                tooltip: 'Add roles, modules, apbs and other content from repositories'
+                styleClass: 'btn-primary',
+                tooltip: 'Add roles, modules, APBs and other content from repositories',
+                template: addContentButtonTemplate 
             }],
             moreActions: [{
                 id: 'editNamespaceProps',
@@ -142,37 +158,18 @@ export class NamespaceListComponent implements OnInit {
             moreActionsVisible: true
         } as ActionConfig;
 
-        this.listActionConfigEnable = {
-            primaryActions: [{
+        // Set disabled options
+        if (!item.active) {
+            actionConfig.primaryActions[0].disabled = true;
+            actionConfig.moreActions[0].disabled = true;
+            actionConfig.moreActions[1] = {
                 id: 'enableNamespace',
-                styleClass: 'btn-primary primary-action-btn',
                 title: 'Enable',
-                tooltip: 'Enable namespace'
-            }],
-            moreActions: [{
-                id: 'editNamespaceProps',
-                title: 'Edit Properties',
-                tooltip: 'Edit namespace properties'
-            }, {
-                id: 'disableNamespace',
-                title: 'Disable',
-                tooltip: 'Disable namespace'
-            }],
-            moreActionsDisabled: true,
-            moreActionsVisible: false
-        } as ActionConfig;
-
-        this.listConfig = {
-            dblClick: false,
-            multiSelect: false,
-            selectItems: false,
-            selectionMatchProp: 'name',
-            showCheckbox: false,
-            useExpandItems: true
-        } as ListConfig;
+                tooltip: 'Enable namespace'    
+            };
+        }
+        return actionConfig;
     }
-
-    ngDoCheck(): void {}
 
     // Actions
 
@@ -182,7 +179,7 @@ export class NamespaceListComponent implements OnInit {
             .subscribe(namespaces => {
                 this.items = this.prepForList(namespaces);
                 this.namespaces = JSON.parse(JSON.stringify(this.items));
-                this.pageLoading = false;
+                this.cancelPageLoading();
             });
     }
 
@@ -195,7 +192,6 @@ export class NamespaceListComponent implements OnInit {
     }
 
     handleListAction($event: Action, item: any): void {
-        console.log($event);
         switch ($event.id) {
             case 'addContent': {
                 this.addContent(item);
@@ -211,9 +207,7 @@ export class NamespaceListComponent implements OnInit {
                 break;
             }
             default: {
-                console.log(`handle action "${$event.id}" not found`, $event, item);
-                console.log($event);
-                console.log(item);
+                console.log(`handle action "${$event.id}" not found`);
             }
         }
     }
@@ -307,4 +301,10 @@ export class NamespaceListComponent implements OnInit {
         this.namespaceService.save(namespace)
             .subscribe(_ => { this.refreshNamespaces() });
     }
+
+    private cancelPageLoading(): void {
+        setTimeout(_ => {
+            this.pageLoading = false;
+        }, 2000);
+    } 
 }

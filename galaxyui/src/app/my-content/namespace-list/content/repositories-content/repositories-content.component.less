@@ -5,14 +5,39 @@
 .content-loader {
 	position: absolute;
     top: 0;
+    bottom: 0;
     left: 0;
+    right: 0;
     width: 100%;
     height: 100%;
-    z-index: 9999;
+    z-index: +1;
     background:rgba(255,255,255,0.5);
     text-align: center;
-    padding-top: 15%;
+    opacity: 1;
+    transition: 2s ease;
+    .content-loader-inner {
+        position: absolute;
+        top: 45%;
+        left: 45%;
+        text-align: center;
+    }
 }
+
+.content-loader.hide-content {
+    opacity: 0;
+    z-index: -1;
+}
+
+/*.content-refresh {
+    position: relative;
+    top: -10px;
+    opacity: 1;
+    transition: 2s ease;
+}
+
+.content-refresh.hide-content {
+    opacity: 0;
+}*/
 
 .list-pf-additional-content a:hover {
     text-decoration: none;

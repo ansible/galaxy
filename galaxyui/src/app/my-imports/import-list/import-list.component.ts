@@ -65,7 +65,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 if (this.items.length) {
                     this.getImport(this.items[0].id);
                 } else {
-                    this.pageLoading = false;
+                    this.cancelPageLoading();
                 }
             }
         );
@@ -143,7 +143,6 @@ export class ImportListComponent implements OnInit, AfterViewInit {
             result => {
                 let deselectId = this.selected  ? this.selected.id : null;
                 this.selected = result;
-                this.pageLoading = false;
                 if (!this.selected.import_branch) {
                     // TODO: a default value for import branch should be set on the backend
                     this.selected.import_branch = "master";
@@ -163,6 +162,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 if (this.pfList) {
                     this.selectItem(this.selected.id, deselectId);
                 }
+                this.cancelPageLoading();
             });
     }
 
@@ -195,8 +195,8 @@ export class ImportListComponent implements OnInit, AfterViewInit {
             if (this.items.length) {
                 this.getImport(this.items[0].id);
             } else {
-                this.pageLoading = false;
-            }
+                this.cancelPageLoading();
+            
         });
     }
 
@@ -205,5 +205,11 @@ export class ImportListComponent implements OnInit, AfterViewInit {
             item.finished = moment(item.modified).fromNow();
             item.state = item.state.charAt(0).toUpperCase() + item.state.slice(1).toLowerCase();
         });
+    }
+
+    private cancelPageLoading(): void {
+        setTimeout(_ => {
+            this.pageLoading = false;
+        }, 2000);
     }
 }

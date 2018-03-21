@@ -37,7 +37,10 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     @Input() namespace: Namespace;
 
     items: Repository[] = [new Repository()];   // init with one empty repo to preven EmptyState from flashing on the page
+    
     emptyStateConfig: EmptyStateConfig;
+    disabledStateConfig: EmptyStateConfig;
+
     listConfig: ListConfig;
     selectType: string = 'checkbox';
     loading: boolean = false;
@@ -58,6 +61,12 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             helpLink: {}
         } as EmptyStateConfig;
 
+        this.disabledStateConfig = {
+            iconStyleClass: 'pficon-warning-triangle-o',
+            info: `The Namespace ${this.namespace.name} is disabled. You'll need to re-enable it before viewing and modifying its content.`,
+            title: 'Namespace Disabled'
+        } as EmptyStateConfig;    
+        
         this.listConfig = {
             dblClick: false,
             emptyStateConfig: this.emptyStateConfig,
@@ -68,7 +77,8 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             useExpandItems: false
         } as ListConfig;
 
-        this.getRepositories();
+        if (this.namespace.active) 
+            this.getRepositories();
     }
 
     ngDoCheck(): void {}
@@ -78,9 +88,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             this.polling.unsubscribe();
     }
 
-    getActionConfig(item: Repository,
-                    actionButtonTemplate: TemplateRef<any>,
-                    importButtonTemplate: TemplateRef<any>): ActionConfig {
+    getActionConfig(item: Repository, importButtonTemplate: TemplateRef<any>): ActionConfig {
         let actionConfig = {
             primaryActions: [{
                 id: 'import',
@@ -137,14 +145,21 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             });
             
             this.items = JSON.parse(JSON.stringify(repositories));
-            this.loading = false;
-
+            
             if (this.items.length) {
-                // Every 5 seconds, refresh the respository data
-                this.polling = Observable.interval(5000)
-                    .subscribe(_ => {
-                        this.refreshRepositories();
-                    });
+                // If we have repositories, then track current import state via long polling
+                setTimeout(_ => {
+                    this.loading = false;
+                    if (this.items.length) {
+                        // Every 5 seconds, refresh the respository data
+                        this.polling = Observable.interval(10000)
+                            .subscribe(_ => {
+                                this.refreshRepositories();
+                            });
+                    }
+                }, 2000);
+            } else {
+                this.loading = false;
             }
         });
     }
@@ -188,7 +203,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                     this.items.push(repo);
                 }
             });
-            this.loading = false;
+            setTimeout(_ => {
+                this.loading = false;
+            }, 3000);
         });
     }
 
@@ -213,7 +230,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             this.items.forEach((item: Repository, idx: number) => {
                 if (item.id == repository.id) {
                     this.items.splice(idx, 1);
-                    this.loading = false;
+                    setTimeout(_ => {
+                        this.loading = false;
+                    }, 2000);
                 }
             });
         });

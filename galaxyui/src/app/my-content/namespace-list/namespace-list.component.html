@@ -44,7 +44,7 @@
                         <div class="list-pf-content-wrapper">
                             <div class="list-pf-main-content">
                                 <div class="list-pf-title">{{item.name}}</div>
-                                <div class="list-pf-description text-overflow-pf">{{item.description}}</div>
+                                <div class="list-pf-description text-overflow-pf">{{item.description }}</div>
                             </div>
                             <div class="list-pf-additional-content">
                                 <pfng-list-expand-toggle [expandId]="'owners'" [item]="item" [template]="ownersTemplate">
@@ -63,18 +63,13 @@
                         </div>
                     </ng-template>
                     <ng-template #listActionTemplate let-item="item" let-index="index">
-                        <div *ngIf="item.active">
-                            <pfng-action class="list-pf-actions"
-                                         [config]="listActionConfig"
-                                         (onActionSelect)="handleListAction($event, item)">
-                            </pfng-action>
-                        </div>
-                        <div *ngIf="!item.active">
-                            <pfng-action class="list-pf-actions"
-                                         [config]="listActionConfigEnable"
-                                         (onActionSelect)="handleListAction($event, item)">
-                            </pfng-action>
-                        </div>
+                        <pfng-action class="list-pf-actions"
+                            [config]="getActionConfig(item, addContentButtonTemplate)"
+                            (onActionSelect)="handleListAction($event, item)">
+                            <ng-template #addContentButtonTemplate let-action="action">
+                                <i class="fa fa-plus"></i> {{ action.title }}
+                            </ng-template>
+                        </pfng-action>
                     </ng-template>
                     <ng-template #listExpandTemplate let-item="item" let-index="index">
                         <repositories-content [namespace]="item" *ngIf="item.expandId === undefined"></repositories-content>

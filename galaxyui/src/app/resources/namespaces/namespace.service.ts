@@ -29,8 +29,8 @@ export class NamespaceService {
 
     encounteredErrors: boolean = false;
 
-    query(): Observable<Namespace[]> {
-        return this.http.get<PagedResponse>(this.url + '/')
+    query(params?: object): Observable<Namespace[]> {
+        return this.http.get<PagedResponse>(this.url + '/', {params: params})
             .pipe(
                 map(response => response.results),
                 tap(_ => this.log('fetched namespaces')),
