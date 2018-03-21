@@ -128,10 +128,6 @@ class GenericAPIView(generics.GenericAPIView, APIView):
 
     def get_queryset(self):
         qs = self.model.objects.all().distinct()
-        if hasattr(self.model, "is_active"):
-            return qs.filter(is_active=True)
-        elif hasattr(self.model, "active"):
-            return qs.filter(active=True)
         return qs
 
     def get_description_context(self):
