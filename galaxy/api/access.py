@@ -266,6 +266,9 @@ class StargazerAccess(BaseAccess):
 
 
 class NamespaceAccess(BaseAccess):
+    def can_read(self, obj):
+        return True
+
     def can_add(self, data):
         return self.user.is_authenticated()
 
