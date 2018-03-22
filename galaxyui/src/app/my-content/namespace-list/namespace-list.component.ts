@@ -1,6 +1,6 @@
 import {
     Component,
-    OnInit,,
+    OnInit,
     TemplateRef,
     ViewEncapsulation
 } from '@angular/core';

@@ -29,7 +29,7 @@ export class NamespaceService {
 
     encounteredErrors: boolean = false;
 
-    query(params?: object): Observable<Namespace[]> {
+    query(params?: any): Observable<Namespace[]> {
         return this.http.get<PagedResponse>(this.url + '/', {params: params})
             .pipe(
                 map(response => response.results),

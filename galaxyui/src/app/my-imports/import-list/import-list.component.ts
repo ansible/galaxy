@@ -196,7 +196,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 this.getImport(this.items[0].id);
             } else {
                 this.cancelPageLoading();
-            
+            }    
         });
     }
 
