@@ -102,7 +102,7 @@ def build_standard_context(request):
     debug = 'on' if settings.DEBUG else 'off'
     context = dict(
         request=request,
-        user=request.user,
+        user=request.user if 'user' in request else None,
         debug=debug,
         redirect_url=request.path,
         site_name=settings.SITE_NAME,
@@ -115,6 +115,7 @@ def build_standard_context(request):
         extra_css=None,
         extra_js=None,
         auth_orgs_url=None,
+        is_authenticated=False,
     )
 
     if 'user' in request:
@@ -210,27 +211,20 @@ def detail_category(request, category=None, page=1):
 
 
 def handle_404_view(request):
-<<<<<<< HEAD
-    context = dict(page_title="404 Error")
-=======
     context = build_standard_context(request)
     context['page_title'] = "404 Error"
->>>>>>> 2fd2972... Fix lint issues
     return render_to_response('custom404.html', context, status=404)
 
 
 def handle_400_view(request):
-    context = dict(page_title="400 Error")
+    context = build_standard_context(request)
+    context['page_title'] = "400 Error"
     return render_to_response('custom400.html', context, status=400)
 
 
 def handle_500_view(request):
-<<<<<<< HEAD
-    context = dict(page_title="500 Error")
-=======
     context = build_standard_context(request)
     context['page_title'] = "500 Error"
->>>>>>> 2fd2972... Fix lint issues
     return render_to_response('custom500.html', context, status=500)
 
 

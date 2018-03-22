@@ -1,9 +1,7 @@
 
 <ul class="nav navbar-nav navbar-right" id="galaxy-nav-items" {% if use_menu_controller %} ng-controller="MenuCtrl" {% endif %}>
-    <li {% if '/explore' in request.path %} class="active" {% endif %}><a href="{% url 'main:explore' %}#/">Explore</a></li>
-    <li id="nav-menu-browse-roles"><a href="{% url 'main:list-category' %}#/roles">Search</a></li>
     <li id="nav-menu-browse-authors"><a href="/authors/">Browse Authors</a></li>
-    {% if not user.is_authenticated %}
+    {% if not user or user.is_authenticated %}
         <li><a {% if not use_menu_controller %} href="/accounts/login/" {% endif %}
             {% if use_menu_controller %} href="" ng-click="redirectToSignin()" {% endif %}>Sign In</a></li>
     {% else %}
