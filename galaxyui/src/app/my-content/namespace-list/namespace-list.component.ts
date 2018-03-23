@@ -59,12 +59,21 @@ export class NamespaceListComponent implements OnInit {
     listConfig: ListConfig;
     bsModalRef: BsModalRef;
 
+    contentAdded: number = 0;
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         private modalService: BsModalService,
         private namespaceService: NamespaceService
-    ) {}
+    ) {
+        this.modalService.onHidden.subscribe(_ => {
+            if (this.bsModalRef && this.bsModalRef.content.repositoriesAdded) {
+                console.log('Content added.');
+                this.contentAdded++;
+            }
+        });
+    }
 
     ngOnInit(): void {
         this.route.data
@@ -137,7 +146,7 @@ export class NamespaceListComponent implements OnInit {
     // Action Button and Menu 
 
     getActionConfig(item: Namespace, addContentButtonTemplate: TemplateRef<any>): ActionConfig {
-        let actionConfig = {
+        let config = {
             primaryActions: [{
                 id: 'addContent',
                 title: 'Add Content',
@@ -160,15 +169,15 @@ export class NamespaceListComponent implements OnInit {
 
         // Set disabled options
         if (!item.active) {
-            actionConfig.primaryActions[0].disabled = true;
-            actionConfig.moreActions[0].disabled = true;
-            actionConfig.moreActions[1] = {
+            config.primaryActions[0].disabled = true;
+            config.moreActions[0].disabled = true;
+            config.moreActions[1] = {
                 id: 'enableNamespace',
                 title: 'Enable',
                 tooltip: 'Enable namespace'    
             };
         }
-        return actionConfig;
+        return config;
     }
 
     // Actions
@@ -283,9 +292,6 @@ export class NamespaceListComponent implements OnInit {
 
     private prepForList(namespaces: Namespace[]): Namespace[] {
         let clonedNamespaces = cloneDeep(namespaces);
-
-        //TODO transform
-
         return clonedNamespaces;
     }
 
@@ -293,7 +299,7 @@ export class NamespaceListComponent implements OnInit {
         const initialState = {
             namespace: namespace
         };
-        this.bsModalRef = this.modalService.show(AddRepositoryModalComponent, {initialState});
+        this.bsModalRef = this.modalService.show(AddRepositoryModalComponent, {initialState: initialState, keyboard: true, animated: true});
     }
 
     private enableDisableNamespace(namespace: Namespace) {

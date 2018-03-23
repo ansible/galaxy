@@ -28,7 +28,7 @@
 <div>
     <div class="row">
         <div class="col-sm-12">
-            <div>
+            <div id="my-content-list">
                 <pfng-list
                     [actionTemplate]="listActionTemplate"
                     [config]="listConfig"
@@ -72,7 +72,7 @@
                         </pfng-action>
                     </ng-template>
                     <ng-template #listExpandTemplate let-item="item" let-index="index">
-                        <repositories-content [namespace]="item" *ngIf="item.expandId === undefined"></repositories-content>
+                        <repositories-content [namespace]="item" [contentAdded]="contentAdded" *ngIf="item.expandId === undefined"></repositories-content>
                         <owners-content [namespace]="item" *ngIf="item.expandId === 'owners'"></owners-content>
                         <provider-namespaces-content [namespace]="item" *ngIf="item.expandId === 'provider-namespaces'"></provider-namespaces-content>
                     </ng-template>

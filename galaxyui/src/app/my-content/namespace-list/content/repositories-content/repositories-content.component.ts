@@ -14,12 +14,21 @@ import { EmptyStateConfig }  from 'patternfly-ng/empty-state/empty-state-config'
 import { ListEvent }         from 'patternfly-ng/list/list-event';
 import { ListConfig }        from 'patternfly-ng/list/basic-list/list-config';
 
+import {
+    BsModalService,
+    BsModalRef 
+} from 'ngx-bootstrap';
+
 import { Namespace }               from "../../../../resources/namespaces/namespace";
 import { Repository }              from "../../../../resources/respositories/repository";
 import { RepositoryService }       from "../../../../resources/respositories/repository.service";
 import { ProviderNamespace }       from "../../../../resources/provider-namespaces/provider-namespace";
 import { RepositoryImportService } from "../../../../resources/repository-imports/repository-import.service";
 import { RepositoryImport }        from "../../../../resources/repository-imports/repository-import";
+
+import {
+    AlternateNameModalComponent
+} from "./alternate-name-modal/alternate-name-modal.component";
 
 import { Observable }              from "rxjs/Observable";
 import { forkJoin }                from 'rxjs/observable/forkJoin';
@@ -36,6 +45,22 @@ import * as moment                 from 'moment';
 export class RepositoriesContentComponent implements OnInit, OnDestroy {
     @Input() namespace: Namespace;
 
+    @Input()
+    set contentAdded(state: number) {
+        // Get signal from parent when content added
+        if (state != this._contentAdded) {
+            this._contentAdded = state;
+            console.log('Refreshing repositories');
+            this.refreshRepositories();
+        }
+    }
+
+    get contentChanged(): number {
+        return this._contentAdded;
+    }
+
+    private _contentAdded: number;
+
     items: Repository[] = [new Repository()];   // init with one empty repo to preven EmptyState from flashing on the page
     
     emptyStateConfig: EmptyStateConfig;
@@ -45,9 +70,21 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     selectType: string = 'checkbox';
     loading: boolean = false;
     polling = null;
+    bsModalRef: BsModalRef;
 
-    constructor(private repositoryService: RepositoryService,
-                private repositoryImportService: RepositoryImportService) {}
+    constructor(
+        private repositoryService: RepositoryService,
+        private repositoryImportService: RepositoryImportService,
+        private modalService: BsModalService
+    ) {
+        this.modalService.onHidden.subscribe(_ => {
+            if (this.bsModalRef && this.bsModalRef.content.startedImport) {
+                // Import started by AlternateNamedModalComponent
+                console.log('Refreshing repositories...');
+                this.refreshRepositories();
+            }
+        });
+    }
 
     ngOnInit(): void {
         this.emptyStateConfig = {
@@ -89,7 +126,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     }
 
     getActionConfig(item: Repository, importButtonTemplate: TemplateRef<any>): ActionConfig {
-        let actionConfig = {
+        let config = {
             primaryActions: [{
                 id: 'import',
                 title: 'Import',
@@ -100,6 +137,10 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                 id: 'delete',
                 title: 'Delete',
                 tooltip: 'Delete Repository'
+            }, {
+                id: 'changeName',
+                title: 'Change Name',
+                tooltip: 'Change the repository name'
             }],
             moreActionsDisabled: false,
             moreActionsVisible: true
@@ -107,20 +148,24 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
         // Set button disabled
         if (item['latest_import'] && (item['latest_import']['state'] === 'PENDING' || item['latest_import']['state'] === 'RUNNING')) {
-            actionConfig.primaryActions[0].disabled = true;
-            actionConfig.moreActionsVisible = false;
+            config.primaryActions[0].disabled = true;
+            config.moreActionsVisible = false;
         }
-        return actionConfig;
+        return config;
     }
 
     // Actions
 
     handleAction($event: Action, item: any): void {
-        if ($event.id === 'import' && item) {
-            this.importRepository(item);
-        }
-        if ($event.id == 'delete' && item) {
-            this.deleteRepository(item);
+        if (item) {
+            switch ($event.id) {
+                case 'import':
+                    this.importRepository(item);
+                case 'delete':
+                    this.deleteRepository(item);
+                case 'changeName':
+                    this.changeRepositoryName(item);
+            }
         }
     }
 
@@ -130,7 +175,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         this.loading = true;
         let queries: Observable<Repository[]>[] = [];
         this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
-            queries.push(this.repositoryService.query({'provider_namespace__id': pns.id}));
+            queries.push(this.repositoryService.query({ 'provider_namespace__id': pns.id, 'page_size': 1000}));
         });
 
         forkJoin(queries).subscribe((results: Repository[][]) => {
@@ -165,10 +210,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     }
 
     private refreshRepositories() {
-        this.loading = true;
         let queries: Observable<Repository[]>[] = [];
         this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
-            queries.push(this.repositoryService.query({ 'provider_namespace__id': pns.id }));
+            queries.push(this.repositoryService.query({'provider_namespace__id': pns.id, 'page_size': 1000}));
         });
 
         forkJoin(queries).subscribe((results: Repository[][]) => {
@@ -180,6 +224,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                     // Update items in place, to avoid page bounce. Page bounce happens when all items are replaced. 
                     if (item.id == repo.id) {
                         match = true;
+                        if (item.name != repo.name) {
+                            item.name = repo.name;
+                        }
                         if (repo.summary_fields.latest_import) {
                             if (!item['latest_import']) {
                                 item['latest_import'] = {};
@@ -203,25 +250,17 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                     this.items.push(repo);
                 }
             });
-            setTimeout(_ => {
-                this.loading = false;
-            }, 3000);
         });
     }
 
     private importRepository(repository: Repository) {
         // Start an import
-        let repoImport: RepositoryImport = new RepositoryImport();
-        repoImport.github_user = repository.github_user;
-        repoImport.github_repo = repository.github_repo;
         repository['latest_import']['state'] = 'PENDING';
         repository['latest_import']['as_of_dt'] = '';
-        this.repositoryImportService.save(repoImport)
-            .subscribe(
-                response => {
-                    console.log(`Fetched repoostiroy ${response.id}`);
-                }
-            );
+        this.repositoryImportService.save({'repository_id': repository.id})
+            .subscribe(response => {
+                    console.log(`Started import for repoostiroy ${repository.id}`);
+            });
     }
 
     private deleteRepository(repository: Repository) {
@@ -236,5 +275,12 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                 }
             });
         });
+    }
+
+    private changeRepositoryName(repository: Repository) {
+        const initialState = {
+            repository: repository
+        };
+        this.bsModalRef = this.modalService.show(AlternateNameModalComponent, { initialState: initialState, keyboard: true, animated: true });
     }
 }

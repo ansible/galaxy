@@ -24,7 +24,7 @@ export class RepositoryService {
                 private notificationService: NotificationService) {
     }
 
-    query(params): Observable<Repository[]> {
+    query(params?: any): Observable<Repository[]> {
         return this.http.get<PagedResponse>(this.url + '/', {params: params})
             .pipe(
                 map(response => response.results),

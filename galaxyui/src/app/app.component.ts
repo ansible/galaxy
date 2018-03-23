@@ -77,7 +77,6 @@ export class AppComponent {
     redirectUrl:   string = null;
 
     ngOnInit(): void {
-        console.log('init!');
         // TODO add unsecured API endpoint for retrieving Galaxy version
         this.aboutConfig = {
             additionalInfo: '',
@@ -148,12 +147,7 @@ export class AppComponent {
             }
         );
     }
-
-    onResize($event): void {
-        console.log('window resized');
-        console.log($event);
-    }
-
+    
     onItemClicked($event: NavigationItemConfig): void {
         console.log('item clicked');
         console.log($event);

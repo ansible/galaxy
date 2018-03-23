@@ -27,12 +27,14 @@ import { RepositoriesContentComponent }       from './namespace-list/content/rep
 import { OwnersContentComponent }             from './namespace-list/content/owners-content/owners-content.component';
 import { ProviderNamespacesContentComponent } from './namespace-list/content/provider-namespaces-content/provider-namespaces-content.component';
 import { AddRepositoryModalComponent }        from './add-repository-modal/add-repository-modal.component';
+import { AlternateNameModalComponent }        from './namespace-list/content/repositories-content/alternate-name-modal/alternate-name-modal.component';
 import { PageHeaderModule }                   from '../page-header/page-header.module';
-import { PageLoadingModule }                   from '../page-loading/page-loading.module';
+import { PageLoadingModule }                  from '../page-loading/page-loading.module';
 
 @NgModule({
     entryComponents: [
-        AddRepositoryModalComponent
+        AddRepositoryModalComponent,
+        AlternateNameModalComponent,
     ],
     declarations: [
         NamespaceListComponent,
@@ -40,7 +42,8 @@ import { PageLoadingModule }                   from '../page-loading/page-loadin
         RepositoriesContentComponent,
         OwnersContentComponent,
         ProviderNamespacesContentComponent,
-        AddRepositoryModalComponent
+        AddRepositoryModalComponent,
+        AlternateNameModalComponent
     ],
     imports: [
         ActionModule,

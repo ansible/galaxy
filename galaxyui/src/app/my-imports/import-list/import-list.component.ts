@@ -31,6 +31,7 @@ import { FilterType }    from 'patternfly-ng/filter/filter-type';
 import { Filter }        from "patternfly-ng/filter/filter";
 
 import * as moment       from 'moment';
+import * as $            from 'jquery';
 
 @Component({
     selector: 'import-list',
@@ -111,6 +112,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
+        this.setVerticalScroll(); 
         if (this.selected) {
             this.selectItem(this.selected.id);
         }
@@ -167,7 +169,6 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     }
 
     applyFilters(filters: FilterEvent): void {
-        console.log(filters);
         if (filters.appliedFilters.length) {
             let query = '';
             filters.appliedFilters.forEach((filter: Filter, idx: number) => {
@@ -184,7 +185,32 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         }
     }
 
+    onResize($event): void {
+        // On browser resize
+        this.setVerticalScroll();    
+    }
+
     // private 
+
+    private setVerticalScroll(): void {
+        let windowHeight = window.innerHeight;
+        let windowWidth = window.innerWidth;
+        if (windowWidth > 768) {
+            let headerh = $('.page-header').outerHeight(true);
+            let navbarh = $('.navbar-pf-vertical').outerHeight(true);
+            let filterh = $('#import-filter').outerHeight(true);
+            let listHeight = windowHeight - headerh - navbarh - filterh - 60;
+            if (!isNaN(listHeight))
+                $('#import-list').css('height', listHeight);
+ 
+            let detailHeight = windowHeight - headerh - navbarh - 60;
+            if (!isNaN(detailHeight))
+                $('#import-details-container').css('height', detailHeight);
+        } else {
+            $('#import-list').css('height', '100%');
+            $('#import-details-container').css('height', '100%');
+        }
+    }
 
     private searchImports(query?: string): void {
         this.pageLoading = true;
@@ -196,7 +222,8 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 this.getImport(this.items[0].id);
             } else {
                 this.cancelPageLoading();
-            }    
+            }
+            this.setVerticalScroll();
         });
     }
 
