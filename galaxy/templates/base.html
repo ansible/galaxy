@@ -19,7 +19,7 @@
 
         function _factory($resource) {
 
-            {% if user.is_anonymous %}
+            {% if not user or user.is_anonymous %}
             var userData = {
                 "id": null,
                 "authenticasted": false,
