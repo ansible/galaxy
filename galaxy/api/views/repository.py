@@ -94,18 +94,6 @@ class RepositoryList(ListCreateAPIView):
         if not data.get('original_name'):
             data['original_name'] = original_name
 
-        if not isinstance(owners, list):
-            raise ValidationError(detail={'owners': 'Expected a list'})
-
-        for owner_pk in owners:
-            try:
-                User.objects.get(pk=owner_pk)
-            except ObjectDoesNotExist:
-                raise ValidationError(detail={'owners', '{0} is not a valid owner'})
-
-        if request.user.pk not in owners:
-            owners.append(request.user.pk)
-
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
 
@@ -153,15 +141,6 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
 
         for field in GITHUB_REPO_FIELDS:
             data[field] = repo[field]
-
-        if not isinstance(owners, list):
-            raise ValidationError(detail={'owners': 'Expected a list'})
-
-        for owner_pk in owners:
-            try:
-                User.objects.get(pk=owner_pk)
-            except ObjectDoesNotExist:
-                raise ValidationError(detail={'owners', '{0} is not a valid owner'})
 
         serializer = self.get_serializer(instance, data=data)
         serializer.is_valid(raise_exception=True)
