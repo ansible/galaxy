@@ -117,10 +117,10 @@ def build_standard_context(request):
         auth_orgs_url=None,
     )
 
-    if request.user.is_authenticated():
-        for account in request.user.socialaccount_set.all():
-            if account.provider == 'github':
-                context["connected_to_github"] = True
+    if 'user' in request:
+        user = request.user
+        context['connected_to_github'] = user.is_connected_to_github()
+        context['is_authenticated'] = True if user.is_authenticated() and user.is_connected_to_github() else False
 
     return context
 
@@ -210,7 +210,12 @@ def detail_category(request, category=None, page=1):
 
 
 def handle_404_view(request):
+<<<<<<< HEAD
     context = dict(page_title="404 Error")
+=======
+    context = build_standard_context(request)
+    context['page_title'] = "404 Error"
+>>>>>>> 2fd2972... Fix lint issues
     return render_to_response('custom404.html', context, status=404)
 
 
@@ -220,7 +225,12 @@ def handle_400_view(request):
 
 
 def handle_500_view(request):
+<<<<<<< HEAD
     context = dict(page_title="500 Error")
+=======
+    context = build_standard_context(request)
+    context['page_title'] = "500 Error"
+>>>>>>> 2fd2972... Fix lint issues
     return render_to_response('custom500.html', context, status=500)
 
 
