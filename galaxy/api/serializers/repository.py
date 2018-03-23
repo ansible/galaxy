@@ -55,7 +55,7 @@ class RepositorySerializer(BaseSerializer):
             return {}
         related = {
             'provider': reverse('api:active_provider_detail', kwargs={'pk': instance.provider_namespace.provider.pk}),
-            'provider_namespace': None
+            'imports': '{0}?repository__id={1}'.format(reverse('api:import_task_list'), instance.id)
         }
         if instance.provider_namespace.namespace:
             related['namespace'] = reverse('api:namespace_detail',
@@ -83,9 +83,21 @@ class RepositorySerializer(BaseSerializer):
         if instance.provider_namespace.namespace:
             namespace['name'] = instance.provider_namespace.namespace.name
             namespace['id'] = instance.provider_namespace.namespace.pk
+
+        latest_import = {}
+        import_tasks = instance.import_tasks.order_by('-id')
+        if len(import_tasks):
+            latest_import['id'] = import_tasks[0].id
+            latest_import['state'] = import_tasks[0].state
+            latest_import['started'] = import_tasks[0].started
+            latest_import['finished'] = import_tasks[0].finished
+            latest_import['created'] = import_tasks[0].created
+            latest_import['modified'] = import_tasks[0].modified
+
         return {
             'owners': owners,
             'provider_namespace': provider_namespace,
             'provider': provider,
-            'namespace': namespace
+            'namespace': namespace,
+            'latest_import': latest_import
         }

@@ -37,7 +37,7 @@ from allauth.socialaccount.models import SocialToken
 from django.conf import settings
 # django stuff
 from django.contrib.auth.models import AnonymousUser
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Count, Max
@@ -414,32 +414,42 @@ class ImportTaskList(ListCreateAPIView):
         return super(ImportTaskList, self).get_queryset()
 
     def post(self, request, *args, **kwargs):
-        github_user = request.data.get('github_user', None)
-        github_repo = request.data.get('github_repo', None)
+        github_user = request.data.get('github_user')
+        github_repo = request.data.get('github_repo')
         github_reference = request.data.get('github_reference', '')
-        alternate_role_name = request.data.get('alternate_role_name', None)
+        alternate_role_name = request.data.get('alternate_role_name')
+        repository_id = request.data.get('repository_id')
 
-        if not github_user or not github_repo:
-            raise ValidationError(
-                dict(detail="Invalid request. Expecting github_user and github_repo.")
+        if not repository_id:
+            if not github_user or not github_repo:
+                raise ValidationError(
+                    dict(detail="Invalid request. Expecting github_user and github_repo.")
+                )
+            repo_name = alternate_role_name or github_repo
+
+            namespace = ProviderNamespace.objects.get(
+                provider__name=constants.PROVIDER_GITHUB,
+                name=github_user
             )
+            repository, created = Repository.objects.get_or_create(
+                provider_namespace=namespace,
+                name=repo_name,
+                defaults={'is_enabled': False,
+                          'original_name': github_repo}
+            )
+        else:
+            try:
+                repository = Repository.objects.get(pk=repository_id)
+            except ObjectDoesNotExist:
+                raise ValidationError(
+                    dict(detail="Repository {0} not found, or you do not have access".format(repository_id))
+                )
 
-        repo_name = alternate_role_name or github_repo
-
-        namespace = ProviderNamespace.objects.get(
-            provider__name=constants.PROVIDER_GITHUB,
-            name=github_user
-        )
-        repository, created = Repository.objects.get_or_create(
-            provider_namespace=namespace,
-            name=repo_name,
-            defaults={'is_enabled': False,
-                      'original_name': github_repo}
-        )
         task = create_import_task(
             repository, request.user,
             import_branch=github_reference,
             repository_alt_name=alternate_role_name)
+
         serializer = self.get_serializer(instance=task)
         response = {'results': [serializer.data]}
         return Response(response,
@@ -480,7 +490,8 @@ class ImportTaskLatestList(ListAPIView):
             repository__provider_namespace__namespace__owners=request.user
         ).values(
             'repository__provider_namespace__namespace__name',
-            'repository__name'
+            'repository__name',
+            'repository__id',
         ).order_by(
             'repository__provider_namespace__namespace__name',
             'repository__name'
