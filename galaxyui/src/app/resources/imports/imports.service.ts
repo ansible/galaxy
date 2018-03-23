@@ -50,10 +50,13 @@ export class ImportsService {
         private notificationService: NotificationService
     ){}
 
-    private url:string  = '/api/v1/imports';
+    private url: string  = '/api/v1/imports';
 
-    latest(): Observable<ImportLatest[]> {
-        return this.http.get<PagedResponse>(`${this.url}/latest/`)
+    latest(query?: string): Observable<ImportLatest[]> {
+        let requestUrl = `${this.url}/latest/`;
+        if (query)
+            requestUrl += `?${query}`;
+        return this.http.get<PagedResponse>(requestUrl)
             .pipe(
                 map(response => response.results),
                 tap(_ => this.log('fetched latest imports')),
@@ -61,21 +64,9 @@ export class ImportsService {
             );
     }
 
-    get(id: number): Observable<Import> {
-         return this.http.get<Import[]>(`${this.url}/`, {params: {'id': id.toString()}})
+    get(id: number): Observable<any> {
+        return this.http.get<any>(`${this.url}/${id.toString()}/`)
             .pipe(
-                map(response => {
-                    if (!response) {
-                        return {};
-                    }
-                    if (response['results']) {
-                        return response['results'];
-                    }
-                    if (response.length) {
-                        return response[0];
-                    }
-                    return {};
-                }),
                 tap(_ => this.log('fetched import')),
                 catchError(this.handleError('Get', []))
             );

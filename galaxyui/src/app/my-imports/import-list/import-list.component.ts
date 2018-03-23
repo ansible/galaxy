@@ -28,7 +28,10 @@ import { FilterField }   from 'patternfly-ng/filter/filter-field';
 import { FilterEvent }   from 'patternfly-ng/filter/filter-event';
 import { FilterQuery }   from 'patternfly-ng/filter/filter-query';
 import { FilterType }    from 'patternfly-ng/filter/filter-type';
+import { Filter }        from "patternfly-ng/filter/filter";
+
 import * as moment       from 'moment';
+import * as $            from 'jquery';
 
 @Component({
     selector: 'import-list',
@@ -42,7 +45,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     listConfig: ListConfig;
     filterConfig: FilterConfig;
 
-    items: ImportLatest[];
+    items: ImportLatest[] = [];
     selected: Import = null;
     checking: boolean = false;
 
@@ -59,13 +62,15 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         this.route.data.subscribe(
             (data) => {
                 this.items = data['imports'];
+                this.prepareImports(this.items);
                 if (this.items.length) {
                     this.getImport(this.items[0].id);
                 } else {
-                    this.pageLoading = false;
+                    this.cancelPageLoading();
                 }
             }
         );
+
         this.listConfig = {
             dblClick: false,
             multiSelect: false,
@@ -73,9 +78,41 @@ export class ImportListComponent implements OnInit, AfterViewInit {
             showCheckbox: false,
             useExpandItems: false
         } as ListConfig;
+
+        this.filterConfig = {
+            fields: [{
+                id: 'repository_name',
+                title: 'Repository Name',
+                placeholder: 'Filter by Repository Name...',
+                type: FilterType.TEXT,
+            }, {
+                id: 'namespace',
+                title: 'Namespace',
+                placeholder: 'Filter by Namespace...',
+                type: FilterType.TEXT,
+            }] as FilterField[],
+            resultsCount: this.items.length,
+            appliedFilters: []
+        } as FilterConfig;
+
+        this.route.queryParams.subscribe(params => {
+            if (params['namespace']) {
+                this.filterConfig.appliedFilters.push({
+                    field: this.filterConfig.fields[1],
+                    value: params['namesspace']
+                });
+            }
+            if (params['repository_name']) {
+                this.filterConfig.appliedFilters.push({
+                    field: this.filterConfig.fields[0],
+                    value: params['repository_name']
+                });
+            }
+        });
     }
 
     ngAfterViewInit() {
+        this.setVerticalScroll(); 
         if (this.selected) {
             this.selectItem(this.selected.id);
         }
@@ -108,7 +145,6 @@ export class ImportListComponent implements OnInit, AfterViewInit {
             result => {
                 let deselectId = this.selected  ? this.selected.id : null;
                 this.selected = result;
-                this.pageLoading = false;
                 if (!this.selected.import_branch) {
                     // TODO: a default value for import branch should be set on the backend
                     this.selected.import_branch = "master";
@@ -128,6 +164,79 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 if (this.pfList) {
                     this.selectItem(this.selected.id, deselectId);
                 }
+                this.cancelPageLoading();
             });
+    }
+
+    applyFilters(filters: FilterEvent): void {
+        if (filters.appliedFilters.length) {
+            let query = '';
+            filters.appliedFilters.forEach((filter: Filter, idx: number) => {
+                query += idx > 0 ? '&' : '';
+                if (filter.field.id == 'namespace' && filter.value) {
+                    query += `or__repository__provider_namespace__namespace__name__icontains=${filter.value.toLowerCase()}`;
+                } else if (filter.field.id == 'repository_name' && filter.value) {
+                    query += `or__repository__name__icontains=${filter.value.toLowerCase()}`;
+                }
+            });
+            this.searchImports(query);
+        } else {
+            this.searchImports();
+        }
+    }
+
+    onResize($event): void {
+        // On browser resize
+        this.setVerticalScroll();    
+    }
+
+    // private 
+
+    private setVerticalScroll(): void {
+        let windowHeight = window.innerHeight;
+        let windowWidth = window.innerWidth;
+        if (windowWidth > 768) {
+            let headerh = $('.page-header').outerHeight(true);
+            let navbarh = $('.navbar-pf-vertical').outerHeight(true);
+            let filterh = $('#import-filter').outerHeight(true);
+            let listHeight = windowHeight - headerh - navbarh - filterh - 60;
+            if (!isNaN(listHeight))
+                $('#import-list').css('height', listHeight);
+ 
+            let detailHeight = windowHeight - headerh - navbarh - 60;
+            if (!isNaN(detailHeight))
+                $('#import-details-container').css('height', detailHeight);
+        } else {
+            $('#import-list').css('height', '100%');
+            $('#import-details-container').css('height', '100%');
+        }
+    }
+
+    private searchImports(query?: string): void {
+        this.pageLoading = true;
+        this.importsService.latest(query).subscribe(results => {
+            this.items = results;
+            this.prepareImports(this.items);
+            this.filterConfig.resultsCount = this.items.length;
+            if (this.items.length) {
+                this.getImport(this.items[0].id);
+            } else {
+                this.cancelPageLoading();
+            }
+            this.setVerticalScroll();
+        });
+    }
+
+    private prepareImports(imports: ImportLatest[]): void {
+        imports.forEach(item => {
+            item.finished = moment(item.modified).fromNow();
+            item.state = item.state.charAt(0).toUpperCase() + item.state.slice(1).toLowerCase();
+        });
+    }
+
+    private cancelPageLoading(): void {
+        setTimeout(_ => {
+            this.pageLoading = false;
+        }, 2000);
     }
 }

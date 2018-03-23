@@ -22,10 +22,10 @@ export class AddRepositoryModalComponent implements OnInit {
     namespace: Namespace;
     selectedPNS: any;
     providerNamespaces: any[] = [];
+    originalRepos: any[] = [];
     displayedRepos: any[] = [];
     saveInProgress: boolean;
-    private filterValue = new Subject<string>();
-
+    repositoriesAdded: boolean = false;
 
     constructor(public bsModalRef: BsModalRef,
                 private repositoryService: RepositoryService,
@@ -49,22 +49,41 @@ export class AddRepositoryModalComponent implements OnInit {
     }
 
     filterRepos(filterValue:string) {
-        this.filterValue.next(filterValue);
+        //this.filterValue.next(filterValue);
+        this.providerNamespaces.forEach(pns => {
+            if (filterValue) {
+                pns.displaySources = [];
+                pns.repoSources.forEach(repo => {
+                    if (repo.name.toLowerCase().match(filterValue.toLowerCase()) !== null) {
+                        pns.displaySources.push(JSON.parse(JSON.stringify(repo)));
+                    }
+                });
+            } else {
+                pns.displaySources = JSON.parse(JSON.stringify(pns.repoSources));
+            }
+        });
     }
 
     selectRepo(repo: any) {
         repo.isSelected = !repo.isSelected;
+        this.selectedPNS.repoSources.forEach(srcRepo => {
+            if (srcRepo.name == repo.name) {
+                srcRepo.isSelected = repo.isSelected;
+            }
+        });
     }
 
     saveRepos() {
+        this.repositoriesAdded = true;
         this.saveInProgress = true;
         let saveRequests: Observable<Repository>[] = [];
         this.selectedPNS.repoSources
             .filter((repoSource) => repoSource.isSelected)
             .forEach(repoSource => {
                 let newRepo = new Repository();
-                newRepo.name = repoSource.name;
+                newRepo.name = this.getRepoName(repoSource.name);
                 newRepo.original_name = repoSource.name;
+                newRepo.description = repoSource.description ? repoSource.description : repoSource.name;
                 newRepo.provider_namespace = this.selectedPNS.id;
                 newRepo.is_enabled = true;
                 saveRequests.push(this.repositoryService.save(newRepo));
@@ -74,24 +93,41 @@ export class AddRepositoryModalComponent implements OnInit {
         forkJoin(saveRequests).subscribe((results: Repository[]) => {
             this.saveInProgress = false;
             this.bsModalRef.hide();
-
             results.forEach((repository: Repository) => {
-                let repoImport: RepositoryImport = new RepositoryImport();
-                repoImport.github_user = repository.github_user;
-                repoImport.github_repo = repository.github_repo;
                 this.repositoryImportService
-                    .save(repoImport)
+                    .save({'repository_id': repository.id})
                     .subscribe(_ => {
-                        console.log();
+                        console.log(`Started import for ${repository.name}`);
                     });
             });
         });
+    }
+
+    private getRepoName(original_name: string): string {
+        // This is the logic from Galaxy < 3.0 for setting the repoo name
+        let new_name: string;
+        if (original_name != 'ansible') {
+            original_name.replace(/^(ansible[-_+.]*)*(role[-_+.]*)*/g, function(match, p1, p2, offset, str): string {
+                let result = str;
+                if (p1) {
+                    result = result.replace(new RegExp(p1, 'g'), '');
+                }
+                if (p2) {
+                    result = result.replace(new RegExp(p2, 'g'), '');
+                }
+                result = result.replace(/^-/, '');
+                new_name = result;
+                return '';
+            });
+        }
+        return new_name || original_name;
     }
 
     private getRepoSources() {
         this.providerNamespaces.forEach(pns => {
             pns.loading = true;
             pns.repoSources = [];
+            pns.displaySources = [];
             this.providerSourceService.getRepoSources({
                 providerName: pns.provider_name,
                 name: pns.name
@@ -101,6 +137,7 @@ export class AddRepositoryModalComponent implements OnInit {
                         pns.repoSources.push(repoSource);
                     }
                 });
+                pns.displaySources = JSON.parse(JSON.stringify(pns.repoSources));
                 pns.loading = false;
             });
         });

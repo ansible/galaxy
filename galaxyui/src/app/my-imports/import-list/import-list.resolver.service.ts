@@ -25,14 +25,21 @@ export class ImportListResolver implements Resolve<ImportLatest[]> {
     ){}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ImportLatest[]> {
-        return this.importsService.latest().map(
-            results => {
-                results.forEach(item => {
-                    item.finished = moment(item.modified).fromNow();
-                    item.state = item.state.charAt(0).toUpperCase() + item.state.slice(1).toLowerCase();
-                });
-                return results;
+        console.log(route.queryParams);
+        let query = null;
+        if (route.queryParams) {
+            let namespace = route.queryParams['namespace'];
+            let repositoryName = route.queryParams['repository_name'];
+            query = '';
+            if (namespace) {
+                query += (query == '') ? '' : '&';
+                query += `repository__provider_namespace__namespace__name=${namespace}`;
             }
-        );
+            if (repositoryName) {
+                query += (query == '') ? '' : '&';
+                query += `repository__name=${repositoryName}`;
+            }
+        }
+        return this.importsService.latest(query);
     }
 }

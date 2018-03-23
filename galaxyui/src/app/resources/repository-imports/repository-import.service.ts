@@ -31,11 +31,9 @@ export class RepositoryImportService {
             );
     }
 
-    save(repositoryImport: RepositoryImport): Observable<RepositoryImport> {
+    save(params: any): Observable<RepositoryImport> {
         let httpResult: Observable<Object>;
-
-        return this.http
-            .post<RepositoryImport>(`${this.url}/`, repositoryImport, httpOptions)
+        return this.http.post<RepositoryImport>(`${this.url}/`, params, httpOptions)
             .pipe(
                 tap((newImport: RepositoryImport) => this.log(`Saved repository import`)),
                 catchError(this.handleError<RepositoryImport>('Save'))

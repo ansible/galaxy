@@ -24,8 +24,8 @@ export class RepositoryService {
                 private notificationService: NotificationService) {
     }
 
-    query(params): Observable<Repository[]> {
-        return this.http.get<PagedResponse>(this.url, {params: params})
+    query(params?: any): Observable<Repository[]> {
+        return this.http.get<PagedResponse>(this.url + '/', {params: params})
             .pipe(
                 map(response => response.results),
                tap(_ => this.log('fetched repositories')),
@@ -36,7 +36,7 @@ export class RepositoryService {
     save(repository: Repository): Observable<Repository> {
         let httpResult: Observable<Object>;
         if (repository.id) {
-            httpResult = this.http.put<Repository>(`${this.url}/${repository.id}`, repository, httpOptions);
+            httpResult = this.http.put<Repository>(`${this.url}/${repository.id}/`, repository, httpOptions);
         } else {
             httpResult = this.http.post<Repository>(`${this.url}/`, repository, httpOptions);
         }
@@ -45,6 +45,14 @@ export class RepositoryService {
             tap((newRepo: Repository) => this.log(`Saved repository w/ id=${newRepo.id}`)),
             catchError(this.handleError<Repository>('Save'))
         );
+    }
+
+    destroy(repository: Repository): Observable<any> {
+        return this.http.delete<any>(`${this.url}/${repository.id}/`)
+            .pipe(
+                tap(_ => this.log(`Deleted repository w/ id=${repository.id}`)),
+                catchError(this.handleError('Save'))
+            );
     }
 
     private handleError<T>(operation = '', result?: T) {
