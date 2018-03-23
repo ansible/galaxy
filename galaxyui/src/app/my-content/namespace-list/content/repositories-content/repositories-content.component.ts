@@ -161,10 +161,13 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             switch ($event.id) {
                 case 'import':
                     this.importRepository(item);
+                    break;
                 case 'delete':
                     this.deleteRepository(item);
+                    break;
                 case 'changeName':
                     this.changeRepositoryName(item);
+                    break;
             }
         }
     }

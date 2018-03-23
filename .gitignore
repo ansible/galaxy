@@ -22,3 +22,4 @@ galaxy.min.css
 .DS_Store
 ansible-deployment/
 galaxy.sublime*
+yarn-error.log
