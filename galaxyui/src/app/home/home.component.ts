@@ -1,5 +1,11 @@
-import { Component,
-         OnInit }          from '@angular/core';
+import {
+	Component,
+    OnInit
+}          from '@angular/core';
+
+import {
+	CardConfig
+} from 'patternfly-ng/card/basic-card/card-config';
 
 @Component({
     selector:    'home',
@@ -7,6 +13,15 @@ import { Component,
     styleUrls:   ['./home.component.less']
 })
 export class HomeComponent implements OnInit {
+
+	downloadConfig: CardConfig;
+	headerTitle: string = "Home";
+
     constructor() {}
-    ngOnInit() {}
+    
+    ngOnInit() {
+    	this.downloadConfig = {
+			titleBorder: true
+    	} as CardConfig
+    }
 }

@@ -1,6 +1,69 @@
-<div class="row">
-    <div class="col-sm-12">
-        <p>Welcome home!</p>
-        <p>Jump-start your automation project</p>
-    </div>
+<app-page-header [headerTitle]="headerTitle"></app-page-header>
+<div id="home-page" class="container-fluid">
+	<div class="row search-row">
+		<div class="col-sm-11">
+	    	<input type="text" class="search-input" placeholder="Enter search text" >
+	  	</div>
+	  	<div class="col-sm-1">
+	    	<button class="btn btn-primary" class="search-button">Search</button>
+		</div>
+	</div>
+	<div class="row content-row">
+		<div class="col-sm-4">
+			<div class="home-card">
+				<pfng-card
+					[headerTemplate]="downloadHeader"
+					[config]="downloadConfig">
+					<ng-template #downloadHeader>
+						<div class="card-header">
+		        			<span class="header-icon"><i class="fa fa-download fa-2x"></i></span> <span class="header-text">Download</span>
+		        		</div>
+		        	</ng-template>
+		        	<div class="card-content">
+			        	<p>Jump-start your automation project with great content from the Ansible community. Galaxy provides pre-packaged units of work known to Ansible as roles.</p>
+			        	<p>Roles can be dropped into Ansible PlayBooks and immediately put to work. You'll find roles for provisioning infrastructure, deploying applications, and all of the tasks you do everyday.</p>
+			        	<p>Use Search to find roles for your project, then download them onto your Ansible host using the ansible-galaxy command that comes bundled with Ansible.</p>
+			        	<p>For example:</p>
+			        	<code>$ ansible-galaxy install username.rolename</code>
+		        	</div>
+		        </pfng-card>
+	    	</div>
+		</div>
+		<div class="col-sm-4">
+			<div class="home-card">
+				<pfng-card
+					[headerTemplate]="shareHeader"
+					[config]="shareConfig">
+					<ng-template #shareHeader>
+						<div class="card-header">
+		        			<span class="header-icon"><i class="fa fa-share-alt fa-2x"></i></span> <span class="header-text">Share</span>
+		        		</div>
+		        	</ng-template>
+		        	<div class="card-content">
+			        	<p>Help other Ansible users by sharing the awesome roles you create.</p>
+						<p>Maybe you have a role for installing and configuring a popular software package, or a role for deploying software built by your company. Whatever it is, use Galaxy to share it with the community.</p>
+						<p>Top content authors will be featured on the Explore page, achieving worldwide fame! Or at least fame on the internet among other developers and sysadmins.</p>
+		        	</div>
+		        </pfng-card>
+			</div>
+		</div>
+		<div class="col-sm-4">
+			<div class="home-card">
+				<pfng-card
+					[headerTemplate]="featureHeader"
+					[config]="featureConfig">
+					<ng-template #featureHeader>
+						<div class="card-header">
+		        			<span class="header-icon"><i class="fa fa-star fa-2x"></i></span> <span class="header-text">Featured</span>
+		        		</div>
+		        	</ng-template>
+		        	<div class="card-content"></div>
+		        </pfng-card>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12">
+		</div>
+	</div>
 </div>
