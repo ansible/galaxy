@@ -23,15 +23,14 @@ import * as $ from 'jquery';
 })
 export class HomeComponent implements OnInit, AfterViewInit {
 
-	downloadConfig: CardConfig;
+    downloadConfig: CardConfig;
     shareConfig: CardConfig;
     featureConfig: CardConfig;
     
     downloadContent: string;
     shareContent: string;
     featuredBlogContent: string;
-	headerTitle: string = "Home";
-    
+    headerTitle: string = "Home";
     searchText: string = '';
 
     constructor(
