@@ -1,5 +1,5 @@
 <app-page-header [headerTitle]="headerTitle"></app-page-header>
-<div id="home-page" class="container-fluid">
+<div id="home-page" class="container-fluid" (window:resize)="onResize($event)">
 	<div class="row search-row">
 		<div class="col-sm-11">
 	    	<input type="text" class="search-input" placeholder="Enter search text" >
@@ -10,7 +10,7 @@
 	</div>
 	<div class="row content-row">
 		<div class="col-sm-4">
-			<div class="home-card">
+			<div class="home-card" id="card-1">
 				<pfng-card
 					[headerTemplate]="downloadHeader"
 					[config]="downloadConfig">
@@ -30,7 +30,7 @@
 	    	</div>
 		</div>
 		<div class="col-sm-4">
-			<div class="home-card">
+			<div class="home-card" id="card-2">
 				<pfng-card
 					[headerTemplate]="shareHeader"
 					[config]="shareConfig">
@@ -48,7 +48,7 @@
 			</div>
 		</div>
 		<div class="col-sm-4">
-			<div class="home-card">
+			<div class="home-card" id="card-3">
 				<pfng-card
 					[headerTemplate]="featureHeader"
 					[config]="featureConfig">
