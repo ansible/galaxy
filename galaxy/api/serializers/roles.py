@@ -69,7 +69,7 @@ class RoleListSerializer(BaseRoleSerializer):
             'role_type', 'namespace', 'is_valid',
             'min_ansible_version', 'issue_tracker_url',
             'license', 'company', 'description',
-            'travis_status_url', 'download_count'
+            'travis_status_url', 'download_count', 'imported'
         )
 
     def to_native(self, obj):
