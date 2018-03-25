@@ -68,9 +68,6 @@ class _RepositorySerializer(serializers.ModelSerializer):
 class ContentSerializer(BaseModelSerializer):
     content_type = serializers.StringRelatedField(read_only=True)
 
-    namespace = _NamespaceSerializer()
-    repository = _RepositorySerializer()
-
     class Meta:
         model = models.Content
         fields = BaseModelSerializer.BASE_FIELDS + (
@@ -78,9 +75,7 @@ class ContentSerializer(BaseModelSerializer):
             'name',
             'description',
             'content_type',
-
-            'namespace',
-            'repository',
+            'imported',
         )
 
     def get_platforms(self, instance):
@@ -97,6 +92,8 @@ class ContentSerializer(BaseModelSerializer):
 
     def get_summary_fields(self, instance):
         return {
+            'namespace': _NamespaceSerializer().to_representation(instance),
+            'repository': _RepositorySerializer().to_representation(instance),
             'platforms': self.get_platforms(instance),
             'cloud_platforms': [
                 p.name for p in instance.cloud_platforms.all()],

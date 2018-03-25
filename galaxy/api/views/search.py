@@ -57,13 +57,13 @@ class ApiV1SearchView(base.APIView):
 
     def get(self, request, *args, **kwargs):
         data = OrderedDict()
-        data['platforms'] = reverse('api:platforms_search_view')
         data['cloud_platforms'] = reverse('api:cloud_platforms_search_view')
+        data['content'] = reverse('api:content_search_view')
+        data['platforms'] = reverse('api:platforms_search_view')
         data['roles'] = reverse('api:roles_search_view')
         data['tags'] = reverse('api:tags_search_view')
-        data['users'] = reverse('api:user_search_view')
-        # TODO(cutwater): Move out of search
         data['top_contributors'] = reverse('api:top_contributors_list')
+        data['users'] = reverse('api:user_search_view')
         return Response(data)
 
 
@@ -131,6 +131,8 @@ class ContentSearchView(base.ListAPIView):
 
     @staticmethod
     def add_content_type(queryset, content_type):
+        if not content_type:
+            return queryset
         content_type = models.ContentType.get(content_type)
         return queryset.filter(content_type=content_type)
 
@@ -138,7 +140,6 @@ class ContentSearchView(base.ListAPIView):
     def add_tags_filter(queryset, tags):
         if not tags:
             return queryset
-
         return queryset.filter(
             tags__in=models.Tag.objects.filter(name__in=tags))
 
@@ -152,7 +153,6 @@ class ContentSearchView(base.ListAPIView):
     def add_platforms_filter(queryset, platforms):
         if not platforms:
             return queryset
-
         return queryset.filter(
             platforms__in=models.Platform.objects.filter(name__in=platforms))
 

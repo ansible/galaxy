@@ -38,6 +38,7 @@ class ContentList(base.ListAPIView):
         'description',
         'created',
         'modified',
+        'imported',
         'namespace__name',
         'content_type__name',
         'repository__name'
@@ -48,9 +49,10 @@ class ContentList(base.ListAPIView):
             super(ContentList, self).get_queryset()
             .only(*self.QUERY_FIELDS)
             .select_related(
-                'namespace__name',
-                'content_type__name',
-                'repository__name')
+                'namespace',
+                'content_type',
+                'repository'
+            )
             .prefetch_related(
                 'platforms',
                 'cloud_platforms',
