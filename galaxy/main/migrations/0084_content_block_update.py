@@ -30,8 +30,11 @@ MAIN_DOWNLOADS_BLOCK = """
 <code>$ ansible-galaxy install username.rolename</code>
 """
 
-MAIN_FEATURED_BLOG_BLOCK = ""
-
+MAIN_FEATURED_BLOG_BLOCK = """
+<a href="https://ansible.com/blog" target="_blank" class="blog-link">
+    Read the latest from The Inside Playbook, and keep up with what's
+    happening in the Ansible universe.</a>
+"""
 
 def upgrade_contentblocks_data(apps, schema_editor):
     ContentBlock = apps.get_model("main", "ContentBlock")

@@ -39,6 +39,7 @@ import { RepositoryService }          from './resources/respositories/repository
 import { ProviderSourceService }      from './resources/provider-namespaces/provider-source.service';
 import { RepositoryImportService }    from './resources/repository-imports/repository-import.service';
 import { ImportsService }             from './resources/imports/imports.service';
+import { ContentBlocksService }       from './resources/content-blocks/content-blocks.service';
 import { AppRoutingModule }           from './app-routing.module';
 import { AppComponent }               from './app.component';
 
@@ -75,7 +76,8 @@ import { AppComponent }               from './app.component';
         ProviderSourceService,
         RepositoryService,
         RepositoryImportService,
-        ImportsService
+        ImportsService,
+        ContentBlocksService
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA

@@ -19,13 +19,7 @@
 		        			<span class="header-icon"><i class="fa fa-download fa-2x"></i></span> <span class="header-text">Download</span>
 		        		</div>
 		        	</ng-template>
-		        	<div class="card-content">
-			        	<p>Jump-start your automation project with great content from the Ansible community. Galaxy provides pre-packaged units of work known to Ansible as roles.</p>
-			        	<p>Roles can be dropped into Ansible PlayBooks and immediately put to work. You'll find roles for provisioning infrastructure, deploying applications, and all of the tasks you do everyday.</p>
-			        	<p>Use Search to find roles for your project, then download them onto your Ansible host using the ansible-galaxy command that comes bundled with Ansible.</p>
-			        	<p>For example:</p>
-			        	<code>$ ansible-galaxy install username.rolename</code>
-		        	</div>
+		        	<div class="card-content" [innerHtml]="downloadContent"></div>
 		        </pfng-card>
 	    	</div>
 		</div>
@@ -39,11 +33,7 @@
 		        			<span class="header-icon"><i class="fa fa-share-alt fa-2x"></i></span> <span class="header-text">Share</span>
 		        		</div>
 		        	</ng-template>
-		        	<div class="card-content">
-			        	<p>Help other Ansible users by sharing the awesome roles you create.</p>
-						<p>Maybe you have a role for installing and configuring a popular software package, or a role for deploying software built by your company. Whatever it is, use Galaxy to share it with the community.</p>
-						<p>Top content authors will be featured on the Explore page, achieving worldwide fame! Or at least fame on the internet among other developers and sysadmins.</p>
-		        	</div>
+		        	<div class="card-content" [innerHtml]="shareContent"></div>
 		        </pfng-card>
 			</div>
 		</div>
@@ -57,7 +47,12 @@
 		        			<span class="header-icon"><i class="fa fa-star fa-2x"></i></span> <span class="header-text">Featured</span>
 		        		</div>
 		        	</ng-template>
-		        	<div class="card-content"></div>
+		        	<div class="card-content">
+		        		<div class="featured-blog">
+		        			<div class="featured-icon"><i class="fa fa-pencil-square-o fa-2x"></i></div>
+		        			<div class="featured-text" [innerHtml]="featuredBlogContent"></div>
+		        		</div>
+		        	</div>
 		        </pfng-card>
 			</div>
 		</div>
