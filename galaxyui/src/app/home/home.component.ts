@@ -30,12 +30,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
     downloadContent: string;
     shareContent: string;
     featuredBlogContent: string;
+<<<<<<< HEAD
     headerTitle: string = "Home";
     searchText: string = '';
 
     constructor(
         private contentBlocks: ContentBlocksService,
         private router: Router
+=======
+	headerTitle: string = "Home";
+
+    constructor(
+        private contentBlocks: ContentBlocksService
+>>>>>>> Adds dynamic content blocks to UI
     ) {}
     
     ngOnInit() {
@@ -89,20 +96,37 @@ export class HomeComponent implements OnInit, AfterViewInit {
         setTimeout(_ => {
             let windowHeight = window.innerHeight;
             let windowWidth = window.innerWidth;
+<<<<<<< HEAD
             $('#card-1 .pfng-card').css('height', 'auto');
             $('#card-2 .pfng-card').css('height', 'auto');
             $('#card-3 .pfng-card').css('height', 'auto');
             let height1 = $('#card-1 .pfng-card').height();
             let height2 = $('#card-2 .pfng-card').height();
             let height3 = $('#card-3 .pfng-card').height();
+=======
+            let height1 = $('#card-1').height();
+            let height2 = $('#card-2').height();
+            let height3 = $('#card-3').height();
+>>>>>>> Adds dynamic content blocks to UI
             let height = Math.max(height1, height2, height3);
             if (windowWidth > 768 && !isNaN(height)) {
                 $('#card-1 .pfng-card').css('height', height);
                 $('#card-2 .pfng-card').css('height', height);
                 $('#card-3 .pfng-card').css('height', height);
+<<<<<<< HEAD
+=======
+            } else {
+                $('#card-1 .pfng-card').css('height', 'auto');
+                $('#card-2 .pfng-card').css('height', 'auto');
+                $('#card-3 .pfng-card').css('height', 'auto');
+>>>>>>> Adds dynamic content blocks to UI
             }
         }, 1000);
     }
 }
   
+<<<<<<< HEAD
   
+=======
+  
+>>>>>>> Adds dynamic content blocks to UI
