@@ -39,7 +39,7 @@ class BaseRoleSerializer(BaseSerializer):
         'open_issues_count',
         'commit',
         'commit_message',
-        'commit_url',
+        'commit_url'
     )
 
     def _get_repository_moved_fields(self, instance):
