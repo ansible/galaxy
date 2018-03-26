@@ -30,6 +30,7 @@ import { HomeModule }                 from './home/home.module';
 import { LoginModule }                from './login/login.module';
 import { MyContentModule }            from './my-content/my-content.module';
 import { MyImportsModule }            from './my-imports/my-imports.module';
+import { SearchModule }               from './search/search.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
 
 import { AuthService }                from './auth/auth.service';
@@ -40,6 +41,11 @@ import { ProviderSourceService }      from './resources/provider-namespaces/prov
 import { RepositoryImportService }    from './resources/repository-imports/repository-import.service';
 import { ImportsService }             from './resources/imports/imports.service';
 import { ContentBlocksService }       from './resources/content-blocks/content-blocks.service';
+import { ContentSearchService }       from './resources/content-search/content-search.service';
+import { PlatformService }            from './resources/platforms/platform.service';
+import { ContentTypeService }         from './resources/content-types/content-type.service';
+import { CloudPlatformService }       from './resources/cloud-platforms/cloud-platform.service';
+import { TagsService }                 from './resources/tags/tags.service';
 import { AppRoutingModule }           from './app-routing.module';
 import { AppComponent }               from './app.component';
 
@@ -65,19 +71,25 @@ import { AppComponent }               from './app.component';
         LoginModule,
         MyContentModule,
         MyImportsModule,
+        SearchModule,
         ModalModule,
         AppRoutingModule
     ],
     providers: [
         AuthService,
-        NotificationService,
-        NamespaceService,
-        UserService,
-        ProviderSourceService,
-        RepositoryService,
-        RepositoryImportService,
+        CloudPlatformService,
+        ContentBlocksService,
+        ContentSearchService,
+        ContentTypeService,
         ImportsService,
-        ContentBlocksService
+        NamespaceService,
+        NotificationService,
+        PlatformService,
+        ProviderSourceService,
+        RepositoryImportService,
+        RepositoryService,
+        TagsService,
+        UserService
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA

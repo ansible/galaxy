@@ -26,6 +26,12 @@ a.failed {
     z-index: 1249;
 }
 
+/* Patternfly search results */
+    
+.toolbar-pf-results {
+    border-top-color: @white;
+}
+
 /* The following applies to my-content detail */
 .item-select {
     .row {
@@ -81,5 +87,58 @@ a.failed {
     a, a:visited, a:hover, a:active {
         text-decoration: none;
         color: #363636;
+    }
+}
+
+/* Search page */
+#search-page {
+    .blank-slate-pf {
+        background-color: @white;
+        border: 1px solid @white;
+    }
+    .filter-pf.filter-fields .form-group {
+        width: 40%;
+    }
+    .toolbar-pf {
+        border-bottom: 1px solid @white;
+        box-shadow: none;
+    }
+    @media only screen and (max-width : 1255px) {
+        .filter-pf.filter-fields .form-group {
+            width: 100%;
+        }
+    }
+    @media only screen and (min-width : 1255px) {
+        .filter-pf.filter-fields .form-group {
+            width: 350px;
+        }
+    }
+}
+#search-list {
+    .list-pf-main-content {
+        align-items: flex-start;
+    }
+    .list-pf-container {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    @media only screen and (max-width : 992px) {
+        .list-pf-description {
+            padding-top: 15px;
+        }
+    }
+}
+.popular-widget {
+    .list-pf-container {
+        padding-bottom: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 10px;
+    }
+    .list-pf-item:first-child {
+        border-top: none;
+    }
+    .list-pf-item:last-child {
+        border-bottom: none;
     }
 }
