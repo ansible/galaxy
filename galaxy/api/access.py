@@ -25,7 +25,8 @@ from galaxy.main.models import (Content, ImportTask,
                                 Namespace, NotificationSecret, Notification,
                                 ProviderNamespace,
                                 Repository,
-                                Subscription, Stargazer)
+                                Subscription, Stargazer,
+                                ContentBlock, ContentType)
 
 logger = logging.getLogger('galaxy.api.access')
 
@@ -307,6 +308,16 @@ class RepositoryAccess(BaseAccess):
         return self.user.is_authenticated()
 
 
+class ContentBlockAccess(BaseAccess):
+    def can_read(self, obj):
+        return True
+
+
+class ContentTypeAccess(BaseAccess):
+    def can_read(self, obj):
+        return True
+
+
 register_access(User, UserAccess)
 register_access(Content, RoleAccess)
 register_access(ContentVersion, RoleVersionAccess)
@@ -319,3 +330,5 @@ register_access(Stargazer, StargazerAccess)
 register_access(Namespace, NamespaceAccess)
 register_access(ProviderNamespace, ProviderNamespaceAccess)
 register_access(Repository, RepositoryAccess)
+register_access(ContentBlock, ContentBlockAccess)
+register_access(ContentType, ContentTypeAccess)

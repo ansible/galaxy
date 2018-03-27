@@ -15,14 +15,25 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from .content import *             # noqa
-from .content_block import *       # noqa
-from .content_type import *        # noqa
-from .namespace import *           # noqa
-from .provider import *            # noqa
-from .provider_source import *     # noqa
-from .repository_source import *   # noqa
-from .repository import *          # noqa
-from .provider_namespace import *  # noqa
-from .roles import *               # noqa
-from .serializers import *         # noqa
+from galaxy.main import models
+from galaxy.api import serializers
+
+from . import base_views as base
+
+
+__all__ = (
+    'ContentTypeList',
+    'ContentTypeDetail',
+)
+
+
+class ContentTypeList(base.ListAPIView):
+
+    model = models.ContentType
+    serializer_class = serializers.ContentTypeSerializer
+
+
+class ContentTypeDetail(base.RetrieveAPIView):
+
+    model = models.ContentType
+    serializer_class = serializers.ContentTypeSerializer

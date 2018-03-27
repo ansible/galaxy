@@ -65,6 +65,12 @@ class _RepositorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
+class _ContentTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ContentType
+        fields = ('id', 'name', 'description')
+
+
 class ContentSerializer(BaseModelSerializer):
     content_type = serializers.StringRelatedField(read_only=True)
 
@@ -88,6 +94,12 @@ class ContentSerializer(BaseModelSerializer):
                 'api:content_dependencies_list', args=(instance.pk,)),
             'versions': urls.reverse(
                 'api:content_versions_list', args=(instance.pk,)),
+            'content_type': urls.reverse(
+                'api:content_type_detail', args=(instance.content_type.pk,)),
+            'imports': urls.reverse(
+                'api:role_import_task_list', args=(instance.pk,)),
+            'notifications': urls.reverse(
+                'api:role_notification_list', args=(instance.pk,)),
         }
 
     def get_summary_fields(self, instance):
@@ -98,6 +110,7 @@ class ContentSerializer(BaseModelSerializer):
             'cloud_platforms': [
                 p.name for p in instance.cloud_platforms.all()],
             'tags': [t.name for t in instance.tags.all()],
+            'content_type': _ContentTypeSerializer().to_representation(instance),
         }
 
 

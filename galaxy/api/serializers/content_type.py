@@ -15,14 +15,21 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from .content import *             # noqa
-from .content_block import *       # noqa
-from .content_type import *        # noqa
-from .namespace import *           # noqa
-from .provider import *            # noqa
-from .provider_source import *     # noqa
-from .repository_source import *   # noqa
-from .repository import *          # noqa
-from .provider_namespace import *  # noqa
-from .roles import *               # noqa
-from .serializers import *         # noqa
+from .serializers import BaseSerializer
+
+from galaxy.main import models
+
+
+__all__ = (
+    'ContentTypeSerializer',
+)
+
+
+class ContentTypeSerializer(BaseSerializer):
+    class Meta:
+        model = models.ContentType
+        fields = (
+            'id',
+            'name',
+            'description'
+        )

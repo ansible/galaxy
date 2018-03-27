@@ -178,6 +178,26 @@ account_urls = [
         name='account_logout_view'),
 ]
 
+content_block_urls = [
+    url(r'^$',
+        views.ContentBlockList.as_view(),
+        name='content_block_list'),
+
+    url(r'^(?P<name>[a-zA-Z0-9-_]+)/$',
+        views.ContentBlockDetail.as_view(),
+        name='content_block_detail'),
+]
+
+content_type_urls = [
+    url(r'^$',
+        views.ContentTypeList.as_view(),
+        name='content_type_list'),
+
+    url(r'^(?P<pk>[0-9]+)/$',
+        views.ContentTypeDetail.as_view(),
+        name='content_type_detail'),
+]
+
 v1_urls = [
     url(r'^$', views.ApiV1RootView.as_view(), name='api_v1_root_view'),
     url(r'^account/', include(account_urls)),
@@ -200,6 +220,8 @@ v1_urls = [
     url(r'^provider_namespaces/', include(provider_namespace_urls)),
     url(r'^repositories/', include(repo_urls)),
     url(r'^search/', include(search_urls)),
+    url(r'^content_blocks/', include(content_block_urls)),
+    url(r'^content_types/', include(content_type_urls)),
 ]
 
 urlpatterns = [

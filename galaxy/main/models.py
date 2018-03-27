@@ -220,6 +220,9 @@ class ContentType(BaseModel):
     def __unicode__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('api:content_type_detail', args=(self.pk,))
+
 
 class Content(CommonModelNameNotUnique):
     """A class representing a user role."""

@@ -81,6 +81,7 @@ class RoleListSerializer(BaseRoleSerializer):
             return {}
         res = super(RoleListSerializer, self).get_related(obj)
         res.update(dict(
+            content_type=reverse('api:content_type_detail', args=(obj.content_type.pk,)),
             dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
             imports=reverse('api:role_import_task_list', args=(obj.pk,)),
             versions=reverse('api:role_versions_list', args=(obj.pk,)),
@@ -100,6 +101,10 @@ class RoleListSerializer(BaseRoleSerializer):
         if obj is None:
             return {}
         d = super(RoleListSerializer, self).get_summary_fields(obj)
+        d['content_type'] = dict(
+            id=obj.content_type.id,
+            name=obj.content_type.name,
+            description=obj.content_type.description)
         d['dependencies'] = [str(g) for g in obj.dependencies.all()]
         d['namespace'] = dict(
             id=obj.repository.provider_namespace.namespace.pk,
