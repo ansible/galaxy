@@ -47,6 +47,10 @@ class ContentList(base.ListAPIView):
     def get_queryset(self):
         return (
             super(ContentList, self).get_queryset()
+            .filter(
+                repository__provider_namespace__namespace__isnull=False,
+                repository__provider_namespace__namespace__active=True
+            )
             .only(*self.QUERY_FIELDS)
             .select_related(
                 'namespace',
