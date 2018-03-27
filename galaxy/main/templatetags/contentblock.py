@@ -15,27 +15,27 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import bleach
 from django import template
+from django.core.cache import caches
 
 from galaxy.main import models
 
 register = template.Library()
 
 
-# TODO(cutwater): Pass context variable as parameter
 class ContentBlockNode(template.Node):
     def __init__(self, block_name):
         self.blockname = block_name
 
     def render(self, context):
-        # FIXME(cutwater): THIS IS UNSAFE
-        # Injects content from database as is. Additional sanitizing required.
-        # Consider using `bleach` python library for that purpose.
-        try:
-            return context['contentblocks'][self.blockname].content
-        except KeyError:
-            block = models.ContentBlock.objects.get(name=self.blockname)
-            return block.content
+        key = 'contentblocks-' + self.blockname
+        content = caches.get(key)
+        if content is None:
+            content = models.ContentBlock.objects.get(
+                name=self.blockname).content
+            caches.set(key, content)
+        return bleach.clean(content)
 
 
 @register.tag('contentblock')
