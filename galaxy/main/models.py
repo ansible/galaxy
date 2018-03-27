@@ -24,7 +24,7 @@ from django.contrib.postgres import search as psql_search
 from django.contrib.postgres import indexes as psql_indexes
 from django.utils import timezone
 
-from galaxy.main import constants
+from galaxy import constants
 from galaxy.main import fields
 from galaxy.main.mixins import DirtyMixin
 

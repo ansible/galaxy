@@ -15,18 +15,15 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from galaxy import constants
 
-from .base import ContentImporter
-from .apb import APBImporter
-from .role import RoleImporter
-
-
-IMPORTERS = {
-    constants.ContentType.APB: APBImporter,
-    constants.ContentType.ROLE: RoleImporter,
-}
+class ImporterError(Exception):
+    """Base class for importer exceptions"""
+    pass
 
 
-def get_importer(content_type):
-    return IMPORTERS.get(content_type, ContentImporter)
+class ContentNotFound(ImportError):
+    pass
+
+
+class ContentLoadError(ImportError):
+    pass

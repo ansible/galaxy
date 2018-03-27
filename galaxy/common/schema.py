@@ -15,18 +15,18 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from galaxy import constants
-
-from .base import ContentImporter
-from .apb import APBImporter
-from .role import RoleImporter
+from marshmallow import fields
 
 
-IMPORTERS = {
-    constants.ContentType.APB: APBImporter,
-    constants.ContentType.ROLE: RoleImporter,
-}
+class Enum(fields.Field):
+    def __init__(self, enum, *args, **kwargs):
+        super(Enum, self).__init__(*args, **kwargs)
+        self.enum = enum
 
+    def _deserialize(self, value, attr, data):
+        return self.enum(value)
 
-def get_importer(content_type):
-    return IMPORTERS.get(content_type, ContentImporter)
+    def _serialize(self, value, attr, obj):
+        if self.allow_none and value is None:
+            return None
+        return self.enum(value).value

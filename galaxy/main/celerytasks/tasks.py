@@ -28,7 +28,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from galaxy.main.models import (Content,
                                 ImportTask)
 from galaxy.main import models
-from galaxy.main import constants
+from galaxy import constants
 
 LOG = logging.getLogger(__name__)
 

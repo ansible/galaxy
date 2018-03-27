@@ -1,7 +1,10 @@
+python-dateutil
 gunicorn==19.7.1
 
 django>=1.11,<2.0
 djangorestframework>=3.7,<3.8
+
+marshmallow
 
 decorator
 django-allauth==0.34.0
@@ -21,7 +24,6 @@ rst2html5-tools
 setuptools
 PyYAML
 python-memcached
-mock
 ansible
 pyOpenSSL
 psycopg2
@@ -29,4 +31,6 @@ gevent>=0.13
 dj-database-url
 enum34
 six
+mock
 pytest
+pytest-django

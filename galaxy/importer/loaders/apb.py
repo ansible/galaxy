@@ -20,7 +20,8 @@ import logging
 
 import yaml
 
-from galaxy.worker import exceptions as exc
+from galaxy import constants
+from galaxy.importer import exceptions as exc
 
 from . import base
 
@@ -28,14 +29,15 @@ LOG = logging.getLogger(__name__)
 
 
 class APBLoader(base.BaseLoader):
-    def __init__(self, path, content_type, meta_file, name=None, logger=None):
-        super(APBLoader, self).__init__(path, content_type,
-                                        name=name, logger=logger)
-        self.meta_file = meta_file
+    content_type = constants.ContentType.APB
+
+    def __init__(self, content_type, path, metadata_file, logger=None):
+        super(APBLoader, self).__init__(content_type, path, logger=logger)
+        self.metadata_file = metadata_file
 
     def load(self):
-        self.log.info('Loading metadata file: {0}'.format(self.meta_file))
-        with open(os.path.join(self.path, self.meta_file)) as fp:
+        self.log.info('Loading metadata file: {0}'.format(self.metadata_file))
+        with open(os.path.join(self.path, self.metadata_file)) as fp:
             metadata = yaml.safe_load(fp)
 
         try:
@@ -43,10 +45,10 @@ class APBLoader(base.BaseLoader):
         except KeyError:
             raise exc.ContentLoadError('Missing "name" field in metadata')
 
-        return base.ContentData(
+        return dict(
             name=name,
-            description=metadata.get('description'),
             content_type=self.content_type,
+            description=metadata.get('description'),
             metadata={
                 'apb_metadata': metadata,
             },

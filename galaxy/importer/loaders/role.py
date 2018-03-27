@@ -25,9 +25,10 @@ import yaml
 
 from ansible.playbook.role import requirement as ansible_req
 
-from galaxy.main import constants
-from galaxy.worker import exceptions as exc
-from galaxy.worker.loaders import base
+from galaxy import constants
+from galaxy.importer import models
+from galaxy.importer.loaders import base
+from galaxy.importer import exceptions as exc
 
 LOG = logging.getLogger(__name__)
 
@@ -35,33 +36,6 @@ ROLE_META_FILES = [
     'meta/main.yml', 'meta/main.yaml',
     'meta.yml', 'meta.yaml'
 ]
-
-
-class RoleData(base.ContentData):
-    _fields = base.ContentData._fields | frozenset([
-        'role_type',
-        'author',
-        'company',
-        'license',
-        'description',
-        'min_ansible_version',
-        'min_ansible_container_version',
-        'issue_tracker_url',
-        'github_branch',
-        'video_links',
-        'tags',
-        'container_yml',
-        'platforms',
-        'cloud_platforms',
-    ])
-
-
-PlatformInfo = collections.namedtuple(
-    'PlatformInfo', ['name', 'versions'])
-DependencyInfo = collections.namedtuple(
-    'DependencyInfo', ['namespace', 'name'])
-VideoLink = collections.namedtuple(
-    'VideoLink', ['url', 'description'])
 
 
 class RoleMetaParser(object):
@@ -131,7 +105,7 @@ class RoleMetaParser(object):
 
             versions = platform.get('versions', ['all'])
             # TODO: Validate versions
-            platforms.append(PlatformInfo(name, versions))
+            platforms.append(models.PlatformInfo(name, versions))
         return platforms
 
     def parse_cloud_platforms(self):
@@ -163,7 +137,7 @@ class RoleMetaParser(object):
                     'Expecting dependency name format to match '
                     '"username.role_name", got {0}'
                     .format(dep['name']))
-            dependencies.append(DependencyInfo(*name.rsplit('.', 2)))
+            dependencies.append(models.DependencyInfo(*name.rsplit('.', 2)))
 
         return dependencies
 
@@ -183,7 +157,7 @@ class RoleMetaParser(object):
                 if match:
                     file_id = match.group(1)
                     embed_url = self.VIDEO_EMBED_URLS[name].format(file_id)
-                    videos.append(VideoLink(embed_url, video['title']))
+                    videos.append(models.VideoLink(embed_url, video['title']))
                     break
             else:
                 self.log.warn(
@@ -194,7 +168,7 @@ class RoleMetaParser(object):
         return videos
 
 
-class RoleLoader(base.DirectoryLoader):
+class RoleLoader(base.BaseLoader):
     # (attribute name, default value)
     STRING_ATTRS = [
         ('description', ''),
@@ -209,42 +183,44 @@ class RoleLoader(base.DirectoryLoader):
     CONTAINER_META_FILE = 'meta/container.yml'
     ANSIBLE_CONTAINER_META_FILE = 'container.yml'
 
-    def __init__(self, path, content_type, name=None, meta_file=None, logger=None):
+    content_types = constants.ContentType.ROLE
+
+    def __init__(self, content_type, path, metadata_path, logger=None):
         """
         :param str path: Path to role directory within repository
         """
-        super(RoleLoader, self).__init__(path, content_type,
-                                         name=name, logger=logger)
+        super(RoleLoader, self).__init__(content_type, path, logger=logger)
 
-        self.meta_file = meta_file
-
-        self._container_yml_type = None
+        self.meta_file = metadata_path
 
     def load(self):
-        data = {
-            'name': self.name,
-            'path': self.path,
-            'content_type': self.content_type
-        }
-
         metadata = self._load_metadata()
         meta_parser = RoleMetaParser(metadata, logger=self.log)
 
         # TODO: Refactoring required
+        data = {}
         data.update(self._load_string_attrs(metadata))
 
         container_yml_type, container_yml = self._load_container_yml()
-        self._container_yml_type = container_yml_type
-        data['container_yml'] = container_yml
 
-        data['role_type'] = self._get_role_type(metadata)
+        description = data.pop('description')
+        data['role_type'] = self._get_role_type(metadata, container_yml_type)
         data['tags'] = meta_parser.parse_tags()
         data['platforms'] = meta_parser.parse_platforms()
         data['cloud_platforms'] = meta_parser.parse_cloud_platforms()
         data['dependencies'] = meta_parser.parse_dependencies()
         data['video_links'] = meta_parser.parse_videos()
 
-        return RoleData(**data)
+        return models.Content(
+            name=self.name,
+            path=self.path,
+            content_type=self.content_type,
+            description=description,
+            role_meta=data,
+            metadata={
+                'container_meta': container_yml,
+            }
+        )
 
     def _load_string_attrs(self, metadata):
         attrs = {}
@@ -316,10 +292,10 @@ class RoleLoader(base.DirectoryLoader):
 
         return container_yml_type, container_yml
 
-    def _get_role_type(self, metadata):
-        if self._container_yml_type == self.CONTAINER_META_FILE:
+    def _get_role_type(self, metadata, container_yml_type):
+        if container_yml_type == self.CONTAINER_META_FILE:
             return constants.RoleType.CONTAINER
-        if self._container_yml_type == self.ANSIBLE_CONTAINER_META_FILE:
+        if container_yml_type == self.ANSIBLE_CONTAINER_META_FILE:
             return constants.RoleType.CONTAINER_APP
         if metadata.get('demo'):
             return constants.RoleType.DEMO

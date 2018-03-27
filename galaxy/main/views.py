@@ -28,7 +28,7 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 # local stuff
-from galaxy.main import constants
+from galaxy import constants
 from galaxy.main.models import (
     Content, Namespace, ProviderNamespace)
 

@@ -4,6 +4,7 @@
 .idea/
 .develop/
 .cache/
+.pytest_cache/
 build/
 dist/
 galaxy.egg-info/
