@@ -17,6 +17,8 @@
 
 from .account import *              # noqa
 from .content import *              # noqa
+from .content_block import *        # noqa
+from .content_type import *         # noqa
 from .namespace import *            # noqa
 from .repository import *           # noqa
 from .provider_source import *      # noqa

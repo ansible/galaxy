@@ -66,7 +66,7 @@ class RoleListSerializer(BaseRoleSerializer):
     class Meta:
         model = Content
         fields = BASE_FIELDS + (
-            'role_type', 'namespace', 'is_valid',
+            'role_type', 'is_valid',
             'min_ansible_version', 'issue_tracker_url',
             'license', 'company', 'description',
             'travis_status_url', 'download_count', 'imported'
@@ -81,6 +81,7 @@ class RoleListSerializer(BaseRoleSerializer):
             return {}
         res = super(RoleListSerializer, self).get_related(obj)
         res.update(dict(
+            content_type=reverse('api:content_type_detail', args=(obj.content_type.pk,)),
             dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
             imports=reverse('api:role_import_task_list', args=(obj.pk,)),
             versions=reverse('api:role_versions_list', args=(obj.pk,)),
@@ -100,11 +101,21 @@ class RoleListSerializer(BaseRoleSerializer):
         if obj is None:
             return {}
         d = super(RoleListSerializer, self).get_summary_fields(obj)
+        d['content_type'] = dict(
+            id=obj.content_type.id,
+            name=obj.content_type.name,
+            description=obj.content_type.description)
         d['dependencies'] = [str(g) for g in obj.dependencies.all()]
+        d['namespace'] = dict(
+            id=obj.repository.provider_namespace.namespace.pk,
+            name=obj.repository.provider_namespace.namespace.name)
         d['platforms'] = [
             dict(name=g.name, release=g.release) for g in obj.platforms.all()]
-        d['tags'] = [
-            dict(name=g.name) for g in obj.tags.all()]
+        d['provider_namespace'] = dict(
+            id=obj.repository.provider_namespace.pk,
+            name=obj.repository.provider_namespace.name)
+        d['repository'] = dict(id=obj.repository.pk, name=obj.repository.name)
+        d['tags'] = [g.name for g in obj.tags.all()]
         d['versions'] = [
             dict(id=g.id, name=g.name, release_date=g.release_date)
             for g in obj.versions.all()]
@@ -114,15 +125,13 @@ class RoleListSerializer(BaseRoleSerializer):
 
 
 class RoleDetailSerializer(BaseRoleSerializer):
-    tags = drf_serializers.SerializerMethodField()
 
     class Meta:
         model = Content
         fields = BASE_FIELDS + (
             'role_type', 'namespace', 'is_valid',
             'min_ansible_version', 'issue_tracker_url', 'license', 'company',
-            'description',
-            'readme', 'readme_html', 'tags', 'travis_status_url',
+            'description', 'readme', 'readme_html', 'travis_status_url',
             'created', 'modified', 'download_count', 'imported')
 
     def to_native(self, obj):
@@ -148,18 +157,22 @@ class RoleDetailSerializer(BaseRoleSerializer):
         else:
             return obj.get_absolute_url()
 
-    def get_tags(self, obj):
-        return [t for t in obj.get_tags()]
-
     def get_summary_fields(self, obj):
         if obj is None:
             return {}
         d = super(RoleDetailSerializer, self).get_summary_fields(obj)
         d['dependencies'] = [dict(id=g.id, name=str(g))
                              for g in obj.dependencies.all()]
+        d['namespace'] = dict(
+            id=obj.repository.provider_namespace.namespace.pk,
+            name=obj.repository.provider_namespace.namespace.name)
         d['platforms'] = [dict(name=g.name, release=g.release)
                           for g in obj.platforms.all()]
-        d['tags'] = [dict(name=g.name) for g in obj.tags.all()]
+        d['provider_namespace'] = dict(
+            id=obj.repository.provider_namespace.pk,
+            name=obj.repository.provider_namespace.name)
+        d['repository'] = dict(id=obj.repository.pk, name=obj.repository.name)
+        d['tags'] = [g.name for g in obj.tags.all()]
         d['versions'] = [dict(id=g.id, name=g.name,
                               release_date=g.release_date)
                          for g in obj.versions.all()]

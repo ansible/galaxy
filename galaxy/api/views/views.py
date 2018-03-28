@@ -230,6 +230,8 @@ class ApiV1RootView(APIView):
         data['categories'] = reverse('api:category_list')
         data['cloud_platforms'] = reverse('api:cloud_platform_list')
         data['content'] = reverse('api:content_list')
+        data['content_blocks'] = reverse('api:content_block_list')
+        data['content_types'] = reverse('api:content_type_list')
         data['imports'] = reverse('api:import_task_list')
         data['latest_imports'] = reverse('api:import_task_latest_list')
         data['me'] = reverse('api:user_me_list')
