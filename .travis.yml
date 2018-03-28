@@ -32,6 +32,7 @@ script:
 # check images running
 - docker ps -a
 - docker images
+- docker-compose -f scripts/compose-dev.yml -p galaxy logs galaxy
 
 # Run simple web server test
 - pushd testing/simple
