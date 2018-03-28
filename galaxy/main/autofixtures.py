@@ -19,7 +19,7 @@
 import random
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from galaxy.main.models import Role, RoleVersion
+from galaxy.main.models import Content, ContentVersion
 
 User = get_user_model()
 
@@ -114,7 +114,7 @@ if settings.SITE_ENV == 'DEV':
             'company': generators.StaticGenerator(''),
             'is_valid': generators.StaticGenerator(True),
         }
-    register(Role, RoleAutoFixture)
+    register(Content, RoleAutoFixture)
 
     class RoleVersionAutoFixture(AutoFixture):
         choices = []
@@ -125,4 +125,4 @@ if settings.SITE_ENV == 'DEV':
             'name': generators.ChoicesGenerator(values=choices),
             'loose_version': generators.StaticGenerator("0.0"),
         }
-    register(RoleVersion, RoleVersionAutoFixture)
+    register(ContentVersion, RoleVersionAutoFixture)

@@ -1,0 +1,66 @@
+<div class="modal-header">
+    <h4 class="modal-title pull-left">Add Repositories to {{namespace.name}}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body add-repo-modal-body" id="add-repo-modal-body">
+
+    <div class="container-fluid">
+        <div class="toolbar-pf add-repo-modal-toolbar">
+            <form class="toolbar-pf-actions">
+                <div class="form-group add-repo-modal-dropdown-group">
+                    <div class="dropdown btn-group" dropdown>
+                        <button dropdownToggle id="add-repo-modal-dropdown-button" type="button" class="btn btn-default add-repo-modal-dropdown-button">
+                            <i class="fa fa-github" *ngIf="selectedPNS.provider_name == 'github'"></i> {{ selectedPNS.name }} <span class="caret"></span>
+                        </button>
+                        <ul *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="single-button">
+                            <li role="menuitem" disabled><i>Select provider namespace...</i></li>
+                            <li role="menuitem" *ngFor="let pns of providerNamespaces">
+                                <a (click)="selectProviderNamespace(pns)"><i class="fa fa-github" *ngIf="pns.provider_name == 'github'"></i> {{ pns.name }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="form-group toolbar-pf-filter">
+                    <label class="sr-only" for="add-repo-modal-filter">Name</label>
+                    <div class="input-group">
+                        <input #filterBox type="text" id="add-repo-modal-filter" class="form-control" (keyup)="filterRepos(filterBox.value)" placeholder="Filter By Name..."/>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="list-group list-view-pf list-view-pf-view add-repo-modal-list">
+            <div class="loading-repos-spinner-container" *ngIf="selectedPNS.loading">
+                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+            </div>
+            <div class="list-group-item" *ngFor="let repo of selectedPNS.displaySources">
+                <div class="list-view-pf-checkbox">
+                    <input type="checkbox" [(ngModel)]="repo.isSelected" #ctrl="ngModel"
+                           name="selected-repos-{{ selectedPNS.provider_name }}-{{ selectedPNS.name }}-{{ repo.name }}"
+                           (change)="selectRepo(repo)">
+                </div>
+                <div class="list-view-pf-main-info" (click)="selectRepo(repo)">
+                    <div class="list-view-pf-left">
+                        <i class="pficon-repository"></i>
+                    </div>
+                    <div class="list-view-pf-body">
+                        <div class="list-view-pf-description">
+                            <div class="list-group-item-text">
+                                {{ selectedPNS.name }}/{{ repo.name }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" (click)="saveRepos()">OK</button>
+    <button class="btn btn-warning" type="button" (click)="bsModalRef.hide()">Cancel</button>
+</div>
+
+<app-page-loading [loading]="saveInProgress"></app-page-loading>

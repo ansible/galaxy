@@ -4,6 +4,7 @@
 .idea/
 .develop/
 .cache/
+.pytest_cache/
 build/
 dist/
 galaxy.egg-info/
@@ -21,3 +22,5 @@ provisioning/ec2_inventory
 galaxy.min.css
 .DS_Store
 ansible-deployment/
+galaxy.sublime*
+yarn-error.log

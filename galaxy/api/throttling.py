@@ -19,7 +19,7 @@ import logging
 
 from django.core.cache import caches
 from rest_framework.throttling import ScopedRateThrottle
-from galaxy.main.models import Role
+from galaxy.main.models import Content
 
 
 class RoleDownloadCountThrottle(ScopedRateThrottle):
@@ -43,7 +43,7 @@ class RoleDownloadCountThrottle(ScopedRateThrottle):
                 role_name = request.query_params['name']
                 try:
                     # attempt to lookup role first. if that fails, we don't want get_cache_key to be called.
-                    role = Role.objects.get(namespace=role_namespace, name=role_name)
+                    role = Content.objects.get(namespace=role_namespace, name=role_name)
                     self.role_id = role.id
                     allowed = super(RoleDownloadCountThrottle, self).allow_request(request, view)
                     if not allowed:

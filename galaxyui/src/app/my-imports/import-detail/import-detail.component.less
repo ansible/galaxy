@@ -1,0 +1,99 @@
+@import '../../../variables';
+
+#import-details-container {
+    max-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    h5 {
+        font-weight: 600;
+        font-size: 14px;
+    }
+    div.no-imports {
+        color: #e1e1e1;
+        text-align:center;
+        margin-top: 100px;
+        font-size: 24px;
+    }
+    .title-row {
+        .title {
+            color: @ansible-dark-grey;
+            font-size: 20px;
+            a, a:active, a:visited {
+                color: @blue;
+            }
+            a:hover {
+                color: @ansible-color;
+            }
+        }
+    }
+    .title-bar {
+        position: relative;
+        margin-top: 22px;
+        margin-bottom: 20px;
+        background-color: #f0f0f0;
+        height: 97px;
+        padding: 10px;
+        border: 1px solid #e1e1e1;
+        border-radius: 2px;
+        .branch {
+            font-weight: bold;
+            color: @ansible-dark-grey;
+            .commit {
+                width: 80%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .message {
+                font-size: 16px;
+            }
+            .last-run {
+                font-size: 12px;
+                font-weight: normal;
+                padding-top: 15px;
+            }
+
+            @media (max-width: 650px) {
+                .commit {
+                    width: 55%;
+                }
+            }
+        }
+        .stats {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            text-align: left;
+            font-size: 12px;
+            color: @ansible-dark-grey;
+            .icon {
+                display: inline-block;
+                width: 20px;
+                text-align: center;
+            }
+            a, a:active, a:visited {
+                color: @ansible-dark-grey;
+            }
+            a:hover {
+                color: @black;
+            }
+        }
+        .travis-status {
+            margin-top: 10px;
+        }
+    }
+    .message-list {
+        background-color: @black;
+        padding: 10px;
+        border: 1px solid @black;
+        border-radius: 2px;
+        color: @white;
+        line-height: 18px;
+
+        .message {
+            .error, .failed { color: @red }
+            .warning { color: @warning }
+            .success { color: @green }
+        }
+    }
+}

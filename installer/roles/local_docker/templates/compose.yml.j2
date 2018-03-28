@@ -48,13 +48,14 @@ services:
 
 {% if pg_hostname is not defined %}
   postgres:
-    image: postgres:9.5.4
+    image: centos/postgresql-95-centos7
     volumes:
     - {{ postgres_data_dir }}:/var/lib/postgresql/data:Z
     environment:
-      - POSTGRES_DB={{ pg_database }}
-      - POSTGRES_USER={{ pg_username }}
-      - POSTGRES_PASSWORD={{ pg_password }}
+      - POSTGRESQL_DATABASE={{ pg_database }}
+      - POSTGRESQL_USER={{ pg_username }}
+      - POSTGRESQL_PASSWORD={{ pg_password }}
+      - POSTGRESQL_ADMIN_PASSWORD=postgres
 {% endif %}
 
 {% if elastic_hostname is not defined %}
