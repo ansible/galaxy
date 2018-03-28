@@ -385,20 +385,6 @@ class Content(CommonModelNameNotUnique):
         default=False,
         editable=False,
     )
-    # TODO: Move to Repository
-    travis_status_url = models.CharField(
-        max_length=256,
-        blank=True,
-        default='',
-        verbose_name="Travis Build Status"
-    )
-    # TODO: Move to Repository
-    travis_build_url = models.CharField(
-        max_length=256,
-        blank=True,
-        default='',
-        verbose_name="Travis Build URL"
-    )
     imported = models.DateTimeField(
         null=True,
         verbose_name="Last Import"
@@ -422,6 +408,14 @@ class Content(CommonModelNameNotUnique):
     @property
     def github_repo(self):
         return self.repository.github_repo
+
+    @property
+    def travis_status_url(self):
+        return self.repository.travis_status_url
+
+    @property
+    def travis_build_url(self):
+        return self.repository.travis_build_url
 
     def get_absolute_url(self):
         return reverse('api:content_detail', args=(self.pk,))
@@ -962,6 +956,18 @@ class Repository(BaseModel):
     watchers_count = models.IntegerField(default=0)
     forks_count = models.IntegerField(default=0)
     open_issues_count = models.IntegerField(default=0)
+    travis_status_url = models.CharField(
+        max_length=256,
+        blank=True,
+        default='',
+        verbose_name="Travis Build Status"
+    )
+    travis_build_url = models.CharField(
+        max_length=256,
+        blank=True,
+        default='',
+        verbose_name="Travis Build URL"
+    )
 
     @property
     def clone_url(self):

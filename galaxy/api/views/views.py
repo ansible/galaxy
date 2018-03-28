@@ -956,8 +956,11 @@ class NotificationList(ListCreateAPIView):
         repository, _ = Repository.objects.get_or_create(
             github_user=github_user,
             github_repo=github_repo,
-            defaults={'is_enabled': False,
-                      'original_name': github_repo})
+            defaults={
+                'is_enabled': False,
+                'travis_status_url': travis_status_url,
+                'travis_build_url': payload.get('build_url'),
+                'original_name': github_repo})
 
         role, _ = Content.objects.update_or_create(
             # FIXME(cutwater): Use in-memory cache for content types
@@ -968,8 +971,6 @@ class NotificationList(ListCreateAPIView):
                 'namespace': github_user,
                 'name': github_repo,
                 'github_default_branch': 'master',
-                'travis_status_url': travis_status_url,
-                'travis_build_url': payload['build_url'],
                 'is_valid': False,
             }
         )
@@ -978,7 +979,7 @@ class NotificationList(ListCreateAPIView):
         task = create_import_task(
             role.repository, owner,
             travis_status_url=travis_status_url,
-            travis_build_url=payload['build_url'])
+            travis_build_url=payload.get('build_url'))
         notification.imports.add(task)
         notification.save()
 
