@@ -14,6 +14,15 @@
 - name: Backup postgresql database
   shell: pg_dump {{ backup_db_name }} -U {{ backup_username }} -Fc | openssl enc -aes-256-cbc -a -pass pass:{{ backup_enc_password }} | gzip >{{ backup_tmp }}/{{ backup_db_name }}_{{ timestamp.stdout_lines[0] }}_dump.gz
 
+- name: Stat backup file
+  stat: 
+    path: "{{ backup_tmp }}/{{ backup_db_name }}_{{ timestamp.stdout_lines[0] }}_dump.gz"
+  register: backup_file_info
+
+- name: Show backup file info
+  debug:
+    var: backup_file_info
+
 - name: Get Prefix
   shell: date +'data/%Y/%m/%d'
   register: prefix
@@ -24,7 +33,7 @@
     aws_secret_key: "{{ backup_aws_secret_key }}"
     bucket: "{{ backup_s3_bucket }}"
     object: "{{ prefix.stdout_lines[0] }}/{{ backup_db_name }}_{{ timestamp.stdout_lines[0] }}_dump.gz"
-    src: "/{{ backup_tmp }}/{{ backup_db_name }}_{{ timestamp.stdout_lines[0] }}_dump.gz"
+    src: "{{ backup_tmp }}/{{ backup_db_name }}_{{ timestamp.stdout_lines[0] }}_dump.gz"
     mode: put
 
 - name: Remove the dump file
