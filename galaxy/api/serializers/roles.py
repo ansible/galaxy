@@ -115,6 +115,16 @@ class RoleListSerializer(BaseRoleSerializer):
             id=obj.repository.provider_namespace.pk,
             name=obj.repository.provider_namespace.name)
         d['repository'] = dict(id=obj.repository.pk, name=obj.repository.name)
+        d['repository'] = dict(
+            id=obj.repository.pk,
+            name=obj.repository.name,
+            original_name=obj.repository.original_name,
+            stargazers_count=obj.repository.stargazers_count,
+            watchers_count=obj.repository.watchers_count,
+            forks_count=obj.repository.forks_count,
+            open_issues_count=obj.repository.open_issues_count,
+            travis_status_url=obj.repository.travis_status_url,
+            travis_build_url=obj.repository.travis_build_url)
         d['tags'] = [g.name for g in obj.tags.all()]
         d['versions'] = [
             dict(id=g.id, name=g.name, release_date=g.release_date)

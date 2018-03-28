@@ -44,6 +44,8 @@ class RepositorySerializer(BaseSerializer):
             'watchers_count',
             'forks_count',
             'open_issues_count',
+            'travis_build_url',
+            'travis_status_url',
             # TODO(cutwater): github_user and github_repo are obsolete and
             # will be removed
             'github_user',
