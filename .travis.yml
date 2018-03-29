@@ -40,7 +40,7 @@ script:
 
 # Check the logs
 - docker ps -a
-- docker-compose -f scripts/compose-dev.yml -p galaxy logs galaxy
+- make dev/log
 
 # Stop the application
 - make dev/down

@@ -115,6 +115,14 @@ dev/migrate:
 dev/makemigrations:
 	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py makemigrations main
 
+.PHONY: dev/log
+dev/log:
+	@$(DOCKER_COMPOSE) logs galaxy
+
+.PHONY: dev/logf
+dev/logf:
+	@$(DOCKER_COMPOSE) logs -f galaxy
+
 .PHONY: dev/flake8
 dev/flake8:
 	@echo "Running flake8"
