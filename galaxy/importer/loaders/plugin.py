@@ -19,7 +19,7 @@ import ast
 import logging
 
 from galaxy import constants
-from galaxy.importer import models
+from galaxy.importer import models, lint
 from galaxy.importer.utils import ast as ast_utils
 
 from . import base
@@ -45,6 +45,7 @@ class PluginLoader(base.BaseLoader):
         constants.ContentType.TERMINAL_PLUGIN,
         constants.ContentType.TEST_PLUGIN,
     )
+    linters = lint.Flake8Linter
 
     def __init__(self, content_type, path, logger=None):
         super(PluginLoader, self).__init__(content_type, path, logger=logger)

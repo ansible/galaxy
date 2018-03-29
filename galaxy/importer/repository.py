@@ -29,11 +29,9 @@ LOG = logging.getLogger(__name__)
 
 
 def import_repository(url, branch=None, temp_dir=None, logger=None):
-    logger = logger or LOG
-
     with git.make_clone_dir(temp_dir) as clone_dir:
         git.clone_repository(url, clone_dir, branch=branch)
-        return RepositoryLoader(clone_dir, logger).load()
+        return load_repository(clone_dir, logger)
 
 
 def load_repository(directory, logger=None):
@@ -42,6 +40,7 @@ def load_repository(directory, logger=None):
     :type logger: logging.Logger
     :param logger: Optional logger instance.
     """
+    logger = logger or LOG
     return RepositoryLoader(directory, logger=logger).load()
 
 
@@ -69,13 +68,16 @@ class RepositoryLoader(object):
     def load(self):
         branch = git.get_current_branch(directory=self.path)
         commit = git.get_commit_info(directory=self.path)
-        contents = list(self._get_contents())
+        result = list(self._get_contents())
+
+        if not all(v[1] for v in result):
+            raise exc.ContentLoadError('Lint failed')
 
         return models.Repository(
             path=self.path,
             branch=branch,
             commit=commit,
-            contents=contents,
+            contents=[v[0] for v in result],
         )
 
     def _find_contents(self):
@@ -90,4 +92,6 @@ class RepositoryLoader(object):
         for content_type, path, extra in self._find_contents():
             loader_cls = loaders.get_loader(content_type)
             loader = loader_cls(content_type, path, logger=self.log, **extra)
-            yield loader.load()
+            content = loader.load()
+            lint_result = loader.lint()
+            yield content, lint_result

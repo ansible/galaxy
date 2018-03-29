@@ -26,7 +26,7 @@ import yaml
 from ansible.playbook.role import requirement as ansible_req
 
 from galaxy import constants
-from galaxy.importer import models
+from galaxy.importer import models, lint
 from galaxy.importer.loaders import base
 from galaxy.importer import exceptions as exc
 
@@ -184,6 +184,7 @@ class RoleLoader(base.BaseLoader):
     ANSIBLE_CONTAINER_META_FILE = 'container.yml'
 
     content_types = constants.ContentType.ROLE
+    linters = (lint.Flake8Linter, lint.YamlLinter)
 
     def __init__(self, content_type, path, metadata_path, logger=None):
         """
