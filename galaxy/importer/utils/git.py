@@ -60,7 +60,7 @@ def clone_repository(clone_url, directory, branch=None):
     :raises subprocess.CalledProcessError: If git command finished with
         non-zero exit code.
     """
-    cmd = ['git', 'clone', '--depth', '1']
+    cmd = ['git', 'clone', '--quiet', '--depth', '1']
     if branch:
         cmd += ['--branch', branch]
     cmd += [clone_url, directory]
