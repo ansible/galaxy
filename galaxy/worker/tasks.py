@@ -27,11 +27,12 @@ from django.db import transaction
 from allauth.socialaccount import models as auth_models
 
 from galaxy import constants
-from galaxy.importer import repository as r_imp
+from galaxy.common import logutils
+from galaxy.importer import repository as i_repo
+from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import importers
-from galaxy.worker import logging as wlog
 from galaxy.worker import utils
 
 LOG = logging.getLogger(__name__)
@@ -50,11 +51,13 @@ def import_repository(task_id):
     import_task.start()
 
     logger = logging.getLogger('galaxy.worker.tasks.import_repository')
-    logger = wlog.ImportTaskAdapter(logger, task_id=import_task.id)
+    logger = logutils.ImportTaskAdapter(logger, task_id=import_task.id)
 
     try:
-        with utils.WorkerCloneDir(settings.WORKER_DIR_BASE) as workdir:
-            _import_repository(import_task, workdir, logger)
+        _import_repository(import_task, logger)
+    except exc.TaskError as e:
+        import_task.finish_failed(
+            reason='Task "{}" failed: {}'.format(import_task.id, str(e)))
     except Exception as e:
         LOG.exception(e)
         import_task.finish_failed(
@@ -63,7 +66,7 @@ def import_repository(task_id):
 
 
 @transaction.atomic
-def _import_repository(import_task, workdir, logger):
+def _import_repository(import_task, logger):
     repository = import_task.repository
     repo_full_name = repository.github_user + "/" + repository.github_repo
     logger.info(u'Starting import: task_id={}, repository={}'
@@ -78,22 +81,24 @@ def _import_repository(import_task, workdir, logger):
     gh_api = github.Github(token)
     gh_repo = gh_api.get_repo(repo_full_name)
 
+    try:
+        repo_info = i_repo.import_repository(
+            repository.clone_url,
+            branch=repository.import_branch,
+            temp_dir=settings.WORKER_DIR_BASE,
+            logger=logger)
+    except i_exc.ImporterError as e:
+        raise exc.TaskError(str(e))
+
     context = utils.Context(
-        workdir=workdir,
         repository=repository,
         github_token=token,
         github_client=gh_api,
         github_repo=gh_repo)
 
-    repo_info = r_imp.import_repository(
-        repository.clone_url,
-        branch=repository.import_branch,
-        temp_dir=settings.WORKER_DIR_BASE,
-        logger=logger)
-
     new_content_objs = []
     for content_info in repo_info.contents:
-        content_logger = wlog.ContentTypeAdapter(
+        content_logger = logutils.ContentTypeAdapter(
             logger, content_info.content_type, content_info.name)
         importer_cls = importers.get_importer(content_info.content_type)
         importer = importer_cls(context, content_info, logger=content_logger)
