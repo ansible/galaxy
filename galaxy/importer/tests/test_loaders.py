@@ -125,9 +125,9 @@ class TestRoleLoader(unittest.TestCase):
         }
         load_container_yml_mock.return_value = (None, None)
 
-        loader = loaders.RoleLoader(constants.ContentType.ROLE,
-                                    '/tmp/repo/roles/test_role',
-                                    'meta.yaml')
+        loader = loaders.RoleLoader(
+            constants.ContentType.ROLE, 'roles/test_role', '/tmp/repo',
+            metadata_path='meta.yaml')
         role = loader.load()
         role_meta = role.role_meta
 

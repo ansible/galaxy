@@ -33,13 +33,25 @@ class BaseLoader(object):
     content_types = None
     linters = None
 
-    def __init__(self, content_type, path, logger=None):
+    def __init__(self, content_type, path, root, logger=None):
+        """
+        :param content_type: Content type.
+        :param path: Path to content file or directory relative to
+            repository root.
+        :param root: Repository root path.
+        :param logger: Optional logger instance.
+        """
         self.content_type = content_type
-        self.path = path
+        self.rel_path = path
+        self.root = root
         self.name = self.make_name(self.path)
 
         self.log = logutils.ContentTypeAdapter(
             logger or LOG, self.content_type, self.name)
+
+    @property
+    def path(self):
+        return os.path.join(self.root, self.rel_path)
 
     @classmethod
     def make_name(cls, path):
@@ -68,8 +80,8 @@ class BaseLoader(object):
             linters = [linters]
 
         ok = True
-        for linter in (lc() for lc in linters):
-            for message in linter.check_files(self.path):
+        for linter_cls in linters:
+            for message in linter_cls(self.root).check_files(self.rel_path):
                 self.log.error(message)
                 ok = False
 

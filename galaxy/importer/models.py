@@ -54,8 +54,7 @@ class Content(object):
 
 class Repository(object):
     """Represents repository metadata."""
-    def __init__(self, path, branch, commit, contents):
-        self.path = path
+    def __init__(self, branch, commit, contents):
         self.branch = branch
         self.commit = commit
         self.contents = contents

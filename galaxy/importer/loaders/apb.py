@@ -31,8 +31,9 @@ LOG = logging.getLogger(__name__)
 class APBLoader(base.BaseLoader):
     content_type = constants.ContentType.APB
 
-    def __init__(self, content_type, path, metadata_file, logger=None):
-        super(APBLoader, self).__init__(content_type, path, logger=logger)
+    def __init__(self, content_type, path, root, metadata_file, logger=None):
+        super(APBLoader, self).__init__(
+            content_type, root, path, logger=logger)
         self.metadata_file = metadata_file
 
     def load(self):

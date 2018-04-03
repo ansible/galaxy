@@ -60,7 +60,7 @@ class ApbFinder(BaseFinder):
         meta_path = _find_metadata(self.path, self.META_FILES)
         if meta_path:
             meta_path = os.path.join(self.path, meta_path)
-            return [Result(constants.ContentType.APB, self.path,
+            return [Result(constants.ContentType.APB, '',
                            extra={'metadata_path': meta_path})]
         raise exc.ContentNotFound
 
@@ -73,7 +73,7 @@ class RoleFinder(BaseFinder):
         meta_path = _find_metadata(self.path, ROLE_META_FILES)
         if meta_path:
             meta_path = os.path.join(self.path, meta_path)
-            return [Result(constants.ContentType.ROLE, self.path,
+            return [Result(constants.ContentType.ROLE, '',
                            extra={'metadata_path': meta_path})]
         raise exc.ContentNotFound
 
@@ -97,37 +97,41 @@ class FileSystemFinder(BaseFinder):
             content_path = os.path.join(self.path, directory)
             if not os.path.exists(content_path):
                 continue
+            # TODO(cutwater): Use `yield from` after migration to Python 3
             for content in func(content_type, content_path):
                 yield content
 
-    def _find_modules(self, content_type, content_path):
-        content_dirs = (
-            [content_path]
-            + glob.glob(content_path + '/*')
-            + glob.glob(content_path + '/*/*'))
-        content_dirs = filter(os.path.isdir, content_dirs)
-
-        for dir_ in content_dirs:
-            for file_path in glob.glob(dir_ + '/*.py'):
+    def _find_modules(self, content_type, content_dir):
+        for dir_path in self._module_dirs(content_dir):
+            for file_path in glob.glob(dir_path + '/*.py'):
                 file_name = os.path.basename(file_path)
                 if not os.path.isfile(file_path) or file_name == '__init__.py':
                     continue
-                yield Result(content_type, file_path, extra={})
+                rel_path = os.path.relpath(file_path, self.path)
+                yield Result(content_type, rel_path, extra={})
 
-    @staticmethod
-    def _find_roles(content_type, content_path):
-        for name in os.listdir(content_path):
-            path = os.path.join(content_path, name)
-            if not os.path.isdir(path):
+    def _find_roles(self, content_type, content_dir):
+        for dir_name in os.listdir(content_dir):
+            file_path = os.path.join(content_dir, dir_name)
+            if not os.path.isdir(file_path):
                 continue
-            meta_path = _find_metadata(path, ROLE_META_FILES)
+            meta_path = _find_metadata(file_path, ROLE_META_FILES)
             if not meta_path:
                 continue
-            yield Result(content_type, path,
+            rel_path = os.path.relpath(file_path, self.path)
+            yield Result(content_type, rel_path,
                          extra={'metadata_path': meta_path})
 
-    def _find_module_utils(self, content_type, content_path):
-        return [Result(content_type, content_path, extra={})]
+    def _find_module_utils(self, content_type, content_dir):
+        rel_path = os.path.relpath(content_dir, self.path)
+        return [Result(content_type, rel_path, extra={})]
+
+    def _module_dirs(self, path):
+        content_dirs = (
+            [path]
+            + glob.glob(path + '/*')
+            + glob.glob(path + '/*/*'))
+        return filter(os.path.isdir, content_dirs)
 
     def _content_type_dirs(self):
         for content_type in constants.ContentType:

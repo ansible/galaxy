@@ -74,7 +74,6 @@ class RepositoryLoader(object):
             raise exc.ContentLoadError('Lint failed')
 
         return models.Repository(
-            path=self.path,
             branch=branch,
             commit=commit,
             contents=[v[0] for v in result],
@@ -89,9 +88,10 @@ class RepositoryLoader(object):
         raise exc.ContentNotFound("No content found in repository")
 
     def _get_contents(self):
-        for content_type, path, extra in self._find_contents():
+        for content_type, rel_path, extra in self._find_contents():
             loader_cls = loaders.get_loader(content_type)
-            loader = loader_cls(content_type, path, logger=self.log, **extra)
+            loader = loader_cls(content_type, rel_path, self.path,
+                                logger=self.log, **extra)
             content = loader.load()
             lint_result = loader.lint()
             yield content, lint_result

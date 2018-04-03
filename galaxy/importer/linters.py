@@ -15,14 +15,27 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import os
 import subprocess
+import logging
 
 import six
+
+LOG = logging.getLogger(__name__)
 
 
 class BaseLinter(object):
 
+    def __init__(self, workdir=None):
+        self.root = workdir
+
     def check_files(self, paths):
+        if isinstance(paths, six.string_types):
+            paths = [paths]
+        paths = map(os.path.normpath, paths)
+        return self._check_files(paths)
+
+    def _check_files(self, paths):
         pass
 
 
@@ -30,15 +43,10 @@ class Flake8Linter(BaseLinter):
 
     cmd = 'flake8'
 
-    def __init__(self, workdir=None):
-        self.workdir = workdir
-
-    def check_files(self, paths):
-        if isinstance(paths, six.string_types):
-            paths = [paths]
-
+    def _check_files(self, paths):
         cmd = [self.cmd, '--exit-zero', '--isolated', '--'] + paths
-        proc = subprocess.Popen(cmd, cwd=self.workdir, stdout=subprocess.PIPE)
+        LOG.debug('CMD: ' + ' '.join(cmd))
+        proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
         for line in proc.stdout:
             yield line.strip()
         proc.wait()
@@ -48,15 +56,10 @@ class YamlLinter(BaseLinter):
 
     cmd = 'yamllint'
 
-    def __init__(self, workdir=None):
-        self.workdir = workdir
-
-    def check_files(self, paths):
-        if isinstance(paths, six.string_types):
-            paths = [paths]
-
+    def _check_files(self, paths):
         cmd = [self.cmd, '-f', 'parsable', '--'] + paths
-        proc = subprocess.Popen(cmd, cwd=self.workdir, stdout=subprocess.PIPE)
+        LOG.debug('CMD: ' + ' '.join(cmd))
+        proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
         for line in proc.stdout:
             yield line.strip()
         proc.wait()
