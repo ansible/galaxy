@@ -406,7 +406,7 @@ class PlatformSerializer(BaseSerializer):
 class CloudPlatformSerializer(BaseSerializer):
     class Meta:
         model = CloudPlatform
-        fields = BASE_FIELDS
+        fields = BASE_FIELDS + ('description',)
 
 
 class TagSearchSerializer(TagSerializer):
