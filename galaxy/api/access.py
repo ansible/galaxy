@@ -26,7 +26,8 @@ from galaxy.main.models import (Content, ImportTask,
                                 ProviderNamespace,
                                 Repository,
                                 Subscription, Stargazer,
-                                ContentBlock, ContentType)
+                                ContentBlock, ContentType,
+                                CloudPlatform)
 
 logger = logging.getLogger('galaxy.api.access')
 
@@ -318,6 +319,11 @@ class ContentTypeAccess(BaseAccess):
         return True
 
 
+class CloudPlatformsAccess(BaseAccess):
+    def can_read(self, obj):
+        return True
+
+
 register_access(User, UserAccess)
 register_access(Content, RoleAccess)
 register_access(ContentVersion, RoleVersionAccess)
@@ -332,3 +338,4 @@ register_access(ProviderNamespace, ProviderNamespaceAccess)
 register_access(Repository, RepositoryAccess)
 register_access(ContentBlock, ContentBlockAccess)
 register_access(ContentType, ContentTypeAccess)
+register_access(CloudPlatform, CloudPlatformsAccess)
