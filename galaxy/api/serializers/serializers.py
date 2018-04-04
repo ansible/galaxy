@@ -48,8 +48,11 @@ __all__ = [
     'StargazerSerializer',
     'CategorySerializer',
     'CloudPlatformSerializer',
+    'CloudPlatformSearchSerializer',
     'TagSerializer',
+    'TagSearchSerializer',
     'PlatformSerializer',
+    'PlatformSearchSerializer',
     'RoleVersionSerializer',
     'TopContributorsSerializer',
     'NotificationSecretSerializer',
@@ -404,6 +407,27 @@ class CloudPlatformSerializer(BaseSerializer):
     class Meta:
         model = CloudPlatform
         fields = BASE_FIELDS
+
+
+class TagSearchSerializer(TagSerializer):
+    roles_count = serializers.IntegerField(read_only=True)
+
+    class Meta(TagSerializer.Meta):
+        fields = TagSerializer.Meta.fields + ('roles_count', )
+
+
+class PlatformSearchSerializer(PlatformSerializer):
+    roles_count = serializers.IntegerField(read_only=True)
+
+    class Meta(TagSerializer.Meta):
+        fields = TagSerializer.Meta.fields + ('roles_count', )
+
+
+class CloudPlatformSearchSerializer(CloudPlatformSerializer):
+    roles_count = serializers.IntegerField(read_only=True)
+
+    class Meta(TagSerializer.Meta):
+        fields = TagSerializer.Meta.fields + ('roles_count', )
 
 
 class RoleVersionSerializer(BaseSerializer):

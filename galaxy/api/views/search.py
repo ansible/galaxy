@@ -19,7 +19,7 @@ import operator
 from collections import OrderedDict
 
 import six
-from django.db.models import Func, F, Value, ExpressionWrapper
+from django.db.models import F, Func, Value, Count, ExpressionWrapper
 from django.db.models import fields as db_fields
 from django.core.urlresolvers import reverse
 from django.contrib.postgres import search as psql_search
@@ -85,7 +85,7 @@ class ContentSearchView(base.ListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
 
         # Content type
-        content_type = request.GET.get('content_type', '')
+        content_type = request.GET.get('content_type', '').split()
         queryset = self.add_content_type(queryset, content_type)
 
         # Platforms
@@ -133,11 +133,12 @@ class ContentSearchView(base.ListAPIView):
         )
 
     @staticmethod
-    def add_content_type(queryset, content_type):
-        if not content_type:
+    def add_content_type(queryset, content_types):
+        if not content_types:
             return queryset
-        content_type = models.ContentType.get(content_type)
-        return queryset.filter(content_type=content_type)
+        content_types = models.ContentType.objects.filter(
+            name__in=content_types)
+        return queryset.filter(content_type__in=content_types)
 
     @staticmethod
     def add_tags_filter(queryset, tags):
@@ -214,8 +215,12 @@ class UserSearchView(base.ListAPIView):
 class PlatformsSearchView(base.ListAPIView):
 
     model = models.Platform
-    serializer_class = serializers.PlatformSerializer
+    serializer_class = serializers.PlatformSearchSerializer
     filter_backends = [filters.OrderByFilter]
+
+    def get_queryset(self):
+        return (super(PlatformsSearchView, self).get_queryset()
+                .annotate(roles_count=Count('roles')))
 
     def list(self, request, *args, **kwargs):
         name = None
@@ -231,7 +236,6 @@ class PlatformsSearchView(base.ListAPIView):
                 autocomplete = value
 
         queryset = self.filter_queryset(self.get_queryset())
-        print(type(queryset), str(queryset.query))
         if name:
             queryset = queryset.filter(name=name)
         if releases:
@@ -244,15 +248,18 @@ class PlatformsSearchView(base.ListAPIView):
             '''
             queryset = queryset.extra(where=[where_clause],
                                       params=[autocomplete])
-        print(queryset.query)
         return self.make_response(queryset)
 
 
 class CloudPlatformsSearchView(base.ListAPIView):
 
     model = models.CloudPlatform
-    serializer_class = serializers.CloudPlatformSerializer
+    serializer_class = serializers.CloudPlatformSearchSerializer
     filter_backends = [filters.OrderByFilter]
+
+    def get_queryset(self):
+        return (super(CloudPlatformsSearchView, self).get_queryset()
+                .annotate(roles_count=Count('roles')))
 
     def list(self, request, *args, **kwargs):
         match_query = None
@@ -274,8 +281,12 @@ class CloudPlatformsSearchView(base.ListAPIView):
 class TagsSearchView(base.ListAPIView):
 
     model = models.Tag
-    serializer_class = serializers.TagSerializer
+    serializer_class = serializers.TagSearchSerializer
     filter_backends = [filters.OrderByFilter]
+
+    def get_queryset(self):
+        return (super(TagsSearchView, self).get_queryset()
+                .annotate(roles_count=Count('roles')))
 
     def list(self, request, *args, **kwargs):
         search_query = None
