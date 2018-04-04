@@ -85,7 +85,7 @@ class ContentSearchView(base.ListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
 
         # Content type
-        content_type = request.GET.get('content_type', '')
+        content_type = request.GET.get('content_type', '').split()
         queryset = self.add_content_type(queryset, content_type)
 
         # Platforms
@@ -133,11 +133,12 @@ class ContentSearchView(base.ListAPIView):
         )
 
     @staticmethod
-    def add_content_type(queryset, content_type):
-        if not content_type:
+    def add_content_type(queryset, content_types):
+        if not content_types:
             return queryset
-        content_type = models.ContentType.get(content_type)
-        return queryset.filter(content_type=content_type)
+        content_types = models.ContentType.objects.filter(
+            name__in=content_types)
+        return queryset.filter(content_type__in=content_types)
 
     @staticmethod
     def add_tags_filter(queryset, tags):
