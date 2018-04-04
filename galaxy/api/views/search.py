@@ -231,7 +231,6 @@ class PlatformsSearchView(base.ListAPIView):
                 autocomplete = value
 
         queryset = self.filter_queryset(self.get_queryset())
-        print(type(queryset), str(queryset.query))
         if name:
             queryset = queryset.filter(name=name)
         if releases:
@@ -244,7 +243,6 @@ class PlatformsSearchView(base.ListAPIView):
             '''
             queryset = queryset.extra(where=[where_clause],
                                       params=[autocomplete])
-        print(queryset.query)
         return self.make_response(queryset)
 
 
