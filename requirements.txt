@@ -16,6 +16,10 @@ pyOpenSSL
 psycopg2
 gevent>=0.13
 
+# Linting
+yamllint
+flake8
+
 # Django
 django>=1.11,<2.0
 djangorestframework>=3.7,<3.8
