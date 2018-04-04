@@ -19,7 +19,7 @@ import operator
 from collections import OrderedDict
 
 import six
-from django.db.models import Func, F, Value, ExpressionWrapper
+from django.db.models import F, Func, Value, Count, ExpressionWrapper
 from django.db.models import fields as db_fields
 from django.core.urlresolvers import reverse
 from django.contrib.postgres import search as psql_search
@@ -215,8 +215,12 @@ class UserSearchView(base.ListAPIView):
 class PlatformsSearchView(base.ListAPIView):
 
     model = models.Platform
-    serializer_class = serializers.PlatformSerializer
+    serializer_class = serializers.PlatformSearchSerializer
     filter_backends = [filters.OrderByFilter]
+
+    def get_queryset(self):
+        return (super(PlatformsSearchView, self).get_queryset()
+                .annotate(roles_count=Count('roles')))
 
     def list(self, request, *args, **kwargs):
         name = None
@@ -250,8 +254,12 @@ class PlatformsSearchView(base.ListAPIView):
 class CloudPlatformsSearchView(base.ListAPIView):
 
     model = models.CloudPlatform
-    serializer_class = serializers.CloudPlatformSerializer
+    serializer_class = serializers.CloudPlatformSearchSerializer
     filter_backends = [filters.OrderByFilter]
+
+    def get_queryset(self):
+        return (super(CloudPlatformsSearchView, self).get_queryset()
+                .annotate(roles_count=Count('roles')))
 
     def list(self, request, *args, **kwargs):
         match_query = None
@@ -273,8 +281,12 @@ class CloudPlatformsSearchView(base.ListAPIView):
 class TagsSearchView(base.ListAPIView):
 
     model = models.Tag
-    serializer_class = serializers.TagSerializer
+    serializer_class = serializers.TagSearchSerializer
     filter_backends = [filters.OrderByFilter]
+
+    def get_queryset(self):
+        return (super(TagsSearchView, self).get_queryset()
+                .annotate(roles_count=Count('roles')))
 
     def list(self, request, *args, **kwargs):
         search_query = None
