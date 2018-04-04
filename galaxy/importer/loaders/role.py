@@ -26,7 +26,7 @@ import yaml
 from ansible.playbook.role import requirement as ansible_req
 
 from galaxy import constants
-from galaxy.importer import models
+from galaxy.importer import models, linters
 from galaxy.importer.loaders import base
 from galaxy.importer import exceptions as exc
 
@@ -184,12 +184,14 @@ class RoleLoader(base.BaseLoader):
     ANSIBLE_CONTAINER_META_FILE = 'container.yml'
 
     content_types = constants.ContentType.ROLE
+    linters = (linters.Flake8Linter, linters.YamlLinter)
 
-    def __init__(self, content_type, path, metadata_path, logger=None):
+    def __init__(self, content_type, path, root, metadata_path, logger=None):
         """
         :param str path: Path to role directory within repository
         """
-        super(RoleLoader, self).__init__(content_type, path, logger=logger)
+        super(RoleLoader, self).__init__(
+            content_type, path, root, logger=logger)
 
         self.meta_file = metadata_path
 
@@ -213,7 +215,7 @@ class RoleLoader(base.BaseLoader):
 
         return models.Content(
             name=self.name,
-            path=self.path,
+            path=self.rel_path,
             content_type=self.content_type,
             description=description,
             role_meta=data,

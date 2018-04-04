@@ -51,7 +51,7 @@ class TestApbFinder(unittest.TestCase):
         assert len(contents) == 1
         assert contents[0] == finders.Result(
             content_type=constants.ContentType.APB,
-            path='/tmp/i63AJuQQex',
+            path='',
             extra={'metadata_path': '/tmp/i63AJuQQex/apb.yaml'}
         )
 
@@ -86,7 +86,7 @@ class TestRoleFinder(unittest.TestCase):
         assert len(contents) == 1
         assert contents[0] == finders.Result(
             content_type=constants.ContentType.ROLE,
-            path='/tmp/hTmTxgljOw',
+            path='',
             extra={'metadata_path': '/tmp/hTmTxgljOw/meta/main.yaml'}
         )
 

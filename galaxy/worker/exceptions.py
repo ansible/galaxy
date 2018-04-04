@@ -22,7 +22,3 @@ class WorkerError(Exception):
 
 class TaskError(WorkerError):
     pass
-
-
-class ContentLoadError(TaskError):
-    pass

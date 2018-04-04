@@ -1,20 +1,7 @@
+marshmallow
+celery==3.1.24
 python-dateutil
 gunicorn==19.7.1
-
-django>=1.11,<2.0
-djangorestframework>=3.7,<3.8
-
-marshmallow
-
-decorator
-django-allauth==0.34.0
-django-autofixture
-celery==3.1.24
-django-bootstrap-form
-django-celery
-django-filter
-django-debug-toolbar
-
 PyGithub
 markdown==2.4.1
 requests
@@ -28,9 +15,36 @@ ansible
 pyOpenSSL
 psycopg2
 gevent>=0.13
+
+# Linting
+yamllint
+flake8
+
+# Django
+django>=1.11,<2.0
+djangorestframework>=3.7,<3.8
+django-allauth==0.34.0
+
+# TODO(cutwater): Review usage of this package
+django-autofixture
+
+# TODO(cutwater): Review usage of this package
+django-bootstrap-form
+django-celery
+
+# TODO(cutwater): Review usage of this package
+django-filter
+
+# TODO(cutwater): Review usage of this package
+django-debug-toolbar
 dj-database-url
+
+
+# Py3 compatibility
 enum34
 six
+
+# Testing
 mock
 pytest
 pytest-django

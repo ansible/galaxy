@@ -15,19 +15,43 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import abc
+import logging
 import os
 
+import six
 
+from galaxy.common import logutils
+
+
+LOG = logging.getLogger(__name__)
+
+
+@six.add_metaclass(abc.ABCMeta)
 class BaseLoader(object):
 
     content_types = None
+    linters = None
 
-    def __init__(self, content_type, path, logger=None):
+    def __init__(self, content_type, path, root, logger=None):
+        """
+        :param content_type: Content type.
+        :param path: Path to content file or directory relative to
+            repository root.
+        :param root: Repository root path.
+        :param logger: Optional logger instance.
+        """
         self.content_type = content_type
-        self.path = path
-        self.log = logger
-
+        self.rel_path = path
+        self.root = root
         self.name = self.make_name(self.path)
+
+        self.log = logutils.ContentTypeAdapter(
+            logger or LOG, self.content_type, self.name)
+
+    @property
+    def path(self):
+        return os.path.join(self.root, self.rel_path)
 
     @classmethod
     def make_name(cls, path):
@@ -41,6 +65,29 @@ class BaseLoader(object):
         :return: Content name
         """
         return None
+
+    @abc.abstractmethod
+    def load(self):
+        pass
+
+    def lint(self):
+        if not self.linters:
+            return
+        self.log.info('Linting...')
+
+        linters = self.linters
+        if not isinstance(linters, (list, tuple)):
+            linters = [linters]
+
+        ok = True
+        for linter_cls in linters:
+            for message in linter_cls(self.root).check_files(self.rel_path):
+                self.log.error(message)
+                ok = False
+
+        if ok:
+            self.log.info('Linting OK.')
+        return ok
 
 
 def make_module_name(path):

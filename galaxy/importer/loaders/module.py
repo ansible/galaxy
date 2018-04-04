@@ -19,6 +19,7 @@ import ast
 import logging
 
 from galaxy import constants
+from galaxy.importer import linters
 from galaxy.importer import models
 from galaxy.importer.utils import ast as ast_utils
 from galaxy.importer.loaders import base
@@ -29,9 +30,11 @@ LOG = logging.getLogger(__name__)
 class ModuleLoader(base.BaseLoader):
 
     content_types = constants.ContentType.MODULE
+    linters = linters.Flake8Linter
 
-    def __init__(self, content_type, path, logger=None):
-        super(ModuleLoader, self).__init__(content_type, path, logger=logger)
+    def __init__(self, content_type, path, root, logger=None):
+        super(ModuleLoader, self).__init__(
+            content_type, path, root, logger=logger)
 
         self.documentation = None
         self.metdata = None
@@ -49,7 +52,7 @@ class ModuleLoader(base.BaseLoader):
 
         return models.Content(
             name=self.name,
-            path=self.path,
+            path=self.rel_path,
             content_type=self.content_type,
             description=description,
             metadata={

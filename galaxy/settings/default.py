@@ -354,7 +354,7 @@ LOGGING = {
         },
         'import_task': {
             'level': 'DEBUG',
-            'class': 'galaxy.worker.logging.ImportTaskHandler',
+            'class': 'galaxy.common.logutils.ImportTaskHandler',
             'formatter': 'simple',
         }
     },
@@ -398,7 +398,7 @@ LOGGING = {
         'galaxy.worker.tasks.import_repository': {
             'handlers': ['import_task'],
             'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
         },
         'allauth': {
             'handlers': ['console'],
