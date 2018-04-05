@@ -15,6 +15,8 @@ import {
     SaveParams
 } from '../../resources/imports/imports.service';
 
+import { Observable }    from "rxjs/Observable";
+
 import { Import }        from '../../resources/imports/import';
 import { ImportLatest }  from '../../resources/imports/import-latest';
 
@@ -51,6 +53,9 @@ export class ImportListComponent implements OnInit, AfterViewInit {
 
     pageTitle: string = "My Imports";
     pageLoading: boolean = true;
+    refreshing: boolean = false;
+    polling = null;
+    query: string;
 
     constructor(
         private route: ActivatedRoute,
@@ -64,7 +69,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 this.items = data['imports'];
                 this.prepareImports(this.items);
                 if (this.items.length) {
-                    this.getImport(this.items[0].id);
+                    this.getImport(this.items[0].id, true);
                 } else {
                     this.cancelPageLoading();
                 }
@@ -109,6 +114,12 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 });
             }
         });
+
+        // refresh ever 10 seconds
+        this.polling = Observable.interval(10000)
+            .subscribe(_ => {
+                this.refreshImports();
+            });
     }
 
     ngAfterViewInit() {
@@ -118,20 +129,25 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         }
     }
 
+    ngOnDestroy(): void {
+        if (this.polling)
+            this.polling.unsubscribe();
+    }
+
     handleAction(event, msg): void {}
 
     handleClick(event): void {
         if (event['item']) {
             let clickedId = event['item']['id'];
             if (clickedId != this.selected.id) {
-                this.getImport(clickedId);
+                this.getImport(clickedId, true);
             }
         }
     }
 
     selectItem(select: number, deselect?: number): void {
         this.items.forEach(item => {
-            if (deselect != null && item.id == deselect) {
+            if (deselect != null && select != deselect && item.id == deselect) {
                 this.pfList.selectItem(item, false);
             } else if (item.id == select) {
                 this.pfList.selectItem(item, true);
@@ -139,11 +155,12 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         });
     }
 
-    getImport(id: number): void {
-        this.pageLoading = true;
+    getImport(id: number, showPageLoader: boolean): void {
+        if(showPageLoader)
+            this.pageLoading = true;
         this.importsService.get(id).subscribe(
             result => {
-                let deselectId = this.selected  ? this.selected.id : null;
+                let deselectId = this.selected ? this.selected.id : null;
                 this.selected = result;
                 if (!this.selected.import_branch) {
                     // TODO: a default value for import branch should be set on the backend
@@ -158,8 +175,10 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 else if (this.selected.state == 'RUNNING') {
                     this.selected.last_run = "Running...";
                 }
-                else if (this.selected.finished) {
-                    this.selected.last_run = 'Finished ' + moment(this.selected.finished).fromNow();
+                else if (this.selected.state == 'FAILED' || this.selected.state == 'SUCCESS') {
+                    let state = this.selected.state.charAt(0).toUpperCase() +
+                        this.selected.state.slice(1).toLowerCase();
+                    this.selected.last_run = state + ' ' + moment(this.selected.finished).fromNow();
                 }
                 if (this.pfList) {
                     this.selectItem(this.selected.id, deselectId);
@@ -169,6 +188,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     }
 
     applyFilters(filters: FilterEvent): void {
+        this.query = null;
         if (filters.appliedFilters.length) {
             let query = '';
             filters.appliedFilters.forEach((filter: Filter, idx: number) => {
@@ -179,15 +199,18 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                     query += `or__repository__name__icontains=${filter.value.toLowerCase()}`;
                 }
             });
-            this.searchImports(query);
-        } else {
-            this.searchImports();
+            this.query = query;
         }
+        this.searchImports(this.query);
     }
 
     onResize($event): void {
         // On browser resize
         this.setVerticalScroll();    
+    }
+
+    startedImport($event): void {
+        this.refreshImports();
     }
 
     // private 
@@ -219,7 +242,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
             this.prepareImports(this.items);
             this.filterConfig.resultsCount = this.items.length;
             if (this.items.length) {
-                this.getImport(this.items[0].id);
+                this.getImport(this.items[0].id, true);
             } else {
                 this.cancelPageLoading();
             }
@@ -227,8 +250,34 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         });
     }
 
+    private refreshImports(): void {
+        this.refreshing = true;
+        this.importsService.latest(this.query).subscribe(results => {
+            this.prepareImports(results);
+            this.items = results;
+            this.filterConfig.resultsCount = this.items.length;
+            if (this.items.length) {
+                let selected_item: ImportLatest = this.items[0];
+                if (this.selected) {
+                    this.items.forEach(item => {
+                        if (item['repository_id'] == this.selected.summary_fields.repository.id) {
+                            selected_item = item;
+                        }
+                    });
+                }
+                this.getImport(selected_item.id, false);
+            } else {
+                this.refreshing = false;
+            }
+            this.setVerticalScroll();
+        });
+    }
+
     private prepareImports(imports: ImportLatest[]): void {
         imports.forEach(item => {
+            if (this.selected && this.selected.summary_fields.repository.id == item.id) {
+                item['selected'] = true;
+            }
             item.finished = moment(item.modified).fromNow();
             item.state = item.state.charAt(0).toUpperCase() + item.state.slice(1).toLowerCase();
         });
@@ -237,6 +286,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     private cancelPageLoading(): void {
         setTimeout(_ => {
             this.pageLoading = false;
+            this.refreshing = false;
         }, 2000);
     }
 }

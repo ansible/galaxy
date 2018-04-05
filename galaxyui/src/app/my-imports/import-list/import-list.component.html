@@ -8,7 +8,7 @@
             </pfng-filter>
         </div>
         <div id="import-list" (window:resize)="onResize($event)">
-            <pfng-list
+            <pfng-list #importList
                 [config]="listConfig"
                 [items]="items"
                 [itemTemplate]="itemTemplate"
@@ -33,7 +33,11 @@
         </div>
     </div>
     <div class="col-sm-8">
-        <app-import-detail [importTask]="selected"></app-import-detail>
+        <app-import-detail
+            [importTask]="selected"
+            [refreshing]="refreshing"
+            (startedImport)="startedImport($event)">   
+        </app-import-detail>
     </div>
 </div>
 <app-page-loading [loading]="pageLoading"></app-page-loading>

@@ -23,15 +23,14 @@ import * as $ from 'jquery';
 })
 export class HomeComponent implements OnInit, AfterViewInit {
 
-	downloadConfig: CardConfig;
+    downloadConfig: CardConfig;
     shareConfig: CardConfig;
     featureConfig: CardConfig;
     
     downloadContent: string;
     shareContent: string;
     featuredBlogContent: string;
-	headerTitle: string = "Home";
-    
+    headerTitle: string = "Home";
     searchText: string = '';
 
     constructor(
@@ -101,9 +100,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
                 $('#card-1 .pfng-card').css('height', height);
                 $('#card-2 .pfng-card').css('height', height);
                 $('#card-3 .pfng-card').css('height', height);
+            } else {
+                $('#card-1 .pfng-card').css('height', 'auto');
+                $('#card-2 .pfng-card').css('height', 'auto');
+                $('#card-3 .pfng-card').css('height', 'auto');
             }
         }, 1000);
     }
 }
-  
-  

@@ -1,0 +1,139 @@
+@import '../../variables';
+
+#search-page {
+	.pagination {
+		width: 100%;
+	}
+}
+
+#search-list {
+	margin-top: 20px;
+	color: @ansible-dark-grey;
+
+	.content-name {
+		.icon, .name, .type {
+			display: inline-block;
+			vertical-align: middle;
+		}
+		.icon {
+			width: 32px;
+			text-align: center;
+			margin-right: 5px;
+		}
+		.name {
+			font-size: 16px;
+			margin-right: 5px;
+			color: @blue;
+		}
+		.type {
+			display: inline-block;
+			color: @white;
+			background-color: @ansible-dark-grey;
+			padding: 1px 3px;
+			border-radius: 1px;
+			border-color: @ansible-dark-grey;
+		}
+		.description {
+			margin: 15px 0;
+			padding-left: 5px;
+			font-weight: normal;
+		}
+	}
+
+	.content-namespace {
+		.name {
+			color: @blue;
+		}
+		.avatar, .name {
+			display: inline-block;
+			vertical-align: middle;
+		}
+		.avatar {
+			margin-right: 5px;
+			width: 32px;
+			text-align: center;
+			img {
+				width: 22px;
+				height: 22px;
+				border-radius: 50%;
+				border: 1px solid @ansible-dark-grey;
+			}
+		}
+	}
+
+	.content-tags {
+		margin-top: 15px;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: no-wrap;
+		align-items: flex-start;
+
+		.icon, .tags {
+			display: inline-block;
+			vertical-align: middle;
+		}
+		.icon {
+			width: 32px;
+			text-align: center;
+			margin-right: 5px;
+		}
+		.tag {
+			display: inline-block;
+			font-size: 11px;
+			font-weight: normal;
+			margin-right: 5px;
+			margin-top: 5px;
+			padding: 1px 3px;
+			background-color: @blue;
+			color: @white;
+			border-radius: 1px;
+		}
+	}
+
+	.counts {
+		text-align: right;
+
+		.count-icon, .count-count, .count-text {
+			display: inline-block;
+			margin-right: 6px;
+		}
+		.count-count {
+			font-size: 14px;
+			font-weight: 600;
+		}
+		.count-text {
+			margin-right: 15px;
+		}
+		.count-text:last-child {
+			margin-right: 0;
+		}
+	}
+
+	.import {
+		text-align: right;
+		margin-top: 10px;
+		.import-text, .import-date {
+			display: inline-block;
+		}
+		.import-text {
+			font-weight: 600;
+		}
+	}
+	.travis {
+		text-align: right;
+		margin-bottom: 10px;
+		img {
+			width: 90px;
+			height: 20px;
+		}
+	}
+	.relevance {
+		text-align: right;
+		margin-top: 10px;
+
+		.relevance-text {
+			padding-right: 10px;
+			font-weight: 600;
+		}
+	}
+}
