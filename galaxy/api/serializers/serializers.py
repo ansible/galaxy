@@ -419,15 +419,15 @@ class TagSearchSerializer(TagSerializer):
 class PlatformSearchSerializer(PlatformSerializer):
     roles_count = serializers.IntegerField(read_only=True)
 
-    class Meta(TagSerializer.Meta):
-        fields = TagSerializer.Meta.fields + ('roles_count', )
+    class Meta(PlatformSerializer.Meta):
+        fields = PlatformSerializer.Meta.fields + ('roles_count',)
 
 
 class CloudPlatformSearchSerializer(CloudPlatformSerializer):
     roles_count = serializers.IntegerField(read_only=True)
 
-    class Meta(TagSerializer.Meta):
-        fields = TagSerializer.Meta.fields + ('roles_count', )
+    class Meta(CloudPlatformSerializer.Meta):
+        fields = CloudPlatformSerializer.Meta.fields + ('roles_count', )
 
 
 class RoleVersionSerializer(BaseSerializer):
