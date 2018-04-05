@@ -49,7 +49,8 @@ class GithubAPI(object):
 
     def get_client(self):
         try:
-            gh_token = SocialToken.objects.get(account__user=self.user, account__provider='github')
+            gh_token = SocialToken.objects.get(account__user=self.user,
+                                               account__provider='github')
         except ObjectDoesNotExist:
             raise Exception(
                 "User does not have a GitHub OAuth token"
@@ -57,9 +58,8 @@ class GithubAPI(object):
         try:
             client = Github(gh_token.token)
         except GithubException as exc:
-            raise Exception(
-                "Failed to connect to the GitHub API {0} - {1}".format(exc.data, exc.status)
-            )
+            raise Exception("Failed to connect to the GitHub API {0} - {1}"
+                            .format(exc.data, exc.status))
         return client
 
     def user_namespaces(self):
@@ -85,7 +85,8 @@ class GithubAPI(object):
             for org in gh_orgs:
                 source = {
                     'name': org.login,
-                    'description': org.description if hasattr(org, 'description') else None,
+                    'description': (org.description
+                                    if hasattr(org, 'description') else None),
                     'provider': self.provider_name.lower(),
                     'display_name': org.name,
                     'avatar_url': org.avatar_url,
@@ -97,9 +98,8 @@ class GithubAPI(object):
                 }
                 result.append(source)
         except GithubException, exc:
-            raise Exception(
-                "Failed to access GitHub authorized user. {0} - {1}".format(exc.data, exc.status)
-            )
+            raise Exception("Failed to access GitHub authorized user."
+                            " {0} - {1}".format(exc.data, exc.status))
         return result
 
     def get_namespace_repositories(self, namespace, name=None):

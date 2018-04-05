@@ -18,7 +18,8 @@
 import re
 
 # Django
-from django.core.exceptions import FieldError, ValidationError, ObjectDoesNotExist
+from django.core.exceptions import (
+    FieldError, ValidationError, ObjectDoesNotExist)
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q
@@ -36,9 +37,9 @@ GalaxyUser = get_user_model()
 
 
 class ActiveOnlyBackend(BaseFilterBackend):
-    '''
+    """
     Filter to show only objects where is_active/active is True.
-    '''
+    """
 
     def filter_queryset(self, request, queryset, view):
         for field in queryset.model._meta.fields:
@@ -50,9 +51,9 @@ class ActiveOnlyBackend(BaseFilterBackend):
 
 
 class FieldLookupBackend(BaseFilterBackend):
-    '''
+    """
     Filter using field lookups provided via query string parameters.
-    '''
+    """
 
     RESERVED_NAMES = ('page', 'page_size', 'format', 'order', 'order_by',
                       'search')
@@ -91,7 +92,8 @@ class FieldLookupBackend(BaseFilterBackend):
         elif allow_none and value.lower() in ('none', 'null'):
             return None
         else:
-            raise ValueError(u'Unable to convert "%s" to boolean' % unicode(value))
+            raise ValueError(
+                u'Unable to convert "{}" to boolean'.format(unicode(value)))
 
     def to_python_related(self, value):
         value = unicode(value)
@@ -142,8 +144,10 @@ class FieldLookupBackend(BaseFilterBackend):
             except ObjectDoesNotExist as e:
                 # if not, check to see if there's an alias for it
                 try:
-                    alias_obj = UserAlias.objects.get(alias_name=request.GET['owner__username'])
-                    # and override that query parameter with the actual username
+                    alias_obj = UserAlias.objects.get(
+                        alias_name=request.GET['owner__username'])
+                    # and override that query parameter with
+                    # the actual username
                     qp = request.GET.copy()
                     qp['owner__username'] = alias_obj.alias_of.username
                     # Again, we use GET here because QUERY_PARAMS has no
@@ -233,9 +237,9 @@ class FieldLookupBackend(BaseFilterBackend):
 
 
 class OrderByBackend(BaseFilterBackend):
-    '''
+    """
     Filter to apply ordering based on query string parameters.
-    '''
+    """
 
     def filter_queryset(self, request, queryset, view):
         try:

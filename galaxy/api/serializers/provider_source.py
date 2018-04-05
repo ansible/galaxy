@@ -46,13 +46,17 @@ class ProviderSourceSerializer(BaseSerializer):
         provider_id = instance['provider']['id']
 
         result['related'] = {
-            'provider': reverse('api:active_provider_detail', kwargs={'pk': provider_id}),
-            'source_repositories': reverse('api:repository_source_list', kwargs={'provider_name': provider_name.lower(),
-                                                                                 'provider_namespace': name.lower()})
+            'provider': reverse(
+                'api:active_provider_detail', kwargs={'pk': provider_id}),
+            'source_repositories': reverse(
+                'api:repository_source_list',
+                kwargs={'provider_name': provider_name.lower(),
+                        'provider_namespace': name.lower()})
         }
 
         if instance.get('provider_namespace_url'):
-            result['related']['provider_namespace'] = instance['provider_namespace_url']
+            result['related']['provider_namespace'] = \
+                instance['provider_namespace_url']
         if instance.get('namespace_url'):
             result['related']['namespace'] = instance['namespace_url']
 
@@ -61,7 +65,8 @@ class ProviderSourceSerializer(BaseSerializer):
         }
 
         if instance.get('provider_namespace'):
-            result['summary_fields']['provider_namespace'] = instance['provider_namespace']
+            result['summary_fields']['provider_namespace'] = \
+                instance['provider_namespace']
         if instance.get('namespace'):
             result['summary_fields']['namespace'] = instance['namespace']
 

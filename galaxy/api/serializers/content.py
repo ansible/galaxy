@@ -110,7 +110,8 @@ class ContentSerializer(BaseModelSerializer):
             'cloud_platforms': [
                 p.name for p in instance.cloud_platforms.all()],
             'tags': [t.name for t in instance.tags.all()],
-            'content_type': _ContentTypeSerializer().to_representation(instance),
+            'content_type':
+                _ContentTypeSerializer().to_representation(instance),
         }
 
 
