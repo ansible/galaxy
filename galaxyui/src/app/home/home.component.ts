@@ -5,6 +5,10 @@ import {
 } from '@angular/core';
 
 import {
+    Router
+} from '@angular/router';
+
+import {
 	CardConfig
 } from 'patternfly-ng/card/basic-card/card-config';
 
@@ -27,9 +31,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
     shareContent: string;
     featuredBlogContent: string;
 	headerTitle: string = "Home";
+    
+    searchText: string = '';
 
     constructor(
-        private contentBlocks: ContentBlocksService
+        private contentBlocks: ContentBlocksService,
+        private router: Router
     ) {}
     
     ngOnInit() {
@@ -70,6 +77,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         this.setCardHeight();
+    }
+
+    searchContent(): void {
+        this.router.navigate(['/search'], {queryParams: {keywords: this.searchText}});
     }
 
     // private 

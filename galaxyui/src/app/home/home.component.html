@@ -1,11 +1,25 @@
 <app-page-header [headerTitle]="headerTitle"></app-page-header>
 <div id="home-page" class="container-fluid" (window:resize)="onResize($event)">
 	<div class="row search-row">
-		<div class="col-sm-11">
-	    	<input type="text" class="search-input" placeholder="Enter search text" >
-	  	</div>
-	  	<div class="col-sm-1">
-	    	<button class="btn btn-primary search-button" type="button">Search</button>
+		<div class="col-sm-12">
+			<form #searchForm="ngForm">
+				<div class="form-inline">
+					<div class="form-group search-field">
+			  			<input
+			  				type="text"
+			  				class="input-medium search-query"
+			  				placeholder="Search Ansible content..."
+			  				name="searchText"
+			  				[(ngModel)]="searchText">
+			  		</div>
+			  		<div class="form-group">
+			  			<button 
+			  				class="btn btn-primary search-button"
+			  				type="button"
+			  				(click)="searchContent()">Search</button>
+					</div>
+				</div>
+			</form>
 		</div>
 	</div>
 	<div class="row content-row">

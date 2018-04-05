@@ -3,6 +3,8 @@ import {
 	CUSTOM_ELEMENTS_SCHEMA
 } from '@angular/core';
 
+import { FormsModule }          from '@angular/forms';
+
 import { HomeComponent }        from './home.component';
 import { HomeRoutingModule }    from './home.routing.module';
 
@@ -21,7 +23,8 @@ import { PageLoadingModule }    from '../page-loading/page-loading.module';
     	CardModule,
     	PageHeaderModule,
     	PageLoadingModule,
-        HomeRoutingModule
+        HomeRoutingModule,
+        FormsModule
     ],
     providers: [],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA]
