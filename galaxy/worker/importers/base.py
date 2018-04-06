@@ -21,6 +21,7 @@ from django.utils import timezone
 
 from galaxy.main import models
 from galaxy.worker import utils
+from galaxy.worker import exceptions as exc
 
 LOG = logging.getLogger(__name__)
 
@@ -47,11 +48,20 @@ class ContentImporter(object):
     def make_content(self):
         repo = self.ctx.repository
         ns = repo.provider_namespace.namespace
+
+        if self.data.name:
+            name = self.data.name
+        elif not self.path:
+            name = repo.name
+        else:
+            raise exc.TaskError("Content is not a repository global "
+                                "and doesn't have name.")
+
         obj, is_created = models.Content.objects.get_or_create(
             namespace=ns,
             # FIXME(cutwater): Use in-memory cache for content types
             content_type=models.ContentType.get(self.data.content_type),
-            name=self.data.name,
+            name=name,
             defaults={
                 'repository': repo,
                 'is_valid': False,

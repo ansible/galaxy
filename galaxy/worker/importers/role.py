@@ -35,26 +35,28 @@ class RoleImporter(base.ContentImporter):
         if not content.description:
             content.description = gh_repo.description
 
-        content.author = self.data.author
-        content.company = self.data.company
-        content.license = self.data.license
-        content.min_ansible_version = self.data.min_ansible_version
+        role_meta = self.data.role_meta
+
+        content.author = role_meta['author']
+        content.company = role_meta['company']
+        content.license = role_meta['license']
+        content.min_ansible_version = role_meta['min_ansible_version']
         content.min_ansible_container_version = \
-            self.data.min_ansible_container_version
-        content.github_branch = self.data.github_branch
+            role_meta['min_ansible_container_version']
+        content.github_branch = role_meta['github_branch']
         content.github_default_branch = gh_repo.default_branch
-        content.role_type = self.data.role_type.value
-        content.container_yml = self.data.container_yml
-        content.issue_tracker_url = self.data.issue_tracker_url
+        content.role_type = role_meta['role_type']
+        content.issue_tracker_url = role_meta['issue_tracker_url']
+        content.container_yml = self.data.metadata['container_meta']
 
         if content.issue_tracker_url == "" and gh_repo.has_issues:
             content.issue_tracker_url = gh_repo.html_url + '/issues'
 
-        self._add_role_videos(content, self.data.video_links)
-        self._add_tags(content, self.data.tags)
-        self._add_platforms(content, self.data.platforms)
-        self._add_cloud_platforms(content, self.data.cloud_platforms)
-        self._add_dependencies(content, self.data.dependencies)
+        self._add_role_videos(content, role_meta['video_links'])
+        self._add_tags(content, role_meta['tags'])
+        self._add_platforms(content, role_meta['platforms'])
+        self._add_cloud_platforms(content, role_meta['cloud_platforms'])
+        self._add_dependencies(content, role_meta['dependencies'])
         self._add_readme(content)
         self._update_role_versions(content)
 

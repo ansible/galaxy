@@ -158,10 +158,10 @@ def _update_repository(repository, gh_repo, commit_info):
     repository.forks_count = gh_repo.forks_count
     repository.open_issues_count = gh_repo.open_issues_count
 
-    repository.commit = commit_info['sha']
-    repository.commit_message = commit_info['message'][:255]
+    repository.commit = commit_info.sha
+    repository.commit_message = commit_info.message[:255]
     repository.commit_url = \
         'https://api.github.com/repos/{0}/git/commits/{1}'.format(
-            gh_repo.full_name, commit_info['sha'])
-    repository.commit_created = commit_info['committer_date']
+            gh_repo.full_name, commit_info.sha)
+    repository.commit_created = commit_info.committer_date
     repository.save()

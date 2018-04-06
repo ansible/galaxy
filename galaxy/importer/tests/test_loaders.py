@@ -131,7 +131,7 @@ class TestRoleLoader(unittest.TestCase):
         role = loader.load()
         role_meta = role.role_meta
 
-        assert role.name is None
+        assert role.name == 'test_role'
         assert role.description == 'A test role'
         assert role_meta['role_type'] == constants.RoleType.ANSIBLE
         assert role_meta['author'] == 'John Smith'
