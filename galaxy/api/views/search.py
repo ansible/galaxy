@@ -73,12 +73,10 @@ class ContentSearchView(base.ListAPIView):
     filter_backends = [filters.OrderByFilter]
 
     def get_queryset(self):
-        role_type = models.ContentType.get(constants.ContentType.ROLE)
         return (models.Content.objects.distinct()
                 .filter(
                     repository__provider_namespace__namespace__isnull=False,
-                    repository__provider_namespace__namespace__active=True,
-                    content_type=role_type))
+                    repository__provider_namespace__namespace__active=True))
 
     # TODO(cutwater): Use serializer to parse request arguments
     def list(self, request, *args, **kwargs):
@@ -109,6 +107,8 @@ class ContentSearchView(base.ListAPIView):
         queryset = self.add_keywords_filter(queryset, keywords)
 
         queryset = self.add_relevance(queryset)
+
+        print(queryset.query)
 
         return self.make_response(queryset)
 

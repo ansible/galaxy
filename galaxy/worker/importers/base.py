@@ -51,7 +51,7 @@ class ContentImporter(object):
 
         if self.data.name:
             name = self.data.name
-        elif not self.path:
+        elif not self.data.path:
             name = repo.name
         else:
             raise exc.TaskError("Content is not a repository global "
