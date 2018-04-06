@@ -22,6 +22,7 @@ import { Namespace }                   from "../../resources/namespaces/namespac
 import { NamespaceService }            from "../../resources/namespaces/namespace.service";
 import { BsModalService, BsModalRef }  from 'ngx-bootstrap';
 import { AddRepositoryModalComponent } from "../add-repository-modal/add-repository-modal.component";
+import { AuthService }                 from "../../auth/auth.service";
 import { FilterConfig }                from "patternfly-ng/filter/filter-config";
 import { ToolbarConfig }               from "patternfly-ng/toolbar/toolbar-config";
 import { FilterType }                  from "patternfly-ng/filter/filter-type";
@@ -62,6 +63,7 @@ export class NamespaceListComponent implements OnInit {
     contentAdded: number = 0;
 
     constructor(
+        private authService: AuthService,
         private route: ActivatedRoute,
         private router: Router,
         private modalService: BsModalService,
@@ -184,7 +186,11 @@ export class NamespaceListComponent implements OnInit {
 
     refreshNamespaces(): void {
         this.pageLoading = true;
-        this.namespaceService.query()
+        let params = {
+            'page_size': 1000,
+            'owners__username': this.authService.meCache.username
+        };
+        this.namespaceService.query(params)
             .subscribe(namespaces => {
                 this.items = this.prepForList(namespaces);
                 this.namespaces = JSON.parse(JSON.stringify(this.items));

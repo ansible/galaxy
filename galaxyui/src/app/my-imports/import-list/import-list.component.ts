@@ -101,25 +101,39 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         } as FilterConfig;
 
         this.route.queryParams.subscribe(params => {
+            let event: FilterEvent = new FilterEvent();
+            event.appliedFilters = [];
             if (params['namespace']) {
+                event.appliedFilters.push({
+                    field: this.filterConfig.fields[1],
+                    value: params['namesspace']
+                } as Filter);
                 this.filterConfig.appliedFilters.push({
                     field: this.filterConfig.fields[1],
                     value: params['namesspace']
-                });
+                } as Filter);
             }
             if (params['repository_name']) {
-                this.filterConfig.appliedFilters.push({
+                event.appliedFilters.push({
                     field: this.filterConfig.fields[0],
                     value: params['repository_name']
-                });
+                } as Filter);
+                this.filterConfig.appliedFilters.push({
+                    field: this.filterConfig.fields[1],
+                    value: params['namesspace']
+                } as Filter);
+            }
+            if (event.appliedFilters.length) {
+                this.applyFilters(event);
             }
         });
-
-        // refresh ever 10 seconds
-        this.polling = Observable.interval(10000)
-            .subscribe(_ => {
-                this.refreshImports();
-            });
+        
+        setTimeout(_=>{
+            this.polling = Observable.interval(5000)
+                .subscribe(_ => {
+                    this.refreshImports();
+                });
+        }, 3000)
     }
 
     ngAfterViewInit() {
@@ -200,6 +214,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 }
             });
             this.query = query;
+            console.log('this.query: ' + this.query);
         }
         this.searchImports(this.query);
     }

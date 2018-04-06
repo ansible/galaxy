@@ -91,6 +91,8 @@ export class AddRepositoryModalComponent implements OnInit {
             });
 
         forkJoin(saveRequests).subscribe((results: Repository[]) => {
+            console.log('Saving...');
+            console.log(results);
             this.saveInProgress = false;
             this.bsModalRef.hide();
             results.forEach((repository: Repository) => {
