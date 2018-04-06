@@ -39,9 +39,8 @@ class ModuleLoader(base.BaseLoader):
         self.documentation = None
         self.metdata = None
 
-    @classmethod
-    def make_name(cls, path):
-        return base.make_module_name(path)
+    def make_name(self):
+        return base.make_module_name(self.path)
 
     def load(self):
         self._parse_module()

@@ -44,7 +44,7 @@ class BaseLoader(object):
         self.content_type = content_type
         self.rel_path = path
         self.root = root
-        self.name = self.make_name(self.path)
+        self.name = self.make_name()
 
         self.log = logutils.ContentTypeAdapter(
             logger or LOG, self.content_type, self.name)
@@ -53,8 +53,7 @@ class BaseLoader(object):
     def path(self):
         return os.path.join(self.root, self.rel_path)
 
-    @classmethod
-    def make_name(cls, path):
+    def make_name(self):
         """Returns content name if it can be generated from it's path.
 
         If name cannot be generated from the path, for example if content

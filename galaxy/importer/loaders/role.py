@@ -206,6 +206,7 @@ class RoleLoader(base.BaseLoader):
         container_yml_type, container_yml = self._load_container_yml()
 
         description = data.pop('description')
+
         data['role_type'] = self._get_role_type(metadata, container_yml_type)
         data['tags'] = meta_parser.parse_tags()
         data['platforms'] = meta_parser.parse_platforms()
@@ -223,6 +224,12 @@ class RoleLoader(base.BaseLoader):
                 'container_meta': container_yml,
             }
         )
+
+    def make_name(self):
+        if self.rel_path:
+            return os.path.basename(self.path)
+        else:
+            return None
 
     def _load_string_attrs(self, metadata):
         attrs = {}
