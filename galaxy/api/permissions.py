@@ -50,7 +50,8 @@ class ModelAccessPermission(permissions.BasePermission):
 
     def check_get_permissions(self, request, view, obj=None):
         if hasattr(view, 'parent_model'):
-            parent_obj = get_object_or_400(view.parent_model, pk=view.kwargs['pk'])
+            parent_obj = get_object_or_400(view.parent_model,
+                                           pk=view.kwargs['pk'])
             if not check_user_access(request.user, view.parent_model, 'read',
                                      parent_obj):
                 return False
@@ -66,7 +67,8 @@ class ModelAccessPermission(permissions.BasePermission):
             if obj:
                 return True
             if hasattr(view, 'model'):
-                return check_user_access(request.user, view.model, 'add', request.data)
+                return check_user_access(request.user, view.model,
+                                         'add', request.data)
             return True
 
     def check_put_permissions(self, request, view, obj=None):
@@ -102,7 +104,8 @@ class ModelAccessPermission(permissions.BasePermission):
         active = getattr(obj, 'active', getattr(obj, 'is_active', True))
         if callable(active):
             active = active()
-        if not active and not isinstance(obj, AnonymousUser) and not isinstance(obj, Namespace):
+        if (not active and not isinstance(obj, AnonymousUser)
+                and not isinstance(obj, Namespace)):
             raise Http404()
 
         # Don't allow inactive users (and respond with a 403).
@@ -117,10 +120,12 @@ class ModelAccessPermission(permissions.BasePermission):
 
         # Check permissions for the given view and object, based on the request
         # method used.
-        check_method = getattr(self, 'check_%s_permissions' % request.method.lower(), None)
+        check_method = getattr(
+            self, 'check_%s_permissions' % request.method.lower(), None)
         result = check_method and check_method(request, view, obj)
         if not result:
-            raise PermissionDenied("You do not have permission to perform this action.")
+            raise PermissionDenied("You do not have permission to "
+                                   "perform this action.")
         return result
 
     def has_permission(self, request, view, obj=None):

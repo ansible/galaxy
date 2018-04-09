@@ -81,11 +81,16 @@ class RoleListSerializer(BaseRoleSerializer):
             return {}
         res = super(RoleListSerializer, self).get_related(obj)
         res.update(dict(
-            content_type=reverse('api:content_type_detail', args=(obj.content_type.pk,)),
-            dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
-            imports=reverse('api:role_import_task_list', args=(obj.pk,)),
-            versions=reverse('api:role_versions_list', args=(obj.pk,)),
-            notifications=reverse('api:role_notification_list', args=(obj.pk,)),
+            content_type=reverse(
+                'api:content_type_detail', args=(obj.content_type.pk,)),
+            dependencies=reverse(
+                'api:role_dependencies_list', args=(obj.pk,)),
+            imports=reverse(
+                'api:role_import_task_list', args=(obj.pk,)),
+            versions=reverse(
+                'api:role_versions_list', args=(obj.pk,)),
+            notifications=reverse(
+                'api:role_notification_list', args=(obj.pk,)),
         ))
         return res
 

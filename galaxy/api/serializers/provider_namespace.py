@@ -60,7 +60,9 @@ class ProviderNamespaceSerializer(BaseSerializer):
     def get_related(self, instance):
         result = {}
         if instance.provider:
-            result['provider'] = reverse('api:active_provider_detail', args=[instance.provider.pk])
+            result['provider'] = reverse(
+                'api:active_provider_detail', args=[instance.provider.pk])
         if instance.namespace:
-            result['namespace'] = reverse('api:namespace_detail', args=[instance.namespace.pk])
+            result['namespace'] = reverse(
+                'api:namespace_detail', args=[instance.namespace.pk])
         return result

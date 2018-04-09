@@ -67,7 +67,8 @@ logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
-BASE_FIELDS = ('id', 'url', 'related', 'summary_fields', 'created', 'modified', 'name')
+BASE_FIELDS = ('id', 'url', 'related', 'summary_fields',
+               'created', 'modified', 'name')
 
 # Fields that should be summarized regardless of object type.
 DEFAULT_SUMMARY_FIELDS = ('name', 'description',)
@@ -91,7 +92,8 @@ class BaseSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(BaseSerializer, self).__init__(*args, **kwargs)
-        self.Meta.fields = ('url', 'related', 'summary_fields') + self.Meta.fields + ('created', 'modified', 'active')
+        self.Meta.fields += ('url', 'related', 'summary_fields',
+                             'created', 'modified', 'active')
 
     def get_fields(self):
         # opts = get_concrete_model(self.Meta.model)._meta
@@ -99,21 +101,30 @@ class BaseSerializer(serializers.ModelSerializer):
         ret = super(BaseSerializer, self).get_fields()
         for key, field in ret.items():
             if key == 'id' and not getattr(field, 'help_text', None):
-                field.help_text = 'Database ID for this %s.' % unicode(opts.verbose_name)
+                field.help_text = u'Database ID for this {}.'.format(
+                    unicode(opts.verbose_name))
             elif key == 'url':
-                field.help_text = 'URL for this %s.' % unicode(opts.verbose_name)
+                field.help_text = u'URL for this {}.'.format(
+                    unicode(opts.verbose_name))
                 field.type_label = 'string'
             elif key == 'related':
-                field.help_text = 'Data structure with URLs of related resources.'
+                field.help_text = (
+                    'Data structure with URLs of related resources.')
                 field.type_label = 'object'
             elif key == 'summary_fields':
-                field.help_text = 'Data structure with name/description for related resources.'
+                field.help_text = (
+                    'Data structure with name/description '
+                    'for related resources.')
                 field.type_label = 'object'
             elif key == 'created':
-                field.help_text = 'Timestamp when this %s was created.' % unicode(opts.verbose_name)
+                field.help_text = (
+                    u'Timestamp when this {} was created.'.format(
+                        unicode(opts.verbose_name)))
                 field.type_label = 'datetime'
             elif key == 'modified':
-                field.help_text = 'Timestamp when this %s was last modified.' % unicode(opts.verbose_name)
+                field.help_text = (
+                    u'Timestamp when this {} was last modified.'.format(
+                        unicode(opts.verbose_name)))
                 field.type_label = 'datetime'
         return ret
 
@@ -227,10 +238,14 @@ class UserListSerializer(BaseSerializer):
             return {}
         res = super(UserListSerializer, self).get_related(obj)
         res.update(dict(
-            subscriptions=reverse('api:user_subscription_list', args=(obj.pk,)),
-            starred=reverse('api:user_starred_list', args=(obj.pk,)),
-            repositories=reverse('api:user_repositories_list', args=(obj.pk,)),
-            secrets=reverse('api:user_notification_secret_list', args=(obj.pk,)),
+            subscriptions=reverse(
+                'api:user_subscription_list', args=(obj.pk,)),
+            starred=reverse(
+                'api:user_starred_list', args=(obj.pk,)),
+            repositories=reverse(
+                'api:user_repositories_list', args=(obj.pk,)),
+            secrets=reverse(
+                'api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
@@ -297,7 +312,8 @@ class UserDetailSerializer(BaseSerializer):
 
     def restore_object(self, attrs, instance=None):
         new_password = attrs.pop('password', None)
-        instance = super(UserDetailSerializer, self).restore_object(attrs, instance)
+        instance = super(UserDetailSerializer, self).restore_object(
+            attrs, instance)
         instance._new_password = new_password
         return instance
 
@@ -314,10 +330,14 @@ class UserDetailSerializer(BaseSerializer):
             return {}
         res = super(UserDetailSerializer, self).get_related(obj)
         res.update(dict(
-            repositories=reverse('api:user_repositories_list', args=(obj.pk,)),
-            subscriptions=reverse('api:user_subscription_list', args=(obj.pk,)),
-            starred=reverse('api:user_starred_list', args=(obj.pk,)),
-            secrets=reverse('api:user_notification_secret_list', args=(obj.pk,)),
+            repositories=reverse(
+                'api:user_repositories_list', args=(obj.pk,)),
+            subscriptions=reverse(
+                'api:user_subscription_list', args=(obj.pk,)),
+            starred=reverse(
+                'api:user_starred_list', args=(obj.pk,)),
+            secrets=reverse(
+                'api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
@@ -475,7 +495,7 @@ class NotificationSecretSerializer(BaseSerializer):
         last = ''
         try:
             last = obj.secret[-4:]
-        except:
+        except Exception:
             pass
         return '******' + last
 
@@ -574,15 +594,18 @@ class ImportTaskSerializer(BaseSerializer):
             return {}
         res = super(ImportTaskSerializer, self).get_related(obj)
         res.update({
-            'provider': reverse('api:active_provider_detail',
-                                kwargs={'pk': obj.repository.provider_namespace.provider.pk}),
-            'repository': reverse('api:repository_detail', args=(obj.repository.pk,)),
-            'notifications': reverse('api:import_task_notification_list', args=(obj.pk,)),
+            'provider': reverse(
+                'api:active_provider_detail',
+                kwargs={'pk': obj.repository.provider_namespace.provider.pk}),
+            'repository': reverse(
+                'api:repository_detail', args=(obj.repository.pk,)),
+            'notifications': reverse(
+                'api:import_task_notification_list', args=(obj.pk,)),
         })
         if obj.repository.provider_namespace.namespace:
+            pk = obj.repository.provider_namespace.namespace.pk
             res.update({
-                'namespace': reverse('api:namespace_detail',
-                                     kwargs={'pk': obj.repository.provider_namespace.namespace.pk})
+                'namespace': reverse('api:namespace_detail', kwargs={'pk': pk})
             })
         return res
 
@@ -642,7 +665,8 @@ class ImportTaskLatestSerializer(BaseSerializer):
 
     def get_related(self, obj):
         res = super(ImportTaskLatestSerializer, self).get_related(obj)
-        res.update({'repository': reverse('api:repository_detail', args=(obj['repository__id'],))})
+        res.update({'repository': reverse(
+            'api:repository_detail', args=(obj['repository__id'],))})
         return res
 
     def get_task_obj(self, task_id):
