@@ -291,7 +291,7 @@ class RoleLoader(base.BaseLoader):
         ansible_container_meta_file = os.path.join(
             self.path, self.ANSIBLE_CONTAINER_META_FILE)
         if os.path.exists(ansible_container_meta_file):
-            if self._container_yml_type is not None:
+            if container_yml_type is not None:
                 raise exc.ContentLoadError(
                     'Found container.yml and meta/container.yml. '
                     'A role can only have only one container.yml file.')
