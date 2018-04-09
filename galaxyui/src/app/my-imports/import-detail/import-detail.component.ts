@@ -28,8 +28,6 @@ export class ImportDetailComponent implements OnInit {
     @Input() refreshing: boolean;
     @Output() startedImport = new EventEmitter<boolean>();
 
-    checking: boolean = false;
-
     constructor(
         private repositoryImportService: RepositoryImportService
     ) {}

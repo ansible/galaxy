@@ -18,7 +18,13 @@
 				          	<div class="list-pf-main-content">
 			            		<div class="list-pf-title">
 			            			<div class="content-name">
-			        					<div class="icon"><i class="fa fa-gear fa-2x"></i></div>
+			        					<div class="icon">
+			        						<i class="fa fa-cog fa-2x" *ngIf="item.summary_fields.content_type.name == 'role'"></i>
+			        						<i class="fa fa-microchip fa-2x" *ngIf="item.summary_fields.content_type.name == 'module'"></i>
+			        						<i class="fa fa-plug fa-2x"
+			        						*ngIf="item.summary_fields.content_type.name.includes('plugin' )"></i>
+			        						<i class="fa fa-book fa-2x" *ngIf="item.summary_fields.content_type.name == 'apb'"></i>
+			        					</div>
 			        					<div class="name">{{ item.name }}</div>
 			        					<div class="type">{{ item.summary_fields.content_type.name }}</div>
 			            				<div class="description">
@@ -52,7 +58,7 @@
 			            			<div class="counts">
 			            				<div class="count-icon"><i class="fa fa-download fa-2x"></i></div>
 			            				<div class="count-count">{{ item.download_count }}</div>
-			            				<div class="count-text"><a href="">Download</a></div>
+			            				<div class="count-text">Downloads</div>
 			            				
 			            				<div class="count-icon"><i class="fa fa-eye fa-2x"></i></div>
 			            				<div class="count-count">

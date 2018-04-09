@@ -32,6 +32,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     featuredBlogContent: string;
     headerTitle: string = "Home";
     searchText: string = '';
+    showCards: boolean = false;
 
     constructor(
         private contentBlocks: ContentBlocksService,
@@ -71,6 +72,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
 
     onResize($event) {
+        this.showCards = false;
         this.setCardHeight();
     }
 
@@ -105,6 +107,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
                 $('#card-2 .pfng-card').css('height', 'auto');
                 $('#card-3 .pfng-card').css('height', 'auto');
             }
-        }, 1000);
+            this.showCards = true;
+        }, 500);
     }
 }

@@ -45,6 +45,7 @@ import {
 	ContentResponse
 } from "../resources/content-search/content";
 
+import * as moment        from 'moment';
 
 @Component({
     selector: 'app-search',
@@ -383,15 +384,19 @@ export class SearchComponent implements OnInit, AfterViewInit {
     	let paging = '&page_size=' + this.pageSize.toString() +
     		'&page=' + this.pageNumber;
     	let query = this.filterParams + this.sortParams + paging;
-    	this.contentSearch.query(query).subscribe(result => {
-    		this.contentItems = result.results;
-    		this.filterConfig.resultsCount = result.count;
-    		this.pageLoading = false;
-    		this.paginationConfig.totalItems = result.count;
-    		if (!result.count) {
-    			this.emptyStateConfig.title = this.noResultsState;
-    		}
-    	});
+    	this.contentSearch.query(query)
+    		.subscribe(result => {
+	    		result.results.forEach(item => {
+	    			item.imported = moment(item.imported).fromNow();
+	    		});
+	    		this.contentItems = result.results;
+	    		this.filterConfig.resultsCount = result.count;
+	    		this.pageLoading = false;
+	    		this.paginationConfig.totalItems = result.count;
+	    		if (!result.count) {
+	    			this.emptyStateConfig.title = this.noResultsState;
+	    		}
+    		});
     }
 
     private getFilterConfigFieldIdx(id: string): number {
