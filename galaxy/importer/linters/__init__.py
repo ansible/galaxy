@@ -23,6 +23,8 @@ import six
 
 LOG = logging.getLogger(__name__)
 
+LINTERS_DIR = os.path.abspath(os.path.dirname(__file__))
+
 
 class BaseLinter(object):
 
@@ -55,9 +57,10 @@ class Flake8Linter(BaseLinter):
 class YamlLinter(BaseLinter):
 
     cmd = 'yamllint'
+    config = os.path.join(LINTERS_DIR, 'yamllint.yaml')
 
     def _check_files(self, paths):
-        cmd = [self.cmd, '-f', 'parsable', '--'] + paths
+        cmd = [self.cmd, '-f', 'parsable', '-c', self.config, '--'] + paths
         LOG.debug('CMD: ' + ' '.join(cmd))
         proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
         for line in proc.stdout:
