@@ -21,9 +21,9 @@ class ImporterError(Exception):
     pass
 
 
-class ContentNotFound(ImportError):
+class ContentNotFound(ImporterError):
     pass
 
 
-class ContentLoadError(ImportError):
+class ContentLoadError(ImporterError):
     pass
