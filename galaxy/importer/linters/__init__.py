@@ -24,6 +24,7 @@ import six
 LOG = logging.getLogger(__name__)
 
 LINTERS_DIR = os.path.abspath(os.path.dirname(__file__))
+FLAKE8_MAX_LINE_LENGTH = 120
 
 
 class BaseLinter(object):
@@ -46,7 +47,9 @@ class Flake8Linter(BaseLinter):
     cmd = 'flake8'
 
     def _check_files(self, paths):
-        cmd = [self.cmd, '--exit-zero', '--isolated', '--'] + paths
+        cmd = [self.cmd, '--exit-zero', '--isolated',
+               '--max-line-length', str(FLAKE8_MAX_LINE_LENGTH),
+               '--'] + paths
         LOG.debug('CMD: ' + ' '.join(cmd))
         proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
         for line in proc.stdout:
