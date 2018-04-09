@@ -23,10 +23,10 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 
 from allauth.account.signals import user_logged_in
-from allauth.socialaccount.models import SocialAccount
+from allauth.socialaccount import models as auth_models
 
 from galaxy import constants
-from galaxy.main.models import ImportTask, Namespace, Provider, ProviderNamespace
+from galaxy.main import models
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ User = get_user_model()
 
 @receiver(user_logged_in)
 def user_logged_in_handler(request, user, **kwargs):
-    social = SocialAccount.objects.get(
+    social = auth_models.SocialAccount.objects.get(
         provider=constants.PROVIDER_GITHUB.lower(), user=user)
     user.github_user = social.extra_data.get('login')
     user.github_avatar = social.extra_data.get('avatar_url')
@@ -51,9 +51,9 @@ def user_logged_in_handler(request, user, **kwargs):
     # User is not associated with any Namespaces, so we'll attempt
     # to create one, along with associated Provider Namespaces.
     namespace = None
-    for provider in Provider.objects.all():
+    for provider in models.Provider.objects.all():
         try:
-            social = SocialAccount.objects.get(
+            social = auth_models.SocialAccount.objects.get(
                 provider__iexact=provider.name.lower(), user=user)
         except ObjectDoesNotExist:
             continue
@@ -72,22 +72,22 @@ def user_logged_in_handler(request, user, **kwargs):
             }
             if not namespace:
                 # Only create one Namespace
-                namespace, _ = Namespace.objects.get_or_create(
+                namespace, _ = models.Namespace.objects.get_or_create(
                     name=login, defaults=defaults)
                 namespace.owners.add(user)
             defaults['description'] = social.extra_data.get('bio') or name
             defaults['followers'] = social.extra_data.get('followers')
             defaults['display_name'] = social.extra_data.get('name')
-            ProviderNamespace.objects.get_or_create(
+            models.ProviderNamespace.objects.get_or_create(
                 namespace=namespace, name=login, provider=provider,
                 defaults=defaults)
 
 
-@receiver(post_save, sender=ImportTask)
+@receiver(post_save, sender=models.ImportTask)
 def import_task_post_save(sender, **kwargs):
-    '''
+    """
     When a role is imported enable the role in the user's repository cache
-    '''
+    """
     instance = kwargs['instance']
     repo = instance.repository
     repo.is_enabled = True
