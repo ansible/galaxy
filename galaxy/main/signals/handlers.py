@@ -22,11 +22,10 @@ from django.db.models.signals import post_save
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 
-# allauth
 from allauth.account.signals import user_logged_in
 from allauth.socialaccount.models import SocialAccount
 
-# local
+from galaxy import constants
 from galaxy.main.models import ImportTask, Namespace, Provider, ProviderNamespace
 
 
@@ -37,21 +36,30 @@ User = get_user_model()
 
 @receiver(user_logged_in)
 def user_logged_in_handler(request, user, **kwargs):
+    social = SocialAccount.objects.get(
+        provider=constants.PROVIDER_GITHUB.lower(), user=user)
+    user.github_user = social.extra_data.get('login')
+    user.github_avatar = social.extra_data.get('avatar_url')
+    user.save()
+
     if user.namespaces.count():
-        # User is associated with one or more namespaces. Even though the Namespaces may be inactive, we'll
-        # assume the user has been here before, and knows how to manage Namespaces
+        # User is associated with one or more namespaces.
+        # Even though the Namespaces may be inactive, we'll assume
+        # the user has been here before, and knows how to manage Namespaces.
         return
 
-    # User is not associated with any Namespaces, so we'll attempt to create one, along with associated Provider
-    # Namespaces
+    # User is not associated with any Namespaces, so we'll attempt
+    # to create one, along with associated Provider Namespaces.
     namespace = None
     for provider in Provider.objects.all():
         try:
-            social = SocialAccount.objects.get(provider__iexact=provider.name.lower(), user=user)
+            social = SocialAccount.objects.get(
+                provider__iexact=provider.name.lower(), user=user)
         except ObjectDoesNotExist:
             continue
 
         if provider.name.lower() == 'github':
+
             login = social.extra_data.get('login')
             name = social.extra_data.get('name')
             defaults = {
@@ -64,13 +72,15 @@ def user_logged_in_handler(request, user, **kwargs):
             }
             if not namespace:
                 # Only create one Namespace
-                namespace, _ = Namespace.objects.get_or_create(name=login, defaults=defaults)
+                namespace, _ = Namespace.objects.get_or_create(
+                    name=login, defaults=defaults)
                 namespace.owners.add(user)
             defaults['description'] = social.extra_data.get('bio') or name
             defaults['followers'] = social.extra_data.get('followers')
             defaults['display_name'] = social.extra_data.get('name')
-            ProviderNamespace.objects.get_or_create(namespace=namespace, name=login, provider=provider,
-                                                    defaults=defaults)
+            ProviderNamespace.objects.get_or_create(
+                namespace=namespace, name=login, provider=provider,
+                defaults=defaults)
 
 
 @receiver(post_save, sender=ImportTask)
