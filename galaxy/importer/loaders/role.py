@@ -60,7 +60,7 @@ class RoleMetaParser(object):
 
     def _validate_tag(self, tag):
         if not re.match(self.TAG_REGEXP, tag):
-            self.log.warn('"{}" is not a valid tag. Skipping.'.format(tag))
+            self.log.warning('"{}" is not a valid tag. Skipping.'.format(tag))
             return False
         return True
 
@@ -71,16 +71,16 @@ class RoleMetaParser(object):
         if isinstance(galaxy_tags, list):
             tags += galaxy_tags
         else:
-            self.log.warn('Expected "categories" in meta data to be a list')
+            self.log.warning('Expected "categories" in meta data to be a list')
 
         if 'categories' in self.metadata:
-            self.log.warn(
+            self.log.warning(
                 'Found "categories" in metadata. Update the metadata '
                 'to use "galaxy_tags" rather than categories.')
             if isinstance(self.metadata['categories'], list):
                 tags += self.metadata['categories']
             else:
-                self.log.warn('Expected "categories" in meta data to be a list')
+                self.log.warning('Expected "categories" in meta data to be a list')
 
         tags = list(filter(self._validate_tag, tags))
 
@@ -99,7 +99,7 @@ class RoleMetaParser(object):
             try:
                 name = platform['name']
             except KeyError:
-                self.log.warn('No name specified for platform [{0}], skipping'
+                self.log.warning('No name specified for platform [{0}], skipping'
                               .format(idx))
                 continue
 
@@ -146,10 +146,10 @@ class RoleMetaParser(object):
         meta_videos = self.metadata.get('video_links', [])
         for video in meta_videos:
             if not isinstance(video, dict):
-                self.log.warn('Expected item in video_links to be dictionary')
+                self.log.warning('Expected item in video_links to be dictionary')
                 continue
             if set(video) != {'url', 'title'}:
-                self.log.warn("Expected item in video_links to contain only "
+                self.log.warning("Expected item in video_links to contain only "
                               "keys 'url' and 'title'")
                 continue
             for name, expr in six.iteritems(self.VIDEO_REGEXP):
@@ -160,7 +160,7 @@ class RoleMetaParser(object):
                     videos.append(models.VideoLink(embed_url, video['title']))
                     break
             else:
-                self.log.warn(
+                self.log.warning(
                     "URL format '{0}' is not recognized. "
                     "Expected it be a shared link from Vimeo, YouTube, "
                     "or Google Drive.".format(video['url']))
@@ -273,7 +273,7 @@ class RoleLoader(base.BaseLoader):
                 raise exc.ContentLoadError(
                     "Invalid 'galaxy_info' field format, dict expected.")
         else:
-            self.log.warn("Missing 'galaxy_info' field in metadata.")
+            self.log.warning("Missing 'galaxy_info' field in metadata.")
             galaxy_info = {}
         return galaxy_info
 
