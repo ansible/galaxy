@@ -46,7 +46,7 @@ class TestRoleMetaParser(unittest.TestCase):
         tags = parser.parse_tags()
 
         assert tags == ['database']
-        self.log.warn.assert_called_once_with(
+        self.log.warning.assert_called_once_with(
             '"s q l" is not a valid tag. Skipping.')
 
     def test_parse_categories(self):
@@ -56,7 +56,7 @@ class TestRoleMetaParser(unittest.TestCase):
         tags = parser.parse_tags()
 
         assert tags == ['database', 'sql']
-        self.log.warn.assert_called_once_with(
+        self.log.warning.assert_called_once_with(
             'Found "categories" in metadata. Update the metadata '
             'to use "galaxy_tags" rather than categories.')
 
