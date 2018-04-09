@@ -31,6 +31,7 @@ import { LoginModule }                from './login/login.module';
 import { MyContentModule }            from './my-content/my-content.module';
 import { MyImportsModule }            from './my-imports/my-imports.module';
 import { SearchModule }               from './search/search.module';
+import { ExploreModule }               from './explore/explore.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
 
 import { AuthService }                from './auth/auth.service';
@@ -73,7 +74,8 @@ import { AppComponent }               from './app.component';
         MyImportsModule,
         SearchModule,
         ModalModule,
-        AppRoutingModule
+        AppRoutingModule,
+        ExploreModule
     ],
     providers: [
         AuthService,

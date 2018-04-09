@@ -109,6 +109,11 @@ export class AppComponent {
                 title: 'My Imports',
                 iconStyleClass: 'fa fa-upload',
                 url: '/my-imports'
+            },
+            {
+                title: 'Explore',
+                iconStyleClass: 'fa fa-compass',
+                url: '/explore'
             }
         ];
         this.authService.me().subscribe(
@@ -147,7 +152,7 @@ export class AppComponent {
             }
         );
     }
-    
+
     onItemClicked($event: NavigationItemConfig): void {
         console.log('item clicked');
         console.log($event);
