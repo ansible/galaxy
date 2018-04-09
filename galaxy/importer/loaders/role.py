@@ -100,7 +100,7 @@ class RoleMetaParser(object):
                 name = platform['name']
             except KeyError:
                 self.log.warning('No name specified for platform [{0}], skipping'
-                              .format(idx))
+                                 .format(idx))
                 continue
 
             versions = platform.get('versions', ['all'])
@@ -150,7 +150,7 @@ class RoleMetaParser(object):
                 continue
             if set(video) != {'url', 'title'}:
                 self.log.warning("Expected item in video_links to contain only "
-                              "keys 'url' and 'title'")
+                                 "keys 'url' and 'title'")
                 continue
             for name, expr in six.iteritems(self.VIDEO_REGEXP):
                 match = expr.match(video['url'])
