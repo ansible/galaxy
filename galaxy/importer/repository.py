@@ -70,8 +70,8 @@ class RepositoryLoader(object):
         commit = git.get_commit_info(directory=self.path)
         result = list(self._get_contents())
 
-        if not all(v[1] for v in result):
-            raise exc.ContentLoadError('Lint failed')
+        # if not all(v[1] for v in result):
+        #     raise exc.ContentLoadError('Lint failed')
 
         return models.Repository(
             branch=branch,

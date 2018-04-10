@@ -81,7 +81,8 @@ class BaseLoader(object):
         ok = True
         for linter_cls in linters:
             for message in linter_cls(self.root).check_files(self.rel_path):
-                self.log.error(message)
+                # self.log.error(message)
+                self.log.warning(message)
                 ok = False
 
         if ok:
