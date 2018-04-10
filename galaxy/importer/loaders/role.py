@@ -16,7 +16,6 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import collections
-import logging
 import os
 import re
 
@@ -30,7 +29,6 @@ from galaxy.importer import models, linters
 from galaxy.importer.loaders import base
 from galaxy.importer import exceptions as exc
 
-LOG = logging.getLogger(__name__)
 
 ROLE_META_FILES = [
     'meta/main.yml', 'meta/main.yaml',
@@ -56,7 +54,7 @@ class RoleMetaParser(object):
 
     def __init__(self, metadata, logger=None):
         self.metadata = metadata
-        self.log = logger or LOG
+        self.log = logger or base.LOG
 
     def _validate_tag(self, tag):
         if not re.match(self.TAG_REGEXP, tag):
@@ -146,11 +144,12 @@ class RoleMetaParser(object):
         meta_videos = self.metadata.get('video_links', [])
         for video in meta_videos:
             if not isinstance(video, dict):
-                self.log.warning('Expected item in video_links to be dictionary')
+                self.log.warning(
+                    'Expected item in video_links to be dictionary')
                 continue
             if set(video) != {'url', 'title'}:
-                self.log.warning("Expected item in video_links to contain only "
-                                 "keys 'url' and 'title'")
+                self.log.warning("Expected item in video_links to contain "
+                                 "only keys 'url' and 'title'")
                 continue
             for name, expr in six.iteritems(self.VIDEO_REGEXP):
                 match = expr.match(video['url'])

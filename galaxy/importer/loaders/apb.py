@@ -16,16 +16,12 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import os
-import logging
 
 import yaml
 
 from galaxy import constants
 from galaxy.importer import exceptions as exc
-
-from . import base
-
-LOG = logging.getLogger(__name__)
+from galaxy.importer.loaders import base
 
 
 class APBLoader(base.BaseLoader):
