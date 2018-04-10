@@ -54,7 +54,7 @@ class RoleMetaParser(object):
 
     def __init__(self, metadata, logger=None):
         self.metadata = metadata
-        self.log = logger or base.LOG
+        self.log = logger or base.default_logger
 
     def _validate_tag(self, tag):
         if not re.match(self.TAG_REGEXP, tag):

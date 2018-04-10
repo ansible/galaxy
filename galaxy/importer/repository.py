@@ -25,7 +25,8 @@ from galaxy.importer.utils import git
 from galaxy.importer import finders as finders_
 from galaxy.importer import exceptions as exc
 
-LOG = logging.getLogger(__name__)
+
+default_logger = logging.getLogger(__name__)
 
 
 def import_repository(url, branch=None, temp_dir=None, logger=None):
@@ -40,7 +41,7 @@ def load_repository(directory, logger=None):
     :type logger: logging.Logger
     :param logger: Optional logger instance.
     """
-    logger = logger or LOG
+    logger = logger or default_logger
     return RepositoryLoader(directory, logger=logger).load()
 
 
@@ -63,7 +64,7 @@ class RepositoryLoader(object):
         self.path = path
         self.name = name
         self.metadata = None
-        self.log = logger or LOG
+        self.log = logger or default_logger
 
     def load(self):
         branch = git.get_current_branch(directory=self.path)
