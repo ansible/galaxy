@@ -71,11 +71,8 @@ class CustomUser(auth_models.AbstractBaseUser,
     # TODO(cutwater): Seem to be not used anymore.
     # Consider removal of karma field.
     karma = models.IntegerField(default=0, db_index=True)
-    # NOTE(cutwater): Maximum URL length is more than 254 characters.
-    # De facto safe URL length is up to 2000 characters.
-    # https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
     avatar_url = models.CharField(
-        _('avatar URL'), max_length=2000, blank=True)
+        _('avatar URL'), max_length=256, blank=True)
     cache_refreshed = models.BooleanField(
         _('cache refreshed'), default=False)
 

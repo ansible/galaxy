@@ -12,10 +12,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='customuser',
-            name='github_user',
-        ),
         migrations.RenameField(
             model_name='customuser',
             old_name='github_avatar',
@@ -24,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='customuser',
             name='avatar_url',
-            field=models.CharField(blank=True, max_length=2000,
+            field=models.CharField(blank=True, max_length=256,
                                    verbose_name='avatar URL'),
         ),
     ]
