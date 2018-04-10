@@ -28,7 +28,7 @@ from galaxy.importer.loaders import role as role_loader
 class TestRoleMetaParser(unittest.TestCase):
 
     def setUp(self):
-        log_mock = mock.patch('galaxy.importer.loaders.role.LOG')
+        log_mock = mock.patch('galaxy.importer.loaders.base.default_logger')
         self.log = log_mock.start()
         self.addCleanup(log_mock.stop)
 
