@@ -22,7 +22,7 @@ services:
   postgres:
     image: centos/postgresql-95-centos7
     ports:
-    - '2345:5432'
+      - '2345:5432'
     environment:
       - POSTGRESQL_DATABASE=galaxy
       - POSTGRESQL_USER=galaxy
