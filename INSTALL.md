@@ -9,7 +9,7 @@ This document provides a guide for installing Galaxy.
   - [Prerequisites](#prerequisites)
   - [Official vs Building Images](#official-vs-building-images)
 - [OpenShift](#openshift)
-  - [Prerequisites](#prerequisites)
+  - [Prerequisites](#prerequisites-1)
   - [Building the Galaxy image on minishift](#building-the-galaxy-image-on-minishift)
   - [Pre-deployment steps](#pre-deployment-steps)
     - [Authentication](#authentication)
@@ -61,10 +61,11 @@ Before you can run a deployment, you'll need the following installed in your loc
 
 - [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) Requires Version 2.4+
 - [Docker](https://docs.docker.com/engine/installation/)
-- [docker-py](https://github.com/docker/docker-py) Python module
+- [docker](https://github.com/docker/docker-py) Python module
 - [docker-compose](https://github.com/docker/compose) Python module
 - [GNU Make](https://www.gnu.org/software/make/)
 - [Git](https://git-scm.com/)
+- Ansible role [ansible.kubernetes-modules](https://galaxy.ansible.com/ansible/kubernetes-modules/)
 
 ### Official vs Building Images
 
@@ -100,7 +101,7 @@ Provide a path to a directory containing the following subdirectories: templates
 You will need the following:
 
 - Access to a running OpenShift cluster. If you want to try it locally, we recommend [Minishift](https://github.com/minishift/minishift)
-- [ansible.ansible-kubernetes-modules](https://github.com/ansible/ansible-kubernetes-modules), which can be installed by running the following:
+- Ansible role [ansible.kubernetes-modules](https://github.com/ansible/ansible-kubernetes-modules), which can be installed by running the following:
 
     ```bash
     $ ansible-galaxy install ansible.kubernetes-modules
@@ -389,7 +390,7 @@ $ ansible-playbook -i inventory galaxy.yml --tags destroy
 You will need the following installed on the host where Galaxy will be deployed:
 
 - [Docker](https://docs.docker.com/engine/installation/)
-- [docker-py](https://github.com/docker/docker-py) Python module
+- [docker](https://github.com/docker/docker-py) Python module
 - [docker-compose](https://github.com/docker/docker-compose) Python module
 
 Note: After installing Docker, the Docker service must be started. 
@@ -418,7 +419,7 @@ If you choose to use the official images, then the remote host will be the one t
 
 > You may also want to set additional variables to control how Ansible connects to the host. For more information about this, view [Behavioral Inventory Parameters](http://docs.ansible.com/ansible/latest/intro_inventory.html#id12).
 
-> As mentioned above, in [Prerequisites](#prerequisites-1), the prerequisites are required on the remote host.
+> As mentioned above, in [Prerequisites](#prerequisites-2), the prerequisites are required on the remote host.
 
 > When deploying to a remote host, the playbook does not execute tasks with the `become` option. For this reason, make sure the user that connects to the remote host has privileges to run the `docker` command. This typically means that non-privileged users need to be part of the `docker` group.
 
