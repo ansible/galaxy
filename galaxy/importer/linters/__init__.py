@@ -21,7 +21,11 @@ import logging
 
 import six
 
-LOG = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)
+
+LINTERS_DIR = os.path.abspath(os.path.dirname(__file__))
+FLAKE8_MAX_LINE_LENGTH = 120
 
 
 class BaseLinter(object):
@@ -44,8 +48,10 @@ class Flake8Linter(BaseLinter):
     cmd = 'flake8'
 
     def _check_files(self, paths):
-        cmd = [self.cmd, '--exit-zero', '--isolated', '--'] + paths
-        LOG.debug('CMD: ' + ' '.join(cmd))
+        cmd = [self.cmd, '--exit-zero', '--isolated',
+               '--max-line-length', str(FLAKE8_MAX_LINE_LENGTH),
+               '--'] + paths
+        logger.debug('CMD: ' + ' '.join(cmd))
         proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
         for line in proc.stdout:
             yield line.strip()
@@ -55,10 +61,11 @@ class Flake8Linter(BaseLinter):
 class YamlLinter(BaseLinter):
 
     cmd = 'yamllint'
+    config = os.path.join(LINTERS_DIR, 'yamllint.yaml')
 
     def _check_files(self, paths):
-        cmd = [self.cmd, '-f', 'parsable', '--'] + paths
-        LOG.debug('CMD: ' + ' '.join(cmd))
+        cmd = [self.cmd, '-f', 'parsable', '-c', self.config, '--'] + paths
+        logger.debug('CMD: ' + ' '.join(cmd))
         proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
         for line in proc.stdout:
             yield line.strip()

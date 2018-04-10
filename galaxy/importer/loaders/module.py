@@ -16,15 +16,12 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import ast
-import logging
 
 from galaxy import constants
 from galaxy.importer import linters
 from galaxy.importer import models
 from galaxy.importer.utils import ast as ast_utils
 from galaxy.importer.loaders import base
-
-LOG = logging.getLogger(__name__)
 
 
 class ModuleLoader(base.BaseLoader):

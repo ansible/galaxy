@@ -100,7 +100,6 @@ def test_yamllint_fail():
 
         expected = [
             '{0}:1:1: [error] too many blank lines (1 > 0) (empty-lines)',
-            '{0}:2:1: [warning] missing document start "---" (document-start)',
             '{0}:4:7: [error] too many spaces after hyphen (hyphens)',
         ]
         expected = [s.format(fp.name) for s in expected]

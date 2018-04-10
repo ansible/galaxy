@@ -24,7 +24,7 @@ import six
 from galaxy.common import logutils
 
 
-LOG = logging.getLogger(__name__)
+default_logger = logging.getLogger(__name__)
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -47,7 +47,7 @@ class BaseLoader(object):
         self.name = self.make_name()
 
         self.log = logutils.ContentTypeAdapter(
-            logger or LOG, self.content_type, self.name)
+            logger or default_logger, self.content_type, self.name)
 
     @property
     def path(self):

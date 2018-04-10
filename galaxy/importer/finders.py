@@ -25,7 +25,7 @@ from galaxy import constants
 from galaxy.importer import exceptions as exc
 
 
-LOG = logging.getLogger(__name__)
+default_logger = logging.getLogger(__name__)
 
 ROLE_META_FILES = [
     'meta/main.yml', 'meta/main.yaml',
@@ -40,7 +40,7 @@ class BaseFinder(object):
 
     def __init__(self, path, logger=None):
         self.path = path
-        self.log = logger or LOG
+        self.log = logger or default_logger
 
     def find_contents(self):
         """Finds contents in path and return the results.
