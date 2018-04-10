@@ -188,7 +188,7 @@ dev/tmux_noattach:
 .PHONY: dev/tmux
 dev/tmux:
 	# Connect to the galaxy container, start processes, and pipe stdout/stderr through a tmux session
-	$(DOCKER_COMPOSE) exec galaxy bash -c 'make dev/tmux_noattach; tmux -2 attach-session -t galaxy'
+	$(DOCKER_COMPOSE) exec galaxy script /dev/null -q -c 'make dev/tmux_noattach; tmux -2 attach-session -t galaxy'
 
 .PHONY: dev/tmuxcc
 dev/tmuxcc: dev/tmux_noattach
