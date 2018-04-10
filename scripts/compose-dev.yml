@@ -6,7 +6,7 @@ services:
     build:
       context: ./docker-dev
     volumes:
-      - ${PWD}:/galaxy:rw
+      - ${PWD}:/galaxy:z
     environment:
       - TMUX
       - TEST
