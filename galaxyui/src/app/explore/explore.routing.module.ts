@@ -1,5 +1,5 @@
 import {
-    NgModule
+    NgModule,
 } from '@angular/core';
 
 import {
@@ -26,6 +26,6 @@ const exploreRoutes: Routes = [
     exports: [
         RouterModule,
     ],
-    providers: []
+    providers: [],
 })
 export class ExploreRoutingModule { }
