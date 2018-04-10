@@ -154,8 +154,7 @@ def refresh_user_repos(user, token):
     refresh_existing_user_repos(token, ghu)
 
     update_user_repos(repos, user)
-    user.github_avatar = ghu.avatar_url
-    user.github_user = ghu.login
+    user.avatar_url = ghu.avatar_url
     user.cache_refreshed = True
     user.save()
 

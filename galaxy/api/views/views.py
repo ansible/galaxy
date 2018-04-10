@@ -590,7 +590,7 @@ class StargazerList(ListCreateAPIView):
         try:
             gh_user.add_to_starred(gh_repo)
         except GithubException as e:
-            msg = "GitHub API failed to add user {0} to stargazers ".format(request.user.github_user) + \
+            msg = "GitHub API failed to add user {0} to stargazers ".format(request.user.username) + \
                 "for {0}/{1}. {2} - {3}".format(github_user, github_repo, e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
@@ -649,7 +649,7 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
         try:
             gh_user.remove_from_starred(gh_repo)
         except GithubException as e:
-            msg = "GitHub API failed to remove user {0} from stargazers ".format(request.user.github_user) + \
+            msg = "GitHub API failed to remove user {0} from stargazers ".format(request.user.username) + \
                 "for {0}/{1}. {2} - {3}".format(obj.github_user, obj.github_repo, e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
@@ -707,7 +707,7 @@ class SubscriptionList(ListCreateAPIView):
         try:
             gh_user.add_to_subscriptions(gh_repo)
         except GithubException as e:
-            msg = "GitHub API failed to subscribe user {0} to for {1}/{2}".format(request.user.github_user,
+            msg = "GitHub API failed to subscribe user {0} to for {1}/{2}".format(request.user.username,
                                                                                   github_user,
                                                                                   github_repo)
             raise ValidationError(dict(detail=msg))
@@ -781,7 +781,7 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
         try:
             gh_user.remove_from_subscriptions(gh_repo)
         except GithubException as e:
-            msg = "GitHub API failed to unsubscribe {0} from {1}/{2}. {3} - {4}".format(request.user.github_user,
+            msg = "GitHub API failed to unsubscribe {0} from {1}/{2}. {3} - {4}".format(request.user.username,
                                                                                         obj.github_user,
                                                                                         obj.github_repo,
                                                                                         e.data,
@@ -799,7 +799,7 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
         repo.watchers_count = sub_count
         repo.save()
 
-        result = "unsubscribed {0} from {1}/{2}.".format(request.user.github_user,
+        result = "unsubscribed {0} from {1}/{2}.".format(request.user.username,
                                                          obj.github_user,
                                                          obj.github_repo)
 

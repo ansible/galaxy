@@ -42,8 +42,7 @@ class NamespaceSerializer(BaseSerializer):
     def get_summary_fields(self, instance):
         owners = [{
             'id': u.id,
-            'github_user': u.github_user,
-            'github_avatar': u.github_avatar,
+            'avatar_url': u.avatar_url,
             'username': u.username
         } for u in instance.owners.all()]
         provider_namespaces = [{

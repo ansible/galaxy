@@ -68,11 +68,14 @@ class CustomUser(auth_models.AbstractBaseUser,
                     'active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
+    # TODO(cutwater): Seem to be not used anymore.
+    # Consider removal of karma field.
     karma = models.IntegerField(default=0, db_index=True)
-    github_avatar = models.CharField(
-        _('github avatar'), max_length=254, blank=True)
-    github_user = models.CharField(
-        _('github user'), max_length=254, blank=True)
+    # NOTE(cutwater): Maximum URL length is more than 254 characters.
+    # De facto safe URL length is up to 2000 characters.
+    # https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
+    avatar_url = models.CharField(
+        _('avatar URL'), max_length=2000, blank=True)
     cache_refreshed = models.BooleanField(
         _('cache refreshed'), default=False)
 
@@ -99,7 +102,7 @@ class CustomUser(auth_models.AbstractBaseUser,
         return full_name.strip()
 
     def get_short_name(self):
-        "Returns the short name for the user."
+        """Returns the short name for the user."""
         return self.short_name.strip()
 
     def get_num_roles(self):

@@ -38,8 +38,7 @@ User = get_user_model()
 def user_logged_in_handler(request, user, **kwargs):
     social = auth_models.SocialAccount.objects.get(
         provider=constants.PROVIDER_GITHUB.lower(), user=user)
-    user.github_user = social.extra_data.get('login')
-    user.github_avatar = social.extra_data.get('avatar_url')
+    user.avatar_url = social.extra_data.get('avatar_url')
     user.save()
 
     if user.namespaces.count():

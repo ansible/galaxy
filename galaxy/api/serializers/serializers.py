@@ -217,8 +217,7 @@ class UserListSerializer(BaseSerializer):
             'staff',
             'full_name',
             'date_joined',
-            'github_avatar',
-            'github_user',
+            'avatar_url',
             'cache_refreshed'
         )
 
@@ -279,8 +278,7 @@ class UserDetailSerializer(BaseSerializer):
             'staff',
             'full_name',
             'date_joined',
-            'github_avatar',
-            'github_user',
+            'avatar_url',
             'cache_refreshed'
         )
 
