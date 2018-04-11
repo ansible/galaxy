@@ -1,0 +1,58 @@
+/* repository.component.less */
+
+@import '../../../variables';
+
+.row.repository-container {
+	margin-right: 0;
+	margin-left: 0;
+}
+
+.repository-container {
+    color: @ansible-dark-grey;
+	border-bottom: 1px solid #ccc;
+	padding-bottom: 15px;
+
+	.icon-container, .title-container {
+		display: inline-block;
+		vertical-align: middle;
+	}
+	.icon-container {
+		margin-right: 15px;
+	}
+	.title-container {
+		.title, .description {
+			margin-bottom: 5px;
+		}
+		.title {
+			font-weight: 700;
+			font-size: 18px;
+		}
+		.namespace img {
+			width: 24px;
+			height: 24px;
+			border-radius: 50%;
+			border: 2px solid @ansible-dark-grey;
+			margin-right: 5px;
+		}
+	}
+	.repository-counts {
+		margin-top: 30px;
+		.count-icon, .count-count, .count-text {
+			display: inline-block;
+			margin-right: 6px;
+		}
+		.count-count {
+			font-size: 14px;
+			font-weight: 600;
+		}
+		.count-text {
+			margin-right: 15px;
+		}
+		.count-text:last-child {
+			margin-right: 0;
+		}
+		a.btn {
+			margin-right: 15px;
+		}
+	}
+}

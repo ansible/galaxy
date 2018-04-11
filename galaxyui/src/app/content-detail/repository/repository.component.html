@@ -1,0 +1,32 @@
+<div class="row repository-container">
+	<div class="col-sm-4">
+		<div class="icon-container">
+			<span class="fa fa-5x" [ngClass]="repositoryView.iconClass" tooltip="{{ repositoryView.tooltip }}"></span>
+		</div>
+		<div class="title-container">
+			<div class="title">{{ repositoryView.name }}</div>
+			<div class="description">{{ repositoryView.description }}</div>
+			<div class="namespace"><img [src]="repositoryView.avatarUrl" > {{ repositoryView.namespace }}</div>
+		</div>
+	</div>
+	<div class="col-sm-8">
+		<div class="repository-counts">
+			<div class="count-icon"><i class="fa fa-download fa-2x"></i></div>
+			<div class="count-count">{{ repositoryView.downloadCount }}</div>
+			<div class="count-text">Downloads</div>
+			<div class="count-icon"><i class="fa fa-eye fa-2x"></i></div>
+			<div class="count-count">{{ repositoryView.watchersCount }}</div>
+			<div class="count-text">Watchers</div>
+			<div class="count-icon"><i class="fa fa-star fa-2x"></i></div>
+			<div class="count-count">{{ repositoryView.stargazersCount }}</div>
+			<div class="count-text">Star Gazers</div>
+			<a [href]="repositoryView.issueTrackerUrl" *ngIf="repositoryView.issueTrackerUrl"
+			    target="_blank"
+			    tooltip="Visit the issue tracker. Opens in a new browser tab."
+				class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
+			<a [href]="repositoryView.scmUrl" target="_blank"
+				tooltip="Visit the repository. Opens in a new browser tab." class="btn btn-default">
+					<i [ngClass]="repositoryView.scmIconClass"></i> {{ repositoryView.scmName }} Repo</a>
+		</div>
+	</div>
+</div>

@@ -36,6 +36,26 @@ a.failed {
     border-top-color: @white;
 }
 
+/* Vertical Nav - set menu width*/
+
+/*
+.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical.nav-pf-vertical-with-badges {
+    margin-left: 200px;
+}
+.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical.collapsed-nav {
+    margin-left: 75px;
+}
+.nav-pf-vertical.nav-pf-vertical-with-badges {
+    width: 200px;
+}
+.nav-pf-vertical.nav-pf-vertical-with-badges .list-group-item>a {
+    width: 200px;
+}
+.nav-pf-vertical.collapsed {
+    width: 75px;
+}
+*/
+
 /* The following applies to my-content detail */
 .item-select {
     .row {
@@ -144,5 +164,112 @@ a.failed {
     }
     .list-pf-item:last-child {
         border-bottom: none;
+    }
+}
+
+/* Content Detail */
+#content-detail-page {
+    .card-pf {
+        margin: 0;
+    }
+    /*.cd-card.card-cloud-platforms,
+    .cd-card.card-dependencies,
+    .cd-card.card-platforms,
+    .cd-card.card-versions {
+        margin-top: 20px;
+    }
+    .cards-container {
+        margin-top: -20px;
+    }*/
+    .cd-card .card-pf-body {
+        height: 250px;
+        overflow-y: auto;
+    }
+    .row.readme {
+        font-size: 16px;
+        line-height: 24px;
+        min-height: 600px;
+        color: #333;
+
+        .octicon {
+            display: none;
+        }
+
+        h1 {
+            color: @black;
+            font-size: 32px;
+            line-height: 52px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        h2 {
+            color: @black;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 42px;
+            border-bottom: 1px solid #eee;
+        }
+        h3 {
+            color: @black;
+            font-size: 22px;
+            line-height: 42px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h4 {
+            color: @black;
+            font-size: 16px;
+            margin-top: 15px;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            th {
+                padding: 0.4em 0.8em;
+                border: 1px solid #ddd;
+            }
+            td {
+                padding: 0.8em;
+                border: 1px solid #ddd;
+            }
+            tr:nth-child(even) {
+                background-color: #f8f8f8;
+            }
+        }
+        pre {
+            overflow: auto;
+            word-break: inherit;
+            word-wrap: inherit;
+            code {
+                white-space: pre;
+                overflow: initial;
+            }
+        }
+        code {
+            color: @black;
+            background-color: #f7f7f7;
+            font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 13.6px;
+        }
+        ol, ul {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        li>ul, li>ol {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        blockquote {
+            font-size: 16px;
+        }
+    }
+    .modules-detail {
+        .list-pf-content {
+            max-width: 100%;
+            overflow-x: auto;
+        }
     }
 }

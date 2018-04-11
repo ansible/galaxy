@@ -17,8 +17,8 @@ import { Subject }                 from 'rxjs';
 import { forkJoin }                from 'rxjs/observable/forkJoin';
 import { Observable }              from 'rxjs/Observable';
 
-import { RepositoryService }       from '../../../../../resources/respositories/repository.service';
-import { Repository }              from '../../../../../resources/respositories/repository';
+import { RepositoryService }       from '../../../../../resources/repositories/repository.service';
+import { Repository }              from '../../../../../resources/repositories/repository';
 import { RepositoryImportService } from '../../../../../resources/repository-imports/repository-import.service';
 
 

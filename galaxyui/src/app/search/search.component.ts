@@ -61,14 +61,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
 	contentItems: Content[];
 	listConfig: ListConfig;
 	paginationConfig: PaginationConfig;
-	
+
 	emptyStateConfig: EmptyStateConfig;
 	defaultEmptyStateTitle: string;
 	noResultsState: string = 'No matching results found';
 
 	pageLoading: boolean = true;
 	showRelevance: boolean = false;
-	
+
 	filterParams: string;
     sortParams: string = '&order_by=-relevance';
     sortAscending: boolean = false;
@@ -79,6 +79,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     constructor(
     	private route: ActivatedRoute,
+    	private router: Router,
     	private contentSearch: ContentSearchService
     ) {}
 
@@ -91,7 +92,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 					placeholder: 'Keyword',
 					type: FilterType.TEXT
 				},
-				{ 
+				{
 					id: 'cloud_platform',
 					title: 'Cloud Platform',
 					placeholder: 'Cloud Platform',
@@ -139,7 +140,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 		        id: 'download_count',
 		        title: 'Download Count',
 		        sortType: 'numeric'
-		    
+
 		    }, {
 		        id: 'name',
 		        title: 'Namespace, Name',
@@ -187,7 +188,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 	                	value: kw
 		            }
 	            	this.filterConfig.appliedFilters.push(ffield);
-	                this.appliedFilters.push(ffield);	
+	                this.appliedFilters.push(ffield);
             	});
             }
 
@@ -200,7 +201,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 					this.defaultEmptyStateTitle = `Search our index of ${count} Ansible content items.`;
 					this.emptyStateConfig.title = this.defaultEmptyStateTitle;
 					this.pageLoading = false;
-					
+
 					if (this.appliedFilters.length) {
 						// keywords passed in from Home page, so trigger a search
 						let event = new FilterEvent();
@@ -262,9 +263,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
 					params += '&';
 				if (key == 'content_type') {
 					// contenty_type only accepts a single value
-					params += key + '=' + encodeURIComponent(filterby[key][0]); 
+					params += key + '=' + encodeURIComponent(filterby[key][0]);
 				} else {
-					params += key + 's=' + encodeURIComponent(filterby[key].join(' '));		
+					params += key + 's=' + encodeURIComponent(filterby[key].join(' '));
 				}
 			}
 			this.appliedFilters = JSON.parse(JSON.stringify($event.appliedFilters));
@@ -282,7 +283,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
 	getToolbarConfig() :ToolbarConfig {
 		this.toolbarConfig.filterConfig.appliedFilters = JSON.parse(JSON.stringify(this.appliedFilters));
-		return this.toolbarConfig;	
+		return this.toolbarConfig;
 	}
 
 	handlePageSizeChange($event: PaginationEvent) {
@@ -345,8 +346,16 @@ export class SearchComponent implements OnInit, AfterViewInit {
 		}
 	}
 
+	itemClicked($event: ListEvent) {
+		console.log($event);
+		let namespace = $event.item.summary_fields['namespace']['name'];
+	    let repository = $event.item.summary_fields['repository']['name'];
+		let name = $event.item.name;
+		this.router.navigate([`${namespace}/${repository}/${name}`]);
+	}
+
 	// private
-    
+
 	private getFilterField(id: string): FilterField {
 		let result: FilterField = null;
 		this.filterConfig.fields.forEach((item: FilterField) => {

@@ -1,0 +1,18 @@
+<div class="cd-card card-cloud-platforms" *ngIf="cloudPlatforms && cloudPlatforms.length">
+	<pfng-card
+		[config]="config"
+		[headerTemplate]="headerTemplate">
+		<ng-template #headerTemplate>
+			<div class="card-heading">
+				<span class="fa fa-tags"></span> <span class="title-text">Cloud Platforms</span>
+			</div>
+		</ng-template>
+		<div class="card-list-body">
+			<table>
+				<tr *ngFor="let platform of cloudPlatforms">
+					<td class="name">{{ platform }}</td>
+				</tr>
+			</table>
+		</div>
+	</pfng-card>
+</div>

@@ -1,5 +1,5 @@
 import { ProviderNamespace } from "../provider-namespaces/provider-namespace";
-import { Repository }        from "../respositories/repository";
+import { Repository }        from "../repositories/repository";
 import { User }              from "../users/user";
 
 export class Namespace {

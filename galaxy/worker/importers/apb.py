@@ -22,6 +22,7 @@ from galaxy import constants
 
 
 class APBImporter(base.ContentImporter):
+    MAX_TAGS_COUNT = 20
 
     def update_content(self, content):
         super(APBImporter, self).update_content(content)

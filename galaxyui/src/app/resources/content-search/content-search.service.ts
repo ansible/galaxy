@@ -38,13 +38,13 @@ export class ContentSearchService {
 			requestUrl += `?${query}`;
 		return this.http.get<ContentResponse>(requestUrl)
 			.pipe(
-			 	tap(_ => this.log('fetched latest imports')),
+			 	tap(_ => this.log('fetched content')),
 			 	catchError(this.handleError('Query', {} as ContentResponse))
 			);
 	}
 
 	get(id: number): Observable<any> {
-		return this.http.get<any>(`${this.url}/${id.toString()}/`)
+		return this.http.get<any>(`${this.url}${id.toString()}/`)
 			.pipe(
 				tap(_ => this.log('fetched import')),
 				catchError(this.handleError('Get', []))

@@ -1,0 +1,19 @@
+<div class="cd-card card-versions" *ngIf="versions && versions.length">
+	<pfng-card
+		[config]="config"
+		[headerTemplate]="headerTemplate">
+		<ng-template #headerTemplate>
+			<div class="card-heading">
+				<span class="fa fa-tags"></span> <span class="title-text">Versions</span>
+			</div>
+		</ng-template>
+		<div class="card-list-body">
+			<table>
+				<tr *ngFor="let version of versions">
+					<td class="name">{{ version['name'] }}</td>
+					<td class="date">{{ version['date'] }}</td>
+				</tr>
+			</table>
+		</div>
+	</pfng-card>
+</div>

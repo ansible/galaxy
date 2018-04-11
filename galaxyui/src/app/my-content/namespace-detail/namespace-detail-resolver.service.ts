@@ -1,9 +1,16 @@
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/take';
+
 import { Injectable }        from '@angular/core';
 import { Observable }        from 'rxjs/Observable';
-import { Router, Resolve, RouterStateSnapshot,
-    ActivatedRouteSnapshot } from '@angular/router';
+
+import {
+    Router,
+    Resolve,
+    RouterStateSnapshot,
+    ActivatedRouteSnapshot
+} from '@angular/router';
+
 import { Namespace }         from "../../resources/namespaces/namespace";
 import { NamespaceService }  from "../../resources/namespaces/namespace.service";
 
