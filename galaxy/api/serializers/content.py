@@ -62,7 +62,13 @@ class _NamespaceSerializer(serializers.ModelSerializer):
 class _RepositorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Repository
-        fields = ('id', 'name')
+        fields = (
+            'id',
+            'name',
+            'original_name',
+            'description',
+            'clone_url'
+        )
 
 
 class _ContentTypeSerializer(serializers.ModelSerializer):
@@ -79,9 +85,10 @@ class ContentSerializer(BaseModelSerializer):
         fields = BaseModelSerializer.BASE_FIELDS + (
             'id',
             'name',
+            'original_name',
             'description',
             'content_type',
-            'imported',
+            'imported'
         )
 
     def get_platforms(self, instance):
@@ -104,14 +111,17 @@ class ContentSerializer(BaseModelSerializer):
 
     def get_summary_fields(self, instance):
         return {
-            'namespace': _NamespaceSerializer().to_representation(instance),
-            'repository': _RepositorySerializer().to_representation(instance),
+            'namespace': _NamespaceSerializer().to_representation(
+                instance.repository.provider_namespace.namespace),
+            'repository': _RepositorySerializer().to_representation(
+                instance.repository),
             'platforms': self.get_platforms(instance),
             'cloud_platforms': [
                 p.name for p in instance.cloud_platforms.all()],
             'tags': [t.name for t in instance.tags.all()],
             'content_type':
-                _ContentTypeSerializer().to_representation(instance),
+                _ContentTypeSerializer().to_representation(
+                    instance.content_type),
         }
 
 
@@ -119,7 +129,10 @@ class ContentDetailSerializer(ContentSerializer):
 
     class Meta(ContentSerializer.Meta):
         fields = ContentSerializer.Meta.fields + (
+            'container_yml',
+            'metadata',
             'readme',
             'readme_html',
-            'metadata',
+            'min_ansible_container_version',
+            'min_ansible_version'
         )

@@ -46,10 +46,8 @@ class RepositorySerializer(BaseSerializer):
             'open_issues_count',
             'travis_build_url',
             'travis_status_url',
-            # TODO(cutwater): github_user and github_repo are obsolete and
-            # will be removed
-            'github_user',
-            'github_repo',
+            'clone_url',
+            'issue_tracker_url',
         )
 
     def get_related(self, instance):

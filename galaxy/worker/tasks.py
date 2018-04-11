@@ -102,7 +102,13 @@ def _import_repository(import_task, logger):
             logger, content_info.content_type, content_info.name)
         importer_cls = importers.get_importer(content_info.content_type)
         importer = importer_cls(context, content_info, logger=content_logger)
-
+        issue_tracker_url = ''
+        if hasattr(content_info, 'role_meta') and getattr(content_info, 'role_meta') and \
+           content_info.role_meta.get('issue_tracker_url'):
+            issue_tracker_url = content_info.role_meta['issue_tracker_url']
+        elif context.github_repo.has_issues:
+            issue_tracker_url = context.github_repo.html_url + '/issues'
+        repository.issue_tracker_url = issue_tracker_url
         content_obj = importer.do_import()
         new_content_objs.append(content_obj.id)
 
