@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
+import re
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -43,6 +44,9 @@ logger = logging.getLogger(__name__)
 def check_basic(data, errors):
     if not data.get('name'):
         errors['name'] = "Attribute 'name' is required"
+    elif not re.match('^[\w-]+$', data['name']):
+        # Allow only names containing word chars and '-'
+        errors['name'] = "Name can only contain [A-Za-z0-9-_]"
 
 
 def check_owners(data_owners):
@@ -176,7 +180,7 @@ class NamespaceList(ListCreateAPIView):
 
         if data.get('name'):
             try:
-                Namespace.objects.get(name=data['name'].lower())
+                Namespace.objects.get(name__iexact=data['name'].lower())
                 errors['name'] = "A namespace with this name already exists"
             except ObjectDoesNotExist:
                 pass

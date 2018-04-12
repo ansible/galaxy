@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
+import re
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -51,6 +52,17 @@ def get_repo(provider_namespace, user, repo_name):
     return repo
 
 
+def check_name(name):
+    if not name:
+        raise ValidationError(detail={'name': 'Name is required'})
+
+    if not re.match('^[\w-]+$', name):
+        # Allow only names containing word chars and '-'
+        raise ValidationError(detail={
+            'name': 'Name contains invalid characters. Must match [A-Za-z0-9-_].'
+        })
+
+
 GITHUB_REPO_FIELDS = [
     'commit',
     'commit_message',
@@ -74,8 +86,7 @@ class RepositoryList(ListCreateAPIView):
         if not data.get('provider_namespace'):
             raise ValidationError(detail={'provider_namespace': 'Value required'})
 
-        if not data.get('name'):
-            raise ValidationError(detail={'name': 'Value required'})
+        check_name(data.get('name'))
 
         try:
             provider_namespace = ProviderNamespace.objects.get(pk=data['provider_namespace'])
@@ -83,6 +94,8 @@ class RepositoryList(ListCreateAPIView):
             raise ValidationError(detail={'provider_namespace': 'Invalid value'})
 
         original_name = data.get('original_name', data['name'])
+
+        data['name'] = data['name'].lower()
 
         repo = get_repo(provider_namespace, request.user, original_name)
         if not repo:
@@ -98,7 +111,11 @@ class RepositoryList(ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         data['provider_namespace'] = provider_namespace
-        repository = Repository.objects.create(**data)
+        try:
+            repository = Repository.objects.create(**data)
+        except Exception as exc:
+            raise APIException('Error creating repository: {0}'.format(exc.message))
+
         for owner_pk in owners:
             try:
                 owner = User.objects.get(pk=owner_pk)
@@ -130,6 +147,8 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
         else:
             provider_namespace = instance.provider_namespace
 
+        check_name(data.get('name'))
+
         original_name = data.get('original_name', instance.original_name)
 
         repo = get_repo(provider_namespace, request.user, original_name)
@@ -145,7 +164,11 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance, data=data)
         serializer.is_valid(raise_exception=True)
 
-        Repository.objects.filter(pk=instance.pk).update(**data)
+        try:
+            Repository.objects.filter(pk=instance.pk).update(**data)
+        except Exception as exc:
+            raise APIException('Error updating repository: {0}'.format(exc.message))
+
         instance = self.get_object()
 
         for owner_pk in owners:
