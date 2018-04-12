@@ -68,7 +68,7 @@ def import_repository(task_id):
 @transaction.atomic
 def _import_repository(import_task, logger):
     repository = import_task.repository
-    repo_full_name = repository.github_user + "/" + repository.github_repo
+    repo_full_name = repository.provider_namespace.name + "/" + repository.original_name
     logger.info(u'Starting import: task_id={}, repository={}'
                 .format(import_task.id, repo_full_name))
 
