@@ -47,7 +47,7 @@ class RoleList(ListAPIView):
             params = {}
             for key, val in request.query_params.items():
                 if key == 'owner__username':
-                    params['namespace'] = val
+                    params['namespace__name'] = val
                 else:
                     params[key] = val
             qs = self.get_queryset()
