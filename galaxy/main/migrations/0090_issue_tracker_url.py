@@ -32,8 +32,7 @@ class Migration(migrations.Migration):
                                    verbose_name=b'Issue Tracker URL'),
         ),
         migrations.RunSQL(
-            sql=UPDATE_REPOSITORY,
-            reverse_sql=migrations.RunSQL.noop
+            sql=UPDATE_REPOSITORY
         ),
         migrations.RemoveField(
             model_name='content',
