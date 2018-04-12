@@ -44,8 +44,8 @@ logger = logging.getLogger(__name__)
 def check_basic(data, errors):
     if not data.get('name'):
         errors['name'] = "Attribute 'name' is required"
-    elif re.search('[^a-z0-9-_]', data['name']):
-        errors['name'] = "Name can only contain [a-z0-9-_]"
+    elif not re.match('^[\w-]+$', data['name']):
+        errors['name'] = "Name can only contain [A-Za-z0-9-_]"
 
 
 def check_owners(data_owners):
@@ -179,7 +179,7 @@ class NamespaceList(ListCreateAPIView):
 
         if data.get('name'):
             try:
-                Namespace.objects.get(name=data['name'].lower())
+                Namespace.objects.get(name__iexact=data['name'].lower())
                 errors['name'] = "A namespace with this name already exists"
             except ObjectDoesNotExist:
                 pass
