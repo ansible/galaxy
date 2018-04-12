@@ -4,16 +4,19 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
+ALTER_CUSTOMUSER = """
+ALTER TABLE accounts_customuser DROP COLUMN github_user CASCADE
+"""
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('main', '0090_issue_tracker_url'),
         ('accounts', '0005_github_attrs'),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='customuser',
-            name='github_user',
+        migrations.RunSQL(
+            sql=ALTER_CUSTOMUSER
         ),
     ]
