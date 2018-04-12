@@ -39,7 +39,8 @@ class BaseRoleSerializer(BaseSerializer):
         'open_issues_count',
         'commit',
         'commit_message',
-        'commit_url'
+        'commit_url',
+        'issue_tracker_url'
     )
 
     def _get_repository_moved_fields(self, instance):
@@ -67,7 +68,7 @@ class RoleListSerializer(BaseRoleSerializer):
         model = Content
         fields = BASE_FIELDS + (
             'role_type', 'is_valid',
-            'min_ansible_version', 'issue_tracker_url',
+            'min_ansible_version',
             'license', 'company', 'description',
             'travis_status_url', 'download_count', 'imported'
         )
@@ -142,6 +143,11 @@ class RoleListSerializer(BaseRoleSerializer):
                        for v in obj.videos.all()]
         return d
 
+    def get_issue_tracker_url(self, obj):
+        if not obj:
+            return None
+        return obj.repository.issue_tracker_url
+
 
 class RoleDetailSerializer(BaseRoleSerializer):
 
@@ -149,7 +155,7 @@ class RoleDetailSerializer(BaseRoleSerializer):
         model = Content
         fields = BASE_FIELDS + (
             'role_type', 'namespace', 'is_valid',
-            'min_ansible_version', 'issue_tracker_url', 'license', 'company',
+            'min_ansible_version', 'license', 'company',
             'description', 'readme', 'readme_html', 'travis_status_url',
             'created', 'modified', 'download_count', 'imported')
 
