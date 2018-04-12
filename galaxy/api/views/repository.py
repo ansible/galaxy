@@ -57,6 +57,7 @@ def check_name(name):
         raise ValidationError(detail={'name': 'Name is required'})
 
     if not re.match('^[\w-]+$', name):
+        # Allow only names containing word chars and '-'
         raise ValidationError(detail={
             'name': 'Name contains invalid characters. Must match [A-Za-z0-9-_].'
         })
