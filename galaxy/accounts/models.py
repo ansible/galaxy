@@ -18,9 +18,8 @@
 from __future__ import unicode_literals
 import re
 
-from django.contrib.auth.models import (AbstractBaseUser,
-                                        PermissionsMixin,
-                                        UserManager)
+from django.contrib.auth import models as auth_models
+
 from django.core import exceptions
 from django.core.mail import send_mail
 from django.core import validators
@@ -29,10 +28,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.http import urlquote
 from django.utils import timezone
 
-from galaxy.main.mixins import DirtyMixin
+import galaxy.main.mixins as mixins
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
+class CustomUser(auth_models.AbstractBaseUser,
+                 auth_models.PermissionsMixin,
+                 mixins.DirtyMixin):
     """
     A custom user class that basically mirrors Django's `AbstractUser` class
     and doesn't force `first_name` or `last_name` with sensibilities for
@@ -57,7 +58,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
-        help_text=_('Designates whether the user can log into this admin site.'))
+        help_text=_('Designates whether the user can log into '
+                    'this admin site.'))
     is_active = models.BooleanField(
         _('active'),
         default=True,
@@ -66,12 +68,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
                     'active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
+    # TODO(cutwater): Seem to be not used anymore.
+    # Consider removal of karma field.
     karma = models.IntegerField(default=0, db_index=True)
-    github_avatar = models.CharField(_('github avatar'), max_length=254, blank=True)
-    github_user = models.CharField(_('github user'), max_length=254, blank=True)
-    cache_refreshed = models.BooleanField(_('cache refreshed'), default=False)
+    avatar_url = models.CharField(
+        _('avatar URL'), max_length=256, blank=True)
+    cache_refreshed = models.BooleanField(
+        _('cache refreshed'), default=False)
 
-    objects = UserManager()
+    objects = auth_models.UserManager()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
@@ -94,7 +99,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
         return full_name.strip()
 
     def get_short_name(self):
-        "Returns the short name for the user."
+        """Returns the short name for the user."""
         return self.short_name.strip()
 
     def get_num_roles(self):
