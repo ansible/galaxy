@@ -46,11 +46,7 @@ class RoleImporter(base.ContentImporter):
         content.github_branch = role_meta['github_branch']
         content.github_default_branch = gh_repo.default_branch
         content.role_type = role_meta['role_type']
-        content.issue_tracker_url = role_meta['issue_tracker_url']
         content.container_yml = self.data.metadata['container_meta']
-
-        if content.issue_tracker_url == "" and gh_repo.has_issues:
-            content.issue_tracker_url = gh_repo.html_url + '/issues'
 
         self._add_role_videos(content, role_meta['video_links'])
         self._add_tags(content, role_meta['tags'])

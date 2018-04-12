@@ -359,13 +359,6 @@ class Content(CommonModelNameNotUnique):
         null=True,
         verbose_name="Min Ansible Container Version",
     )
-    # TODO: Move to Repotisotry?
-    issue_tracker_url = models.CharField(
-        max_length=256,
-        blank=True,
-        null=True,
-        verbose_name="Issue Tracker URL",
-    )
     license = models.CharField(
         max_length=50,
         blank=True,
@@ -497,21 +490,6 @@ class Content(CommonModelNameNotUnique):
             # LOG.warn(u'Minimum Ansible Container version is not set, '
             #          u'setting it to "0.2.0"')
             self.min_ansible_container_version = u'0.2.0'
-
-        if not self.issue_tracker_url:
-            # add_message(import_task, u"WARNING", u"No issue tracker
-            #  defined. Enable issue tracker in repo settings,
-            # or provide an issue tracker in meta data.")
-            pass
-        else:
-            from six.moves import urllib_parse
-            parsed_url = urllib_parse.urlparse(self.issue_tracker_url)
-            if (parsed_url.scheme == ''
-                    or parsed_url.netloc == ''
-                    or parsed_url.path == ''):
-                # add_message(import_task, u"WARNING",
-                # u"Invalid URL found in meta data for issue tracker ")
-                self.issue_tracker_url = ""
 
 
 class Namespace(CommonModel):
@@ -967,6 +945,12 @@ class Repository(BaseModel):
         blank=True,
         default='',
         verbose_name="Travis Build URL"
+    )
+    issue_tracker_url = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        verbose_name="Issue Tracker URL",
     )
 
     @property
