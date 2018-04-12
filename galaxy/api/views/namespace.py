@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
+import re
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -43,6 +44,8 @@ logger = logging.getLogger(__name__)
 def check_basic(data, errors):
     if not data.get('name'):
         errors['name'] = "Attribute 'name' is required"
+    elif re.search('[^a-z0-9-_]', data['name']):
+        errors['name'] = "Name can only contain [a-z0-9-_]"
 
 
 def check_owners(data_owners):
