@@ -54,9 +54,6 @@ class ContentImporter(object):
             name = self.data.name
         elif not self.data.path:
             name = repo.name
-        else:
-            raise exc.TaskError("Content is not a repository global "
-                                "and doesn't have name.")
 
         # Check name
         if not re.match('^[\w-]+$', name):
