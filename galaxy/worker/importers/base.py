@@ -63,6 +63,7 @@ class ContentImporter(object):
             content_type=models.ContentType.get(self.data.content_type),
             name=name,
             defaults={
+                'original_name': name,
                 'repository': repo,
                 'is_valid': False,
             }
