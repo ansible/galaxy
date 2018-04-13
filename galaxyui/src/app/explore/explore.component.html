@@ -12,7 +12,22 @@
             </div>
           </ng-template>
 
-          <div class="card-cont"></div>
+          <div class="card-cont">
+            <!-- <ul>
+              <li *ngFor="let repo of mostStarred">{{repo.name }}</li>
+            </ul> -->
+            <pfng-list [items]="mostStarred" [itemTemplate]="starredTemplate">
+              <ng-template #starredTemplate let-item="item" let-item="index">
+                <div class="list-pf-content-wrapper">
+                  <div class="list-pf-main-content">
+                    <div class="list-of-title text-overflow-pf">
+                      <span class="item-name">{{item.name}}</span>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </pfng-list>
+          </div>
 
         </pfng-card>
 
