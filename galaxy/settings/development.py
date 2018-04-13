@@ -44,6 +44,9 @@ INSTALLED_APPS += (  # noqa: F405
 # Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
 DATABASES = {'default': dj_database_url.config(env='GALAXY_DB_URL', conn_max_age=None)}
 
+# Create default alias for worker logging
+DATABASES['logging'] = DATABASES['default'].copy()
+
 # Set the test database name
 DATABASES['default']['TEST'] = {'NAME': 'test_galaxy'}
 
@@ -82,25 +85,6 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'var', 'email')  # noqa: F405
 
 DEBUG_TOOLBAR_PATCH_SETTINGS = False
 
-# Elasticsearch settings
-# ---------------------------------------------------------
-
-ELASTICSEARCH = {
-    'default': {
-        'hosts': ["elastic:9200"],
-        'timeout': 20,
-    }
-}
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'galaxy.main.elasticsearch_backend'
-                  '.ElasticsearchSearchEngine',
-        'URL': ['http://elastic:9200'],
-        'INDEX_NAME': 'haystack',
-    },
-}
-
 # Celery settings
 # ---------------------------------------------------------
 
@@ -118,5 +102,6 @@ WAIT_FOR = [
     {'host': 'postgres', 'port': 5432},
     {'host': 'rabbitmq', 'port': 5672},
     {'host': 'memcache', 'port': 11211},
-    {'host': 'elastic', 'port': 9200}
 ]
+
+STATIC_ROOT = ''

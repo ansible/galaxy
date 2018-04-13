@@ -1,0 +1,79 @@
+<app-page-header [headerTitle]="headerTitle"></app-page-header>
+<div id="home-page" class="container-fluid" (window:resize)="onResize($event)">
+	<div class="row search-row">
+		<div class="col-sm-12">
+			<form #searchForm="ngForm">
+				<div class="form-inline">
+					<div class="form-group search-field">
+			  			<input
+			  				type="text"
+			  				class="input-medium search-query"
+			  				placeholder="Search Ansible content..."
+			  				name="searchText"
+			  				(keyup.enter)="searchContent()"
+			  				[(ngModel)]="searchText">
+			  		</div>
+			  		<div class="form-group">
+			  			<button 
+			  				class="btn btn-primary search-button"
+			  				type="button"
+			  				(click)="searchContent()">Search</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="row content-row" [ngClass]="{'ready': showCards}">
+		<div class="col-sm-4">
+			<div class="home-card" id="card-1">
+				<pfng-card
+					[headerTemplate]="downloadHeader"
+					[config]="downloadConfig">
+					<ng-template #downloadHeader>
+						<div class="card-header">
+		        			<span class="header-icon"><i class="fa fa-download fa-2x"></i></span> <span class="header-text">Download</span>
+		        		</div>
+		        	</ng-template>
+		        	<div class="card-content" [innerHtml]="downloadContent"></div>
+		        </pfng-card>
+	    	</div>
+		</div>
+		<div class="col-sm-4">
+			<div class="home-card" id="card-2">
+				<pfng-card
+					[headerTemplate]="shareHeader"
+					[config]="shareConfig">
+					<ng-template #shareHeader>
+						<div class="card-header">
+		        			<span class="header-icon"><i class="fa fa-share-alt fa-2x"></i></span> <span class="header-text">Share</span>
+		        		</div>
+		        	</ng-template>
+		        	<div class="card-content" [innerHtml]="shareContent"></div>
+		        </pfng-card>
+			</div>
+		</div>
+		<div class="col-sm-4">
+			<div class="home-card" id="card-3">
+				<pfng-card
+					[headerTemplate]="featureHeader"
+					[config]="featureConfig">
+					<ng-template #featureHeader>
+						<div class="card-header">
+		        			<span class="header-icon"><i class="fa fa-star fa-2x"></i></span> <span class="header-text">Featured</span>
+		        		</div>
+		        	</ng-template>
+		        	<div class="card-content">
+		        		<div class="featured-blog">
+		        			<div class="featured-icon"><i class="fa fa-pencil-square-o fa-2x"></i></div>
+		        			<div class="featured-text" [innerHtml]="featuredBlogContent"></div>
+		        		</div>
+		        	</div>
+		        </pfng-card>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12">
+		</div>
+	</div>
+</div>

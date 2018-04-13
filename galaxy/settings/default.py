@@ -20,6 +20,7 @@ import os
 
 import djcelery
 
+
 djcelery.setup_loader()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
@@ -67,7 +68,6 @@ INSTALLED_APPS = (
     'djcelery',
     'rest_framework',
     'rest_framework.authtoken',
-    'haystack',
 
     # Project apps
     'galaxy.accounts',
@@ -120,7 +120,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 LOGIN_URL = '/accounts/login/'
 
-LOGIN_REDIRECT_URL = '/explore'
+LOGIN_REDIRECT_URL = '/home'
 
 # Sessions
 # ---------------------------------------------------------
@@ -198,17 +198,15 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'galaxy.api.permissions.ModelAccessPermission',
     ),
-    'DEFAULT_PAGINATION_SERIALIZER_CLASS':
-        'galaxy.api.pagination.PaginationSerializer',
+    # TODO(cutwater): Update production settings
+    'DEFAULT_PAGINATION_CLASS':
+        'galaxy.api.pagination.PageNumberPagination',
     'DEFAULT_FILTER_BACKENDS': (
         'galaxy.api.filters.ActiveOnlyBackend',
         'galaxy.api.filters.FieldLookupBackend',
         'rest_framework.filters.SearchFilter',
         'galaxy.api.filters.OrderByBackend',
     ),
-    'PAGINATE_BY': 10,
-    'PAGINATE_BY_PARAM': 'page_size',
-    'MAX_PAGINATE_BY': 1000,
     'DEFAULT_THROTTLE_CLASSES': (
         'galaxy.api.throttling.RoleDownloadCountThrottle',
     ),
@@ -217,20 +215,6 @@ REST_FRAMEWORK = {
     }
 }
 
-# Elasticsearch
-# ---------------------------------------------------------
-
-ELASTICSEARCH = {}
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'galaxy.main.elasticsearch_backend'
-                  '.ElasticsearchSearchEngine',
-    },
-}
-
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
-
 # Celery
 # ---------------------------------------------------------
 
@@ -238,6 +222,7 @@ BROKER_URL = None
 
 CELERY_IMPORTS = (
     'galaxy.main.celerytasks.tasks',
+    'galaxy.worker.tasks',
 )
 
 CELERY_TRACK_STARTED = True
@@ -291,7 +276,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['r_emailaddress']
     },
     'github': {
-        'SCOPE': ['user:email', 'public_repo']
+        'SCOPE': ['user:email', 'public_repo', 'read:org']
     },
 }
 
@@ -320,6 +305,13 @@ WAIT_FOR = []
 ADMIN_URL_PATTERN = r'^admin/'
 
 ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
+
+WORKER_DIR_BASE = None
+"""
+A base directory used by repository import task to clone repositories into.
+
+If set to `None`, system temporary directory is used.
+"""
 
 # =========================================================
 # Logging
@@ -356,9 +348,14 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         },
         'console': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
+        },
+        'import_task': {
+            'level': 'DEBUG',
+            'class': 'galaxy.common.logutils.ImportTaskHandler',
+            'formatter': 'simple',
         }
     },
 
@@ -371,6 +368,11 @@ LOGGING = {
         'django': {
             'handlers': ['console'],
             'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.db': {
+            'handlers': ['console'],
+            'level': 'INFO',
             'propagate': True,
         },
         'galaxy.api': {
@@ -387,6 +389,16 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'galaxy.worker': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'galaxy.worker.tasks.import_repository': {
+            'handlers': ['import_task'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
         'allauth': {
             'handlers': ['console'],

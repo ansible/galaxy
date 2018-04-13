@@ -1,0 +1,114 @@
+/*
+ * my_namespaces.less
+ */
+
+ #galaxy-my-namespaces {
+
+    h2 {
+        padding-bottom: 10px;
+    }
+    .modified {
+        color: @ansible-dark-grey;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+    .list-view-pf-left .fa.list-view-pf-icon-sm.disabled {
+        border: 2px solid #ccc;
+        color: #ccc;
+    }
+
+    @media(min-width: 768px) {
+        .toolbar-pf .form-group:first-child {
+            padding-left: 0px;
+        }
+    }
+
+   .list-group-item.tree-child-item {
+     padding-left: 50px;
+     .list-group-item-heading {
+       i {
+         padding-left: 4px;
+         color: gray;
+       }
+       i:hover {
+         color: #161b1f;
+       }
+     }
+
+     .view-import-link {
+       color: #161b1f;
+     }
+
+     .tooltip-inner {
+       max-width: 100%;
+     }
+
+     .popover {
+       max-width: 350px;
+     }
+
+   }
+
+   .list-view-pf-actions .btn.btn-link {
+     color: #161b1f
+   }
+
+   .ns-expansion.repo-sub-list {
+     .loading-inline, .no-content-msg {
+       text-align: center;
+     }
+
+     .loader {
+       position: absolute;
+       top: 13px;
+       left: 0;
+       width: 100%;
+       text-align: center;
+       .line-scale > div {
+         height: 20px;
+         background-color: #ccc;
+       }
+     }
+   }
+ }
+
+.add-repo-modal-body {
+  .add-repo-modal-toolbar {
+    border: none;
+    box-shadow: none;
+    .form-group:first-child {
+      padding-left: 0;
+    }
+
+    .add-repo-modal-dropdown-button {
+      text-transform: none;
+      width: auto;
+    }
+  }
+
+  .add-repo-modal-list {
+    overflow-y: scroll;
+    height: 400px;
+    border: solid 1px #ededed;
+    border-radius: 4px;
+    margin-top: 10px;
+    margin-bottom: 0;
+    background-color: transparent;
+
+    .list-group-item {
+      border-bottom-color: #ededed
+    }
+  }
+
+  .loader {
+    position: absolute;
+    top: 240px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    .line-scale > div {
+      height: 20px;
+      background-color: #ccc;
+    }
+  }
+}

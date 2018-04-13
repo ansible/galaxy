@@ -18,9 +18,8 @@
 from __future__ import unicode_literals
 import re
 
-from django.contrib.auth.models import (AbstractBaseUser,
-                                        PermissionsMixin,
-                                        UserManager)
+from django.contrib.auth import models as auth_models
+
 from django.core import exceptions
 from django.core.mail import send_mail
 from django.core import validators
@@ -29,10 +28,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.http import urlquote
 from django.utils import timezone
 
-from galaxy.main.mixins import DirtyMixin
+import galaxy.main.mixins as mixins
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
+class CustomUser(auth_models.AbstractBaseUser,
+                 auth_models.PermissionsMixin,
+                 mixins.DirtyMixin):
     """
     A custom user class that basically mirrors Django's `AbstractUser` class
     and doesn't force `first_name` or `last_name` with sensibilities for
@@ -57,7 +58,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
-        help_text=_('Designates whether the user can log into this admin site.'))
+        help_text=_('Designates whether the user can log into '
+                    'this admin site.'))
     is_active = models.BooleanField(
         _('active'),
         default=True,
@@ -66,12 +68,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
                     'active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
+    # TODO(cutwater): Seem to be not used anymore.
+    # Consider removal of karma field.
     karma = models.IntegerField(default=0, db_index=True)
-    github_avatar = models.CharField(_('github avatar'), max_length=254, blank=True)
-    github_user = models.CharField(_('github user'), max_length=254, blank=True)
-    cache_refreshed = models.BooleanField(_('cache refreshed'), default=False)
+    avatar_url = models.CharField(
+        _('avatar URL'), max_length=256, blank=True)
+    cache_refreshed = models.BooleanField(
+        _('cache refreshed'), default=False)
 
-    objects = UserManager()
+    objects = auth_models.UserManager()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
@@ -82,16 +87,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
 
     def __unicode__(self):
         return self.username
-
-    def mark_inactive(self, save=True):
-        '''Use instead of delete to rename and mark inactive.'''
-
-        if self.is_active:
-            if 'username' in self._meta.get_all_field_names():
-                self.name = "_deleted_%s_%s" % (timezone.now().isoformat(), self.username)
-            self.is_active = False
-            if save:
-                self.save()
 
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.username)
@@ -104,7 +99,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
         return full_name.strip()
 
     def get_short_name(self):
-        "Returns the short name for the user."
+        """Returns the short name for the user."""
         return self.short_name.strip()
 
     def get_num_roles(self):
@@ -129,21 +124,23 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, DirtyMixin):
     def get_starred(self):
         return [{
             'id': g.id,
-            'github_user': g.role.github_user,
-            'github_repo': g.role.github_repo,
-        } for g in self.starred.select_related('role').all()]
+            'github_user': g.repository.github_user,
+            'github_repo': g.repository.github_repo,
+        } for g in self.starred.select_related('repository').all()]
 
     def get_subscriber(self, github_user, github_repo):
         try:
             return self.subscriptions.get(
-                github_user=github_user, github_repo=github_repo)
+                github_user=github_user,
+                github_repo=github_repo)
         except exceptions.ObjectDoesNotExist:
             return None
 
     def get_stargazer(self, github_user, github_repo):
         try:
-            star = self.starred.get(role__github_user=github_user,
-                                    role__github_repo=github_repo)
+            star = self.starred.get(
+                repository__provider_namespace__name=github_user,
+                repository__name=github_repo)
             return star
         except exceptions.ObjectDoesNotExist:
             return None

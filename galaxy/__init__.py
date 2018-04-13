@@ -44,6 +44,7 @@ def find_commands(management_dir):
 
 def prepare_env():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.default')
+    # TODO(cutwater): Remove local site-packages usage
     local_site_packages = os.path.join(
         os.path.dirname(__file__), 'lib', 'site-packages')
     sys.path.insert(0, local_site_packages)

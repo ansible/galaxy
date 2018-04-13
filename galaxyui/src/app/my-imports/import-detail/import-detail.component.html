@@ -1,0 +1,44 @@
+<div id="import-details-container" *ngIf="importTask">
+    <div class="title-container">
+        <span class="title">{{ importTask.summary_fields.namespace.name + '.' + importTask.summary_fields.repository.name }}</span>
+        <span class="refreshing-icon" [ngClass]="{refreshing: refreshing}" ><i class="fa fa-spinner fa-spin fa-lg"></i></span>
+    </div>
+    <div class="import-btn-container">
+        <button class="btn btn-default btn-sm" type="button" (click)="startImport()">
+            <i class="fa fa-upload"></i></button>
+    </div>
+    <div class="title-bar" >
+        <div class="row">
+            <div class="col-sm-7">
+                <div class="branch">
+                    <div class="commit">{{ importTask.import_branch }} <span class="message">{{ importTask.commit_message }}</span></div>
+                    <div class="last-run" >{{ importTask.last_run }}</div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <div class="stats">
+                    <div class="commit" *ngIf="importTask.commit">
+                        <a href="{{ importTask.commit_url }}" target="_blank"><i class="fa fa-github"></i> Commit {{ importTask.commit.substring(0,7) }}</a>
+                    </div>
+                    <div class="travis-status" *ngIf="importTask.travis_status_url">
+                        <a href="{{ importTask.travis_build_url }}" target="_blank">
+                            <img src="{{ importTask.travis_status_url }}" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="message-list" *ngIf="importTask.summary_fields.task_messages.length">
+        <div class="message" *ngFor="let message of importTask.summary_fields.task_messages">
+            <span class="text {{ message.message_type | lowercase }}">{{ message.message_text }}</span>
+        </div>
+    </div>
+
+    <div class="message-list" *ngIf="!importTask.summary_fields.task_messages.length">
+        <div class="message" *ngIf="importTask.state == 'PENDING'">
+            <span class="text warning">Waiting for import to start...</span>
+        </div>
+    </div>
+</div>

@@ -18,7 +18,8 @@
 import re
 
 # Django
-from django.core.exceptions import FieldError, ValidationError, ObjectDoesNotExist
+from django.core.exceptions import (
+    FieldError, ValidationError, ObjectDoesNotExist)
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q
@@ -29,9 +30,6 @@ from django.db.models.fields.related import ForeignObjectRel
 from rest_framework.exceptions import ParseError
 from rest_framework.filters import BaseFilterBackend
 
-# drf-haystack
-from drf_haystack.filters import HaystackFilter
-
 # Galaxy
 from galaxy.main.models import UserAlias
 
@@ -39,9 +37,9 @@ GalaxyUser = get_user_model()
 
 
 class ActiveOnlyBackend(BaseFilterBackend):
-    '''
+    """
     Filter to show only objects where is_active/active is True.
-    '''
+    """
 
     def filter_queryset(self, request, queryset, view):
         for field in queryset.model._meta.fields:
@@ -53,9 +51,9 @@ class ActiveOnlyBackend(BaseFilterBackend):
 
 
 class FieldLookupBackend(BaseFilterBackend):
-    '''
+    """
     Filter using field lookups provided via query string parameters.
-    '''
+    """
 
     RESERVED_NAMES = ('page', 'page_size', 'format', 'order', 'order_by',
                       'search')
@@ -77,7 +75,7 @@ class FieldLookupBackend(BaseFilterBackend):
             if name == 'pk':
                 field = model._meta.pk
             else:
-                field = model._meta.get_field_by_name(name)[0]
+                field = model._meta.get_field(name)
             if n < (len(parts) - 2):
                 if getattr(field, 'rel', None):
                     model = field.rel.to
@@ -94,7 +92,8 @@ class FieldLookupBackend(BaseFilterBackend):
         elif allow_none and value.lower() in ('none', 'null'):
             return None
         else:
-            raise ValueError(u'Unable to convert "%s" to boolean' % unicode(value))
+            raise ValueError(
+                u'Unable to convert "{}" to boolean'.format(unicode(value)))
 
     def to_python_related(self, value):
         value = unicode(value)
@@ -145,8 +144,10 @@ class FieldLookupBackend(BaseFilterBackend):
             except ObjectDoesNotExist as e:
                 # if not, check to see if there's an alias for it
                 try:
-                    alias_obj = UserAlias.objects.get(alias_name=request.GET['owner__username'])
-                    # and override that query parameter with the actual username
+                    alias_obj = UserAlias.objects.get(
+                        alias_name=request.GET['owner__username'])
+                    # and override that query parameter with
+                    # the actual username
                     qp = request.GET.copy()
                     qp['owner__username'] = alias_obj.alias_of.username
                     # Again, we use GET here because QUERY_PARAMS has no
@@ -236,9 +237,9 @@ class FieldLookupBackend(BaseFilterBackend):
 
 
 class OrderByBackend(BaseFilterBackend):
-    '''
+    """
     Filter to apply ordering based on query string parameters.
-    '''
+    """
 
     def filter_queryset(self, request, queryset, view):
         try:
@@ -250,6 +251,9 @@ class OrderByBackend(BaseFilterBackend):
                     else:
                         order_by = (value,)
             if order_by:
+                # FIXME(cutwater): Queryset should not be executed here.
+                # To validate order_by fields a list of model fields should
+                # be used.
                 queryset = queryset.order_by(*order_by)
                 # Fetch the first result to run the query, otherwise we don't
                 # always catch the FieldError for invalid field names.
@@ -263,20 +267,18 @@ class OrderByBackend(BaseFilterBackend):
             raise ParseError(*e.args)
 
 
-class HaystackFilter(HaystackFilter):
+# NOTE(cutwater): This class partially duplicates OrderByBackend filter
+# and should be fixed in future. However it is not desirable to modify
+# OrderByBackend clss at the moment to be able to reuse it.
+class OrderByFilter(BaseFilterBackend):
+
     def filter_queryset(self, request, queryset, view):
-        qs = super(HaystackFilter, self).filter_queryset(request, queryset, view)
-        try:
-            order_by = None
-            for key, value in request.GET.items():
-                if key in ('order', 'order_by'):
-                    if ',' in value:
-                        order_by = value.split(',')
-                    else:
-                        order_by = (value,)
-            if order_by:
-                qs = qs.order_by(*order_by)
-            return qs
-        except FieldError as e:
-            # Return a 400 for invalid field names.
-            raise ParseError(*e.args)
+        order_by = None
+        for key, value in request.GET.items():
+            if key in ('order', 'order_by'):
+                order_by = value.split(',')
+
+        if order_by:
+            queryset = queryset.order_by(*order_by)
+
+        return queryset

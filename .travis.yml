@@ -39,6 +39,10 @@ script:
 - ansible-playbook -i inventory test.yml
 - popd
 
+# Check the logs
+- docker ps -a
+- make dev/log
+
 # Stop the application
 - make dev/down
 

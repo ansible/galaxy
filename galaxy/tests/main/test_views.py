@@ -20,7 +20,7 @@ from django import test
 from galaxy.main import views
 
 
-class TestErrorHandlers(test.TestCase):
+class TestErrorHandlers(test.SimpleTestCase):
 
     def setUp(self):
         self.factory = test.RequestFactory()

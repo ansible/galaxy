@@ -1,0 +1,114 @@
+<app-page-header [headerTitle]="pageTitle"></app-page-header>
+
+<div id="search-page" class="container-fluid">
+	<div class="row">
+		<div class="col-sm-9">
+			<pfng-toolbar
+			    [config]="getToolbarConfig()"
+			    (onFilterChange)="filterChanged($event)"
+			    (onSortChange)="sortChanged($event)">
+			</pfng-toolbar>
+			<div id="search-list">
+				<pfng-list
+			        [config]="listConfig"
+			        [items]="contentItems"
+			        [itemTemplate]="itemTemplate">
+			        <ng-template #itemTemplate let-item="item" let-index="index">
+			            <div class="list-pf-content-wrapper">
+				          	<div class="list-pf-main-content">
+			            		<div class="list-pf-title">
+			            			<div class="content-name">
+			        					<div class="icon">
+			        						<i class="fa fa-cog fa-2x" *ngIf="item.summary_fields.content_type.name == 'role'"></i>
+			        						<i class="fa fa-microchip fa-2x" *ngIf="item.summary_fields.content_type.name == 'module'"></i>
+			        						<i class="fa fa-plug fa-2x"
+			        						*ngIf="item.summary_fields.content_type.name.includes('plugin' )"></i>
+			        						<i class="fa fa-book fa-2x" *ngIf="item.summary_fields.content_type.name == 'apb'"></i>
+			        					</div>
+			        					<div class="name">{{ item.name }}</div>
+			        					<div class="type">{{ item.summary_fields.content_type.name }}</div>
+			            				<div class="description">
+			            					{{item.description}}
+			            				</div>
+		            				</div>
+			            			<div class="content-namespace">
+			            				<div class="avatar">
+			            					<img [src]="item.summary_fields.content_type.name.avatar_url || '/assets/avatar.png'" >
+			            				</div>
+			            				<div class="name">
+			            					{{ item.summary_fields.namespace.name }}
+			            				</div>
+			            			</div>
+			            			<div class="content-tags">
+			            				<div class="icon"><i class="fa fa-tag fa-2x"></i></div>
+			            				<div class="tags">
+			            					<div class="tag" *ngFor="let tag of item.summary_fields.tags">
+			            						{{ tag }}
+			            					</div>
+			            				</div>
+			            			</div>
+			            		</div>
+			            		<div class="list-pf-description">
+			            			<div class="travis" *ngIf="item.summary_fields.repository.travis_build_url">
+			            				<a href="{{ item.summary_fields.repository.travis_build_url }}" target="_blank">
+                                    		<img src="{{ item.summary_fields.repository.travis_status_url }}"
+                                    			class="travis-status-img" title="Travis Build Status" />
+                                    	</a>
+                                    </div>
+			            			<div class="counts">
+			            				<div class="count-icon"><i class="fa fa-download fa-2x"></i></div>
+			            				<div class="count-count">{{ item.download_count }}</div>
+			            				<div class="count-text">Downloads</div>
+			            				
+			            				<div class="count-icon"><i class="fa fa-eye fa-2x"></i></div>
+			            				<div class="count-count">
+			            				{{ item.summary_fields.repository.watchers_count }}</div>
+			            				<div class="count-text">Watchers</div>
+			            				
+			            				<div class="count-icon"><i class="fa fa-star fa-2x"></i></div>
+			            				<div class="count-count">
+			            				{{ item.summary_fields.repository.stargazers_count }}</div>
+			            				<div class="count-text">Star Gazers</div>
+			            			</div>
+			            			<div class="import">
+			            				<div class="import-text">Last Imported</div>
+			            				<div class="import-date">{{ item.imported }}</div>
+			            			</div>
+			            			<div class="relevance" *ngIf="showRelevance">
+			            				<span class="relevance-text">Best Match</span>
+			            				<span class="relevance-score">{{ item.relevance | number:'1.4-4' }}</span>
+			            			</div>
+			            		</div>
+				        	</div>
+				        </div>
+			    	</ng-template>
+			    </pfng-list>
+			</div>
+			<div class="pagination" *ngIf="contentItems && contentItems.length">
+			    <pfng-pagination
+			    	[config]='paginationConfig'
+                    (onPageSizeChange)="handlePageSizeChange($event)"
+                    (onPageNumberChange)="handlePageNumberChange($event)">
+       	        </pfng-pagination>
+   	    	</div>
+		</div>
+		<div class="col-sm-3">
+			<popular-widget
+				[popularTitle]="'Popular Tags'"
+				[popularType]="'tags'"
+				(onClick)="handleWidgetClick($event)">
+			</popular-widget>
+			<popular-widget
+				[popularTitle]="'Popular Platforms'"
+				[popularType]="'platforms'"
+				(onClick)="handleWidgetClick($event)">
+			</popular-widget>
+			<popular-widget
+				[popularTitle]="'Popular Clouds'"
+				[popularType]="'cloudPlatforms'"
+				(onClick)="handleWidgetClick($event)">
+			</popular-widget>
+		</div>
+	</div>
+</div>
+<app-page-loading [loading]="pageLoading"></app-page-loading>

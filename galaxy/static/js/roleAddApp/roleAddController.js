@@ -19,7 +19,7 @@
 'use strict';
 
 (function(angular) {
-    
+
     var mod = angular.module('roleAddController', []);
 
     mod.controller('RoleAddCtrl', [
@@ -50,7 +50,7 @@
         repositories,
         notificationSecretService) {
 
-        
+
         $scope.page_title = 'My Content';
         $scope.loading = true;
         $scope.repositories = repositories;
@@ -58,6 +58,7 @@
         $scope.auth_orgs_url = currentUserService.auth_orgs_url;
         $scope.toggleRepository = _toggleRepository;
         $scope.refreshing = false;
+        $scope.toggleActive = true;
         $scope.refreshRepos = _refresh;
         $scope.showIntegrations = _showIntegrations;
         $scope.cancelIntegrations = _cancelIntegrations;
@@ -78,7 +79,7 @@
             $scope.loading = false;
             return;
         }
-        
+
         if (currentUserService.cache_refreshed) {
             $scope.loading = false;
             _setup();
@@ -88,7 +89,7 @@
 
         return;
 
-        
+
         function _waitForRefresh() {
             var stop = $interval(function() {
                 currentUserService.update().then(function(userData) {
@@ -120,57 +121,35 @@
                 repo.name_pattern_error = false;
                 repo.show_enable_failed = false;
                 repo.show_enable_failed_msg = '';
-                if (repo.summary_fields) {
-                    repo.summary_fields.notification_secrets.forEach(function(secret) {
-                        if (secret.source == 'travis') {
-                            repo.travis_id = secret.id;
-                            repo.travis_token = secret.secret;
-                        } else {
-                            repo.github_id = secret.id;
-                            repo.github_secret = secret.secret;
-                        }
-                    });
-                }
-                if (repo.summary_fields && repo.summary_fields.roles.length) {
-                    repo.role_id = repo.summary_fields.roles[0].id;
-                    repo.role_name = repo.summary_fields.roles[0].name;
-                    repo.role_namespace = repo.summary_fields.roles[0].namespace;
-                    if (repo.summary_fields.roles[0].last_import['state']) {
-                        repo.state = repo.summary_fields.roles[0].last_import.state;
-                    } else {
-                        repo.state = repo.summary_fields.roles[0].last_import.state = null;
-                    }
-                    repo.master_role_name = repo.role_name;
+
+                var new_name = null;
+                if (repo.original_name === 'ansible') {
+                    new_name = repo.original_name;
                 } else {
-                    var new_name;
-                    if (repo.github_repo === 'ansible') {
-                        new_name = repo.github_repo;
-                    } else {
-                        repo.github_repo.replace(/^(ansible[-_+.]*)*(role[-_+.]*)*/g, function(match, p1, p2, offset, str) {
-                            var result = str;
-                            if (p1) {
-                                result = result.replace(new RegExp(p1,'g'), '');
-                            }
-                            if (p2) {
-                                result = result.replace(new RegExp(p2,'g'), '');
-                            }
-                            result = result.replace(/^-/,'');
-                            new_name = result;
-                        });
-                        if (!new_name) {
-                            new_name = repo.github_repo;
+                    repo.original_name.replace(/^(ansible[-_+.]*)*(role[-_+.]*)*/g, function(match, p1, p2, offset, str) {
+                        var result = str;
+                        if (p1) {
+                            result = result.replace(new RegExp(p1,'g'), '');
                         }
+                        if (p2) {
+                            result = result.replace(new RegExp(p2,'g'), '');
+                        }
+                        result = result.replace(/^-/,'');
+                        new_name = result;
+                    });
+                    if (!new_name) {
+                        new_name = repo.original_name;
                     }
-                    repo.role_namespace = repo.github_user
-                    repo.role_name = new_name;
-                    repo.master_role_name = repo.role_name;
                 }
+                repo.provider_namespace = repo.summary_fields.provider_namespace.name;
+                repo.role_name = new_name;
+                repo.master_role_name = repo.role_name;
             });
         }
 
         function _resetRepo(_repo) {
             // Restore repo values
-            _repo.role_name = _repo.master_role_name
+            _repo.role_name = _repo.master_role_name;
             _repo.travis_id = $scope.master.travis_id;
             _repo.travis_token = $scope.master.travis_token;
             _repo.github_id = $scope.master.github_id;
@@ -179,7 +158,7 @@
         }
 
         function _showIntegrations(_repo) {
-            _repo.show_integrations = !_repo.show_integrations; 
+            _repo.show_integrations = !_repo.show_integrations;
             _repo.github_secret_type = "password";
             _repo.travis_token_type = "password";
             if (_repo.show_integrations) {
@@ -290,15 +269,17 @@
                 });
             }
         }
-        
+
         function _refresh() {
             if ($scope.loading || $scope.refreshing) {
-                return 
+                return
             }
             $scope.refreshing = true;
+            $scope.toggleActive = false;
             githubRepoService.refresh().$promise.then(function(response) {
                 $timeout(function() {
                     $scope.refreshing = false;
+                    $scope.toggleActive = true;
                     $scope.$apply();
                 },1000);
                 $scope.repositories = response;
@@ -335,7 +316,9 @@
             _repo.show_enable_failed=false;
 
             if (_repo.is_enabled) {
-                _importRepository(_repo);
+                if (_repo.state != 'RUNNING' && _repo.state != 'PENDING') {
+                    _importRepository(_repo);
+                }
             } else {
                 _repo.show_delete_warning = true;
             }
@@ -375,7 +358,7 @@
             var stop = $interval(function(_id) {
                 importService.imports.query({ id: _id}).$promise.then(function(response) {
                     $scope.repositories.every(function(repo) {
-                        if (repo.github_user == response.results[0].github_user && 
+                        if (repo.github_user == response.results[0].github_user &&
                             repo.github_repo === response.results[0].github_repo) {
                             repo.state = response.results[0].state;
                             repo.role_id = response.results[0].role;
@@ -407,5 +390,5 @@
     }
 
 })(angular);
- 
+
 

@@ -19,8 +19,8 @@ import re
 
 
 def camelcase_to_underscore(s):
-    '''
+    """
     Convert CamelCase names to lowercase_with_underscore.
-    '''
+    """
     s = re.sub(r'(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', '_\\1', s)
     return s.lower().strip('_')

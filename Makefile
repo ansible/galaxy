@@ -20,9 +20,9 @@ runserver:
 celery:
 	python manage.py celeryd -B --autoreload -Q 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
 
-.PHONY: gulp
-gulp:
-	/usr/local/bin/gulp
+.PHONY: ng_server
+ng_server:
+	cd /galaxy/galaxyui; ng serve --host '0.0.0.0' --port '8000' --poll '5000' --watch --verbose --proxy-config proxy.conf.js --environment dev
 
 .PHONY: waitenv
 waitenv:
@@ -38,21 +38,14 @@ migrate:
 collectstatic:
 	python manage.py collectstatic --noinput --clear
 
-.PHONY: build_indexes
-build_indexes:
-	@echo "Rebuild Custom Indexes"
-	python ./manage.py rebuild_galaxy_indexes
-	@echo "Rebuild Search Index"
-	python ./manage.py rebuild_index --noinput
-
 .PHONY: clean
 clean:
 	rm -rfv dist build *.egg-info
 	rm -rfv rpm-build debian deb-build
-	rm -fv galaxy/static/dist/*.js
+	rm -rfv galaxyui/dist
 	find . -type f -name "*.pyc" -delete
 
-.PHONT: createsuperuser
+.PHONY: createsuperuser
 	@echo Create super user
 	${VENV_BIN}/python ./manage.py createsuperuser
 
@@ -62,11 +55,9 @@ clean:
 
 .PHONY: build/static
 build/static:
-	if hash gulp 2>/dev/null; then \
-		gulp build; \
-	else \
-		node node_modules/gulp/bin/gulp.js build; \
-	fi
+	cd galaxyui; yarn install
+	cd galaxyui; ng build --prod
+	rm -rf galaxyui/node_modules
 
 .PHONY: build/dist
 build/dist: build/static
@@ -124,6 +115,14 @@ dev/migrate:
 dev/makemigrations:
 	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py makemigrations main
 
+.PHONY: dev/log
+dev/log:
+	@$(DOCKER_COMPOSE) logs galaxy
+
+.PHONY: dev/logf
+dev/logf:
+	@$(DOCKER_COMPOSE) logs -f galaxy
+
 .PHONY: dev/flake8
 dev/flake8:
 	@echo "Running flake8"
@@ -132,7 +131,10 @@ dev/flake8:
 .PHONY: dev/test
 dev/test:
 	@echo "Running tests"
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py test --noinput
+# TODO:  Revert to $(DOCKER_COMPOSE)
+# Currently `docker exec` offers -e option for setting Env variables, and `docker-compose exec` does not.
+# Setting the postgres connetion string to use postgres user, to have authority to create and destroy the test database.
+	@docker exec -e GALAXY_DB_URL=postgres://postgres:postgres@postgres:5432/galaxy galaxy_galaxy_1 bash -c 'source $(VENV_BIN)/activate; pytest galaxy'
 
 .PHONY: dev/waitenv
 dev/waitenv:
@@ -180,23 +182,18 @@ dev/tmux_noattach:
 		 send-keys "scripts/docker-dev/entrypoint.sh make runserver" Enter \; \
 		 new-window -n celery \; \
 		 send-keys "scripts/docker-dev/entrypoint.sh make celery" Enter \; \
-		 new-window -n gulp \; \
-		 send-keys "make gulp" Enter
+		 new-window -n ng \; \
+		 send-keys "make ng_server" Enter
 
 .PHONY: dev/tmux
 dev/tmux:
 	# Connect to the galaxy container, start processes, and pipe stdout/stderr through a tmux session
-	$(DOCKER_COMPOSE) exec galaxy bash -c 'make dev/tmux_noattach; tmux -2 attach-session -t galaxy'
+	$(DOCKER_COMPOSE) exec galaxy script /dev/null -q -c 'make dev/tmux_noattach; tmux -2 attach-session -t galaxy'
 
 .PHONY: dev/tmuxcc
 dev/tmuxcc: dev/tmux_noattach
 	# Same as above using iTerm's built-in tmux support
 	$(DOCKER_COMPOSE) exec galaxy bash -c 'make dev/tmux_noattach; tmux -2 -CC attach-session -t galaxy'
-
-.PHONY: dev/gulp_build
-dev/gulp_build:
-	# build UI components
-	$(DOCKER_COMPOSE) exec galaxy bash -c '/usr/local/bin/gulp build'
 
 .PHONY: dev/export-test-data
 export-test-data:
