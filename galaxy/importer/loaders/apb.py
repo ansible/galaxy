@@ -21,16 +21,18 @@ import yaml
 
 from galaxy import constants
 from galaxy.importer import exceptions as exc
+from galaxy.importer import linters
+from galaxy.importer import models
 from galaxy.importer.loaders import base
 
 
 class APBLoader(base.BaseLoader):
-    content_type = constants.ContentType.APB
+    content_types = constants.ContentType.APB
+    linters = (linters.YamlLinter,)
 
-    def __init__(self, content_type, path, root, metadata_file, logger=None):
-        super(APBLoader, self).__init__(
-            content_type, root, path, logger=logger)
-        self.metadata_file = metadata_file
+    def __init__(self, content_type, path, root, metadata_path, logger=None):
+        super(APBLoader, self).__init__(content_type, path, root, logger=logger)
+        self.metadata_file = metadata_path
 
     def load(self):
         self.log.info('Loading metadata file: {0}'.format(self.metadata_file))
@@ -41,9 +43,9 @@ class APBLoader(base.BaseLoader):
             name = metadata['name']
         except KeyError:
             raise exc.ContentLoadError('Missing "name" field in metadata')
-
-        return dict(
+        return models.Content(
             name=name,
+            path=self.rel_path,
             content_type=self.content_type,
             description=metadata.get('description'),
             metadata={
