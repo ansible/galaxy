@@ -139,6 +139,8 @@ class FileSystemFinder(BaseFinder):
                 yield content_type, 'roles', self._find_roles
             elif content_type == constants.ContentType.MODULE:
                 yield content_type, 'library', self._find_modules
+            elif content_type == constants.ContentType.MODULE_UTILS:
+                yield content_type, 'module_utils', self._find_module_utils
             # FIXME(cutwater): Add module_utils type
             elif content_type.value.endswith('_plugin'):
                 yield (content_type, content_type.value + 's',
