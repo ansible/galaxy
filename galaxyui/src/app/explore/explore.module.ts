@@ -4,6 +4,7 @@ import { ExploreComponent } from './explore.component';
 
 import { ExploreRoutingModule } from './explore.routing.module'
 import { PageHeaderModule }     from '../page-header/page-header.module';
+import { ListModule } from 'patternfly-ng/list/list.module';
 
 import {
 	CardModule
@@ -14,7 +15,8 @@ import {
     CommonModule,
     ExploreRoutingModule,
     PageHeaderModule,
-    CardModule
+    CardModule,
+		ListModule
   ],
   declarations: [ExploreComponent]
 })

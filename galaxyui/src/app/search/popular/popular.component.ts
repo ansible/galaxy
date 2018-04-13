@@ -17,7 +17,7 @@ import { ListEvent }      from 'patternfly-ng/list/list-event';
 import { Tag }              from "../../resources/tags/tag";
 import { TagsService }      from "../../resources/tags/tags.service";
 
-import { PlatformService }  from '../../resources/platforms/platform.service';  
+import { PlatformService }  from '../../resources/platforms/platform.service';
 import { Platform }         from '../../resources/platforms/platform';
 
 import { CloudPlatformService } from '../../resources/cloud-platforms/cloud-platform.service';
@@ -44,7 +44,7 @@ export class PopularComponent implements OnInit {
 	@Input() popularType: string;
 	@Input() popularTitle: string;
 	@Output() onClick = new EventEmitter<PopularEvent>();
-	
+
 	data: PopularData;
 	listConfig: ListConfig;
 	items: any;
@@ -63,7 +63,7 @@ export class PopularComponent implements OnInit {
     	e.item = $event.item;
     	this.onClick.emit(e);
     }
-    
+
     ngOnInit() {
 		this.route.data.subscribe(result => {
 			switch (this.popularType) {
