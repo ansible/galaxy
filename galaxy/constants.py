@@ -56,9 +56,10 @@ class RoleType(Enum):
 
 class ContentType(Enum):
     # FIXME(cutwater): Add module_utils type
+    APB = 'apb'
     ROLE = 'role'
     MODULE = 'module'
-    APB = 'apb'
+    MODULE_UTILS = 'module_utils'
     ACTION_PLUGIN = 'action_plugin'
     CACHE_PLUGIN = 'cache_plugin'
     CALLBACK_PLUGIN = 'callback_plugin'
@@ -76,9 +77,10 @@ class ContentType(Enum):
     @classmethod
     def choices(cls):
         return [
+            (cls.APB.value, 'Ansible Playbook Bundle'),
             (cls.ROLE.value, 'Role'),
             (cls.MODULE.value, 'Module'),
-            (cls.APB.value, 'Ansible Playbook Bundle'),
+            (cls.MODULE_UTILS.value, 'Module Utils'),
             (cls.ACTION_PLUGIN.value, 'Action Plugin'),
             (cls.CACHE_PLUGIN.value, 'Cache Plugin'),
             (cls.CALLBACK_PLUGIN.value, 'Callback Plugin'),
