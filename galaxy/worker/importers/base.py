@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
+import re
 
 from django.utils import timezone
 
@@ -53,9 +54,11 @@ class ContentImporter(object):
             name = self.data.name
         elif not self.data.path:
             name = repo.name
-        else:
-            raise exc.TaskError("Content is not a repository global "
-                                "and doesn't have name.")
+
+        # Check name
+        if not re.match('^[\w-]+$', name):
+            raise exc.TaskError('Invalid name, only aplhanumeric characters, '
+                                '"-" and "_" symbols are allowed.')
 
         obj, is_created = models.Content.objects.get_or_create(
             namespace=ns,
