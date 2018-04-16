@@ -51,7 +51,8 @@ cleanup
 
 
 display "import ${GITHUB_USER} ${GITHUB_SMOKE_REPO}"
-ansible-galaxy import ${ARGS} --role-name "galaxy-smoke" "${GITHUB_USER}" "${GITHUB_SMOKE_REPO}"
+# ansible-galaxy import ${ARGS} --role-name "galaxy-smoke" "${GITHUB_USER}" "${GITHUB_SMOKE_REPO}"
+ansible-galaxy import ${ARGS} "${GITHUB_USER}" "${GITHUB_SMOKE_REPO}"
 cleanup
 
 display "install ${GITHUB_USER}.galaxy-smoke"
@@ -69,9 +70,9 @@ display "delete ${GITHUB_USER} ${GITHUB_SMOKE_REPO}"
 ansible-galaxy delete ${ARGS} "${GITHUB_USER}" "${GITHUB_SMOKE_REPO}"
 cleanup
 
-display "delete ${GITHUB_USER} galaxy-smoke"
-ansible-galaxy delete ${ARGS} "${GITHUB_USER}" "galaxy-smoke"
-cleanup
+#display "delete ${GITHUB_USER} galaxy-smoke"
+#ansible-galaxy delete ${ARGS} "${GITHUB_USER}" "galaxy-smoke"
+#cleanup
 
 # stop here if we are only testing old ansible-galaxy
 if [ ! -n "${TEST_NEW}" ] ; then
