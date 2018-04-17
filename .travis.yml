@@ -38,6 +38,11 @@ script:
 - ansible-playbook -i inventory test.yml
 - popd
 
+# run ansible-galaxy client smoke tests
+- pushd testing/client
+- test-ansible-galaxy.sh
+- popd
+
 # Check the logs
 - docker ps -a
 - make dev/log
