@@ -39,9 +39,7 @@ script:
 - popd
 
 # run ansible-galaxy client smoke tests
-- pushd testing/client
-- test-ansible-galaxy.sh
-- popd
+- PAGER=cat testing/client/test-ansible-galaxy.sh
 
 # Check the logs
 - docker ps -a
