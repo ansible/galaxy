@@ -392,7 +392,7 @@ class Content(CommonModelNameNotUnique):
     # -------------------------------------------------------------------------
 
     def __unicode__(self):
-        return "%s.%s" % (self.namespace, self.name)
+        return "%s.%s" % (self.namespace.name, self.name)
 
     @property
     def github_user(self):
@@ -417,7 +417,7 @@ class Content(CommonModelNameNotUnique):
         try:
             return model_to_dict(self.repository.import_tasks.latest(),
                                  fields=('id', 'state'))
-        except:
+        except Exception:
             return dict()
 
     def get_unique_platforms(self):

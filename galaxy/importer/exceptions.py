@@ -27,3 +27,7 @@ class ContentNotFound(ImporterError):
 
 class ContentLoadError(ImporterError):
     pass
+
+
+class APBContentLoadError(ContentLoadError):
+    pass

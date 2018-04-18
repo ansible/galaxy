@@ -15,6 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import logging
+
 from django.core import urlresolvers as urls
 from rest_framework import serializers
 
@@ -25,6 +27,9 @@ __all__ = (
     'ContentSerializer',
     'ContentDetailSerializer',
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class BaseModelSerializer(serializers.ModelSerializer):
@@ -88,7 +93,9 @@ class ContentSerializer(BaseModelSerializer):
             'original_name',
             'description',
             'content_type',
-            'imported'
+            'imported',
+            'download_count',
+            'role_type'
         )
 
     def get_platforms(self, instance):
@@ -107,6 +114,8 @@ class ContentSerializer(BaseModelSerializer):
                 'api:role_import_task_list', args=(instance.pk,)),
             'notifications': urls.reverse(
                 'api:role_notification_list', args=(instance.pk,)),
+            'repository': urls.reverse(
+                'api:repository_detail', args=(instance.repository.pk,)),
         }
 
     def get_summary_fields(self, instance):
@@ -115,13 +124,10 @@ class ContentSerializer(BaseModelSerializer):
                 instance.repository.provider_namespace.namespace),
             'repository': _RepositorySerializer().to_representation(
                 instance.repository),
-            'platforms': self.get_platforms(instance),
-            'cloud_platforms': [
-                p.name for p in instance.cloud_platforms.all()],
-            'tags': [t.name for t in instance.tags.all()],
             'content_type':
                 _ContentTypeSerializer().to_representation(
                     instance.content_type),
+            'dependencies': [str(g) for g in instance.dependencies.all()]
         }
 
 
@@ -136,3 +142,21 @@ class ContentDetailSerializer(ContentSerializer):
             'min_ansible_container_version',
             'min_ansible_version'
         )
+
+    def get_summary_fields(self, instance):
+        result = super(ContentDetailSerializer, self).get_summary_fields(instance)
+        result.update({
+            'platforms': self.get_platforms(instance),
+            'cloud_platforms': [
+                p.name for p in instance.cloud_platforms.all()],
+            'tags': [t.name for t in instance.tags.all()],
+            'dependencies': [dict(
+                id=g.pk,
+                namespace=g.namespace.name,
+                name=g.name) for g in instance.dependencies.all()],
+            'versions': [
+                dict(id=g.id, name=g.name, release_date=g.release_date)
+                for g in instance.versions.all()
+            ],
+        })
+        return result

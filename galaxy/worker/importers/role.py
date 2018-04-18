@@ -19,6 +19,7 @@ from __future__ import absolute_import
 
 import pytz
 
+from galaxy import constants
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
 
@@ -26,7 +27,6 @@ from . import base
 
 
 class RoleImporter(base.ContentImporter):
-    MAX_TAGS_COUNT = 20
 
     def update_content(self, content):
         super(RoleImporter, self).update_content(content)
@@ -66,13 +66,13 @@ class RoleImporter(base.ContentImporter):
     def _add_tags(self, role, tags):
         if not tags:
             self.log.warning('No galaxy tags found in metadata')
-        elif len(tags) > self.MAX_TAGS_COUNT:
+        elif len(tags) > constants.MAX_TAGS_COUNT:
             self.log.warning(
                 'Found more than {0} galaxy tags in metadata. '
                 'Only first {0} will be used'
-                .format(self.MAX_TAGS_COUNT))
-            tags = role.tags[:self.MAX_TAGS_COUNT]
-
+                .format(constants.MAX_TAGS_COUNT))
+            tags = role.tags[:constants.MAX_TAGS_COUNT]
+        self.log.info('Adding role metadata tags')
         for tag in tags:
             db_tag, _ = models.Tag.objects.get_or_create(
                 name=tag,
@@ -86,12 +86,13 @@ class RoleImporter(base.ContentImporter):
                 role.tags.remove(tag)
 
     def _add_platforms(self, role, platforms):
-        if role.role_type not in (role.CONTAINER, role.ANSIBLE):
+        if role.role_type not in (constants.RoleType.CONTAINER,
+                                  constants.RoleType.ANSIBLE):
             return
         if not platforms:
             self.log.warning('No platforms found in metadata')
             return
-
+        self.log.info('Adding role platforms')
         new_platforms = []
         for platform in platforms:
             name = platform.name
@@ -112,7 +113,7 @@ class RoleImporter(base.ContentImporter):
                     p = models.Platform.objects.get(name=name, release=version)
                 except models.Platform.DoesNotExist:
                     self.log.warning(
-                        u'Invalid platform: "{}-{}", skipping.'
+                        u'Invalid platform: "{0}-{1}", skipping.'
                         .format(name, version))
                 else:
                     role.platforms.add(p)
@@ -143,17 +144,18 @@ class RoleImporter(base.ContentImporter):
             role.cloud_platforms.add(platform)
 
     def _add_dependencies(self, role, dependencies):
-        if role.role_type not in (role.CONTAINER, role.ANSIBLE):
+        if role.role_type not in (constants.RoleType.CONTAINER,
+                                  constants.RoleType.ANSIBLE):
             return
         if not dependencies:
             return
-
+        self.log.info('Adding role dependencies')
         new_deps = []
         for dep in dependencies:
             try:
                 try:
                     dep_role = models.Content.objects.get(
-                        namespace=dep.namespace, name=dep.name)
+                        namespace__name=dep.namespace, name=dep.name)
                     role.dependencies.add(dep_role)
                     new_deps.append(dep)
                 except Exception as e:
@@ -167,7 +169,7 @@ class RoleImporter(base.ContentImporter):
                     u'Error parsing dependency {}'.format(e))
 
         for dep in role.dependencies.all():
-            if (dep.namespace, dep.name) not in new_deps:
+            if (dep.namespace.name, dep.name) not in new_deps:
                 role.dependencies.remove(dep)
 
     def _update_role_versions(self, role):
