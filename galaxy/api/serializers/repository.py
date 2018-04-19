@@ -55,12 +55,16 @@ class RepositorySerializer(BaseSerializer):
         if not isinstance(instance, Repository):
             return {}
         related = {
-            'provider': reverse('api:active_provider_detail', kwargs={'pk': instance.provider_namespace.provider.pk}),
-            'imports': '{0}?repository__id={1}'.format(reverse('api:import_task_list'), instance.id)
+            'provider': reverse(
+                'api:active_provider_detail',
+                kwargs={'pk': instance.provider_namespace.provider.pk}),
+            'imports': '{0}?repository__id={1}'.format(
+                reverse('api:import_task_list'), instance.id)
         }
         if instance.provider_namespace.namespace:
-            related['namespace'] = reverse('api:namespace_detail',
-                                           kwargs={'pk': instance.provider_namespace.namespace.pk})
+            related['namespace'] = reverse(
+                'api:namespace_detail',
+                kwargs={'pk': instance.provider_namespace.namespace.pk})
         return related
 
     def get_summary_fields(self, instance):
