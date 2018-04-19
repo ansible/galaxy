@@ -23,6 +23,7 @@ from .serializers import BaseSerializer
 
 __all__ = [
     'RepositorySerializer',
+    'RepositoryDetailSerializer',
 ]
 
 
@@ -100,3 +101,25 @@ class RepositorySerializer(BaseSerializer):
             'namespace': namespace,
             'latest_import': latest_import
         }
+
+
+class RepositoryDetailSerializer(RepositorySerializer):
+
+    REPOSITORY_TYPE_MULTIPLE = 'multiple'
+
+    def _get_repository_type(self, instance):
+        content_count = instance.content_objects.count()
+
+        if content_count > 1:
+            return self.REPOSITORY_TYPE_MULTIPLE
+        elif content_count > 0:
+            content = instance.content_objects.first()
+            return content.content_type.name
+        else:
+            return None
+
+    def get_summary_fields(self, instance):
+        summary_fields = super(
+            RepositoryDetailSerializer, self).get_summary_fields(instance)
+        summary_fields['repository_type'] = self._get_repository_type(instance)
+        return summary_fields
