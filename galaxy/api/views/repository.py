@@ -20,19 +20,20 @@ import re
 
 from django.core.exceptions import ObjectDoesNotExist
 
-# filter backends
-from rest_framework.filters import SearchFilter
-from ..filters import FieldLookupBackend, OrderByBackend
-
-from rest_framework import status
 from rest_framework.exceptions import ValidationError, APIException
+from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
+from rest_framework import status
 
 from galaxy.accounts.models import CustomUser as User
+from galaxy.api.githubapi import GithubAPI
+from galaxy.api.filters import FieldLookupBackend, OrderByBackend
+from galaxy.api.serializers import (RepositorySerializer,
+                                    RepositoryDetailSerializer)
+from galaxy.api.views.base_views import (ListCreateAPIView,
+                                         RetrieveUpdateDestroyAPIView)
 from galaxy.main.models import Repository, ProviderNamespace
-from .base_views import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from ..serializers import RepositorySerializer
-from ..githubapi import GithubAPI
+
 
 __all__ = [
     'RepositoryList',
@@ -46,7 +47,8 @@ def get_repo(provider_namespace, user, repo_name):
     repo = {}
     if provider_namespace.provider.name.lower() == 'github':
         # Check that the user has access to the requested repo
-        repos = GithubAPI(user=user).get_namespace_repositories(provider_namespace.name, name=repo_name)
+        repos = GithubAPI(user=user).get_namespace_repositories(
+            provider_namespace.name, name=repo_name)
         if repos:
             repo = repos[0]
     return repo
@@ -59,7 +61,8 @@ def check_name(name):
     if not re.match('^[\w-]+$', name):
         # Allow only names containing word chars and '-'
         raise ValidationError(detail={
-            'name': 'Name contains invalid characters. Must match [A-Za-z0-9-_].'
+            'name': 'Name contains invalid characters. '
+                    'Must match [A-Za-z0-9-_].'
         })
 
 
@@ -84,14 +87,17 @@ class RepositoryList(ListCreateAPIView):
         data = request.data
         owners = data.pop('owners', [])
         if not data.get('provider_namespace'):
-            raise ValidationError(detail={'provider_namespace': 'Value required'})
+            raise ValidationError(
+                detail={'provider_namespace': 'Value required'})
 
         check_name(data.get('name'))
 
         try:
-            provider_namespace = ProviderNamespace.objects.get(pk=data['provider_namespace'])
+            provider_namespace = ProviderNamespace.objects.get(
+                pk=data['provider_namespace'])
         except ObjectDoesNotExist:
-            raise ValidationError(detail={'provider_namespace': 'Invalid value'})
+            raise ValidationError(
+                detail={'provider_namespace': 'Invalid value'})
 
         original_name = data.get('original_name', data['name'])
 
@@ -99,8 +105,8 @@ class RepositoryList(ListCreateAPIView):
 
         repo = get_repo(provider_namespace, request.user, original_name)
         if not repo:
-            raise APIException("User does not have access to {0}/{1} in GitHub".format(provider_namespace.name,
-                                                                                       original_name))
+            raise APIException("User does not have access to {0}/{1} in GitHub"
+                               .format(provider_namespace.name, original_name))
         for field in GITHUB_REPO_FIELDS:
             data[field] = repo[field]
 
@@ -114,7 +120,8 @@ class RepositoryList(ListCreateAPIView):
         try:
             repository = Repository.objects.create(**data)
         except Exception as exc:
-            raise APIException('Error creating repository: {0}'.format(exc.message))
+            raise APIException('Error creating repository: {0}'
+                               .format(exc.message))
 
         for owner_pk in owners:
             try:
@@ -126,12 +133,13 @@ class RepositoryList(ListCreateAPIView):
 
         serializer = self.get_serializer(repository)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
 
 class RepositoryDetail(RetrieveUpdateDestroyAPIView):
     model = Repository
-    serializer_class = RepositorySerializer
+    serializer_class = RepositoryDetailSerializer
     filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)
 
     def update(self, request, *args, **kwargs):
@@ -141,9 +149,11 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
 
         if data.get('provider_namespace'):
             try:
-                provider_namespace = ProviderNamespace.objects.get(pk=data['provider_namespace'])
+                provider_namespace = ProviderNamespace.objects.get(
+                    pk=data['provider_namespace'])
             except ObjectDoesNotExist:
-                raise ValidationError(detail={'provider_namespace': 'Invalid value'})
+                raise ValidationError(
+                    detail={'provider_namespace': 'Invalid value'})
         else:
             provider_namespace = instance.provider_namespace
 
@@ -154,9 +164,8 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
         repo = get_repo(provider_namespace, request.user, original_name)
         if not repo:
             raise APIException(
-                "User does not have access to {0}/{1} in GitHub".format(provider_namespace.name,
-                                                                        original_name)
-            )
+                "User does not have access to {0}/{1} in GitHub".format(
+                    provider_namespace.name, original_name))
 
         for field in GITHUB_REPO_FIELDS:
             data[field] = repo[field]
@@ -167,7 +176,8 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
         try:
             Repository.objects.filter(pk=instance.pk).update(**data)
         except Exception as exc:
-            raise APIException('Error updating repository: {0}'.format(exc.message))
+            raise APIException('Error updating repository: {0}'
+                               .format(exc.message))
 
         instance = self.get_object()
 
@@ -187,11 +197,12 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        repo = get_repo(instance.provider_namespace, request.user, instance.original_name)
+        repo = get_repo(instance.provider_namespace, request.user,
+                        instance.original_name)
         if not repo:
             raise APIException(
-                "User does not have access to {0}/{1} in GitHub".format(instance.provider_namespace.name,
-                                                                        instance.original_name)
-            )
+                "User does not have access to {0}/{1} in GitHub"
+                .format(instance.provider_namespace.name,
+                        instance.original_name))
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)

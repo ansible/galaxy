@@ -23,6 +23,7 @@ from .serializers import BaseSerializer
 
 __all__ = [
     'RepositorySerializer',
+    'RepositoryDetailSerializer',
 ]
 
 
@@ -54,12 +55,16 @@ class RepositorySerializer(BaseSerializer):
         if not isinstance(instance, Repository):
             return {}
         related = {
-            'provider': reverse('api:active_provider_detail', kwargs={'pk': instance.provider_namespace.provider.pk}),
-            'imports': '{0}?repository__id={1}'.format(reverse('api:import_task_list'), instance.id)
+            'provider': reverse(
+                'api:active_provider_detail',
+                kwargs={'pk': instance.provider_namespace.provider.pk}),
+            'imports': '{0}?repository__id={1}'.format(
+                reverse('api:import_task_list'), instance.id)
         }
         if instance.provider_namespace.namespace:
-            related['namespace'] = reverse('api:namespace_detail',
-                                           kwargs={'pk': instance.provider_namespace.namespace.pk})
+            related['namespace'] = reverse(
+                'api:namespace_detail',
+                kwargs={'pk': instance.provider_namespace.namespace.pk})
         return related
 
     def get_summary_fields(self, instance):
@@ -100,3 +105,25 @@ class RepositorySerializer(BaseSerializer):
             'namespace': namespace,
             'latest_import': latest_import
         }
+
+
+class RepositoryDetailSerializer(RepositorySerializer):
+
+    REPOSITORY_TYPE_MULTIPLE = 'multiple'
+
+    def _get_repository_type(self, instance):
+        content_count = instance.content_objects.count()
+
+        if content_count > 1:
+            return self.REPOSITORY_TYPE_MULTIPLE
+        elif content_count > 0:
+            content = instance.content_objects.first()
+            return content.content_type.name
+        else:
+            return None
+
+    def get_summary_fields(self, instance):
+        summary_fields = super(
+            RepositoryDetailSerializer, self).get_summary_fields(instance)
+        summary_fields['repository_type'] = self._get_repository_type(instance)
+        return summary_fields
