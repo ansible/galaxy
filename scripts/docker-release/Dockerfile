@@ -4,9 +4,10 @@ RUN useradd -r -m -g root galaxy
 
 ENV PIP_NO_CACHE_DIR off
 
-# Install python
+# Install system packages
+# Install virtualenv
 RUN yum -y install epel-release \
-    && yum -y install python python-pip \
+    && yum -y install python python-pip git \
     && pip install virtualenv \
     && yum -y clean all \
     && rm -rf /var/cache/yum
@@ -45,10 +46,13 @@ RUN ${VENV_BIN}/pip install $(readlink -f /tmp/dist/galaxy.whl) \
 # Copy test data
 RUN mkdir -p /galaxy/test-data
 COPY test-data/* /galaxy/test-data/
-
 WORKDIR /galaxy
 
 ENV DJANGO_SETTINGS_MODULE galaxy.settings.production
+# Workaround for git running under different users
+# See https://github.com/jenkinsci/docker/issues/519
+ENV GIT_COMMITTER_NAME 'Ansible Galaxy'
+ENV GIT_COMMITTER_EMAIL 'galaxy@ansible.com'
 
 USER galaxy
 EXPOSE 8000
