@@ -15,9 +15,10 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import os.path
+import os
 import sys
 import warnings
+import mimetypes
 
 from galaxy.common import version
 
@@ -44,15 +45,12 @@ def find_commands(management_dir):
 
 def prepare_env():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.default')
-    # TODO(cutwater): Remove local site-packages usage
-    local_site_packages = os.path.join(
-        os.path.dirname(__file__), 'lib', 'site-packages')
-    sys.path.insert(0, local_site_packages)
     from django.conf import settings
     if not settings.DEBUG:
         warnings.simplefilter('ignore', DeprecationWarning)
     # import django.utils
     settings.version = __version__
+    _fix_mimetypes()
 
 
 def manage():
@@ -64,3 +62,8 @@ def manage():
         sys.stdout.write('galaxy-%s\n' % __version__)
     else:
         execute_from_command_line(sys.argv)
+
+
+def _fix_mimetypes():
+    mimetypes.add_type("image/svg+xml", ".svg", True)
+    mimetypes.add_type("image/svg+xml", ".svgz", True)
