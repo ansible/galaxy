@@ -37,7 +37,9 @@ ROLE_META_FILES = [
 
 
 class RoleMetaParser(object):
+    # TODO Role tags should contain lowercase letters and digits only
     TAG_REGEXP = re.compile('^[a-zA-Z0-9:]+$')
+
     VIDEO_REGEXP = {
         'google': re.compile(
             r'https://drive.google.com.*file/d/([0-9A-Za-z-_]+)/.*'),

@@ -15,7 +15,6 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import collections
 import os
 import re
 import yaml
@@ -28,7 +27,8 @@ from galaxy.importer.loaders import base
 
 
 class APBMetaParser(object):
-    TAG_REGEXP = re.compile('^[a-zA-Z0-9:]+$')
+    # Tags should contain lowercase letters and digits only
+    TAG_REGEXP = re.compile('^[a-z0-9]+$')
     VERSIONS = ['1.0']
 
     def __init__(self, metadata, logger=None):
@@ -39,7 +39,6 @@ class APBMetaParser(object):
         self._check_version()
         self._check_async()
         self._check_bindable()
-        self._check_dependencies()
         self._check_metadata()
         self._check_plans()
 
@@ -53,11 +52,16 @@ class APBMetaParser(object):
 
     def _check_version(self):
         version = self._get_key('version')
-        version_string = '{:.1f}'.format(version)
+        try:
+            version_string = '{:.1f}'.format(version)
+        except ValueError:
+            raise exc.APBContentLoadError(
+                'Version "{0}" in metadata is an invalid version '
+                'format'.format(version))
         if version_string not in self.VERSIONS:
             raise exc.APBContentLoadError(
-                'Version {0} is not a valid version of the APB '
-                'spec'.format(version_string))
+                'Version "{0}" in metadata is not a valid version of '
+                'the APB spec'.format(version_string))
 
     def _check_bindable(self):
         fieldname = 'bindable'
@@ -66,13 +70,6 @@ class APBMetaParser(object):
             raise exc.APBContentLoadError(
                 'Expecting "{0}" in metadata to be a boolean '
                 'value'.format(fieldname))
-
-    def _check_dependencies(self):
-        fieldname = 'dependencies'
-        value = self._get_key(fieldname)
-        if not isinstance(value, collections.Sequence):
-            raise exc.APBContentLoadError(
-                'Expecting "{0}" in metadata to be a list'.format(fieldname))
 
     def _check_for_keys(self, keys, fieldname, data):
         for key in keys:
@@ -98,7 +95,7 @@ class APBMetaParser(object):
     def _check_plans(self):
         fieldname = 'plans'
         plans = self._get_key(fieldname)
-        if not isinstance(plans, collections.Sequence):
+        if not isinstance(plans, list):
             raise exc.APBContentLoadError(
                 'Expecting "plans" in metadata to be a list')
 
@@ -118,27 +115,28 @@ class APBMetaParser(object):
                     'Expecting "name" to be defined for each plan found in '
                     'metadata.')
             self._check_for_keys(expected_plan_keys,
-                                 'plan[{0}]'.format(idx), plan)
+                                 'plans[{0}]'.format(idx), plan)
             if plan.get('metadata'):
                 self._check_for_keys(expected_plan_meta_keys,
-                                     'plan[{0}].metadata'.format(idx),
+                                     'plans[{0}].metadata'.format(idx),
                                      plan['metadata'])
             if plan.get('parameters'):
-                if not isinstance(plan['parameters'], collections.Sequence):
+                if not isinstance(plan['parameters'], list):
                     raise exc.APBContentLoadError(
-                        'Expecting "parameters" in "plan[{0}]" of metadata to '
+                        'Expecting "parameters" in "plans[{0}]" of metadata to '
                         'be a list'.format(idx))
                 pidx = 0
                 for params in plan['parameters']:
                     if not isinstance(params, dict):
                         raise exc.APBContentLoadError(
-                            'Expecting "parameters[{0}]" in "plan[{1}]" of '
+                            'Expecting "parameters[{0}]" in "plans[{1}]" of '
                             'metadata to be a dictionary or mapping of '
                             'key:value pairs'.format(idx, pidx))
                     self._check_for_keys(
                         expected_parameter_keys,
-                        'plan[{0}].parameters[{1}]'.format(idx, pidx),
+                        'plans[{0}].parameters[{1}]'.format(idx, pidx),
                         params)
+                    pidx += 1
             idx += 1
 
     def _check_async(self):
@@ -189,9 +187,7 @@ class APBLoader(base.BaseLoader):
 
     def load(self):
         self.log.info('Loading metadata file: {0}'.format(self.metadata_file))
-        with open(os.path.join(self.path, self.metadata_file)) as fp:
-            metadata = yaml.safe_load(fp)
-
+        metadata = self._load_metadata()
         meta_parser = APBMetaParser(metadata, logger=self.log)
         name = meta_parser.parse_name()
         description = meta_parser.parse_description()
@@ -209,3 +205,11 @@ class APBLoader(base.BaseLoader):
                 'apb_metadata': metadata,
             },
         )
+
+    def _load_metadata(self):
+        with open(os.path.join(self.path, self.metadata_file)) as fp:
+            metadata = yaml.safe_load(fp)
+        if not isinstance(metadata, dict):
+            raise exc.ContentLoadError(
+                "Invalid 'apb.yml' file format, dict expected.")
+        return metadata
