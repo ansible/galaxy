@@ -17,7 +17,6 @@
 
 import unittest
 import mock
-import pytest
 
 from galaxy import constants
 from galaxy.importer import models
@@ -34,14 +33,20 @@ class TestRoleMetaParser(unittest.TestCase):
 
     def test_parse_tags(self):
         parser = role_loader.RoleMetaParser({
-            'galaxy_tags': ['database', 'sql']
+            'galaxy_info': {
+                'galaxy_tags': ['database', 'sql']
+            },
+            'dependencies': []
         })
         tags = parser.parse_tags()
         assert tags == ['database', 'sql']
 
     def test_parse_tags_invalid(self):
         parser = role_loader.RoleMetaParser({
-            'galaxy_tags': ['database', 's q l']
+            'galaxy_info': {
+                'galaxy_tags': ['database', 's q l']
+            },
+            'dependencies': []
         })
         tags = parser.parse_tags()
 
@@ -51,7 +56,10 @@ class TestRoleMetaParser(unittest.TestCase):
 
     def test_parse_categories(self):
         parser = role_loader.RoleMetaParser({
-            'categories': ['database', 'sql'],
+            'galaxy_info': {
+                'categories': ['database', 'sql'],
+            },
+            'dependencies': []
         })
         tags = parser.parse_tags()
 
@@ -62,10 +70,13 @@ class TestRoleMetaParser(unittest.TestCase):
 
     def test_parse_platforms(self):
         parser = role_loader.RoleMetaParser({
-            'platforms': [
-                {'name': 'Ubuntu', 'versions': ['trusty', 'xenial']},
-                {'name': 'RHEL', 'versions': ['all']}
-            ]
+            'galaxy_info': {
+                'platforms': [
+                    {'name': 'Ubuntu', 'versions': ['trusty', 'xenial']},
+                    {'name': 'RHEL', 'versions': ['all']}
+                ]
+            },
+            'dependencies': []
         })
         platforms = parser.parse_platforms()
 
@@ -76,27 +87,45 @@ class TestRoleMetaParser(unittest.TestCase):
 
     def test_parse_cloud_platforms(self):
         parser = role_loader.RoleMetaParser({
-            'cloud_platforms': ['AWX', 'OpenStack']
+            'galaxy_info': {
+                'cloud_platforms': ['AWX', 'OpenStack']
+            },
+            'dependencies': []
         })
         platforms = parser.parse_cloud_platforms()
 
         assert platforms == ['AWX', 'OpenStack']
 
     def test_parse_dependencies(self):
-        pytest.xfail('Not implemented')
+        parser = role_loader.RoleMetaParser({
+            'galaxy_info': {
+                'cloud_platforms': ['AWX', 'OpenStack']
+            },
+            'dependencies': [
+                {'role': 'foo.foo_role_a'},
+                'foo.foo_role_b'
+            ]
+        })
+        dependencies = parser.parse_dependencies()
+        assert len(dependencies) == 2
+        assert dependencies[0].name == 'foo_role_a'
+        assert dependencies[1].name == 'foo_role_b'
 
     def test_parse_videos(self):
         parser = role_loader.RoleMetaParser({
-            'video_links': [{
-                'title': 'Google Drive Video',
-                'url': 'https://drive.google.com/file/d/gxH17k3EzzJP3g/browse'
-            }, {
-                'title': 'Vimeo Video',
-                'url': 'https://vimeo.com/1733124',
-            }, {
-                'title': 'Youtube Video',
-                'url': 'https://youtu.be/TxHPpfkGms9eDQ'
-            }]
+            'galaxy_info': {
+                'video_links': [{
+                    'title': 'Google Drive Video',
+                    'url': 'https://drive.google.com/file/d/gxH17k3EzzJP3g/browse'
+                }, {
+                    'title': 'Vimeo Video',
+                    'url': 'https://vimeo.com/1733124',
+                }, {
+                    'title': 'Youtube Video',
+                    'url': 'https://youtu.be/TxHPpfkGms9eDQ'
+                }]
+            },
+            'dependencies': []
         })
 
         videos = parser.parse_videos()
@@ -118,11 +147,14 @@ class TestRoleLoader(unittest.TestCase):
     @mock.patch.object(loaders.RoleLoader, '_load_metadata')
     @mock.patch.object(loaders.RoleLoader, '_load_container_yml')
     def test_load_role(self, load_container_yml_mock, load_metadata_mock):
-        load_metadata_mock.return_value = {
-            'description': 'A test role',
-            'author': 'John Smith',
-            'min_ansible_version': '2.4.0',
-        }
+        load_metadata_mock.return_value = ({
+            'galaxy_info': {
+                'description': 'A test role',
+                'author': 'John Smith',
+                'min_ansible_version': '2.4.0',
+            },
+            'dependencies': [{'role': 'testing.test-role-b'}]
+        })
         load_container_yml_mock.return_value = (None, None)
 
         loader = loaders.RoleLoader(
@@ -130,8 +162,12 @@ class TestRoleLoader(unittest.TestCase):
             metadata_path='meta.yaml')
         role = loader.load()
         role_meta = role.role_meta
+        dependencies = role.role_meta['dependencies']
 
         assert role.name == 'test_role'
+        assert len(dependencies) == 1
+        assert dependencies[0].namespace == 'testing'
+        assert dependencies[0].name == 'test-role-b'
         assert role.description == 'A test role'
         assert role_meta['role_type'] == constants.RoleType.ANSIBLE
         assert role_meta['author'] == 'John Smith'

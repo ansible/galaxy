@@ -21,6 +21,7 @@ import enum
 import logging
 
 
+MAX_TAGS_COUNT = 20
 PROVIDER_GITHUB = 'GitHub'
 
 

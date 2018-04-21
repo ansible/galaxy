@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.core.urlresolvers import reverse
+from rest_framework import serializers as drf_serializers
 
 from galaxy.main.models import Repository
 from .serializers import BaseSerializer
@@ -28,6 +29,8 @@ __all__ = [
 
 
 class RepositorySerializer(BaseSerializer):
+    external_url = drf_serializers.SerializerMethodField()
+
     class Meta:
         model = Repository
         fields = (
@@ -48,6 +51,7 @@ class RepositorySerializer(BaseSerializer):
             'travis_build_url',
             'travis_status_url',
             'clone_url',
+            'external_url',
             'issue_tracker_url',
         )
 
@@ -105,6 +109,15 @@ class RepositorySerializer(BaseSerializer):
             'namespace': namespace,
             'latest_import': latest_import
         }
+
+    def get_external_url(self, instance):
+        server = ''
+        if instance.provider_namespace.provider.name.lower() == 'github':
+            server = 'https://github.com'
+        return '{0}/{1}/{2}'.format(
+            server,
+            instance.provider_namespace.name,
+            instance.original_name)
 
 
 class RepositoryDetailSerializer(RepositorySerializer):

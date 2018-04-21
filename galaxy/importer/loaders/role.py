@@ -37,7 +37,9 @@ ROLE_META_FILES = [
 
 
 class RoleMetaParser(object):
+    # TODO Role tags should contain lowercase letters and digits only
     TAG_REGEXP = re.compile('^[a-zA-Z0-9:]+$')
+
     VIDEO_REGEXP = {
         'google': re.compile(
             r'https://drive.google.com.*file/d/([0-9A-Za-z-_]+)/.*'),
@@ -53,8 +55,32 @@ class RoleMetaParser(object):
     }
 
     def __init__(self, metadata, logger=None):
-        self.metadata = metadata
+        self.metadata = self._get_galaxy_info(metadata)
+        self.dependencies = self._get_dependencies(metadata)
         self.log = logger or base.default_logger
+
+    def _get_galaxy_info(self, metadata):
+        if 'galaxy_info' in metadata:
+            galaxy_info = metadata['galaxy_info']
+            if not isinstance(galaxy_info, dict):
+                raise exc.ContentLoadError(
+                    "Expecting 'galaxy_info' in metadata to be a dictionary "
+                    "or key:value mapping")
+        else:
+            self.log.warning("Missing 'galaxy_info' field in metadata.")
+            galaxy_info = {}
+        return galaxy_info
+
+    def _get_dependencies(self, metadata):
+        if 'dependencies' in metadata:
+            dependencies = metadata['dependencies']
+            if not isinstance(dependencies, collections.Sequence):
+                raise exc.ContentLoadError(
+                    "Expecting 'dependencies' in metadata to be a list")
+        else:
+            self.log.warning("Missing 'dependencies' field in metadata.")
+            dependencies = []
+        return dependencies
 
     def _validate_tag(self, tag):
         if not re.match(self.TAG_REGEXP, tag):
@@ -69,7 +95,7 @@ class RoleMetaParser(object):
         if isinstance(galaxy_tags, list):
             tags += galaxy_tags
         else:
-            self.log.warning('Expected "categories" in meta data to be a list')
+            self.log.warning('Expected "galaxy_tags" in metadata to be a list')
 
         if 'categories' in self.metadata:
             self.log.warning(
@@ -115,16 +141,10 @@ class RoleMetaParser(object):
     # TODO: Extend dependencies support with format used
     # in .galaxy-metadata.yml
     def parse_dependencies(self):
-        meta_deps = self.metadata.get('dependencies')
-        if not meta_deps:
+        if not self.dependencies:
             return []
-
-        if not isinstance(meta_deps, collections.Sequence):
-            raise exc.ContentLoadError(
-                'Expected "dependencies" in metadata to be a list')
-
         dependencies = []
-        for dep in meta_deps:
+        for dep in self.dependencies:
             dep = ansible_req.RoleRequirement.role_yaml_parse(dep)
             name = dep.get('name')
             if not name:
@@ -136,7 +156,6 @@ class RoleMetaParser(object):
                     '"username.role_name", got {0}'
                     .format(dep['name']))
             dependencies.append(models.DependencyInfo(*name.rsplit('.', 2)))
-
         return dependencies
 
     def parse_videos(self):
@@ -195,18 +214,19 @@ class RoleLoader(base.BaseLoader):
         self.meta_file = metadata_path
 
     def load(self):
-        metadata = self._load_metadata()
-        meta_parser = RoleMetaParser(metadata, logger=self.log)
+        meta = self._load_metadata()
+        meta_parser = RoleMetaParser(meta, logger=self.log)
+        galaxy_info = meta_parser.metadata
 
         # TODO: Refactoring required
         data = {}
-        data.update(self._load_string_attrs(metadata))
+        data.update(self._load_string_attrs(galaxy_info))
 
         container_yml_type, container_yml = self._load_container_yml()
 
         description = data.pop('description')
 
-        data['role_type'] = self._get_role_type(metadata, container_yml_type)
+        data['role_type'] = self._get_role_type(galaxy_info, container_yml_type)
         data['tags'] = meta_parser.parse_tags()
         data['platforms'] = meta_parser.parse_platforms()
         data['cloud_platforms'] = meta_parser.parse_cloud_platforms()
@@ -266,15 +286,7 @@ class RoleLoader(base.BaseLoader):
             raise exc.ContentLoadError(
                 "Invalid 'meta.yml' file format, dict expected.")
 
-        if 'galaxy_info' in metadata:
-            galaxy_info = metadata['galaxy_info']
-            if not isinstance(galaxy_info, dict):
-                raise exc.ContentLoadError(
-                    "Invalid 'galaxy_info' field format, dict expected.")
-        else:
-            self.log.warning("Missing 'galaxy_info' field in metadata.")
-            galaxy_info = {}
-        return galaxy_info
+        return metadata
 
     def _load_container_yml(self):
         container_yml = None
