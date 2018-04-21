@@ -28,8 +28,7 @@ from rest_framework import status
 from galaxy.accounts.models import CustomUser as User
 from galaxy.api.githubapi import GithubAPI
 from galaxy.api.filters import FieldLookupBackend, OrderByBackend
-from galaxy.api.serializers import (RepositorySerializer,
-                                    RepositoryDetailSerializer)
+from galaxy.api.serializers import RepositorySerializer
 from galaxy.api.views.base_views import (ListCreateAPIView,
                                          RetrieveUpdateDestroyAPIView)
 from galaxy.main.models import Repository, ProviderNamespace
@@ -139,7 +138,7 @@ class RepositoryList(ListCreateAPIView):
 
 class RepositoryDetail(RetrieveUpdateDestroyAPIView):
     model = Repository
-    serializer_class = RepositoryDetailSerializer
+    serializer_class = RepositorySerializer
     filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)
 
     def update(self, request, *args, **kwargs):

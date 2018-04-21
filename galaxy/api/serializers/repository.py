@@ -23,13 +23,14 @@ from .serializers import BaseSerializer
 
 
 __all__ = [
-    'RepositorySerializer',
-    'RepositoryDetailSerializer',
+    'RepositorySerializer'
 ]
 
 
 class RepositorySerializer(BaseSerializer):
+    REPOSITORY_TYPE_MULTIPLE = 'multiple'
     external_url = drf_serializers.SerializerMethodField()
+    repository_type = drf_serializers.SerializerMethodField()
 
     class Meta:
         model = Repository
@@ -53,6 +54,7 @@ class RepositorySerializer(BaseSerializer):
             'clone_url',
             'external_url',
             'issue_tracker_url',
+            'repository_type'
         )
 
     def get_related(self, instance):
@@ -119,12 +121,7 @@ class RepositorySerializer(BaseSerializer):
             instance.provider_namespace.name,
             instance.original_name)
 
-
-class RepositoryDetailSerializer(RepositorySerializer):
-
-    REPOSITORY_TYPE_MULTIPLE = 'multiple'
-
-    def _get_repository_type(self, instance):
+    def get_repository_type(self, instance):
         content_count = instance.content_objects.count()
 
         if content_count > 1:
@@ -134,9 +131,3 @@ class RepositoryDetailSerializer(RepositorySerializer):
             return content.content_type.name
         else:
             return None
-
-    def get_summary_fields(self, instance):
-        summary_fields = super(
-            RepositoryDetailSerializer, self).get_summary_fields(instance)
-        summary_fields['repository_type'] = self._get_repository_type(instance)
-        return summary_fields
