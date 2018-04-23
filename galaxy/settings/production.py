@@ -24,6 +24,11 @@ The following environment variables are supported:
 * GALAXY_ALLOWED_HOSTS
 * GALAXY_EMAIL_HOST
 * GALAXY_DB_URL
+* GALAXY_DB_NAME
+* GALAXY_DB_USER
+* GALAXY_DB_PASSWORD
+* GALAXY_DB_HOST
+* GALAXY_DB_PORT
 * GALAXY_EMAIL_PORT
 * GALAXY_EMAIL_USER
 * GALAXY_EMAIL_PASSWORD
@@ -78,9 +83,22 @@ ALLOWED_HOSTS = os.environ.get('GALAXY_ALLOWED_HOSTS', '*').split(',')
 # ---------------------------------------------------------
 
 # Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
-DATABASES = {
-    'default': dj_database_url.config(env='GALAXY_DB_URL', conn_max_age=None)
-}
+DATABASES = {}
+
+if os.environ.get('GALAXY_DB_URL'):
+    DATABASES['default'] = dj_database_url.config(
+        env='GALAXY_DB_URL', conn_max_age=None)
+else:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('GALAXY_DB_NAME', 'galaxy'),
+        'USER': os.environ.get('GALAXY_DB_USER', 'galaxy'),
+        'PASSWORD': os.environ.get('GALAXY_DB_PASSWORD', ''),
+        'HOST': os.environ.get('GALAXY_DB_HOST', ''),
+        'PORT': int(os.environ.get('GALAXY_DB_PORT', 5432)),
+        'CONN_MAX_AGE': None,
+    }
+
 # Create default alias for worker logging
 DATABASES['logging'] = DATABASES['default'].copy()
 
