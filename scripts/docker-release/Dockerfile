@@ -23,10 +23,14 @@ RUN yum -y install wget \
 
 # Create directories structure
 RUN mkdir -p /etc/galaxy \
-    && mkdir -p /var/log/galaxy \
-    && mkdir -p /var/lib/galaxy/public \
-    && chown galaxy:root /var/log/galaxy \
-    && chmod g+w /var/log/galaxy
+             /var/log/galaxy \
+             /var/lib/galaxy/public \
+    && chown galaxy:root /etc/galaxy \
+                         /var/log/galaxy \
+                         /var/lib/galaxy/public \
+    && chmod g+w /etc/galaxy \
+                 /var/log/galaxy \
+                 /var/lib/galaxy/public
 
 # Install python dependencies
 ENV VENV_BIN /var/lib/galaxy/venv/bin
