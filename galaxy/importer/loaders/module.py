@@ -34,7 +34,7 @@ class ModuleLoader(base.BaseLoader):
             content_type, path, root, logger=logger)
 
         self.documentation = None
-        self.metdata = None
+        self.metadata = None
 
     def make_name(self):
         return base.make_module_name(self.path)
@@ -52,7 +52,7 @@ class ModuleLoader(base.BaseLoader):
             content_type=self.content_type,
             description=description,
             metadata={
-                'ansible_metadata': self.metdata,
+                'ansible_metadata': self.metadata,
                 'documentation': self.documentation
             }
         )
