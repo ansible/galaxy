@@ -122,7 +122,10 @@ class RepositorySerializer(BaseSerializer):
             instance.original_name)
 
     def get_repository_type(self, instance):
-        content_count = instance.content_objects.count()
+        try:
+            content_count = instance.content_count
+        except AttributeError:
+            content_count = instance.content_objects.count()
 
         if content_count > 1:
             return self.REPOSITORY_TYPE_MULTIPLE

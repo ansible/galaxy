@@ -19,6 +19,7 @@ import logging
 import re
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
 
 from rest_framework.exceptions import ValidationError, APIException
 from rest_framework.filters import SearchFilter
@@ -81,6 +82,10 @@ class RepositoryList(ListCreateAPIView):
     model = Repository
     serializer_class = RepositorySerializer
     filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)
+
+    def get_queryset(self):
+        qs = super(RepositoryList, self).get_queryset()
+        return qs.annotate(content_count=Count('content_objects'))
 
     def post(self, request, *args, **kwargs):
         data = request.data
