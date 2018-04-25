@@ -9,6 +9,7 @@ import { ListModule } from 'patternfly-ng/list/list.module';
 import {
 	CardModule
 } from 'patternfly-ng/card/card.module';
+import { TopListComponent } from './top-list/top-list.component';
 
 @NgModule({
   imports: [
@@ -18,6 +19,6 @@ import {
     CardModule,
 		ListModule
   ],
-  declarations: [ExploreComponent]
+  declarations: [ExploreComponent, TopListComponent]
 })
 export class ExploreModule { }

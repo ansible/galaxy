@@ -1,0 +1,53 @@
+<pfng-card [headerTemplate]="topList" class="top-list">
+
+  <ng-template #topList>
+    <div class="card-header">
+      <span class="header-icon"><i class="fa fa-star fa-2x"></i></span>
+      <span class="header-text">{{ cardTitle }}</span>
+    </div>
+  </ng-template>
+
+  <div class="card-cont">
+    <!-- <pfng-list [items]="items" [itemTemplate]="topListTemplate">
+      <ng-template #topListTemplate let-item="item" let-item="index">
+        <div class="list-pf-content-wrapper">
+          <div class="list-pf-main-content">
+
+              <div class="list-pf-title text-overflow-pf">
+                <span class="item-name">{{item.name}}</span>
+              </div>
+              <div class="list-pf-description text-right item-hide">
+                <span class="fa fa-{{ icon }}"></span>
+                <span class="item-count">{{ item.stargazers_count }}</span>
+              </div>
+
+          </div>
+        </div>
+      </ng-template>
+    </pfng-list> -->
+
+    <pfng-tree-list [itemTemplate]="XtopListTemplate" [items]="items">
+
+      <ng-template #XtopListTemplate let-node="node">
+        <div class="list-pf-content-wrapper">
+          <div class="list-pf-main-content">
+              <div class="list-pf-title text-overflow-pf">
+                <span *ngIf="node.data.type_icon" class="fa fa-{{ node.data.type_icon }}"></span>
+                <span *ngIf="node.data.type_name">{{node.data.type_name}}: </span>
+                {{node.data.name}}
+              </div>
+
+
+          </div>
+          <div class="list-pf-additional-content">
+
+            <span class="item-count"><span class="fa fa-{{ icon }}"></span> {{ node.data.count }}</span>
+          </div>
+        </div>
+      </ng-template>
+
+
+    </pfng-tree-list>
+  </div>
+
+</pfng-card>

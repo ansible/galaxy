@@ -1,41 +1,11 @@
 <app-page-header [headerTitle]="headerTitle"></app-page-header>
 <div id="explore-page" class="container-fluid">
   <div class="row content-row">
-    <div class="col-sm-4">
-      <div>
-        <pfng-card [headerTemplate]="mostStarred">
-
-          <ng-template #mostStarred>
-            <div class="card-header">
-              <span class="header-icon"><i class="fa fa-star fa-2x"></i></span>
-              <span class="header-text">Most Starred</span>
-            </div>
-          </ng-template>
-
-          <div class="card-cont">
-            <!-- <ul>
-              <li *ngFor="let repo of mostStarred">{{repo.name }}</li>
-            </ul> -->
-            <pfng-list [items]="mostStarred" [itemTemplate]="starredTemplate">
-              <ng-template #starredTemplate let-item="item" let-item="index">
-                <div class="list-pf-content-wrapper">
-                  <div class="list-pf-main-content">
-                    <div class="list-of-title text-overflow-pf">
-                      <span class="item-name">{{item.name}}</span>
-                    </div>
-                  </div>
-                </div>
-              </ng-template>
-            </pfng-list>
-          </div>
-
-        </pfng-card>
-
-
-
-      </div>
+    <div class="col-lg-4">
+      <app-top-list [icon]="'star'" [items]="mostStarredRepos" [cardTitle]="'Most Starred'">
+      </app-top-list>
     </div>
-    <div class="col-sm-4">
+    <div class="col-lg-4">
       <pfng-card [headerTemplate]="mostWatched">
 
         <ng-template #mostWatched>
@@ -51,7 +21,7 @@
     </div>
 
 
-    <div class="col-sm-4">
+    <div class="col-lg-4">
       <pfng-card [headerTemplate]="mostDownloaded">
 
         <ng-template #mostDownloaded>
@@ -68,7 +38,7 @@
   </div>
 
   <div class="row content-row">
-    <div class="col-sm-4">
+    <div class="col-lg-4">
       <pfng-card [headerTemplate]="topContributors">
 
         <ng-template #topContributors>
@@ -82,7 +52,7 @@
 
       </pfng-card>
     </div>
-    <div class="col-sm-4">
+    <div class="col-lg-4">
       <pfng-card [headerTemplate]="topTags">
 
         <ng-template #topTags>
@@ -98,7 +68,7 @@
     </div>
 
 
-    <div class="col-sm-4">
+    <div class="col-lg-4">
       <pfng-card [headerTemplate]="newest">
 
         <ng-template #newest>
