@@ -19,10 +19,13 @@ from .apb import APBLoader
 from .module import ModuleLoader
 from .plugin import PluginLoader
 from .role import RoleLoader
+from .module_utils import ModuleUtilsLoader
+
 
 ALL_LOADERS = [
     APBLoader,
     ModuleLoader,
+    ModuleUtilsLoader,
     PluginLoader,
     RoleLoader,
 ]
