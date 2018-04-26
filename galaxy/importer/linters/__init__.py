@@ -25,7 +25,7 @@ import six
 logger = logging.getLogger(__name__)
 
 LINTERS_DIR = os.path.abspath(os.path.dirname(__file__))
-FLAKE8_MAX_LINE_LENGTH = 160
+FLAKE8_MAX_LINE_LENGTH = 120
 FLAKE8_IGNORE_ERRORS = 'E402'
 
 
