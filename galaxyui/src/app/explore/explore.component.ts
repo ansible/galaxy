@@ -21,6 +21,7 @@ class TopCard {
 export class ExploreComponent implements OnInit {
   headerTitle = 'Explore';
   mostStarredRepos: TopCard[] = [];
+  mostWatchedRepos: TopCard[] = [];
 
 
   constructor(
@@ -29,6 +30,7 @@ export class ExploreComponent implements OnInit {
 
   ngOnInit() {
     this.getMostStarred();
+    this.getMostWatched();
   }
 
   repositoryToTopCard(repo: Repository, type_name: string, type_icon: string): TopCard {
@@ -57,8 +59,21 @@ export class ExploreComponent implements OnInit {
           repo => this.mostStarredRepos[0].children.push(this.repositoryToTopCard(repo, "", ""))
         );
 
-        console.log(this.mostStarredRepos);
       });
   }
+
+  getMostWatched(): void {
+    this.repositoryService.query({'order_by': '-watchers_count', 'page_size': '5'})
+      .subscribe(repositories => {
+        console.log(repositories[0])
+        this.mostWatchedRepos.push(this.repositoryToTopCard(repositories[0], "Repo", "gear"));
+        console.log(this.mostStarredRepos[0]);
+        repositories.slice(1,5).forEach(
+          repo => this.mostWatchedRepos[0].children.push(this.repositoryToTopCard(repo, "", ""))
+        );
+
+      });
+  }
+
 
 }

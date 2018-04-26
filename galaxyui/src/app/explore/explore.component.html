@@ -2,22 +2,10 @@
 <div id="explore-page" class="container-fluid">
   <div class="row content-row">
     <div class="col-lg-4">
-      <app-top-list [icon]="'star'" [items]="mostStarredRepos" [cardTitle]="'Most Starred'">
-      </app-top-list>
+      <app-top-list [icon]="'star'" [items]="mostStarredRepos" [cardTitle]="'Most Starred'"></app-top-list>
     </div>
     <div class="col-lg-4">
-      <pfng-card [headerTemplate]="mostWatched">
-
-        <ng-template #mostWatched>
-          <div class="card-header">
-            <span class="header-icon"><i class="fa fa-eye fa-2x"></i></span>
-            <span class="header-text">Most Watched</span>
-          </div>
-        </ng-template>
-
-        <div class="card-cont"></div>
-
-      </pfng-card>
+      <app-top-list [icon]="'eye'" [items]="mostWatchedRepos" [cardTitle]="'Most Watched'"></app-top-list>
     </div>
 
 
