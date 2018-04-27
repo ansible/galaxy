@@ -5,6 +5,18 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 
 
+INSERT_MODULE_UTILS_CONTENT_TYPE = """
+INSERT INTO main_contenttype
+  (name, description, created, modified)
+VALUES
+  ('module_utils', 'Module Utils', now(), now())
+"""
+
+DELETE_MODULE_UTILS_CONTENT_TYPE = """
+DELETE FROM main_contenttype WHERE name = 'module_utils'
+"""
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ('main', '0091_remove_customuser_github_user'),

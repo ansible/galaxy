@@ -17,12 +17,14 @@
 
 from .apb import APBLoader
 from .module import ModuleLoader
+from .module_utils import ModuleUtilsLoader
 from .plugin import PluginLoader
 from .role import RoleLoader
 
 ALL_LOADERS = [
     APBLoader,
     ModuleLoader,
+    ModuleUtilsLoader,
     PluginLoader,
     RoleLoader,
 ]
