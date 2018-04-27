@@ -38,7 +38,6 @@ ROLE_META_FILES = [
 
 class RoleMetaParser(object):
     # TODO Role tags should contain lowercase letters and digits only
-    TAG_REGEXP = re.compile('^[a-zA-Z0-9:]+$')
 
     VIDEO_REGEXP = {
         'google': re.compile(
@@ -83,10 +82,24 @@ class RoleMetaParser(object):
         return dependencies
 
     def _validate_tag(self, tag):
-        if not re.match(self.TAG_REGEXP, tag):
-            self.log.warning('"{}" is not a valid tag. Skipping.'.format(tag))
+        if not re.match(constants.TAG_REGEXP, tag):
+            self.log.warning("'{}' is not a valid tag. Tags must container lowercase letters "
+                             "and digits only. Skipping.".format(tag))
             return False
         return True
+
+    def validate_strings(self):
+        string_defaults = [
+            ('author', 'your name', True),
+            ('description', 'your description', True),
+            ('company', 'your company', False),
+            ('license', 'license', True)
+        ]
+        for key, value, required in string_defaults:
+            if key not in self.metadata and required:
+                exc.ContentLoadError("Missing required key {0} in metadata".format(key))
+            if key in self.metadata and value in self.metadata[key]:
+                self.log.warning("Vale of {0} has not been set in metadata.".format(key))
 
     def parse_tags(self):
         tags = []
@@ -217,6 +230,8 @@ class RoleLoader(base.BaseLoader):
         meta = self._load_metadata()
         meta_parser = RoleMetaParser(meta, logger=self.log)
         galaxy_info = meta_parser.metadata
+
+        meta_parser.validate_strings()
 
         # TODO: Refactoring required
         data = {}
