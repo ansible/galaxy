@@ -16,12 +16,14 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import ast
+import os
 
 from galaxy import constants
 from galaxy.importer import linters
 from galaxy.importer import models
 from galaxy.importer.utils import ast as ast_utils
 from galaxy.importer.loaders import base
+from galaxy.importer import exceptions as exc
 
 
 class ModuleLoader(base.BaseLoader):
@@ -60,24 +62,26 @@ class ModuleLoader(base.BaseLoader):
     def _parse_module(self):
         with open(self.path) as fp:
             code = fp.read()
+        try:
+            module = ast.parse(code)  # type: ast.Module
+            assert isinstance(module, ast.Module), 'Module expected'
+        except SyntaxError as e:
+            raise exc.ContentLoadError("Syntax error while parsing module {0}: Line {1}:{2} {3}".format(
+                                       os.path.basename(self.path), e.lineno, e.offset, e.text))
+            for node in module.body:
+                if not isinstance(node, ast.Assign):
+                    continue
 
-        module = ast.parse(code)  # type: ast.Module
-        assert isinstance(module, ast.Module), 'Module expected'
+                name = node.targets[0].id
 
-        for node in module.body:
-            if not isinstance(node, ast.Assign):
-                continue
-
-            name = node.targets[0].id
-
-            if name == 'ANSIBLE_METADATA':
-                self.metadata = self._parse_metdata(node)
-            elif name == 'DOCUMENTATION':
-                try:
-                    self.documentation = ast_utils.parse_ast_doc(node)
-                except ValueError as e:
-                    self.log.warning('Cannot parse "DOCUMENTATION": {}'
-                                     .format(e))
+                if name == 'ANSIBLE_METADATA':
+                    self.metadata = self._parse_metdata(node)
+                elif name == 'DOCUMENTATION':
+                    try:
+                        self.documentation = ast_utils.parse_ast_doc(node)
+                    except ValueError as e:
+                        self.log.warning('Cannot parse "DOCUMENTATION": {0}'
+                                         .format(e))
 
     def _parse_metdata(self, node):
         # type (ast.Dict) -> dict

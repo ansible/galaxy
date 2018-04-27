@@ -16,11 +16,13 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import ast
+import os
 
 from galaxy import constants
 from galaxy.importer import models, linters
 from galaxy.importer.loaders import base
 from galaxy.importer.utils import ast as ast_utils
+from galaxy.importer import exceptions as exc
 
 
 class PluginLoader(base.BaseLoader):
@@ -67,8 +69,12 @@ class PluginLoader(base.BaseLoader):
         with open(self.path) as fp:
             code = fp.read()
 
-        module = ast.parse(code)  # type: ast.Module
-        assert isinstance(module, ast.Module), 'Module expected'
+        try:
+            module = ast.parse(code)  # type: ast.Module
+            assert isinstance(module, ast.Module), 'Module expected'
+        except SyntaxError as e:
+            raise exc.ContentLoadError("Syntax error while parsing module {0}: Line {1}:{2} {3}".format(
+                                       os.path.basename(self.path), e.lineno, e.offset, e.text))
 
         for node in module.body:
             if not isinstance(node, ast.Assign):

@@ -19,10 +19,12 @@ from __future__ import unicode_literals
 
 import enum
 import logging
+import re
 
 
 MAX_TAGS_COUNT = 20
 PROVIDER_GITHUB = 'GitHub'
+TAG_REGEXP = re.compile('^[a-z0-9]+$')
 
 
 class Enum(enum.Enum):
