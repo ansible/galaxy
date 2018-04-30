@@ -21,7 +21,7 @@ import re
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 
-from rest_framework.exceptions import ValidationError, APIException
+from rest_framework.exceptions import ValidationError, APIException, PermissionDenied
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework import status
@@ -29,15 +29,16 @@ from rest_framework import status
 from galaxy.accounts.models import CustomUser as User
 from galaxy.api.githubapi import GithubAPI
 from galaxy.api.filters import FieldLookupBackend, OrderByBackend
-from galaxy.api.serializers import RepositorySerializer
-from galaxy.api.views.base_views import (ListCreateAPIView,
-                                         RetrieveUpdateDestroyAPIView)
-from galaxy.main.models import Repository, ProviderNamespace
+from galaxy.api import serializers
+from galaxy.api.views import base_views as views
+from galaxy.main import models
 
 
 __all__ = [
     'RepositoryList',
-    'RepositoryDetail'
+    'RepositoryDetail',
+    'RepositoryImportTaskList',
+    'RepositoryContentList'
 ]
 
 logger = logging.getLogger(__name__)
@@ -78,9 +79,9 @@ GITHUB_REPO_FIELDS = [
 ]
 
 
-class RepositoryList(ListCreateAPIView):
-    model = Repository
-    serializer_class = RepositorySerializer
+class RepositoryList(views.ListCreateAPIView):
+    model = models.Repository
+    serializer_class = serializers.RepositorySerializer
     filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)
 
     def get_queryset(self):
@@ -97,7 +98,7 @@ class RepositoryList(ListCreateAPIView):
         check_name(data.get('name'))
 
         try:
-            provider_namespace = ProviderNamespace.objects.get(
+            provider_namespace = models.ProviderNamespace.objects.get(
                 pk=data['provider_namespace'])
         except ObjectDoesNotExist:
             raise ValidationError(
@@ -109,8 +110,9 @@ class RepositoryList(ListCreateAPIView):
 
         repo = get_repo(provider_namespace, request.user, original_name)
         if not repo:
-            raise APIException("User does not have access to {0}/{1} in GitHub"
-                               .format(provider_namespace.name, original_name))
+            raise PermissionDenied(
+                "User does not have access to {0}/{1} in "
+                "GitHub".format(provider_namespace.name, original_name))
         for field in GITHUB_REPO_FIELDS:
             data[field] = repo[field]
 
@@ -122,7 +124,7 @@ class RepositoryList(ListCreateAPIView):
 
         data['provider_namespace'] = provider_namespace
         try:
-            repository = Repository.objects.create(**data)
+            repository = models.Repository.objects.create(**data)
         except Exception as exc:
             raise APIException('Error creating repository: {0}'
                                .format(exc.message))
@@ -141,9 +143,9 @@ class RepositoryList(ListCreateAPIView):
                         headers=headers)
 
 
-class RepositoryDetail(RetrieveUpdateDestroyAPIView):
-    model = Repository
-    serializer_class = RepositorySerializer
+class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
+    model = models.Repository
+    serializer_class = serializers.RepositorySerializer
     filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)
 
     def update(self, request, *args, **kwargs):
@@ -153,7 +155,7 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
 
         if data.get('provider_namespace'):
             try:
-                provider_namespace = ProviderNamespace.objects.get(
+                provider_namespace = models.ProviderNamespace.objects.get(
                     pk=data['provider_namespace'])
             except ObjectDoesNotExist:
                 raise ValidationError(
@@ -167,9 +169,9 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
 
         repo = get_repo(provider_namespace, request.user, original_name)
         if not repo:
-            raise APIException(
-                "User does not have access to {0}/{1} in GitHub".format(
-                    provider_namespace.name, original_name))
+            raise PermissionDenied(
+                "User does not have access to {0}/{1} in "
+                "GitHub".format(provider_namespace.name, original_name))
 
         for field in GITHUB_REPO_FIELDS:
             data[field] = repo[field]
@@ -178,7 +180,7 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
 
         try:
-            Repository.objects.filter(pk=instance.pk).update(**data)
+            models.Repository.objects.filter(pk=instance.pk).update(**data)
         except Exception as exc:
             raise APIException('Error updating repository: {0}'
                                .format(exc.message))
@@ -204,9 +206,22 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
         try:
             instance.provider_namespace.namespace.owners.get(pk=request.user.pk)
         except ObjectDoesNotExist:
-            raise APIException(
-                "User does not have access to {0}/{1}"
-                .format(instance.provider_namespace.name,
-                        instance.original_name))
+            raise PermissionDenied()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RepositoryImportTaskList(views.SubListAPIView):
+    view_name = "Repository Imports"
+    model = models.ImportTask
+    serializer_class = serializers.ImportTaskSerializer
+    parent_model = models.Repository
+    relationship = "import_tasks"
+
+
+class RepositoryContentList(views.SubListAPIView):
+    view_name = "Repository Content"
+    model = models.Content
+    serializer_class = serializers.ContentSerializer
+    parent_model = models.Repository
+    relationship = "content_objects"

@@ -61,11 +61,15 @@ class RepositorySerializer(BaseSerializer):
         if not isinstance(instance, Repository):
             return {}
         related = {
+            'content': reverse(
+                'api:repository_content_list',
+                kwargs={'pk': instance.pk}),
+            'imports': reverse(
+                'api:repository_import_task_list',
+                kwargs={'pk': instance.pk}),
             'provider': reverse(
                 'api:active_provider_detail',
                 kwargs={'pk': instance.provider_namespace.provider.pk}),
-            'imports': '{0}?repository__id={1}'.format(
-                reverse('api:import_task_list'), instance.id)
         }
         if instance.provider_namespace.namespace:
             related['namespace'] = reverse(
