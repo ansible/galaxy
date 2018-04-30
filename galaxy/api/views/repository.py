@@ -201,11 +201,11 @@ class RepositoryDetail(RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        repo = get_repo(instance.provider_namespace, request.user,
-                        instance.original_name)
-        if not repo:
+        try:
+            instance.provider_namespace.namespace.owners.get(pk=request.user.pk)
+        except ObjectDoesNotExist:
             raise APIException(
-                "User does not have access to {0}/{1} in GitHub"
+                "User does not have access to {0}/{1}"
                 .format(instance.provider_namespace.name,
                         instance.original_name))
         self.perform_destroy(instance)
