@@ -47,4 +47,6 @@ class Migration(migrations.Migration):
                     ('test_plugin', 'Test Plugin')
                 ], db_index=True, max_length=512, unique=True),
         ),
+        migrations.RunSQL(sql=INSERT_MODULE_UTILS_CONTENT_TYPE,
+                          reverse_sql=DELETE_MODULE_UTILS_CONTENT_TYPE)
     ]
