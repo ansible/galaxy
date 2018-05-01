@@ -116,6 +116,14 @@ class ContentSerializer(BaseModelSerializer):
                 'api:role_notification_list', args=(instance.pk,)),
             'repository': urls.reverse(
                 'api:repository_detail', args=(instance.repository.pk,)),
+            'namespace': urls.reverse(
+                'api:namespace_detail', args=(instance.namespace.pk,)),
+            'provider_namespace': urls.reverse(
+                'api:provider_namespace_detail',
+                args=(instance.repository.provider_namespace.pk,)),
+            'provider': urls.reverse(
+                'api:active_provider_detail',
+                args=(instance.repository.provider_namespace.provider.pk,)),
         }
 
     def get_summary_fields(self, instance):

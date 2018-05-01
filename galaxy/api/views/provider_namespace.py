@@ -27,14 +27,15 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError, APIException
 from rest_framework.response import Response
 
-from galaxy.main.models import Namespace, Provider, ProviderNamespace
-from .base_views import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from galaxy.main import models
+from . import base_views
 from ..githubapi import GithubAPI
-from ..serializers import ProviderNamespaceSerializer
+from .. import serializers
 
 __all__ = [
     'ProviderNamespaceList',
-    'ProviderNamespaceDetail'
+    'ProviderNamespaceDetail',
+    'ProviderNamespaceRepositoriesList'
 ]
 
 logger = logging.getLogger(__name__)
@@ -60,9 +61,9 @@ def check_namespace_access(user, namespace_id):
     return namespace
 
 
-class ProviderNamespaceList(ListCreateAPIView):
-    model = ProviderNamespace
-    serializer_class = ProviderNamespaceSerializer
+class ProviderNamespaceList(base_views.ListCreateAPIView):
+    model = models.ProviderNamespace
+    serializer_class = serializers.ProviderNamespaceSerializer
     filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)  # excludes ActiveOnly
 
     def post(self, request, *args, **kwargs):
@@ -83,12 +84,12 @@ class ProviderNamespaceList(ListCreateAPIView):
             raise
 
         try:
-            provider = Provider.objects.get(pk=data['provider'])
+            provider = models.Provider.objects.get(pk=data['provider'])
         except ObjectDoesNotExist:
             raise ValidationError(detail={'provider': 'provider does not exist'})
 
         try:
-            ProviderNamespace.objects.get(name=data['name'], provider=provider)
+            models.ProviderNamespace.objects.get(name=data['name'], provider=provider)
         except ObjectDoesNotExist:
             pass
         else:
@@ -103,15 +104,15 @@ class ProviderNamespaceList(ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         data['provider'] = provider
         data['namespace'] = namespace
-        obj = ProviderNamespace.objects.create(**data)
+        obj = models.ProviderNamespace.objects.create(**data)
         serializer = self.get_serializer(obj)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class ProviderNamespaceDetail(RetrieveUpdateDestroyAPIView):
-    model = ProviderNamespace
-    serializer_class = ProviderNamespaceSerializer
+class ProviderNamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
+    model = models.ProviderNamespace
+    serializer_class = serializers.ProviderNamespaceSerializer
     filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)  # excludes ActiveOnly
 
     def update(self, request, *args, **kwargs):
@@ -127,7 +128,7 @@ class ProviderNamespaceDetail(RetrieveUpdateDestroyAPIView):
         if data.get('namespace'):
             # User attempting to change the namespace
             try:
-                namespace = Namespace.objects.get(pk=data['namespace'], active=True)
+                namespace = models.Namespace.objects.get(pk=data['namespace'], active=True)
             except ObjectDoesNotExist:
                 raise ValidationError(detail={'namespace': 'namespace does not exist'})
             try:
@@ -138,7 +139,7 @@ class ProviderNamespaceDetail(RetrieveUpdateDestroyAPIView):
 
         if data.get('provider'):
             try:
-                provider = Provider.objects.get(pk=data['provider'])
+                provider = models.Provider.objects.get(pk=data['provider'])
             except ObjectDoesNotExist:
                 raise ValidationError(detail={'provider': 'provider does not exist'})
         else:
@@ -151,7 +152,7 @@ class ProviderNamespaceDetail(RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        ProviderNamespace.objects.filter(pk=instance.pk).update(**data)
+        models.ProviderNamespace.objects.filter(pk=instance.pk).update(**data)
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
@@ -164,3 +165,11 @@ class ProviderNamespaceDetail(RetrieveUpdateDestroyAPIView):
             raise
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ProviderNamespaceRepositoriesList(base_views.SubListAPIView):
+    view_name = "Provider Namespace Repositories"
+    model = models.Repository
+    serializer_class = serializers.RepositorySerializer
+    parent_model = models.ProviderNamespace
+    relationship = "repositories"

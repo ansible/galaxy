@@ -19,7 +19,7 @@ from django.core.urlresolvers import reverse
 from rest_framework import serializers as drf_serializers
 
 from galaxy.main.models import Repository
-from .serializers import BaseSerializer
+from . import serializers
 
 
 __all__ = [
@@ -27,16 +27,15 @@ __all__ = [
 ]
 
 
-class RepositorySerializer(BaseSerializer):
+class RepositorySerializer(serializers.BaseSerializer):
     REPOSITORY_TYPE_MULTIPLE = 'multiple'
     external_url = drf_serializers.SerializerMethodField()
     repository_type = drf_serializers.SerializerMethodField()
 
     class Meta:
         model = Repository
-        fields = (
+        fields = serializers.BASE_FIELDS + (
             'id',
-            'name',
             'original_name',
             'description',
             'import_branch',
@@ -70,6 +69,9 @@ class RepositorySerializer(BaseSerializer):
             'provider': reverse(
                 'api:active_provider_detail',
                 kwargs={'pk': instance.provider_namespace.provider.pk}),
+            'provider_namespace': reverse(
+                'api:provider_namespace_detail',
+                args=(instance.provider_namespace.pk,)),
         }
         if instance.provider_namespace.namespace:
             related['namespace'] = reverse(
