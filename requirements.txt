@@ -13,7 +13,7 @@ PyYAML
 python-memcached
 ansible
 pyOpenSSL
-psycopg2
+psycopg2-binary
 gevent>=0.13
 
 # Linting
