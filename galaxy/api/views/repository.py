@@ -137,8 +137,13 @@ class RepositoryList(views.ListCreateAPIView):
             else:
                 owner.repositories.add(repository)
 
+        import_task = views.create_import_task(repository, request.user)
+
         serializer = self.get_serializer(repository)
-        headers = self.get_success_headers(serializer.data)
+        data = serializer.data
+        data['summary_fields']['latest_import'] = \
+            serializers.ImportTaskSerializer(import_task).data
+        headers = self.get_success_headers(data)
         return Response(serializer.data, status=status.HTTP_201_CREATED,
                         headers=headers)
 
@@ -180,12 +185,14 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
 
         try:
-            models.Repository.objects.filter(pk=instance.pk).update(**data)
+            # FIXME(cutwater): This code should be refactored.
+            repository = models.Repository.objects.get(pk=instance.pk)
+            for k in data:
+                setattr(repository, k, data[k])
+            repository.save()
         except Exception as exc:
             raise APIException('Error updating repository: {0}'
                                .format(exc.message))
-
-        instance = self.get_object()
 
         for owner_pk in owners:
             try:
@@ -198,8 +205,13 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
         if not request.user.repositories.filter(pk=instance.pk):
             request.user.repositories.add(instance)
 
+        import_task = views.create_import_task(repository, request.user)
+
         serializer = self.get_serializer(instance=instance)
-        return Response(serializer.data)
+        data = serializer.data
+        data['summary_fields']['latest_import'] = \
+            serializers.ImportTaskSerializer(import_task).data
+        return Response(data)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
