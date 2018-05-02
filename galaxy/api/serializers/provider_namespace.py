@@ -18,7 +18,7 @@
 from django.core.urlresolvers import reverse
 
 from galaxy.main.models import ProviderNamespace
-from .serializers import BaseSerializer
+from . import serializers
 
 
 __all__ = [
@@ -26,13 +26,12 @@ __all__ = [
 ]
 
 
-class ProviderNamespaceSerializer(BaseSerializer):
+class ProviderNamespaceSerializer(serializers.BaseSerializer):
 
     class Meta:
         model = ProviderNamespace
-        fields = (
+        fields = serializers.BASE_FIELDS + (
             'id',
-            'name',
             'description',
             'display_name',
             'avatar_url',
@@ -61,8 +60,11 @@ class ProviderNamespaceSerializer(BaseSerializer):
         result = {}
         if instance.provider:
             result['provider'] = reverse(
-                'api:active_provider_detail', args=[instance.provider.pk])
+                'api:active_provider_detail', args=(instance.provider.pk,))
         if instance.namespace:
             result['namespace'] = reverse(
-                'api:namespace_detail', args=[instance.namespace.pk])
+                'api:namespace_detail', args=(instance.namespace.pk,))
+        result['repositories'] = reverse(
+            'api:provider_namespace_repositories_list',
+            args=(instance.pk,))
         return result
