@@ -15,9 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from django.core.urlresolvers import reverse
 from galaxy.main.models import Namespace
-from . import serializers
+from .serializers import BaseSerializer
 
 
 __all__ = [
@@ -25,12 +24,13 @@ __all__ = [
 ]
 
 
-class NamespaceSerializer(serializers.BaseSerializer):
+class NamespaceSerializer(BaseSerializer):
 
     class Meta:
         model = Namespace
-        fields = serializers.BASE_FIELDS + (
+        fields = (
             'id',
+            'name',
             'description',
             'avatar_url',
             'location',
@@ -62,17 +62,3 @@ class NamespaceSerializer(serializers.BaseSerializer):
             'owners': owners,
             'provider_namespaces': provider_namespaces
         }
-
-    def get_related(self, instance):
-        related = {
-            'provider_namespaces': reverse(
-                'api:namespace_provider_namespaces_list',
-                args=(instance.pk,)),
-            'content': reverse(
-                'api:namespace_content_list',
-                args=(instance.pk,)),
-            'owners': reverse(
-                'api:namespace_owners_list',
-                args=(instance.pk,)),
-        }
-        return related

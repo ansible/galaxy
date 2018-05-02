@@ -122,15 +122,6 @@ namespace_urls = [
     url(r'^$', views.NamespaceList.as_view(), name='namespace_list'),
     url(r'^(?P<pk>[0-9]+)/$', views.NamespaceDetail.as_view(),
         name='namespace_detail'),
-    url(r'^(?P<pk>[0-9]+)/provider_namespaces/$',
-        views.NamespaceProviderNamespacesList.as_view(),
-        name='namespace_provider_namespaces_list'),
-    url(r'^(?P<pk>[0-9]+)/content/$',
-        views.NamespaceContentList.as_view(),
-        name='namespace_content_list'),
-    url(r'^(?P<pk>[0-9]+)/owners/$',
-        views.NamespaceOwnersList.as_view(),
-        name='namespace_owners_list'),
 ]
 
 provider_namespace_urls = [
@@ -138,8 +129,6 @@ provider_namespace_urls = [
         name='provider_namespace_list'),
     url(r'^(?P<pk>[0-9]+)/$', views.ProviderNamespaceDetail.as_view(),
         name='provider_namespace_detail'),
-    url(r'^(?P<pk>[0-9]+)/repositories/$', views.ProviderNamespaceRepositoriesList.as_view(),
-        name='provider_namespace_repositories_list'),
 ]
 
 provider_urls = [

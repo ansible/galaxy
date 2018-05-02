@@ -29,17 +29,13 @@ from rest_framework.exceptions import ValidationError, APIException
 from rest_framework.response import Response
 
 from galaxy.accounts.models import CustomUser as User
-from galaxy.main import models
-from . import base_views
-from .. import serializers
+from galaxy.main.models import Namespace, Provider, ProviderNamespace
+from .base_views import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from ..serializers import NamespaceSerializer
 
 __all__ = [
     'NamespaceList',
-    'NamespaceDetail',
-    'NamespaceProviderNamespacesList',
-    'NamespaceProviderNamespacesList',
-    'NamespaceContentList',
-    'NamespaceOwnersList',
+    'NamespaceDetail'
 ]
 
 logger = logging.getLogger(__name__)
@@ -96,12 +92,12 @@ def check_providers(data_providers, parent=None):
             errors[i] = "Attribute 'provider' is required"
             continue
         try:
-            provider = models.Provider.objects.get(pk=pns['provider'])
+            provider = Provider.objects.get(pk=pns['provider'])
         except ObjectDoesNotExist:
             errors[i] = "The 'provider' attribute contains an invalid provider"
             continue
         if provider:
-            existing_namespaces = models.ProviderNamespace.objects.filter(
+            existing_namespaces = ProviderNamespace.objects.filter(
                 provider=provider,
                 name__iexact=pns['name'].lower(),
                 namespace__isnull=False)
@@ -124,7 +120,7 @@ def update_provider_namespaces(namespace, provider_namespaces):
         pns_attributes['description'] = pns['description'] if pns.get('description') is not None else ''
 
         try:
-            provider = models.Provider.objects.get(pk=pns['provider'])
+            provider = Provider.objects.get(pk=pns['provider'])
         except ObjectDoesNotExist:
             pass
         else:
@@ -132,13 +128,12 @@ def update_provider_namespaces(namespace, provider_namespaces):
             pns_attributes['namespace'] = namespace
 
             try:
-                pns_obj, _ = models.ProviderNamespace.objects.update_or_create(name=pns['name'],
-                                                                               defaults=pns_attributes)
+                pns_obj, _ = ProviderNamespace.objects.update_or_create(name=pns['name'], defaults=pns_attributes)
                 pns['id'] = pns_obj.pk
             except Exception as exc:
                 raise APIException('Error creating or updating provider namespaces: {0}'.format(exc.message))
     # Disassociate provider namespaces not in the list
-    for id in [obj.pk for obj in models.ProviderNamespace.objects.filter(namespace=namespace)]:
+    for id in [obj.pk for obj in ProviderNamespace.objects.filter(namespace=namespace)]:
         found = False
         for pns in provider_namespaces:
             if pns['id'] == id:
@@ -147,7 +142,7 @@ def update_provider_namespaces(namespace, provider_namespaces):
         if not found:
             # The provider namespace is no longer associated with the Galaxy namespace
             try:
-                obj = models.ProviderNamespace.objects.get(pk=id)
+                obj = ProviderNamespace.objects.get(pk=id)
             except ObjectDoesNotExist as exc:
                 raise
             else:
@@ -171,9 +166,9 @@ def update_owners(instance, owners):
         instance.owners.remove(owner)
 
 
-class NamespaceList(base_views.ListCreateAPIView):
-    model = models.Namespace
-    serializer_class = serializers.NamespaceSerializer
+class NamespaceList(ListCreateAPIView):
+    model = Namespace
+    serializer_class = NamespaceSerializer
     filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)  # excludes ActiveOnly
 
     def post(self, request, *args, **kwargs):
@@ -185,7 +180,7 @@ class NamespaceList(base_views.ListCreateAPIView):
 
         if data.get('name'):
             try:
-                models.Namespace.objects.get(name__iexact=data['name'].lower())
+                Namespace.objects.get(name__iexact=data['name'].lower())
                 errors['name'] = "A namespace with this name already exists"
             except ObjectDoesNotExist:
                 pass
@@ -216,7 +211,7 @@ class NamespaceList(base_views.ListCreateAPIView):
             if item in data:
                 namespace_attributes[item] = data[item]
         try:
-            namespace = models.Namespace.objects.create(**namespace_attributes)
+            namespace = Namespace.objects.create(**namespace_attributes)
         except Exception as exc:
             raise APIException('Error creating namespace: {0}'.format(exc.message))
 
@@ -227,9 +222,9 @@ class NamespaceList(base_views.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
-    model = models.Namespace
-    serializer_class = serializers.NamespaceSerializer
+class NamespaceDetail(RetrieveUpdateDestroyAPIView):
+    model = Namespace
+    serializer_class = NamespaceSerializer
     filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)  # excludes ActiveOnly
 
     def update(self, request, *args, **kwargs):
@@ -268,27 +263,3 @@ class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(instance=instance)
         return Response(serializer.data)
-
-
-class NamespaceProviderNamespacesList(base_views.SubListAPIView):
-    view_name = "Namespace Provider Namespaces"
-    model = models.ProviderNamespace
-    serializer_class = serializers.ProviderNamespaceSerializer
-    parent_model = models.Namespace
-    relationship = "provider_namespaces"
-
-
-class NamespaceContentList(base_views.SubListAPIView):
-    view_name = "Namespace Content"
-    model = models.Content
-    serializer_class = serializers.ContentSerializer
-    parent_model = models.Namespace
-    relationship = "content_objects"
-
-
-class NamespaceOwnersList(base_views.SubListAPIView):
-    view_name = "Namespace Owners"
-    model = User
-    serializer_class = serializers.UserListSerializer
-    parent_model = models.Namespace
-    relationship = "owners"

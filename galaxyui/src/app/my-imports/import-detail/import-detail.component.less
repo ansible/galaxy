@@ -18,11 +18,13 @@
     .title-container {
         display: inline-block;
         .title {
-            font-size: 20px;
+            display: inline;
+            font-size: 18px;
         }
         .refreshing-icon {
-            padding-left: 10px;
-            color: @ansible-dark-grey;
+            display: inline;
+            font-size: 18px;
+            margin-left: 10px;
             opacity: 0;
             transition: 2s ease;
         }
@@ -31,9 +33,9 @@
         }
     }
     .import-btn-container {
-        display: relative;
+        display: inline;
         float: right;
-        margin-top: 10px;
+        margin-top: 5px;
     }
     .title-bar {
         position: relative;
@@ -102,5 +104,38 @@
             .warning { color: @warning }
             .success { color: @green }
         }
+    }
+    #log-follow-button {
+        position: relative;
+        top: 0;
+        float: right;
+        font-size: 18px;
+        a, a:visited, a:active {
+            color: @white;
+        }
+        a:hover {
+            text-decoration: none;
+            cursor: pointer;
+        }
+        a.toggle-active {
+            color: @green;
+        }
+    }
+    #log-follow-button.fixed {
+        position: fixed;
+        top: 175px;
+        right: 60px;
+    }
+
+    @media(max-width: 768px) {
+        #log-follow-button {
+            display: none;
+        }
+    }
+}
+
+@media(max-width: 768px) {
+    #import-details-container {
+        margin-top: 20px;
     }
 }

@@ -36,7 +36,8 @@
         <app-import-detail
             [importTask]="selected"
             [refreshing]="refreshing"
-            (startedImport)="startedImport($event)">   
+            (startedImport)="startedImport($event)"
+            (scrollToggled)="toggleScroll($event)">
         </app-import-detail>
     </div>
 </div>
