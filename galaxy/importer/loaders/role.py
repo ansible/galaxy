@@ -54,9 +54,9 @@ class RoleMetaParser(object):
     }
 
     def __init__(self, metadata, logger=None):
+        self.log = logger or base.default_logger
         self.metadata = self._get_galaxy_info(metadata)
         self.dependencies = self._get_dependencies(metadata)
-        self.log = logger or base.default_logger
 
     def _get_galaxy_info(self, metadata):
         if 'galaxy_info' in metadata:
