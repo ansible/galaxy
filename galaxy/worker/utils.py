@@ -17,70 +17,11 @@
 
 from __future__ import absolute_import
 
-import contextlib
-import errno
-import datetime as dt
-import shutil
-import subprocess
-import tempfile
-
 import github
-import pytz
 import six
 import requests
 
 from . import exceptions as exc
-
-
-@contextlib.contextmanager
-def WorkerCloneDir(basedir=None):
-    path = tempfile.mkdtemp(dir=basedir)
-    try:
-        yield path
-    finally:
-        try:
-            shutil.rmtree(path)
-        except OSError as e:
-            # Note(cutwater): Temporary directory may be deleted by git
-            # process in case of error while cloning repository
-            if e.errno != errno.ENOENT:
-                raise
-
-
-def clone_repository(clone_url, directory, branch=None):
-    """Clones a git repository to destination directory.
-
-    @param str clone_url: The repository URL to clone from.
-    @param str directory: The name of a directory to clone into.
-    @param str branch: Branch name to checkout. If not specified,
-        a default branch is checked out.
-    """
-    cmd = ['git', 'clone', '--depth', '1']
-    if branch:
-        cmd += ['--branch', branch]
-    cmd += [clone_url, directory]
-    subprocess.check_call(cmd)
-
-
-def get_commit_info(fields, commit_id=None, directory=None,
-                    date_format=None):
-    commit_id = commit_id or 'HEAD'
-    log_format = '%x1f'.join(field[1] for field in fields)
-
-    cmd = ['git', 'log', '-n', '1',
-           '--format=' + log_format]
-    if date_format:
-        cmd.append('--date=' + date_format)
-    cmd.append(commit_id)
-    output = subprocess.check_output(cmd, cwd=directory).strip()
-
-    return {fmt[0]: value.strip() for fmt, value
-            in zip(fields, output.split('\x1f'))}
-
-
-def parse_git_date_raw(date):
-    return dt.datetime.fromtimestamp(
-        int(date.strip().split(' ', 1)[0]), tz=pytz.utc)
 
 
 def get_readme(token, repo, branch=None):
