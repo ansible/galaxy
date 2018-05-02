@@ -21,6 +21,10 @@ class ImporterError(Exception):
     pass
 
 
+class RepositoryError(ImporterError):
+    pass
+
+
 class ContentNotFound(ImporterError):
     pass
 
