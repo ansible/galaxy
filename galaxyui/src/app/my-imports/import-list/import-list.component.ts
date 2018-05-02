@@ -20,6 +20,8 @@ import { Observable }    from "rxjs/Observable";
 import { Import }        from '../../resources/imports/import';
 import { ImportLatest }  from '../../resources/imports/import-latest';
 
+import { ImportState }   from '../../enums/import-state.enum';
+
 import { PageHeaderComponent } from '../../page-header/page-header.component';
 
 import { ListConfig }    from 'patternfly-ng/list/basic-list/list-config';
@@ -56,6 +58,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     refreshing: boolean = false;
     polling = null;
     query: string;
+    scroll: boolean;
 
     constructor(
         private route: ActivatedRoute,
@@ -127,17 +130,10 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 this.applyFilters(event);
             }
         });
-        
-        setTimeout(_=>{
-            this.polling = Observable.interval(5000)
-                .subscribe(_ => {
-                    this.refreshImports();
-                });
-        }, 3000)
     }
 
     ngAfterViewInit() {
-        this.setVerticalScroll(); 
+        this.setVerticalScroll();
         if (this.selected) {
             this.selectItem(this.selected.id);
         }
@@ -154,6 +150,9 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         if (event['item']) {
             let clickedId = event['item']['id'];
             if (clickedId != this.selected.id) {
+                if (this.polling) {
+                    this.polling.unsubscribe();
+                }
                 this.getImport(clickedId, true);
             }
         }
@@ -170,34 +169,32 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     }
 
     getImport(id: number, showPageLoader: boolean): void {
-        if(showPageLoader)
+        if(showPageLoader) {
             this.pageLoading = true;
+        }
+        let deselectId: number;
+        if (this.selected) {
+            deselectId = this.selected.id;
+            this.selected.id = 0;
+        }
+        if (this.polling) {
+            this.polling.unsubscribe();
+        }
         this.importsService.get(id).subscribe(
             result => {
-                let deselectId = this.selected ? this.selected.id : null;
+                this.prepareImport(result)
                 this.selected = result;
-                if (!this.selected.import_branch) {
-                    // TODO: a default value for import branch should be set on the backend
-                    this.selected.import_branch = "master";
-                    if (this.selected.summary_fields.repository.import_branch) {
-                        this.selected.import_branch = this.selected.summary_fields.repository.import_branch;
-                    }
-                }
-                if (this.selected.state == 'PENDING') {
-                    this.selected.last_run = "Waiting to start...";
-                }
-                else if (this.selected.state == 'RUNNING') {
-                    this.selected.last_run = "Running...";
-                }
-                else if (this.selected.state == 'FAILED' || this.selected.state == 'SUCCESS') {
-                    let state = this.selected.state.charAt(0).toUpperCase() +
-                        this.selected.state.slice(1).toLowerCase();
-                    this.selected.last_run = state + ' ' + moment(this.selected.finished).fromNow();
-                }
                 if (this.pfList) {
                     this.selectItem(this.selected.id, deselectId);
                 }
                 this.cancelPageLoading();
+                setTimeout(_ => { this.setVerticalScroll(); }, 1000);
+                if (this.selected.state == ImportState.running ||
+                    this.selected.state == ImportState.pending) {
+                        // monitor the state of a running import
+                        this.polling = Observable.interval(5000)
+                            .subscribe(_ => this.refreshImport());
+                }
             });
     }
 
@@ -221,37 +218,91 @@ export class ImportListComponent implements OnInit, AfterViewInit {
 
     onResize($event): void {
         // On browser resize
-        this.setVerticalScroll();    
+        this.setVerticalScroll();
     }
 
     startedImport($event): void {
-        this.refreshImports();
+        this.refreshImport();
+        this.polling = Observable.interval(5000)
+            .subscribe(_ => this.refreshImport());
     }
 
-    // private 
+    toggleScroll($event): void {
+        this.scroll = $event;
+        if (this.scroll) {
+            this.scrollDetails();
+        }
+    }
+
+    // private
+
+    private scrollDetails() {
+        $('#import-details-container').animate({scrollTop:$('#import-details-container')[0].scrollHeight}, 1000);
+    }
+
+    private prepareImport(data: Import): void {
+        if (!data.import_branch) {
+            // TODO: a default value for import branch should be set on the backend
+            data.import_branch = "master";
+            if (data.summary_fields.repository.import_branch) {
+                data.import_branch = data.summary_fields.repository.import_branch;
+            }
+        }
+        if (data.state == ImportState.pending) {
+            data.last_run = "Waiting to start...";
+        }
+        else if (data.state == ImportState.running) {
+            data.last_run = "Running...";
+        }
+        else if (data.state == ImportState.failed || data.state == ImportState.success) {
+            let state = data.state.charAt(0).toUpperCase() +
+                data.state.slice(1).toLowerCase();
+            data.last_run = state + ' ' + moment(data.finished).fromNow();
+        }
+    }
+
+    private prepareImports(imports: ImportLatest[]): void {
+        imports.forEach((item: ImportLatest) => {
+            if (this.selected && this.selected.summary_fields.repository.id == item.id) {
+                item['selected'] = true;
+            }
+            item.finished = moment(item.modified).fromNow();
+            item.state = item.state.charAt(0).toUpperCase() + item.state.slice(1).toLowerCase();
+        });
+    }
 
     private setVerticalScroll(): void {
         let windowHeight = window.innerHeight;
         let windowWidth = window.innerWidth;
+        let $importList = $('#import-list');
+        let $importDetails = $('#import-details-container');
         if (windowWidth > 768) {
             let headerh = $('.page-header').outerHeight(true);
             let navbarh = $('.navbar-pf-vertical').outerHeight(true);
             let filterh = $('#import-filter').outerHeight(true);
             let listHeight = windowHeight - headerh - navbarh - filterh - 60;
-            if (!isNaN(listHeight))
-                $('#import-list').css('height', listHeight);
- 
+            if (!isNaN(listHeight)) {
+                $importList.css('height', listHeight);
+            }
+
             let detailHeight = windowHeight - headerh - navbarh - 60;
-            if (!isNaN(detailHeight))
-                $('#import-details-container').css('height', detailHeight);
+            if (!isNaN(detailHeight)) {
+                $importDetails.css('height', detailHeight);
+            }
         } else {
-            $('#import-list').css('height', '100%');
-            $('#import-details-container').css('height', '100%');
+            $importList.css('height', '100%');
+            $importDetails.css('height', '100%');
+        }
+        if (this.scroll) {
+             this.scrollDetails();
         }
     }
 
     private searchImports(query?: string): void {
         this.pageLoading = true;
+        if (this.polling) {
+            this.polling.unsubscribe();
+        }
         this.importsService.latest(query).subscribe(results => {
             this.items = results;
             this.prepareImports(this.items);
@@ -261,47 +312,58 @@ export class ImportListComponent implements OnInit, AfterViewInit {
             } else {
                 this.cancelPageLoading();
             }
-            this.setVerticalScroll();
+            setTimeout(_ => { this.setVerticalScroll(); }, 1000);
         });
     }
 
-    private refreshImports(): void {
-        this.refreshing = true;
-        this.importsService.latest(this.query).subscribe(results => {
-            this.prepareImports(results);
-            this.items = results;
-            this.filterConfig.resultsCount = this.items.length;
-            if (this.items.length) {
-                let selected_item: ImportLatest = this.items[0];
-                if (this.selected) {
-                    this.items.forEach(item => {
-                        if (item['repository_id'] == this.selected.summary_fields.repository.id) {
-                            selected_item = item;
+    private refreshImport(): void {
+        // Refresh the attributes of the currently selected import
+        if (this.selected) {
+            let selectedId = this.selected.id;
+            this.refreshing = true;
+            let params: any = {
+                'repository__id': this.selected.summary_fields.repository.id,
+                'order_by': '-id'
+            }
+            this.importsService.query(params).subscribe(
+                result => {
+                    if (result.length) {
+                        let import_result: Import = result[0];
+                        this.prepareImport(import_result);
+                        this.items.forEach((item: ImportLatest) => {
+                            if (item.repository_id == import_result.summary_fields.repository.id) {
+                                item.finished = moment(import_result.modified).fromNow();
+                                item.state = import_result.state.charAt(0).toUpperCase() +
+                                    import_result.state.slice(1).toLowerCase();
+                            }
+                        });
+                        if (this.selected.id == selectedId) {
+                            // If the selected item has not changed,
+                            //   copy result property values -> this.selected
+                            let keys = Object.keys(import_result);
+                            for (var i=0; i < keys.length; i++ ) {
+                                this.selected[keys[i]] = import_result[keys[i]];
+                            }
+                            if (this.selected.state == ImportState.failed ||
+                                this.selected.state == ImportState.success) {
+                                // The import finished
+                                if (this.polling) {
+                                    this.polling.unsubscribe();
+                                }
+                            }
                         }
-                    });
-                }
-                this.getImport(selected_item.id, false);
-            } else {
-                this.refreshing = false;
-            }
-            this.setVerticalScroll();
-        });
-    }
-
-    private prepareImports(imports: ImportLatest[]): void {
-        imports.forEach(item => {
-            if (this.selected && this.selected.summary_fields.repository.id == item.id) {
-                item['selected'] = true;
-            }
-            item.finished = moment(item.modified).fromNow();
-            item.state = item.state.charAt(0).toUpperCase() + item.state.slice(1).toLowerCase();
-        });
+                    }
+                    this.refreshing = false;
+                    this.scrollDetails();
+                    setTimeout(_ => { this.setVerticalScroll(); }, 1000);
+                });
+        }
     }
 
     private cancelPageLoading(): void {
         setTimeout(_ => {
             this.pageLoading = false;
             this.refreshing = false;
-        }, 2000);
+        }, 500);
     }
 }

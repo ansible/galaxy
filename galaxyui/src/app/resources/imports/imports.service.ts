@@ -60,15 +60,24 @@ export class ImportsService {
             .pipe(
                 map(response => response.results),
                 tap(_ => this.log('fetched latest imports')),
-                catchError(this.handleError('Query', []))
+                catchError(this.handleError('Latest', [] as ImportLatest[]))
             );
     }
 
-    get(id: number): Observable<any> {
+    query(params?: any): Observable<Import[]> {
+        return this.http.get<PagedResponse>(this.url + '/', {params: params})
+            .pipe(
+                map(response => response.results),
+                tap(_ => this.log('fetched imports')),
+                catchError(this.handleError('Query', [] as Import[]))
+            );
+    }
+
+    get(id: number): Observable<Import> {
         return this.http.get<any>(`${this.url}/${id.toString()}/`)
             .pipe(
                 tap(_ => this.log('fetched import')),
-                catchError(this.handleError('Get', []))
+                catchError(this.handleError('Get', {} as Import))
             );
     }
 

@@ -11,7 +11,7 @@ import {
 } from '@angular/router';
 
 
-import { cloneDeep } from 'lodash';
+import { cloneDeep }    from 'lodash';
 
 import { Action }       from 'patternfly-ng/action/action';
 import { ActionConfig } from 'patternfly-ng/action/action-config';
@@ -144,8 +144,8 @@ export class NamespaceListComponent implements OnInit {
 
     ngDoCheck(): void {}
 
-    
-    // Action Button and Menu 
+
+    // Action Button and Menu
 
     getActionConfig(item: Namespace, addContentButtonTemplate: TemplateRef<any>): ActionConfig {
         let config = {
@@ -154,7 +154,7 @@ export class NamespaceListComponent implements OnInit {
                 title: 'Add Content',
                 styleClass: 'btn-primary',
                 tooltip: 'Add roles, modules, APBs and other content from repositories',
-                template: addContentButtonTemplate 
+                template: addContentButtonTemplate
             }],
             moreActions: [{
                 id: 'editNamespaceProps',
@@ -176,7 +176,7 @@ export class NamespaceListComponent implements OnInit {
             config.moreActions[1] = {
                 id: 'enableNamespace',
                 title: 'Enable',
-                tooltip: 'Enable namespace'    
+                tooltip: 'Enable namespace'
             };
         }
         return config;
@@ -216,7 +216,7 @@ export class NamespaceListComponent implements OnInit {
                 this.router.navigate([`/my-content/namespaces/${item.id}`]);
                 break;
             }
-            case 'disableNamespace': 
+            case 'disableNamespace':
             case 'enableNamespace': {
                 this.enableDisableNamespace(item);
                 break;
@@ -258,7 +258,7 @@ export class NamespaceListComponent implements OnInit {
     }
 
     matchesFilters(item: any, filters: Filter[]): boolean {
-        // Return true if all filters match the item. 
+        // Return true if all filters match the item.
         let matches = true;
         filters.forEach((filter) => {
             if (!this.matchesFilter(item, filter)) {
@@ -318,5 +318,5 @@ export class NamespaceListComponent implements OnInit {
         setTimeout(_ => {
             this.pageLoading = false;
         }, 2000);
-    } 
+    }
 }

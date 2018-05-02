@@ -4,6 +4,7 @@ export class ImportLatest {
     summary_fields: object;
     id: number;
     namespace: string;
+    repository_id: number;
     repository_name: string;
     state: string;
     created: string;
