@@ -25,6 +25,14 @@ import subprocess
 import dateutil.parser as dt_parser
 
 
+TIMEOUT_RETCODE = 124
+
+
+class RepositoryNotExist(Exception):
+    """Repository does not exist exception."""
+    pass
+
+
 @contextlib.contextmanager
 def make_clone_dir(basedir=None):
     """Creates temporary directory and deletes at the end.
@@ -59,7 +67,24 @@ def clone_repository(clone_url, directory, branch=None):
         a default branch is checked out.
     :raises subprocess.CalledProcessError: If git command finished with
         non-zero exit code.
+    :raises RepositoryNotExist: If repository does not exist.
     """
+    # NOTE: Checking that remote repository exists. If trying to clone
+    # without this check `git clone` will hang on waiting for
+    # authentication user input.
+    # This code should be removed once git version is upgrade.
+    # Starting from version 2.3 git provides GIT_TERMINAL_PROMPT environment
+    # variable, that causes immediate exit of `git clone` command.
+    cmd = ['timeout', '10', 'git', 'ls-remote', clone_url]
+    try:
+        subprocess.check_call(cmd)
+    except subprocess.CalledProcessError as e:
+        if e.returncode == TIMEOUT_RETCODE:
+            raise RepositoryNotExist("Repository '{0}' does not exist"
+                                     .format(clone_url))
+        else:
+            raise
+
     cmd = ['git', 'clone', '--quiet', '--depth', '1']
     if branch:
         cmd += ['--branch', branch]

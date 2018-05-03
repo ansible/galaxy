@@ -31,7 +31,10 @@ default_logger = logging.getLogger(__name__)
 
 def import_repository(url, branch=None, temp_dir=None, logger=None):
     with git.make_clone_dir(temp_dir) as clone_dir:
-        git.clone_repository(url, clone_dir, branch=branch)
+        try:
+            git.clone_repository(url, clone_dir, branch=branch)
+        except Exception as e:
+            raise exc.RepositoryError(e)
         return load_repository(clone_dir, logger)
 
 
