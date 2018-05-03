@@ -66,22 +66,25 @@ class ModuleLoader(base.BaseLoader):
             module = ast.parse(code)  # type: ast.Module
             assert isinstance(module, ast.Module), 'Module expected'
         except SyntaxError as e:
-            raise exc.ContentLoadError("Syntax error while parsing module {0}: Line {1}:{2} {3}".format(
-                                       os.path.basename(self.path), e.lineno, e.offset, e.text))
-            for node in module.body:
-                if not isinstance(node, ast.Assign):
-                    continue
+            raise exc.ContentLoadError(
+                "Syntax error while parsing module {0}: Line {1}:{2} {3}"
+                .format(os.path.basename(self.path),
+                        e.lineno, e.offset, e.text))
 
-                name = node.targets[0].id
+        for node in module.body:
+            if not isinstance(node, ast.Assign):
+                continue
 
-                if name == 'ANSIBLE_METADATA':
-                    self.metadata = self._parse_metdata(node)
-                elif name == 'DOCUMENTATION':
-                    try:
-                        self.documentation = ast_utils.parse_ast_doc(node)
-                    except ValueError as e:
-                        self.log.warning('Cannot parse "DOCUMENTATION": {0}'
-                                         .format(e))
+            name = node.targets[0].id
+
+            if name == 'ANSIBLE_METADATA':
+                self.metadata = self._parse_metdata(node)
+            elif name == 'DOCUMENTATION':
+                try:
+                    self.documentation = ast_utils.parse_ast_doc(node)
+                except ValueError as e:
+                    self.log.warning('Cannot parse "DOCUMENTATION": {0}'
+                                     .format(e))
 
     def _parse_metdata(self, node):
         # type (ast.Dict) -> dict
