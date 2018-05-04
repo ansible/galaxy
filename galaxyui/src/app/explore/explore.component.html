@@ -1,0 +1,27 @@
+<app-page-header [headerTitle]="headerTitle"></app-page-header>
+<div id="explore-page" class="container-fluid">
+  <div class="row content-row">
+    <div class="col-lg-4">
+      <app-top-list [icon]="'star'" [items]="mostStarred" [cardTitle]="'Most Starred'"></app-top-list>
+    </div>
+    <div class="col-lg-4">
+      <app-top-list [icon]="'eye'" [items]="mostWatched" [cardTitle]="'Most Watched'"></app-top-list>
+    </div>
+    <div class="col-lg-4">
+      <app-top-list [icon]="'download'" [items]="mostDownloaded" [cardTitle]="'Most Downloaded'"></app-top-list>
+    </div>
+  </div>
+
+  <div class="row content-row">
+    <div class="col-lg-4">
+      <app-top-list [icon]="'user-circle'" [items]="topContributors" [cardTitle]="'Top Cobtributors'"></app-top-list>
+    </div>
+    <div class="col-lg-4">
+      <app-top-list [icon]="'tags'" [items]="topTags" [cardTitle]="'Top Tags'"></app-top-list>
+    </div>
+    <div class="col-lg-4">
+      <app-top-list [icon]="'certificate'" [items]="newestItems" [cardTitle]="'Newest'"></app-top-list>
+    </div>
+  </div>
+
+</div>

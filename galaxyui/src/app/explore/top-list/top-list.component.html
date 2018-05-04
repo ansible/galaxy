@@ -1,0 +1,30 @@
+<pfng-card [headerTemplate]="topList" class="top-list">
+
+  <ng-template #topList>
+    <div class="card-header">
+      <span class="header-icon"><i class="fa fa-{{ icon }} fa-2x"></i></span>
+      <span class="header-text">{{ cardTitle }}</span>
+    </div>
+  </ng-template>
+
+  <div class="card-cont">
+    <pfng-list [items]="items" [itemTemplate]="topListTemplate">
+      <ng-template #topListTemplate let-item="item" let-item="index">
+        <div class="list-pf-content-wrapper">
+          <div class="list-pf-main-content">
+            <div class="list-view-pf-left decrease-padding">
+              <span class="fa fa-{{ item.icon }} fa-2x "></span>
+            </div>
+            <div class="list-pf-body list-name">
+              <span *ngIf="item.type">{{item.type}}: </span>{{item.name}}
+            </div>
+          </div>
+          <!-- <div class="list-pf-additional-content">
+            <span class="item-count"><span class="fa fa-{{ icon }}"></span> {{ item.count }}</span>
+          </div> -->
+        </div>
+      </ng-template>
+    </pfng-list>
+  </div>
+
+</pfng-card>
