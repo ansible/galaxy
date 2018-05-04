@@ -2,7 +2,7 @@
 
   <ng-template #topList>
     <div class="card-header">
-      <span class="header-icon"><i class="fa fa-star fa-2x"></i></span>
+      <span class="header-icon"><i class="fa fa-{{ icon }} fa-2x"></i></span>
       <span class="header-text">{{ cardTitle }}</span>
     </div>
   </ng-template>
@@ -12,11 +12,11 @@
       <ng-template #topListTemplate let-item="item" let-item="index">
         <div class="list-pf-content-wrapper">
           <div class="list-pf-main-content">
-            <div class="list-view-pf-left">
-              <span class="fa fa-{{ item.icon }} fa-2x"></span>
+            <div class="list-view-pf-left decrease-padding">
+              <span class="fa fa-{{ item.icon }} fa-2x "></span>
             </div>
             <div class="list-pf-body list-name">
-              {{item.type}}: {{item.name}}
+              <span *ngIf="item.type">{{item.type}}: </span>{{item.name}}
             </div>
           </div>
           <!-- <div class="list-pf-additional-content">

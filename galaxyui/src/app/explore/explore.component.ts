@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Repository } from '../resources/respositories/repository';
 import { RepositoryService } from '../resources/respositories/repository.service';
 import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
-
+import { TagsService } from '../resources/tags/tags.service'
 
 class TopCard {
   type: string;
@@ -11,9 +11,9 @@ class TopCard {
   count: number;
   url: string;
 
-  public constructor(init?:Partial<Person>) {
-      Object.assign(this, init);
-  }
+  // public constructor(init?:Partial<Person>) {
+  //     Object.assign(this, init);
+  // }
 
 }
 
@@ -24,16 +24,22 @@ class TopCard {
 })
 export class ExploreComponent implements OnInit {
   headerTitle = 'Explore';
-  mostStarredRepos: TopCard[] = [];
-  mostWatchedRepos: TopCard[] = [];
-
+  mostStarred: TopCard[] = [];
+  mostWatched: TopCard[] = [];
+  mostDownloaded: TopCard[] = [];
+  topTags: TopCard[] = [];
+  topUsers: TopCard[] = [];
+  newestItems: TopCard[] = [];
 
   constructor(
     private repositoryService: RepositoryService,
+    private tagsService: TagsService,
+
   ) { }
 
   ngOnInit() {
     this.getMostStarred();
+    this.getTopTags();
   }
 
   repositoryToTopCard(repo: Repository, type: string, icon: string): TopCard {
@@ -54,7 +60,21 @@ export class ExploreComponent implements OnInit {
   getMostStarred(): void {
     this.repositoryService.query({'order_by': '-stargazers_count', 'page_size': '1'})
       .subscribe(repositories => {
-        this.mostStarredRepos.push(this.repositoryToTopCard(repositories[0], "Repo", "gear"));
+        this.mostStarred.push(this.repositoryToTopCard(repositories[0], "Repo", "gear"));
+      });
+  }
+
+  getTopTags(): void{
+    this.tagsService.search({'order_by': '-roles_count', 'page_size': '5'})
+      .subscribe(tags => {
+        tags.forEach(tag =>{
+          this.topTags.push(new TopCard({
+            icon: 'tag',
+            name: tag.name,
+            count: tag.roles_count,
+            url: tag.url,
+          }))
+        });
       });
   }
 }

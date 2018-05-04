@@ -2,73 +2,25 @@
 <div id="explore-page" class="container-fluid">
   <div class="row content-row">
     <div class="col-lg-4">
-      <app-top-list [icon]="'star'" [items]="mostStarredRepos" [cardTitle]="'Most Starred'"></app-top-list>
+      <app-top-list [icon]="'star'" [items]="mostStarred" [cardTitle]="'Most Starred'"></app-top-list>
     </div>
     <div class="col-lg-4">
-      <app-top-list [icon]="'eye'" [items]="mostWatchedRepos" [cardTitle]="'Most Watched'"></app-top-list>
+      <app-top-list [icon]="'eye'" [items]="mostWatched" [cardTitle]="'Most Watched'"></app-top-list>
     </div>
-
-
     <div class="col-lg-4">
-      <pfng-card [headerTemplate]="mostDownloaded">
-
-        <ng-template #mostDownloaded>
-          <div class="card-header">
-            <span class="header-icon"><i class="fa fa-download fa-2x"></i></span>
-            <span class="header-text">Most Downloaded</span>
-          </div>
-        </ng-template>
-
-        <div class="card-cont"></div>
-
-      </pfng-card>
+      <app-top-list [icon]="'download'" [items]="mostDownloaded" [cardTitle]="'Most Downloaded'"></app-top-list>
     </div>
   </div>
 
   <div class="row content-row">
     <div class="col-lg-4">
-      <pfng-card [headerTemplate]="topContributors">
-
-        <ng-template #topContributors>
-          <div class="card-header">
-            <span class="header-icon"><i class="fa fa-user-circle fa-2x"></i></span>
-            <span class="header-text">Top Contributors</span>
-          </div>
-        </ng-template>
-
-        <div class="card-cont"></div>
-
-      </pfng-card>
+      <app-top-list [icon]="'user-circle'" [items]="topContributors" [cardTitle]="'Top Cobtributors'"></app-top-list>
     </div>
     <div class="col-lg-4">
-      <pfng-card [headerTemplate]="topTags">
-
-        <ng-template #topTags>
-          <div class="card-header">
-            <span class="header-icon"><i class="fa fa-tags fa-2x"></i></span>
-            <span class="header-text">Top Tags</span>
-          </div>
-        </ng-template>
-
-        <div class="card-cont"></div>
-
-      </pfng-card>
+      <app-top-list [icon]="'tags'" [items]="topTags" [cardTitle]="'Top Tags'"></app-top-list>
     </div>
-
-
     <div class="col-lg-4">
-      <pfng-card [headerTemplate]="newest">
-
-        <ng-template #newest>
-          <div class="card-header">
-            <span class="header-icon"><i class="fa fa-certificate fa-2x"></i></span>
-            <span class="header-text">Newest</span>
-          </div>
-        </ng-template>
-
-        <div class="card-cont"></div>
-
-      </pfng-card>
+      <app-top-list [icon]="'certificate'" [items]="newestItems" [cardTitle]="'Newest'"></app-top-list>
     </div>
   </div>
 
