@@ -16,7 +16,6 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import collections
-import glob
 import itertools
 import logging
 import os
@@ -102,13 +101,18 @@ class FileSystemFinder(BaseFinder):
                 yield content
 
     def _find_modules(self, content_type, content_dir):
-        for dir_path in self._module_dirs(content_dir):
-            for file_path in glob.glob(dir_path + '/*.py'):
-                file_name = os.path.basename(file_path)
-                if not os.path.isfile(file_path) or file_name == '__init__.py':
-                    continue
-                rel_path = os.path.relpath(file_path, self.path)
-                yield Result(content_type, rel_path, extra={})
+        for file_name in os.listdir(content_dir):
+            file_path = os.path.join(content_dir, file_name)
+            if os.path.isdir(file_path):
+                self.log.warning("Directory detected: '{0}'. "
+                                 "Nested modules are not supported.")
+                continue
+            if (not os.path.isfile(file_path)
+                    or not file_name.endswith('.py')
+                    or file_name == '__init__.py'):
+                continue
+            rel_path = os.path.relpath(file_path, self.path)
+            yield Result(content_type, rel_path, extra={})
 
     def _find_roles(self, content_type, content_dir):
         for dir_name in os.listdir(content_dir):
@@ -121,13 +125,6 @@ class FileSystemFinder(BaseFinder):
             rel_path = os.path.relpath(file_path, self.path)
             yield Result(content_type, rel_path,
                          extra={'metadata_path': meta_path})
-
-    def _module_dirs(self, path):
-        content_dirs = (
-            [path]
-            + glob.glob(path + '/*')
-            + glob.glob(path + '/*/*'))
-        return filter(os.path.isdir, content_dirs)
 
     def _content_type_dirs(self):
         for content_type in constants.ContentType:
