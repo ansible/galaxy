@@ -56,8 +56,13 @@ class PluginLoader(base.BaseLoader):
     def load(self):
         self._parse_plugin()
 
+        description = ''
+        if self.documentation:
+            description = self.documentation.get('short_description', '')
+
         return models.Content(
             name=self.name,
+            description=description,
             path=self.rel_path,
             content_type=self.content_type,
             metadata={
