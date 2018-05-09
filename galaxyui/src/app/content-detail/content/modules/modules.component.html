@@ -1,0 +1,48 @@
+<div class="modules-detail">
+    <div class="modules-filter">
+        <pfng-filter
+             [config]="filterConfig"
+             (onChange)="applyFilters($event)">
+        </pfng-filter>
+    </div>
+    <pfng-list
+        [expandTemplate]="listExpandTemplate"
+        [config]="listConfig"
+        [items]="items"
+        [itemTemplate]="itemTemplate">
+        <ng-template #itemTemplate let-item="item">
+            <div class="list-pf-left">
+                <span class="fa fa-chip list-pf-icon list-pf-icon-small"></span>
+            </div>
+            <div class="list-pf-content-wrapper">
+                <div class="list-pf-main-content">
+                    <div class="list-pf-title">{{item.name}}</div>
+                    <div class="list-pf-description text-overflow-pf">{{item.description }}</div>
+                </div>
+                <div class="list-pf-additional-content">
+                    <div class="title-tag" *ngIf="item.moduleStatus">{{ item.moduleStatus }}</div>
+                    <div class="title-tag" *ngIf="item.moduleSupport">{{ item.moduleSupport }}</div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template #listExpandTemplate let-item="item" let-index="index" >
+            <div class="meta" *ngIf="!item.metadata || !item.metadata.documentation">
+                <pfng-empty-state
+                    [config]="emptyStateConfig">
+                </pfng-empty-state>
+            </div>
+            <div class="meta" *ngIf="item.metadata && item.metadata.documentation">
+                <h2>Documentation</h2>
+                <pre>{{ item.metadata.documentation | json }}</pre>
+            </div>
+        </ng-template>
+    </pfng-list>
+    <div class="pagination" *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
+        <pfng-pagination
+            [config]='paginationConfig'
+            (onPageSizeChange)="handlePageSizeChange($event)"
+            (onPageNumberChange)="handlePageNumberChange($event)">
+        </pfng-pagination>
+    </div>
+</div>
+<app-page-loading [loading]="loading"></app-page-loading>

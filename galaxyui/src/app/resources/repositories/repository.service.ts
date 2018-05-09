@@ -27,9 +27,39 @@ export class RepositoryService {
     query(params?: any): Observable<Repository[]> {
         return this.http.get<PagedResponse>(this.url + '/', {params: params})
             .pipe(
-                map(response => response.results),
-               tap(_ => this.log('fetched repositories')),
-               catchError(this.handleError('Query', []))
+                map(response => response.results as Repository[]),
+                tap(_ => this.log('fetched repositories')),
+                catchError(this.handleError('Query', [] as Repository[]))
+            );
+    }
+
+    pagedQuery(params?: any): Observable<PagedResponse> {
+        if (params && typeof params == 'object') {
+            return this.http.get<PagedResponse>(this.url + '/', {params: params})
+                .pipe(
+                    tap(_ => this.log('fetched repositories')),
+                    catchError(this.handleError('Query', {} as PagedResponse))
+                );
+        }
+        if (params && typeof params == 'string') {
+            return this.http.get<PagedResponse>(this.url + '/' + params)
+                .pipe(
+                    tap(_ => this.log('fetched repositories')),
+                    catchError(this.handleError('Query', {} as PagedResponse))
+                );
+        }
+        return this.http.get<PagedResponse>(this.url + '/')
+            .pipe(
+                tap(_ => this.log('fetched repositories')),
+                catchError(this.handleError('Query', {} as PagedResponse))
+            );
+    }
+
+    get(id: number): Observable<Repository> {
+        return this.http.get<Repository>(`${this.url}/${id.toString()}/`)
+            .pipe(
+                tap(_ => this.log('Fetched repository')),
+                catchError(this.handleError('Get', {} as Repository))
             );
     }
 
@@ -51,7 +81,7 @@ export class RepositoryService {
         return this.http.delete<any>(`${this.url}/${repository.id}/`)
             .pipe(
                 tap(_ => this.log(`Deleted repository w/ id=${repository.id}`)),
-                catchError(this.handleError('Save'))
+                catchError(this.handleError<any>('Save'))
             );
     }
 

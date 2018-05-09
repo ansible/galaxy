@@ -1,0 +1,20 @@
+<div class="cd-card card-dependencies" *ngIf="dependencies && dependencies.length">
+	<pfng-card
+		[config]="config"
+		[headerTemplate]="headerTemplate">
+		<ng-template #headerTemplate>
+			<div class="card-heading">
+				<span class="fa fa-tags"></span> <span class="title-text">Dependencies</span>
+			</div>
+		</ng-template>
+		<div class="card-list-body">
+			<table>
+				<tr *ngFor="let dependency of dependencies">
+					<td class="name">
+						<a [routerLink]="dependency['url']">{{ dependency['name'] }}</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</pfng-card>
+</div>

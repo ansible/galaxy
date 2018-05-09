@@ -6,7 +6,7 @@ import { Observable }           from "rxjs/Observable";
 import { of }                   from "rxjs/observable/of";
 import { ProviderNamespace }    from "./provider-namespace";
 import { ProviderSource }       from "./provider-source";
-import { RepositorySource }     from "../respositories/repository-source";
+import { RepositorySource }     from "../repositories/repository-source";
 
 @Injectable()
 export class ProviderSourceService {

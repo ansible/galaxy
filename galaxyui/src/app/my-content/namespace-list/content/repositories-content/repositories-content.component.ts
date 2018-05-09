@@ -16,12 +16,12 @@ import { ListConfig }        from 'patternfly-ng/list/basic-list/list-config';
 
 import {
     BsModalService,
-    BsModalRef 
+    BsModalRef
 } from 'ngx-bootstrap';
 
 import { Namespace }               from "../../../../resources/namespaces/namespace";
-import { Repository }              from "../../../../resources/respositories/repository";
-import { RepositoryService }       from "../../../../resources/respositories/repository.service";
+import { Repository }              from "../../../../resources/repositories/repository";
+import { RepositoryService }       from "../../../../resources/repositories/repository.service";
 import { ProviderNamespace }       from "../../../../resources/provider-namespaces/provider-namespace";
 import { RepositoryImportService } from "../../../../resources/repository-imports/repository-import.service";
 import { RepositoryImport }        from "../../../../resources/repository-imports/repository-import";
@@ -62,7 +62,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     private _contentAdded: number;
 
     items: Repository[] = [new Repository()];   // init with one empty repo to preven EmptyState from flashing on the page
-    
+
     emptyStateConfig: EmptyStateConfig;
     disabledStateConfig: EmptyStateConfig;
 
@@ -102,8 +102,8 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             iconStyleClass: 'pficon-warning-triangle-o',
             info: `The Namespace ${this.namespace.name} is disabled. You'll need to re-enable it before viewing and modifying its content.`,
             title: 'Namespace Disabled'
-        } as EmptyStateConfig;    
-        
+        } as EmptyStateConfig;
+
         this.listConfig = {
             dblClick: false,
             emptyStateConfig: this.emptyStateConfig,
@@ -114,7 +114,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             useExpandItems: false
         } as ListConfig;
 
-        if (this.namespace.active) 
+        if (this.namespace.active)
             this.getRepositories();
     }
 
@@ -184,16 +184,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         forkJoin(queries).subscribe((results: Repository[][]) => {
             let repositories = flatten(results);
             repositories.forEach(item => {
-                item['latest_import'] = {};
-                if (item.summary_fields.latest_import) {
-                    item['latest_import'] = item.summary_fields.latest_import;
-                    item['latest_import']['as_of_dt'] =
-                        item['latest_import']['finished'] ? moment(item['latest_import']['finished']).fromNow() : moment(item['latest_import']['modified']).fromNow();
-                }
+                this.prepareRepository(item);
             });
-            
             this.items = JSON.parse(JSON.stringify(repositories));
-            
             if (this.items.length) {
                 // If we have repositories, then track current import state via long polling
                 setTimeout(_ => {
@@ -212,6 +205,34 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         });
     }
 
+    private getDetailUrl(item: Repository) {
+        return `/${item.summary_fields['namespace']['name']}/${item.name}`;
+    }
+
+    private getIconClass(repository_type: string) {
+        let result = 'pficon-repository list-pf-icon list-pf-icon-small';
+        switch (repository_type) {
+            case 'apb':
+                result = 'pficon-bundle list-pf-icon list-pf-icon-small';
+                break;
+            case 'role':
+                result = 'fa fa-gear list-pf-icon list-pf-icon-small';
+                break;
+        }
+        return result;
+    }
+
+    private prepareRepository(item: Repository) {
+        item['latest_import'] = {};
+        item['detail_url'] = this.getDetailUrl(item);
+        item['iconClass'] = this.getIconClass(item.repository_type);
+        if (item.summary_fields.latest_import) {
+            item['latest_import'] = item.summary_fields.latest_import;
+            item['latest_import']['as_of_dt'] =
+                item['latest_import']['finished'] ? moment(item['latest_import']['finished']).fromNow() : moment(item['latest_import']['modified']).fromNow();
+        }
+    }
+
     private refreshRepositories() {
         let queries: Observable<Repository[]>[] = [];
         this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
@@ -224,11 +245,16 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             repositories.forEach(repo => {
                 match = false;
                 this.items.forEach(item => {
-                    // Update items in place, to avoid page bounce. Page bounce happens when all items are replaced. 
+                    // Update items in place, to avoid page bounce. Page bounce happens when all items are replaced.
                     if (item.id == repo.id) {
                         match = true;
+                        if (item.repository_type != repo.repository_type) {
+                            item.repository_type = repo.repository_type;
+                            item['iconClass'] = this.getIconClass(item.repository_type);
+                        }
                         if (item.name != repo.name) {
                             item.name = repo.name;
+                            item['detail_url'] = this.getDetailUrl(item);
                         }
                         if (repo.summary_fields.latest_import) {
                             if (!item['latest_import']) {
@@ -244,12 +270,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                 });
                 if (!match) {
                     // repository doesn't exist, so add it
-                    repo['latest_import'] = {};
-                    if (repo.summary_fields.latest_import) {
-                        repo['latest_import'] = repo.summary_fields.latest_import;
-                        repo['latest_import']['as_of_dt'] =
-                            repo['latest_import']['finished'] ? moment(repo['latest_import']['finished']).fromNow() : moment(repo['latest_import']['modified']).fromNow();
-                    }
+                    this.prepareRepository(repo);
                     this.items.push(repo);
                 }
             });

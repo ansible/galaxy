@@ -17,14 +17,15 @@
  */
 
 import {
-  Component,
-  OnInit,
-  TemplateRef
+    Component,
+    OnInit,
+    TemplateRef
 } from '@angular/core';
 
 import {
     Router,
-    NavigationStart
+    NavigationStart,
+    NavigationEnd
 } from '@angular/router';
 
 import { DOCUMENT }             from '@angular/common';
@@ -45,7 +46,7 @@ import { AuthService }          from './auth/auth.service';
     styleUrls:   ['./app.component.less'],
     templateUrl: './app.component.html'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
     constructor(
         private router:       Router,
@@ -53,19 +54,15 @@ export class AppComponent {
         private modalService: BsModalService,
         private notificationService: NotificationService
     ) {
-        router.events.subscribe(
-            event => {
-                if (event instanceof NavigationStart) {
-                    // When user navigates away from a page, remove any lingering notifications
-                    let notices: Notification[] = notificationService.getNotifications();
-                    if (notices) {
-                        notices.forEach((notice: Notification) => {
-                            notificationService.remove(notice);
-                        });
-                    }
-                }
+        this.router.events.subscribe(event => {
+            if (event instanceof NavigationEnd || event instanceof NavigationStart) {
+                // When user navigates away from a page, remove any lingering notifications
+                let notices: Notification[] = notificationService.getNotifications();
+                notices.forEach((notice: Notification) => {
+                    notificationService.remove(notice);
+                });
             }
-        );
+        });
     }
 
     navItems:      NavigationItemConfig[] = [];
@@ -102,7 +99,7 @@ export class AppComponent {
             },
             {
                 title: 'My Content',
-                iconStyleClass: 'fa fa-book',
+                iconStyleClass: 'fa fa-list',
                 url: '/my-content'
             },
             {
@@ -147,7 +144,7 @@ export class AppComponent {
             }
         );
     }
-    
+
     onItemClicked($event: NavigationItemConfig): void {
         console.log('item clicked');
         console.log($event);

@@ -32,11 +32,11 @@ import { MyContentModule }            from './my-content/my-content.module';
 import { MyImportsModule }            from './my-imports/my-imports.module';
 import { SearchModule }               from './search/search.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
-
+import { ContentDetailModule }        from './content-detail/content-detail.module';
 import { AuthService }                from './auth/auth.service';
 import { NamespaceService }           from './resources/namespaces/namespace.service';
 import { UserService }                from './resources/users/user.service';
-import { RepositoryService }          from './resources/respositories/repository.service';
+import { RepositoryService }          from './resources/repositories/repository.service';
 import { ProviderSourceService }      from './resources/provider-namespaces/provider-source.service';
 import { RepositoryImportService }    from './resources/repository-imports/repository-import.service';
 import { ImportsService }             from './resources/imports/imports.service';
@@ -45,10 +45,10 @@ import { ContentSearchService }       from './resources/content-search/content-s
 import { PlatformService }            from './resources/platforms/platform.service';
 import { ContentTypeService }         from './resources/content-types/content-type.service';
 import { CloudPlatformService }       from './resources/cloud-platforms/cloud-platform.service';
-import { TagsService }                 from './resources/tags/tags.service';
+import { TagsService }                from './resources/tags/tags.service';
+import { ContentService }             from './resources/content/content.service';
 import { AppRoutingModule }           from './app-routing.module';
 import { AppComponent }               from './app.component';
-
 
 @NgModule({
     declarations: [
@@ -73,6 +73,7 @@ import { AppComponent }               from './app.component';
         MyImportsModule,
         SearchModule,
         ModalModule,
+        ContentDetailModule,
         AppRoutingModule
     ],
     providers: [
@@ -89,7 +90,8 @@ import { AppComponent }               from './app.component';
         RepositoryImportService,
         RepositoryService,
         TagsService,
-        UserService
+        UserService,
+        ContentService
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA

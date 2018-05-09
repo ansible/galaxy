@@ -12,7 +12,8 @@
 				<pfng-list
 			        [config]="listConfig"
 			        [items]="contentItems"
-			        [itemTemplate]="itemTemplate">
+			        [itemTemplate]="itemTemplate"
+			        (onClick)="itemClicked($event)">
 			        <ng-template #itemTemplate let-item="item" let-index="index">
 			            <div class="list-pf-content-wrapper">
 				          	<div class="list-pf-main-content">
@@ -59,12 +60,12 @@
 			            				<div class="count-icon"><i class="fa fa-download fa-2x"></i></div>
 			            				<div class="count-count">{{ item.download_count }}</div>
 			            				<div class="count-text">Downloads</div>
-			            				
+
 			            				<div class="count-icon"><i class="fa fa-eye fa-2x"></i></div>
 			            				<div class="count-count">
 			            				{{ item.summary_fields.repository.watchers_count }}</div>
 			            				<div class="count-text">Watchers</div>
-			            				
+
 			            				<div class="count-icon"><i class="fa fa-star fa-2x"></i></div>
 			            				<div class="count-count">
 			            				{{ item.summary_fields.repository.stargazers_count }}</div>
@@ -84,7 +85,7 @@
 			    	</ng-template>
 			    </pfng-list>
 			</div>
-			<div class="pagination" *ngIf="contentItems && contentItems.length">
+			<div class="pagination" *ngIf="contentItems && contentItems.length && paginationConfig.totalItems > paginationConfig.pageSize">
 			    <pfng-pagination
 			    	[config]='paginationConfig'
                     (onPageSizeChange)="handlePageSizeChange($event)"
