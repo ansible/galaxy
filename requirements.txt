@@ -50,3 +50,9 @@ pytest-env
 
 # Docs
 Sphinx
+
+# logging related
+# add request-id to django logs
+django-log-request-id
+# format log output as json
+jog
