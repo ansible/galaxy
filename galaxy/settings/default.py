@@ -77,6 +77,7 @@ INSTALLED_APPS = (
 # FIXME(cutwater): Deprecated from Django 1.10, use MIDDLEWARE setting
 # instead.
 MIDDLEWARE_CLASSES = (
+    'log_request_id.middleware.RequestIDMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
