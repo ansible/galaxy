@@ -38,7 +38,8 @@ __all__ = [
     'RepositoryList',
     'RepositoryDetail',
     'RepositoryImportTaskList',
-    'RepositoryContentList'
+    'RepositoryContentList',
+    'RepositoryVersionList',
 ]
 
 logger = logging.getLogger(__name__)
@@ -237,3 +238,10 @@ class RepositoryContentList(views.SubListAPIView):
     serializer_class = serializers.ContentSerializer
     parent_model = models.Repository
     relationship = "content_objects"
+
+
+class RepositoryVersionList(views.SubListAPIView):
+    model = models.RepositoryVersion
+    serializer_class = serializers.RepositoryVersionSerializer
+    parent_model = models.Repository
+    relationship = 'versions'

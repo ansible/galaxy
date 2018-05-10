@@ -17,11 +17,8 @@
 
 from __future__ import absolute_import
 
-import pytz
-
 from galaxy import constants
 from galaxy.main import models
-from galaxy.worker import exceptions as exc
 
 from . import base
 
@@ -54,7 +51,6 @@ class RoleImporter(base.ContentImporter):
         self._add_cloud_platforms(content, role_meta['cloud_platforms'])
         self._add_dependencies(content, role_meta['dependencies'])
         self._add_readme(content)
-        self._update_role_versions(content)
 
     def _add_role_videos(self, role, videos):
         role.videos.all().delete()
@@ -171,43 +167,3 @@ class RoleImporter(base.ContentImporter):
         for dep in role.dependencies.all():
             if (dep.namespace.name, dep.name) not in new_deps:
                 role.dependencies.remove(dep)
-
-    def _update_role_versions(self, role):
-        self.log.info('Adding repo tags as role versions')
-        repo = self.ctx.github_repo
-        git_tag_list = []
-        try:
-            git_tag_list = repo.get_tags()
-            for tag in git_tag_list:
-                rv, created = models.ContentVersion.objects.get_or_create(
-                    name=tag.name, content=role)
-                rv.release_date = tag.commit.commit.author.date.replace(
-                    tzinfo=pytz.UTC)
-                rv.save()
-        except Exception as e:
-            self.log.warning(
-                u"An error occurred while importing repo tags: {}".format(e))
-
-        if git_tag_list:
-            remove_versions = []
-            try:
-                for version in role.versions.all():
-                    found = False
-                    for tag in git_tag_list:
-                        if tag.name == version.name:
-                            found = True
-                            break
-                    if not found:
-                        remove_versions.append(version.name)
-            except Exception as e:
-                raise exc.TaskError(
-                    u"Error identifying tags to remove: {}".format(e))
-
-            if remove_versions:
-                try:
-                    for version_name in remove_versions:
-                        models.ContentVersion.objects.filter(
-                            name=version_name, role=role).delete()
-                except Exception as e:
-                    raise exc.TaskError(
-                        u"Error removing tags from role: {}".format(e))

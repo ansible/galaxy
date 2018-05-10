@@ -32,7 +32,7 @@ from galaxy.main.models import (Platform,
                                 Tag,
                                 Content,
                                 ImportTask,
-                                ContentVersion,
+                                RepositoryVersion,
                                 NotificationSecret,
                                 Notification,
                                 Subscription,
@@ -53,7 +53,7 @@ __all__ = [
     'TagSearchSerializer',
     'PlatformSerializer',
     'PlatformSearchSerializer',
-    'RoleVersionSerializer',
+    'RepositoryVersionSerializer',
     'TopContributorsSerializer',
     'NotificationSecretSerializer',
     'NotificationSerializer',
@@ -448,10 +448,10 @@ class CloudPlatformSearchSerializer(CloudPlatformSerializer):
         fields = CloudPlatformSerializer.Meta.fields + ('roles_count', )
 
 
-class RoleVersionSerializer(BaseSerializer):
+class RepositoryVersionSerializer(BaseSerializer):
     class Meta:
-        model = ContentVersion
-        fields = ('id', 'name', 'release_date',)
+        model = RepositoryVersion
+        fields = ('id', 'name', 'release_date')
 
 
 class TopContributorsSerializer(serializers.BaseSerializer):

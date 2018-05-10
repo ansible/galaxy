@@ -21,7 +21,7 @@ import logging
 
 from django.contrib.auth import get_user_model
 from galaxy.main.models import (Content, ImportTask,
-                                ImportTaskMessage, ContentVersion,
+                                ImportTaskMessage, RepositoryVersion,
                                 Namespace, NotificationSecret, Notification,
                                 ProviderNamespace,
                                 Repository,
@@ -174,8 +174,8 @@ class RoleAccess(BaseAccess):
         return self.model.objects.filter(active=True).distinct()
 
 
-class RoleVersionAccess(BaseAccess):
-    model = ContentVersion
+class RepositoryVersionAccess(BaseAccess):
+    model = RepositoryVersion
 
     def get_queryset(self):
         return self.model.objects.filter(
@@ -332,7 +332,7 @@ class CloudPlatformsAccess(BaseAccess):
 
 register_access(User, UserAccess)
 register_access(Content, RoleAccess)
-register_access(ContentVersion, RoleVersionAccess)
+register_access(RepositoryVersion, RepositoryVersionAccess)
 register_access(ImportTask, ImportTaskAccess)
 register_access(ImportTaskMessage, ImportTaskMessageAccess)
 register_access(NotificationSecret, NotificationSecretAccess)

@@ -31,7 +31,7 @@ class RoleAdmin(admin.ModelAdmin):
     pass
 
 
-class RoleVersionAdmin(admin.ModelAdmin):
+class RepositoryVersionAdmin(admin.ModelAdmin):
     pass
 
 
@@ -42,5 +42,5 @@ class ContentBlockAdmin(admin.ModelAdmin):
 admin.site.register(models.Platform, PlatformAdmin)
 admin.site.register(models.CloudPlatform, CloudPlatformAdmin)
 admin.site.register(models.Content, RoleAdmin)
-admin.site.register(models.ContentVersion, RoleVersionAdmin)
+admin.site.register(models.RepositoryVersion, RepositoryVersionAdmin)
 admin.site.register(models.ContentBlock, ContentBlockAdmin)

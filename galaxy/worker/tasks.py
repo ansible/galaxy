@@ -21,6 +21,7 @@ import logging
 
 import celery
 import github
+import pytz
 
 from django.conf import settings
 from django.db import transaction
@@ -103,11 +104,12 @@ def _import_repository(import_task, logger):
         importer_cls = importers.get_importer(content_info.content_type)
         importer = importer_cls(context, content_info, logger=content_logger)
         issue_tracker_url = ''
-        if hasattr(content_info, 'role_meta') and getattr(content_info, 'role_meta') and \
-           content_info.role_meta.get('issue_tracker_url'):
+        if (hasattr(content_info, 'role_meta')
+                and getattr(content_info, 'role_meta')
+                and content_info.role_meta.get('issue_tracker_url')):
             issue_tracker_url = content_info.role_meta['issue_tracker_url']
-        elif context.github_repo.has_issues:
-            issue_tracker_url = context.github_repo.html_url + '/issues'
+        elif gh_repo.has_issues:
+            issue_tracker_url = gh_repo.html_url + '/issues'
         repository.issue_tracker_url = issue_tracker_url
         content_obj = importer.do_import()
         new_content_objs.append(content_obj.id)
@@ -119,6 +121,7 @@ def _import_repository(import_task, logger):
                 obj.content_type, obj.namespace, obj.name))
         obj.delete()
 
+    _update_repository_versions(context, gh_repo, logger)
     _update_namespace(gh_repo)
     _update_repository(repository, gh_repo, repo_info.commit)
 
@@ -171,3 +174,43 @@ def _update_repository(repository, gh_repo, commit_info):
             gh_repo.full_name, commit_info.sha)
     repository.commit_created = commit_info.committer_date
     repository.save()
+
+
+def _update_repository_versions(repository, github_repo, logger):
+    logger.info('Adding repo tags as versions')
+    git_tag_list = []
+    try:
+        git_tag_list = github_repo.get_tags()
+        for tag in git_tag_list:
+            rv, created = models.RepositoryVersion.objects.get_or_create(
+                name=tag.name, repository=repository)
+            rv.release_date = tag.commit.commit.author.date.replace(
+                tzinfo=pytz.UTC)
+            rv.save()
+    except Exception as e:
+        logger.warning(
+            u"An error occurred while importing repo tags: {}".format(e))
+
+    if git_tag_list:
+        remove_versions = []
+        try:
+            for version in repository.versions.all():
+                found = False
+                for tag in git_tag_list:
+                    if tag.name == version.name:
+                        found = True
+                        break
+                if not found:
+                    remove_versions.append(version.name)
+        except Exception as e:
+            raise exc.TaskError(
+                u"Error identifying tags to remove: {}".format(e))
+
+        if remove_versions:
+            try:
+                for version_name in remove_versions:
+                    models.RepositoryVersion.objects.filter(
+                        name=version_name, repository=repository).delete()
+            except Exception as e:
+                raise exc.TaskError(
+                    u"Error removing tags from role: {}".format(e))

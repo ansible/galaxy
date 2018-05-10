@@ -30,7 +30,7 @@ from galaxy.main.mixins import DirtyMixin
 
 __all__ = [
     'PrimordialModel', 'Platform', 'CloudPlatform', 'Category', 'Tag',
-    'Content', 'ImportTask', 'ImportTaskMessage', 'ContentVersion',
+    'Content', 'ImportTask', 'ImportTaskMessage', 'RepositoryVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
     'Subscription', 'Stargazer', 'Namespace', 'Provider', 'ProviderNamespace',
     'ContentBlock', 'ContentType'
@@ -638,16 +638,16 @@ class ProviderNamespace(PrimordialModel):
         return reverse('api:provider_namespace_detail', args=(self.pk,))
 
 
-class ContentVersion(CommonModelNameNotUnique):
+class RepositoryVersion(CommonModelNameNotUnique):
     class Meta:
         ordering = ('-loose_version',)
 
     # Foreign keys
     # -------------------------------------------------------------------------
 
-    content = models.ForeignKey(
-        Content,
-        related_name='versions',
+    repository = models.ForeignKey(
+        'Repository',
+        related_name='versions'
     )
 
     # Regular fields
@@ -673,7 +673,7 @@ class ContentVersion(CommonModelNameNotUnique):
         # the value of score is based on the
         # values in the other rating fields
         self.loose_version = self.name
-        super(ContentVersion, self).save(*args, **kwargs)
+        super(RepositoryVersion, self).save(*args, **kwargs)
 
 
 class ImportTaskMessage(PrimordialModel):
