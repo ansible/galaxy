@@ -71,7 +71,6 @@ from galaxy.api.serializers import (MeSerializer,
                                     TagSerializer,
                                     PlatformSerializer,
                                     CloudPlatformSerializer,
-                                    RoleVersionSerializer,
                                     RepositorySerializer,
                                     TopContributorsSerializer,
                                     NotificationSecretSerializer,
@@ -97,7 +96,6 @@ from galaxy.main.models import (Platform,
                                 Content,
                                 ContentType,
                                 ImportTask,
-                                ContentVersion,
                                 NotificationSecret,
                                 Notification,
                                 Provider,
@@ -144,7 +142,6 @@ __all__ = [
     'RoleNotificationList',
     'RoleTypes',
     'RoleUsersList',
-    'RoleVersionsList',
     'StargazerDetail',
     'StargazerList',
     'SubscriptionDetail',
@@ -386,13 +383,6 @@ class RoleImportTaskList(SubListAPIView):
     serializer_class = ImportTaskSerializer
     parent_model = Content
     relationship = 'import_tasks'
-
-
-class RoleVersionsList(SubListAPIView):
-    model = ContentVersion
-    serializer_class = RoleVersionSerializer
-    parent_model = Content
-    relationship = 'versions'
 
 
 class RoleDownloads(APIView):

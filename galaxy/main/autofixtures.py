@@ -19,7 +19,7 @@
 import random
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from galaxy.main.models import Content, ContentVersion
+from galaxy.main.models import Content, RepositoryVersion
 
 User = get_user_model()
 
@@ -125,4 +125,4 @@ if settings.SITE_ENV == 'DEV':
             'name': generators.ChoicesGenerator(values=choices),
             'loose_version': generators.StaticGenerator("0.0"),
         }
-    register(ContentVersion, RoleVersionAutoFixture)
+    register(RepositoryVersion, RoleVersionAutoFixture)

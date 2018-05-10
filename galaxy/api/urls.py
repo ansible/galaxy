@@ -43,8 +43,6 @@ role_urls = [
         views.RoleDependenciesList.as_view(), name='role_dependencies_list'),
     url(r'^(?P<pk>[0-9]+)/imports/$',
         views.RoleImportTaskList.as_view(), name='role_import_task_list'),
-    url(r'^(?P<pk>[0-9]+)/versions/$',
-        views.RoleVersionsList.as_view(), name='role_versions_list'),
     url(r'^(?P<pk>[0-9]+)/notifications/$',
         views.RoleNotificationList.as_view(), name='role_notification_list'),
     url(r'^(?P<pk>[0-9]+)/downloads/$', views.RoleDownloads.as_view(),
@@ -171,6 +169,8 @@ repo_urls = [
         name='repository_import_task_list'),
     url(r'^(?P<pk>[0-9]+)/content/$', views.RepositoryContentList.as_view(),
         name='repository_content_list'),
+    url(r'^(?P<pk>[0-9]+)/versions/$', views.RepositoryVersionList.as_view(),
+        name='repository_version_list'),
     url(r'refresh/$', views.RefreshUserRepos.as_view(),
         name='refresh_user_repos'),
     url(r'stargazers/$', views.StargazerList.as_view(), name='stargazer_list'),
@@ -179,7 +179,7 @@ repo_urls = [
     url(r'subscriptions/$', views.SubscriptionList.as_view(),
         name='subscription_list'),
     url(r'subscriptions/(?P<pk>[0-9]+)/$', views.SubscriptionDetail.as_view(),
-        name='subscription_detail')
+        name='subscription_detail'),
 ]
 
 content_urls = [
@@ -194,10 +194,6 @@ content_urls = [
     url(r'^(?P<pk>[0-9]+)/dependencies/$',
         views.RoleDependenciesList.as_view(),
         name='content_dependencies_list'),
-
-    url(r'^(?P<pk>[0-9]+)/versions/$',
-        views.RoleVersionsList.as_view(),
-        name='content_versions_list'),
 ]
 
 account_urls = [
