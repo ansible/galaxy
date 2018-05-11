@@ -98,6 +98,11 @@ export class AppComponent implements OnInit {
                 url: '/search'
             },
             {
+                title: 'Authors',
+                iconStyleClass: 'fa fa-users',
+                url: '/authors'
+            },
+            {
                 title: 'My Content',
                 iconStyleClass: 'fa fa-list',
                 url: '/my-content'

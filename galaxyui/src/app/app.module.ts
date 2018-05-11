@@ -32,6 +32,7 @@ import { MyContentModule }            from './my-content/my-content.module';
 import { MyImportsModule }            from './my-imports/my-imports.module';
 import { SearchModule }               from './search/search.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
+import { AuthorsModule }              from './authors/authors.module';
 import { ContentDetailModule }        from './content-detail/content-detail.module';
 import { AuthService }                from './auth/auth.service';
 import { NamespaceService }           from './resources/namespaces/namespace.service';
@@ -74,6 +75,7 @@ import { AppComponent }               from './app.component';
         SearchModule,
         ModalModule,
         ContentDetailModule,
+        AuthorsModule,
         AppRoutingModule
     ],
     providers: [

@@ -38,6 +38,28 @@ export class NamespaceService {
             );
     }
 
+    pagedQuery(params:any): Observable<PagedResponse> {
+        if (params && typeof params == 'object') {
+            return this.http.get<PagedResponse>(this.url + '/', {params: params})
+                .pipe(
+                    tap(_ => this.log('fetched paged content')),
+                    catchError(this.handleError('Query', {} as PagedResponse))
+                );
+        }
+        if (params && typeof params == 'string') {
+            return this.http.get<PagedResponse>(this.url + '/' + params)
+                .pipe(
+                    tap(_ => this.log('fetched paged content')),
+                    catchError(this.handleError('Query', {} as PagedResponse))
+                );
+        }
+        return this.http.get<PagedResponse>(this.url + '/')
+            .pipe(
+                tap(_ => this.log('fetched paged content')),
+                 catchError(this.handleError('Query', {} as PagedResponse))
+            );
+    }
+
     get(id: number): Observable<Namespace> {
         const url = `${this.url}/${id}/`;
         return this.http.get<Namespace>(url).pipe(

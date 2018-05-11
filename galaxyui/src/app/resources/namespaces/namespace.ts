@@ -15,5 +15,6 @@ export class Namespace {
     owners: User[];
     provider_namespaces: ProviderNamespace[];
     repositories: Repository[];
+    contentCounts: any[];
     summary_fields: any;
 }

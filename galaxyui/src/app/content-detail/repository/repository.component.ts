@@ -10,9 +10,15 @@ import { Repository }       from '../../resources/repositories/repository';
 import { Content }          from '../../resources/content/content';
 import { Namespace }        from '../../resources/namespaces/namespace';
 import { ContentService }   from '../../resources/content/content.service';
-import { RepoTypes }        from '../../enums/repo-types.enum';
+
+import {
+    RepoTypes,
+    RepoTypesTooltips,
+    RepoTypesIconClasses
+} from '../../enums/repo-types.enum';
 
 import * as moment          from 'moment';
+
 
 class RepositoryView {
     repoType: RepoTypes;
@@ -63,18 +69,8 @@ export class RepositoryComponent implements OnInit {
         // Determine repoType: role, apb, multiconent
         this.repositoryView = {} as RepositoryView;
         this.repositoryView.repoType = RepoTypes[this.repository.repository_type];
-        this.repositoryView.iconClass = 'pficon-repository';
-        this.repositoryView.tooltip = 'Multi-content Repository'
-        switch (this.repositoryView.repoType) {
-            case RepoTypes.role:
-                this.repositoryView.iconClass = 'fa fa-gear';
-                this.repositoryView.tooltip = 'Ansible Role';
-                break;
-            case RepoTypes.apb:
-                this.repositoryView.iconClass = 'pficon-bundle';
-                this.repositoryView.tooltip = 'Ansible Playbook Bundle';
-                break;
-        }
+        this.repositoryView.iconClass = RepoTypesIconClasses[this.repository.repository_type];
+        this.repositoryView.tooltip = RepoTypesTooltips[this.repository.repository_type];
         this.repositoryView.name = this.repository.name;
         this.repositoryView.description = this.repository.description;
         this.repositoryView.namespace = this.repository.summary_fields.namespace['name'];

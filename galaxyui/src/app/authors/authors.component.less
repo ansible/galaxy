@@ -1,0 +1,37 @@
+/* authors.component.less */
+
+@import '../../variables';
+
+#authors-page {
+    margin-bottom: 150px;
+    .pagination {
+        width: 100%;
+    }
+}
+
+#authors-list {
+    color: @ansible-dark-grey;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    .github-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 2px solid @ansible-dark-grey;
+        margin-right: 5px;
+    }
+
+    .list-pf-item:first-child {
+        border: none;
+    }
+    .list-pf-container {
+        border-top: 1px solid #ededed;
+    }
+    .content-count {
+        margin-right: 15px;
+    }
+    .title-link:hover {
+        text-decoration: none;
+        cursor: pointer;
+    }
+}

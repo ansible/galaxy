@@ -13,7 +13,7 @@ import { PagedResponse } from '../paged-response';
 
 import {
 	Content,
-	ContentResponse 
+	ContentResponse
 } from './content';
 
 const httpOptions = {
@@ -33,7 +33,7 @@ export class ContentSearchService {
 	private url: string = '/api/v1/search/content/';
 
 	query(query?: string): Observable<ContentResponse> {
-		let requestUrl = this.url; 
+		let requestUrl = this.url;
 		if (query)
 			requestUrl += `?${query}`;
 		return this.http.get<ContentResponse>(requestUrl)
