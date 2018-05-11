@@ -46,7 +46,7 @@ else:
             serve_static, kwargs={'document_root': settings.STATIC_ROOT}),
         url(r'^(?P<path>.*[css|js|png|jpg|jpeg|ico|woff|woff2|svg|ttf])/?$',
             serve_static, kwargs={'document_root': settings.STATIC_ROOT}),
-        url(r'^$',
+        url(r'',
             serve_static, kwargs={'document_root': settings.STATIC_ROOT,
                                   'path': 'index.html'})
     ]
