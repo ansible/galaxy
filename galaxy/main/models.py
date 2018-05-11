@@ -15,6 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import logging
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -27,6 +29,8 @@ from django.utils import timezone
 from galaxy import constants
 from galaxy.main import fields
 from galaxy.main.mixins import DirtyMixin
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     'PrimordialModel', 'Platform', 'CloudPlatform', 'Category', 'Tag',
@@ -538,6 +542,13 @@ class Namespace(CommonModel):
 
     def get_absolute_url(self):
         return reverse('api:namespace_detail', args=(self.pk,))
+
+    def content_counts(self):
+        return Content.objects \
+            .filter(namespace=self.pk) \
+            .values('content_type__name') \
+            .annotate(count=models.Count('content_type__name')) \
+            .order_by('content_type__name')
 
 
 class Provider(CommonModel):
