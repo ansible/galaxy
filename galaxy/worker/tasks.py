@@ -184,39 +184,26 @@ def _update_repository(repository, gh_repo, commit_info):
 
 def _update_repository_versions(repository, github_repo, logger):
     logger.info('Adding repo tags as versions')
-    git_tag_list = []
-    try:
-        git_tag_list = github_repo.get_tags()
-        for tag in git_tag_list:
-            rv, created = models.RepositoryVersion.objects.get_or_create(
-                name=tag.name, repository=repository)
-            rv.release_date = tag.commit.commit.author.date.replace(
-                tzinfo=pytz.UTC)
-            rv.save()
-    except Exception as e:
-        logger.warning(
-            u"An error occurred while importing repo tags: {}".format(e))
+    git_tag_list = github_repo.get_tags()
+    for tag in git_tag_list:
+        rv, created = models.RepositoryVersion.objects.get_or_create(
+            name=tag.name, repository=repository)
+        rv.release_date = tag.commit.commit.author.date.replace(
+            tzinfo=pytz.UTC)
+        rv.save()
 
     if git_tag_list:
         remove_versions = []
-        try:
-            for version in repository.versions.all():
-                found = False
-                for tag in git_tag_list:
-                    if tag.name == version.name:
-                        found = True
-                        break
-                if not found:
-                    remove_versions.append(version.name)
-        except Exception as e:
-            raise exc.TaskError(
-                u"Error identifying tags to remove: {}".format(e))
+        for version in repository.versions.all():
+            found = False
+            for tag in git_tag_list:
+                if tag.name == version.name:
+                    found = True
+                    break
+            if not found:
+                remove_versions.append(version.name)
 
         if remove_versions:
-            try:
-                for version_name in remove_versions:
-                    models.RepositoryVersion.objects.filter(
-                        name=version_name, repository=repository).delete()
-            except Exception as e:
-                raise exc.TaskError(
-                    u"Error removing tags from role: {}".format(e))
+            for version_name in remove_versions:
+                models.RepositoryVersion.objects.filter(
+                    name=version_name, repository=repository).delete()
