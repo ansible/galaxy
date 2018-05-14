@@ -60,8 +60,7 @@ class ContentList(base.ListAPIView):
             .prefetch_related(
                 'platforms',
                 'cloud_platforms',
-                'tags',
-                'versions',
+                'tags'
             )
         )
 
