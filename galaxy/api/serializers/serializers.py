@@ -724,7 +724,6 @@ class RoleTopSerializer(BaseSerializer):
         res.update(dict(
             dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
             imports=reverse('api:role_import_task_list', args=(obj.pk,)),
-            versions=reverse('api:role_versions_list', args=(obj.pk,)),
         ))
         return res
 

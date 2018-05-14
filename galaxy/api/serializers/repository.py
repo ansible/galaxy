@@ -66,6 +66,9 @@ class RepositorySerializer(serializers.BaseSerializer):
             'imports': reverse(
                 'api:repository_import_task_list',
                 kwargs={'pk': instance.pk}),
+            'versions': reverse(
+                'api:repository_version_list',
+                kwargs={'pk': instance.pk}),
             'provider': reverse(
                 'api:active_provider_detail',
                 kwargs={'pk': instance.provider_namespace.provider.pk}),
