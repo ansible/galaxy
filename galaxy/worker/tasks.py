@@ -78,6 +78,9 @@ def _import_repository(import_task, logger):
                      .format(import_task.repository_alt_name))
         repository.name = import_task.repository_alt_name
 
+    if import_task.import_branch:
+        repository.import_branch = import_task.import_branch
+
     token = _get_social_token(import_task)
     gh_api = github.Github(token)
     gh_repo = gh_api.get_repo(repo_full_name)
@@ -96,6 +99,9 @@ def _import_repository(import_task, logger):
         github_token=token,
         github_client=gh_api,
         github_repo=gh_repo)
+
+    if repository.import_branch is None:
+        repository.import_branch = repo_info.branch
 
     new_content_objs = []
     for content_info in repo_info.contents:
