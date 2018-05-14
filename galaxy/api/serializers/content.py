@@ -106,8 +106,6 @@ class ContentSerializer(BaseModelSerializer):
         return {
             'dependencies': urls.reverse(
                 'api:content_dependencies_list', args=(instance.pk,)),
-            'versions': urls.reverse(
-                'api:content_versions_list', args=(instance.pk,)),
             'content_type': urls.reverse(
                 'api:content_type_detail', args=(instance.content_type.pk,)),
             'imports': urls.reverse(
