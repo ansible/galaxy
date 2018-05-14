@@ -121,7 +121,7 @@ def _import_repository(import_task, logger):
                 obj.content_type, obj.namespace, obj.name))
         obj.delete()
 
-    _update_repository_versions(context, gh_repo, logger)
+    _update_repository_versions(repository, gh_repo, logger)
     _update_namespace(gh_repo)
     _update_repository(repository, gh_repo, repo_info.commit)
 
