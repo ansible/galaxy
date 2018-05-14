@@ -641,6 +641,7 @@ class ProviderNamespace(PrimordialModel):
 class RepositoryVersion(CommonModelNameNotUnique):
     class Meta:
         ordering = ('-loose_version',)
+        unique_together = ('name', 'repository')
 
     # Foreign keys
     # -------------------------------------------------------------------------
