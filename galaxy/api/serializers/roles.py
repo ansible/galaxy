@@ -136,7 +136,7 @@ class RoleListSerializer(BaseRoleSerializer):
         d['tags'] = [g.name for g in obj.tags.all()]
         d['versions'] = [
             dict(id=g.id, name=g.name, release_date=g.release_date)
-            for g in obj.versions.all()]
+            for g in obj.repository.versions.all()]
         d['videos'] = [dict(url=v.url, description=v.description)
                        for v in obj.videos.all()]
         return d
@@ -197,7 +197,7 @@ class RoleDetailSerializer(BaseRoleSerializer):
         d['tags'] = [g.name for g in obj.tags.all()]
         d['versions'] = [dict(id=g.id, name=g.name,
                               release_date=g.release_date)
-                         for g in obj.versions.all()]
+                         for g in obj.repository.versions.all()]
         d['videos'] = [dict(url=v.url, description=v.description)
                        for v in obj.videos.all()]
         return d
