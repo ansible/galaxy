@@ -16,7 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.core.urlresolvers import reverse
-from galaxy.main.models import Namespace
+from galaxy.main import models
 from . import serializers
 
 
@@ -26,9 +26,8 @@ __all__ = [
 
 
 class NamespaceSerializer(serializers.BaseSerializer):
-
     class Meta:
-        model = Namespace
+        model = models.Namespace
         fields = serializers.BASE_FIELDS + (
             'id',
             'description',
@@ -45,6 +44,7 @@ class NamespaceSerializer(serializers.BaseSerializer):
             'avatar_url': u.avatar_url,
             'username': u.username
         } for u in instance.owners.all()]
+
         provider_namespaces = [{
             'id': pn.id,
             'name': pn.name,
@@ -58,9 +58,13 @@ class NamespaceSerializer(serializers.BaseSerializer):
             'provider': pn.provider.id,
             'provider_name': pn.provider.name.lower()
         } for pn in instance.provider_namespaces.all()]
+
+        content_counts = {c['content_type__name']: c['count'] for c in instance.content_counts()}
+
         return {
             'owners': owners,
-            'provider_namespaces': provider_namespaces
+            'provider_namespaces': provider_namespaces,
+            'content_counts': content_counts
         }
 
     def get_related(self, instance):
@@ -73,6 +77,6 @@ class NamespaceSerializer(serializers.BaseSerializer):
                 args=(instance.pk,)),
             'owners': reverse(
                 'api:namespace_owners_list',
-                args=(instance.pk,)),
+                args=(instance.pk,))
         }
         return related
