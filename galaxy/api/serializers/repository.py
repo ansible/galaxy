@@ -113,12 +113,19 @@ class RepositorySerializer(serializers.BaseSerializer):
             latest_import['created'] = import_tasks[0].created
             latest_import['modified'] = import_tasks[0].modified
 
+        content_objects = [{'id': c.id, 'name': c.name, 'content_type': c.content_type.name}
+                           for c in instance.content_objects.all()]
+
+        content_counts = {c['content_type__name']: c['count'] for c in instance.content_counts}
+
         return {
             'owners': owners,
             'provider_namespace': provider_namespace,
             'provider': provider,
             'namespace': namespace,
-            'latest_import': latest_import
+            'latest_import': latest_import,
+            'content_objects': content_objects,
+            'content_counts': content_counts
         }
 
     def get_external_url(self, instance):
