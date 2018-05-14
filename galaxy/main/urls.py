@@ -44,7 +44,7 @@ else:
     urlpatterns += [
         url(r'^static/(?P<path>.*)$',
             serve_static, kwargs={'document_root': settings.STATIC_ROOT}),
-        url(r'^(?P<path>.*[css|js|png|jpg|jpeg|ico|woff|woff2|svg|ttf])/?$',
+        url(r'^(?P<path>.*(?:css|js|png|jpg|jpeg|ico|woff|woff2|svg|ttf))/?$',
             serve_static, kwargs={'document_root': settings.STATIC_ROOT}),
         url(r'^$',
             serve_static, kwargs={'document_root': settings.STATIC_ROOT,
