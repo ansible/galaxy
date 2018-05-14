@@ -162,7 +162,7 @@ class ContentDetailSerializer(ContentSerializer):
                 name=g.name) for g in instance.dependencies.all()],
             'versions': [
                 dict(id=g.id, name=g.name, release_date=g.release_date)
-                for g in instance.versions.all()
+                for g in instance.repository.versions.all()
             ],
         })
         return result
