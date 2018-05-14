@@ -83,8 +83,9 @@ class RoleMetaParser(object):
 
     def _validate_tag(self, tag):
         if not re.match(constants.TAG_REGEXP, tag):
-            self.log.warning("'{}' is not a valid tag. Tags must container lowercase letters "
-                             "and digits only. Skipping.".format(tag))
+            self.log.warning(
+                "'{}' is not a valid tag. Tags must container lowercase "
+                "letters and digits only. Skipping.".format(tag))
             return False
         return True
 
@@ -97,9 +98,11 @@ class RoleMetaParser(object):
         ]
         for key, value, required in string_defaults:
             if key not in self.metadata and required:
-                exc.ContentLoadError("Missing required key {0} in metadata".format(key))
+                exc.ContentLoadError("Missing required key {0} in metadata"
+                                     .format(key))
             if key in self.metadata and value in self.metadata[key]:
-                self.log.warning("Vale of {0} has not been set in metadata.".format(key))
+                self.log.warning("Value of {0} has not been set in metadata."
+                                 .format(key))
 
     def parse_tags(self):
         tags = []
@@ -117,7 +120,8 @@ class RoleMetaParser(object):
             if isinstance(self.metadata['categories'], list):
                 tags += self.metadata['categories']
             else:
-                self.log.warning('Expected "categories" in meta data to be a list')
+                self.log.warning(
+                    'Expected "categories" in meta data to be a list')
 
         tags = list(filter(self._validate_tag, tags))
 
@@ -136,8 +140,9 @@ class RoleMetaParser(object):
             try:
                 name = platform['name']
             except KeyError:
-                self.log.warning('No name specified for platform [{0}], skipping'
-                                 .format(idx))
+                self.log.warning(
+                    'No name specified for platform [{0}], skipping'
+                    .format(idx))
                 continue
 
             versions = platform.get('versions', ['all'])
@@ -241,7 +246,8 @@ class RoleLoader(base.BaseLoader):
 
         description = data.pop('description')
 
-        data['role_type'] = self._get_role_type(galaxy_info, container_yml_type)
+        data['role_type'] = self._get_role_type(
+            galaxy_info, container_yml_type)
         data['tags'] = meta_parser.parse_tags()
         data['platforms'] = meta_parser.parse_platforms()
         data['cloud_platforms'] = meta_parser.parse_cloud_platforms()
