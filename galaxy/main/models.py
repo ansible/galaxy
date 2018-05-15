@@ -233,7 +233,7 @@ class Content(CommonModelNameNotUnique):
 
     class Meta:
         unique_together = [
-            ('namespace', 'content_type', 'name')
+            ('namespace', 'content_type', 'name'),
         ]
         ordering = ['namespace', 'content_type', 'name']
         indexes = [

@@ -42,9 +42,10 @@ class Content(object):
     """Represents common content data."""
 
     def __init__(self, name, path, content_type,
-                 description='', role_meta=None,
-                 metadata=None):
+                 description='', original_name=None,
+                 role_meta=None, metadata=None):
         self.name = name
+        self.original_name = original_name or name
         self.path = path
         self.content_type = content_type
         self.description = description
@@ -126,6 +127,7 @@ class RoleMetaSchema(mm.Schema):
 class ContentSchema(mm.Schema):
     """A schema for Content class."""
     name = fields.Str()
+    original_name = fields.Str()
     path = fields.Str()
     content_type = schema.Enum(constants.ContentType)
     description = fields.Str()
