@@ -227,6 +227,10 @@ CELERY_IMPORTS = (
 
 CELERY_TRACK_STARTED = True
 
+CELERY_TASK_SERIALIZER = 'json'
+
+CELERY_ACCEPT_CONTENT = ['json']
+
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 # Allauth
