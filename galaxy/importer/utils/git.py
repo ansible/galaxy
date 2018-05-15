@@ -15,6 +15,7 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import os
 import errno
 import collections
 import contextlib
@@ -76,20 +77,21 @@ def clone_repository(clone_url, directory, branch=None):
     # Starting from version 2.3 git provides GIT_TERMINAL_PROMPT environment
     # variable, that causes immediate exit of `git clone` command.
     cmd = ['timeout', '10', 'git', 'ls-remote', clone_url]
-    try:
-        subprocess.check_call(cmd)
-    except subprocess.CalledProcessError as e:
-        if e.returncode == TIMEOUT_RETCODE:
-            raise RepositoryNotExist("Repository '{0}' does not exist"
-                                     .format(clone_url))
-        else:
-            raise
+    with open(os.devnull, 'w') as null_file:
+        try:
+            subprocess.check_call(cmd, stdout=null_file)
+        except subprocess.CalledProcessError as e:
+            if e.returncode == TIMEOUT_RETCODE:
+                raise RepositoryNotExist("Repository '{0}' does not exist"
+                                         .format(clone_url))
+            else:
+                raise
 
-    cmd = ['git', 'clone', '--quiet', '--depth', '1']
-    if branch:
-        cmd += ['--branch', branch]
-    cmd += [clone_url, directory]
-    subprocess.check_call(cmd)
+        cmd = ['git', 'clone', '--quiet', '--depth', '1']
+        if branch:
+            cmd += ['--branch', branch]
+        cmd += [clone_url, directory]
+        subprocess.check_call(cmd, stdout=null_file)
 
 
 def get_current_branch(directory=None):
