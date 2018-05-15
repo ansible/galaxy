@@ -72,27 +72,31 @@ class RepositoryLoader(object):
     def load(self):
         branch = git.get_current_branch(directory=self.path)
         commit = git.get_commit_info(directory=self.path)
-        result = list(self._get_contents())
+        finder, contents = self._find_contents()
+        result = list(self._load_contents(contents))
 
         if not all(v[1] for v in result):
             raise exc.ContentLoadError('Lint failed')
 
         return models.Repository(
+            repo_type=finder.repo_type,
             branch=branch,
             commit=commit,
             contents=[v[0] for v in result],
         )
 
     def _find_contents(self):
-        for finder in self.finders:
+        for finder_cls in self.finders:
             try:
-                return finder(self.path, self.log).find_contents()
+                finder = finder_cls(self.path, self.log)
+                contents = finder.find_contents()
+                return finder, contents
             except exc.ContentNotFound:
                 pass
         raise exc.ContentNotFound("No content found in repository")
 
-    def _get_contents(self):
-        for content_type, rel_path, extra in self._find_contents():
+    def _load_contents(self, contents):
+        for content_type, rel_path, extra in contents:
             loader_cls = loaders.get_loader(content_type)
             loader = loader_cls(content_type, rel_path, self.path,
                                 logger=self.log, **extra)

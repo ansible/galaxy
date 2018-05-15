@@ -15,6 +15,7 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import enum
 import collections
 
 import marshmallow as mm
@@ -55,10 +56,11 @@ class Content(object):
 
 class Repository(object):
     """Represents repository metadata."""
-    def __init__(self, branch, commit, contents):
+    def __init__(self, branch, commit, contents, repo_type):
         self.branch = branch
         self.commit = commit
         self.contents = contents
+        self.repo_type = repo_type
 
 
 # -----------------------------------------------------------------------------
@@ -143,7 +145,7 @@ class ContentSchema(mm.Schema):
 
 class RepositorySchema(mm.Schema):
     """A schema for Repository class."""
-    path = fields.Str()
+    repo_type = schema.Enum(constants.RepositoryType)
     branch = fields.Str()
     commit = fields.Nested(CommitInfoSchema())
     contents = fields.Nested(ContentSchema(), many=True)
