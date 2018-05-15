@@ -20,7 +20,6 @@ from __future__ import print_function
 import base64
 import json
 import logging
-import sys
 from collections import OrderedDict
 from hashlib import sha256
 from urlparse import parse_qs
@@ -66,10 +65,7 @@ from galaxy.api import tasks
 from galaxy.api.views import base_views
 from galaxy.main.celerytasks import tasks as celerytasks
 from galaxy.main import models
-from galaxy.main import utils
 
-
-# local stuff
 
 logger = logging.getLogger(__name__)
 
@@ -1247,15 +1243,3 @@ class TokenView(base_views.APIView):
             token.save()
         result = dict(token=token.key, username=user.username)
         return Response(result, status=status.HTTP_200_OK)
-
-
-# ------------------------------------------------------------------------
-# Create view functions for all of the class-based views to simplify inclusion
-# in URL patterns and reverse URL lookups, converting CamelCase names to
-# lowercase_with_underscore (e.g. MyView.as_view() becomes my_view).
-this_module = sys.modules[__name__]
-for attr, value in locals().items():
-    if isinstance(value, type) and issubclass(value, base_views.APIView):
-        name = utils.camelcase_to_underscore(attr)
-        view = value.as_view()
-        setattr(this_module, name, view)
