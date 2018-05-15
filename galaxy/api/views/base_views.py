@@ -32,8 +32,6 @@ from rest_framework import views
 
 from galaxy.api.access import check_user_access
 from galaxy.api.utils import camelcase_to_underscore
-from galaxy.main import models
-from galaxy.worker import tasks
 
 
 # FIXME: machinery for auto-adding audit trail logs to all CREATE/EDITS
@@ -82,23 +80,6 @@ def get_view_description(cls, html=False):
     if html:
         desc = '<div class="description">%s</div>' % desc
     return mark_safe(desc)
-
-
-def create_import_task(
-        repository, user,
-        import_branch=None, repository_alt_name=None,
-        travis_status_url='', travis_build_url=''):
-    task = models.ImportTask.objects.create(
-        repository=repository,
-        owner=user,
-        import_branch=import_branch,
-        repository_alt_name=repository_alt_name,
-        travis_status_url=travis_status_url,
-        travis_build_url=travis_build_url,
-        state=models.ImportTask.STATE_PENDING
-    )
-    tasks.import_repository.delay(task.id)
-    return task
 
 
 class APIView(views.APIView):

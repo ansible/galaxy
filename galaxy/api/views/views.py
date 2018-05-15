@@ -86,9 +86,9 @@ from .base_views import (APIView,
                          SubListAPIView,
                          RetrieveAPIView,
                          RetrieveUpdateDestroyAPIView)
+from galaxy.api import tasks
 
 from galaxy.main.celerytasks.tasks import update_user_repos, refresh_existing_user_repos
-from galaxy.worker.tasks import import_repository
 from galaxy.main.models import (Platform,
                                 CloudPlatform,
                                 Category,
@@ -179,23 +179,6 @@ def filter_rating_queryset(qs):
         role__is_valid=True,
         owner__is_active=True,
     )
-
-
-def create_import_task(
-        repository, user,
-        import_branch=None, repository_alt_name=None,
-        travis_status_url='', travis_build_url=''):
-    task = ImportTask.objects.create(
-        repository=repository,
-        owner=user,
-        import_branch=import_branch,
-        repository_alt_name=repository_alt_name,
-        travis_status_url=travis_status_url,
-        travis_build_url=travis_build_url,
-        state=ImportTask.STATE_PENDING
-    )
-    import_repository.delay(task.id)
-    return task
 
 # --------------------------------------------------------------------------------
 
@@ -435,7 +418,7 @@ class ImportTaskList(ListCreateAPIView):
                     dict(detail="Repository {0} not found, or you do not have access".format(repository_id))
                 )
 
-        task = create_import_task(
+        task = tasks.create_import_task(
             repository, request.user,
             import_branch=github_reference,
             repository_alt_name=alternate_role_name)
@@ -966,7 +949,7 @@ class NotificationList(ListCreateAPIView):
         )
         notification.roles.add(role)
 
-        task = create_import_task(
+        task = tasks.create_import_task(
             role.repository, owner,
             travis_status_url=travis_status_url,
             travis_build_url=payload.get('build_url'))
