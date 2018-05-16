@@ -60,11 +60,14 @@ class PluginLoader(base.BaseLoader):
         if self.documentation:
             description = self.documentation.get('short_description', '')
 
+        readme = self._get_readme(os.path.dirname(self.path))
+
         return models.Content(
             name=self.name,
             description=description,
             path=self.rel_path,
             content_type=self.content_type,
+            readme=readme,
             metadata={
                 'documentation': self.documentation
             }
@@ -78,8 +81,10 @@ class PluginLoader(base.BaseLoader):
             module = ast.parse(code)  # type: ast.Module
             assert isinstance(module, ast.Module), 'Module expected'
         except SyntaxError as e:
-            raise exc.ContentLoadError("Syntax error while parsing module {0}: Line {1}:{2} {3}".format(
-                                       os.path.basename(self.path), e.lineno, e.offset, e.text))
+            raise exc.ContentLoadError(
+                "Syntax error while parsing module {0}: Line {1}:{2} {3}"
+                .format(os.path.basename(self.path),
+                        e.lineno, e.offset, e.text))
 
         for node in module.body:
             if not isinstance(node, ast.Assign):

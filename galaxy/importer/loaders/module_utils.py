@@ -15,6 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import os
+
 from galaxy import constants
 from galaxy.importer import linters
 from galaxy.importer import models
@@ -34,8 +36,10 @@ class ModuleUtilsLoader(base.BaseLoader):
         return base.make_module_name(self.path)
 
     def load(self):
+        readme = self._get_readme(os.path.dirname(self.path))
         return models.Content(
             name=self.name,
             path=self.rel_path,
+            readme=readme,
             content_type=self.content_type,
         )

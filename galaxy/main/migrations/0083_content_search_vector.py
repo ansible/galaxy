@@ -32,8 +32,8 @@ BEFORE INSERT OR UPDATE
 """
 
 DROP_SEARCH_VECTOR_UPDATE_TRIGGER = """
-DROP TRIGGER  update_content_search_vector_trigger;
-DROP FUNCTION update_content_search_vector;
+DROP TRIGGER update_content_search_vector_trigger ON main_content;
+DROP FUNCTION update_content_search_vector();
 """
 
 

@@ -29,6 +29,8 @@ __all__ = [
 
 class RepositorySerializer(serializers.BaseSerializer):
     external_url = drf_serializers.SerializerMethodField()
+    readme = drf_serializers.SerializerMethodField()
+    readme_html = drf_serializers.SerializerMethodField()
 
     class Meta:
         model = Repository
@@ -52,6 +54,8 @@ class RepositorySerializer(serializers.BaseSerializer):
             'clone_url',
             'external_url',
             'issue_tracker_url',
+            'readme',
+            'readme_html',
         )
 
     def get_related(self, instance):
@@ -134,3 +138,13 @@ class RepositorySerializer(serializers.BaseSerializer):
             server,
             instance.provider_namespace.name,
             instance.original_name)
+
+    def get_readme(self, obj):
+        if obj.readme:
+            return obj.readme.raw
+        return None
+
+    def get_readme_html(self, obj):
+        if obj.readme:
+            return obj.readme.html
+        return None

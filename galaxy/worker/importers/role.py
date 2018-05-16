@@ -50,7 +50,6 @@ class RoleImporter(base.ContentImporter):
         self._add_platforms(content, role_meta['platforms'])
         self._add_cloud_platforms(content, role_meta['cloud_platforms'])
         self._add_dependencies(content, role_meta['dependencies'])
-        self._add_readme(content)
 
     def _add_role_videos(self, role, videos):
         role.videos.all().delete()

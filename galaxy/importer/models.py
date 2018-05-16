@@ -24,6 +24,7 @@ from marshmallow import validate
 from galaxy import constants
 from galaxy.common import schema
 from galaxy.importer.utils import git
+from galaxy.importer.utils import readme as readmeutils
 
 SHA1_LEN = 40
 
@@ -42,22 +43,23 @@ class Content(object):
     """Represents common content data."""
 
     def __init__(self, name, path, content_type,
-                 description='', role_meta=None,
-                 metadata=None):
+                 description='', readme=None, role_meta=None, metadata=None):
         self.name = name
         self.path = path
         self.content_type = content_type
         self.description = description
+        self.readme = readme
         self.role_meta = role_meta
         self.metadata = metadata or {}
 
 
 class Repository(object):
     """Represents repository metadata."""
-    def __init__(self, branch, commit, format, contents):
+    def __init__(self, branch, commit, format, readme, contents):
         self.branch = branch
         self.commit = commit
         self.format = format
+        self.readme = readme
         self.contents = contents
 
 
@@ -89,6 +91,17 @@ class VideoLinkSchema(mm.Schema):
     @mm.post_load
     def make_object(self, data):
         return VideoLink(**data)
+
+
+class ReadmeFileSchema(mm.Schema):
+    """A schema for Readme class."""
+    mimetype = fields.Str()
+    raw = fields.Str()
+    checksum = fields.Str()
+
+    @mm.post_load
+    def make_object(self, data):
+        return readmeutils.ReadmeFile(**data)
 
 
 class CommitInfoSchema(mm.Schema):
@@ -133,6 +146,7 @@ class ContentSchema(mm.Schema):
     # Note(cutwater): This is workaround to make properly serializable
     # role metadata.
     role_meta = fields.Nested(RoleMetaSchema())
+    readme = fields.Nested(ReadmeFileSchema())
     metadata = fields.Dict()
 
     @mm.post_load
@@ -146,7 +160,8 @@ class RepositorySchema(mm.Schema):
     commit = fields.Nested(CommitInfoSchema())
     format = schema.Enum(constants.RepositoryFormat)
     contents = fields.Nested(ContentSchema(), many=True)
+    readme = fields.Nested(ReadmeFileSchema())
 
     @mm.post_load
     def make_object(self, data):
-        return RepositorySchema(**data)
+        return Repository(**data)

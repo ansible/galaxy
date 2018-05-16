@@ -299,6 +299,12 @@ class Content(CommonModelNameNotUnique):
         'Namespace',
         related_name='content_objects',
     )
+    readme = models.ForeignKey(
+        'Readme',
+        null=True,
+        on_delete=models.PROTECT,
+        related_name='+',
+    )
 
     # Regular fields
     # -------------------------------------------------------------------------
@@ -330,21 +336,6 @@ class Content(CommonModelNameNotUnique):
         max_length=256,
         default='master',
         verbose_name="Default Branch"
-    )
-    readme = models.TextField(
-        blank=True,
-        default='',
-        verbose_name='README raw content'
-    )
-    readme_type = models.CharField(
-        max_length=5,
-        null=True,
-        verbose_name='README type'
-    )
-    readme_html = models.TextField(
-        blank=True,
-        default='',
-        verbose_name='README HTML'
     )
     container_yml = models.TextField(
         blank=True,
@@ -927,6 +918,12 @@ class Repository(BaseModel):
         ProviderNamespace,
         related_name='repositories',
     )
+    readme = models.ForeignKey(
+        'Readme',
+        null=True,
+        on_delete=models.PROTECT,
+        related_name='+',
+    )
 
     # Fields
     name = models.CharField(max_length=256)
@@ -1061,3 +1058,31 @@ class ContentBlock(BaseModel):
 
     def get_absolute_url(self):
         return reverse('api:content_block_detail', args=(self.name,))
+
+
+class Readme(BaseModel):
+    class Meta:
+        unique_together = ('repository', 'raw_hash')
+
+    repository = models.ForeignKey(
+        Repository,
+        null=False,
+        on_delete=models.CASCADE,
+        related_name='+',
+    )
+    raw = models.TextField(null=False, blank=False)
+    raw_hash = models.CharField(
+        max_length=128, null=False, blank=False)
+    mimetype = models.CharField(max_length=32, blank=False)
+    html = models.TextField(null=False, blank=False)
+
+    def safe_delete(self):
+        ref_count = (
+            Repository.objects.filter(readme=self).count()
+            + Content.objects.filter(readme=self).count()
+        )
+        if ref_count:
+            return False
+
+        self.delete()
+        return True

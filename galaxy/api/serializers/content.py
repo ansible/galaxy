@@ -139,6 +139,9 @@ class ContentSerializer(BaseModelSerializer):
 
 class ContentDetailSerializer(ContentSerializer):
 
+    readme = serializers.SerializerMethodField()
+    readme_html = serializers.SerializerMethodField()
+
     class Meta(ContentSerializer.Meta):
         fields = ContentSerializer.Meta.fields + (
             'container_yml',
@@ -150,7 +153,8 @@ class ContentDetailSerializer(ContentSerializer):
         )
 
     def get_summary_fields(self, instance):
-        result = super(ContentDetailSerializer, self).get_summary_fields(instance)
+        result = super(
+            ContentDetailSerializer, self).get_summary_fields(instance)
         result.update({
             'platforms': self.get_platforms(instance),
             'cloud_platforms': [
@@ -166,3 +170,13 @@ class ContentDetailSerializer(ContentSerializer):
             ],
         })
         return result
+
+    def get_readme(self, obj):
+        if obj.readme:
+            return obj.readme.raw
+        return None
+
+    def get_readme_html(self, obj):
+        if obj.readme:
+            return obj.readme.html
+        return None

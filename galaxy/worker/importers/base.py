@@ -21,8 +21,8 @@ import re
 from django.utils import timezone
 
 from galaxy.main import models
-from galaxy.worker import utils
-from galaxy.worker import exceptions as exc
+from galaxy.worker import exceptions as exc, utils
+
 
 LOG = logging.getLogger(__name__)
 
@@ -87,10 +87,15 @@ class ContentImporter(object):
     def update_content(self, content):
         content.description = self.data.description or ''
         content.metadata = self.data.metadata
+        self._update_readme(content)
 
-    def _add_readme(self, content):
-        readme, readme_html, readme_type = utils.get_readme(
-            self.ctx.github_token, self.ctx.github_repo)
-        content.readme = readme
-        content.readme_html = readme_html
-        content.readme_type = readme_type
+    def _update_readme(self, content):
+        readme = self.data.readme
+        repository = content.repository
+        readme_obj = content.readme
+        content.readme = None
+        content.save()
+        content.readme = utils.update_readme(
+            repository, readme_obj, readme,
+            self.ctx.github_client, self.ctx.github_repo)
+        content.save()

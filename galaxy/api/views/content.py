@@ -71,7 +71,13 @@ class ContentDetail(base.RetrieveAPIView):
     serializer_class = serializers.ContentDetailSerializer
 
     QUERY_FIELDS = ContentList.QUERY_FIELDS + (
-        'readme',
-        'readme_html',
         'metadata',
+        'readme_raw',
+        'readme_html',
     )
+
+    def get_queryset(self):
+        return (
+            super(ContentDetail, self).get_queryset()
+            .select_related('readme')
+        )

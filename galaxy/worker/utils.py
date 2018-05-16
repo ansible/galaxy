@@ -17,46 +17,34 @@
 
 from __future__ import absolute_import
 
-import github
 import six
-import requests
 
-from . import exceptions as exc
-
-
-def get_readme(token, repo, branch=None):
-    """
-    Retrieve README from the repo and sanitize by removing all markup.
-
-    Should preserve unicode characters.
-    """
-    data = {'ref': branch} if branch else {}
-    try:
-        readme = repo.get_readme(**data)
-    except github.UnknownObjectException:
-        raise exc.WorkerError("Failed to get README file")
-    readme_raw = readme.decoded_content
-
-    if readme.name == 'README.md':
-        file_type = 'md'
-    elif readme.name == 'README.rst':
-        file_type = 'rst'
-    else:
-        raise exc.WorkerError(
-            u'Unable to determine README file type. '
-            u'Expected file extensions: ".md", ".rst"')
-
-    headers = {'Authorization': 'token %s' % token,
-               'Accept': 'application/vnd.github.VERSION.html'}
-    url = "https://api.github.com/repos/%s/readme" % repo.full_name
-    response = requests.get(url, headers=headers, data=data)
-    response.raise_for_status()
-    readme_html = response.text
-
-    return readme_raw, readme_html, file_type
+from galaxy.main import models
 
 
 class Context(object):
     def __init__(self, **kwargs):
         for arg, value in six.iteritems(kwargs):
             setattr(self, arg, value)
+
+
+def update_readme(repository, readme_obj, readme, github_api, github_repo):
+    if readme_obj and readme and readme_obj.raw_hash == readme.hash:
+        return readme_obj
+
+    if readme_obj:
+        readme_obj.safe_delete()
+
+    if readme:
+        readme_obj, created = models.Readme.objects.get_or_create(
+            repository=repository, raw_hash=readme.hash,
+            defaults={
+                'raw': readme.text,
+                'mimetype': readme.mimetype,
+            }
+        )
+        if created:
+            readme_obj.html = github_api.render_markdown(
+                readme.text, context=github_repo)
+            readme_obj.save()
+        return readme_obj
