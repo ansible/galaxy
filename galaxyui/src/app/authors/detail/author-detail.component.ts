@@ -262,6 +262,9 @@ export class AuthorDetailComponent implements OnInit {
 
     private prepareRepositories() {
         this.items.forEach((item: Repository) => {
+            if (!item.format) {
+                item.format = 'role';
+            }
             item['iconClass'] = RepoFormatsIconClasses[item.format];
             item['tooltip'] = RepoFormatsTooltips[item.format];
 
