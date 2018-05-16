@@ -59,7 +59,7 @@ class NamespaceSerializer(serializers.BaseSerializer):
             'provider_name': pn.provider.name.lower()
         } for pn in instance.provider_namespaces.all()]
 
-        content_counts = {c['content_type__name']: c['count'] for c in instance.content_counts()}
+        content_counts = {c['content_type__name']: c['count'] for c in instance.content_counts}
 
         return {
             'owners': owners,

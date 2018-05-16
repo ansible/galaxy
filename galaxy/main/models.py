@@ -543,6 +543,7 @@ class Namespace(CommonModel):
     def get_absolute_url(self):
         return reverse('api:namespace_detail', args=(self.pk,))
 
+    @property
     def content_counts(self):
         return Content.objects \
             .filter(namespace=self.pk) \
@@ -979,6 +980,14 @@ class Repository(BaseModel):
     @property
     def github_repo(self):
         return self.original_name
+
+    @property
+    def content_counts(self):
+        return Content.objects \
+            .filter(repository=self.pk) \
+            .values('content_type__name') \
+            .annotate(count=models.Count('content_type__name')) \
+            .order_by('content_type__name')
 
     def get_absolute_url(self):
         return reverse('api:repository_detail', args=(self.pk,))
