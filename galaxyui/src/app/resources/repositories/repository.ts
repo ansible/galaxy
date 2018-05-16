@@ -3,6 +3,7 @@ export class Repository {
     name: string;
     original_name: string;
     description: string;
+    format: string;
     is_enabled: boolean;
     provider_namespace: any;
     url: string;
@@ -18,7 +19,6 @@ export class Repository {
     open_issues_count: number;
     clone_url: string;
     issue_tracker_url: string;
-    repository_type: string;
     summary_fields: any;
     related: any;
     last_import: string;

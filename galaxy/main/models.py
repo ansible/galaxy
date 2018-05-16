@@ -931,6 +931,8 @@ class Repository(BaseModel):
     # Fields
     name = models.CharField(max_length=256)
     original_name = models.CharField(max_length=256, null=False)
+    format = models.CharField(max_length=16, null=True,
+                              choices=constants.RepositoryFormat.choices())
     description = fields.TruncatingCharField(
         max_length=255, blank=True, default='')
     import_branch = models.CharField(max_length=256, null=True)

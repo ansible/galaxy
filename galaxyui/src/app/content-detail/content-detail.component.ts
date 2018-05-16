@@ -21,7 +21,7 @@ import { Namespace }        from '../resources/namespaces/namespace';
 import { PagedResponse }    from '../resources/paged-response';
 import { RepoChangeEvent }  from './repository/repository.component';
 import { ViewTypes }        from '../enums/view-types.enum';
-import { RepoTypes }        from '../enums/repo-types.enum';
+import { RepoFormats }        from '../enums/repo-types.enum';
 import { ContentTypes }     from '../enums/content-types.enum';
 
 import { ContentService }   from '../resources/content/content.service';
@@ -57,9 +57,9 @@ export class ContentDetailComponent implements OnInit {
     pageLoading: boolean = true;
 
     ViewTypes: typeof ViewTypes = ViewTypes;
-    RepoTypes: typeof RepoTypes = RepoTypes;
+    RepoFormats: typeof RepoFormats = RepoFormats;
 
-    repoType: RepoTypes;
+    repoType: RepoFormats;
     repoContent: Content;
     hasReadme: boolean = false;
     hasMetadata: boolean = false;
@@ -94,7 +94,7 @@ export class ContentDetailComponent implements OnInit {
                 this.namespace = data['namespace'];
                 this.content = data['content'];
                 console.log(this.repository);
-                this.repoType = RepoTypes[this.repository.repository_type];
+                this.repoType = RepoFormats[this.repository.format];
 
                 let req_content_name = params['content_name'];
 
@@ -102,7 +102,7 @@ export class ContentDetailComponent implements OnInit {
                     this.selectedContent = this.findSelectedContent(req_content_name);
                 }
                 if (!this.repository || !this.content ||
-                    (this.repository.repository_type == RepoTypes.multiple &&
+                    (this.repository.format == RepoFormats.multi &&
                     req_content_name && !this.selectedContent)) {
                     // Requested content from a multicontent repo not found || No content found
                     this.showEmptyState = true;
@@ -162,13 +162,13 @@ export class ContentDetailComponent implements OnInit {
             this.hasMetadata = false;
             this.metadataFilename = '';
             this.metadata = null;
-            if (this.repoContent.content_type == RepoTypes.role &&
+            if (this.repoContent.content_type == RepoFormats.role &&
                 this.repoContent.metadata['container_meta']) {
                 this.hasMetadata = true;
                 this.metadataFilename = 'container.yml';
                 this.metadata = this.repoContent.metadata['container_meta'];
             }
-            if (this.repoContent.content_type == RepoTypes.apb &&
+            if (this.repoContent.content_type == RepoFormats.apb &&
                 this.repoContent.metadata['apb_metadata']) {
                 this.hasMetadata = true;
                 this.metadataFilename = 'apb.yml';
@@ -181,7 +181,7 @@ export class ContentDetailComponent implements OnInit {
                 hasKey = hasKey.replace(/\_(\w)/, this.toCamel);
                 this.repoContent[hasKey] = (this.repoContent[key] && this.repoContent[key].length) ? true : false;
             });
-            if (this.repository.repository_type == RepoTypes.multiple) {
+            if (this.repository.format == RepoFormats.multi) {
                 this.getContentTypeCounts();
             } else {
                 this.pageLoading = false;

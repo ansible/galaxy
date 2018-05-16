@@ -8,7 +8,7 @@ import { CardConfig }     from 'patternfly-ng/card/basic-card/card-config';
 import { Content }        from '../../../resources/content/content';
 import { Repository }     from '../../../resources/repositories/repository';
 import { ViewTypes }      from '../../../enums/view-types.enum';
-import { RepoTypes }      from '../../../enums/repo-types.enum';
+import { RepoFormats }      from '../../../enums/repo-types.enum';
 
 import { ContentTypesPlural }   from '../../../enums/content-types.enum';
 
@@ -24,7 +24,7 @@ export class CardInfoComponent implements OnInit {
 
     _repoContent: Content;
     _metadata: object;
-    _repoType: RepoTypes;
+    _repoType: RepoFormats;
     _repository: Repository;
 
     example_type: string;
@@ -40,10 +40,10 @@ export class CardInfoComponent implements OnInit {
     }
 
     @Input()
-    set repoType(repoType: RepoTypes) {
+    set repoType(repoType: RepoFormats) {
         this._repoType = repoType;
     }
-    get repoType(): RepoTypes {
+    get repoType(): RepoFormats {
         return this._repoType;
     }
 
@@ -75,7 +75,7 @@ export class CardInfoComponent implements OnInit {
     config: CardConfig;
 
     ViewTypes: typeof ViewTypes = ViewTypes;
-    RepoTypes: typeof RepoTypes = RepoTypes;
+    RepoFormats: typeof RepoFormats = RepoFormats;
 
     ngOnInit() {
         this.config = {

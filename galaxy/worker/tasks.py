@@ -94,14 +94,16 @@ def _import_repository(import_task, logger):
     except i_exc.ImporterError as e:
         raise exc.TaskError(str(e))
 
+    if repository.import_branch is None:
+        repository.import_branch = repo_info.branch
+
+    repository.format = repo_info.format.value
+
     context = utils.Context(
         repository=repository,
         github_token=token,
         github_client=gh_api,
         github_repo=gh_repo)
-
-    if repository.import_branch is None:
-        repository.import_branch = repo_info.branch
 
     new_content_objs = []
     for content_info in repo_info.contents:

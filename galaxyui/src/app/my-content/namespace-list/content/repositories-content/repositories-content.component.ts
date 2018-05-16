@@ -209,9 +209,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         return `/${item.summary_fields['namespace']['name']}/${item.name}`;
     }
 
-    private getIconClass(repository_type: string) {
+    private getIconClass(repository_format: string) {
         let result = 'pficon-repository list-pf-icon list-pf-icon-small';
-        switch (repository_type) {
+        switch (repository_format) {
             case 'apb':
                 result = 'pficon-bundle list-pf-icon list-pf-icon-small';
                 break;
@@ -225,7 +225,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     private prepareRepository(item: Repository) {
         item['latest_import'] = {};
         item['detail_url'] = this.getDetailUrl(item);
-        item['iconClass'] = this.getIconClass(item.repository_type);
+        item['iconClass'] = this.getIconClass(item.format);
         if (item.summary_fields.latest_import) {
             item['latest_import'] = item.summary_fields.latest_import;
             item['latest_import']['as_of_dt'] =
@@ -248,9 +248,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                     // Update items in place, to avoid page bounce. Page bounce happens when all items are replaced.
                     if (item.id == repo.id) {
                         match = true;
-                        if (item.repository_type != repo.repository_type) {
-                            item.repository_type = repo.repository_type;
-                            item['iconClass'] = this.getIconClass(item.repository_type);
+                        if (item.format != repo.format) {
+                            item.format = repo.format;
+                            item['iconClass'] = this.getIconClass(item.format);
                         }
                         if (item.name != repo.name) {
                             item.name = repo.name;
