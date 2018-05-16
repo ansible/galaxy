@@ -109,6 +109,8 @@ def _import_repository(import_task, logger):
             logger, content_info.content_type, content_info.name)
         importer_cls = importers.get_importer(content_info.content_type)
         importer = importer_cls(context, content_info, logger=content_logger)
+
+        # TODO(cutwater): Review this code. Probably it can be improved.
         issue_tracker_url = ''
         if (hasattr(content_info, 'role_meta')
                 and getattr(content_info, 'role_meta')
@@ -117,7 +119,14 @@ def _import_repository(import_task, logger):
         elif gh_repo.has_issues:
             issue_tracker_url = gh_repo.html_url + '/issues'
         repository.issue_tracker_url = issue_tracker_url
+
         content_obj = importer.do_import()
+
+        # NOTE(cutwater): Renaming repository during import process
+        # can have hidden side effects.
+        if repo_info.repo_type == constants.RepositoryType.ROLE:
+            repository.name = content_obj.name
+
         new_content_objs.append(content_obj.id)
 
     for obj in repository.content_objects.exclude(id__in=new_content_objs):

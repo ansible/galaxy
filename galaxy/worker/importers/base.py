@@ -50,15 +50,24 @@ class ContentImporter(object):
         repo = self.ctx.repository
         ns = repo.provider_namespace.namespace
 
+        name = None
+        original_name = None
+
+        if not self.data.path:
+            name = repo.name
+            original_name = repo.name
+
         if self.data.name:
             name = self.data.name
-        elif not self.data.path:
-            name = repo.name
+
+        if self.data.original_name:
+            original_name = self.data.original_name
 
         # Check name
         if not re.match('^[\w-]+$', name):
-            raise exc.TaskError('Invalid name, only aplhanumeric characters, '
-                                '"-" and "_" symbols are allowed.')
+            raise exc.TaskError(
+                'Invalid name: "{0}", only aplhanumeric characters, '
+                '"-" and "_" symbols are allowed.'.format(name))
 
         obj, is_created = models.Content.objects.get_or_create(
             namespace=ns,
@@ -66,7 +75,7 @@ class ContentImporter(object):
             content_type=models.ContentType.get(self.data.content_type),
             name=name,
             defaults={
-                'original_name': name,
+                'original_name': original_name,
                 'repository': repo,
                 'is_valid': False,
             }

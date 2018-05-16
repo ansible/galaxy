@@ -42,9 +42,10 @@ class Content(object):
     """Represents common content data."""
 
     def __init__(self, name, path, content_type,
-                 description='', role_meta=None,
-                 metadata=None):
+                 description='', original_name=None,
+                 role_meta=None, metadata=None):
         self.name = name
+        self.original_name = original_name or name
         self.path = path
         self.content_type = content_type
         self.description = description
@@ -54,10 +55,11 @@ class Content(object):
 
 class Repository(object):
     """Represents repository metadata."""
-    def __init__(self, branch, commit, contents):
+    def __init__(self, branch, commit, contents, repo_type):
         self.branch = branch
         self.commit = commit
         self.contents = contents
+        self.repo_type = repo_type
 
 
 # -----------------------------------------------------------------------------
@@ -126,6 +128,7 @@ class RoleMetaSchema(mm.Schema):
 class ContentSchema(mm.Schema):
     """A schema for Content class."""
     name = fields.Str()
+    original_name = fields.Str()
     path = fields.Str()
     content_type = schema.Enum(constants.ContentType)
     description = fields.Str()
@@ -141,7 +144,7 @@ class ContentSchema(mm.Schema):
 
 class RepositorySchema(mm.Schema):
     """A schema for Repository class."""
-    path = fields.Str()
+    repo_type = schema.Enum(constants.RepositoryType)
     branch = fields.Str()
     commit = fields.Nested(CommitInfoSchema())
     contents = fields.Nested(ContentSchema(), many=True)

@@ -127,3 +127,9 @@ class ImportTaskState(Enum):
     RUNNING = 'RUNNING'
     FAILED = 'FAILED'
     SUCCESS = 'SUCCESS'
+
+
+class RepositoryType(enum.Enum):
+    ROLE = 'role'
+    APB = 'apb'
+    MULTI = 'multi'

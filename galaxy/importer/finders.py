@@ -15,10 +15,13 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import abc
 import collections
 import itertools
 import logging
 import os
+
+import six
 
 from galaxy import constants
 from galaxy.importer import exceptions as exc
@@ -35,24 +38,32 @@ Result = collections.namedtuple(
     'Result', ['content_type', 'path', 'extra'])
 
 
+@six.add_metaclass(abc.ABCMeta)
 class BaseFinder(object):
 
     def __init__(self, path, logger=None):
         self.path = path
         self.log = logger or default_logger
 
+    @abc.abstractproperty
+    def repo_type(self):
+        pass
+
+    @abc.abstractmethod
     def find_contents(self):
         """Finds contents in path and return the results.
 
         :rtype: Iterator[Result]
         :return: Iterator of find results.
         """
-        raise NotImplementedError
+        pass
 
 
 class ApbFinder(BaseFinder):
     """Searches for APB repository."""
     META_FILES = ['apb.yml', 'apb.yaml']
+
+    repo_type = constants.RepositoryType.APB
 
     def find_contents(self):
         self.log.debug('Content search - Looking for file "apb.yml"')
@@ -66,6 +77,9 @@ class ApbFinder(BaseFinder):
 
 class RoleFinder(BaseFinder):
     """Searches for a repository global role."""
+
+    repo_type = constants.RepositoryType.ROLE
+
     def find_contents(self):
         self.log.debug(
             'Content search - Looking for top level role metadata file')
@@ -79,6 +93,8 @@ class RoleFinder(BaseFinder):
 
 class FileSystemFinder(BaseFinder):
     """Searches for content in repository top level directories."""
+
+    repo_type = constants.RepositoryType.MULTI
 
     def find_contents(self):
         self.log.debug('Content search - Analyzing repository structure')
@@ -141,6 +157,8 @@ class FileSystemFinder(BaseFinder):
 
 class MetadataFinder(BaseFinder):
     """Searches for content defined in galaxy-metadata.yaml file."""
+
+    repo_type = constants.RepositoryType.MULTI
 
     def find_contents(self):
         raise NotImplementedError
