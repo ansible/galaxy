@@ -20,22 +20,19 @@ from __future__ import print_function
 import base64
 import json
 import logging
-
-# standard python libraries
-import sys
 from collections import OrderedDict
 from hashlib import sha256
 from urlparse import parse_qs
 
 import requests
 from OpenSSL.crypto import Error as SignatureError
-# OpenSSL
 from OpenSSL.crypto import verify, load_publickey, FILETYPE_PEM, X509
-# allauth
+
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.models import SocialToken
 from django.conf import settings
-# django stuff
+
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -59,55 +56,16 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from galaxy import constants
 from galaxy.accounts.models import CustomUser as User
 from galaxy.api.access import check_user_access
 from galaxy.api.permissions import ModelAccessPermission
-from galaxy.api.serializers import (MeSerializer,
-                                    UserListSerializer,
-                                    UserDetailSerializer,
-                                    SubscriptionSerializer,
-                                    StargazerSerializer,
-                                    CategorySerializer,
-                                    TagSerializer,
-                                    PlatformSerializer,
-                                    CloudPlatformSerializer,
-                                    RepositorySerializer,
-                                    TopContributorsSerializer,
-                                    NotificationSecretSerializer,
-                                    NotificationSerializer,
-                                    ImportTaskSerializer,
-                                    ImportTaskLatestSerializer,
-                                    ProviderSerializer,
-                                    RoleDetailSerializer)
+from galaxy.api import serializers
+from galaxy.api import tasks
+from galaxy.api.views import base_views
+from galaxy.main.celerytasks import tasks as celerytasks
+from galaxy.main import models
 
-from .base_views import (APIView,
-                         ListAPIView,
-                         ListCreateAPIView,
-                         SubListAPIView,
-                         RetrieveAPIView,
-                         RetrieveUpdateDestroyAPIView)
-
-from galaxy.main.celerytasks.tasks import update_user_repos, refresh_existing_user_repos
-from galaxy.worker.tasks import import_repository
-from galaxy.main.models import (Platform,
-                                CloudPlatform,
-                                Category,
-                                Tag,
-                                Content,
-                                ContentType,
-                                ImportTask,
-                                NotificationSecret,
-                                Notification,
-                                Provider,
-                                ProviderNamespace,
-                                Repository,
-                                Subscription,
-                                Stargazer)
-
-from galaxy import constants
-from galaxy.main.utils import camelcase_to_underscore
-
-# local stuff
 
 logger = logging.getLogger(__name__)
 
@@ -180,27 +138,10 @@ def filter_rating_queryset(qs):
         owner__is_active=True,
     )
 
-
-def create_import_task(
-        repository, user,
-        import_branch=None, repository_alt_name=None,
-        travis_status_url='', travis_build_url=''):
-    task = ImportTask.objects.create(
-        repository=repository,
-        owner=user,
-        import_branch=import_branch,
-        repository_alt_name=repository_alt_name,
-        travis_status_url=travis_status_url,
-        travis_build_url=travis_build_url,
-        state=ImportTask.STATE_PENDING
-    )
-    import_repository.delay(task.id)
-    return task
-
 # --------------------------------------------------------------------------------
 
 
-class ApiRootView(APIView):
+class ApiRootView(base_views.APIView):
     permission_classes = (AllowAny,)
     view_name = 'REST API'
 
@@ -217,7 +158,7 @@ class ApiRootView(APIView):
         return Response(data)
 
 
-class ApiV1RootView(APIView):
+class ApiV1RootView(base_views.APIView):
     permission_classes = (AllowAny,)
     view_name = 'Version 1'
 
@@ -246,7 +187,7 @@ class ApiV1RootView(APIView):
         return Response(data)
 
 
-class ProviderRootView(APIView):
+class ProviderRootView(base_views.APIView):
     """ Provider resources """
     permission_classes = (AllowAny,)
 
@@ -257,27 +198,27 @@ class ProviderRootView(APIView):
         return Response(data)
 
 
-class ActiveProviderList(ListAPIView):
+class ActiveProviderList(base_views.ListAPIView):
     """ Active providers """
-    model = Provider
-    serializer_class = ProviderSerializer
+    model = models.Provider
+    serializer_class = serializers.ProviderSerializer
     permission_classes = (AllowAny,)
 
     def get_queryset(self):
         return self.model.objects.filter(active=True)
 
 
-class ActiveProviderDetail(RetrieveAPIView):
+class ActiveProviderDetail(base_views.RetrieveAPIView):
     """ Active providers """
-    model = Provider
-    serializer_class = ProviderSerializer
+    model = models.Provider
+    serializer_class = serializers.ProviderSerializer
     permission_classes = (AllowAny,)
 
     def get_queryset(self):
         return self.model.objects.filter(active=True)
 
 
-class RoleTypes(APIView):
+class RoleTypes(base_views.APIView):
     permission_classes = (AllowAny,)
     view_name = 'Role Types'
 
@@ -287,7 +228,7 @@ class RoleTypes(APIView):
         return Response(roles)
 
 
-class ApiV1ReposView(APIView):
+class ApiV1ReposView(base_views.APIView):
     permission_classes = (AllowAny,)
     view_name = 'Repos'
 
@@ -300,59 +241,59 @@ class ApiV1ReposView(APIView):
         return Response(data)
 
 
-class CategoryList(ListAPIView):
-    model = Category
-    serializer_class = CategorySerializer
+class CategoryList(base_views.ListAPIView):
+    model = models.Category
+    serializer_class = serializers.CategorySerializer
     paginate_by = None
 
     def get_queryset(self):
         return self.model.objects.filter(active=True)
 
 
-class TagList(ListAPIView):
-    model = Tag
-    serializer_class = TagSerializer
+class TagList(base_views.ListAPIView):
+    model = models.Tag
+    serializer_class = serializers.TagSerializer
 
     def get_queryset(self):
         return self.model.objects.filter(active=True)
 
 
-class TagDetail(RetrieveAPIView):
-    model = Tag
-    serializer_class = TagSerializer
+class TagDetail(base_views.RetrieveAPIView):
+    model = models.Tag
+    serializer_class = serializers.TagSerializer
 
 
-class CategoryDetail(RetrieveAPIView):
-    model = Category
-    serializer_class = CategorySerializer
+class CategoryDetail(base_views.RetrieveAPIView):
+    model = models.Category
+    serializer_class = serializers.CategorySerializer
 
 
-class PlatformList(ListAPIView):
-    model = Platform
-    serializer_class = PlatformSerializer
+class PlatformList(base_views.ListAPIView):
+    model = models.Platform
+    serializer_class = serializers.PlatformSerializer
     paginate_by = None
 
 
-class PlatformDetail(RetrieveAPIView):
-    model = Platform
-    serializer_class = PlatformSerializer
+class PlatformDetail(base_views.RetrieveAPIView):
+    model = models.Platform
+    serializer_class = serializers.PlatformSerializer
 
 
-class CloudPlatformList(ListAPIView):
-    model = CloudPlatform
-    serializer_class = CloudPlatformSerializer
+class CloudPlatformList(base_views.ListAPIView):
+    model = models.CloudPlatform
+    serializer_class = serializers.CloudPlatformSerializer
     paginate_by = None
 
 
-class CloudPlatformDetail(RetrieveAPIView):
-    model = CloudPlatform
-    serializer_class = CloudPlatformSerializer
+class CloudPlatformDetail(base_views.RetrieveAPIView):
+    model = models.CloudPlatform
+    serializer_class = serializers.CloudPlatformSerializer
 
 
-class RoleDependenciesList(SubListAPIView):
-    model = Content
-    serializer_class = RoleDetailSerializer
-    parent_model = Content
+class RoleDependenciesList(base_views.SubListAPIView):
+    model = models.Content
+    serializer_class = serializers.RoleDetailSerializer
+    parent_model = models.Content
     relationship = 'dependencies'
 
     def get_queryset(self):
@@ -360,10 +301,10 @@ class RoleDependenciesList(SubListAPIView):
         return filter_role_queryset(qs)
 
 
-class RoleUsersList(SubListAPIView):
+class RoleUsersList(base_views.SubListAPIView):
     model = User
-    serializer_class = UserDetailSerializer
-    parent_model = Content
+    serializer_class = serializers.UserDetailSerializer
+    parent_model = models.Content
     relationship = 'created_by'
 
     def get_queryset(self):
@@ -371,34 +312,34 @@ class RoleUsersList(SubListAPIView):
         return filter_user_queryset(qs)
 
 
-class RoleNotificationList(SubListAPIView):
-    model = Notification
-    serializer_class = NotificationSerializer
-    parent_model = Content
+class RoleNotificationList(base_views.SubListAPIView):
+    model = models.Notification
+    serializer_class = serializers.NotificationSerializer
+    parent_model = models.Content
     relationship = 'notifications'
 
 
-class RoleImportTaskList(SubListAPIView):
-    model = ImportTask
-    serializer_class = ImportTaskSerializer
-    parent_model = Content
+class RoleImportTaskList(base_views.SubListAPIView):
+    model = models.ImportTask
+    serializer_class = serializers.ImportTaskSerializer
+    parent_model = models.Content
     relationship = 'import_tasks'
 
 
-class RoleDownloads(APIView):
+class RoleDownloads(base_views.APIView):
 
     def post(self, request, pk):
-        obj = get_object_or_404(Content, pk=pk)
+        obj = get_object_or_404(models.Content, pk=pk)
         obj.download_count += 1
         obj.save()
         return Response(status=status.HTTP_201_CREATED)
 
 
-class ImportTaskList(ListCreateAPIView):
+class ImportTaskList(base_views.ListCreateAPIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (ModelAccessPermission,)
-    model = ImportTask
-    serializer_class = ImportTaskSerializer
+    model = models.ImportTask
+    serializer_class = serializers.ImportTaskSerializer
 
     def get_queryset(self):
         return super(ImportTaskList, self).get_queryset()
@@ -417,11 +358,11 @@ class ImportTaskList(ListCreateAPIView):
                 )
             repo_name = alternate_role_name or github_repo
 
-            namespace = ProviderNamespace.objects.get(
+            namespace = models.ProviderNamespace.objects.get(
                 provider__name=constants.PROVIDER_GITHUB,
                 name=github_user
             )
-            repository, created = Repository.objects.get_or_create(
+            repository, created = models.Repository.objects.get_or_create(
                 provider_namespace=namespace,
                 name=repo_name,
                 defaults={'is_enabled': False,
@@ -429,13 +370,13 @@ class ImportTaskList(ListCreateAPIView):
             )
         else:
             try:
-                repository = Repository.objects.get(pk=repository_id)
+                repository = models.Repository.objects.get(pk=repository_id)
             except ObjectDoesNotExist:
                 raise ValidationError(
                     dict(detail="Repository {0} not found, or you do not have access".format(repository_id))
                 )
 
-        task = create_import_task(
+        task = tasks.create_import_task(
             repository, request.user,
             import_branch=github_reference,
             repository_alt_name=alternate_role_name)
@@ -447,11 +388,11 @@ class ImportTaskList(ListCreateAPIView):
                         headers=self.get_success_headers(response))
 
 
-class ImportTaskDetail(RetrieveAPIView):
+class ImportTaskDetail(base_views.RetrieveAPIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (ModelAccessPermission,)
-    model = ImportTask
-    serializer_class = ImportTaskSerializer
+    model = models.ImportTask
+    serializer_class = serializers.ImportTaskSerializer
 
     def get_object(self, qs=None):
         obj = super(ImportTaskDetail, self).get_object()
@@ -460,22 +401,22 @@ class ImportTaskDetail(RetrieveAPIView):
         return obj
 
 
-class ImportTaskNotificationList(SubListAPIView):
-    model = Notification
-    serializer_class = NotificationSerializer
-    parent_model = ImportTask
+class ImportTaskNotificationList(base_views.SubListAPIView):
+    model = models.Notification
+    serializer_class = serializers.NotificationSerializer
+    parent_model = models.ImportTask
     relationship = 'notifications'
 
 
-class ImportTaskLatestList(ListAPIView):
+class ImportTaskLatestList(base_views.ListAPIView):
     """ Return the most recent import for each of the user's repositories """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated,)
-    model = ImportTask
-    serializer_class = ImportTaskLatestSerializer
+    model = models.ImportTask
+    serializer_class = serializers.ImportTaskLatestSerializer
 
     def list(self, request, *args, **kwargs):
-        qs = ImportTask.objects.filter(
+        qs = models.ImportTask.objects.filter(
             repository__provider_namespace__namespace__isnull=False,
             repository__provider_namespace__namespace__owners=request.user
         ).values(
@@ -497,16 +438,16 @@ class ImportTaskLatestList(ListAPIView):
         return Response(serializer.data)
 
 
-class UserRepositoriesList(SubListAPIView):
-    model = Repository
-    serializer_class = RepositorySerializer
+class UserRepositoriesList(base_views.SubListAPIView):
+    model = models.Repository
+    serializer_class = serializers.RepositorySerializer
     parent_model = User
     relationship = 'repositories'
 
 
-class UserRolesList(SubListAPIView):
-    model = Content
-    serializer_class = RoleDetailSerializer
+class UserRolesList(base_views.SubListAPIView):
+    model = models.Content
+    serializer_class = serializers.RoleDetailSerializer
     parent_model = User
     relationship = 'roles'
 
@@ -515,30 +456,30 @@ class UserRolesList(SubListAPIView):
         return filter_role_queryset(qs)
 
 
-class UserSubscriptionList(SubListAPIView):
-    model = Subscription
-    serializer_class = SubscriptionSerializer
+class UserSubscriptionList(base_views.SubListAPIView):
+    model = models.Subscription
+    serializer_class = serializers.SubscriptionSerializer
     parent_model = User
     relationship = 'subscriptions'
 
 
-class UserStarredList(SubListAPIView):
-    model = Stargazer
-    serializer_class = StargazerSerializer
+class UserStarredList(base_views.SubListAPIView):
+    model = models.Stargazer
+    serializer_class = serializers.StargazerSerializer
     parent_model = User
     relationship = 'starred'
 
 
-class UserNotificationSecretList(SubListAPIView):
-    model = NotificationSecret
-    serializer_class = NotificationSecretSerializer
+class UserNotificationSecretList(base_views.SubListAPIView):
+    model = models.NotificationSecret
+    serializer_class = serializers.NotificationSecretSerializer
     parent_model = User
     relationship = 'notification_secrets'
 
 
-class StargazerList(ListCreateAPIView):
-    model = Stargazer
-    serializer_class = StargazerSerializer
+class StargazerList(base_views.ListCreateAPIView):
+    model = models.Stargazer
+    serializer_class = serializers.StargazerSerializer
 
     def post(self, request, *args, **kwargs):
         github_user = request.data.get('github_user', None)
@@ -584,8 +525,8 @@ class StargazerList(ListCreateAPIView):
                 "for {0}/{1}. {2} - {3}".format(github_user, github_repo, e.data, e.status)
             raise ValidationError(dict(detail=msg))
 
-        repo = Repository.objects.get(github_user=github_user,
-                                      github_repo=github_repo)
+        repo = models.Repository.objects.get(github_user=github_user,
+                                             github_repo=github_repo)
         star = repo.stars.create(owner=request.user)
         repo.stargazers_count = gh_repo.stargazers_count + 1
         repo.save()
@@ -599,9 +540,9 @@ class StargazerList(ListCreateAPIView):
             status=status.HTTP_201_CREATED)
 
 
-class StargazerDetail(RetrieveUpdateDestroyAPIView):
-    model = Stargazer
-    serializer_class = StargazerSerializer
+class StargazerDetail(base_views.RetrieveUpdateDestroyAPIView):
+    model = models.Stargazer
+    serializer_class = serializers.StargazerSerializer
 
     def destroy(self, request, *args, **kwargs):
         obj = super(StargazerDetail, self).get_object()
@@ -645,17 +586,17 @@ class StargazerDetail(RetrieveUpdateDestroyAPIView):
 
         obj.delete()
 
-        repo = Repository.objects.get(github_user=obj.role.github_user,
-                                      github_repo=obj.role.github_repo)
+        repo = models.Repository.objects.get(github_user=obj.role.github_user,
+                                             github_repo=obj.role.github_repo)
         repo.stargazers_count = max(0, gh_repo.stargazers_count - 1)
         repo.save()
 
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
-class SubscriptionList(ListCreateAPIView):
-    model = Subscription
-    serializer_class = SubscriptionSerializer
+class SubscriptionList(base_views.ListCreateAPIView):
+    model = models.Subscription
+    serializer_class = serializers.SubscriptionSerializer
 
     def post(self, request, *args, **kwargs):
         github_user = request.data.get('github_user', None)
@@ -702,7 +643,7 @@ class SubscriptionList(ListCreateAPIView):
                                                                                   github_repo)
             raise ValidationError(dict(detail=msg))
 
-        new_sub, created = Subscription.objects.get_or_create(
+        new_sub, created = models.Subscription.objects.get_or_create(
             owner=request.user,
             github_user=github_user,
             github_repo=github_repo,
@@ -716,8 +657,8 @@ class SubscriptionList(ListCreateAPIView):
         for s in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        repo = Repository.objects.get(github_user=github_user,
-                                      github_repo=github_repo)
+        repo = models.Repository.objects.get(github_user=github_user,
+                                             github_repo=github_repo)
         repo.watchers_count = sub_count
         repo.save()
 
@@ -731,9 +672,9 @@ class SubscriptionList(ListCreateAPIView):
         ), status=status.HTTP_201_CREATED)
 
 
-class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
-    model = Subscription
-    serializer_class = SubscriptionSerializer
+class SubscriptionDetail(base_views.RetrieveUpdateDestroyAPIView):
+    model = models.Subscription
+    serializer_class = serializers.SubscriptionSerializer
 
     def destroy(self, request, *args, **kwargs):
         obj = super(SubscriptionDetail, self).get_object()
@@ -784,8 +725,8 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
         for sub in gh_repo.get_subscribers():
             sub_count += 1   # only way to get subscriber count via pygithub
 
-        repo = Repository.objects.get(github_user=obj.github_user,
-                                      github_repo=obj.github_repo)
+        repo = models.Repository.objects.get(github_user=obj.github_user,
+                                             github_repo=obj.github_repo)
         repo.watchers_count = sub_count
         repo.save()
 
@@ -796,12 +737,12 @@ class SubscriptionDetail(RetrieveUpdateDestroyAPIView):
         return Response(dict(detail=result), status=status.HTTP_202_ACCEPTED)
 
 
-class NotificationSecretList(ListCreateAPIView):
+class NotificationSecretList(base_views.ListCreateAPIView):
     '''
     Integration tokens.
     '''
-    model = NotificationSecret
-    serializer_class = NotificationSecretSerializer
+    model = models.NotificationSecret
+    serializer_class = serializers.NotificationSecretSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated, ModelAccessPermission,)
 
@@ -827,7 +768,7 @@ class NotificationSecretList(ListCreateAPIView):
         if source == 'travis':
             secret = sha256(github_user + '/' + github_repo + secret).hexdigest()
 
-        secret, create = NotificationSecret.objects.get_or_create(
+        secret, create = models.NotificationSecret.objects.get_or_create(
             source=source,
             github_user=github_user,
             github_repo=github_repo,
@@ -851,9 +792,9 @@ class NotificationSecretList(ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
-    model = NotificationSecret
-    serializer_class = NotificationSecretSerializer
+class NotificationSecretDetail(base_views.RetrieveUpdateDestroyAPIView):
+    model = models.NotificationSecret
+    serializer_class = serializers.NotificationSecretSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated, ModelAccessPermission,)
 
@@ -894,9 +835,9 @@ class NotificationSecretDetail(RetrieveUpdateDestroyAPIView):
                         status=status.HTTP_202_ACCEPTED)
 
 
-class NotificationList(ListCreateAPIView):
-    model = Notification
-    serializer_class = NotificationSerializer
+class NotificationList(base_views.ListCreateAPIView):
+    model = models.Notification
+    serializer_class = serializers.NotificationSerializer
 
     def post(self, request, *args, **kwargs):
 
@@ -932,7 +873,7 @@ class NotificationList(ListCreateAPIView):
         request_branch = payload['branch']
         travis_status_url = "https://travis-ci.org/%s/%s.svg?branch=%s" % (github_user, github_repo, request_branch)
 
-        notification = Notification.objects.create(
+        notification = models.Notification.objects.create(
             owner=owner,
             source='travis',
             github_branch=request_branch,
@@ -943,7 +884,7 @@ class NotificationList(ListCreateAPIView):
             commit=payload['commit']
         )
 
-        repository, _ = Repository.objects.get_or_create(
+        repository, _ = models.Repository.objects.get_or_create(
             github_user=github_user,
             github_repo=github_repo,
             defaults={
@@ -952,9 +893,9 @@ class NotificationList(ListCreateAPIView):
                 'travis_build_url': payload.get('build_url'),
                 'original_name': github_repo})
 
-        role, _ = Content.objects.update_or_create(
+        role, _ = models.Content.objects.update_or_create(
             # FIXME(cutwater): Use in-memory cache for content types
-            content_type=ContentType.get(constants.ContentType.ROLE),
+            content_type=models.ContentType.get(constants.ContentType.ROLE),
             repository=repository,
             active=True,
             defaults={
@@ -966,7 +907,7 @@ class NotificationList(ListCreateAPIView):
         )
         notification.roles.add(role)
 
-        task = create_import_task(
+        task = tasks.create_import_task(
             role.repository, owner,
             travis_status_url=travis_status_url,
             travis_build_url=payload.get('build_url'))
@@ -1020,15 +961,15 @@ class NotificationList(ListCreateAPIView):
         return owner
 
 
-class NotificationDetail(RetrieveAPIView):
-    model = Notification
-    serializer_class = NotificationSerializer
+class NotificationDetail(base_views.RetrieveAPIView):
+    model = models.Notification
+    serializer_class = serializers.NotificationSerializer
 
 
-class NotificationRolesList(SubListAPIView):
-    model = Content
-    serializer_class = RoleDetailSerializer
-    parent_model = Notification
+class NotificationRolesList(base_views.SubListAPIView):
+    model = models.Content
+    serializer_class = serializers.RoleDetailSerializer
+    parent_model = models.Notification
     relationship = 'roles'
 
     def get_queryset(self):
@@ -1036,10 +977,10 @@ class NotificationRolesList(SubListAPIView):
         return qs
 
 
-class NotificationImportsList(SubListAPIView):
-    model = ImportTask
-    serializer_class = ImportTaskSerializer
-    parent_model = Notification
+class NotificationImportsList(base_views.SubListAPIView):
+    model = models.ImportTask
+    serializer_class = serializers.ImportTaskSerializer
+    parent_model = models.Notification
     relationship = 'imports'
 
     def get_queryset(self):
@@ -1047,9 +988,9 @@ class NotificationImportsList(SubListAPIView):
         return qs
 
 
-class UserDetail(RetrieveAPIView):
+class UserDetail(base_views.RetrieveAPIView):
     model = User
-    serializer_class = UserDetailSerializer
+    serializer_class = serializers.UserDetailSerializer
 
     def update_filter(self, request, *args, **kwargs):
         ''' make sure non-read-only fields that can only be edited by admins, are only edited by admins '''
@@ -1074,21 +1015,21 @@ class UserDetail(RetrieveAPIView):
         return obj
 
 
-class UserList(ListAPIView):
+class UserList(base_views.ListAPIView):
     model = User
-    serializer_class = UserListSerializer
+    serializer_class = serializers.UserListSerializer
 
     def get_queryset(self):
         qs = super(UserList, self).get_queryset()
         return filter_user_queryset(qs)
 
 
-class TopContributorsList(ListAPIView):
-    model = Content
-    serializer_class = TopContributorsSerializer
+class TopContributorsList(base_views.ListAPIView):
+    model = models.Content
+    serializer_class = serializers.TopContributorsSerializer
 
     def list(self, request, *args, **kwargs):
-        qs = (Content.objects.values('namespace')
+        qs = (models.Content.objects.values('namespace')
               .annotate(count=Count('id'))
               .order_by('-count', 'namespace'))
 
@@ -1101,9 +1042,9 @@ class TopContributorsList(ListAPIView):
         return Response(serializer.data)
 
 
-class UserMeList(RetrieveAPIView):
+class UserMeList(base_views.RetrieveAPIView):
     model = User
-    serializer_class = MeSerializer
+    serializer_class = serializers.MeSerializer
     view_name = 'Me'
 
     def get_object(self):
@@ -1114,7 +1055,7 @@ class UserMeList(RetrieveAPIView):
         return obj
 
 
-class RemoveRole(APIView):
+class RemoveRole(base_views.APIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated,)
 
@@ -1166,7 +1107,7 @@ class RemoveRole(APIView):
             ('status', '')
         ])
 
-        roles = Content.objects.filter(
+        roles = models.Content.objects.filter(
             repository__provider_namespace__name=gh_user,
             repository__name=gh_repo)
         cnt = len(roles)
@@ -1191,19 +1132,19 @@ class RemoveRole(APIView):
                 notification.delete()
 
         # Update the repository cache
-        repo = Repository.objects.get(
+        repo = models.Repository.objects.get(
             provider_namespace__name=gh_user,
             name=gh_repo)
         repo.is_enabled = False
         repo.save()
 
-        Content.objects.filter(repository=repo).delete()
-        ImportTask.objects.filter(repository=repo).delete()
+        models.Content.objects.filter(repository=repo).delete()
+        models.ImportTask.objects.filter(repository=repo).delete()
 
         return Response(response)
 
 
-class RefreshUserRepos(APIView):
+class RefreshUserRepos(base_views.APIView):
     '''
     Return user GitHub repos directly from GitHub. Use to refresh cache for the authenticated user.
     '''
@@ -1243,23 +1184,23 @@ class RefreshUserRepos(APIView):
             return HttpResponseBadRequest({'detail': msg})
 
         try:
-            refresh_existing_user_repos(token.token, ghu)
+            celerytasks.refresh_existing_user_repos(token.token, ghu)
         except Exception as exc:
             logger.error("Error: refresh_user_repos - {0}".format(exc.message))
             raise
 
         try:
-            update_user_repos(user_repos, request.user)
+            celerytasks.update_user_repos(user_repos, request.user)
         except Exception as exc:
             logger.error("Error: update_user_repos - {0}".format(exc.message))
             raise
 
         qs = request.user.repositories.all()
-        serializer = RepositorySerializer(qs, many=True)
+        serializer = serializers.RepositorySerializer(qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class TokenView(APIView):
+class TokenView(base_views.APIView):
     '''
     Allows ansible-galaxy CLI to retrieve an auth token
     '''
@@ -1302,15 +1243,3 @@ class TokenView(APIView):
             token.save()
         result = dict(token=token.key, username=user.username)
         return Response(result, status=status.HTTP_200_OK)
-
-
-# ------------------------------------------------------------------------
-# Create view functions for all of the class-based views to simplify inclusion
-# in URL patterns and reverse URL lookups, converting CamelCase names to
-# lowercase_with_underscore (e.g. MyView.as_view() becomes my_view).
-this_module = sys.modules[__name__]
-for attr, value in locals().items():
-    if isinstance(value, type) and issubclass(value, APIView):
-        name = camelcase_to_underscore(attr)
-        view = value.as_view()
-        setattr(this_module, name, view)

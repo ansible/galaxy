@@ -21,7 +21,9 @@ import re
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 
-from rest_framework.exceptions import ValidationError, APIException, PermissionDenied
+from rest_framework.exceptions import (ValidationError,
+                                       APIException,
+                                       PermissionDenied)
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework import status
@@ -30,6 +32,7 @@ from galaxy.accounts.models import CustomUser as User
 from galaxy.api.githubapi import GithubAPI
 from galaxy.api.filters import FieldLookupBackend, OrderByBackend
 from galaxy.api import serializers
+from galaxy.api import tasks
 from galaxy.api.views import base_views as views
 from galaxy.main import models
 
@@ -138,7 +141,7 @@ class RepositoryList(views.ListCreateAPIView):
             else:
                 owner.repositories.add(repository)
 
-        import_task = views.create_import_task(repository, request.user)
+        import_task = tasks.create_import_task(repository, request.user)
 
         serializer = self.get_serializer(repository)
         data = serializer.data
@@ -206,7 +209,7 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
         if not request.user.repositories.filter(pk=instance.pk):
             request.user.repositories.add(instance)
 
-        import_task = views.create_import_task(repository, request.user)
+        import_task = tasks.create_import_task(repository, request.user)
 
         serializer = self.get_serializer(instance=instance)
         data = serializer.data
