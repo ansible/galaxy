@@ -39,7 +39,7 @@ export class NamespaceDetailResolver implements Resolve<Namespace> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Namespace> {
         let namespace = route.params['namespace'].toLowerCase();
         let params = {
-            name: namespace
+            name__iexact: namespace
         }
         return this.namespaceService.query(params).map(results => {
             if (results && results.length) {

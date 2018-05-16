@@ -81,7 +81,7 @@ export class AddRepositoryModalComponent implements OnInit {
             .filter((repoSource) => repoSource.isSelected)
             .forEach(repoSource => {
                 let newRepo = new Repository();
-                newRepo.name = this.getRepoName(repoSource.name);
+                newRepo.name = repoSource.name;
                 newRepo.original_name = repoSource.name;
                 newRepo.description = repoSource.description ? repoSource.description : repoSource.name;
                 newRepo.provider_namespace = this.selectedPNS.id;
@@ -95,13 +95,6 @@ export class AddRepositoryModalComponent implements OnInit {
             console.log(results);
             this.saveInProgress = false;
             this.bsModalRef.hide();
-            results.forEach((repository: Repository) => {
-                this.repositoryImportService
-                    .save({'repository_id': repository.id})
-                    .subscribe(_ => {
-                        console.log(`Started import for ${repository.name}`);
-                    });
-            });
         });
     }
 

@@ -12,13 +12,14 @@
 				<pfng-list
 			        [config]="listConfig"
 			        [items]="contentItems"
-			        [itemTemplate]="itemTemplate"
-			        (onClick)="itemClicked($event)">
+			        [itemTemplate]="itemTemplate">
 			        <ng-template #itemTemplate let-item="item" let-index="index">
 			            <div class="list-pf-content-wrapper">
 				          	<div class="list-pf-main-content">
 			            		<div class="list-pf-title">
-			            			<div class="content-name">
+			            			<div class="content-name cursor-pointer"
+			            					(click)="itemClicked(item)"
+			            					tooltip="View item details">
 			        					<div class="icon">
 			        						<i class="fa fa-cog fa-2x" *ngIf="item.summary_fields.content_type.name == 'role'"></i>
 			        						<i class="fa fa-microchip fa-2x" *ngIf="item.summary_fields.content_type.name == 'module'"></i>
@@ -33,12 +34,11 @@
 			            				</div>
 		            				</div>
 			            			<div class="content-namespace">
-			            				<div class="avatar">
-			            					<img [src]="item.summary_fields.content_type.name.avatar_url || '/assets/avatar.png'" >
-			            				</div>
-			            				<div class="name">
+			            				<a [routerLink]="['/', item.summary_fields.namespace.name]"
+			            				   tooltip="View the Author's page">
+			            					<img [src]="item.summary_fields.content_type.name.avatar_url || '/assets/avatar.png'" class="avatar">
 			            					{{ item.summary_fields.namespace.name }}
-			            				</div>
+			            				</a>
 			            			</div>
 			            			<div class="content-tags">
 			            				<div class="icon"><i class="fa fa-tag fa-2x"></i></div>
@@ -51,12 +51,14 @@
 			            		</div>
 			            		<div class="list-pf-description">
 			            			<div class="travis" *ngIf="item.summary_fields.repository.travis_build_url">
-			            				<a href="{{ item.summary_fields.repository.travis_build_url }}" target="_blank">
+			            				<a href="{{ item.summary_fields.repository.travis_build_url }}" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
                                     		<img src="{{ item.summary_fields.repository.travis_status_url }}"
                                     			class="travis-status-img" title="Travis Build Status" />
                                     	</a>
                                     </div>
-			            			<div class="counts">
+			            			<div class="counts cursor-pointer"
+			            					(click)="itemClicked(item)"
+			            		    		tooltip="View item details">
 			            				<div class="count-icon"><i class="fa fa-download fa-2x"></i></div>
 			            				<div class="count-count">{{ item.download_count }}</div>
 			            				<div class="count-text">Downloads</div>
@@ -71,11 +73,15 @@
 			            				{{ item.summary_fields.repository.stargazers_count }}</div>
 			            				<div class="count-text">Star Gazers</div>
 			            			</div>
-			            			<div class="import">
+			            			<div class="import cursor-pointer"
+			            			     	(click)="itemClicked(item)"
+			            		    	 	tooltip="View item details">
 			            				<div class="import-text">Last Imported</div>
 			            				<div class="import-date">{{ item.imported }}</div>
 			            			</div>
-			            			<div class="relevance" *ngIf="showRelevance">
+			            			<div class="relevance cursor-pointer" *ngIf="showRelevance"
+			            			        (click)="itemClicked(item)"
+			            		    		tooltip="View item details">
 			            				<span class="relevance-text">Best Match</span>
 			            				<span class="relevance-score">{{ item.relevance | number:'1.4-4' }}</span>
 			            			</div>

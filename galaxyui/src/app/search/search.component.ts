@@ -100,17 +100,17 @@ export class SearchComponent implements OnInit, AfterViewInit {
 					queries: []
 				},
 				{
+					id: 'namespace',
+					title: 'Content Author',
+					placeholder: 'Author Name',
+					type: FilterType.TEXT
+				},
+				{
 					id: 'content_type',
 					title: 'Content Type',
 					placeholder: 'Content Type',
 					type: FilterType.TYPEAHEAD,
 					queries: []
-				},
-				{
-					id: 'namespace',
-					title: 'Namespace',
-					placeholder: 'Namespace',
-					type: FilterType.TEXT
 				},
 				{
 					id: 'platform',
@@ -346,12 +346,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
 		}
 	}
 
-	itemClicked($event: ListEvent) {
-		console.log($event);
-		let namespace = $event.item.summary_fields['namespace']['name'];
-	    let repository = $event.item.summary_fields['repository']['name'];
-		let name = $event.item.name;
-		this.router.navigate([`${namespace}/${repository}/${name}`]);
+	itemClicked(item: Content) {
+		let namespace = item.summary_fields['namespace']['name'];
+	    let repository = item.summary_fields['repository']['name'];
+		let name = item.name;
+		this.router.navigate(['/', namespace, repository, name]);
 	}
 
 	// private
