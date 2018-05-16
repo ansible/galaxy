@@ -10,6 +10,7 @@ import { ToolbarModule }       from 'patternfly-ng/toolbar/toolbar.module';
 import { ListModule }          from 'patternfly-ng/list/list.module';
 import { SortModule }          from 'patternfly-ng/sort/sort.module';
 import { PaginationModule }    from 'patternfly-ng/pagination/pagination.module';
+import { TooltipModule }               from 'ngx-bootstrap/tooltip';
 
 import { SearchRoutingModule } from './search-routing.module';
 import { SearchComponent }     from './search.component';
@@ -25,6 +26,7 @@ import { PageLoadingModule }   from '../page-loading/page-loading.module';
     	FilterModule,
         SortModule,
     	ToolbarModule,
+        TooltipModule,
     	ListModule,
         CommonModule,
         SearchRoutingModule,
