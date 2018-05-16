@@ -186,11 +186,11 @@ def _update_repository_versions(repository, github_repo, logger):
     logger.info('Adding repo tags as versions')
     git_tag_list = github_repo.get_tags()
     for tag in git_tag_list:
-        rv, created = models.RepositoryVersion.objects.get_or_create(
-            name=tag.name, repository=repository)
-        rv.release_date = tag.commit.commit.author.date.replace(
-            tzinfo=pytz.UTC)
-        rv.save()
+        release_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
+        models.RepositoryVersion.objects.update_or_create(
+            name=tag.name, repository=repository,
+            defaults={'release_date': release_date}
+        )
 
     if git_tag_list:
         remove_versions = []
