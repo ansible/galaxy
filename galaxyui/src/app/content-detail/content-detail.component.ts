@@ -126,10 +126,15 @@ export class ContentDetailComponent implements OnInit {
                         this.repository.last_commit =
                             moment(this.repository.commit_created).fromNow();
                     }
-
-                    this.repoContent = this.content[0];
-                    console.log(this.repoContent);
-                    this.fetchContentDetail(this.repoContent.id);
+                    if (this.content && this.content.length) {
+                        this.repoContent = this.content[0];
+                        console.log(this.repoContent);
+                        this.fetchContentDetail(this.repoContent.id);
+                    } else {
+                        // Repo has no child Content Objects
+                        this.pageLoading = false;
+                        this.showEmptyState = true;
+                    }
                 }
             });
         });
