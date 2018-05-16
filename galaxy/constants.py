@@ -133,3 +133,11 @@ class RepositoryFormat(enum.Enum):
     ROLE = 'role'
     APB = 'apb'
     MULTI = 'multi'
+
+    @classmethod
+    def choices(cls):
+        return [
+            (cls.ROLE.value, 'Role'),
+            (cls.APB.value, 'Ansible Playbook Bundle'),
+            (cls.MULTI.value, 'Multi-content'),
+        ]
