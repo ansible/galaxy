@@ -61,7 +61,7 @@
 					</card-info>
 				</div>
 			</div>
-			<div class="row detail" *ngIf="repoType != RepoTypes.multiple">
+			<div class="row detail" *ngIf="repoType != RepoFormats.multi">
 				<div class="col-sm-3"
 					*ngIf="repoContent && repoContent['hasPlatforms']">
 					<card-platforms [platforms]="repoContent['platforms']"></card-platforms>

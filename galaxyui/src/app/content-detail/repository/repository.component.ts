@@ -12,16 +12,16 @@ import { Namespace }        from '../../resources/namespaces/namespace';
 import { ContentService }   from '../../resources/content/content.service';
 
 import {
-    RepoTypes,
-    RepoTypesTooltips,
-    RepoTypesIconClasses
+    RepoFormats,
+    RepoFormatsTooltips,
+    RepoFormatsIconClasses
 } from '../../enums/repo-types.enum';
 
 import * as moment          from 'moment';
 
 
 class RepositoryView {
-    repoType: RepoTypes;
+    repoType: RepoFormats;
     name: string;
     description: string;
     iconClass: string;
@@ -38,7 +38,7 @@ class RepositoryView {
 }
 
 export class RepoChangeEvent {
-    repoType: RepoTypes;
+    repoType: RepoFormats;
     mainContent: Content;
 }
 
@@ -58,7 +58,7 @@ export class RepositoryComponent implements OnInit {
 
     mainContent: Content = {} as Content;
     repositoryView: RepositoryView;
-    RepoTypes: typeof RepoTypes = RepoTypes;
+    RepoFormats: typeof RepoFormats = RepoFormats;
 
     ngOnInit() {
         this.setRepositoryView();
@@ -68,9 +68,9 @@ export class RepositoryComponent implements OnInit {
     private setRepositoryView(){
         // Determine repoType: role, apb, multiconent
         this.repositoryView = {} as RepositoryView;
-        this.repositoryView.repoType = RepoTypes[this.repository.repository_type];
-        this.repositoryView.iconClass = RepoTypesIconClasses[this.repository.repository_type];
-        this.repositoryView.tooltip = RepoTypesTooltips[this.repository.repository_type];
+        this.repositoryView.repoType = RepoFormats[this.repository.format];
+        this.repositoryView.iconClass = RepoFormatsIconClasses[this.repository.format];
+        this.repositoryView.tooltip = RepoFormatsTooltips[this.repository.format];
         this.repositoryView.name = this.repository.name;
         this.repositoryView.description = this.repository.description;
         this.repositoryView.namespace = this.repository.summary_fields.namespace['name'];

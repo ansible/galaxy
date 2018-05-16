@@ -40,9 +40,9 @@ import {
 } from '../../enums/content-types.enum';
 
 import {
-    RepoTypes,
-    RepoTypesTooltips,
-    RepoTypesIconClasses
+    RepoFormats,
+    RepoFormatsTooltips,
+    RepoFormatsIconClasses
 } from '../../enums/repo-types.enum';
 
 
@@ -78,7 +78,7 @@ export class AuthorDetailComponent implements OnInit {
     filterBy: any = {};
     sortBy: string = 'name';
 
-    RepoTypes: typeof RepoTypes = RepoTypes;
+    RepoFormats: typeof RepoFormats = RepoFormats;
 
     ngOnInit() {
 
@@ -262,8 +262,8 @@ export class AuthorDetailComponent implements OnInit {
 
     private prepareRepositories() {
         this.items.forEach((item: Repository) => {
-            item['iconClass'] = RepoTypesIconClasses[item.repository_type];
-            item['tooltip'] = RepoTypesTooltips[item.repository_type];
+            item['iconClass'] = RepoFormatsIconClasses[item.format];
+            item['tooltip'] = RepoFormatsTooltips[item.format];
 
             item.last_import = 'NA';
             item.last_import_state = 'NA';

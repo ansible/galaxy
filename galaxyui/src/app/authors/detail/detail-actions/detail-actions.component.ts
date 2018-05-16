@@ -12,9 +12,9 @@ import { ActionConfig }     from 'patternfly-ng/action/action-config';
 import { Repository }       from '../../../resources/repositories/repository';
 
 import {
-    RepoTypes,
-    RepoTypesTooltips,
-    RepoTypesIconClasses
+    RepoFormats,
+    RepoFormatsTooltips,
+    RepoFormatsIconClasses
 } from '../../../enums/repo-types.enum';
 
 
