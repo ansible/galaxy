@@ -1,0 +1,71 @@
+/* authors-detail.component.less */
+
+@import '../../../variables';
+
+#author-detail {
+    color: @ansible-dark-grey;
+    margin-bottom: 150px;
+
+    .pagination {
+        width: 100%;
+    }
+
+	.namespace {
+		display: flex;
+		flex-grow: 1;
+		flex-wrap: nowrap;
+		align-items: center;
+		justify-content: flex-start;
+		margin-top: 30px;
+        padding-left: 15px;
+        padding-right: 15px;
+	}
+
+	.namespace-details,
+	.content-summary {
+		flex-grow: 1;
+		flex-shrink: 1;
+	}
+	.namespace-details {
+		display: flex;
+		flex-wrap: nowrap;
+		justify-content: flex-start;
+		align-items: center;
+	}
+	.namespace-bio {
+    	font-size: 14px;
+    	p {
+    		margin-bottom: 3px;
+    	}
+    	.name {
+            color: @black;
+    		font-weight: 700;
+    		font-size: 18px;
+            padding-bottom: 2px;
+    	}
+    }
+	.github-avatar {
+		width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        border: 2px solid @ansible-dark-grey;
+        margin-right: 15px;
+    }
+    .content-count {
+    	display: inline-block;
+        color: @black;
+        font-size: 14px;
+        margin-right: 15px;
+    }
+    .detail-search-toolbar {
+    	margin-top: 40px;
+    }
+    .repository-list {
+    	margin-top: 20px;
+    }
+    .repo-name,
+    .repo-description,
+    .repo-count {
+        font-size: 12px;
+    }
+}

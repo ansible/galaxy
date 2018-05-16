@@ -23,4 +23,6 @@ export class Repository {
     related: any;
     last_import: string;
     last_commit: string;
+    last_import_state: string;
+    download_count: number;
 }

@@ -19,4 +19,5 @@ export class Content {
     last_commit: string;
     last_import: string;
     download_count: number;
+    content_objects: any;
 }

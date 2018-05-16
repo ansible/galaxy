@@ -54,7 +54,7 @@ export class SearchContentTypeResolver implements Resolve<ContentType[]> {
         private router: Router
     ){}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ContentType[]> {
-        return this.contentTypeService.query({'page_size': 1000});
+        return this.contentTypeService.query({'page_size': 1000, 'order': 'description'});
     }
 }
 
