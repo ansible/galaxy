@@ -28,9 +28,7 @@ __all__ = [
 
 
 class RepositorySerializer(serializers.BaseSerializer):
-    REPOSITORY_TYPE_MULTIPLE = 'multiple'
     external_url = drf_serializers.SerializerMethodField()
-    repository_type = drf_serializers.SerializerMethodField()
 
     class Meta:
         model = Repository
@@ -38,6 +36,7 @@ class RepositorySerializer(serializers.BaseSerializer):
             'id',
             'original_name',
             'description',
+            'format',
             'import_branch',
             'is_enabled',
             'commit',
@@ -53,7 +52,6 @@ class RepositorySerializer(serializers.BaseSerializer):
             'clone_url',
             'external_url',
             'issue_tracker_url',
-            'repository_type'
         )
 
     def get_related(self, instance):
@@ -136,17 +134,3 @@ class RepositorySerializer(serializers.BaseSerializer):
             server,
             instance.provider_namespace.name,
             instance.original_name)
-
-    def get_repository_type(self, instance):
-        try:
-            content_count = instance.content_count
-        except AttributeError:
-            content_count = instance.content_objects.count()
-
-        if content_count > 1:
-            return self.REPOSITORY_TYPE_MULTIPLE
-        elif content_count > 0:
-            content = instance.content_objects.first()
-            return content.content_type.name
-        else:
-            return None
