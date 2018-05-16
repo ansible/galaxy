@@ -54,9 +54,10 @@ class Content(object):
 
 class Repository(object):
     """Represents repository metadata."""
-    def __init__(self, branch, commit, contents):
+    def __init__(self, branch, commit, format, contents):
         self.branch = branch
         self.commit = commit
+        self.format = format
         self.contents = contents
 
 
@@ -141,9 +142,9 @@ class ContentSchema(mm.Schema):
 
 class RepositorySchema(mm.Schema):
     """A schema for Repository class."""
-    path = fields.Str()
     branch = fields.Str()
     commit = fields.Nested(CommitInfoSchema())
+    format = schema.Enum(constants.RepositoryFormat)
     contents = fields.Nested(ContentSchema(), many=True)
 
     @mm.post_load
