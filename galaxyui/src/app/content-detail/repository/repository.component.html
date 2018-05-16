@@ -6,7 +6,11 @@
 		<div class="title-container">
 			<div class="title">{{ repositoryView.name }}</div>
 			<div class="description">{{ repositoryView.description }}</div>
-			<div class="namespace"><img [src]="repositoryView.avatarUrl" > {{ repositoryView.namespace }}</div>
+			<a class="namespace"
+			   [href]=""
+			   (click)="viewAuthor()"
+			   tooltip="View the Author's page">
+			   <img [src]="repositoryView.avatarUrl" > {{ repositoryView.namespace }}</a>
 		</div>
 	</div>
 	<div class="col-sm-8">

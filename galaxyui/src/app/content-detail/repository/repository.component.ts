@@ -6,6 +6,10 @@ import {
 	OnInit
 } from '@angular/core';
 
+import {
+    Router
+} from '@angular/router';
+
 import { Repository }       from '../../resources/repositories/repository';
 import { Content }          from '../../resources/content/content';
 import { Namespace }        from '../../resources/namespaces/namespace';
@@ -50,7 +54,8 @@ export class RepoChangeEvent {
 export class RepositoryComponent implements OnInit {
 
     constructor(
-        private contentService: ContentService
+        private contentService: ContentService,
+        private router: Router
     ) {}
 
     @Input() repository: Repository;
@@ -62,6 +67,10 @@ export class RepositoryComponent implements OnInit {
 
     ngOnInit() {
         this.setRepositoryView();
+    }
+
+    viewAuthor() {
+        this.router.navigate(['/', this.repositoryView.namespace]);
     }
 
     // private
