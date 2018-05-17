@@ -1,6 +1,7 @@
 <div id="import-details-container" *ngIf="importTask">
     <div class="title-container">
-        <div class="title">{{ importTask.summary_fields.namespace.name + '.' + importTask.summary_fields.repository.name }}</div>
+        <a [routerLink]="['/', importTask.summary_fields.namespace.name, importTask.summary_fields.repository.name]"
+          class="title" tooltip="View imported content">{{ importTask.summary_fields.namespace.name + '.' + importTask.summary_fields.repository.name }}</a>
         <div class="refreshing-icon" [ngClass]="{refreshing: refreshing}" ><i class="fa fa-spinner fa-spin"></i></div>
     </div>
 
