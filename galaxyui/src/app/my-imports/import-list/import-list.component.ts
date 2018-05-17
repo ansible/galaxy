@@ -354,7 +354,8 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                         }
                     }
                     this.refreshing = false;
-                    this.scrollDetails();
+                    if (this.scroll)
+                        this.scrollDetails();
                     setTimeout(_ => { this.setVerticalScroll(); }, 1000);
                 });
         }

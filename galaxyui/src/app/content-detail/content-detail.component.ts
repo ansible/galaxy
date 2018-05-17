@@ -21,7 +21,7 @@ import { Namespace }        from '../resources/namespaces/namespace';
 import { PagedResponse }    from '../resources/paged-response';
 import { RepoChangeEvent }  from './repository/repository.component';
 import { ViewTypes }        from '../enums/view-types.enum';
-import { RepoFormats }        from '../enums/repo-types.enum';
+import { RepoFormats }      from '../enums/repo-types.enum';
 import { ContentTypes }     from '../enums/content-types.enum';
 
 import { ContentService }   from '../resources/content/content.service';
