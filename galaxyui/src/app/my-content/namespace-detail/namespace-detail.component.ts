@@ -123,7 +123,7 @@ export class NamespaceDetailComponent implements OnInit {
         } as FilterConfig;
     }
 
-    saveNamespace() {
+    saveNamespace($event) {
         let namespace: Namespace = this.prepareSaveNamespace();
         this.namespaceService.save(namespace)
             .subscribe(
