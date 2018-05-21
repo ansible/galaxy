@@ -1,6 +1,6 @@
 <app-page-header [headerTitle]="pageTitle"></app-page-header>
 <div class="padding-15">
-    <form [formGroup]="namespaceForm" (ngSubmit)="saveNamespace()" novalidate>
+    <form [formGroup]="namespaceForm" novalidate>
         <div class="form-group">
             <label for="nameInput">Name <span class="required">*</span></label>
             <input type="text"
@@ -147,9 +147,10 @@
 
         <div class="row form-buttons">
             <div class="col-sm-12">
-                <button type="submit" class="btn btn-primary btn-lg"
+                <button type="button" class="btn btn-primary btn-lg"
                         tooltip-placement="top"
                         uib-tooltip="Save the new namespace"
+                        (click)="saveNamespace($event)"
                         [disabled]="!namespaceForm.valid || !selectedNamespaces.length"><i class="fa fa-check"></i> Save</button>
                 <a [routerLink]="['/my-content']" class="btn btn-default btn-lg"
                    tooltip-placement="top"

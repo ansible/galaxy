@@ -18,7 +18,7 @@ export class ProviderSourceService {
         private notificationService: NotificationService) {}
 
     query(): Observable<ProviderSource[]> {
-        return this.http.get<ProviderSource[]>(this.url)
+        return this.http.get<ProviderSource[]>(this.url + '/')
             .pipe(
                 tap(providerNamespaces => this.log('fetched provider sources')),
                 catchError(this.handleError('Query', []))
@@ -26,7 +26,7 @@ export class ProviderSourceService {
     }
 
     getRepoSources(params):  Observable<RepositorySource[]>{
-        return this.http.get<RepositorySource[]>(`${this.url}/${params.providerName}/${params.name}`)
+        return this.http.get<RepositorySource[]>(`${this.url}/${params.providerName}/${params.name}/`)
         .pipe(
             tap(providerNamespaces => this.log('fetched source repositories')),
         catchError(this.handleError('Query', []))
