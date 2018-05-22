@@ -10,6 +10,10 @@ import {
 	Router
 } from '@angular/router';
 
+import {
+	Location
+} from '@angular/common'
+
 import { ListConfig }     from 'patternfly-ng/list/basic-list/list-config';
 import { ListEvent }      from 'patternfly-ng/list/list-event';
 import { ListComponent }  from 'patternfly-ng/list/basic-list/list.component';
@@ -37,6 +41,16 @@ import { ContentSearchService } from "../resources/content-search/content-search
 import { Platform }             from "../resources/platforms/platform";
 import { ContentType }          from "../resources/content-types/content-type";
 import { CloudPlatform }        from "../resources/cloud-platforms/cloud-platform";
+
+import {
+	ContentTypes,
+	ContentTypesIconClasses
+} from '../enums/content-types.enum';
+
+import {
+	RepoFormats
+} from '../enums/repo-types.enum';
+
 
 import { PopularEvent }   from "./popular/popular.component";
 
@@ -67,9 +81,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
 	noResultsState: string = 'No matching results found';
 
 	pageLoading: boolean = true;
-	showRelevance: boolean = false;
+	showRelevance: boolean = true;
 
-	filterParams: string;
+	filterParams: string = '';
     sortParams: string = '&order_by=-relevance';
     sortAscending: boolean = false;
     pageSize: number = 10;
@@ -80,27 +94,28 @@ export class SearchComponent implements OnInit, AfterViewInit {
     constructor(
     	private route: ActivatedRoute,
     	private router: Router,
-    	private contentSearch: ContentSearchService
+    	private contentSearch: ContentSearchService,
+    	private location: Location
     ) {}
 
 	ngOnInit() {
 		this.filterConfig = {
 			fields: [
 				{
-					id: 'keyword',
+					id: 'keywords',
 					title: 'Keyword',
 					placeholder: 'Keyword',
 					type: FilterType.TEXT
 				},
 				{
-					id: 'cloud_platform',
+					id: 'cloud_platforms',
 					title: 'Cloud Platform',
 					placeholder: 'Cloud Platform',
 					type: FilterType.TYPEAHEAD,
 					queries: []
 				},
 				{
-					id: 'namespace',
+					id: 'namespaces',
 					title: 'Content Author',
 					placeholder: 'Author Name',
 					type: FilterType.TEXT
@@ -113,14 +128,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
 					queries: []
 				},
 				{
-					id: 'platform',
+					id: 'platforms',
 					title: 'Platform',
 					placeholder: 'Platform',
 					type: FilterType.TYPEAHEAD,
         			queries: []
 				},
 				{
-					id: 'tag',
+					id: 'tags',
 					title: 'Tag',
 					placeholder: 'Tag',
 					type: FilterType.TEXT
@@ -132,29 +147,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
 		} as FilterConfig;
 
 		this.sortConfig = {
-			fields: [{
-		        id: 'relevance',
-		        title: 'Best Match',
-		        sortType: 'numeric'
-		    }, {
-		        id: 'download_count',
-		        title: 'Download Count',
-		        sortType: 'numeric'
-
-		    }, {
-		        id: 'name',
-		        title: 'Namespace, Name',
-		        sortType: 'alpha'
-		    }, {
-		    	id: 'stargazers',
-		    	title: 'Star Gazers',
-		    	sortType: 'numeric'
-		    }, {
-		    	id: 'watchers',
-		    	title: 'Watchers',
-		    	sortType: 'numeric'
-		    }],
-      		isAscending: this.sortAscending
+			fields: [] as SortField[],
+      		isAscending: true
 		} as SortConfig;
 
 		this.emptyStateConfig = {
@@ -179,35 +173,46 @@ export class SearchComponent implements OnInit, AfterViewInit {
 	    } as PaginationConfig;
 
 	    this.route.queryParams.subscribe(params => {
-            if (params['keywords']) {
-            	console.log(params['keywords']);
-            	let keywords: string[] = params['keywords'].split(' ');
-            	keywords.forEach(kw => {
-            		let ffield: Filter = {
-	                	field: this.getFilterField('keyword'),
-	                	value: kw
-		            }
-	            	this.filterConfig.appliedFilters.push(ffield);
-	                this.appliedFilters.push(ffield);
-            	});
-            }
-
             this.route.data.subscribe(
 				(data) => {
-					let count = data.content.count.toString().replace(/(\d)(?=(\d{3})$)/g, '$1,');
 					this.preparePlatforms(data.platforms);
 					this.prepareContentTypes(data.contentTypes);
 					this.prepareCloudPlatforms(data.cloudPlatforms);
-					this.defaultEmptyStateTitle = `Search our index of ${count} Ansible content items.`;
-					this.emptyStateConfig.title = this.defaultEmptyStateTitle;
-					this.pageLoading = false;
 
-					if (this.appliedFilters.length) {
-						// keywords passed in from Home page, so trigger a search
-						let event = new FilterEvent();
-						event.appliedFilters = JSON.parse(JSON.stringify(this.appliedFilters)) as Filter[];
-						this.filterChanged(event);
-					}
+					for (var key in params) {
+		            	// Convert query params to filters
+		            	var field = this.getFilterField(key);
+		            	if (!field)
+		            		continue;
+		            	var values: string[] = params[key].split(' ');
+		            	values.forEach(v => {
+		            		var ffield: Filter = {} as Filter;
+		            		ffield.field = field;
+		            		if (field.type == FilterType.TEXT) {
+		            		  	ffield.value = v;
+		            		} else if (field.type == FilterType.TYPEAHEAD) {
+		            			field.queries.forEach((query: FilterQuery) => {
+		            				if (query.id == v) {
+		            					ffield.query = query;
+		            					ffield.value = query.value;
+		            				}
+		            			});
+		            		}
+		            		this.filterConfig.appliedFilters.push(ffield);
+			                this.appliedFilters.push(ffield);
+		            	});
+		            }
+
+		            this.setSortConfig(params['order_by']);
+
+		            if (params['page_size'])
+		            	this.paginationConfig.pageSize = params['page_size'];
+		       		if (params['page'])
+		       			this.paginationConfig.pageNumber = params['page'];
+
+		       		this.prepareContent(data.content.results, data.content.count);
+		       		this.setQuery();
+					this.pageLoading = false;
 				}
 			);
         });
@@ -216,32 +221,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
 	ngAfterViewInit() {}
 
 	sortChanged($event: SortEvent): void {
-		this.sortAscending = $event.isAscending;
 		this.sortParams = '&order_by=';
-		let params = '';
-		if (!this.sortAscending)
+		if (!$event.isAscending)
 			this.sortParams += '-';
-		switch ($event.field.id) {
-			case 'download_count':
-				this.sortParams += 'download_count';
-				break;
-			case 'relevance':
-				this.sortParams += 'relevance'
-				break;
-			case 'name':
-				this.sortParams += 'namespace__name,name'
-				break;
-			case 'stargazers':
-				this.sortParams += 'repository__stargazers_count'
-				break;
-			case 'watchers':
-				this.sortParams += 'repository__watchers_count'
-				break;
-		}
-		if (this.filterParams) {
-			this.showRelevance = true;
-			this.searchContent();
-		}
+		this.sortParams += $event.field.id;
+		this.searchContent();
 	}
 
     filterChanged($event: FilterEvent): void {
@@ -252,7 +236,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 			$event.appliedFilters.forEach(filter => {
 				if (filterby[filter.field.id] == undefined)
 					filterby[filter.field.id] = [];
-				if (filter.field.type == 'typeahead') {
+				if (filter.field.type == FilterType.TYPEAHEAD) {
 					filterby[filter.field.id].push(filter.query.id);
 				} else {
 					filterby[filter.field.id].push(filter.value);
@@ -261,24 +245,16 @@ export class SearchComponent implements OnInit, AfterViewInit {
 			for (var key in filterby) {
 				if (params != '')
 					params += '&';
-				if (key == 'content_type') {
-					// contenty_type only accepts a single value
-					params += key + '=' + encodeURIComponent(filterby[key][0]);
-				} else {
-					params += key + 's=' + encodeURIComponent(filterby[key].join(' '));
-				}
+				params += key + '=' + encodeURIComponent(filterby[key].join(' '));
 			}
 			this.appliedFilters = JSON.parse(JSON.stringify($event.appliedFilters));
-			this.showRelevance = true;
 			this.filterParams = params;
-			this.searchContent();
 		} else {
 			this.appliedFilters = [];
-			this.showRelevance = false;
 			this.contentItems = [];
-			this.filterParams = null;
-			this.emptyStateConfig.title = this.defaultEmptyStateTitle;
+			this.filterParams = '';
 		}
+		this.searchContent();
 	}
 
 	getToolbarConfig() :ToolbarConfig {
@@ -347,13 +323,22 @@ export class SearchComponent implements OnInit, AfterViewInit {
 	}
 
 	itemClicked(item: Content) {
-		let namespace = item.summary_fields['namespace']['name'];
-	    let repository = item.summary_fields['repository']['name'];
-		let name = item.name;
-		this.router.navigate(['/', namespace, repository, name]);
+		let namespace = item.summary_fields['namespace']['name'].toLowerCase();
+	    let repository = item.summary_fields['repository']['name'].toLowerCase();
+		let name = item.name.toLowerCase();
+		if (item['repository_format'] == RepoFormats.multi) {
+			this.router.navigate(['/', namespace, repository, name]);
+		} else {
+			this.router.navigate(['/', namespace, repository]);
+		}
 	}
 
 	// private
+
+	private getBasePath(): string {
+		let path = this.location.path();
+		return path.replace(/\?.*$/,'');
+	}
 
 	private getFilterField(id: string): FilterField {
 		let result: FilterField = null;
@@ -387,24 +372,41 @@ export class SearchComponent implements OnInit, AfterViewInit {
 		}
 	}
 
-    private searchContent(params?: string) {
-    	this.pageLoading = true;
-    	let paging = '&page_size=' + this.pageSize.toString() +
+	private setQuery(): string {
+		let paging = '&page_size=' + this.pageSize.toString() +
     		'&page=' + this.pageNumber;
-    	let query = this.filterParams + this.sortParams + paging;
+    	let query = (this.filterParams + this.sortParams + paging).replace(/^&/,'');  // remove leading &
+    	this.location.replaceState(this.getBasePath(), query);   // update browser URL
+    	return query;
+	}
+
+    private searchContent() {
+    	this.pageLoading = true;
+    	let query = this.setQuery();
     	this.contentSearch.query(query)
     		.subscribe(result => {
-	    		result.results.forEach(item => {
-	    			item.imported = moment(item.imported).fromNow();
-	    		});
-	    		this.contentItems = result.results;
-	    		this.filterConfig.resultsCount = result.count;
+	    		this.prepareContent(result.results, result.count);
 	    		this.pageLoading = false;
-	    		this.paginationConfig.totalItems = result.count;
-	    		if (!result.count) {
-	    			this.emptyStateConfig.title = this.noResultsState;
-	    		}
     		});
+    }
+
+    private prepareContent(data: Content[], count: number) {
+    	data.forEach(item => {
+			item.imported = moment(item.imported).fromNow();
+			item['repository_format'] = item.summary_fields['repository']['format'];
+			item['avatar_url'] = item.summary_fields['namespace']['avatar_url'] || '/assets/avatar.png';
+			if (item.summary_fields['content_type']['name'].indexOf('plugin') > -1) {
+				item['iconClass'] = ContentTypesIconClasses.plugin;
+			} else {
+				item['iconClass'] = ContentTypesIconClasses[item.summary_fields['content_type']['name']];
+			}
+		});
+		this.contentItems = data;
+		this.filterConfig.resultsCount = count;
+	   	this.paginationConfig.totalItems = count;
+	   	if (!count) {
+	    	this.emptyStateConfig.title = this.noResultsState;
+	    }
     }
 
     private getFilterConfigFieldIdx(id: string): number {
@@ -468,6 +470,67 @@ export class SearchComponent implements OnInit, AfterViewInit {
 	    			value: cpMap[key]
 	    		});
 	    	}
+	    }
+    }
+
+    private setSortConfig(orderBy?: string) {
+    	let fields: SortField[] = [
+    		{
+		        id: 'relevance',
+		        title: 'Best Match',
+		        sortType: 'numeric'
+		    }, {
+		        id: 'download_count',
+		        title: 'Download Count',
+		        sortType: 'numeric'
+
+		    }, {
+		        id: 'namespace__name,name',
+		        title: 'Author, Name',
+		        sortType: 'alpha'
+		    }, {
+		    	id: 'repository__stargazers_count',
+		    	title: 'Star Gazers',
+		    	sortType: 'numeric'
+		    }, {
+		    	id: 'repository__watchers_count',
+		    	title: 'Watchers',
+		    	sortType: 'numeric'
+		    }
+		] as SortField[];
+
+    	this.sortParams = '&order_by=';
+		if (this.sortConfig.isAscending)
+			this.sortParams += '-';
+
+		if (!orderBy) {
+	    	// Use default order
+	    	this.sortConfig.isAscending = false;
+	    	this.sortConfig.fields = fields;
+	    	this.sortParams += fields[0].id;
+	    } else {
+	    	let result: SortField[] = [] as SortField[];
+
+	    	// Set ascending
+	    	this.sortConfig.isAscending = true;
+	    	if (orderBy.startsWith('-')) {
+	    		this.sortConfig.isAscending = false;
+	    	}
+
+	    	// Put the requested orderby field at the top of the list
+	    	let order = orderBy.replace(/^[+-]/, '');
+	    	fields.forEach(f => {
+	    		if (f.id == order) {
+	    			result.push(f);
+	    		}
+	    	})
+	    	fields.forEach(f => {
+	    		if (f.id != order) {
+	    			result.push(f);
+	    		}
+	    	});
+	    	this.sortConfig.fields =result;
+	    	this.sortParams += fields[0].id;
 	    }
     }
 }
