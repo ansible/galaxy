@@ -36,6 +36,7 @@ class NamespaceSerializer(serializers.BaseSerializer):
             'company',
             'email',
             'html_url',
+            'vendor',
         )
 
     def get_summary_fields(self, instance):

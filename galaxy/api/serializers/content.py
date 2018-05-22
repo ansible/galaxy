@@ -61,7 +61,7 @@ class BaseModelSerializer(serializers.ModelSerializer):
 class _NamespaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Namespace
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'vendor')
 
 
 class _RepositorySerializer(serializers.ModelSerializer):

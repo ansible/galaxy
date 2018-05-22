@@ -104,6 +104,7 @@ class RepositorySerializer(serializers.BaseSerializer):
         if instance.provider_namespace.namespace:
             namespace['name'] = instance.provider_namespace.namespace.name
             namespace['id'] = instance.provider_namespace.namespace.pk
+            namespace['vendor'] = instance.provider_namespace.namespace.vendor
 
         latest_import = {}
         import_tasks = instance.import_tasks.order_by('-id')

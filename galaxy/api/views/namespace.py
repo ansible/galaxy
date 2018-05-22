@@ -212,7 +212,7 @@ class NamespaceList(base_views.ListCreateAPIView):
             'name': data['name'],
             'description': data['description'] if data.get('description') is not None else ''
         }
-        for item in ('avatar_url', 'location', 'company', 'email', 'html_url'):
+        for item in ('avatar_url', 'location', 'company', 'email', 'html_url', 'vendor'):
             if item in data:
                 namespace_attributes[item] = data[item]
         try:
@@ -258,7 +258,7 @@ class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
                 owners.append(request.user.pk)
             update_owners(instance, owners)
 
-        for item in ('name', 'description', 'avatar_url', 'location', 'company', 'email', 'html_url', 'active'):
+        for item in ('name', 'description', 'avatar_url', 'location', 'company', 'email', 'html_url', 'active', 'vendor'):
             if item in data:
                 setattr(instance, item, data[item])
         instance.save()
