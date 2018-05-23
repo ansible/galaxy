@@ -64,7 +64,7 @@ a.failed {
 }
 */
 
-/* The following applies to my-content detail */
+/* My-Content detail */
 .item-select {
     .row {
         margin-left: 0;
@@ -80,6 +80,24 @@ a.failed {
     }
     .filter-pf.filter-fields .form-group {
         width: 100%;
+    }
+}
+
+#my-content-repository-modal {
+    input[type=checkbox] {
+        font-size: 14px;
+    }
+    .blank-slate-pf {
+        background-color: transparent;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        border-bottom: none;
+    }
+    @media (min-width: 992px) {
+        .list-pf-content-wrapper>*+* {
+            margin-left: 0;
+        }
     }
 }
 

@@ -32,29 +32,23 @@
             </form>
         </div>
 
-        <div class="list-group list-view-pf list-view-pf-view add-repo-modal-list">
-            <div class="loading-repos-spinner-container" *ngIf="selectedPNS.loading">
-                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-            </div>
-            <div class="list-group-item" *ngFor="let repo of selectedPNS.displaySources">
-                <div class="list-view-pf-checkbox">
-                    <input type="checkbox" [(ngModel)]="repo.isSelected" #ctrl="ngModel"
-                           name="selected-repos-{{ selectedPNS.provider_name }}-{{ selectedPNS.name }}-{{ repo.name }}"
-                           (change)="selectRepo(repo)">
-                </div>
-                <div class="list-view-pf-main-info" (click)="selectRepo(repo)">
-                    <div class="list-view-pf-left">
-                        <i class="pficon-repository"></i>
-                    </div>
-                    <div class="list-view-pf-body">
-                        <div class="list-view-pf-description">
-                            <div class="list-group-item-text">
-                                {{ selectedPNS.name }}/{{ repo.name }}
-                            </div>
+        <div class="add-repo-modal-list" id="my-content-repository-modal">
+            <pfng-list
+                [config]="listConfig"
+                [items]="selectedPNS.filteredSources"
+                [itemTemplate]="itemTemplate"
+                (onSelectionChange)="handleSelectionChange($event)">
+                <ng-template #itemTemplate let-item="item">
+                    <div class="list-pf-content-wrapper">
+                        <div class="list-view-pf-left">
+                            <i class="pficon-repository"></i>
+                        </div>
+                        <div class="list-pf-main-content">
+                            <div class="list-pf-title">{{ selectedPNS.name }}/{{ item.name }}</div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </ng-template>
+            </pfng-list>
         </div>
     </div>
 </div>
