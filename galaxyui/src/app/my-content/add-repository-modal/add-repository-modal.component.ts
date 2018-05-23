@@ -1,16 +1,57 @@
-import { Component, OnInit }       from '@angular/core';
+import {
+    Component,
+    OnInit
+} from '@angular/core';
+
+import { EmptyStateConfig }        from "patternfly-ng/empty-state/empty-state-config";
+import { ListEvent }               from 'patternfly-ng/list/list-event';
+import { ListConfig }              from 'patternfly-ng/list/basic-list/list-config';
+
 import { BsModalRef }              from 'ngx-bootstrap';
-import { Namespace }               from '../../resources/namespaces/namespace';
-import { ProviderNamespace }       from '../../resources/provider-namespaces/provider-namespace';
 import { cloneDeep }               from 'lodash';
-import { ProviderSourceService }   from '../../resources/provider-namespaces/provider-source.service';
+
 import { Subject }                 from 'rxjs';
 import { forkJoin }                from 'rxjs/observable/forkJoin';
 import { Observable }              from 'rxjs/Observable';
+
+import { Namespace }               from '../../resources/namespaces/namespace';
+import { ProviderSourceService }   from '../../resources/provider-namespaces/provider-source.service';
 import { RepositoryService }       from '../../resources/repositories/repository.service';
 import { Repository }              from '../../resources/repositories/repository';
 import { RepositoryImport }        from '../../resources/repository-imports/repository-import';
 import { RepositoryImportService } from '../../resources/repository-imports/repository-import.service';
+
+class RepositorySource {
+    name: string;
+    description: string;
+    stargazers_count: number;
+    watchers_count: number;
+    forks_count: number;
+    open_issues_count: number;
+    default_branch: string;
+    related: any;
+    summary_fields: any;
+    isSelected: boolean;
+}
+
+class ProviderNamespace {
+    id: number;
+    name: string;
+    description: string;
+    display_name: string;
+    avatar_url: string;
+    location: string;
+    company: string;
+    email: string;
+    html_url: string;
+    followers: number;
+    provider: number;
+    provider_name: string;
+    related: object;
+    summary_fields: any;
+    repoSources: RepositorySource[];
+    filteredSources : RepositorySource[];
+}
 
 
 @Component({
@@ -19,13 +60,17 @@ import { RepositoryImportService } from '../../resources/repository-imports/repo
     styleUrls: ['./add-repository-modal.component.less']
 })
 export class AddRepositoryModalComponent implements OnInit {
+
+    emptyStateConfig: EmptyStateConfig = {} as EmptyStateConfig;
     namespace: Namespace;
-    selectedPNS: any;
-    providerNamespaces: any[] = [];
+    selectedPNS: ProviderNamespace;
+    providerNamespaces: ProviderNamespace[] = [];
     originalRepos: any[] = [];
     displayedRepos: any[] = [];
     saveInProgress: boolean;
     repositoriesAdded: boolean = false;
+    listConfig: ListConfig;
+    filterValue: string = '';
 
     constructor(public bsModalRef: BsModalRef,
                 private repositoryService: RepositoryService,
@@ -41,35 +86,55 @@ export class AddRepositoryModalComponent implements OnInit {
         if (this.providerNamespaces.length > 0) {
             this.selectedPNS = this.providerNamespaces[0]
         }
+
+        this.setLoadingStateConfig();
+
+        this.listConfig = {
+            dblClick: false,
+            multiSelect: false,
+            selectItems: false,
+            selectionMatchProp: 'name',
+            showCheckbox: true,
+            showRadioButton: false,
+            useExpandItems: false,
+            emptyStateConfig: this.emptyStateConfig
+        } as ListConfig;
+
         this.getRepoSources();
     }
 
     selectProviderNamespace(pns:ProviderNamespace) {
         this.selectedPNS = pns;
+        this.getRepoSources();
     }
 
     filterRepos(filterValue:string) {
-        //this.filterValue.next(filterValue);
-        this.providerNamespaces.forEach(pns => {
-            if (filterValue) {
-                pns.displaySources = [];
-                pns.repoSources.forEach(repo => {
-                    if (repo.name.toLowerCase().match(filterValue.toLowerCase()) !== null) {
-                        pns.displaySources.push(JSON.parse(JSON.stringify(repo)));
-                    }
-                });
-            } else {
-                pns.displaySources = JSON.parse(JSON.stringify(pns.repoSources));
-            }
-        });
+        if (filterValue) {
+            this.filterValue = filterValue;
+            this.selectedPNS.filteredSources = this.selectedPNS.repoSources.filter(
+                repo => repo.name.toLowerCase().match(filterValue.toLowerCase()));
+        } else {
+            this.filterValue = '';
+            this.selectedPNS.filteredSources = this.selectedPNS.repoSources;
+        }
     }
 
-    selectRepo(repo: any) {
-        repo.isSelected = !repo.isSelected;
-        this.selectedPNS.repoSources.forEach(srcRepo => {
-            if (srcRepo.name == repo.name) {
-                srcRepo.isSelected = repo.isSelected;
-            }
+    handleSelectionChange($event: ListEvent) {
+        this.selectedPNS.repoSources.forEach((repo: RepositorySource) => {
+            repo.isSelected = false;
+            $event.selectedItems.forEach((selectedRepo: RepositorySource) => {
+                if (selectedRepo.name == repo.name) {
+                    repo.isSelected = true;
+                }
+            });
+        });
+        this.selectedPNS.filteredSources.forEach((repo: RepositorySource) => {
+            repo.isSelected = false;
+            $event.selectedItems.forEach((selectedRepo: RepositorySource) => {
+                if (selectedRepo.name == repo.name) {
+                    repo.isSelected = true;
+                }
+            });
         });
     }
 
@@ -91,50 +156,45 @@ export class AddRepositoryModalComponent implements OnInit {
             });
 
         forkJoin(saveRequests).subscribe((results: Repository[]) => {
-            console.log('Saving...');
-            console.log(results);
             this.saveInProgress = false;
             this.bsModalRef.hide();
         });
     }
 
-    private getRepoName(original_name: string): string {
-        // This is the logic from Galaxy < 3.0 for setting the repoo name
-        let new_name: string;
-        if (original_name != 'ansible') {
-            original_name.replace(/^(ansible[-_+.]*)*(role[-_+.]*)*/g, function(match, p1, p2, offset, str): string {
-                let result = str;
-                if (p1) {
-                    result = result.replace(new RegExp(p1, 'g'), '');
-                }
-                if (p2) {
-                    result = result.replace(new RegExp(p2, 'g'), '');
-                }
-                result = result.replace(/^-/, '');
-                new_name = result;
-                return '';
-            });
-        }
-        return new_name || original_name;
+    // private
+
+    private setEmptyStateConfig() {
+        this.emptyStateConfig.iconStyleClass = 'pficon-warning-triangle-o';
+        this.emptyStateConfig.title = 'No matching repositories found!';
+        this.emptyStateConfig.info = '';
+    }
+
+    private setLoadingStateConfig() {
+        this.emptyStateConfig.iconStyleClass = 'fa fa-spinner fa-pulse';
+        this.emptyStateConfig.title = 'Loading repositories...';
+        this.emptyStateConfig.info = '';
     }
 
     private getRepoSources() {
-        this.providerNamespaces.forEach(pns => {
-            pns.loading = true;
-            pns.repoSources = [];
-            pns.displaySources = [];
+        if (!this.selectedPNS['repoSources'] || !this.selectedPNS.repoSources.length) {
+            this.setLoadingStateConfig();
+            this.selectedPNS.repoSources = [];
+            this.selectedPNS.filteredSources = [];
             this.providerSourceService.getRepoSources({
-                providerName: pns.provider_name,
-                name: pns.name
+                providerName: this.selectedPNS.provider_name,
+                name: this.selectedPNS.name
             }).subscribe(repoSources => {
                 repoSources.forEach(repoSource => {
                     if (!repoSource.summary_fields.repository) {
-                        pns.repoSources.push(repoSource);
+                        this.selectedPNS.repoSources.push(repoSource as RepositorySource);
                     }
                 });
-                pns.displaySources = JSON.parse(JSON.stringify(pns.repoSources));
-                pns.loading = false;
+                this.filterRepos(this.filterValue);
+                this.setEmptyStateConfig();
             });
-        });
+        } else {
+            this.filterRepos(this.filterValue);
+            this.setEmptyStateConfig();
+        }
     }
 }

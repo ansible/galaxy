@@ -88,8 +88,19 @@ export class RepositoryService {
     private handleError<T>(operation = '', result?: T) {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
+            let data = error;
+            if (error['error']) {
+                // Check if API returned a field-level validation error
+                let msg = error['error'];
+                if (typeof msg == 'object') {
+                    for (var key in msg) {
+                        data = {message: msg[key]};
+                        break;
+                    }
+                }
+            }
             this.log(`${operation} repository error: ${error.message}`);
-            this.notificationService.httpError(`${operation} repository failed:`, {data: error});
+            this.notificationService.httpError(`${operation} repository failed:`, {data: data});
 
             // Let the app keep running by returning an empty result.
             return of(result as T);
