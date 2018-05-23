@@ -74,12 +74,7 @@
 					<tr>
 						<td>Installation</td>
 						<td class="install-instructions">
-							<p>To install all of the content from this repository, use the the following:</p>
 							<code>$ ansible-galaxy install {{ repoContent.summary_fields['namespace']['name'] }}.{{ repoContent.summary_fields['repository']['name'] }}</code>
-							<p>To install only content of a particular type, use the <code>-t</code> option. For example, the following will install all {{ example_type_plural }} found in this repository:</p>
-							<code>$ ansible-galaxy install -t {{ example_type }} {{ repoContent.summary_fields['namespace']['name'] }}.{{ repoContent.summary_fields['repository']['name'] }}</code>
-							<p>To install a specific content item, use the <code>-t</code> option, and include the content item name. For example, the following will install the <i>{{ example_name }}</i> {{ example_type }}:</p>
-							<code>$ ansible-galaxy install -t {{example_type }} {{ repoContent.summary_fields['namespace']['name'] }}.{{ repoContent.summary_fields['repository']['name'] }}.{{ example_name }}</code>
 						</td>
 					</tr>
 					<tr>
