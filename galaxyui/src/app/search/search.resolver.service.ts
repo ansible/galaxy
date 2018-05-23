@@ -9,6 +9,10 @@ import {
     RouterStateSnapshot
 } from '@angular/router';
 
+import {
+    Location
+} from '@angular/common';
+
 import { Observable }            from 'rxjs/Observable';
 import { ContentSearchService }  from '../resources/content-search/content-search.service';
 import { ContentResponse }       from '../resources/content-search/content';
@@ -29,10 +33,33 @@ import { Tag }                   from '../resources/tags/tag';
 export class SearchContentResolver implements Resolve<ContentResponse> {
     constructor(
         private contentService: ContentSearchService,
-        private router: Router
+        private router: Router,
+        private location: Location
     ){}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ContentResponse> {
-        return this.contentService.query();
+        let params = '';
+        for (var key in route.queryParams) {
+            if (params != '')
+                params += '&';
+            params += key + '=' + encodeURIComponent(route.queryParams[key]);
+        }
+        // Add default params
+        if (!route.queryParams['order_by']) {
+            if (params != '')
+                params += '&';
+            params += 'order_by=-relevance';
+        }
+        if (!route.queryParams['page_size']) {
+            if (params != '')
+                params += '&';
+            params += 'page_size=10';
+        }
+        if (!route.queryParams['page']) {
+            if (params != '')
+                params += '&';
+            params += 'page=1';
+        }
+        return this.contentService.query(params);
     }
 }
 
