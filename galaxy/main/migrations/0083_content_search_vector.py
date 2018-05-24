@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
         migrations.AddIndex(
             model_name='content',
             index=psql_indexes.GinIndex(
-                fields=[b'search_vector'],
+                fields=['search_vector'],
                 name='main_conten_search__47815a_gin'),
         ),
         migrations.RunSQL(sql=(SET_SEARCH_VECTOR,
