@@ -348,7 +348,6 @@ class ImportTaskList(base_views.ListCreateAPIView):
         github_user = request.data.get('github_user')
         github_repo = request.data.get('github_repo')
         github_reference = request.data.get('github_reference', '')
-        alternate_role_name = request.data.get('alternate_role_name')
         repository_id = request.data.get('repository_id')
 
         if not repository_id:
@@ -356,15 +355,13 @@ class ImportTaskList(base_views.ListCreateAPIView):
                 raise ValidationError(
                     dict(detail="Invalid request. Expecting github_user and github_repo.")
                 )
-            repo_name = alternate_role_name or github_repo
-
             namespace = models.ProviderNamespace.objects.get(
                 provider__name=constants.PROVIDER_GITHUB,
                 name=github_user
             )
             repository, created = models.Repository.objects.get_or_create(
                 provider_namespace=namespace,
-                name=repo_name,
+                name=github_repo,
                 defaults={'is_enabled': False,
                           'original_name': github_repo}
             )
@@ -378,8 +375,7 @@ class ImportTaskList(base_views.ListCreateAPIView):
 
         task = tasks.create_import_task(
             repository, request.user,
-            import_branch=github_reference,
-            repository_alt_name=alternate_role_name)
+            import_branch=github_reference)
 
         serializer = self.get_serializer(instance=task)
         response = {'results': [serializer.data]}

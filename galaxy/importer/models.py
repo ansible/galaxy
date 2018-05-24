@@ -43,8 +43,10 @@ class Content(object):
     """Represents common content data."""
 
     def __init__(self, name, path, content_type,
-                 description='', readme=None, role_meta=None, metadata=None):
+                 original_name=None, description='', readme=None,
+                 role_meta=None, metadata=None):
         self.name = name
+        self.original_name = original_name or name
         self.path = path
         self.content_type = content_type
         self.description = description
@@ -55,12 +57,14 @@ class Content(object):
 
 class Repository(object):
     """Represents repository metadata."""
-    def __init__(self, branch, commit, format, readme, contents):
+    def __init__(self, branch, commit, format, contents,
+                 readme=None, name=None):
         self.branch = branch
         self.commit = commit
         self.format = format
-        self.readme = readme
         self.contents = contents
+        self.readme = readme
+        self.name = name
 
 
 # -----------------------------------------------------------------------------
@@ -68,7 +72,7 @@ class Repository(object):
 
 class PlatformInfoSchema(mm.Schema):
     name = fields.Str()
-    versions = fields.List(fields.Str)
+    versions = fields.List(fields.Str())
 
     @mm.post_load
     def make_object(self, data):
@@ -130,9 +134,9 @@ class RoleMetaSchema(mm.Schema):
     github_branch = fields.Str()
 
     role_type = schema.Enum(constants.RoleType)
-    tags = fields.List(fields.Str)
+    tags = fields.List(fields.Str())
     platforms = fields.Nested(PlatformInfoSchema(), many=True)
-    cloud_platforms = fields.List(fields.Str)
+    cloud_platforms = fields.List(fields.Str())
     dependencies = fields.Nested(DependencyInfoSchema(), many=True)
     video_links = fields.Nested(VideoLinkSchema(), many=True)
 
@@ -140,6 +144,7 @@ class RoleMetaSchema(mm.Schema):
 class ContentSchema(mm.Schema):
     """A schema for Content class."""
     name = fields.Str()
+    original_name = fields.Str()
     path = fields.Str()
     content_type = schema.Enum(constants.ContentType)
     description = fields.Str()
@@ -156,6 +161,7 @@ class ContentSchema(mm.Schema):
 
 class RepositorySchema(mm.Schema):
     """A schema for Repository class."""
+    name = fields.Str()
     branch = fields.Str()
     commit = fields.Nested(CommitInfoSchema())
     format = schema.Enum(constants.RepositoryFormat)

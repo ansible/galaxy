@@ -730,11 +730,6 @@ class ImportTask(PrimordialModel):
         null=True,
         blank=False,
     )
-    repository_alt_name = models.CharField(
-        max_length=256,
-        null=True,
-        blank=False,
-    )
     celery_task_id = models.CharField(
         max_length=100,
         blank=True,

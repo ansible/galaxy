@@ -50,10 +50,13 @@ class ContentImporter(object):
         repo = self.ctx.repository
         ns = repo.provider_namespace.namespace
 
+        name = repo.name
+        original_name = repo.name
+
         if self.data.name:
             name = self.data.name
-        elif not self.data.path:
-            name = repo.name
+        if self.data.original_name:
+            original_name = self.data.original_name
 
         # Check name
         if not re.match('^[\w-]+$', name):
@@ -66,22 +69,14 @@ class ContentImporter(object):
             content_type=models.ContentType.get(self.data.content_type),
             name=name,
             defaults={
-                'original_name': name,
+                'original_name': original_name,
                 'repository': repo,
                 'is_valid': False,
             }
         )
 
-        if is_created:
-            self.log.debug(
-                'Created new Content instance: '
-                'id={} content_type="{}", name="{}"'
-                .format(obj.id, self.data.content_type, self.data.name))
-        else:
-            self.log.debug(
-                'Found Content instance: '
-                'id={}, content_type="{}", name="{}"'
-                .format(obj.id, self.data.content_type, self.data.name))
+        self._log_create_content(obj.id, is_created)
+
         return obj
 
     def update_content(self, content):
@@ -99,3 +94,11 @@ class ContentImporter(object):
             repository, readme_obj, readme,
             self.ctx.github_client, self.ctx.github_repo)
         content.save()
+
+    def _log_create_content(self, content_id, is_created):
+        action = 'Created new' if is_created else 'Found'
+        self.log.debug(
+            '{action} Content instance: id={id}, content_type="{content_type}"'
+            ', name="{name}"'.format(
+                action=action, id=content_id,
+                content_type=self.data.content_type, name=self.data.name))
