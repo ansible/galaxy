@@ -22,7 +22,7 @@ import json
 import logging
 from collections import OrderedDict
 from hashlib import sha256
-from urlparse import parse_qs
+from six.moves.urllib.parse import parse_qs
 
 import requests
 from OpenSSL.crypto import Error as SignatureError
