@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
-
+from __future__ import unicode_literals
 
 import subprocess
 
@@ -48,7 +48,7 @@ def get_git_version():
     try:
         tag_info = subprocess.check_output([
             'git', 'describe', '--always', '--match', TAG_PREFIX + '*']
-        ).strip()
+        ).decode().strip()
     except subprocess.CalledProcessError:
         raise RuntimeError('Cannot determine git version string.')
 
