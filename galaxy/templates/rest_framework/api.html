@@ -5,10 +5,14 @@
 
 {% block style %}
 {{ block.super }}
-<link href="/static/img/favicon.ico" rel="shortcut icon" />
+<link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
 <style type="text/css">
+
 html body {
   background: #ddd;
+}
+html body .navbar {
+  background-color: #1d1d1d;
 }
 html body .navbar .navbar-inner {
   border-top: none;
@@ -33,8 +37,8 @@ html body .navbar-inverse .nav > li > a:focus {
    color: #2078be;
 }
 html body .navbar .brand img {
-    height: 70px;
-    width: 150px;
+    height: 35px;
+    width: 120px;
 }
 html body .navbar-inverse .nav li.dropdown.open > .dropdown-toggle,
 html body .navbar-inverse .nav li.dropdown.active > .dropdown-toggle,
@@ -43,7 +47,7 @@ html body .navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle {
 }
 html body .navbar-inverse .brand {
     position: relative;
-    top: 7px;
+    top: 3px;
     font-size: 2.2em;
     color: #fff;
 }
@@ -67,7 +71,7 @@ html body .hero-unit h2,
 html body .hero-unit h1,
 html body a,
 html body a {
- color: #2078be; 
+ color: #2078be;
 }
 html body .navbar .navbar-inner .dropdown-menu li a:hover,
 html body a:hover {
@@ -120,7 +124,7 @@ html body #push {
 {% endblock %}
 
 {% block branding %}
-  <a class="brand" href="/api/">GALAXY</a>
+  <a class="brand" href="/api/"><img src="/assets/galaxy-logo-02.svg"></a>
 {% endblock %}
 
 {% block userlinks %}
