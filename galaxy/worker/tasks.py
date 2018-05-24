@@ -129,9 +129,11 @@ def _import_repository(import_task, logger):
                 obj.content_type, obj.namespace, obj.name))
         obj.delete()
 
+    _update_readme(repository, repo_info.readme, gh_api, gh_repo)
     _update_repository_versions(repository, gh_repo, logger)
     _update_namespace(gh_repo)
-    _update_repository(repository, gh_repo, repo_info.commit)
+    _update_repo_info(repository, gh_repo, repo_info.commit)
+    repository.save()
 
     import_task.finish_success(u'Import completed')
 
@@ -169,7 +171,16 @@ def _get_social_token(import_task):
             u"You must first authenticate with GitHub.".format(user.username))
 
 
-def _update_repository(repository, gh_repo, commit_info):
+def _update_readme(repository, readme, github_api, github_repo):
+    readme_obj = repository.readme
+    repository.readme = None
+    repository.save()
+    repository.readme = utils.update_readme(
+        repository, readme_obj, readme, github_api, github_repo)
+    repository.save()
+
+
+def _update_repo_info(repository, gh_repo, commit_info):
     repository.stargazers_count = gh_repo.stargazers_count
     repository.watchers_count = gh_repo.subscribers_count
     repository.forks_count = gh_repo.forks_count
@@ -181,7 +192,6 @@ def _update_repository(repository, gh_repo, commit_info):
         'https://api.github.com/repos/{0}/git/commits/{1}'.format(
             gh_repo.full_name, commit_info.sha)
     repository.commit_created = commit_info.committer_date
-    repository.save()
 
 
 def _update_repository_versions(repository, github_repo, logger):

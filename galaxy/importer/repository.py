@@ -19,9 +19,11 @@ from __future__ import absolute_import
 
 import logging
 
+from galaxy import constants
 from galaxy.importer import loaders
 from galaxy.importer import models
 from galaxy.importer.utils import git
+from galaxy.importer.utils import readme as readmeutils
 from galaxy.importer import finders as finders_
 from galaxy.importer import exceptions as exc
 
@@ -74,6 +76,7 @@ class RepositoryLoader(object):
         commit = git.get_commit_info(directory=self.path)
         finder, contents = self._find_contents()
         result = list(self._load_contents(contents))
+        readme = self._get_readme(finder.repository_format)
 
         if not all(v[1] for v in result):
             raise exc.ContentLoadError('Lint failed')
@@ -82,6 +85,7 @@ class RepositoryLoader(object):
             branch=branch,
             commit=commit,
             format=finder.repository_format,
+            readme=readme,
             contents=[v[0] for v in result],
         )
 
@@ -103,3 +107,11 @@ class RepositoryLoader(object):
             content = loader.load()
             lint_result = loader.lint()
             yield content, lint_result
+
+    def _get_readme(self, repository_format):
+        if repository_format == constants.RepositoryFormat.MULTI:
+            try:
+                return readmeutils.get_readme(directory=self.path)
+            except readmeutils.FileSizeError as e:
+                self.log.warning(e)
+        return None

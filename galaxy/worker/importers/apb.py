@@ -27,7 +27,6 @@ class APBImporter(base.ContentImporter):
     def update_content(self, content):
         super(APBImporter, self).update_content(content)
         role_meta = self.data.role_meta
-        self._add_readme(content)
         self._add_tags(content, role_meta['tags'])
 
     def _add_tags(self, content, tags):

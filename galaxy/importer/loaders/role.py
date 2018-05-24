@@ -253,6 +253,7 @@ class RoleLoader(base.BaseLoader):
         data['cloud_platforms'] = meta_parser.parse_cloud_platforms()
         data['dependencies'] = meta_parser.parse_dependencies()
         data['video_links'] = meta_parser.parse_videos()
+        readme = self._get_readme()
 
         return models.Content(
             name=self.name,
@@ -260,6 +261,7 @@ class RoleLoader(base.BaseLoader):
             content_type=self.content_type,
             description=description,
             role_meta=data,
+            readme=readme,
             metadata={
                 'container_meta': container_yml,
             }

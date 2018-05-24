@@ -150,6 +150,9 @@ class RoleListSerializer(BaseRoleSerializer):
 
 class RoleDetailSerializer(BaseRoleSerializer):
 
+    readme = drf_serializers.SerializerMethodField()
+    readme_html = drf_serializers.SerializerMethodField()
+
     class Meta:
         model = Content
         fields = BASE_FIELDS + (
@@ -202,6 +205,16 @@ class RoleDetailSerializer(BaseRoleSerializer):
         d['videos'] = [dict(url=v.url, description=v.description)
                        for v in obj.videos.all()]
         return d
+
+    def get_readme(self, obj):
+        if obj.readme:
+            return obj.readme.raw
+        return None
+
+    def get_readme_html(self, obj):
+        if obj.readme:
+            return obj.readme.html
+        return None
 
 
 class RoleSearchSerializer(RoleListSerializer):

@@ -192,14 +192,15 @@ class APBLoader(base.BaseLoader):
         name = meta_parser.parse_name()
         description = meta_parser.parse_description()
         meta_parser.check_data()
-        data = {}
-        data['tags'] = meta_parser.parse_tags()
+        data = {'tags': meta_parser.parse_tags()}
+        readme = self._get_readme()
 
         return models.Content(
             name=name,
             path=self.rel_path,
             content_type=self.content_type,
             description=description,
+            readme=readme,
             role_meta=data,
             metadata={
                 'apb_metadata': metadata,

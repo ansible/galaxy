@@ -22,6 +22,7 @@ import os
 import six
 
 from galaxy.common import logutils
+from galaxy.importer.utils import readme as readmeutils
 
 
 default_logger = logging.getLogger(__name__)
@@ -87,6 +88,15 @@ class BaseLoader(object):
         if ok:
             self.log.info('Linting OK.')
         return ok
+
+    # FIXME(cutwater): Due to current object model current object limitation
+    # this leads to copying README file over multiple roles.
+    # We need to improve object model or add caching mechanism.
+    def _get_readme(self, directory=None):
+        try:
+            return readmeutils.get_readme(directory or self.path, self.root)
+        except readmeutils.FileSizeError as e:
+            self.log.warning(e)
 
 
 def make_module_name(path):

@@ -48,10 +48,13 @@ class ModuleLoader(base.BaseLoader):
         if self.documentation:
             description = self.documentation.get('short_description', '')
 
+        readme = self._get_readme(os.path.dirname(self.path))
+
         return models.Content(
             name=self.name,
             path=self.rel_path,
             content_type=self.content_type,
+            readme=readme,
             description=description,
             metadata={
                 'ansible_metadata': self.metadata,
