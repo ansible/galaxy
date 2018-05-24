@@ -25,4 +25,6 @@ export class Repository {
     last_commit: string;
     last_import_state: string;
     download_count: number;
+    readme: string;
+    readme_html: string;
 }
