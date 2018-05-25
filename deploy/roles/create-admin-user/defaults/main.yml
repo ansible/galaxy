@@ -1,5 +1,0 @@
-# defaults/main.yml
-
----
-galaxy_admin_username: galaxy_admin
-galaxy_admin_password: galaxy
