@@ -6,6 +6,8 @@ import {
 import { CommonModule }         from '@angular/common';
 import { FormsModule }          from '@angular/forms';
 
+import { CarouselComponent }    from './carousel/carousel.component';
+import { PopularComponent }     from './popular/popular.component';
 import { HomeComponent }        from './home.component';
 import { HomeRoutingModule }    from './home.routing.module';
 
@@ -18,6 +20,8 @@ import { PageLoadingModule }    from '../page-loading/page-loading.module';
 
 @NgModule({
     declarations: [
+        CarouselComponent,
+        PopularComponent,
         HomeComponent
     ],
     imports: [

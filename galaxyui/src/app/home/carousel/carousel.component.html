@@ -1,0 +1,24 @@
+
+<div class="row" *ngIf="vendors && vendors.length">
+	<div class="col-sm-12">
+		<div class="partner-carousel">
+			<div class="carousel-header">
+			    <i class="fa fa-star fa-2x"></i> <span class="title">Featured Vendors</span> <a [routerLink]="['/','search']">View All Vendors</a>
+			</div>
+			<div class="carousel-left-control">
+				<a [href]="" (click)="handleLeftClick()"><i class="fa fa-chevron-left fa-2x"></i></a>
+			</div>
+			<div class="carousel-slider">
+				<div class="carousel-slider-inner" id="slider-inner">
+			  		<div *ngFor="let vendor of vendors">
+			  			<img [src]="vendor.avatar_url" class="{{ vendor['displayClass'] }}">
+			  			<p *ngIf="vendor.name">{{ vendor.name }}</p>
+			  		</div>
+			  	</div>
+			</div>
+			<div class="carousel-right-control">
+				<a [href]="" (click)="handleRightClick()"><i class="fa fa-chevron-right fa-2x"></i></a>
+			</div>
+		</div>
+	</div>
+</div>

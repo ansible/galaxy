@@ -12,7 +12,8 @@ import {
 	CardConfig
 } from 'patternfly-ng/card/basic-card/card-config';
 
-import { ContentBlocksService } from '../resources/content-blocks/content-blocks.service';
+import { ContentBlocksService }   from '../resources/content-blocks/content-blocks.service';
+import { Namespace }              from '../resources/namespaces/namespace';
 
 import * as $ from 'jquery';
 
@@ -26,7 +27,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     downloadConfig: CardConfig;
     shareConfig: CardConfig;
     featureConfig: CardConfig;
-    
+
     downloadContent: string;
     shareContent: string;
     featuredBlogContent: string;
@@ -34,11 +35,48 @@ export class HomeComponent implements OnInit, AfterViewInit {
     searchText: string = '';
     showCards: boolean = false;
 
+    vendors: Namespace[] = [
+        {
+            name: 'Microsoft 1',
+            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
+        },
+        {
+            name: 'Microsoft 2',
+            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
+        },
+        {
+            name: 'Microsoft 3',
+            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
+        },
+        {
+            name: 'Microsoft 4',
+            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
+        },
+        {
+            name: 'Microsoft 5',
+            avatar_url: ''
+        },
+        {
+            name: 'Microsoft 6',
+            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
+        },
+        {
+            name: 'Microsoft 7',
+            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
+        },
+        {
+            name: 'Microsoft 8',
+            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
+        }
+    ] as Namespace[];
+
+
+
     constructor(
         private contentBlocks: ContentBlocksService,
         private router: Router
     ) {}
-    
+
     ngOnInit() {
         this.contentBlocks.query().subscribe(
             results => {
@@ -84,7 +122,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.router.navigate(['/search'], {queryParams: {keywords: this.searchText}});
     }
 
-    // private 
+    // private
 
     private setCardHeight(): void {
         // Set the cards to a consistent height

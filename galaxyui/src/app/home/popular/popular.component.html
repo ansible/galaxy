@@ -1,0 +1,14 @@
+<div class="row">
+    <div class="col-sm-12">
+    	<div class="popular-card">
+			<div class="popular-header">
+			    <i class="fa fa-gear fa-2x"></i> <span class="title">Most Popular</span>
+			</div>
+			<div class="popular-body">
+				<div class="category" *ngFor="let category of categories">
+					<i class="{{ category.iconClass }}"></i> <span class="title">{{ category.name }}</span>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
