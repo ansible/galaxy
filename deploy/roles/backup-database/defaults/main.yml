@@ -1,9 +1,0 @@
----
-# defaults file for backup_databse
-
-backup_db_name: galaxy
-backup_username: galaxy
-backup_password: galaxy
-backup_enc_password: galaxy
-backup_s3_bucket: galaxy.ansibleworks.com
-backup_tmp: /tmp
