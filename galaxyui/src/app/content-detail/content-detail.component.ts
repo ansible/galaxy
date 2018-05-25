@@ -93,7 +93,6 @@ export class ContentDetailComponent implements OnInit {
                 this.repository = data['repository'];
                 this.namespace = data['namespace'];
                 this.content = data['content'];
-                console.log(this.repository);
                 this.repoType = RepoFormats[this.repository.format];
 
                 let req_content_name = params['content_name'];
@@ -163,21 +162,31 @@ export class ContentDetailComponent implements OnInit {
     private fetchContentDetail(id: number) {
         this.contentService.get(id).subscribe(result => {
             this.repoContent = JSON.parse(JSON.stringify(result));
-            this.hasReadme = (this.repoContent.readme_html) ? true : false;
             this.hasMetadata = false;
             this.metadataFilename = '';
             this.metadata = null;
-            if (this.repoContent.content_type == RepoFormats.role &&
-                this.repoContent.metadata['container_meta']) {
-                this.hasMetadata = true;
-                this.metadataFilename = 'container.yml';
-                this.metadata = this.repoContent.metadata['container_meta'];
+            this.hasReadme = false;
+            if (this.repoContent.content_type == RepoFormats.role) {
+                if (this.repoContent.metadata['container_meta']) {
+                    this.hasMetadata = true;
+                    this.metadataFilename = 'container.yml';
+                    this.metadata = this.repoContent.metadata['container_meta'];
+                }
+                this.hasReadme = (this.repoContent.readme_html) ? true : false;
             }
-            if (this.repoContent.content_type == RepoFormats.apb &&
-                this.repoContent.metadata['apb_metadata']) {
-                this.hasMetadata = true;
-                this.metadataFilename = 'apb.yml';
-                this.metadata = this.repoContent.metadata['apb_metadata'];
+            if (this.repoContent.content_type == RepoFormats.apb) {
+                if (this.repoContent.metadata['apb_metadata']) {
+                    this.hasMetadata = true;
+                    this.metadataFilename = 'apb.yml';
+                    this.metadata = this.repoContent.metadata['apb_metadata'];
+                }
+                this.hasReadme = (this.repoContent.readme_html) ? true : false;
+            }
+            if (this.repository.format == RepoFormats.multi) {
+                if (this.repository.readme_html) {
+                    this.hasReadme = true;
+                    this.repoContent.readme_html = this.repository.readme_html;
+                }
             }
             // Make it easier to access related data
             ['platforms', 'versions', 'cloud_platforms', 'dependencies'].forEach(key => {
