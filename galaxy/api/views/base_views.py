@@ -17,6 +17,7 @@
 
 import inspect
 import logging
+import six
 
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -139,9 +140,9 @@ class GenericAPIView(generics.GenericAPIView, APIView):
         d = super(GenericAPIView, self).get_description_context()
         d.update({
             'model_verbose_name':
-                unicode(self.model._meta.verbose_name),
+                six.text_type(self.model._meta.verbose_name),
             'model_verbose_name_plural':
-                unicode(self.model._meta.verbose_name_plural),
+                six.text_type(self.model._meta.verbose_name_plural),
             'serializer_fields': self.get_serializer().metadata(),
         })
         return d
@@ -250,9 +251,9 @@ class SubListAPIView(ListAPIView):
         d = super(SubListAPIView, self).get_description_context()
         d.update({
             'parent_model_verbose_name':
-                unicode(self.parent_model._meta.verbose_name),
+                six.text_type(self.parent_model._meta.verbose_name),
             'parent_model_verbose_name_plural':
-                unicode(self.parent_model._meta.verbose_name_plural),
+                six.text_type(self.parent_model._meta.verbose_name_plural),
         })
         return d
 

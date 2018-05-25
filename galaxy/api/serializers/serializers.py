@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
+import six
 
 from rest_framework import serializers
 
@@ -102,10 +103,10 @@ class BaseSerializer(serializers.ModelSerializer):
         for key, field in ret.items():
             if key == 'id' and not getattr(field, 'help_text', None):
                 field.help_text = u'Database ID for this {}.'.format(
-                    unicode(opts.verbose_name))
+                    six.text_type(opts.verbose_name))
             elif key == 'url':
                 field.help_text = u'URL for this {}.'.format(
-                    unicode(opts.verbose_name))
+                    six.text_type(opts.verbose_name))
                 field.type_label = 'string'
             elif key == 'related':
                 field.help_text = (
@@ -119,12 +120,12 @@ class BaseSerializer(serializers.ModelSerializer):
             elif key == 'created':
                 field.help_text = (
                     u'Timestamp when this {} was created.'.format(
-                        unicode(opts.verbose_name)))
+                        six.text_type(opts.verbose_name)))
                 field.type_label = 'datetime'
             elif key == 'modified':
                 field.help_text = (
                     u'Timestamp when this {} was last modified.'.format(
-                        unicode(opts.verbose_name)))
+                        six.text_type(opts.verbose_name)))
                 field.type_label = 'datetime'
         return ret
 
