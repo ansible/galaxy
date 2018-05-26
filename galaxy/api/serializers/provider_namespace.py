@@ -52,7 +52,8 @@ class ProviderNamespaceSerializer(serializers.BaseSerializer):
         if instance.namespace:
             result['namespace'] = {
                 'id': instance.namespace.pk,
-                'name': instance.namespace.name
+                'name': instance.namespace.name,
+                'is_vendor': instance.namespace.vendor,
             }
         return result
 
