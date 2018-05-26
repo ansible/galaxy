@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='namespace',
-            name='vendor',
+            name='is_vendor',
             field=models.BooleanField(default=False),
         ),
     ]

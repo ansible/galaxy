@@ -531,7 +531,7 @@ class Namespace(CommonModel):
         verbose_name="Web Site URL"
     )
 
-    vendor = models.BooleanField(default=False)
+    is_vendor = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse('api:namespace_detail', args=(self.pk,))

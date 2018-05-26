@@ -102,10 +102,12 @@ class RepositorySerializer(serializers.BaseSerializer):
         }
         namespace = {}
         if instance.provider_namespace.namespace:
-            namespace['name'] = instance.provider_namespace.namespace.name
-            namespace['id'] = instance.provider_namespace.namespace.pk
-            namespace['vendor'] = instance.provider_namespace.namespace.vendor
-
+            namespace = {
+                'id': instance.provider_namespace.namespace.pk,
+                'name': instance.provider_namespace.namespace.name,
+                'description': instance.provider_namespace.namespace.description,
+                'is_vendor': instance.provider_namespace.namespace.is_vendor
+            }
         latest_import = {}
         import_tasks = instance.import_tasks.order_by('-id')
         if len(import_tasks):
