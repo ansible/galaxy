@@ -44,7 +44,6 @@ __all__ = [
     'TagsSearchView',
 ]
 
-
 RANK_FUNCTION = 'ts_rank'
 RANK_NORMALIZATION = 32
 
@@ -105,6 +104,10 @@ class ContentSearchView(base.ListAPIView):
         # Keywords
         keywords = request.GET.get('keywords', '').split()
         queryset = self.add_keywords_filter(queryset, keywords)
+
+        # Vendor
+        is_vendor = request.GET.get('vendor', None)
+        queryset = self.add_vendor_filter(queryset, is_vendor)
 
         queryset = self.add_relevance(queryset)
 
@@ -183,6 +186,15 @@ class ContentSearchView(base.ListAPIView):
             function=RANK_FUNCTION, output_field=db_fields.FloatField())
         return (queryset.annotate(search_rank=search_rank_fn)
                 .filter(search_vector=tsquery))
+
+    @staticmethod
+    def add_vendor_filter(queryset, is_vendor):
+        if is_vendor is None:
+            return queryset
+        is_vendor_value = False
+        if is_vendor.lower() in ('true', 'yes', '1'):
+            is_vendor_value = True
+        return queryset.filter(namespace__is_vendor=is_vendor_value)
 
 
 class RoleSearchView(ContentSearchView):

@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0097_delete_empty_repos'),
+        ('main', '0098_readme'),
     ]
 
     operations = [
