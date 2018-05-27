@@ -1,7 +1,16 @@
 <app-page-header [headerTitle]="pageTitle"></app-page-header>
 
 <div id="author-detail" class="container-fluid">
-	<div class="row">
+
+	<div class="row" *ngIf="authorNotFound">
+		<div class="col-sm-12">
+			<pfng-empty-state
+				[config]="nameEmptyStateConfig">
+			</pfng-empty-state>
+		</div>
+	</div>
+
+	<div class="row" *ngIf="!authorNotFound">
 		<div class="col-sm-12">
 			<div class="namespace">
 				<div class="namespace-details">
@@ -37,7 +46,7 @@
     	</div>
 	</div>
 
-	<div class="row detail-search-toolbar">
+	<div class="row detail-search-toolbar" *ngIf="!authorNotFound">
         <div class="col-sm-12">
             <pfng-toolbar
             	[config]="toolbarConfig"
@@ -47,7 +56,7 @@
         </div>
     </div>
 
-	<div class="row repository-list">
+	<div class="row repository-list" *ngIf="!authorNotFound">
 		<div class="col-sm-12">
 			<pfng-list
 	            [config]="listConfig"
@@ -92,7 +101,7 @@
     	</div>
 	</div>
 
-	<div class="row repository-pagination">
+	<div class="row repository-pagination" *ngIf="!authorNotFound">
 		<div class="col-sm-12">
 			<div class="pagination"
 			    *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
