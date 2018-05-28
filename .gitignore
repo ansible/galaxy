@@ -1,4 +1,7 @@
+# Python: Byte-compiled files
+__pycache__/
 *.pyc
+
 *.swp
 *.retry
 .idea/
