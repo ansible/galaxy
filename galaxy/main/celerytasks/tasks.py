@@ -127,7 +127,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = u"User {} Repo Cache Refresh Error: {}".format(
-            user.username, unicode(exc))
+            user.username, exc)
         LOG.error(msg)
         raise Exception(msg)
 
@@ -137,7 +137,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = u"User {} Repo Cache Refresh Error: {}".format(
-            user.username, unicode(exc))
+            user.username, exc)
         LOG.error(msg)
         raise Exception(msg)
 
@@ -147,7 +147,7 @@ def refresh_user_repos(user, token):
         user.cache_refreshed = True
         user.save()
         msg = u"User {} Repo Cache Refresh Error: {}".foramt(
-            user.username, unicode(exc))
+            user.username, exc)
         LOG.error(msg)
         raise Exception(msg)
 
@@ -168,21 +168,21 @@ def refresh_user_stars(user, token):
     try:
         gh_api = github.Github(token)
     except github.GithubException as exc:
-        msg = u"User {} Refresh Stars: {}".format(user.username, unicode(exc))
+        msg = u"User {} Refresh Stars: {}".format(user.username, exc)
         LOG.error(msg)
         raise Exception(msg)
 
     try:
         ghu = gh_api.get_user()
     except github.GithubException as exc:
-        msg = u"User {} Refresh Stars: {}".format(user.username, unicode(exc))
+        msg = u"User {} Refresh Stars: {}".format(user.username, exc)
         LOG.error(msg)
         raise Exception(msg)
 
     try:
         subscriptions = ghu.get_subscriptions()
     except github.GithubException as exc:
-        msg = u"User {} Refresh Stars: {}".format(user.username, unicode(exc))
+        msg = u"User {} Refresh Stars: {}".format(user.username, exc)
         LOG.error(msg)
         raise Exception(msg)
 
@@ -205,7 +205,7 @@ def refresh_user_stars(user, token):
     try:
         starred = ghu.get_starred()
     except github.GithubException as exc:
-        msg = u"User {0} Refresh Stars: {1}".format(user.username, unicode(exc))
+        msg = u"User {0} Refresh Stars: {1}".format(user.username, exc)
         LOG.error(msg)
         raise Exception(msg)
 
@@ -268,7 +268,7 @@ def refresh_role_counts(start, end, token, tracker):
             else:
                 passed += 1
         except Exception as exc:
-            LOG.error(u"FAILED: {0} - {1}".format(full_name, unicode(exc)))
+            LOG.error(u"FAILED: {0} - {1}".format(full_name, exc))
             failed += 1
 
     tracker.state = 'FINISHED'
@@ -307,5 +307,5 @@ def clear_stuck_imports():
             ri.save()
             transaction.commit()
     except Exception as exc:
-        LOG.error(u"Clear Stuck Imports ERROR: {}".format(unicode(exc)))
+        LOG.error(u"Clear Stuck Imports ERROR: {}".format(exc))
         raise

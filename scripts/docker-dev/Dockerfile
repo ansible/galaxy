@@ -3,7 +3,7 @@ FROM galaxy-build
 LABEL com.ansible.galaxy.description="Ansible Galaxy development"
 
 RUN yum -y install vim tmux make
-RUN ${VENV_BIN}/pip install honcho supervisor flake8
+RUN ${VENV_BIN}/pip install honcho flake8
 RUN localedef -c -i en_US -f UTF-8 en_US.UTF-8
 
 ENV DJANGO_SETTINGS_MODULE galaxy.settings.development

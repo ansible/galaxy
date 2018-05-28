@@ -97,7 +97,7 @@ class GithubAPI(object):
                     'followers': org.followers
                 }
                 result.append(source)
-        except GithubException, exc:
+        except GithubException as exc:
             raise Exception("Failed to access GitHub authorized user."
                             " {0} - {1}".format(exc.data, exc.status))
         return result
