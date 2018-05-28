@@ -21,6 +21,7 @@ import { FilterField }           from 'patternfly-ng/filter/filter-field';
 import { FilterType }            from 'patternfly-ng/filter/filter-type';
 import { FilterComponent }       from 'patternfly-ng/filter/filter.component';
 
+import { Me }                    from '../../auth/auth.service';
 import { Namespace }             from '../../resources/namespaces/namespace';
 import { NamespaceService }      from "../../resources/namespaces/namespace.service";
 import { UserService }           from "../../resources/users/user.service";
@@ -57,7 +58,18 @@ class Source {
     styleUrls: ['./namespace-detail.component.less']
 })
 export class NamespaceDetailComponent implements OnInit {
-    @Input() namespace: Namespace;
+
+    @Input()
+    set namespace(data: Namespace) {
+        this._namespace = data;
+    }
+
+    get namespace(): Namespace {
+        return this._namespace;
+    }
+
+    _namespace: Namespace;
+    me: Me;
 
     pageTitle: string = 'My Content;/my-content;Add Namespace';
     pageLoading: boolean = true;
@@ -86,10 +98,11 @@ export class NamespaceDetailComponent implements OnInit {
 
     ngOnInit() {
         this.route.data
-            .subscribe((data: { namespace: Namespace }) => {
+            .subscribe(data => {
+                this.me = data['me'];
                 this.namespace = new Namespace();
-                if (data.namespace) {
-                    this.namespace = data.namespace;
+                if (data['namespace']) {
+                    this.namespace = data['namespace'];
                     this.selectedUsers = this.namespace.summary_fields['owners'] as Owner[];
                     this.selectedNamespaces = this.namespace.summary_fields['provider_namespaces'] as Source[];
                     this.pageTitle = 'My Content;/my-content;Edit Namespace';
@@ -248,8 +261,12 @@ export class NamespaceDetailComponent implements OnInit {
             location: [this.namespace.location],
             avatar_url: [this.namespace.avatar_url],
             email: [this.namespace.email],
-            html_url: [this.namespace.html_url]
+            html_url: [this.namespace.html_url],
+            namespaceType: (this.namespace.is_vendor) ? ['vendor'] : ['community']
         });
+        if (!this.me.staff) {
+            this.namespaceForm.controls['namespaceType'].disable();
+        }
     }
 
     private getUsers(params?: any): void {
@@ -323,6 +340,7 @@ export class NamespaceDetailComponent implements OnInit {
         ns.email = formModel.email as string;
         ns.html_url = formModel.html_url as string;
         ns.active = true;
+        ns.is_vendor = (formModel.namespaceType == 'vendor') ? true : false;
 
         let owners: User[] = [];
         let pns: ProviderNamespace[] = [];

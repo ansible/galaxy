@@ -68,6 +68,20 @@
         </div>
 
         <div class="form-group">
+            <label>Contributor Type</label>
+            <div class="border-box">
+                <label for="namespaceType" class="radio-inline">
+                <input type="radio" name="namespaceType" value="community"
+                       formControlName="namespaceType"> Community
+                </label>
+                <label for="namespaceType" class="radio-inline">
+                <input type="radio" name="namespaceType" value="vendor"
+                       formControlName="namespaceType"> Vendor
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label>Namespace Owners</label>
             <div class="row">
                 <div class="col-sm-6">

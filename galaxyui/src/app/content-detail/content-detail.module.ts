@@ -9,7 +9,7 @@ import { FilterModule }                from 'patternfly-ng/filter/filter.module'
 
 import { TooltipModule }               from 'ngx-bootstrap/tooltip';
 
-import { ContentDetailRoutingModule }  from './content-detail-routing.module';
+import { ContentDetailRoutingModule }  from './content-detail.routing.module';
 import { ContentDetailComponent }      from './content-detail.component';
 import { RepositoryComponent }         from './repository/repository.component';
 import { ModuleUtilsComponent }        from './content/module-utils/module-utils.component';
