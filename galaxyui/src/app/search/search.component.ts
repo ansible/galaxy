@@ -474,6 +474,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
 			item.imported = moment(item.imported).fromNow();
 			item['repository_format'] = item.summary_fields['repository']['format'];
 			item['avatar_url'] = item.summary_fields['namespace']['avatar_url'] || '/assets/avatar.png';
+			item['namespace_name'] = (item.summary_fields['namespace']['avatar_url']) ? '' : item.summary_fields['namespace']['name'];
+			item['displayNamespace'] = item.summary_fields['namespace']['name'];
 			if (item.summary_fields['content_type']['name'].indexOf('plugin') > -1) {
 				item['iconClass'] = ContentTypesIconClasses.plugin;
 			} else {
