@@ -10,9 +10,9 @@
 			</div>
 			<div class="carousel-slider">
 				<div class="carousel-slider-inner" id="slider-inner">
-			  		<div *ngFor="let vendor of vendors">
+			  		<div *ngFor="let vendor of vendors" (click)="handleVendorClick(vendor)" class="vendor">
 			  			<img [src]="vendor.avatar_url" class="{{ vendor['displayClass'] }}">
-			  			<p *ngIf="vendor.name">{{ vendor.name }}</p>
+			  			<p *ngIf="vendor['displayName']">{{ vendor['displayName'] }}</p>
 			  		</div>
 			  	</div>
 			</div>

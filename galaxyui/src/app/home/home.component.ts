@@ -5,6 +5,7 @@ import {
 } from '@angular/core';
 
 import {
+    ActivatedRoute,
     Router
 } from '@angular/router';
 
@@ -12,7 +13,6 @@ import {
 	CardConfig
 } from 'patternfly-ng/card/basic-card/card-config';
 
-import { ContentBlocksService }   from '../resources/content-blocks/content-blocks.service';
 import { Namespace }              from '../resources/namespaces/namespace';
 
 import * as $ from 'jquery';
@@ -34,68 +34,31 @@ export class HomeComponent implements OnInit, AfterViewInit {
     headerTitle: string = "Home";
     searchText: string = '';
     showCards: boolean = false;
-
-    vendors: Namespace[] = [
-        {
-            name: 'Microsoft 1',
-            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
-        },
-        {
-            name: 'Microsoft 2',
-            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
-        },
-        {
-            name: 'Microsoft 3',
-            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
-        },
-        {
-            name: 'Microsoft 4',
-            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
-        },
-        {
-            name: 'Microsoft 5',
-            avatar_url: ''
-        },
-        {
-            name: 'Microsoft 6',
-            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
-        },
-        {
-            name: 'Microsoft 7',
-            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
-        },
-        {
-            name: 'Microsoft 8',
-            avatar_url: 'http://www.rcelconnect.org/wp-content/uploads/2016/03/new-microsoft-logo-SIZED-SQUARE-300x297.jpg'
-        }
-    ] as Namespace[];
-
-
+    vendors: Namespace[] = [];
 
     constructor(
-        private contentBlocks: ContentBlocksService,
+        private route: ActivatedRoute,
         private router: Router
     ) {}
 
     ngOnInit() {
-        this.contentBlocks.query().subscribe(
-            results => {
-                results.forEach(result => {
-                    switch (result.name) {
-                        case 'main-downloads':
-                            this.downloadContent = result.content;
-                            break;
-                        case 'main-share':
-                            this.shareContent = result.content;
-                            break;
-                        case 'main-featured-blog':
-                            this.featuredBlogContent = result.content;
-                            break
-                    }
-                });
-                this.setCardHeight();
-            }
-        );
+        this.route.data.subscribe((data) => {
+            this.vendors = data['vendors']['results'];
+            data['contentBlocks'].forEach(item => {
+                switch (item.name) {
+                    case 'main-downloads':
+                        this.downloadContent = item.content;
+                        break;
+                    case 'main-share':
+                        this.shareContent = item.content;
+                        break;
+                    case 'main-featured-blog':
+                        this.featuredBlogContent = item.content;
+                        break
+                }
+            });
+        });
+
         this.downloadConfig = {
             titleBorder: true
     	} as CardConfig

@@ -25,9 +25,10 @@ export class CarouselComponent implements OnInit {
             if (!vendor.avatar_url) {
                 vendor.avatar_url = '/assets/avatar.png';
                 vendor['displayClass'] = 'missing-avatar';
+                vendor['displayName'] = vendor.name;
             } else {
                 vendor['displayClass'] = '';
-                vendor.name = '';
+                vendor['displayName'] = '';
             }
         })
     }
@@ -54,4 +55,11 @@ export class CarouselComponent implements OnInit {
         console.log(document.getElementById('slider-inner').scrollLeft);
     }
 
+    handleVendorClick(vendor:Namespace) {
+        let params = {
+            'vendor': 'true',
+            'namespaces': vendor.name
+        }
+        this.router.navigate(['/', 'search'], {queryParams: params});
+    }
 }
