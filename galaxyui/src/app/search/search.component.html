@@ -14,7 +14,16 @@
 			        [items]="contentItems"
 			        [itemTemplate]="itemTemplate">
 			        <ng-template #itemTemplate let-item="item" let-index="index">
-			            <div class="list-pf-content-wrapper">
+		            	<div class="list-pf-left">
+          					<a [routerLink]="['/', item.summary_fields.namespace.name]"
+            				   [tooltip]="'View more content from ' + item['displayNamespace']"
+            				   container="body">
+            					<img [src]="item.avatar_url"
+            					     class="namespace-avatar">
+            					<div class="namespace-name">{{ item['namespace_name'] }}</div>
+            				</a>
+        				</div>
+				        <div class="list-pf-content-wrapper">
 				          	<div class="list-pf-main-content">
 			            		<div class="list-pf-title">
 			            			<div class="content-name cursor-pointer">
@@ -27,13 +36,13 @@
 			            					{{item.description}}
 			            				</div>
 		            				</div>
-			            			<div class="content-namespace">
+			            			<!--div class="content-namespace">
 			            				<a [routerLink]="['/', item.summary_fields.namespace.name]"
 			            				   tooltip="View the Author's page">
 			            					<img [src]="item.avatar_url" class="avatar">
 			            					{{ item.summary_fields.namespace.name }}
 			            				</a>
-			            			</div>
+			            			</div-->
 			            			<div class="content-tags">
 			            				<div class="icon"><i class="fa fa-tag fa-2x"></i></div>
 			            				<div class="tags">
