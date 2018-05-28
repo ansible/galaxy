@@ -1,0 +1,49 @@
+/* popular-component.less */
+
+@import '../../../variables';
+
+.popular-card {
+	border: 1px solid #ccc;
+	width: 100%;
+	color: @black;
+	margin-top: 20px;
+}
+
+.popular-header {
+	border-bottom: 1px solid #ccc;
+	padding: 15px;
+	.title {
+		font-size: 18px;
+		font-weight: 700;
+		padding-left: 5px;
+	}
+}
+
+.popular-body {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	flex-direction: row;
+	overflow-x: hidden;
+    overflow-y: hidden;
+    padding: 15px;
+}
+
+.popular-body > div {
+	flex-grow: 0;
+	padding: 10px 15px;
+	font-size: 16px;
+	min-width: 200px;
+	.title {
+		padding-left: 5px;
+	}
+
+}
+
+.popular-body {
+	.category:hover {
+		cursor: pointer;
+		background-color: #ccc;
+	}
+}
+

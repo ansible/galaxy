@@ -9,7 +9,7 @@ import { FilterModule }            from 'patternfly-ng/filter/filter.module';
 import { ToolbarModule }           from 'patternfly-ng/toolbar/toolbar.module';
 import { TooltipModule }           from 'ngx-bootstrap/tooltip';
 
-import { AuthorsRoutingModule }      from './authors-routing.module';
+import { AuthorsRoutingModule }      from './authors.routing.module';
 import { AuthorsComponent }          from './authors.component';
 import { AuthorDetailComponent }     from './detail/author-detail.component';
 import { DetailActionsComponent }    from './detail/detail-actions/detail-actions.component';

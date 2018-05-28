@@ -11,13 +11,20 @@ import {
     ActivatedRouteSnapshot
 } from '@angular/router';
 
-import { Namespace }         from "../../resources/namespaces/namespace";
-import { NamespaceService }  from "../../resources/namespaces/namespace.service";
+import { Namespace }         from '../../resources/namespaces/namespace';
+import { NamespaceService }  from '../../resources/namespaces/namespace.service';
+
+import {
+    AuthService,
+    Me
+} from '../../auth/auth.service';
 
 
 @Injectable()
 export class NamespaceDetailResolver implements Resolve<Namespace> {
-    constructor(private namespaceService: NamespaceService, private router: Router) {}
+    constructor(
+        private namespaceService: NamespaceService,
+        private router: Router) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Namespace> {
         let id = route.paramMap.get('id');
@@ -34,5 +41,17 @@ export class NamespaceDetailResolver implements Resolve<Namespace> {
                 return null;
             }
         });
+    }
+}
+
+@Injectable()
+export class MeResolver implements Resolve<Me> {
+    constructor(
+        private authService: AuthService,
+        private router: Router) {}
+
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Me> {
+        console.log('HERE');
+        return this.authService.me();
     }
 }

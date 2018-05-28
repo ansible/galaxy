@@ -14,9 +14,10 @@
                             <span class="fa fa-spinner"></span>
                             Refresh
                         </button>
-                        <a class="btn btn-primary primary-action" type="button" routerLink="/my-content/namespaces/new">
-                            <span class="fa fa-plus"></span>
-                            Add
+                        <a class="btn btn-primary primary-action"
+                           type="button"
+                           routerLink="/my-content/namespaces/new" *ngIf="me.staff">
+                           <span class="fa fa-plus"></span> Add
                         </a>
                     </ng-template>
                 </pfng-toolbar>

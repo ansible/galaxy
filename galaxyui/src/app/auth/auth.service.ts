@@ -47,9 +47,7 @@ export class AuthService implements CanActivate {
 
     me(): Observable<Me> {
         if (this.meCache) {
-            return new Observable<Me>(
-                observer => { return observer.next(this.meCache); }
-            );
+            return Observable.of(this.meCache);
         }
         return this.http.get<Me>(this.meUrl, {headers: this.headers})
             .map((result) => { this.meCache = result; return result; });

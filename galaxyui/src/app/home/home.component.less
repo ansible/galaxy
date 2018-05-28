@@ -6,17 +6,18 @@
 		opacity: 0;
 		transition: 1s ease;
 		margin-top: 40px;
+
+    	a, a:visited, a:hover, a:active {
+        	text-decoration: none;
+        	color: #363636;
+    	}
 	}
 	.content-row.ready {
 		opacity: 1;
 	}
-	.search-row {
-		.search-input {
-			width: 100%;
-		}
-		.search-button {
-			width: 100%;
-		}
+	.row.content-row {
+		margin-left: -10px;
+		margin-right: -10px;
 	}
 	.card-header {
 		padding: 20px 0;
@@ -27,9 +28,6 @@
 			font-size: 18px;
 			font-weight: 700;
 		}
-	}
-	.home-card {
-		margin-left: 10px;
 	}
 	.featured-blog {
 		.featured-icon {

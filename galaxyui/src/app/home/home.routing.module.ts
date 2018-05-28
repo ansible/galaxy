@@ -11,11 +11,19 @@ import {
     HomeComponent
 } from './home.component';
 
+import {
+    VendorListResolver,
+    ContentBlockResolver
+} from './home.resolver.service';
 
 const homeRoutes: Routes = [
     {
         path: 'home',
-        component: HomeComponent
+        component: HomeComponent,
+        resolve: {
+            vendors: VendorListResolver,
+            contentBlocks: ContentBlockResolver
+        }
     }
 ];
 
@@ -26,6 +34,9 @@ const homeRoutes: Routes = [
     exports: [
         RouterModule,
     ],
-    providers: []
+    providers: [
+        VendorListResolver,
+        ContentBlockResolver
+    ]
 })
 export class HomeRoutingModule { }

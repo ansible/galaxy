@@ -5,6 +5,7 @@ import {
 } from '@angular/core';
 
 import {
+    ActivatedRoute,
     Router
 } from '@angular/router';
 
@@ -12,7 +13,7 @@ import {
 	CardConfig
 } from 'patternfly-ng/card/basic-card/card-config';
 
-import { ContentBlocksService } from '../resources/content-blocks/content-blocks.service';
+import { Namespace }              from '../resources/namespaces/namespace';
 
 import * as $ from 'jquery';
 
@@ -26,38 +27,38 @@ export class HomeComponent implements OnInit, AfterViewInit {
     downloadConfig: CardConfig;
     shareConfig: CardConfig;
     featureConfig: CardConfig;
-    
+
     downloadContent: string;
     shareContent: string;
     featuredBlogContent: string;
     headerTitle: string = "Home";
     searchText: string = '';
     showCards: boolean = false;
+    vendors: Namespace[] = [];
 
     constructor(
-        private contentBlocks: ContentBlocksService,
+        private route: ActivatedRoute,
         private router: Router
     ) {}
-    
+
     ngOnInit() {
-        this.contentBlocks.query().subscribe(
-            results => {
-                results.forEach(result => {
-                    switch (result.name) {
-                        case 'main-downloads':
-                            this.downloadContent = result.content;
-                            break;
-                        case 'main-share':
-                            this.shareContent = result.content;
-                            break;
-                        case 'main-featured-blog':
-                            this.featuredBlogContent = result.content;
-                            break
-                    }
-                });
-                this.setCardHeight();
-            }
-        );
+        this.route.data.subscribe((data) => {
+            this.vendors = data['vendors']['results'];
+            data['contentBlocks'].forEach(item => {
+                switch (item.name) {
+                    case 'main-downloads':
+                        this.downloadContent = item.content;
+                        break;
+                    case 'main-share':
+                        this.shareContent = item.content;
+                        break;
+                    case 'main-featured-blog':
+                        this.featuredBlogContent = item.content;
+                        break
+                }
+            });
+        });
+
         this.downloadConfig = {
             titleBorder: true
     	} as CardConfig
@@ -84,7 +85,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.router.navigate(['/search'], {queryParams: {keywords: this.searchText}});
     }
 
-    // private 
+    // private
 
     private setCardHeight(): void {
         // Set the cards to a consistent height

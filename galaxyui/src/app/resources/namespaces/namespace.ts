@@ -12,6 +12,7 @@ export class Namespace {
     email: string;
     html_url: string;
     active: boolean;
+    is_vendor: boolean;
     owners: User[];
     provider_namespaces: ProviderNamespace[];
     repositories: Repository[];

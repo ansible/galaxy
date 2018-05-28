@@ -144,6 +144,10 @@ dev/waitenv:
 dev/up:
 	$(DOCKER_COMPOSE) up
 
+.PHONY: dev/pip_install
+dev/pip_install:
+	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/pip install -r requirements.txt
+
 # Start all containers detached
 .PHONY: dev/up_detached
 dev/up_detached:

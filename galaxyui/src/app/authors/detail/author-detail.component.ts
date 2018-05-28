@@ -66,6 +66,8 @@ export class AuthorDetailComponent implements OnInit {
     items: Repository[] = [];
 
     emptyStateConfig: EmptyStateConfig;
+    nameEmptyStateConfig: EmptyStateConfig;
+    authorNotFound: boolean = false;
     toolbarActionConfig: ActionConfig;
     filterConfig: FilterConfig;
     sortConfig: SortConfig;
@@ -86,6 +88,18 @@ export class AuthorDetailComponent implements OnInit {
             info: '',
             title: 'No repositories match your search',
             iconStyleClass: 'pficon pficon-filter'
+        } as EmptyStateConfig;
+
+        this.nameEmptyStateConfig = {
+            title: 'Author not found!',
+            info: 'The requested content author was not found. Try using the Search page to browse  ' +
+            'available content.',
+            iconStyleClass: 'pficon-warning-triangle-o',
+            helpLink: {
+                hypertext: 'Visit the Search page',
+                text: '',
+                url: '/search'
+            },
         } as EmptyStateConfig;
 
         this.filterConfig = {
@@ -155,8 +169,14 @@ export class AuthorDetailComponent implements OnInit {
             this.namespace = data['namespace'];
             this.items = data['repositories']['results'];
             this.paginationConfig.totalItems = data['repositories']['count'];
-            this.parepareNamespace();
-            this.prepareRepositories();
+            if (this.namespace && this.namespace.name) {
+                this.parepareNamespace();
+            } else {
+                this.authorNotFound = true;
+            }
+            if (this.items && this.items.length) {
+                this.prepareRepositories();
+            }
             this.pageLoading = false;
         });
     }

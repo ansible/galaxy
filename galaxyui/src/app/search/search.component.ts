@@ -51,8 +51,12 @@ import {
 	RepoFormats
 } from '../enums/repo-types.enum';
 
+import {
+	ContributorTypes,
+	ContributorTypesIconClasses
+} from '../enums/contributor-types.enum';
 
-import { PopularEvent }   from "./popular/popular.component";
+import { PopularEvent }     from "./popular/popular.component";
 
 import {
 	Content,
@@ -116,9 +120,24 @@ export class SearchComponent implements OnInit, AfterViewInit {
 				},
 				{
 					id: 'namespaces',
-					title: 'Content Author',
-					placeholder: 'Author Name',
+					title: 'Contributor',
+					placeholder: 'Name',
 					type: FilterType.TEXT
+				},
+				{
+					id: 'contributor_type',
+					title: 'Contributor Type',
+					placeholder: 'Contributur Type',
+					type: FilterType.TYPEAHEAD,
+					queries: [{
+						id: ContributorTypes.community,
+						value: ContributorTypes.community,
+						iconStyleClass: ContributorTypesIconClasses.community
+					}, {
+						id: ContributorTypes.vendor,
+						value: ContributorTypes.vendor,
+						iconStyleClass: ContributorTypesIconClasses.vendor
+					}]
 				},
 				{
 					id: 'content_type',
@@ -179,36 +198,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
 					this.prepareContentTypes(data.contentTypes);
 					this.prepareCloudPlatforms(data.cloudPlatforms);
 
-					for (var key in params) {
-		            	// Convert query params to filters
-		            	var field = this.getFilterField(key);
-		            	if (!field)
-		            		continue;
-		            	var values: string[] = params[key].split(' ');
-		            	values.forEach(v => {
-		            		var ffield: Filter = {} as Filter;
-		            		ffield.field = field;
-		            		if (field.type == FilterType.TEXT) {
-		            		  	ffield.value = v;
-		            		} else if (field.type == FilterType.TYPEAHEAD) {
-		            			field.queries.forEach((query: FilterQuery) => {
-		            				if (query.id == v) {
-		            					ffield.query = query;
-		            					ffield.value = query.value;
-		            				}
-		            			});
-		            		}
-		            		this.filterConfig.appliedFilters.push(ffield);
-			                this.appliedFilters.push(ffield);
-		            	});
-		            }
-
+					this.setAppliedFilters(params);
 		            this.setSortConfig(params['order_by']);
-
-		            if (params['page_size'])
-		            	this.paginationConfig.pageSize = params['page_size'];
-		       		if (params['page'])
-		       			this.paginationConfig.pageNumber = params['page'];
+		            this.setPageSize(params);
 
 		       		this.prepareContent(data.content.results, data.content.count);
 		       		this.setQuery();
@@ -245,7 +237,20 @@ export class SearchComponent implements OnInit, AfterViewInit {
 			for (var key in filterby) {
 				if (params != '')
 					params += '&';
-				params += key + '=' + encodeURIComponent(filterby[key].join(' '));
+				if (key == 'contributor_type') {
+					if (filterby[key].length == 1) {
+						switch (filterby[key][0]) {
+							case ContributorTypes.community:
+								params += 'vendor=false';
+								break;
+							case ContributorTypes.vendor:
+								params += 'vendor=true';
+								break
+						}
+					}
+				} else {
+					params += key + '=' + encodeURIComponent(filterby[key].join(' '));
+				}
 			}
 			this.appliedFilters = JSON.parse(JSON.stringify($event.appliedFilters));
 			this.filterParams = params;
@@ -284,14 +289,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
 		let event: FilterEvent;
 		switch ($event.itemType) {
 			case 'tags':
-				ffield = this.getFilterField('tag')
+				ffield = this.getFilterField('tags')
 				filter = {
 					field: ffield,
 					value: $event.item['name']
 				} as Filter;
 				break;
 			case 'cloudPlatforms':
-				ffield = this.getFilterField('cloud_platform');
+				ffield = this.getFilterField('cloud_platforms');
 				query = this.getFilterFieldQuery(ffield, $event.item['name'])
 				filter = {
 					field: ffield,
@@ -300,7 +305,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 				} as Filter;
 				break;
 			case 'platforms':
-				ffield = this.getFilterField('platform');
+				ffield = this.getFilterField('platforms');
 				query = this.getFilterFieldQuery(ffield, $event.item['name'])
 				filter = {
 					field: ffield,
@@ -334,6 +339,80 @@ export class SearchComponent implements OnInit, AfterViewInit {
 	}
 
 	// private
+
+	private setPageSize(params:any) {
+		if (params['page_size']) {
+        	this.paginationConfig.pageSize = params['page_size'];
+        	this.pageSize = params['page_size'];
+			this.pageNumber = 1;
+        }
+   		if (params['page']) {
+   			this.paginationConfig.pageNumber = params['page'];
+   			this.pageNumber = params['page'];
+   		}
+	}
+
+	private setAppliedFilters(queryParams:any) {
+		// Convert query params to filters
+		let filterParams = '';
+
+        let params = JSON.parse(JSON.stringify(queryParams));
+        if (!Object.keys(params).length) {
+        	// When no prior query, default Contributor Type to vendor
+        	params['vendor'] = true;
+        }
+
+        for (var key in params) {
+        	if (key == 'vendor') {
+        		var field = this.getFilterField('contributor_type');
+
+        		if (filterParams != '')
+                	filterParams += '&';
+                filterParams += `vendor=${params[key]}`;
+
+        		var ffield: Filter = {} as Filter;
+        		ffield.field = field;
+        		field.queries.forEach((query: FilterQuery) => {
+    				if (query.id == ContributorTypes.community && !params[key]) {
+    					ffield.query = query;
+    					ffield.value = query.value;
+    				} else if (query.id == ContributorTypes.vendor && params[key]) {
+    					ffield.query = query;
+    					ffield.value = query.value;
+    				}
+    			});
+    			this.filterConfig.appliedFilters.push(ffield);
+                this.appliedFilters.push(ffield);
+        	} else {
+	        	var field = this.getFilterField(key);
+	        	if (!field)
+	        		continue;
+
+	        	if (filterParams != '')
+	                filterParams += '&';
+	            filterParams += `${key}=${encodeURIComponent(params[key])}`;
+
+	        	var values: string[] = params[key].split(' ');
+	        	values.forEach(v => {
+	        		var ffield: Filter = {} as Filter;
+	        		ffield.field = field;
+	        		if (field.type == FilterType.TEXT) {
+	        		  	ffield.value = v;
+	        		} else if (field.type == FilterType.TYPEAHEAD) {
+	        			field.queries.forEach((query: FilterQuery) => {
+	        				if (query.id == v) {
+	        					ffield.query = query;
+	        					ffield.value = query.value;
+	        				}
+	        			});
+	        		}
+	        		this.filterConfig.appliedFilters.push(ffield);
+	                this.appliedFilters.push(ffield);
+	        	});
+	        }
+	    }
+	    this.filterParams = filterParams;
+	}
 
 	private getBasePath(): string {
 		let path = this.location.path();
@@ -522,6 +601,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 	    	fields.forEach(f => {
 	    		if (f.id == order) {
 	    			result.push(f);
+	    			this.sortParams += f.id;
 	    		}
 	    	})
 	    	fields.forEach(f => {
@@ -530,7 +610,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
 	    		}
 	    	});
 	    	this.sortConfig.fields =result;
-	    	this.sortParams += fields[0].id;
 	    }
     }
 }

@@ -7,7 +7,12 @@ import {
 
 import { AuthService }              from '../auth/auth.service';
 import { NamespaceDetailComponent } from './namespace-detail/namespace-detail.component';
-import { NamespaceDetailResolver }  from './namespace-detail/namespace-detail-resolver.service';
+
+import {
+    NamespaceDetailResolver,
+    MeResolver
+}  from './namespace-detail/namespace-detail.resolver.service';
+
 import { NamespaceListComponent }   from './namespace-list/namespace-list.component';
 import { NamespaceListResolver }    from './namespace-list/namespace-list-resolver.service';
 
@@ -22,6 +27,7 @@ const myContentRoutes: Routes = [
         path: 'my-content/namespaces/:id',
         component: NamespaceDetailComponent,
         resolve: {
+            me: MeResolver,
             namespace: NamespaceDetailResolver
         },
         canActivate: [AuthService]
@@ -30,6 +36,7 @@ const myContentRoutes: Routes = [
         path: 'my-content/namespaces',
         component: NamespaceListComponent,
         resolve: {
+            me: MeResolver,
             namespaces: NamespaceListResolver
         },
         canActivate: [AuthService]
@@ -45,7 +52,8 @@ const myContentRoutes: Routes = [
     ],
     providers: [
         NamespaceDetailResolver,
-        NamespaceListResolver
+        NamespaceListResolver,
+        MeResolver
     ]
 })
 export class MyContentRoutingModule {

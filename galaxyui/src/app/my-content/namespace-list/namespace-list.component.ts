@@ -22,7 +22,7 @@ import { Namespace }                   from "../../resources/namespaces/namespac
 import { NamespaceService }            from "../../resources/namespaces/namespace.service";
 import { BsModalService, BsModalRef }  from 'ngx-bootstrap';
 import { AddRepositoryModalComponent } from "../add-repository-modal/add-repository-modal.component";
-import { AuthService }                 from "../../auth/auth.service";
+import { Me }                          from "../../auth/auth.service";
 import { FilterConfig }                from "patternfly-ng/filter/filter-config";
 import { ToolbarConfig }               from "patternfly-ng/toolbar/toolbar-config";
 import { FilterType }                  from "patternfly-ng/filter/filter-type";
@@ -44,6 +44,7 @@ import { FilterEvent }                 from "patternfly-ng/filter/filter-event";
 export class NamespaceListComponent implements OnInit {
     items: Namespace[] = [];
     namespaces: Namespace[] = [];
+    me: Me;
 
     pageTitle: string = "My Content";
     pageLoading: boolean = true;
@@ -63,7 +64,6 @@ export class NamespaceListComponent implements OnInit {
     contentAdded: number = 0;
 
     constructor(
-        private authService: AuthService,
         private route: ActivatedRoute,
         private router: Router,
         private modalService: BsModalService,
@@ -79,8 +79,9 @@ export class NamespaceListComponent implements OnInit {
 
     ngOnInit(): void {
         this.route.data
-            .subscribe((data: { namespaces: Namespace[] }) => {
-                this.items = this.prepForList(data.namespaces);
+            .subscribe(data => {
+                this.me = data['me'];
+                this.items = this.prepForList(data['namespaces']);
                 this.namespaces = JSON.parse(JSON.stringify(this.items));
                 this.cancelPageLoading();
             });
@@ -188,7 +189,7 @@ export class NamespaceListComponent implements OnInit {
         this.pageLoading = true;
         let params = {
             'page_size': 1000,
-            'owners__username': this.authService.meCache.username
+            'owners__username': this.me.username
         };
         this.namespaceService.query(params)
             .subscribe(namespaces => {
