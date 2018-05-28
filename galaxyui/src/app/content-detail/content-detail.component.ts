@@ -93,7 +93,9 @@ export class ContentDetailComponent implements OnInit {
                 this.repository = data['repository'];
                 this.namespace = data['namespace'];
                 this.content = data['content'];
-                this.repoType = RepoFormats[this.repository.format];
+
+                if (this.repository)
+                    this.repoType = RepoFormats[this.repository.format];
 
                 let req_content_name = params['content_name'];
 
