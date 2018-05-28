@@ -29,6 +29,8 @@ import { CloudPlatform }         from '../resources/cloud-platforms/cloud-platfo
 import { TagsService }           from '../resources/tags/tags.service';
 import { Tag }                   from '../resources/tags/tag';
 
+import { ContributorTypes }      from '../enums/contributor-types.enum';
+
 @Injectable()
 export class SearchContentResolver implements Resolve<ContentResponse> {
     constructor(
@@ -41,7 +43,21 @@ export class SearchContentResolver implements Resolve<ContentResponse> {
         for (var key in route.queryParams) {
             if (params != '')
                 params += '&';
-            params += key + '=' + encodeURIComponent(route.queryParams[key]);
+            if (key == 'contributor_type') {
+                switch (route.queryParams[key]) {
+                    case ContributorTypes.community:
+                        params += 'vendor=false';
+                        break;
+                    case ContributorTypes.vendor:
+                        params += 'vendor=true';
+                }
+            } else {
+                params += `${key}=${encodeURIComponent(route.queryParams[key])}`;
+            }
+        }
+        if (params == '') {
+            // When no prior query, default Contributor Type to vendor.
+            params += 'vendor=true';
         }
         // Add default params
         if (!route.queryParams['order_by']) {
