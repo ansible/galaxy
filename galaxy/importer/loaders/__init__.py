@@ -16,18 +16,17 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from .apb import APBLoader
-# from .module import ModuleLoader
-# from .module_utils import ModuleUtilsLoader
-# from .plugin import PluginLoader
+from .module import ModuleLoader
+from .module_utils import ModuleUtilsLoader
+from .plugin import PluginLoader
 from .role import RoleLoader
 
-# NOTE(cutwater): All loaders except APBLoader and RoleLoader are disabled
-# in accordance to https://github.com/ansible/galaxy/issues/571
+
 ALL_LOADERS = [
     APBLoader,
-    # ModuleLoader,
-    # ModuleUtilsLoader,
-    # PluginLoader,
+    ModuleLoader,
+    ModuleUtilsLoader,
+    PluginLoader,
     RoleLoader,
 ]
 
