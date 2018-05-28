@@ -9,6 +9,11 @@ import {
     Router
 } from '@angular/router';
 
+import {
+    ContentTypes
+} from '../../enums/content-types.enum';
+
+
 class Category {
 	name: string;
 	iconClass: string;
@@ -23,7 +28,9 @@ export class PopularComponent implements OnInit {
 
 	categories: Category[] = [];
 
-    constructor() {}
+    constructor(
+        private router:Router
+    ) {}
 
     ngOnInit() {
     	this.categories = [
@@ -67,8 +74,17 @@ export class PopularComponent implements OnInit {
     			name: 'Web',
     			iconClass: 'fa fa-globe'
     		}
-    	]
+    	] as Category[];
+    }
 
+    handleCategoryClick(category:Category) {
+        let params = {};
+        if (category.name == 'Playbook Bundles') {
+            params['content_type'] = ContentTypes.apb;
+        } else {
+            params['tags'] = category.name.toLowerCase();
+        }
+        this.router.navigate(['/', 'search'], {queryParams: params});
     }
 
 }

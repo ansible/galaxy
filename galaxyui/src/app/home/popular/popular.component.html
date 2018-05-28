@@ -5,7 +5,8 @@
 			    <i class="fa fa-gear fa-2x"></i> <span class="title">Most Popular</span>
 			</div>
 			<div class="popular-body">
-				<div class="category" *ngFor="let category of categories">
+				<div class="category" *ngFor="let category of categories"
+					(click)="handleCategoryClick(category)">
 					<i class="{{ category.iconClass }}"></i> <span class="title">{{ category.name }}</span>
 				</div>
 			</div>
