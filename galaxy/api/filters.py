@@ -95,7 +95,7 @@ class FieldLookupBackend(BaseFilterBackend):
             return None
         else:
             raise ValueError(
-                u'Unable to convert "{}" to boolean'.format(six.text_type(value)))
+                u'Unable to convert "{}" to boolean'.format(value))
 
     def to_python_related(self, value):
         value = six.text_type(value)

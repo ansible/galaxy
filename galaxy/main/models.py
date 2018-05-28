@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
+
 import six
 
 from django.conf import settings
@@ -57,7 +58,7 @@ class BaseModel(models.Model, DirtyMixin):
 
     def __unicode__(self):
         if hasattr(self, 'name'):
-            return six.text_type("%s-%s" % (self.name, self.id))
+            return u'{}-{}'.format(self.name, self.id)
         else:
             return u'%s-%s' % (self._meta.verbose_name, self.id)
 
@@ -165,6 +166,7 @@ class CloudPlatform(CommonModel):
         return reverse('api:cloud_platform_detail', args=(self.pk,))
 
 
+@six.python_2_unicode_compatible
 class UserAlias(models.Model):
     """
     A class representing a mapping between users and aliases to allow
@@ -184,9 +186,9 @@ class UserAlias(models.Model):
         unique=True,
     )
 
-    def __unicode__(self):
-        return six.text_type("%s (alias of %s)" % (
-            self.alias_name, self.alias_of.username))
+    def __str__(self):
+        return '{} (alias of {})'.format(
+            self.alias_name, self.alias_of.username)
 
 
 class Video(PrimordialModel):
