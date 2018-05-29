@@ -56,7 +56,7 @@ class RoleDownloadCountThrottle(ScopedRateThrottle):
                         'user requested role {}.{} already.'.format(
                             role_namespace, role_name))
                     return True
-                role.download_count += 1
+                role.repository.download_count += 1
                 role.save()
             except Exception as e:
                 self.logger.error(

@@ -118,7 +118,8 @@ class ContentSearchView(base.ListAPIView):
 
     @staticmethod
     def add_relevance(queryset):
-        download_count_ln_expr = Func(F('download_count') + 1, function='ln')
+        download_count_ln_expr = Func(
+            F('repository__download_count') + 1, function='ln')
         download_rank_expr = (
             F('download_count_ln')
             / (1 + F('download_count_ln'))
