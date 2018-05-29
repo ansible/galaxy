@@ -22,7 +22,7 @@ celery:
 
 .PHONY: ng_server
 ng_server:
-	cd /galaxy/galaxyui; ng serve --host '0.0.0.0' --port '8000' --poll '5000' --watch --verbose --proxy-config proxy.conf.js --environment dev
+	cd /galaxy/galaxyui; ng serve --host '0.0.0.0' --port '8000' --poll '5000' --watch --verbose --proxy-config proxy.conf.js
 
 .PHONY: waitenv
 waitenv:
