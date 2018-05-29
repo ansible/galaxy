@@ -17,16 +17,10 @@
 
 from __future__ import print_function
 
-import base64
-import json
 import logging
 from collections import OrderedDict
-from hashlib import sha256
-from six.moves.urllib.parse import parse_qs
 
 import requests
-from OpenSSL.crypto import Error as SignatureError
-from OpenSSL.crypto import verify, load_publickey, FILETYPE_PEM, X509
 
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.models import SocialToken
@@ -36,12 +30,9 @@ from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.db import IntegrityError
 from django.db.models import Count, Max
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
-from django.utils import timezone
-from django.utils.dateparse import parse_datetime
 
 # TODO move all github interactions to githubapi
 # Github
@@ -83,12 +74,6 @@ __all__ = [
     'ImportTaskLatestList',
     'ImportTaskList',
     'ImportTaskNotificationList',
-    'NotificationDetail',
-    'NotificationImportsList',
-    'NotificationList',
-    'NotificationRolesList',
-    'NotificationSecretDetail',
-    'NotificationSecretList',
     'PlatformDetail',
     'PlatformList',
     'ProviderRootView',
@@ -97,7 +82,6 @@ __all__ = [
     'RoleDependenciesList',
     'RoleDownloads',
     'RoleImportTaskList',
-    'RoleNotificationList',
     'RoleTypes',
     'RoleUsersList',
     'StargazerDetail',
@@ -117,6 +101,7 @@ __all__ = [
     'UserStarredList',
     'UserSubscriptionList',
 ]
+
 
 # --------------------------------------------------------------------------------
 # Helper functions
@@ -310,13 +295,6 @@ class RoleUsersList(base_views.SubListAPIView):
     def get_queryset(self):
         qs = super(RoleUsersList, self).get_queryset()
         return filter_user_queryset(qs)
-
-
-class RoleNotificationList(base_views.SubListAPIView):
-    model = models.Notification
-    serializer_class = serializers.NotificationSerializer
-    parent_model = models.Content
-    relationship = 'notifications'
 
 
 class RoleImportTaskList(base_views.SubListAPIView):
@@ -737,263 +715,13 @@ class SubscriptionDetail(base_views.RetrieveUpdateDestroyAPIView):
         return Response(dict(detail=result), status=status.HTTP_202_ACCEPTED)
 
 
-class NotificationSecretList(base_views.ListCreateAPIView):
-    '''
-    Integration tokens.
-    '''
-    model = models.NotificationSecret
-    serializer_class = serializers.NotificationSecretSerializer
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (IsAuthenticated, ModelAccessPermission,)
-
-    def list(self, request, *args, **kwargs):
-        # only list secrets belonging to the authenticated user
-        queryset = self.filter_queryset(self.get_queryset())
-        queryset = queryset.filter(owner=request.user)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, *args, **kwargs):
-        secret = request.data.get('secret', None)
-        source = request.data.get('source', None)
-        github_user = request.data.get('github_user', None)
-        github_repo = request.data.get('github_repo', None)
-
-        if not secret or not source or not github_user or not github_repo:
-            raise ValidationError(dict(detail="Invalid request. Missing one or more required values."))
-
-        if source not in ['github', 'travis']:
-            raise ValidationError(dict(detail="Invalid source value. Expecting one of: [github, travis]"))
-
-        if source == 'travis':
-            secret = sha256(github_user + '/' + github_repo + secret).hexdigest()
-
-        secret, create = models.NotificationSecret.objects.get_or_create(
-            source=source,
-            github_user=github_user,
-            github_repo=github_repo,
-            defaults={
-                'owner': request.user,
-                'source': source,
-                'secret': secret,
-                'github_user': github_user,
-                'github_repo': github_repo
-            }
-        )
-
-        if not create:
-            msg = "Duplicate key. An integration for {0} {1} {2} already exists.".format(source,
-                                                                                         github_user,
-                                                                                         github_repo)
-            raise ValidationError(dict(detail=msg))
-
-        serializer = self.get_serializer(instance=secret)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-class NotificationSecretDetail(base_views.RetrieveUpdateDestroyAPIView):
-    model = models.NotificationSecret
-    serializer_class = serializers.NotificationSecretSerializer
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (IsAuthenticated, ModelAccessPermission,)
-
-    def put(self, request, *args, **kwargs):
-        source = request.data.get('source', None)
-        secret = request.data.get('secret', None)
-        github_user = request.data.get('github_user', None)
-        github_repo = request.data.get('github_repo', None)
-
-        if not secret or not source or not github_user or not github_repo:
-            raise ValidationError(dict(detail="Invalid request. Missing one or more required values."))
-
-        if source not in ['github', 'travis']:
-            raise ValidationError(dict(detail="Invalid source value. Expecting one of: [github, travis]"))
-
-        instance = self.get_object()
-
-        if source == 'travis':
-            secret = sha256(github_user + '/' + github_repo + secret).hexdigest()
-
-        try:
-            instance.source = source
-            instance.secret = secret
-            instance.github_user = github_user
-            instance.github_repo = github_repo
-            instance.save()
-        except IntegrityError:
-            msg = "An integration for {0} {1} {2} already exists.".format(source, github_user, github_repo)
-            raise ValidationError(dict(detail=msg))
-
-        serializer = self.get_serializer(instance=instance)
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = super(NotificationSecretDetail, self).get_object()
-        obj.delete()
-        return Response(dict(detail="Requested secret deleted."),
-                        status=status.HTTP_202_ACCEPTED)
-
-
-class NotificationList(base_views.ListCreateAPIView):
-    model = models.Notification
-    serializer_class = serializers.NotificationSerializer
-
-    def post(self, request, *args, **kwargs):
-
-        signature = self._get_signature(request)
-        json_payload = parse_qs(request.body)['payload'][0]
-
-        slug = request.META.get('HTTP_TRAVIS_REPO_SLUG')
-        if not slug:
-            msg = "Notification error: expected TRAVIS_REPO_SLUG header"
-            logger.error(msg)
-            return HttpResponseBadRequest({'detail': msg})
-        github_user, github_repo = slug.split('/', 1)
-        owner = self._get_owner(github_user)
-
-        try:
-            public_key = self._get_travis_public_key()
-        except requests.Timeout:
-            msg = "Notification error: Timeout attempting to retrieve Travis CI public key"
-            logger.error(msg)
-            return HttpResponseBadRequest({'detail': msg})
-        except requests.RequestException as e:
-            msg = "Notification error: Failed to retrieve Travis CI public key. %s" % e.message
-            logger.error(msg)
-            return HttpResponseBadRequest({'detail': msg})
-        try:
-            self._check_authorized(signature, public_key, json_payload)
-        except SignatureError:
-            msg = "Notification error: Authorization failed"
-            logger.error(msg)
-            return HttpResponseBadRequest({'detail': msg})
-
-        payload = json.loads(json_payload)
-        request_branch = payload['branch']
-        travis_status_url = "https://travis-ci.org/%s/%s.svg?branch=%s" % (github_user, github_repo, request_branch)
-
-        notification = models.Notification.objects.create(
-            owner=owner,
-            source='travis',
-            github_branch=request_branch,
-            travis_build_url=payload.get('build_url'),
-            travis_status=payload.get('status_message'),
-            commit_message=payload.get('message'),
-            committed_at=parse_datetime(payload['committed_at']) if payload.get('committed_at') else timezone.now(),
-            commit=payload['commit']
-        )
-
-        repository, _ = models.Repository.objects.get_or_create(
-            github_user=github_user,
-            github_repo=github_repo,
-            defaults={
-                'is_enabled': False,
-                'travis_status_url': travis_status_url,
-                'travis_build_url': payload.get('build_url'),
-                'original_name': github_repo})
-
-        role, _ = models.Content.objects.update_or_create(
-            # FIXME(cutwater): Use in-memory cache for content types
-            content_type=models.ContentType.get(constants.ContentType.ROLE),
-            repository=repository,
-            active=True,
-            defaults={
-                'namespace': github_user,
-                'name': github_repo,
-                'github_default_branch': 'master',
-                'is_valid': False,
-            }
-        )
-        notification.roles.add(role)
-
-        task = tasks.create_import_task(
-            role.repository, owner,
-            travis_status_url=travis_status_url,
-            travis_build_url=payload.get('build_url'))
-        notification.imports.add(task)
-        notification.save()
-
-        serializer = self.get_serializer(instance=notification)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED,
-                        headers=headers)
-
-    def _check_authorized(self, signature, public_key, payload):
-        """
-        Convert the PEM encoded public key to a format palatable for pyOpenSSL,
-        then verify the signature
-        """
-        pkey_public_key = load_publickey(FILETYPE_PEM, public_key)
-        certificate = X509()
-        certificate.set_pubkey(pkey_public_key)
-        verify(certificate, signature, payload, str('sha1'))
-
-    def _get_signature(self, request):
-        """
-        Extract the raw bytes of the request signature provided by travis
-        """
-        signature = request.META['HTTP_SIGNATURE']
-        return base64.b64decode(signature)
-
-    def _get_travis_public_key(self):
-        """
-        Returns the PEM encoded public key from the Travis CI /config endpoint
-        """
-        response = requests.get(settings.TRAVIS_CONFIG_URL, timeout=10.0)
-        response.raise_for_status()
-        return response.json()['config']['notifications']['webhook']['public_key']
-
-    def _get_owner(self, github_user):
-        owner = None
-        try:
-            owner = User.objects.get(github_user=github_user)
-        except User.DoesNotExist:
-            pass
-        if not owner:
-            try:
-                owner = User.objects.get(
-                    username=settings.GITHUB_TASK_USERS[0])
-            except User.DoesNotExist:
-                msg = "Notification error: Galaxy task user not found"
-                logger.error(msg)
-                return HttpResponseBadRequest({'detail': msg})
-        return owner
-
-
-class NotificationDetail(base_views.RetrieveAPIView):
-    model = models.Notification
-    serializer_class = serializers.NotificationSerializer
-
-
-class NotificationRolesList(base_views.SubListAPIView):
-    model = models.Content
-    serializer_class = serializers.RoleDetailSerializer
-    parent_model = models.Notification
-    relationship = 'roles'
-
-    def get_queryset(self):
-        qs = super(NotificationRolesList, self).get_queryset()
-        return qs
-
-
-class NotificationImportsList(base_views.SubListAPIView):
-    model = models.ImportTask
-    serializer_class = serializers.ImportTaskSerializer
-    parent_model = models.Notification
-    relationship = 'imports'
-
-    def get_queryset(self):
-        qs = super(NotificationImportsList, self).get_queryset()
-        return qs
-
-
 class UserDetail(base_views.RetrieveAPIView):
     model = User
     serializer_class = serializers.UserDetailSerializer
 
     def update_filter(self, request, *args, **kwargs):
-        ''' make sure non-read-only fields that can only be edited by admins, are only edited by admins '''
+        # make sure non-read-only fields that can only be edited by admins,
+        # are only edited by admins
         obj = User.objects.get(pk=kwargs['pk'])
         can_change = check_user_access(request.user, User, 'change', obj, request.data)
         can_admin = check_user_access(request.user, User, 'admin', obj, request.data)

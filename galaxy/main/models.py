@@ -23,7 +23,6 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms.models import model_to_dict
-from django.contrib.postgres import fields as psql_fields
 from django.contrib.postgres import search as psql_search
 from django.contrib.postgres import indexes as psql_indexes
 from django.utils import timezone
@@ -901,28 +900,25 @@ class Notification(PrimordialModel):
         max_length=256,
         blank=True
     )
-    roles = models.ManyToManyField(
-        Content,
+    repository = models.ForeignKey(
+        'Repository',
         related_name='notifications',
-        verbose_name='Roles',
-        editable=False
+        editable=False,
     )
-    imports = models.ManyToManyField(
+    import_task = models.ForeignKey(
         ImportTask,
         related_name='notifications',
         verbose_name='Tasks',
-        editable=False
-    )
-    messages = psql_fields.ArrayField(
-        models.CharField(max_length=256),
-        default=list,
         editable=False
     )
 
 
 class Repository(BaseModel):
     class Meta:
-        unique_together = ('provider_namespace', 'name')
+        unique_together = [
+            ('provider_namespace', 'name'),
+            ('provider_namespace', 'original_name'),
+        ]
         ordering = ('provider_namespace', 'name')
 
     # Foreign keys

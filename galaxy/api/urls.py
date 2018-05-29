@@ -43,8 +43,6 @@ role_urls = [
         views.RoleDependenciesList.as_view(), name='role_dependencies_list'),
     url(r'^(?P<pk>[0-9]+)/imports/$',
         views.RoleImportTaskList.as_view(), name='role_import_task_list'),
-    url(r'^(?P<pk>[0-9]+)/notifications/$',
-        views.RoleNotificationList.as_view(), name='role_notification_list'),
     url(r'^(?P<pk>[0-9]+)/downloads/$', views.RoleDownloads.as_view(),
         name='role_downloads')
 ]
@@ -110,10 +108,6 @@ notification_urls = [
     url(r'^$', views.NotificationList.as_view(), name='notification_list'),
     url(r'^(?P<pk>[0-9]+)/$', views.NotificationDetail.as_view(),
         name='notification_detail'),
-    url(r'^(?P<pk>[0-9]+)/roles/$', views.NotificationRolesList.as_view(),
-        name='notification_roles_list'),
-    url(r'^(?P<pk>[0-9]+)/imports/$', views.NotificationImportsList.as_view(),
-        name='notification_imports_list'),
 ]
 
 namespace_urls = [
