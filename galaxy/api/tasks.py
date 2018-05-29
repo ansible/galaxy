@@ -20,14 +20,13 @@ from galaxy.worker import tasks as worker_tasks
 
 
 def create_import_task(
-        repository, user, import_branch=None, repository_alt_name=None,
+        repository, user, import_branch=None,
         travis_status_url='', travis_build_url=''):
 
     task = models.ImportTask.objects.create(
         repository=repository,
         owner=user,
         import_branch=import_branch,
-        repository_alt_name=repository_alt_name,
         travis_status_url=travis_status_url,
         travis_build_url=travis_build_url,
         state=models.ImportTask.STATE_PENDING

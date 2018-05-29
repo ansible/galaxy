@@ -81,12 +81,19 @@ class RepositoryLoader(object):
         if not all(v[1] for v in result):
             raise exc.ContentLoadError('Lint failed')
 
+        name = None
+        if (finder.repository_format in (constants.RepositoryFormat.ROLE,
+                                         constants.RepositoryFormat.APB)
+                and result[0][0].name):
+            name = result[0][0].name
+
         return models.Repository(
             branch=branch,
             commit=commit,
             format=finder.repository_format,
-            readme=readme,
             contents=[v[0] for v in result],
+            readme=readme,
+            name=name
         )
 
     def _find_contents(self):

@@ -255,8 +255,10 @@ class RoleLoader(base.BaseLoader):
         data['video_links'] = meta_parser.parse_videos()
         readme = self._get_readme()
 
+        name = galaxy_info.get('role_name', self.name)
         return models.Content(
-            name=self.name,
+            name=name,
+            original_name=self.name,
             path=self.rel_path,
             content_type=self.content_type,
             description=description,

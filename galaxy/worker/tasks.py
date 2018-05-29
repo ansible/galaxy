@@ -69,14 +69,11 @@ def import_repository(task_id):
 @transaction.atomic
 def _import_repository(import_task, logger):
     repository = import_task.repository
-    repo_full_name = repository.provider_namespace.name + "/" + repository.original_name
+    repo_full_name = (
+        repository.provider_namespace.name
+        + "/" + repository.original_name)
     logger.info(u'Starting import: task_id={}, repository={}'
                 .format(import_task.id, repo_full_name))
-
-    if import_task.repository_alt_name:
-        logging.info(u'Using repository name alias: "{}"'
-                     .format(import_task.repository_alt_name))
-        repository.name = import_task.repository_alt_name
 
     if import_task.import_branch:
         repository.import_branch = import_task.import_branch
@@ -99,11 +96,12 @@ def _import_repository(import_task, logger):
 
     repository.format = repo_info.format.value
 
+    if repo_info.name:
+        repository.name = repo_info.name
+
     context = utils.Context(
-        repository=repository,
-        github_token=token,
-        github_client=gh_api,
-        github_repo=gh_repo)
+        repository=repository, github_token=token,
+        github_client=gh_api, github_repo=gh_repo)
 
     new_content_objs = []
     for content_info in repo_info.contents:
