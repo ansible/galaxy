@@ -110,8 +110,6 @@ class ContentSerializer(BaseModelSerializer):
                 'api:content_type_detail', args=(instance.content_type.pk,)),
             'imports': urls.reverse(
                 'api:role_import_task_list', args=(instance.pk,)),
-            'notifications': urls.reverse(
-                'api:role_notification_list', args=(instance.pk,)),
             'repository': urls.reverse(
                 'api:repository_detail', args=(instance.repository.pk,)),
             'namespace': urls.reverse(
