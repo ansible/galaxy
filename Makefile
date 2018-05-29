@@ -61,7 +61,7 @@ build/static:
 
 .PHONY: build/dist
 build/dist: build/static
-	python setup.py clean sdist bdist_wheel
+	python setup.py clean bdist_wheel
 	GALAXY_VERSION=$$(python setup.py --version) \
 		&& ln -sf galaxy-$$GALAXY_VERSION-py2-none-any.whl dist/galaxy.whl
 
