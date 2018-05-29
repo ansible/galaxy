@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { EmptyStateModule }            from 'patternfly-ng/empty-state/empty-state.module'
 import { CardModule }                  from 'patternfly-ng/card/card.module';
-import { ListModule }                  from 'patternfly-ng/list/list.module';
+import { ListModule }                  from 'patternfly-ng/list/basic-list/list.module';
 import { PaginationModule }            from 'patternfly-ng/pagination/pagination.module';
 import { FilterModule }                from 'patternfly-ng/filter/filter.module';
 

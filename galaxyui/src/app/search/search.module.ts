@@ -7,7 +7,7 @@ import { ActionModule }        from 'patternfly-ng/action/action.module';
 import { EmptyStateModule }    from 'patternfly-ng/empty-state/empty-state.module';
 import { FilterModule }        from 'patternfly-ng/filter/filter.module';
 import { ToolbarModule }       from 'patternfly-ng/toolbar/toolbar.module';
-import { ListModule }          from 'patternfly-ng/list/list.module';
+import { ListModule }          from 'patternfly-ng/list/basic-list/list.module';
 import { SortModule }          from 'patternfly-ng/sort/sort.module';
 import { PaginationModule }    from 'patternfly-ng/pagination/pagination.module';
 import { TooltipModule }               from 'ngx-bootstrap/tooltip';
