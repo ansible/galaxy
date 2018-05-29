@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0098_readme'),
+        ('main', '0100_notifications'),
     ]
 
     operations = [
