@@ -12,9 +12,12 @@
 	border-bottom: 1px solid #ccc;
 	padding-bottom: 15px;
 
-	.icon-container, .title-container {
-		display: inline-block;
-		vertical-align: middle;
+	.title-box {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		justify-content: flex-start;
+		align-content: middle;
 	}
 	.icon-container {
 		margin-right: 15px;
@@ -29,13 +32,13 @@
 		}
 		.namespace {
 			font-size: 14px;
+			img {
+				max-height: 32px;
+				margin-right: 5px;
+			}
 		}
-		.namespace img {
-			width: 32px;
-			height: 32px;
-			border-radius: 50%;
-			border: 2px solid @ansible-dark-grey;
-			margin-right: 5px;
+		.namespace:hover {
+			cursor: pointer;
 		}
 	}
 	.repository-counts {

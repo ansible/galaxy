@@ -11,8 +11,14 @@
 			<div class="carousel-slider">
 				<div class="carousel-slider-inner" id="slider-inner">
 			  		<div *ngFor="let vendor of vendors" (click)="handleVendorClick(vendor)" class="vendor">
-			  			<img [src]="vendor.avatar_url" class="{{ vendor['displayClass'] }}">
-			  			<p *ngIf="vendor['displayName']">{{ vendor['displayName'] }}</p>
+			  			<table class="img-wrapper">
+  							<tr>
+    							<td>
+    								<img [src]="vendor.avatar_url" class="{{ vendor['displayClass'] }}">
+			  						<p *ngIf="vendor['displayName']">{{ vendor['displayName'] }}</p>
+    							</td>
+  							</tr>
+						</table>
 			  		</div>
 			  	</div>
 			</div>

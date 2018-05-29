@@ -15,7 +15,11 @@
 			<div class="namespace">
 				<div class="namespace-details">
 					<div class="namespace-img">
-						<img [src]="namespace.avatar_url" class="github-avatar">
+						<table class="img-wrapper">
+						    <tr>
+						        <td><img [src]="namespace.avatar_url"></td>
+						    </tr>
+						</table>
 					</div>
 					<div class="namespace-bio text-overflow-pf">
 						<p class="name">{{ namespace.name }}</p>

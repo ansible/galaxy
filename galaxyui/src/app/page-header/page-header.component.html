@@ -1,9 +1,9 @@
 <div class="page-header">
     <ul class="page-header-list">
         <li *ngFor="let title of _headerTitle; index as i">
-            <a [routerLink]="[title.path]" *ngIf="title.path">{{ title.name }}</a>
+            <a [routerLink]="[title.path]" *ngIf="title.path" [innerHTML]="title.name"></a>
             <span *ngIf="i < _headerTitle.length - 1" class="separator">&gt;</span>
-            <span *ngIf="!title.path">{{ title.name }}</span>
+            <span *ngIf="!title.path" [innerHTML]="title.name"></span>
         </li>
     </ul>
 </div>

@@ -23,7 +23,13 @@
                     (onClick)="handleListClick($event)">
                     <ng-template #itemTemplate let-item="item">
                         <div class="list-pf-left">
-                            <img src="{{ item.avatar_url }}" class="github-avatar">
+                            <div class="img-container">
+                                <table class="img-wrapper">
+                                    <tr>
+                                        <td><img src="{{ item.avatar_url }}"></td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                         <div class="list-pf-content-wrapper">
                             <div class="list-pf-main-content">

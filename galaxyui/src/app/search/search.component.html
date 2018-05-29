@@ -15,13 +15,20 @@
 			        [itemTemplate]="itemTemplate">
 			        <ng-template #itemTemplate let-item="item" let-index="index">
 		            	<div class="list-pf-left">
-          					<a [routerLink]="['/', item.summary_fields.namespace.name]"
-            				   [tooltip]="'View more content from ' + item['displayNamespace']"
-            				   container="body">
-            					<img [src]="item.avatar_url"
-            					     class="namespace-avatar">
-            					<div class="namespace-name">{{ item['namespace_name'] }}</div>
-            				</a>
+		            		<div class="namespace-container">
+	          					<a [routerLink]="['/', item.summary_fields.namespace.name]"
+	            				   [tooltip]="'View more content from ' + item['displayNamespace']"
+	            				   container="body">
+	            				   <table class="img-wrapper">
+	            				   		<tr>
+	            				   			<td>
+	            				   				<img [src]="item.avatar_url" class="namespace-avatar">
+	            								<div class="namespace-name">{{ item['namespace_name'] }}</div>
+	            							</td>
+	            						</tr>
+	            					</table>
+	            				</a>
+            				</div>
         				</div>
 				        <div class="list-pf-content-wrapper">
 				          	<div class="list-pf-main-content">

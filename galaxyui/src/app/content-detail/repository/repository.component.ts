@@ -27,6 +27,7 @@ import * as moment          from 'moment';
 class RepositoryView {
     repoType: RepoFormats;
     name: string;
+    displayName: string;
     description: string;
     iconClass: string;
     tooltip: string;
@@ -83,7 +84,22 @@ export class RepositoryComponent implements OnInit {
         this.repositoryView.name = this.repository.name;
         this.repositoryView.description = this.repository.description;
         this.repositoryView.namespace = this.repository.summary_fields.namespace['name'];
-        this.repositoryView.avatarUrl = this.namespace.avatar_url || '/assets/avatar.png';
+
+        if (this.repository.summary_fields.namespace['is_vendor']) {
+            // assuming vendor name in logo img
+            this.repositoryView.displayName = '';
+        } else {
+            this.repositoryView.displayName = this.repository.summary_fields.namespace['name'];
+        }
+
+        if (!this.namespace.avatar_url) {
+            // missing avatar_url
+            this.repositoryView.displayName = this.repository.summary_fields.namespace['name'];
+            this.repositoryView.avatarUrl = '/assets/avatar.png';
+        } else {
+            this.repositoryView.avatarUrl = this.namespace.avatar_url;
+        }
+
         this.repositoryView.watchersCount = this.repository.watchers_count;
         this.repositoryView.stargazersCount = this.repository.stargazers_count;
         this.repositoryView.downloadCount = 0;

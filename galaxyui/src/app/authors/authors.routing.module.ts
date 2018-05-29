@@ -19,7 +19,7 @@ import { AuthorDetailComponent }    from './detail/author-detail.component';
 
 
 const routes: Routes = [{
-    	path: 'authors',
+    	path: 'community',
     	component: AuthorsComponent,
     	resolve: {
     		namespaces: NamespaceListResolver

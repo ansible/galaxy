@@ -36,11 +36,11 @@ import {
 } from '../enums/content-types.enum';
 
 @Component({
-    selector: 'app-authors',
-    templateUrl: './authors.component.html',
-    styleUrls: ['./authors.component.less']
+    selector: 'app-vendors',
+    templateUrl: './vendors.component.html',
+    styleUrls: ['./vendors.component.less']
 })
-export class AuthorsComponent implements OnInit {
+export class VendorsComponent implements OnInit {
 
     constructor(
     	private router: Router,
@@ -48,7 +48,7 @@ export class AuthorsComponent implements OnInit {
   	    private namespaceService: NamespaceService
     ) {}
 
-    pageTitle: string = `<i class="fa fa-users"></i> Community Authors`;
+    pageTitle: string = `<i class="fa fa-star"></i> Vendors`;
     pageLoading: boolean = true;
     items: Namespace[] = [];
 
@@ -61,7 +61,7 @@ export class AuthorsComponent implements OnInit {
     paginationConfig: PaginationConfig;
     sortBy: string = "name";
     filterBy: any = {
-        'is_vendor': false
+        'is_vendor': 'true'
     };
     pageNumber: number = 1;
     pageSize: number = 10;
@@ -137,8 +137,8 @@ export class AuthorsComponent implements OnInit {
         } as PaginationConfig;
 
         this.route.data.subscribe((data) => {
-            this.items = data['namespaces']['results'];
-            this.paginationConfig.totalItems = data['namespaces']['count'];
+            this.items = data['vendors']['results'];
+            this.paginationConfig.totalItems = data['vendors']['count'];
             this.prepareNamespaces();
         });
     }
@@ -158,7 +158,7 @@ export class AuthorsComponent implements OnInit {
             });
         } else {
             this.filterBy = {
-                'is_vendor': false
+                'is_vendor': 'true'
             };
         }
         this.pageNumber = 1;
@@ -193,10 +193,6 @@ export class AuthorsComponent implements OnInit {
     private prepareNamespaces(): void {
         if (this.items) {
             this.items.forEach(item => {
-                if (!item.avatar_url) {
-                    item.avatar_url = '/assets/avatar.png';
-                }
-
                 // Creat an array of {'Content Type': {count: <int>, iconClass: 'icon-class'}}
                 let contentCounts = [];
                 for (let ct in ContentTypes) {

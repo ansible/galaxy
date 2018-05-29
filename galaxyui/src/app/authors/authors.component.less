@@ -13,12 +13,26 @@
     color: @ansible-dark-grey;
     margin-top: 15px;
     margin-bottom: 15px;
-    .github-avatar {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        border: 2px solid @ansible-dark-grey;
-        margin-right: 5px;
+
+    .img-container {
+        margin-right: 15px;
+        padding-right: 15px;
+        border-right: 1px solid #ccc;
+    }
+
+    .img-wrapper {
+        width: 100px;
+        height: 100px;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        td {
+            vertical-align: middle;
+            text-align: center;
+            img {
+                max-width: 100px;
+            }
+        }
     }
 
     .list-pf-item:first-child {

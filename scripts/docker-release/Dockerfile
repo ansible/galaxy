@@ -7,7 +7,7 @@ ENV PIP_NO_CACHE_DIR off
 # Install system packages
 # Install virtualenv
 RUN yum -y install epel-release \
-    && yum -y install python python-pip git \
+    && yum -y install gcc python python-pip python-devel git \
     && pip install virtualenv \
     && yum -y clean all \
     && rm -rf /var/cache/yum

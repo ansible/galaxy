@@ -14,7 +14,7 @@ RUN yum -y install wget \
 # Install packages and create virtual environment
 ENV PIP_NO_CACHE_DIR off
 RUN yum -y install epel-release \
-    && yum -y install git make python python-pip \
+    && yum -y install gcc git make python python-pip python-devel \
     && pip install virtualenv \
     && yum -y clean all \
     && rm -rf /var/cache/yum
