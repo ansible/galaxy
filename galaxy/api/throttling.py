@@ -75,5 +75,5 @@ class RoleDownloadCountThrottle(ScopedRateThrottle):
                 self.scope, ident, self.role_id))
         return self.cache_format % {
             'scope': self.scope,
-            'ident': "%s_%s" % (ident, self.role_id)
+            'ident': "{}_{}".format(ident, self.role_id)
         }

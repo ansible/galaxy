@@ -41,12 +41,12 @@ LOG = logging.getLogger(__name__)
 
 @celery.task
 def import_repository(task_id):
-    LOG.info(u"Starting task: %d" % int(task_id))
+    LOG.info(u"Starting task: {:d}".format(int(task_id)))
 
     try:
         import_task = models.ImportTask.objects.get(id=task_id)
     except models.ImportTask.DoesNotExist:
-        LOG.error(u"Failed to get task id: %d" % int(task_id))
+        LOG.error(u"Failed to get task id: {:d}".format(int(task_id)))
         raise
 
     import_task.start()

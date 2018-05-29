@@ -149,10 +149,10 @@ class KeyTransform(models.Transform):
         try:
             int(self.key_name)
         except ValueError:
-            lookup = "'%s'" % self.key_name
+            lookup = "'{}'".format(self.key_name)
         else:
-            lookup = "%s" % self.key_name
-        return "%s -> %s" % (lhs, lookup), params
+            lookup = "{}".format(self.key_name)
+        return "{} -> {}".format(lhs, lookup), params
 
 
 class KeyTransformFactory(object):

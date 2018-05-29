@@ -524,38 +524,51 @@ class StargazerDetail(base_views.RetrieveUpdateDestroyAPIView):
         try:
             token = SocialToken.objects.get(account__user=request.user, account__provider='github')
         except:
-            msg = "Failed to connect to GitHub account for Galaxy user {0}. ".format(request.user.username) + \
-                  "You must first authenticate with Github."
+            msg = (
+                "Failed to connect to GitHub account for Galaxy user {}. "
+                "You must first authenticate with Github."
+                .format(request.user.username)
+            )
             raise ValidationError(dict(detail=msg))
         try:
             gh_api = Github(token.token)
             gh_api.get_api_status()
         except GithubException as e:
-            msg = "Failed to connect to GitHub API. This is most likely a temporary " + \
-                "error, please try again in a few minutes. {0} - {1}".format(e.data, e.status)
+            msg = (
+                "Failed to connect to GitHub API. This is most likely a "
+                "temporary error, please try again in a few minutes. {} - {}"
+                .format(e.data, e.status)
+            )
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_repo = gh_api.get_repo(
                 obj.role.github_user + '/' + obj.role.github_repo)
         except GithubException as e:
-            msg = "GitHub API failed to return repo for {0}/{1}. {2} - {3}".format(obj.github_user,
-                                                                                   obj.github_repo,
-                                                                                   e.data,
-                                                                                   e.status)
+            msg = (
+                "GitHub API failed to return repo for {}/{}. {} - {}"
+                .format(obj.github_user, obj.github_repo, e.data, e.status)
+            )
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_user = gh_api.get_user()
         except GithubException as e:
-            msg = "GitHub API failed to return authorized user. {0} - {1}".format(e.data, e.status)
+            msg = (
+                "GitHub API failed to return authorized user. {} - {}"
+                .format(e.data, e.status)
+            )
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_user.remove_from_starred(gh_repo)
         except GithubException as e:
-            msg = "GitHub API failed to remove user {0} from stargazers ".format(request.user.username) + \
-                "for {0}/{1}. {2} - {3}".format(obj.github_user, obj.github_repo, e.data, e.status)
+            msg = (
+                "GitHub API failed to remove user {} from stargazers "
+                "for {}/{}. {} - {}"
+                .format(request.user.username, obj.github_user,
+                        obj.github_repo, e.data, e.status)
+            )
             raise ValidationError(dict(detail=msg))
 
         obj.delete()
@@ -582,39 +595,49 @@ class SubscriptionList(base_views.ListCreateAPIView):
         try:
             token = SocialToken.objects.get(account__user=request.user, account__provider='github')
         except:
-            msg = "Failed to connect to GitHub account for Galaxy user {0}. ".format(request.user.username) + \
-                  "You must first authenticate with Github."
+            msg = (
+                "Failed to connect to GitHub account for Galaxy user {}. "
+                "You must first authenticate with Github."
+                .format(request.user.username)
+            )
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_api = Github(token.token)
             gh_api.get_api_status()
         except GithubException as e:
-            msg = "Failed to connect to GitHub API. This is most likely a temporary error, please try " + \
-                  "again in a few minutes. {0} - {1}".format(e.data, e.status)
+            msg = (
+                "Failed to connect to GitHub API. This is most likely a "
+                "temporary error, please try again in a few minutes. {} - {}"
+                .format(e.data, e.status)
+            )
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_repo = gh_api.get_repo(github_user + '/' + github_repo)
         except GithubException as e:
-            msg = "GitHub API failed to return repo for {0}/{1}. {2} - {3}".format(github_user,
-                                                                                   github_repo,
-                                                                                   e.data,
-                                                                                   e.status)
+            msg = (
+                "GitHub API failed to return repo for {}/{}. {} - {}"
+                .format(github_user, github_repo, e.data, e.status)
+            )
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_user = gh_api.get_user()
         except GithubException as e:
-            msg = "GitHub API failed to return authorized user. {0} - {1}".format(e.data, e.status)
+            msg = (
+                "GitHub API failed to return authorized user. {} - {}"
+                .format(e.data, e.status)
+            )
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_user.add_to_subscriptions(gh_repo)
         except GithubException as e:
-            msg = "GitHub API failed to subscribe user {0} to for {1}/{2}".format(request.user.username,
-                                                                                  github_user,
-                                                                                  github_repo)
+            msg = (
+                "GitHub API failed to subscribe user {} to for {}/{}"
+                .format(request.user.username, github_user, github_repo)
+            )
             raise ValidationError(dict(detail=msg))
 
         new_sub, created = models.Subscription.objects.get_or_create(
@@ -656,41 +679,50 @@ class SubscriptionDetail(base_views.RetrieveUpdateDestroyAPIView):
         try:
             token = SocialToken.objects.get(account__user=request.user, account__provider='github')
         except:
-            msg = "Failed to access GitHub account for Galaxy user {0}. ".format(request.user.username) + \
-                  "You must first authenticate with GitHub."
+            msg = (
+                "Failed to access GitHub account for Galaxy user {}. "
+                "You must first authenticate with GitHub."
+                .format(request.user.username)
+            )
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_api = Github(token.token)
             gh_api.get_api_status()
         except GithubException as e:
-            msg = "Failed to connect to GitHub API. This is most likely a temporary error, " + \
-                  "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
+            msg = (
+                "Failed to connect to GitHub API. This is most likely a "
+                "temporary error, please try again in a few minutes. {} - {}"
+                .format(e.data, e.status)
+            )
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_repo = gh_api.get_repo(obj.github_user + '/' + obj.github_repo)
         except GithubException as e:
-            msg = "GitHub API failed to return repo for {0}/{1}. {2} - {3}".format(obj.github_user,
-                                                                                   obj.github_repo,
-                                                                                   e.data,
-                                                                                   e.status)
+            msg = (
+                "GitHub API failed to return repo for {}/{}. {} - {}"
+                .format(obj.github_user, obj.github_repo, e.data, e.status)
+            )
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_user = gh_api.get_user()
         except GithubException as e:
-            msg = "GitHub API failed to return authorized user. {0} - {1}".format(e.data, e.status)
+            msg = (
+                "GitHub API failed to return authorized user. {} - {}"
+                .format(e.data, e.status)
+            )
             raise ValidationError(dict(detail=msg))
 
         try:
             gh_user.remove_from_subscriptions(gh_repo)
         except GithubException as e:
-            msg = "GitHub API failed to unsubscribe {0} from {1}/{2}. {3} - {4}".format(request.user.username,
-                                                                                        obj.github_user,
-                                                                                        obj.github_repo,
-                                                                                        e.data,
-                                                                                        e.status)
+            msg = (
+                "GitHub API failed to unsubscribe {} from {}/{}. {} - {}"
+                .format(request.user.username, obj.github_user,
+                        obj.github_repo, e.data, e.status)
+            )
             raise ValidationError(dict(detail=msg))
 
         obj.delete()
@@ -704,9 +736,10 @@ class SubscriptionDetail(base_views.RetrieveUpdateDestroyAPIView):
         repo.watchers_count = sub_count
         repo.save()
 
-        result = "unsubscribed {0} from {1}/{2}.".format(request.user.username,
-                                                         obj.github_user,
-                                                         obj.github_repo)
+        result = (
+            "unsubscribed {} from {}/{}."
+            .format(request.user.username, obj.github_user, obj.github_repo)
+        )
 
         return Response(dict(detail=result), status=status.HTTP_202_ACCEPTED)
 
@@ -796,16 +829,22 @@ class RemoveRole(base_views.APIView):
             try:
                 token = SocialToken.objects.get(account__user=request.user, account__provider='github')
             except:
-                msg = "Failed to get Github account for Galaxy user {0}. ".format(request.user.username) + \
-                      "You must first authenticate with Github."
+                msg = (
+                    "Failed to get Github account for Galaxy user {}. "
+                    "You must first authenticate with Github."
+                    .format(request.user.username)
+                )
                 raise ValidationError(dict(detail=msg))
 
             try:
                 gh_api = Github(token.token)
                 gh_api.get_api_status()
             except GithubException as e:
-                msg = "Failed to connect to GitHub API. This is most likely a temporary error, " + \
-                      "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
+                msg = (
+                    "Failed to connect to GitHub API. This is most likely a "
+                    "temporary error, please try again in a few minutes. {} - {}"
+                    .format(e.data, e.status)
+                )
                 raise ValidationError(dict(detail=msg))
 
             try:
@@ -814,7 +853,7 @@ class RemoveRole(base_views.APIView):
                 raise ValidationError(dict(detail="Failed to get Github authorized user."))
 
             allowed = False
-            repo_full_name = "%s/%s" % (gh_user, gh_repo)
+            repo_full_name = "{}/{}".format(gh_user, gh_repo)
             for r in ghu.get_repos():
                 if r.full_name == repo_full_name:
                     allowed = True
@@ -836,12 +875,18 @@ class RemoveRole(base_views.APIView):
             repository__name=gh_repo)
         cnt = len(roles)
         if cnt == 0:
-            response['status'] = "Role %s.%s not found. Maybe it was deleted previously?" % (gh_user, gh_repo)
+            response['status'] = (
+                "Role {}.{} not found. Maybe it was deleted previously?"
+                .format(gh_user, gh_repo)
+            )
             return Response(response)
         elif cnt == 1:
-            response['status'] = "Role %s.%s deleted" % (gh_user, gh_repo)
+            response['status'] = "Role {}.{} deleted".format(gh_user, gh_repo)
         else:
-            response['status'] = "Deleted %d roles associated with %s/%s" % (len(roles), gh_user, gh_repo)
+            response['status'] = (
+                "Deleted {:d} roles associated with {}/{}"
+                .format(len(roles), gh_user, gh_repo)
+            )
 
         for role in roles:
             response['deleted_roles'].append({
@@ -880,8 +925,11 @@ class RefreshUserRepos(base_views.APIView):
         try:
             token = SocialToken.objects.get(account__user=request.user, account__provider='github')
         except:
-            msg = "Failed to connect to GitHub account for Galaxy user {0} ".format(request.user.username) + \
-                  "You must first authenticate with GitHub."
+            msg = (
+                "Failed to connect to GitHub account for Galaxy user {} "
+                "You must first authenticate with GitHub."
+                .format(request.user.username)
+            )
             logger.error(msg)
             return HttpResponseBadRequest({'detail': msg})
 
@@ -889,8 +937,11 @@ class RefreshUserRepos(base_views.APIView):
             gh_api = Github(token.token)
             gh_api.get_api_status()
         except GithubException as e:
-            msg = "Failed to connect to GitHub API. This is most likely a temporary error, " + \
-                  "please try again in a few minutes. {0} - {1}".format(e.data, e.status)
+            msg = (
+                "Failed to connect to GitHub API. This is most likely a "
+                "temporary error, please try again in a few minutes. {} - {}"
+                .format(e.data, e.status)
+            )
             logger.error(msg)
             return HttpResponseBadRequest({'detail': msg})
 
@@ -957,7 +1008,10 @@ class TokenView(base_views.APIView):
         if SocialAccount.objects.filter(provider='github', uid=gh_user['id']).count() > 0:
             user = SocialAccount.objects.get(provider='github', uid=gh_user['id']).user
         else:
-            msg = "Galaxy user not found. You must first log into Galaxy using your GitHub account."
+            msg = (
+                "Galaxy user not found. You must first log into Galaxy using "
+                "your GitHub account."
+            )
             raise ValidationError(dict(detail=msg))
 
         if Token.objects.filter(user=user).count() > 0:

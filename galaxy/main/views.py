@@ -318,7 +318,8 @@ class RoleListView(ListView):
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False
         context["page_title"] = self.namespace
-        context["meta_description"] = "Roles contributed by %s." % self.namespace.name
+        context["meta_description"] = (
+            "Roles contributed by {}.".format(self.namespace.name))
         return context
 
 
@@ -359,7 +360,7 @@ class RoleDetailView(DetailView):
         context['name'] = self.name
         context["site_name"] = settings.SITE_NAME
         context["load_angular"] = False
-        context["meta_description"] = "Content %s.%s - %s" % (
+        context["meta_description"] = "Content {}.{} - {}".format(
             self.role.namespace.name, self.role.name, self.role.description)
 
         try:
@@ -419,7 +420,7 @@ class RoleDetailView(DetailView):
         context['import_date'] = role.imported
         context['last_commit_date'] = role.repository.commit_created
         context['readme_html'] = readme_to_html(role)
-        context['page_title'] = "%s.%s" % (self.namespace, self.name)
+        context['page_title'] = "{}.{}".format(self.namespace, self.name)
         return context
 
 

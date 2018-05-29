@@ -56,7 +56,7 @@ if settings.SITE_ENV == 'DEV':
             else:
                 first_initial = random.choice(self.all)[0].lower()
             last_name = random.choice(self.surname).lower()
-            return "%s_%s" % (first_initial, last_name)
+            return "{}_{}".format(first_initial, last_name)
 
     class FullNameGenerator(generators.FirstNameGenerator, generators.LastNameGenerator):
         """ Generates a full_name of the form 'fname lname' """
@@ -73,7 +73,7 @@ if settings.SITE_ENV == 'DEV':
             else:
                 first_name = random.choice(self.all)
             last_name = random.choice(self.surname)
-            return "%s %s" % (first_name, last_name)
+            return "{} {}".format(first_name, last_name)
 
     class RoleNameGenerator(generators.Generator):
         """ Generates a role name """
@@ -85,7 +85,7 @@ if settings.SITE_ENV == 'DEV':
         ]
 
         def generate(self):
-            return "testrole_%s" % random.choice(self.software_packages)
+            return "testrole_{}".format(random.choice(self.software_packages))
 
     class UserAutoFixture(AutoFixture):
         field_values = {
@@ -120,7 +120,7 @@ if settings.SITE_ENV == 'DEV':
         choices = []
         for major in range(0, 3):
             for minor in range(0, 9):
-                choices.append("v%d.%d" % (major, minor))
+                choices.append("v{:d}.{:d}".format(major, minor))
         field_values = {
             'name': generators.ChoicesGenerator(values=choices),
             'loose_version': generators.StaticGenerator("0.0"),
