@@ -1,16 +1,18 @@
 <div class="row repository-container">
 	<div class="col-sm-4">
-		<div class="icon-container">
-			<span class="fa fa-5x" [ngClass]="repositoryView.iconClass" tooltip="{{ repositoryView.tooltip }}"></span>
-		</div>
-		<div class="title-container">
-			<div class="title">{{ repositoryView.name }}</div>
-			<div class="description">{{ repositoryView.description }}</div>
-			<a class="namespace"
-			   [href]=""
-			   (click)="viewAuthor()"
-			   tooltip="View the Author's page">
-			   <img [src]="repositoryView.avatarUrl" > {{ repositoryView.namespace }}</a>
+		<div class="title-box">
+			<div class="icon-container">
+				<span class="fa fa-5x" [ngClass]="repositoryView.iconClass" tooltip="{{ repositoryView.tooltip }}"></span>
+			</div>
+			<div class="title-container">
+				<div class="title">{{ repositoryView.name }}</div>
+				<div class="description">{{ repositoryView.description }}</div>
+				<a class="namespace"
+				   [href]=""
+				   (click)="viewAuthor()"
+				   tooltip="View the Author's page">
+				   <img [src]="repositoryView.avatarUrl" > {{ repositoryView.displayName }}</a>
+			</div>
 		</div>
 	</div>
 	<div class="col-sm-8">

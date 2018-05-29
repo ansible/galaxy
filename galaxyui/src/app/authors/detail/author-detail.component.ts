@@ -59,7 +59,7 @@ export class AuthorDetailComponent implements OnInit {
   	    private repositoryService: RepositoryService
     ) {}
 
-    pageTitle: string = "Browse Authors;/authors;Author";
+    pageTitle: string = '';
     pageLoading: boolean = true;
 
     namespace: Namespace;
@@ -170,6 +170,11 @@ export class AuthorDetailComponent implements OnInit {
             this.items = data['repositories']['results'];
             this.paginationConfig.totalItems = data['repositories']['count'];
             if (this.namespace && this.namespace.name) {
+                if (this.namespace.is_vendor) {
+                    this.pageTitle = `<i class="fa fa-star"></i> Vendors;/vendors;${this.namespace.name}`;
+                } else {
+                    this.pageTitle = `<i class="fa fa-users"></i> Community Authors;/authors;${this.namespace.name}`;
+                }
                 this.parepareNamespace();
             } else {
                 this.authorNotFound = true;

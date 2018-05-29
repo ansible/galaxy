@@ -19,7 +19,8 @@ import {
 
 import {
     BsDropdownModule,
-    ModalModule as BsModalModule
+    ModalModule as BsModalModule,
+    TooltipModule
 } from 'ngx-bootstrap';
 
 import { NotificationModule }         from 'patternfly-ng/notification/notification.module';
@@ -33,6 +34,7 @@ import { MyImportsModule }            from './my-imports/my-imports.module';
 import { SearchModule }               from './search/search.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
 import { AuthorsModule }              from './authors/authors.module';
+import { VendorsModule }              from './vendors/vendors.module';
 import { ContentDetailModule }        from './content-detail/content-detail.module';
 import { AuthService }                from './auth/auth.service';
 import { NamespaceService }           from './resources/namespaces/namespace.service';
@@ -62,6 +64,7 @@ import { AppComponent }               from './app.component';
             cookieName: 'csrftoken',
             headerName: 'X-CSRFToken',
         }),
+        TooltipModule,
         BrowserModule,
         NavigationModule,
         BsDropdownModule.forRoot(),
@@ -75,6 +78,7 @@ import { AppComponent }               from './app.component';
         SearchModule,
         ModalModule,
         ContentDetailModule,
+        VendorsModule,
         AuthorsModule,
         AppRoutingModule
     ],

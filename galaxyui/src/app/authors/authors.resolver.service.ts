@@ -26,7 +26,7 @@ export class NamespaceListResolver implements Resolve<PagedResponse> {
         private router: Router
     ){}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<PagedResponse> {
-        return this.namespaceService.pagedQuery({});
+        return this.namespaceService.pagedQuery({'is_vendor': false});
     }
 }
 

@@ -98,9 +98,14 @@ export class AppComponent implements OnInit {
                 url: '/search'
             },
             {
-                title: 'Authors',
+                title: 'Vendors',
+                iconStyleClass: 'fa fa-star',
+                url: '/vendors'
+            },
+            {
+                title: 'Community',
                 iconStyleClass: 'fa fa-users',
-                url: '/authors'
+                url: '/community'
             },
             {
                 title: 'My Content',
@@ -112,7 +117,8 @@ export class AppComponent implements OnInit {
                 iconStyleClass: 'fa fa-upload',
                 url: '/my-imports'
             }
-        ];
+        ] as NavigationItemConfig[];
+
         this.authService.me().subscribe(
             (me) => {
                 this.authenticated = me.authenticated;

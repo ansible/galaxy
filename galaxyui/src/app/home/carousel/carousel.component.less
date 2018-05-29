@@ -54,7 +54,7 @@
 .carousel-slider {
 	display: inline-block;
 	height: 225px;
-	vertical-algin: middle;
+	vertical-align: middle;
 	width: 95%;
 }
 
@@ -87,6 +87,7 @@
 
 .carousel-slider-inner {
     display: flex;
+    align-items: center;
     overflow-x: hidden;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
@@ -98,15 +99,27 @@
 	text-align: center;
 	padding: 15px 30px;
     flex-shrink: 0;
+    .img-wrapper {
+    	width: 100%;
+    	height: 100%;
+    	padding: 0;
+    	margin: 0;
+    	border: 0;
+    	td {
+    		text-align: center;
+    		vertical-align: middle;
+    	}
+    }
     img {
     	width: 200px;
-    	height: 200px;
     }
     img.missing-avatar {
+        width: 200px;
     	height: 170px;
     }
     p {
     	padding-top: 10px;
+    	font-weight: 700;
     }
     width: 260px;
     height: 225px;

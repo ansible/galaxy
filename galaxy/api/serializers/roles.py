@@ -115,7 +115,8 @@ class RoleListSerializer(BaseRoleSerializer):
             location=obj.repository.provider_namespace.namespace.location,
             company=obj.repository.provider_namespace.namespace.company,
             email=obj.repository.provider_namespace.namespace.email,
-            html_url=obj.repository.provider_namespace.namespace.html_url)
+            html_url=obj.repository.provider_namespace.namespace.html_url,
+            is_vendor=obj.repository.provider_namespace.namespace.is_vendor)
         d['platforms'] = [
             dict(name=g.name, release=g.release) for g in obj.platforms.all()]
         d['provider_namespace'] = dict(
@@ -189,7 +190,8 @@ class RoleDetailSerializer(BaseRoleSerializer):
                              for g in obj.dependencies.all()]
         d['namespace'] = dict(
             id=obj.repository.provider_namespace.namespace.pk,
-            name=obj.repository.provider_namespace.namespace.name)
+            name=obj.repository.provider_namespace.namespace.name,
+            is_vendor=obj.repository.provider_namespace.namespace.is_vendor)
         d['platforms'] = [dict(name=g.name, release=g.release)
                           for g in obj.platforms.all()]
         d['provider_namespace'] = dict(
