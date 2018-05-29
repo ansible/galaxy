@@ -46,6 +46,7 @@ __all__ = [
 # (e.g. models/base.py, models/content.py, etc.)
 
 
+@six.python_2_unicode_compatible
 class BaseModel(models.Model, DirtyMixin):
     """Common model for objects not needing name, description,
     active attributes."""
@@ -56,11 +57,11 @@ class BaseModel(models.Model, DirtyMixin):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         if hasattr(self, 'name'):
-            return u'{}-{}'.format(self.name, self.id)
+            return '{}-{}'.format(self.name, self.id)
         else:
-            return u'%s-%s' % (self._meta.verbose_name, self.id)
+            return '{}-{}'.format(self._meta.verbose_name, self.id)
 
 
 class PrimordialModel(BaseModel):
@@ -95,6 +96,7 @@ class CommonModelNameNotUnique(PrimordialModel):
 # Actual models
 # -----------------------------------------------------------------------------
 
+@six.python_2_unicode_compatible
 class Category(CommonModel):
     """
     A class represnting the valid categories (formerly tags)
@@ -105,13 +107,14 @@ class Category(CommonModel):
         ordering = ['name']
         verbose_name_plural = "Categories"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse('api:category_detail', args=(self.pk,))
 
 
+@six.python_2_unicode_compatible
 class Tag(CommonModel):
     """A class representing the tags that have been assigned to roles."""
 
@@ -119,7 +122,7 @@ class Tag(CommonModel):
         ordering = ['name']
         verbose_name_plural = 'Tags'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -129,6 +132,7 @@ class Tag(CommonModel):
         return self.roles.filter(active=True, is_valid=True).count()
 
 
+@six.python_2_unicode_compatible
 class Platform(CommonModelNameNotUnique):
     """A class representing the valid platforms a role supports."""
 
@@ -146,20 +150,21 @@ class Platform(CommonModelNameNotUnique):
         verbose_name="Search terms"
     )
 
-    def __unicode__(self):
-        return "%s-%s" % (self.name, self.release)
+    def __str__(self):
+        return "{}-{}".format(self.name, self.release)
 
     def get_absolute_url(self):
         return reverse('api:platform_detail', args=(self.pk,))
 
 
+@six.python_2_unicode_compatible
 class CloudPlatform(CommonModel):
     """A model representing the valid cloud platforms for role."""
 
     class Meta:
         ordering = ['name']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -211,6 +216,7 @@ class Video(PrimordialModel):
     role.help_text = ""
 
 
+@six.python_2_unicode_compatible
 class ContentType(BaseModel):
     """A model that represents content type (e.g. role, module, etc.)."""
     name = models.CharField(max_length=512, unique=True, db_index=True,
@@ -224,13 +230,14 @@ class ContentType(BaseModel):
             content_type = content_type.value
         return cls.objects.get(name=content_type)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse('api:content_type_detail', args=(self.pk,))
 
 
+@six.python_2_unicode_compatible
 class Content(CommonModelNameNotUnique):
     """A class representing a user role."""
 
@@ -389,8 +396,8 @@ class Content(CommonModelNameNotUnique):
     # Other functions and properties
     # -------------------------------------------------------------------------
 
-    def __unicode__(self):
-        return "%s.%s" % (self.namespace.name, self.name)
+    def __str__(self):
+        return "{}.{}".format(self.namespace.name, self.name)
 
     @property
     def github_user(self):
@@ -646,6 +653,7 @@ class ProviderNamespace(PrimordialModel):
         return reverse('api:provider_namespace_detail', args=(self.pk,))
 
 
+@six.python_2_unicode_compatible
 class RepositoryVersion(CommonModelNameNotUnique):
     class Meta:
         ordering = ('-loose_version',)
@@ -674,9 +682,9 @@ class RepositoryVersion(CommonModelNameNotUnique):
     # Other functions and properties
     # -------------------------------------------------------------------------
 
-    def __unicode__(self):
-        return "%s.%s-%s" % (self.content.namespace,
-                             self.content.name, self.name)
+    def __str__(self):
+        return "{}.{}-{}".format(self.content.namespace,
+                                 self.content.name, self.name)
 
     def save(self, *args, **kwargs):
         # the value of score is based on the
@@ -685,6 +693,7 @@ class RepositoryVersion(CommonModelNameNotUnique):
         super(RepositoryVersion, self).save(*args, **kwargs)
 
 
+@six.python_2_unicode_compatible
 class ImportTaskMessage(PrimordialModel):
     TYPE_INFO = constants.ImportTaskMessageType.INFO.value
     TYPE_WARNING = constants.ImportTaskMessageType.WARNING.value
@@ -705,11 +714,12 @@ class ImportTaskMessage(PrimordialModel):
         max_length=256,
     )
 
-    def __unicode__(self):
-        return "%d-%s-%s" % (
+    def __str__(self):
+        return "{}-{}-{}".format(
             self.task.id, self.message_type, self.message_text)
 
 
+@six.python_2_unicode_compatible
 class ImportTask(PrimordialModel):
     class Meta:
         ordering = ('-id',)
@@ -787,8 +797,8 @@ class ImportTask(PrimordialModel):
         verbose_name="Travis Build URL"
     )
 
-    def __unicode__(self):
-        return u'{}-{}'.format(self.id, self.state)
+    def __str__(self):
+        return '{}-{}'.format(self.id, self.state)
 
     def start(self):
         self.state = ImportTask.STATE_RUNNING
@@ -814,6 +824,7 @@ class ImportTask(PrimordialModel):
         self.save()
 
 
+@six.python_2_unicode_compatible
 class NotificationSecret(PrimordialModel):
     class Meta:
         ordering = ('source', 'github_user', 'github_repo')
@@ -842,11 +853,11 @@ class NotificationSecret(PrimordialModel):
         db_index=True
     )
 
-    def __unicode__(self):
-        return "%s-%s" % (self.owner.username, self.source)
+    def __str__(self):
+        return "{}-{}".format(self.owner.username, self.source)
 
     def repo_full_name(self):
-        return "%s/%s" % (self.github_user, self.github_repo)
+        return "{}/{}".format(self.github_user, self.github_repo)
 
 
 class Notification(PrimordialModel):
@@ -1054,11 +1065,12 @@ class RefreshRoleCount(PrimordialModel):
     )
 
 
+@six.python_2_unicode_compatible
 class ContentBlock(BaseModel):
     name = models.SlugField(unique=True)
     content = models.TextField('content', blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
