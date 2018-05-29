@@ -88,8 +88,6 @@ class RoleListSerializer(BaseRoleSerializer):
                 'api:role_dependencies_list', args=(obj.pk,)),
             imports=reverse(
                 'api:role_import_task_list', args=(obj.pk,)),
-            notifications=reverse(
-                'api:role_notification_list', args=(obj.pk,)),
         ))
         return res
 
