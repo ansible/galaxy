@@ -1000,6 +1000,14 @@ class Repository(BaseModel):
     def get_absolute_url(self):
         return reverse('api:repository_detail', args=(self.pk,))
 
+    def get_download_url(self, ref=None):
+        download_url = self.provider_namespace.provider.download_url
+        return download_url.format(
+            username=self.provider_namespace.name,
+            repository=self.original_name,
+            ref=ref or self.import_branch,
+        )
+
 
 class Subscription(PrimordialModel):
     class Meta:
