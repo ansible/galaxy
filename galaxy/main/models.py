@@ -559,6 +559,8 @@ class Provider(CommonModel):
     Valid SCM providers (e.g., GitHub, GitLab, etc.)
     """
 
+    download_url = models.CharField(max_length=256, null=True)
+
     class Meta:
         ordering = ('name',)
 
