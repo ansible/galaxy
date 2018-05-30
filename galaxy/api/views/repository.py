@@ -112,13 +112,14 @@ class RepositoryList(views.ListCreateAPIView):
 
         data['name'] = data['name'].lower()
 
-        repo = get_repo(provider_namespace, request.user, original_name)
-        if not repo:
-            raise PermissionDenied(
-                "User does not have access to {0}/{1} in "
-                "GitHub".format(provider_namespace.name, original_name))
-        for field in GITHUB_REPO_FIELDS:
-            data[field] = repo[field]
+        if not request.user.is_staff:
+            repo = get_repo(provider_namespace, request.user, original_name)
+            if not repo:
+                raise PermissionDenied(
+                    "User does not have access to {0}/{1} in "
+                    "GitHub".format(provider_namespace.name, original_name))
+            for field in GITHUB_REPO_FIELDS:
+                data[field] = repo[field]
 
         if not data.get('original_name'):
             data['original_name'] = original_name
@@ -176,14 +177,14 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
 
         original_name = data.get('original_name', instance.original_name)
 
-        repo = get_repo(provider_namespace, request.user, original_name)
-        if not repo:
-            raise PermissionDenied(
-                "User does not have access to {0}/{1} in "
-                "GitHub".format(provider_namespace.name, original_name))
-
-        for field in GITHUB_REPO_FIELDS:
-            data[field] = repo[field]
+        if not request.user.is_staff:
+            repo = get_repo(provider_namespace, request.user, original_name)
+            if not repo:
+                raise PermissionDenied(
+                    "User does not have access to {0}/{1} in "
+                    "GitHub".format(provider_namespace.name, original_name))
+            for field in GITHUB_REPO_FIELDS:
+                data[field] = repo[field]
 
         serializer = self.get_serializer(instance, data=data)
         serializer.is_valid(raise_exception=True)
@@ -219,10 +220,11 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        try:
-            instance.provider_namespace.namespace.owners.get(pk=request.user.pk)
-        except ObjectDoesNotExist:
-            raise PermissionDenied()
+        if not request.user.is_staff:
+            try:
+                instance.provider_namespace.namespace.owners.get(pk=request.user.pk)
+            except ObjectDoesNotExist:
+                raise PermissionDenied()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
