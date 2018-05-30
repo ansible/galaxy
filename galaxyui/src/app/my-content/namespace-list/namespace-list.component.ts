@@ -18,6 +18,10 @@ import { ActionConfig } from 'patternfly-ng/action/action-config';
 import { ListEvent }    from 'patternfly-ng/list/list-event';
 import { ListConfig }   from 'patternfly-ng/list/basic-list/list-config';
 
+import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
+import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
+
+import { AuthService }                 from '../../auth/auth.service';
 import { Namespace }                   from "../../resources/namespaces/namespace";
 import { NamespaceService }            from "../../resources/namespaces/namespace.service";
 import { BsModalService, BsModalRef }  from 'ngx-bootstrap';
@@ -33,6 +37,7 @@ import { ToolbarView }                 from "patternfly-ng/toolbar/toolbar-view"
 import { SortEvent }                   from "patternfly-ng/sort/sort-event";
 import { Filter }                      from "patternfly-ng/filter/filter";
 import { FilterEvent }                 from "patternfly-ng/filter/filter-event";
+import { PagedResponse }               from '../../resources/paged-response';
 
 
 @Component({
@@ -56,10 +61,17 @@ export class NamespaceListComponent implements OnInit {
     sortConfig: SortConfig;
     currentSortField: SortField;
     toolbarConfig: ToolbarConfig;
+    paginationConfig: PaginationConfig;
+
+    pageNumber: number = 1;
+    pageSize: number = 10;
 
     actionsText: string = '';
     listConfig: ListConfig;
     bsModalRef: BsModalRef;
+
+    filterBy: any = {};
+    sortBy: string = 'name';
 
     contentAdded: number = 0;
 
@@ -67,7 +79,8 @@ export class NamespaceListComponent implements OnInit {
         private route: ActivatedRoute,
         private router: Router,
         private modalService: BsModalService,
-        private namespaceService: NamespaceService
+        private namespaceService: NamespaceService,
+        private authService: AuthService
     ) {
         this.modalService.onHidden.subscribe(_ => {
             if (this.bsModalRef && this.bsModalRef.content.repositoriesAdded) {
@@ -78,13 +91,9 @@ export class NamespaceListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.route.data
-            .subscribe(data => {
-                this.me = data['me'];
-                this.items = this.prepForList(data['namespaces']);
-                this.namespaces = JSON.parse(JSON.stringify(this.items));
-                this.cancelPageLoading();
-            });
+        if (!this.authService.meCache.staff) {
+            this.filterBy['owners__username'] = this.authService.meCache.username;
+        }
 
         this.filterConfig = {
             fields: [
@@ -141,151 +150,73 @@ export class NamespaceListComponent implements OnInit {
             showCheckbox: false,
             useExpandItems: true
         } as ListConfig;
+
+        this.paginationConfig = {
+            pageSize: 10,
+            pageNumber: 1,
+            totalItems: 0
+        } as PaginationConfig;
+
+        this.route.data
+            .subscribe(data => {
+                var results = data['namespaces'] as PagedResponse;
+                this.me = data['me'];
+                this.items = this.prepForList(results.results as Namespace[]);
+                this.filterConfig.resultsCount = results.count;
+                this.paginationConfig.totalItems = results.count;
+                this.pageLoading = false;
+            });
     }
 
     ngDoCheck(): void {}
 
-
-    // Action Button and Menu
-
-    getActionConfig(item: Namespace, addContentButtonTemplate: TemplateRef<any>): ActionConfig {
-        let config = {
-            primaryActions: [{
-                id: 'addContent',
-                title: 'Add Content',
-                styleClass: 'btn-primary',
-                tooltip: 'Add roles, modules, APBs and other content from repositories',
-                template: addContentButtonTemplate
-            }],
-            moreActions: [{
-                id: 'editNamespaceProps',
-                title: 'Edit Properties',
-                tooltip: 'Edit namespace properties'
-            }, {
-                id: 'disableNamespace',
-                title: 'Disable',
-                tooltip: 'Disable namespace'
-            }],
-            moreActionsDisabled: false,
-            moreActionsVisible: true
-        } as ActionConfig;
-
-        // Set disabled options
-        if (!item.active) {
-            config.primaryActions[0].disabled = true;
-            config.moreActions[0].disabled = true;
-            config.moreActions[1] = {
-                id: 'enableNamespace',
-                title: 'Enable',
-                tooltip: 'Enable namespace'
-            };
-        }
-        return config;
-    }
-
-    // Actions
-
-    refreshNamespaces(): void {
-        this.pageLoading = true;
-        let params = {
-            'page_size': 1000,
-            'owners__username': this.me.username
-        };
-        this.namespaceService.query(params)
-            .subscribe(namespaces => {
-                this.items = this.prepForList(namespaces);
-                this.namespaces = JSON.parse(JSON.stringify(this.items));
-                this.cancelPageLoading();
-            });
-    }
-
-    handleToolbarAction(action: Action): void {
-        this.actionsText = action.title + '\n' + this.actionsText;
-    }
-
-    optionSelected(option: number): void {
-        this.actionsText = 'Option ' + option + ' selected\n' + this.actionsText;
-    }
-
-    handleListAction($event: Action, item: any): void {
-        switch ($event.id) {
-            case 'addContent': {
+    handleListAction($event: any): void {
+        let item = $event['item'] as Namespace;
+        switch ($event['id']) {
+            case 'addContent':
                 this.addContent(item);
                 break;
-            }
-            case 'editNamespaceProps': {
+            case 'editNamespaceProps':
                 this.router.navigate([`/my-content/namespaces/${item.id}`]);
                 break;
-            }
             case 'disableNamespace':
-            case 'enableNamespace': {
+            case 'enableNamespace':
                 this.enableDisableNamespace(item);
                 break;
-            }
-            default: {
-                console.log(`handle action "${$event.id}" not found`);
-            }
+            case 'deleteNamespace':
+                this.deleteNamespace(item);
+                break;
+            default:
+                console.log(`handle action "${$event['id']}" not found`);
         }
     }
 
-    handleListClick($event: ListEvent): void {
-        this.actionsText = $event.item.name + ' clicked\r\n' + this.actionsText;
-    }
-
-    filterChanged($event: FilterEvent): void {
-        // Handle filter changes
-        let filters = $event.appliedFilters;
-        this.items = [];
-        if (filters && filters.length > 0 && this.namespaces.length > 0) {
-            this.namespaces.forEach((item) => {
-                if (this.matchesFilters(item, filters)) {
-                    this.items.push(JSON.parse(JSON.stringify(item)));
+    filterChanged($event): void {
+        if ($event.appliedFilters.length) {
+            $event.appliedFilters.forEach(filter => {
+                if (filter.field.type == 'typeahead') {
+                    this.filterBy['or__' + filter.field.id + '__icontains'] = filter.query.id;
+                } else {
+                    this.filterBy['or__' + filter.field.id + '__icontains'] = filter.value;
                 }
             });
         } else {
-            this.items = JSON.parse(JSON.stringify(this.namespaces));
-        }
-        this.toolbarConfig.filterConfig.resultsCount = this.items.length;
-    }
-
-    matchesFilter(item: any, filter: Filter): boolean {
-        let match = true;
-        if (filter.field.id === 'name') {
-            match = item.name.toLowerCase().match(filter.value.toLowerCase()) !== null;
-        } else if (filter.field.id == 'description') {
-            match = item.description.toLowerCase().match(filter.value.toLowerCase()) !== null;
-        }
-        return match;
-    }
-
-    matchesFilters(item: any, filters: Filter[]): boolean {
-        // Return true if all filters match the item.
-        let matches = true;
-        filters.forEach((filter) => {
-            if (!this.matchesFilter(item, filter)) {
-                matches = false;
-                return matches;
+            this.filterBy = {};
+            if (!this.authService.meCache.staff) {
+                this.filterBy['owners__username'] = this.authService.meCache.username;
             }
-        });
-        return matches;
-    }
-
-
-    // Sort
-    compare(item1: any, item2: any): number {
-        let compValue = 0;
-        compValue = item1[this.currentSortField.id].localeCompare(item2[this.currentSortField.id]);
-        if (!this.isAscendingSort) {
-            compValue = compValue * -1;
         }
-        return compValue;
+        this.pageNumber = 1;
+        this.searchNamespaces();
     }
 
-    // Handle sort changes
     sortChanged($event: SortEvent): void {
-        this.currentSortField = $event.field;
-        this.isAscendingSort = $event.isAscending;
-        this.items.sort((item1: any, item2: any) => this.compare(item1, item2));
+        if ($event.isAscending) {
+            this.sortBy = $event.field.id;
+        } else {
+            this.sortBy = '-' + $event.field.id;
+        }
+        this.searchNamespaces();
     }
 
     // View
@@ -294,6 +225,20 @@ export class NamespaceListComponent implements OnInit {
         this.sortConfig.visible = (currentView.id === 'tableView' ? false : true);
     }
 
+    handlePageSizeChange($event: PaginationEvent) {
+        if ($event.pageSize && this.pageSize != $event.pageSize) {
+            this.pageSize = $event.pageSize;
+            this.pageNumber = 1;
+            this.searchNamespaces();
+        }
+    }
+
+    handlePageNumberChange($event: PaginationEvent) {
+        if ($event.pageNumber && this.pageNumber != $event.pageNumber) {
+            this.pageNumber = $event.pageNumber;
+            this.searchNamespaces();
+        }
+    }
 
     //private
 
@@ -312,12 +257,25 @@ export class NamespaceListComponent implements OnInit {
     private enableDisableNamespace(namespace: Namespace) {
         namespace.active = !namespace.active;
         this.namespaceService.save(namespace)
-            .subscribe(_ => { this.refreshNamespaces() });
+            .subscribe(_ => { this.searchNamespaces() });
     }
 
-    private cancelPageLoading(): void {
-        setTimeout(_ => {
+    private searchNamespaces() {
+        this.pageLoading = true;
+        this.filterBy['page_size'] = this.pageSize;
+        this.filterBy['page'] = this.pageNumber;
+        this.filterBy['order'] = this.sortBy;
+        this.namespaceService.pagedQuery(this.filterBy).subscribe(result => {
+            this.items = this.prepForList(result.results as Namespace[]);
+            this.filterConfig.resultsCount = result.count;
+            this.paginationConfig.totalItems = result.count;
             this.pageLoading = false;
-        }, 2000);
+        });
+    }
+
+    private deleteNamespace(namespace: Namespace) {
+        this.namespaceService.delete(namespace).subscribe(result => {
+            this.searchNamespaces();
+        });
     }
 }

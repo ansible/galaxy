@@ -38,7 +38,7 @@
                             </tr>
                             <tr>
                                 <td>Installation</td>
-                                <td><code>$ ansible-galaxy install -t role {{ item.summary_fields['namespace']['name'] }}.{{ item.summary_fields['repository']['name'] }}.{{ item.name }}</code>
+                                <td><code>$ ansible-galaxy install -t role {{ item.summary_fields['namespace']['name'] | lowercase }}.{{ item.summary_fields['repository']['name'] | lowercase }}.{{ item.name | lowercase }}</code>
                                 </td>
                             </tr>
                             <tr *ngIf="item['hasTags']">

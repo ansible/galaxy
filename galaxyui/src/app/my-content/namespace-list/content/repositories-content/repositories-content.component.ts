@@ -61,7 +61,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
     private _contentAdded: number;
 
-    items: Repository[] = [new Repository()];   // init with one empty repo to preven EmptyState from flashing on the page
+    items: Repository[] = [];
 
     emptyStateConfig: EmptyStateConfig;
     disabledStateConfig: EmptyStateConfig;
@@ -87,6 +87,8 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        let provider_namespaces = this.namespace.summary_fields.provider_namespaces;
+
         this.emptyStateConfig = {
             actions: {
                 primaryActions: [],
@@ -114,7 +116,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             useExpandItems: false
         } as ListConfig;
 
-        if (this.namespace.active)
+        if (this.namespace.active && provider_namespaces.length)
             this.getRepositories();
     }
 
@@ -125,40 +127,12 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             this.polling.unsubscribe();
     }
 
-    getActionConfig(item: Repository, importButtonTemplate: TemplateRef<any>): ActionConfig {
-        let config = {
-            primaryActions: [{
-                id: 'import',
-                title: 'Import',
-                tooltip: 'Import Repository',
-                template: importButtonTemplate
-            }],
-            moreActions: [{
-                id: 'delete',
-                title: 'Delete',
-                tooltip: 'Delete Repository'
-            }, {
-                id: 'changeName',
-                title: 'Change Name',
-                tooltip: 'Change the repository name'
-            }],
-            moreActionsDisabled: false,
-            moreActionsVisible: true
-        } as ActionConfig;
-
-        // Set button disabled
-        if (item['latest_import'] && (item['latest_import']['state'] === 'PENDING' || item['latest_import']['state'] === 'RUNNING')) {
-            config.primaryActions[0].disabled = true;
-            config.moreActionsVisible = false;
-        }
-        return config;
-    }
-
     // Actions
 
-    handleAction($event: Action, item: any): void {
+    handleItemAction($event): void {
+        let item = $event['item'] as Repository;
         if (item) {
-            switch ($event.id) {
+            switch ($event['id']) {
                 case 'import':
                     this.importRepository(item);
                     break;

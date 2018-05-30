@@ -74,7 +74,7 @@
 					<tr>
 						<td>Installation</td>
 						<td class="install-instructions">
-							<code>$ ansible-galaxy install {{ repoContent.summary_fields['namespace']['name'] }}.{{ repoContent.summary_fields['repository']['name'] }}</code>
+							<code>$ ansible-galaxy install {{ repoContent.summary_fields['namespace']['name'] | lowercase }}.{{ repoContent.summary_fields['repository']['name'] | lowercase }}</code>
 						</td>
 					</tr>
 					<tr>

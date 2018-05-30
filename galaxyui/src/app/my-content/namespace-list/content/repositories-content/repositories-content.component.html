@@ -39,13 +39,10 @@
                 </div>
             </ng-template>
             <ng-template #actionTemplate let-item="item" let-index="index">
-                <pfng-action class="list-pf-actions"
-                             [config]="getActionConfig(item, importButtonTemplate)"
-                             (onActionSelect)="handleAction($event, item)">
-                    <ng-template #importButtonTemplate let-action="action">
-                        <i class="fa fa-upload"></i> {{item.importing === true ? "Importing" : action.title}}
-                    </ng-template>
-                </pfng-action>
+                <namespace-repository-action
+                    [repository]="item"
+                    (handleAction)="handleItemAction($event)">
+                </namespace-repository-action>
             </ng-template>
             </pfng-list>
         <div class="content-loader" [ngClass]="{'hide-content': !loading}">

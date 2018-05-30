@@ -20,6 +20,7 @@ import { FilterModule }     from 'patternfly-ng/filter/filter.module';
 import { ToolbarModule }    from 'patternfly-ng/toolbar/toolbar.module';
 import { ListModule }       from 'patternfly-ng/list/basic-list/list.module';
 import { ModalModule }      from 'patternfly-ng';
+import { PaginationModule } from 'patternfly-ng/pagination/pagination.module';
 
 import { NamespaceListComponent }             from './namespace-list/namespace-list.component';
 import { NamespaceDetailComponent }           from './namespace-detail/namespace-detail.component';
@@ -30,7 +31,8 @@ import { AddRepositoryModalComponent }        from './add-repository-modal/add-r
 import { AlternateNameModalComponent }        from './namespace-list/content/repositories-content/alternate-name-modal/alternate-name-modal.component';
 import { PageHeaderModule }                   from '../page-header/page-header.module';
 import { PageLoadingModule }                  from '../page-loading/page-loading.module';
-
+import { NamespaceActionComponent }           from './namespace-list/action/action.component';
+import { NamespaceRepositoryActionComponent } from './namespace-list/content/repositories-content/action/action.component';
 @NgModule({
     entryComponents: [
         AddRepositoryModalComponent,
@@ -43,7 +45,9 @@ import { PageLoadingModule }                  from '../page-loading/page-loading
         OwnersContentComponent,
         ProviderNamespacesContentComponent,
         AddRepositoryModalComponent,
-        AlternateNameModalComponent
+        AlternateNameModalComponent,
+        NamespaceActionComponent,
+        NamespaceRepositoryActionComponent
     ],
     imports: [
         ActionModule,
@@ -56,6 +60,7 @@ import { PageLoadingModule }                  from '../page-loading/page-loading
         ReactiveFormsModule,
         ToolbarModule,
         ListModule,
+        PaginationModule,
         PageHeaderModule,
         PageLoadingModule,
         MyContentRoutingModule
