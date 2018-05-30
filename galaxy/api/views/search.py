@@ -157,7 +157,7 @@ class ContentSearchView(base.ListAPIView):
         if not namespaces:
             return queryset
         queries = [Q(namespace__name__icontains=name) for name in namespaces]
-        query = six.reduce(operator.or_, queries)
+        query = six.moves.reduce(operator.or_, queries)
         return queryset.filter(query)
 
     @staticmethod
