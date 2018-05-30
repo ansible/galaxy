@@ -19,7 +19,9 @@ import operator
 from collections import OrderedDict
 
 import six
-from django.db.models import F, Func, Value, Count, ExpressionWrapper
+import operator
+
+from django.db.models import F, Func, Value, Count, ExpressionWrapper, Q
 from django.db.models import fields as db_fields
 from django.core.urlresolvers import reverse
 from django.contrib.postgres import search as psql_search
@@ -154,7 +156,9 @@ class ContentSearchView(base.ListAPIView):
     def add_namespaces_filter(queryset, namespaces):
         if not namespaces:
             return queryset
-        return queryset.filter(namespace__name__in=namespaces)
+        queries = [Q(namespace__name__icontains=name) for name in namespaces]
+        query = six.reduce(operator.or_, queries)
+        return queryset.filter(query)
 
     @staticmethod
     def add_platforms_filter(queryset, platforms):
