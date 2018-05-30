@@ -19,7 +19,6 @@ import operator
 from collections import OrderedDict
 
 import six
-import operator
 
 from django.db.models import F, Func, Value, Count, ExpressionWrapper, Q
 from django.db.models import fields as db_fields
