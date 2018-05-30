@@ -21,3 +21,13 @@ provisioning/ec2_inventory
 galaxy.min.css
 .DS_Store
 ansible-deployment/
+
+galaxyui/yarn-error.log
+
+# NOTE(cutwater): Temporary adding developer environment related files
+# to .gitignore, however these files should not be included in project
+# .gitignore. All IDE, developer related files (not related to project
+# itself) should be included in global ignore file. See `git help config`
+option `core.excludesFile` for more details.
+*.sublime-project
+*.sublime-workspace
