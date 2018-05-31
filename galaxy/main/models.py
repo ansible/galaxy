@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
+import operator
 
 import six
 
@@ -656,10 +657,10 @@ class ProviderNamespace(PrimordialModel):
 
 
 @six.python_2_unicode_compatible
-class RepositoryVersion(CommonModelNameNotUnique):
+class RepositoryVersion(BaseModel):
     class Meta:
-        ordering = ('-loose_version',)
-        unique_together = ('repository', 'name')
+        ordering = ('-version',)
+        unique_together = ('repository', 'version')
 
     # Foreign keys
     # -------------------------------------------------------------------------
@@ -672,27 +673,16 @@ class RepositoryVersion(CommonModelNameNotUnique):
     # Regular fields
     # -------------------------------------------------------------------------
 
-    release_date = models.DateTimeField(
-        blank=True,
-        null=True,
-    )
-    loose_version = fields.LooseVersionField(
-        editable=False,
-        db_index=True,
-    )
+    version = fields.VersionField()
+    raw_version = models.CharField(max_length=64)
+    release_date = models.DateTimeField(blank=True, null=True)
 
     # Other functions and properties
     # -------------------------------------------------------------------------
 
     def __str__(self):
-        return "{}.{}-{}".format(self.content.namespace,
-                                 self.content.name, self.name)
-
-    def save(self, *args, **kwargs):
-        # the value of score is based on the
-        # values in the other rating fields
-        self.loose_version = self.name
-        super(RepositoryVersion, self).save(*args, **kwargs)
+        return "{}.{}-{}".format(
+            self.content.namespace, self.content.name, self.version)
 
 
 @six.python_2_unicode_compatible
@@ -1003,11 +993,30 @@ class Repository(BaseModel):
 
     def get_download_url(self, ref=None):
         download_url = self.provider_namespace.provider.download_url
+
+        if ref is None:
+            last_version = self.last_version()
+            if last_version:
+                ref = last_version.raw_version
+            else:
+                ref = self.import_branch
+
         return download_url.format(
             username=self.provider_namespace.name,
             repository=self.original_name,
-            ref=ref or self.import_branch,
+            ref=ref,
         )
+
+    def all_versions(self):
+        return sorted(self.versions.all(),
+                      key=operator.attrgetter('version'),
+                      reverse=True)
+
+    def last_version(self):
+        versions = self.all_versions()
+        if versions:
+            return versions[0]
+        return None
 
 
 class Subscription(PrimordialModel):

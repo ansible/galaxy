@@ -158,13 +158,14 @@ class ContentDetailSerializer(ContentSerializer):
             'cloud_platforms': [
                 p.name for p in instance.cloud_platforms.all()],
             'tags': [t.name for t in instance.tags.all()],
-            'dependencies': [dict(
-                id=g.pk,
-                namespace=g.namespace.name,
-                name=g.name) for g in instance.dependencies.all()],
+            'dependencies': [
+                {'id': d.pk, 'namespace': d.namespace.name,
+                 'name': d.name}
+                for d in instance.dependencies.all()],
             'versions': [
-                dict(id=g.id, name=g.name, release_date=g.release_date)
-                for g in instance.repository.versions.all()
+                {'id': v.id, 'name': str(v.version), 'raw': v.raw_version,
+                 'release_date': v.release_date}
+                for v in instance.repository.all_versions()
             ],
         })
         return result
