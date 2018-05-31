@@ -38,7 +38,8 @@
                             </tr>
                             <tr>
                                 <td>Installation</td>
-                                <td><code>$ ansible-galaxy install -t role {{ item.summary_fields['namespace']['name'] | lowercase }}.{{ item.summary_fields['repository']['name'] | lowercase }}.{{ item.name | lowercase }}</code>
+                                <td>
+                                    <copy-to-clipboard [copyText]="'ansible-galaxy install -t role ' + item.summary_fields['namespace']['name'] + '.' + item.summary_fields['repository']['name']"></copy-to-clipboard>
                                 </td>
                             </tr>
                             <tr *ngIf="item['hasTags']">
@@ -60,7 +61,9 @@
                             <div class="icon-container"><span class="fa fa-eye fa-2x"></span></div> <div class="title-text">README</div>
                         </div>
                     </div>
-                    <div class="card-pf-body card-info-body" [innerHtml]="item.readme_html"></div>
+                    <div class="card-pf-body card-info-body">
+                        <div class="readme" [innerHtml]="item.readme_html"></div>
+                    </div>
                 </div>
             </div>
             <div class="row meta card-meta">

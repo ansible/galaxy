@@ -9,6 +9,8 @@ import { FilterModule }                from 'patternfly-ng/filter/filter.module'
 
 import { TooltipModule }               from 'ngx-bootstrap/tooltip';
 
+import { UtilitiesModule }             from '../utilities/utilities.module';
+
 import { ContentDetailRoutingModule }  from './content-detail.routing.module';
 import { ContentDetailComponent }      from './content-detail.component';
 import { RepositoryComponent }         from './repository/repository.component';
@@ -37,6 +39,7 @@ import { PageLoadingModule }           from '../page-loading/page-loading.module
         PageLoadingModule,
         PageHeaderModule,
         ListModule,
+        UtilitiesModule
     ],
     declarations: [
   	    ContentDetailComponent,

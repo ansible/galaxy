@@ -84,4 +84,18 @@ export class CardInfoComponent implements OnInit {
             topBorder: true
         } as CardConfig
     }
+
+    copyToClipboard(elementId: string) {
+        let element = document.getElementById(elementId);
+        let val = element.textContent;
+        let txtArea = document.createElement('textarea');
+        txtArea.setAttribute('readonly', '');
+        txtArea.style.position = 'absolute';
+        txtArea.style.left = '-9999px';
+        document.body.appendChild(txtArea);
+        txtArea.value = val;
+        txtArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(txtArea);
+    }
 }

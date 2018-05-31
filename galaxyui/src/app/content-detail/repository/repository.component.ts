@@ -34,6 +34,7 @@ class RepositoryView {
     watchersCount: number;
     stargazersCount: number;
     downloadCount: number;
+    forksCount: number;
     namespace: string;
     avatarUrl: string;
     issueTrackerUrl: string;
@@ -103,6 +104,7 @@ export class RepositoryComponent implements OnInit {
         this.repositoryView.watchersCount = this.repository.watchers_count;
         this.repositoryView.stargazersCount = this.repository.stargazers_count;
         this.repositoryView.downloadCount = 0;
+        this.repositoryView.forksCount = this.repository.forks_count;
         this.repositoryView.issueTrackerUrl = this.repository.issue_tracker_url;
         this.repositoryView.scmUrl = this.repository.external_url;
         this.repositoryView.scmName = this.repository.summary_fields.provider['name'];

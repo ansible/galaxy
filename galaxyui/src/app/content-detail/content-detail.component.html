@@ -85,8 +85,10 @@
 			</div>
 		</div>
 
-		<div class="row readme" *ngIf="!showEmptyState && showingView == ViewTypes.readme">
-			<div class="col-sm-12" [innerHTML]="repoContent.readme_html"></div>
+		<div class="row row-readme" *ngIf="!showEmptyState && showingView == ViewTypes.readme">
+			<div class="col-sm-12">
+				<div class="readme" [innerHTML]="repoContent.readme_html"></div>
+			</div>
 		</div>
 		<div class="row meta" *ngIf="!showEmptyState && showingView == ViewTypes.meta">
 			<div class="col-sm-12">

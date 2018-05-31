@@ -67,19 +67,29 @@
                                     	</a>
                                     </div>
 			            			<div class="counts">
-			            				<div class="count-icon"><i class="fa fa-download fa-2x"></i></div>
-			            				<div class="count-count">{{ item.download_count }}</div>
-			            				<div class="count-text">Downloads</div>
+			            				<div class="repo-count">
+			            					<i class="fa fa-download fa-2x"></i>
+			            					<span class="count">{{ item.download_count }}</span>
+			            					<span class="count-text">Downloads</span>
+			            				</div>
 
-			            				<div class="count-icon"><i class="fa fa-eye fa-2x"></i></div>
-			            				<div class="count-count">
-			            				{{ item.summary_fields.repository.watchers_count }}</div>
-			            				<div class="count-text">Watchers</div>
+			            				<div class="repo-count">
+			            					<i class="fa fa-eye fa-2x"></i>
+			            				    <span class="count">{{ item.summary_fields.repository.watchers_count }}</span>
+			            					<span class="count-text">Watchers</span>
+			            				</div>
 
-			            				<div class="count-icon"><i class="fa fa-star fa-2x"></i></div>
-			            				<div class="count-count">
-			            				{{ item.summary_fields.repository.stargazers_count }}</div>
-			            				<div class="count-text">Star Gazers</div>
+			            				<div class="repo-count">
+			            					<i class="fa fa-star fa-2x"></i>
+			            					<span class="count">{{ item.summary_fields.repository.stargazers_count }}</span>
+			            					<span class="count-text">Stars</span>
+			            				</div>
+
+			            				<div class="repo-count">
+			            					<i class="fa fa-copy fa-2x"></i>
+			            					<span class="count">{{ item.summary_fields.repository.forks_count }}</span>
+			            					<span class="count-text">Forks</span>
+			            				</div>
 			            			</div>
 			            			<div class="import">
 			            				<div class="import-text">Last Imported</div>
