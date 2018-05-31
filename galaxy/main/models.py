@@ -23,6 +23,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms.models import model_to_dict
+from django.contrib.postgres import fields as psql_fields
 from django.contrib.postgres import search as psql_search
 from django.contrib.postgres import indexes as psql_indexes
 from django.utils import timezone
@@ -337,7 +338,7 @@ class Content(CommonModelNameNotUnique):
         max_length=256,
         null=False
     )
-    metadata = fields.JSONField(
+    metadata = psql_fields.JSONField(
         null=False,
         default={}
     )

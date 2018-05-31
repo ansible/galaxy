@@ -15,21 +15,14 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import json
-
 from distutils.version import LooseVersion
-import psycopg2.extras
 
-from django.contrib.postgres import lookups
-from django.core import exceptions
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 
 
 __all__ = [
     'LooseVersionField',
     'TruncatingCharField',
-    'JSONField'
 ]
 
 
@@ -60,75 +53,6 @@ class TruncatingCharField(models.CharField):
         if value and len(value) > self.max_length:
             return value[:self.max_length - 3] + '...'
         return value
-
-
-# NOTE(cutwater): JSONField is implemented in Django since version 1.9.
-# This is a backport of JSONField from Django 1.9.13 that should be removed
-# after upgrade to the higher version of Django.
-class JSONField(models.Field):
-    empty_strings_allowed = False
-    description = _('A JSON object')
-    default_error_messages = {
-        'invalid': _("Value must be valid JSON."),
-    }
-
-    def db_type(self, connection):
-        return 'jsonb'
-
-    def get_transform(self, name):
-        transform = super(JSONField, self).get_transform(name)
-        if transform:
-            return transform
-        return KeyTransformFactory(name)
-
-    def get_prep_value(self, value):
-        if value is not None:
-            return psycopg2.extras.Json(value)
-        return value
-
-    def get_prep_lookup(self, lookup_type, value):
-        if lookup_type in ('has_key', 'has_keys', 'has_any_keys'):
-            return value
-        if isinstance(value, (dict, list)):
-            return psycopg2.extras.Json(value)
-        return super(JSONField, self).get_prep_lookup(lookup_type, value)
-
-    def validate(self, value, model_instance):
-        super(JSONField, self).validate(value, model_instance)
-        try:
-            json.dumps(value)
-        except TypeError:
-            raise exceptions.ValidationError(
-                self.error_messages['invalid'],
-                code='invalid',
-                params={'value': value},
-            )
-
-    def value_to_string(self, obj):
-        value = self.value_from_object(obj)
-        return value
-
-
-class HasKey(lookups.PostgresSimpleLookup):
-    lookup_name = 'has_key'
-    operator = '?'
-
-
-class HasKeys(lookups.PostgresSimpleLookup):
-    lookup_name = 'has_keys'
-    operator = '?&'
-
-
-class HasAnyKeys(lookups.PostgresSimpleLookup):
-    lookup_name = 'has_any_keys'
-    operator = '?|'
-
-
-JSONField.register_lookup(lookups.DataContains)
-JSONField.register_lookup(lookups.ContainedBy)
-JSONField.register_lookup(HasKey)
-JSONField.register_lookup(HasKeys)
-JSONField.register_lookup(HasAnyKeys)
 
 
 class KeyTransform(models.Transform):
