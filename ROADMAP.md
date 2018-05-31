@@ -1,9 +1,20 @@
 # Roadmap
 
-## [Release 2.4.1](https://github.com/ansible/galaxy/milestone/4) (Current development)
+## Release 3.0
+Target release date: 28 June 2018
 
-- Search page re-design. [#185](https://github.com/ansible/galaxy/issues/185)
-- Internal SA POC kickoff. Deploying an instance of Galaxy for internal use. Only visible changes will be the addition of deployment playbooks and roles for creating the new environment. [#192](https://github.com/ansible/galaxy/issues/192)
+- Move deployment of the public site from EC2 to OpenShift Dedicated
+- Refactor the import process to support multiple static analysis tools, and to support future content testing
+- Add the ability to import multi-content repositories. Will only turn on multi-role support for 3.0.
+- Add ability to import [Ansible Playbook Bundles (APBs)](https://github.com/ansibleplaybookbundle)
+- Add database and API support for vendor namespaces, multi-role repositories, Ansible Playbook bundles (APBs), and multiple public source code management platforms
+- Modernize the user interface (UI), including the implementation of Patternfly
+- Add UI features to enable Galaxy admins to create and modify namespaces
+- Add UI features that enable namespace owners to modify and maintain their namespaces
+- Add UI features to support multi-role repositories, and new content types including APBs
+- Remove and replace Elasticsearch with Postgres full-text search
+- Rank search results by a calculated Best Match score that combines matched filters + download count
+- Upgrade to Django 1.11, and begin adding Python 3 support
 
 ## Release 2.4 (Completed)
 
