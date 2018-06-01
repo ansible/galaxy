@@ -4,19 +4,32 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
-def upgrade_data(apps, schema_editor):
-    db_alias = schema_editor.connection.alias
-    Notification = apps.get_model("main", "Notification")
-    for notification in Notification.objects.using(db_alias).all():
-        import_task = notification.imports.order_by('-id').first()
-        content = notification.roles.first()
+UPGRADE_NOTIFICATIONS = """
+UPDATE main_notification n SET import_task_id = (
+  SELECT ni.importtask_id FROM main_notification_imports ni
+  WHERE n.id = ni.notification_id
+  ORDER BY ni.notification_id DESC
+  LIMIT 1
+), repository_id = (
+  SELECT c.repository_id FROM main_notification_roles nr
+  JOIN main_content c ON c.id = nr.content_id
+  WHERE n.id = nr.notification_id
+  LIMIT 1
+);
 
-        if import_task and content:
-            notification.import_task = import_task
-            notification.repository = content.repository
-            notification.save()
-        else:
-            notification.delete()
+WITH notifications_to_delete AS (
+  SELECT n.id FROM main_notification n
+  WHERE n.import_task_id IS NULL OR n.repository_id IS NULL
+), d1 AS (
+  DELETE FROM main_notification_imports
+  WHERE notification_id IN (SELECT id FROM notifications_to_delete) 
+), d2 AS (
+  DELETE FROM main_notification_roles
+  WHERE notification_id IN (SELECT id FROM notifications_to_delete)
+)
+DELETE FROM main_notification 
+WHERE id IN (SELECT id FROM notifications_to_delete);
+"""
 
 
 class Migration(migrations.Migration):
@@ -25,8 +38,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL('SET CONSTRAINTS ALL IMMEDIATE',
-                          reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(sql='SET CONSTRAINTS ALL IMMEDIATE'),
         migrations.AddField(
             model_name='notification',
             name='import_task',
@@ -48,7 +60,7 @@ class Migration(migrations.Migration):
                 related_name='notifications',
                 to='main.Repository'),
         ),
-        migrations.RunPython(code=upgrade_data),
+        migrations.RunSQL(sql=UPGRADE_NOTIFICATIONS),
         migrations.AlterField(
             model_name='notification',
             name='import_task',
