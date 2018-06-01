@@ -31,6 +31,7 @@ class RepositorySerializer(serializers.BaseSerializer):
     external_url = drf_serializers.SerializerMethodField()
     readme = drf_serializers.SerializerMethodField()
     readme_html = drf_serializers.SerializerMethodField()
+    download_url = drf_serializers.SerializerMethodField()
 
     class Meta:
         model = Repository
@@ -56,6 +57,7 @@ class RepositorySerializer(serializers.BaseSerializer):
             'issue_tracker_url',
             'readme',
             'readme_html',
+            'download_url',
         )
 
     def get_related(self, instance):
@@ -151,3 +153,6 @@ class RepositorySerializer(serializers.BaseSerializer):
         if obj.readme:
             return obj.readme.html
         return None
+
+    def get_download_url(self, obj):
+        return obj.get_download_url()

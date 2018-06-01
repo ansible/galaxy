@@ -444,9 +444,14 @@ class CloudPlatformSearchSerializer(CloudPlatformSerializer):
 
 
 class RepositoryVersionSerializer(BaseSerializer):
+    download_url = serializers.SerializerMethodField()
+
     class Meta:
         model = RepositoryVersion
-        fields = ('id', 'name', 'release_date')
+        fields = ('id', 'name', 'release_date', 'download_url')
+
+    def get_download_url(self, obj):
+        return obj.repository.get_download_url(obj.name)
 
 
 class TopContributorsSerializer(serializers.BaseSerializer):
