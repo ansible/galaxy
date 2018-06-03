@@ -567,17 +567,22 @@ export class SearchComponent implements OnInit, AfterViewInit {
 		        title: 'Best Match',
 		        sortType: 'numeric'
 		    }, {
+		        id: 'namespace__name,name',
+		        title: 'Contributor, Name',
+		        sortType: 'alpha'
+		    }, {
 		        id: 'download_count',
 		        title: 'Download Count',
 		        sortType: 'numeric'
 
 		    }, {
-		        id: 'namespace__name,name',
-		        title: 'Author, Name',
-		        sortType: 'alpha'
-		    }, {
+		    	id: 'repository__forks_count',
+		    	title: 'Forks',
+		    	sortType: 'numeric'
+		    }
+		    ,{
 		    	id: 'repository__stargazers_count',
-		    	title: 'Star Gazers',
+		    	title: 'Stars',
 		    	sortType: 'numeric'
 		    }, {
 		    	id: 'repository__watchers_count',
