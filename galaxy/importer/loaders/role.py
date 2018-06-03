@@ -246,8 +246,7 @@ class RoleLoader(base.BaseLoader):
 
         description = data.pop('description')
 
-        data['role_type'] = self._get_role_type(
-            galaxy_info, container_yml_type)
+        data['role_type'] = self._get_role_type(galaxy_info, container_yml_type)
         data['tags'] = meta_parser.parse_tags()
         data['platforms'] = meta_parser.parse_platforms()
         data['cloud_platforms'] = meta_parser.parse_cloud_platforms()
@@ -322,7 +321,7 @@ class RoleLoader(base.BaseLoader):
         if os.path.exists(container_meta_file):
             container_yml_type = self.CONTAINER_META_FILE
             with open(container_meta_file) as fp:
-                container_yml = fp.read()
+                container_yml = yaml.safe_load(fp)
 
         ansible_container_meta_file = os.path.join(
             self.path, self.ANSIBLE_CONTAINER_META_FILE)
@@ -330,10 +329,10 @@ class RoleLoader(base.BaseLoader):
             if container_yml_type is not None:
                 raise exc.ContentLoadError(
                     'Found container.yml and meta/container.yml. '
-                    'A role can only have only one container.yml file.')
+                    'A role can have only one container.yml file.')
             container_yml_type = self.ANSIBLE_CONTAINER_META_FILE
             with open(ansible_container_meta_file) as fp:
-                container_yml = fp.read()
+                container_yml = yaml.safe_load(fp)
 
         return container_yml_type, container_yml
 
