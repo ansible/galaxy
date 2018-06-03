@@ -206,7 +206,7 @@ class NamespaceList(base_views.ListCreateAPIView):
         if errors:
             raise ValidationError(detail=errors)
 
-        if request.user.id not in owners:
+        if not request.user.is_staff and request.user.pk not in owners:
             owners.append(request.user.id)
 
         namespace_attributes = {

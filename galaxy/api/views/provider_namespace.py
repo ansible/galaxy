@@ -42,9 +42,6 @@ logger = logging.getLogger(__name__)
 
 
 def check_provider_access(provider, user, name):
-    if user.is_staff:
-        return True
-
     if provider.name.lower() == 'github':
         user_namespaces = GithubAPI(user=user).user_namespaces()
         match = False
@@ -148,11 +145,10 @@ class ProviderNamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
         else:
             provider = instance.provider
 
-        if not request.user.is_staff:
-            try:
-                check_provider_access(provider, request.user, data['name'])
-            except APIException:
-                raise
+        try:
+            check_provider_access(provider, request.user, data['name'])
+        except APIException:
+            raise
 
         serializer = self.get_serializer(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
@@ -163,11 +159,10 @@ class ProviderNamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if not request.user.is_staff:
-            try:
-                check_namespace_access(request.user, instance.namespace.pk)
-            except APIException:
-                raise
+        try:
+            check_namespace_access(request.user, instance.namespace.pk)
+        except APIException:
+            raise
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
