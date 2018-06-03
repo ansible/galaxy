@@ -247,7 +247,7 @@ class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
                 errors['provider_namespaces'] = provider_errors
 
         if data.get('owners'):
-            owner_errors, owners = check_owners(data.get('owners', []))
+            owner_errors, owners = check_owners(data['owners'])
             if owner_errors:
                 errors['owners'] = owner_errors
 
