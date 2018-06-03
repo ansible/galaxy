@@ -83,4 +83,26 @@
     .repo-count {
         font-size: 12px;
     }
+    .list-pf-additional-content.counts {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: middle;
+    }
+
+    .list-pf-additional-content.counts > div {
+        font-size: 12px;
+        margin-right: 15px;
+        .fa {
+            font-size: 14px;
+        }
+        .count {
+            font-weight: 700;
+            padding: 0 5px;
+        }
+    }
+    .list-pf-additional-content.counts div:last-child {
+        margin-right: 0;
+    }
 }

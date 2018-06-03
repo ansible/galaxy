@@ -46,12 +46,19 @@ export class NamespaceActionComponent implements OnInit {
 
     ngOnInit(): void {
         let provider_namespaces = this.namespace['summary_fields']['provider_namespaces'];
+
+        let primaryTooltip = 'Add yor Ansible content repositories';
+        if (!this.namespace.active)
+             primaryTooltip = 'Namespace is disabled';
+        if (!provider_namespaces.length)
+             primaryTooltip = 'Missing provider namespaces';
+
         this.actionConfig = {
             primaryActions: [{
                 id: 'addContent',
                 title: 'Add Content',
                 styleClass: 'btn-primary',
-                tooltip: 'Add roles, modules, APBs and other content from repositories',
+                tooltip: primaryTooltip,
                 template: this.buttonTemplate,
                 disabled: !this.namespace.active || !provider_namespaces.length
             }] as Action[],
