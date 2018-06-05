@@ -1,0 +1,7 @@
+<pfng-action class="list-pf-actions"
+    [config]="actionConfig"
+    (onActionSelect)="handleListAction($event)">
+    <ng-template #addContentButtonTemplate let-action="action">
+        <i class="fa fa-plus"></i> {{ action.title }}
+    </ng-template>
+</pfng-action>

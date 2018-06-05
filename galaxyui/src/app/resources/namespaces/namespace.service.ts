@@ -81,13 +81,13 @@ export class NamespaceService {
         );
     }
 
-    delete (namespace: Namespace | number): Observable<Namespace> {
+    delete (namespace: Namespace | number): Observable<any> {
         const id = typeof namespace === 'number' ? namespace : namespace.id;
         const url = `${this.url}/${id}`;
 
-        return this.http.delete<Namespace>(url, httpOptions).pipe(
+        return this.http.delete<any>(url, httpOptions).pipe(
             tap(_ => this.log(`deleted namespace id=${id}`)),
-            catchError(this.handleError<Namespace>('Delete'))
+            catchError(this.handleError<any>('Delete'))
         );
     }
 

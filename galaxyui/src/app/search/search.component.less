@@ -106,22 +106,23 @@
 	}
 
 	.counts {
-		text-align: right;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		justify-content: flex-end;
+		align-items: middle;
+	}
 
-		.count-icon, .count-count, .count-text {
-			display: inline-block;
-			margin-right: 6px;
+	.counts > div {
+		font-size: 12px;
+		margin-right: 15px;
+		.count {
+			font-weight: 700;
+			padding: 0 5px;
 		}
-		.count-count {
-			font-size: 14px;
-			font-weight: 600;
-		}
-		.count-text {
-			margin-right: 15px;
-		}
-		.count-text:last-child {
-			margin-right: 0;
-		}
+	}
+	.counts div:last-child {
+		margin-right: 0;
 	}
 
 	.import {

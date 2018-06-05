@@ -304,8 +304,20 @@ export class AuthorDetailComponent implements OnInit {
             if (item.commit_created) {
                 item.last_commit = moment(item.commit_created).fromNow();
             }
-
+            // FIXME
             item.download_count = 0;
+
+            if (!item.description) {
+                // Legacy Repository objects are missing a description. Will get fixed on first import.
+                if (item.summary_fields['content_objects']) {
+                    for (var i=0; i< item.summary_fields['content_objects'].length; i++) {
+                        if (item.summary_fields['content_objects'][i]['description']) {
+                            item.description = item.summary_fields['content_objects'][i]['description'];
+                            break;
+                        }
+                    }
+                }
+            }
         });
 
     }

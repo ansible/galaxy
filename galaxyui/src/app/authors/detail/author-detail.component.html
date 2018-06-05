@@ -82,18 +82,26 @@
 	                        </div>
 	                        <div class="list-pf-description text-overflow-pf"><span class="repo-description">{{ item.description }}</span></div>
 	                    </div>
-	                    <div class="list-pf-additional-content">
+	                    <div class="list-pf-additional-content counts">
 	                    	<div class="repo-count">
-	                    		<i class="fa fa-download"></i> {{ item.download_count }} Downloads
+	                    		<i class="fa fa-download"></i>
+	                    		<span class="count">{{ item.download_count }}</span>
+	                    		<span class="count-label">Downloads</span>
 	                    	</div>
 							<div class="repo-count">
-								<i class="fa fa-eye"></i> {{ item.watchers_count }} Watchers
+								<i class="fa fa-eye"></i>
+								<span class="count">{{ item.watchers_count }}</span>
+								<span class="count-label">Watchers</span>
 							</div>
 							<div class="repo-count">
-								<i class="fa fa-star"></i> {{ item.stargazers_count }} Star Gazers
+								<i class="fa fa-star"></i>
+								<span class="count">{{ item.stargazers_count }}</span>
+								<span class="count-label">Stars</span>
 							</div>
 							<div class="repo-count">
-								<i class="fa fa-copy"></i> {{ item.forks_count }} Forks
+								<i class="fa fa-copy"></i>
+								<span class="count">{{ item.forks_count }}</span>
+								<span class="count-label">Forks</span>
 							</div>
 	                    </div>
 	                </div>

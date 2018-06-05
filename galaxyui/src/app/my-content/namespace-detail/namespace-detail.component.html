@@ -54,7 +54,7 @@
                    id="emailInput"
                    name="email"
                    class="form-control"
-                   placeholder="City, State/Province Country"
+                   placeholder="Email address"
                    formControlName="email">
         </div>
         <div class="form-group">
@@ -165,7 +165,7 @@
                         tooltip-placement="top"
                         uib-tooltip="Save the new namespace"
                         (click)="saveNamespace($event)"
-                        [disabled]="!namespaceForm.valid || !selectedNamespaces.length"><i class="fa fa-check"></i> Save</button>
+                        [disabled]="!namespaceForm.valid || (!me.staff && !selectedNamespaces.length)"><i class="fa fa-check"></i> Save</button>
                 <a [routerLink]="['/my-content']" class="btn btn-default btn-lg"
                    tooltip-placement="top"
                    uib-tooltip="Return to the previous page"><i class="fa fa-times"></i> Cancel</a>

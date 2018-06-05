@@ -54,6 +54,7 @@ class ProviderSourceList(ListAPIView):
                         'id': provider.pk,
                         'name': provider.name.lower()
                     }
+                    print(source['name'])
                     try:
                         provider_namespace = ProviderNamespace.objects.get(provider=provider,
                                                                            name__iexact=source['name'])

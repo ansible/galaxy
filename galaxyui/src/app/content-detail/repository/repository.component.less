@@ -33,7 +33,7 @@
 		.namespace {
 			font-size: 14px;
 			img {
-				max-height: 32px;
+				max-height: 64px;
 				margin-right: 5px;
 			}
 		}
@@ -41,24 +41,20 @@
 			cursor: pointer;
 		}
 	}
-	.repository-counts {
-		margin-top: 30px;
-		.count-icon, .count-count, .count-text {
-			display: inline-block;
-			margin-right: 6px;
-		}
-		.count-count {
-			font-size: 14px;
-			font-weight: 600;
-		}
-		.count-text {
-			margin-right: 15px;
-		}
-		.count-text:last-child {
-			margin-right: 0;
-		}
-		a.btn {
-			margin-right: 15px;
+	.repository-details {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		justify-content: flex-start;
+		align-items: middle;
+	}
+
+	.repository-details > div {
+		font-size: 14px;
+		margin-right: 20px;
+		.count {
+			font-weight: 700;
+			padding: 0 5px;
 		}
 	}
 }

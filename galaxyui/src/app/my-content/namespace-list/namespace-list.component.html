@@ -1,32 +1,29 @@
 <app-page-header [headerTitle]="pageTitle"></app-page-header>
-<div class="padding-15">
-    <div class="row">
-        <div class="col-sm-12">
-            <div>
-                <pfng-toolbar [config]="toolbarConfig"
-                              [actionTemplate]="toolbarActionTemplate"
-                              (onActionSelect)="handleToolbarAction($event)"
-                              (onFilterChange)="filterChanged($event)"
-                              (onSortChange)="sortChanged($event)"
-                              (onViewSelect)="viewSelected($event)">
-                    <ng-template #toolbarActionTemplate>
-                        <button class="btn btn-default primary-action" type="button" (click)="refreshNamespaces()">
-                            <span class="fa fa-spinner"></span>
-                            Refresh
-                        </button>
-                        <a class="btn btn-primary primary-action"
-                           type="button"
-                           routerLink="/my-content/namespaces/new" *ngIf="me.staff">
-                           <span class="fa fa-plus"></span> Add
-                        </a>
-                    </ng-template>
-                </pfng-toolbar>
+
+<div id="my-content-page">
+
+    <div class="padding-15">
+        <div class="row">
+            <div class="col-sm-12">
+                <div>
+                    <pfng-toolbar [config]="toolbarConfig"
+                                  [actionTemplate]="toolbarActionTemplate"
+                                  (onFilterChange)="filterChanged($event)"
+                                  (onSortChange)="sortChanged($event)"
+                                  (onViewSelect)="viewSelected($event)">
+                        <ng-template #toolbarActionTemplate>
+                            <a class="btn btn-primary primary-action"
+                               type="button"
+                               routerLink="/my-content/namespaces/new" *ngIf="me.staff">
+                               <span class="fa fa-plus"></span> Add
+                            </a>
+                        </ng-template>
+                    </pfng-toolbar>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div>
     <div class="row">
         <div class="col-sm-12">
             <div id="my-content-list">
@@ -36,8 +33,7 @@
                     [expandTemplate]="listExpandTemplate"
                     [items]="items"
                     [itemTemplate]="itemTemplate"
-                    (onActionSelect)="handleListAction($event, null)"
-                    (onClick)="handleListClick($event)">
+                    (onActionSelect)="handleListAction($event)">
                     <ng-template #itemTemplate let-item="item">
                         <div class="list-pf-left">
                             <span class="fa fa-folder-o list-pf-icon list-pf-icon-bordered list-pf-icon-small"></span>
@@ -64,13 +60,10 @@
                         </div>
                     </ng-template>
                     <ng-template #listActionTemplate let-item="item" let-index="index">
-                        <pfng-action class="list-pf-actions"
-                            [config]="getActionConfig(item, addContentButtonTemplate)"
-                            (onActionSelect)="handleListAction($event, item)">
-                            <ng-template #addContentButtonTemplate let-action="action">
-                                <i class="fa fa-plus"></i> {{ action.title }}
-                            </ng-template>
-                        </pfng-action>
+                        <namespace-action
+                            [namespace]="item"
+                            (handleAction)="handleListAction($event)">
+                        </namespace-action>
                     </ng-template>
                     <ng-template #listExpandTemplate let-item="item" let-index="index">
                         <repositories-content [namespace]="item" [contentAdded]="contentAdded" *ngIf="item.expandId === undefined"></repositories-content>
@@ -79,7 +72,18 @@
                     </ng-template>
                 </pfng-list>
             </div>
+
+            <div class="pagination-widget" *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
+                <pfng-pagination
+                    [config]="paginationConfig"
+                    (onPageSizeChange)="handlePageSizeChange($event)"
+                    (onPageNumberChange)="handlePageNumberChange($event)">
+                </pfng-pagination>
+            </div>
+
         </div>
     </div>
+
 </div>
+
 <app-page-loading [loading]="pageLoading"></app-page-loading>
