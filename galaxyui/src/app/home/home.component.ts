@@ -1,5 +1,5 @@
 import {
-	Component,
+    Component,
     OnInit,
     AfterViewInit
 } from '@angular/core';
@@ -10,7 +10,7 @@ import {
 } from '@angular/router';
 
 import {
-	CardConfig
+    CardConfig
 } from 'patternfly-ng/card/basic-card/card-config';
 
 import { Namespace }              from '../resources/namespaces/namespace';
@@ -61,7 +61,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
         this.downloadConfig = {
             titleBorder: true
-    	} as CardConfig
+        } as CardConfig
 
         this.shareConfig = {
             titleBorder: true

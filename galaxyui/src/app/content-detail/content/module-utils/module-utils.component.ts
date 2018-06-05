@@ -1,7 +1,7 @@
 import {
-	Component,
+    Component,
     Input,
-	OnInit
+    OnInit
 } from '@angular/core';
 
 import { EmptyStateConfig }  from 'patternfly-ng/empty-state/empty-state-config';

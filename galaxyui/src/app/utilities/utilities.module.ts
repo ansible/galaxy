@@ -8,14 +8,14 @@ import { ClipboardComponent }  from './clipboard/clipboard.component';
 
 @NgModule({
     imports: [
-    	CommonModule,
+        CommonModule,
         TooltipModule
     ],
     declarations: [
         ClipboardComponent
     ],
     exports: [
-    	ClipboardComponent
+        ClipboardComponent
     ]
 })
 export class UtilitiesModule { }

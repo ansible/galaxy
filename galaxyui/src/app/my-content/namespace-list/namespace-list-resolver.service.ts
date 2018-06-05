@@ -1,10 +1,10 @@
 import { Injectable }                                                   from '@angular/core';
 
 import {
-	ActivatedRouteSnapshot,
-	Resolve,
-	Router,
-	RouterStateSnapshot
+    ActivatedRouteSnapshot,
+    Resolve,
+    Router,
+    RouterStateSnapshot
 } from "@angular/router";
 
 import { Observable }            from "rxjs/Observable";
@@ -17,9 +17,9 @@ import { AuthService }           from "../../auth/auth.service";
 export class NamespaceListResolver implements Resolve<PagedResponse> {
 
     constructor(
-    	private namespaceService: NamespaceService,
-    	private router: Router,
-    	private authService: AuthService) {}
+        private namespaceService: NamespaceService,
+        private router: Router,
+        private authService: AuthService) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<PagedResponse> {
         if (this.authService.meCache.staff) {

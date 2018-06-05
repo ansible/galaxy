@@ -1,23 +1,23 @@
 <div class="popular-widget">
-	<div class="popular-title">
-		<i class="fa fa-tags"></i> {{ popularTitle }}
-	</div>
-	<pfng-list
-	    [config]="listConfig"
-	    [items]="items"
-	    [itemTemplate]="itemTemplate"
-	    (onClick)="handleClick($event)">
-		<ng-template #itemTemplate let-item="item" let-index="index">
-			<div class="list-pf-content-wrapper">
-              	<div class="list-pf-main-content">
-              		<div class="list-pf-title text-overflow-pf">
-              			<span class="item-name">{{item.name}}</span>
-              		</div>
-                	<div class="list-pf-description text-right item-hide">
-                		<span class="item-count">{{ item.roles_count | number }}</span>
-                	</div>
+    <div class="popular-title">
+        <i class="fa fa-tags"></i> {{ popularTitle }}
+    </div>
+    <pfng-list
+        [config]="listConfig"
+        [items]="items"
+        [itemTemplate]="itemTemplate"
+        (onClick)="handleClick($event)">
+        <ng-template #itemTemplate let-item="item" let-index="index">
+            <div class="list-pf-content-wrapper">
+                  <div class="list-pf-main-content">
+                      <div class="list-pf-title text-overflow-pf">
+                          <span class="item-name">{{item.name}}</span>
+                      </div>
+                    <div class="list-pf-description text-right item-hide">
+                        <span class="item-count">{{ item.roles_count | number }}</span>
+                    </div>
                 </div>
             </div>
-		</ng-template>   	
-	</pfng-list>
+        </ng-template>       
+    </pfng-list>
 </div>

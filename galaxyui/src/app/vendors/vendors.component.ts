@@ -1,11 +1,11 @@
 import {
-	Component,
-	OnInit
+    Component,
+    OnInit
 } from '@angular/core';
 
 import {
-	ActivatedRoute,
-	Router
+    ActivatedRoute,
+    Router
 } from '@angular/router';
 
 import { Action }             from 'patternfly-ng/action/action';
@@ -43,9 +43,9 @@ import {
 export class VendorsComponent implements OnInit {
 
     constructor(
-    	private router: Router,
-  	    private route: ActivatedRoute,
-  	    private namespaceService: NamespaceService
+        private router: Router,
+          private route: ActivatedRoute,
+          private namespaceService: NamespaceService
     ) {}
 
     pageTitle: string = `<i class="fa fa-star"></i> Vendors`;
@@ -67,7 +67,7 @@ export class VendorsComponent implements OnInit {
     pageSize: number = 10;
 
     ngOnInit() {
-    	this.emptyStateConfig = {
+        this.emptyStateConfig = {
             info: '',
             title: 'No authors match your search',
             iconStyleClass: 'pficon pficon-filter'

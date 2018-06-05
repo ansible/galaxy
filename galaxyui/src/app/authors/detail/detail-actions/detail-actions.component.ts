@@ -1,6 +1,6 @@
 import {
-	Component,
-	OnInit,
+    Component,
+    OnInit,
     Input
 } from '@angular/core';
 
@@ -42,7 +42,7 @@ export class DetailActionsComponent implements OnInit {
     }
 
     ngOnInit() {
-    	this.actionConfig = {
+        this.actionConfig = {
             primaryActions: [{
                 id: 'more',
                 title: 'View content',

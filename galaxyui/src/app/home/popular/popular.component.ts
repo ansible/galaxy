@@ -1,5 +1,5 @@
 import {
-	Component,
+    Component,
     OnInit,
     Input,
     AfterViewInit
@@ -15,8 +15,8 @@ import {
 
 
 class Category {
-	name: string;
-	iconClass: string;
+    name: string;
+    iconClass: string;
 }
 
 @Component({
@@ -26,55 +26,55 @@ class Category {
 })
 export class PopularComponent implements OnInit {
 
-	categories: Category[] = [];
+    categories: Category[] = [];
 
     constructor(
         private router:Router
     ) {}
 
     ngOnInit() {
-    	this.categories = [
-    		{
-    			name: 'System',
-    			iconClass: 'fa fa-desktop'
-    		},
-    		{
-    			name: 'Development',
-    			iconClass: 'fa fa-code'
-    		},
-    		{
-    			name: 'Networking',
-    			iconClass: 'fa fa-sitemap'
-    		},
-    		{
-    			name: 'Cloud',
-    			iconClass: 'fa fa-cloud-upload'
-    		},
-    		{
-    			name: 'Database',
-    			iconClass: 'fa fa-database'
-    		},
-    		{
-    			name: 'Monitoring',
-    			iconClass: 'fa fa-bar-chart'
-    		},
-    		{
-    			name: 'Packaging',
-    			iconClass: 'fa fa-cube'
-    		},
-    		{
-    			name: 'Playbook Bundles',
-    			iconClass: 'pficon-bundle'
-    		},
-    		{
-    			name: 'Security',
-    			iconClass: 'fa fa-lock'
-    		},
-    		{
-    			name: 'Web',
-    			iconClass: 'fa fa-globe'
-    		}
-    	] as Category[];
+        this.categories = [
+            {
+                name: 'System',
+                iconClass: 'fa fa-desktop'
+            },
+            {
+                name: 'Development',
+                iconClass: 'fa fa-code'
+            },
+            {
+                name: 'Networking',
+                iconClass: 'fa fa-sitemap'
+            },
+            {
+                name: 'Cloud',
+                iconClass: 'fa fa-cloud-upload'
+            },
+            {
+                name: 'Database',
+                iconClass: 'fa fa-database'
+            },
+            {
+                name: 'Monitoring',
+                iconClass: 'fa fa-bar-chart'
+            },
+            {
+                name: 'Packaging',
+                iconClass: 'fa fa-cube'
+            },
+            {
+                name: 'Playbook Bundles',
+                iconClass: 'pficon-bundle'
+            },
+            {
+                name: 'Security',
+                iconClass: 'fa fa-lock'
+            },
+            {
+                name: 'Web',
+                iconClass: 'fa fa-globe'
+            }
+        ] as Category[];
     }
 
     handleCategoryClick(category:Category) {

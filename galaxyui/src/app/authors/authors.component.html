@@ -1,19 +1,19 @@
 <app-page-header [headerTitle]="pageTitle"></app-page-header>
 
 <div id="authors-page">
-	<div class="padding-15">
-	    <div class="row">
-	        <div class="col-sm-12">
+    <div class="padding-15">
+        <div class="row">
+            <div class="col-sm-12">
                 <pfng-toolbar
-                	[config]="toolbarConfig"
+                    [config]="toolbarConfig"
                     (onFilterChange)="filterChanged($event)"
                     (onSortChange)="sortChanged($event)">
                 </pfng-toolbar>
-	        </div>
-	    </div>
-	</div>
+            </div>
+        </div>
+    </div>
 
-  	<div class="row">
+      <div class="row">
         <div class="col-sm-12">
             <div id="authors-list">
                 <pfng-list
@@ -41,9 +41,9 @@
                             </div>
                             <div class="list-pf-additional-content">
                                 <div *ngFor="let count of item.contentCounts" class="content-count">
-				                 	<span class="{{ count.iconClass }}"></span>
+                                     <span class="{{ count.iconClass }}"></span>
                                     <strong>{{count.count}}</strong> {{count.title}}
-				                </div>
+                                </div>
                             </div>
                         </div>
                     </ng-template>

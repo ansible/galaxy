@@ -1,14 +1,14 @@
 import {
-	Component,
-	EventEmitter,
-	Input,
-	ViewChild,
-	OnInit,
-	Output
+    Component,
+    EventEmitter,
+    Input,
+    ViewChild,
+    OnInit,
+    Output
 } from '@angular/core';
 
 import {
-	ActivatedRoute,
+    ActivatedRoute,
 } from '@angular/router';
 
 import { ListConfig }     from 'patternfly-ng/list/basic-list/list-config';
@@ -24,14 +24,14 @@ import { CloudPlatformService } from '../../resources/cloud-platforms/cloud-plat
 import { CloudPlatform }        from '../../resources/cloud-platforms/cloud-platform';
 
 class PopularData {
-	tags: Tag[];
-	cloudPlatforms: CloudPlatform[];
-	platforms: Platform[];
+    tags: Tag[];
+    cloudPlatforms: CloudPlatform[];
+    platforms: Platform[];
 }
 
 export class PopularEvent {
-	itemType: string;
-	item: any;
+    itemType: string;
+    item: any;
 }
 
 @Component({
@@ -41,42 +41,42 @@ export class PopularEvent {
 })
 export class PopularComponent implements OnInit {
 
-	@Input() popularType: string;
-	@Input() popularTitle: string;
-	@Output() onClick = new EventEmitter<PopularEvent>();
-	
-	data: PopularData;
-	listConfig: ListConfig;
-	items: any;
+    @Input() popularType: string;
+    @Input() popularTitle: string;
+    @Output() onClick = new EventEmitter<PopularEvent>();
+    
+    data: PopularData;
+    listConfig: ListConfig;
+    items: any;
 
     constructor(
-    	private tagsService: TagsService,
-    	private platformService: PlatformService,
-    	private cloudPlatformService: CloudPlatformService,
-    	private route: ActivatedRoute
+        private tagsService: TagsService,
+        private platformService: PlatformService,
+        private cloudPlatformService: CloudPlatformService,
+        private route: ActivatedRoute
     ) {}
 
     handleClick($event) {
-    	// User clicked on an item
-    	let e = new PopularEvent();
-    	e.itemType = this.popularType;
-    	e.item = $event.item;
-    	this.onClick.emit(e);
+        // User clicked on an item
+        let e = new PopularEvent();
+        e.itemType = this.popularType;
+        e.item = $event.item;
+        this.onClick.emit(e);
     }
     
     ngOnInit() {
-		this.route.data.subscribe(result => {
-			switch (this.popularType) {
-				case 'platforms':
-					this.items = result.popularPlatforms.slice(0, 11);
-					break;
-				case 'tags':
-					this.items = result.popularTags.slice(0, 11);
-					break;
-				case 'cloudPlatforms':
-					this.items = result.popularCloudPlatforms.slice(0, 11);
-					break;
-			}
-		});
-	}
+        this.route.data.subscribe(result => {
+            switch (this.popularType) {
+                case 'platforms':
+                    this.items = result.popularPlatforms.slice(0, 11);
+                    break;
+                case 'tags':
+                    this.items = result.popularTags.slice(0, 11);
+                    break;
+                case 'cloudPlatforms':
+                    this.items = result.popularCloudPlatforms.slice(0, 11);
+                    break;
+            }
+        });
+    }
 }
