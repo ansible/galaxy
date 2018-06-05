@@ -244,7 +244,7 @@ def refresh_role_counts(start, end, token, tracker):
     gh_api = github.Github(token)
     for role in Content.objects.filter(is_valid=True, active=True,
                                        id__gt=start, id__lte=end):
-        full_name = "%s/%s" % (role.github_user, role.github_repo)
+        full_name = "{}/{}".format(role.github_user, role.github_repo)
         try:
             repo = gh_api.get_repo(full_name, lazy=False)
         except github.UnknownObjectException:

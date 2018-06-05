@@ -136,7 +136,10 @@ def update_provider_namespaces(namespace, provider_namespaces):
                                                                                defaults=pns_attributes)
                 pns['id'] = pns_obj.pk
             except Exception as exc:
-                raise APIException('Error creating or updating provider namespaces: {0}'.format(exc.message))
+                raise APIException(
+                    'Error creating or updating provider namespaces: {}'
+                    .format(exc.message)
+                )
     # Disassociate provider namespaces not in the list
     for id in [obj.pk for obj in models.ProviderNamespace.objects.filter(namespace=namespace)]:
         found = False
