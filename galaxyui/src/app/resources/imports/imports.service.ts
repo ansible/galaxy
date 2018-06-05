@@ -52,15 +52,14 @@ export class ImportsService {
 
     private url: string  = '/api/v1/imports';
 
-    latest(query?: string): Observable<ImportLatest[]> {
+    latest(query?: string): Observable<PagedResponse> {
         let requestUrl = `${this.url}/latest/`;
         if (query)
             requestUrl += `?${query}`;
         return this.http.get<PagedResponse>(requestUrl)
             .pipe(
-                map(response => response.results),
                 tap(_ => this.log('fetched latest imports')),
-                catchError(this.handleError('Latest', [] as ImportLatest[]))
+                catchError(this.handleError('Latest', {} as PagedResponse))
             );
     }
 

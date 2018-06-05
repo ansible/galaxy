@@ -13,10 +13,10 @@ import { Observable }            from 'rxjs/Observable';
 import { ImportsService }        from '../../resources/imports/imports.service';
 import { ImportLatest }          from '../../resources/imports/import-latest';
 import { AuthService }           from '../../auth/auth.service';
-import * as moment               from 'moment';
+import { PagedResponse }         from '../../resources/paged-response';
 
 @Injectable()
-export class ImportListResolver implements Resolve<ImportLatest[]> {
+export class ImportListResolver implements Resolve<PagedResponse> {
 
     constructor(
         private importsService: ImportsService,
@@ -24,22 +24,26 @@ export class ImportListResolver implements Resolve<ImportLatest[]> {
         private authService: AuthService
     ){}
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ImportLatest[]> {
-        console.log(route.queryParams);
-        let query = null;
-        if (route.queryParams) {
-            let namespace = route.queryParams['namespace'];
-            let repositoryName = route.queryParams['repository_name'];
-            query = '';
-            if (namespace) {
-                query += (query == '') ? '' : '&';
-                query += `repository__provider_namespace__namespace__name=${namespace}`;
-            }
-            if (repositoryName) {
-                query += (query == '') ? '' : '&';
-                query += `repository__name=${repositoryName}`;
-            }
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<PagedResponse> {
+        let params = '';
+        for (var key in route.queryParams) {
+            let values = (typeof route.queryParams[key] == 'object') ? route.queryParams[key] : [route.queryParams[key]];
+            values.forEach(value => {
+                if (params != '')
+                    params += '&';
+                if (key == 'namespace') {
+                    params += `repository__provider_namespace__namespace__name__icontains=${value.toLowerCase()}`;
+                } else if (key == 'repository_name') {
+                    params += `repository__name__icontains=${value.toLowerCase()}`;
+                } else if (key != 'selected') {
+                    params += `${key}=${value}`;
+                }
+            });
         }
-        return this.importsService.latest(query);
+        if (!route.queryParams['namespace']) {
+            let username = this.authService.meCache.username.toLowerCase();
+            params += `repository__provider_namespace__namespace__name__icontains=${username}`;
+        }
+        return this.importsService.latest(params);
     }
 }

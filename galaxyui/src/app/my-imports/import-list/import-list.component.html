@@ -13,7 +13,6 @@
                 [config]="listConfig"
                 [items]="items"
                 [itemTemplate]="itemTemplate"
-                (onActionSelect)="handleAction($event, null)"
                 (onClick)="handleClick($event)">
                 <ng-template #itemTemplate let-item="item">
                     <div class="list-pf-left">
@@ -31,6 +30,14 @@
                     </div>
                 </ng-template>
             </pfng-list>
+        </div>
+
+        <div class="pagination" *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
+            <pfng-pagination
+                [config]='paginationConfig'
+                (onPageSizeChange)="handlePageSizeChange($event)"
+                (onPageNumberChange)="handlePageNumberChange($event)">
+            </pfng-pagination>
         </div>
     </div>
     <div class="col-sm-8">
