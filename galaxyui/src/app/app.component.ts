@@ -107,16 +107,6 @@ export class AppComponent implements OnInit {
                 iconStyleClass: 'fa fa-users',
                 url: '/community'
             },
-            {
-                title: 'My Content',
-                iconStyleClass: 'fa fa-list',
-                url: '/my-content'
-            },
-            {
-                title: 'My Imports',
-                iconStyleClass: 'fa fa-upload',
-                url: '/my-imports'
-            }
         ] as NavigationItemConfig[];
 
         this.authService.me().subscribe(
@@ -131,6 +121,12 @@ export class AppComponent implements OnInit {
                     name: 'User Role',
                     value: (me.staff) ? 'Staff' : 'User'
                 });
+
+                if (this.authenticated){
+                  this.addNavButtons();
+                } else {
+                  this.removeNavButtons();
+                }
             }
         );
         this.redirectUrl = this.authService.redirectUrl;
@@ -144,6 +140,31 @@ export class AppComponent implements OnInit {
         this.modalRef.hide();
     }
 
+    removeNavButtons(): void{
+      for (var i = 0; i < this.navItems.length; i++){
+        let title = this.navItems[i].title;
+        if (title == "My Content" || title == "My Imports"){
+          this.navItems.splice(i, 1);
+          i--;
+        }
+      }
+    }
+
+    addNavButtons(): void{
+      this.navItems.push(
+        {
+            title: 'My Content',
+            iconStyleClass: 'fa fa-list',
+            url: '/my-content'
+        },
+        {
+            title: 'My Imports',
+            iconStyleClass: 'fa fa-upload',
+            url: '/my-imports'
+        }
+      );
+    }
+
     logout(): void {
         this.authenticated = false;
         this.authService.logout().subscribe(
@@ -154,6 +175,7 @@ export class AppComponent implements OnInit {
                 console.log(error);
             }
         );
+        this.removeNavButtons();
     }
 
     onItemClicked($event: NavigationItemConfig): void {
