@@ -49,10 +49,6 @@ def upgrade_contentblocks_data(apps, schema_editor):
         name='main-featured-blog').update(content=MAIN_FEATURED_BLOG_BLOCK)
 
 
-def downgrade_contentblocks_data(apps, schema_editor):
-    pass
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -61,5 +57,5 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(upgrade_contentblocks_data,
-                             downgrade_contentblocks_data)
+                             migrations.RunPython.noop)
     ]

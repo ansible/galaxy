@@ -70,10 +70,6 @@ def upgrade_contentblocks_data(apps, schema_editor):
     ])
 
 
-def downgrade_contentblocks_data(apps, schema_editor):
-    pass
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -98,5 +94,5 @@ class Migration(migrations.Migration):
             bases=(models.Model, galaxy.main.mixins.DirtyMixin),
         ),
         migrations.RunPython(upgrade_contentblocks_data,
-                             downgrade_contentblocks_data)
+                             migrations.RunPython.noop)
     ]
