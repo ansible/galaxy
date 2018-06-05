@@ -112,15 +112,6 @@ CACHES = {
             os.environ.get('GALAXY_MEMCACHE_HOST', ''),
             os.environ.get('GALAXY_MEMCACHE_PORT', 11211)),
     },
-    'download_count': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'main_download_count_cache',
-        'TIMEOUT': None,
-        'OPTIONS': {
-            'MAX_ENTRIES': 100000,
-            'CULL_FREQUENCY': 0
-        }
-    }
 }
 
 # Static files
