@@ -15,7 +15,7 @@ WHERE version ILIKE 'v%'
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0102_provider_download_url'),
+        ('main', '0103_repository_download_count'),
     ]
 
     operations = [
