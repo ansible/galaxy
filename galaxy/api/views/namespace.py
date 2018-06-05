@@ -25,7 +25,7 @@ from rest_framework.filters import SearchFilter
 from ..filters import FieldLookupBackend, OrderByBackend
 
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, APIException
+from rest_framework.exceptions import ValidationError, APIException, PermissionDenied
 from rest_framework.response import Response
 
 from galaxy.accounts.models import CustomUser as User
@@ -54,11 +54,11 @@ def check_basic(data, errors):
 
 
 def check_owners(data_owners):
-    owners = []
-    if not isinstance(owners, list):
+    if not isinstance(data_owners, list):
         errors = 'Invalid type. Expected list'
-        return errors, owners
+        return errors, []
 
+    owners = []
     errors = {}
     for i in range(0, len(data_owners)):
         owner = data_owners[i]
@@ -193,12 +193,13 @@ class NamespaceList(base_views.ListCreateAPIView):
             except ObjectDoesNotExist:
                 pass
 
-        if not data.get('provider_namespaces'):
-            errors['provider_namespaces'] = 'A minimum of one provider namespace is required'
-        else:
-            provider_errors = check_providers(data['provider_namespaces'])
-            if provider_errors:
-                errors['provider_namespaces'] = provider_errors
+        if not request.user.is_staff:
+            if not data.get('provider_namespaces'):
+                errors['provider_namespaces'] = 'A minimum of one provider namespace is required'
+            else:
+                provider_errors = check_providers(data['provider_namespaces'])
+                if provider_errors:
+                    errors['provider_namespaces'] = provider_errors
 
         if data.get('owners'):
             owner_errors, owners = check_owners(data['owners'])
@@ -208,7 +209,7 @@ class NamespaceList(base_views.ListCreateAPIView):
         if errors:
             raise ValidationError(detail=errors)
 
-        if request.user.id not in owners:
+        if not request.user.is_staff and request.user.pk not in owners:
             owners.append(request.user.id)
 
         namespace_attributes = {
@@ -256,9 +257,11 @@ class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
         if errors:
             raise ValidationError(detail=errors)
 
+        if not request.user.is_staff and request.user.pk not in owners:
+            raise PermissionDenied("User does not have access to Namespace {0}".format(
+                data.get('name', '')))
+
         if data.get('owners'):
-            if request.user.pk not in owners:
-                owners.append(request.user.pk)
             update_owners(instance, owners)
 
         for item in ('name', 'description', 'avatar_url', 'location', 'company', 'email',
@@ -272,6 +275,11 @@ class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(instance=instance)
         return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class NamespaceProviderNamespacesList(base_views.SubListAPIView):

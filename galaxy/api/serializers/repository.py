@@ -120,8 +120,8 @@ class RepositorySerializer(serializers.BaseSerializer):
             latest_import['created'] = import_tasks[0].created
             latest_import['modified'] = import_tasks[0].modified
 
-        content_objects = [{'id': c.id, 'name': c.name, 'content_type': c.content_type.name}
-                           for c in instance.content_objects.all()]
+        content_objects = [{'id': c.id, 'name': c.name, 'content_type': c.content_type.name,
+                           'description': c.description} for c in instance.content_objects.all()]
 
         content_counts = {c['content_type__name']: c['count'] for c in instance.content_counts}
 
