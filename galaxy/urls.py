@@ -21,10 +21,6 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 
 
-handler404 = 'galaxy.main.views.handle_404_view'
-handler400 = 'galaxy.main.views.handle_400_view'
-handler500 = 'galaxy.main.views.handle_500_view'
-
 admin.autodiscover()
 
 
