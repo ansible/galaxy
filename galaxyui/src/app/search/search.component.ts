@@ -197,14 +197,19 @@ export class SearchComponent implements OnInit, AfterViewInit {
 					this.preparePlatforms(data.platforms);
 					this.prepareContentTypes(data.contentTypes);
 					this.prepareCloudPlatforms(data.cloudPlatforms);
-
-					this.setAppliedFilters(params);
-		            this.setSortConfig(params['order_by']);
-		            this.setPageSize(params);
-
-		       		this.prepareContent(data.content.results, data.content.count);
-		       		this.setQuery();
-					this.pageLoading = false;
+					if (!data.content.results.length && !Object.keys(params).length) {
+						// No vendors exists
+		            	let default_params = {vendor: false};
+		            	this.setAppliedFilters(default_params);
+		            	this.searchContent();
+		            } else {
+		       			this.setSortConfig(params['order_by']);
+		            	this.setPageSize(params);
+		       			this.setAppliedFilters(params);
+		       			this.prepareContent(data.content.results, data.content.count);
+		            	this.setQuery();
+						this.pageLoading = false;
+					}
 				}
 			);
         });
