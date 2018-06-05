@@ -32,8 +32,6 @@ The following environment variables are supported:
 * GALAXY_EMAIL_PORT
 * GALAXY_EMAIL_USER
 * GALAXY_EMAIL_PASSWORD
-* GALAXY_MEMCACHE_HOST
-* GALAXY_MEMCACHE_PORT
 * GALAXY_RABBITMQ_HOST
 * GALAXY_RABBITMQ_PORT
 * GALAXY_RABBITMQ_USER
@@ -102,18 +100,6 @@ else:
 # Create default alias for worker logging
 DATABASES['logging'] = DATABASES['default'].copy()
 
-# Cache
-# ---------------------------------------------------------
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '{0}:{1}'.format(
-            os.environ.get('GALAXY_MEMCACHE_HOST', ''),
-            os.environ.get('GALAXY_MEMCACHE_PORT', 11211)),
-    },
-}
-
 # Static files
 # ---------------------------------------------------------
 
@@ -171,10 +157,6 @@ WAIT_FOR = [
     {
         'host': os.environ.get('GALAXY_RABBITMQ_HOST', ''),
         'port': int(os.environ.get('GALAXY_RABBITMQ_PORT', 5672))
-    },
-    {
-        'host': os.environ.get('GALAXY_MEMCACHE_HOST', ''),
-        'port': int(os.environ.get('GALAXY_MEMCACHE_PORT', 11211))
     },
 ]
 

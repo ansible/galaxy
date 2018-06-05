@@ -158,16 +158,6 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'build', 'static')
 
-# Cache settings
-# ---------------------------------------------------------
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'memcache:11211',
-    },
-}
-
 # Database
 # ---------------------------------------------------------
 

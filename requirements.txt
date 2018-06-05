@@ -10,7 +10,6 @@ bleach
 rst2html5-tools
 setuptools
 PyYAML
-python-memcached
 ansible
 pyOpenSSL
 psycopg2-binary
