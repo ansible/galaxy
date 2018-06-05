@@ -42,7 +42,7 @@ import { PageLoadingModule }           from '../page-loading/page-loading.module
         UtilitiesModule
     ],
     declarations: [
-  	    ContentDetailComponent,
+          ContentDetailComponent,
         RepositoryComponent,
         CardInfoComponent,
         CardPlatformsComponent,

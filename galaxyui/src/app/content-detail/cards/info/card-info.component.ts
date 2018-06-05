@@ -1,7 +1,7 @@
 import {
-	Component,
+    Component,
     Input,
-	OnInit
+    OnInit
 } from '@angular/core';
 
 import { CardConfig }     from 'patternfly-ng/card/basic-card/card-config';

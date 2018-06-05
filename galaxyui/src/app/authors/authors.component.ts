@@ -1,11 +1,11 @@
 import {
-	Component,
-	OnInit
+    Component,
+    OnInit
 } from '@angular/core';
 
 import {
-	ActivatedRoute,
-	Router
+    ActivatedRoute,
+    Router
 } from '@angular/router';
 
 import { Action }             from 'patternfly-ng/action/action';
@@ -43,9 +43,9 @@ import {
 export class AuthorsComponent implements OnInit {
 
     constructor(
-    	private router: Router,
-  	    private route: ActivatedRoute,
-  	    private namespaceService: NamespaceService
+        private router: Router,
+          private route: ActivatedRoute,
+          private namespaceService: NamespaceService
     ) {}
 
     pageTitle: string = `<i class="fa fa-users"></i> Community Authors`;
@@ -67,7 +67,7 @@ export class AuthorsComponent implements OnInit {
     pageSize: number = 10;
 
     ngOnInit() {
-    	this.emptyStateConfig = {
+        this.emptyStateConfig = {
             info: '',
             title: 'No authors match your search',
             iconStyleClass: 'pficon pficon-filter'

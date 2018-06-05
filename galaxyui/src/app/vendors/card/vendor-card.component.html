@@ -1,12 +1,12 @@
 <div class="vendor-card" (click)="handleCardClick()">
-	<table class="img-wrapper">
-		<tr>
-			<td>
-				<img [src]="vendor.avatar_url"
-				     [ngClass]="{'vendor-avatar': !vendor['displayName'], 'vendor-missing-avatar': vendor['displayName']}">
-				<div class="vendor-name" *ngIf="vendor['displayName']">{{ vendor['displayName'] }}</div>
-			</td>
-		</tr>
-	</table>
-	<div class="content-count"><span class="count">{{ vendor['contentCount'] }}</span> <span class="title">Content Items</span></div>
+    <table class="img-wrapper">
+        <tr>
+            <td>
+                <img [src]="vendor.avatar_url"
+                     [ngClass]="{'vendor-avatar': !vendor['displayName'], 'vendor-missing-avatar': vendor['displayName']}">
+                <div class="vendor-name" *ngIf="vendor['displayName']">{{ vendor['displayName'] }}</div>
+            </td>
+        </tr>
+    </table>
+    <div class="content-count"><span class="count">{{ vendor['contentCount'] }}</span> <span class="title">Content Items</span></div>
 </div>

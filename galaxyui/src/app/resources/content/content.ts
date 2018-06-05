@@ -1,12 +1,12 @@
 export class Content {
-	url: string;
-	related: object;
-	summary_fields: object;
-	id: number;
-	created: string;
-	modified: string;
-	name: string;
-	original_name: string;
+    url: string;
+    related: object;
+    summary_fields: object;
+    id: number;
+    created: string;
+    modified: string;
+    name: string;
+    original_name: string;
     description: string;
     content_type: string;
     imported: string;

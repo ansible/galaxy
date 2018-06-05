@@ -4,8 +4,8 @@ import {
 } from '@angular/core';
 
 import {
-	Routes,
-	RouterModule
+    Routes,
+    RouterModule
 } from '@angular/router';
 
 import {
@@ -16,10 +16,10 @@ import { VendorsComponent }         from './vendors.component';
 
 
 const routes: Routes = [{
-	path: 'vendors',
-	component: VendorsComponent,
-	resolve: {
-		vendors: VendorListResolver
+    path: 'vendors',
+    component: VendorsComponent,
+    resolve: {
+        vendors: VendorListResolver
     }
 }];
 
@@ -31,7 +31,7 @@ const routes: Routes = [{
         RouterModule
     ],
     providers: [
-    	VendorListResolver
+        VendorListResolver
     ]
 })
 export class VendorsRoutingModule { }

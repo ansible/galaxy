@@ -1,11 +1,11 @@
 import {
-	Component,
-	OnInit
+    Component,
+    OnInit
 } from '@angular/core';
 
 import {
-	ActivatedRoute,
-	Router
+    ActivatedRoute,
+    Router
 } from '@angular/router';
 
 import * as moment          from 'moment';
@@ -42,8 +42,8 @@ class ContentTypeCounts {
 export class ContentDetailComponent implements OnInit {
 
     constructor(
-    	private router: Router,
-  	    private route: ActivatedRoute,
+        private router: Router,
+          private route: ActivatedRoute,
         private contentService: ContentService
     ) {}
 
@@ -76,17 +76,17 @@ export class ContentDetailComponent implements OnInit {
     } as ContentTypeCounts;
 
     ngOnInit() {
-    	this.emptyStateConfig = {
-    		iconStyleClass: 'pficon-warning-triangle-o',
-    		info: "The requested content could not be found. It may not exist in the Galaxy search index. " +
-    		"Check the Search page, to see if it has been imported into Galaxy.",
-      		helpLink: {
-        	    hypertext: 'Search page',
-        	    text: 'To locate the content, please visit the',
-        	    url: '/search'
+        this.emptyStateConfig = {
+            iconStyleClass: 'pficon-warning-triangle-o',
+            info: "The requested content could not be found. It may not exist in the Galaxy search index. " +
+            "Check the Search page, to see if it has been imported into Galaxy.",
+              helpLink: {
+                hypertext: 'Search page',
+                text: 'To locate the content, please visit the',
+                url: '/search'
             },
             title: 'Content Not Found'
-    	} as EmptyStateConfig;
+        } as EmptyStateConfig;
 
         this.route.params.subscribe(params => {
             this.route.data.subscribe((data) => {

@@ -1,17 +1,17 @@
 <div class="cd-card card-platforms" *ngIf="platforms && platforms.length">
-	<pfng-card
-		[config]="config"
-		[headerTemplate]="headerTemplate">
-		<ng-template #headerTemplate>
-			<div class="card-heading"><span class="fa fa-tags"></span> <span class="title-text">OS Platforms</span></div>
-		</ng-template>
-		<div class="card-body">
-			<table>
-				<tr *ngFor="let platform of platforms">
-					<td class="name">{{ platform.name }}</td>
-					<td class="release">{{ platform.release }}</td>
-				</tr>
-			</table>
-		</div>
-	</pfng-card>
+    <pfng-card
+        [config]="config"
+        [headerTemplate]="headerTemplate">
+        <ng-template #headerTemplate>
+            <div class="card-heading"><span class="fa fa-tags"></span> <span class="title-text">OS Platforms</span></div>
+        </ng-template>
+        <div class="card-body">
+            <table>
+                <tr *ngFor="let platform of platforms">
+                    <td class="name">{{ platform.name }}</td>
+                    <td class="release">{{ platform.release }}</td>
+                </tr>
+            </table>
+        </div>
+    </pfng-card>
 </div>

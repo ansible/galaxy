@@ -1,6 +1,6 @@
 import {
-	NgModule,
-	CUSTOM_ELEMENTS_SCHEMA
+    NgModule,
+    CUSTOM_ELEMENTS_SCHEMA
 } from '@angular/core';
 
 import { CommonModule }         from '@angular/common';
@@ -12,7 +12,7 @@ import { HomeComponent }        from './home.component';
 import { HomeRoutingModule }    from './home.routing.module';
 
 import {
-	CardModule
+    CardModule
 } from 'patternfly-ng/card/card.module';
 
 import { PageHeaderModule }     from '../page-header/page-header.module';
@@ -25,14 +25,14 @@ import { PageLoadingModule }    from '../page-loading/page-loading.module';
         HomeComponent
     ],
     imports: [
-    	CardModule,
-    	PageHeaderModule,
-    	PageLoadingModule,
+        CardModule,
+        PageHeaderModule,
+        PageLoadingModule,
         HomeRoutingModule,
         FormsModule,
         CommonModule
     ],
     providers: [],
-	schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomeModule { }

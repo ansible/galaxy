@@ -4,8 +4,8 @@ import {
 } from '@angular/core';
 
 import {
-	Routes,
-	RouterModule
+    Routes,
+    RouterModule
 } from '@angular/router';
 
 import {
@@ -19,10 +19,10 @@ import { AuthorDetailComponent }    from './detail/author-detail.component';
 
 
 const routes: Routes = [{
-    	path: 'community',
-    	component: AuthorsComponent,
-    	resolve: {
-    		namespaces: NamespaceListResolver
+        path: 'community',
+        component: AuthorsComponent,
+        resolve: {
+            namespaces: NamespaceListResolver
         }
     }, {
         path: ':namespace',
@@ -42,7 +42,7 @@ const routes: Routes = [{
     ],
     providers: [
         NamespaceDetailResolver,
-    	NamespaceListResolver,
+        NamespaceListResolver,
         RepositoryResolver
     ]
 })

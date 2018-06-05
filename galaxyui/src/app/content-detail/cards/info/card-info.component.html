@@ -1,102 +1,102 @@
 <div class="card-info">
-	<pfng-card
-		[config]="config"
-		[headerTemplate]="headerTemplate">
-		<ng-template #headerTemplate>
-			<div class="card-heading"><div class="icon-container"><span class="fa fa-info-circle fa-2x"></span></div> <div class="title-text">Info</div></div>
-		</ng-template>
-		<div class="card-info-body" *ngIf="repoType == RepoFormats.role">
-			<table>
-				<tr>
-					<td>Minimum Ansible Version</td>
-					<td>{{ repoContent.min_ansible_version }}</td>
-				</tr>
-				<tr>
-					<td>Installation</td>
-					<td class="install-instructions">
-						<copy-to-clipboard [copyText]="'ansible-galaxy install ' + repoContent.summary_fields['namespace']['name'] + '.' + repoContent.summary_fields['repository']['name']"></copy-to-clipboard>
-					</td>
-				</tr>
-				<tr>
-					<td>Last Commit</td>
-					<td>{{ repository.last_commit }}</td>
-				</tr>
-				<tr>
-					<td>Last Import</td>
-					<td>{{ repository.last_import }}</td>
-				</tr>
-				<tr *ngIf="repoContent && repoContent['hasTags']">
-					<td><i class="fa fa-tags"></i> Tags</td>
-					<td>
-						<div class="tag" *ngFor="let tag of repoContent['tags']">
-							{{ tag }}
-						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<div class="card-info-body apb" *ngIf="repoType == RepoFormats.apb">
-			<div class="title" *ngIf="metadata && metadata['metadata'] && metadata['metadata']['imageUrl']">
-				<img [src]="metadata['metadata']['imageUrl']" /> {{ metadata['metadata']['displayName'] }}
-			</div>
-			<div *ngIf="metadata && metadata['metadata']['documentationUrl']">
-				<h3>References</h3>
-				<ul>
-					<li>
-						<a [href]="metadata['metadata']['documentationUrl']" target="_blank">{{ metadata['metadata']['displayName'] }} Documentation</a>
-					</li>
-					<li>
-						<a href="https://github.com/ansibleplaybookbundle/ansible-playbook-bundle"
-						   target="_blank">APB Documentation Repo</a>
-					</li>
-				</ul>
-			</div>
-			<table>
-				<tr>
-					<td>Last Commit</td>
-					<td>{{ repository.last_commit }}</td>
-				</tr>
-				<tr>
-					<td>Last Import</td>
-					<td>{{ repository.last_import }}</td>
-				</tr>
-				<tr *ngIf="repoContent && repoContent['hasTags']">
-					<td><i class="fa fa-tags"></i> Tags</td>
-					<td>
-						<div class="tag" *ngFor="let tag of repoContent['tags']">
-							{{ tag }}
-						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<div class="card-info-body" *ngIf="repoType == RepoFormats.multi">
-			<div *ngIf="repoContent">
-				<table class="multi-table">
-					<tr>
-						<td>Installation</td>
-						<td class="install-instructions">
-							<copy-to-clipboard [copyText]="'ansible-galaxy install ' +  repoContent.summary_fields['namespace']['name'] + '.' + repoContent.summary_fields['repository']['name']"></copy-to-clipboard>
-						</td>
-					</tr>
-					<tr>
-						<td>Last Commit</td>
-						<td>{{ repository.last_commit }}</td>
-					</tr>
-					<tr>
-						<td>Last Import</td>
-						<td>{{ repository.last_import }}</td>
-					</tr>
-					<tr *ngIf="repoContent && repoContent['hasTags']">
-						<td><i class="fa fa-tags"></i> Tags</td>
-						<td>
-							<div class="tag" *ngFor="let tag of repoContent['tags']">
-								{{ tag }}
-							</div>
-						</td>
-					</tr>
-				</table>
-			</div>
-		</div>
-	</pfng-card>
+    <pfng-card
+        [config]="config"
+        [headerTemplate]="headerTemplate">
+        <ng-template #headerTemplate>
+            <div class="card-heading"><div class="icon-container"><span class="fa fa-info-circle fa-2x"></span></div> <div class="title-text">Info</div></div>
+        </ng-template>
+        <div class="card-info-body" *ngIf="repoType == RepoFormats.role">
+            <table>
+                <tr>
+                    <td>Minimum Ansible Version</td>
+                    <td>{{ repoContent.min_ansible_version }}</td>
+                </tr>
+                <tr>
+                    <td>Installation</td>
+                    <td class="install-instructions">
+                        <copy-to-clipboard [copyText]="'ansible-galaxy install ' + repoContent.summary_fields['namespace']['name'] + '.' + repoContent.summary_fields['repository']['name']"></copy-to-clipboard>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Last Commit</td>
+                    <td>{{ repository.last_commit }}</td>
+                </tr>
+                <tr>
+                    <td>Last Import</td>
+                    <td>{{ repository.last_import }}</td>
+                </tr>
+                <tr *ngIf="repoContent && repoContent['hasTags']">
+                    <td><i class="fa fa-tags"></i> Tags</td>
+                    <td>
+                        <div class="tag" *ngFor="let tag of repoContent['tags']">
+                            {{ tag }}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="card-info-body apb" *ngIf="repoType == RepoFormats.apb">
+            <div class="title" *ngIf="metadata && metadata['metadata'] && metadata['metadata']['imageUrl']">
+                <img [src]="metadata['metadata']['imageUrl']" /> {{ metadata['metadata']['displayName'] }}
+            </div>
+            <div *ngIf="metadata && metadata['metadata']['documentationUrl']">
+                <h3>References</h3>
+                <ul>
+                    <li>
+                        <a [href]="metadata['metadata']['documentationUrl']" target="_blank">{{ metadata['metadata']['displayName'] }} Documentation</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/ansibleplaybookbundle/ansible-playbook-bundle"
+                           target="_blank">APB Documentation Repo</a>
+                    </li>
+                </ul>
+            </div>
+            <table>
+                <tr>
+                    <td>Last Commit</td>
+                    <td>{{ repository.last_commit }}</td>
+                </tr>
+                <tr>
+                    <td>Last Import</td>
+                    <td>{{ repository.last_import }}</td>
+                </tr>
+                <tr *ngIf="repoContent && repoContent['hasTags']">
+                    <td><i class="fa fa-tags"></i> Tags</td>
+                    <td>
+                        <div class="tag" *ngFor="let tag of repoContent['tags']">
+                            {{ tag }}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="card-info-body" *ngIf="repoType == RepoFormats.multi">
+            <div *ngIf="repoContent">
+                <table class="multi-table">
+                    <tr>
+                        <td>Installation</td>
+                        <td class="install-instructions">
+                            <copy-to-clipboard [copyText]="'ansible-galaxy install ' +  repoContent.summary_fields['namespace']['name'] + '.' + repoContent.summary_fields['repository']['name']"></copy-to-clipboard>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Last Commit</td>
+                        <td>{{ repository.last_commit }}</td>
+                    </tr>
+                    <tr>
+                        <td>Last Import</td>
+                        <td>{{ repository.last_import }}</td>
+                    </tr>
+                    <tr *ngIf="repoContent && repoContent['hasTags']">
+                        <td><i class="fa fa-tags"></i> Tags</td>
+                        <td>
+                            <div class="tag" *ngFor="let tag of repoContent['tags']">
+                                {{ tag }}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </pfng-card>
 </div>

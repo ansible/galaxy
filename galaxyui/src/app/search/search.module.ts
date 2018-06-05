@@ -21,13 +21,13 @@ import { PageLoadingModule }   from '../page-loading/page-loading.module';
 
 @NgModule({
     imports: [
-    	ActionModule,
-    	EmptyStateModule,
-    	FilterModule,
+        ActionModule,
+        EmptyStateModule,
+        FilterModule,
         SortModule,
-    	ToolbarModule,
+        ToolbarModule,
         TooltipModule,
-    	ListModule,
+        ListModule,
         CommonModule,
         SearchRoutingModule,
         PageHeaderModule,
@@ -36,7 +36,7 @@ import { PageLoadingModule }   from '../page-loading/page-loading.module';
         BsDropdownModule.forRoot()
     ],
     declarations: [
-    	SearchComponent,
+        SearchComponent,
         PopularComponent
     ]
 })

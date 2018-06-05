@@ -1,7 +1,7 @@
 import {
-	Component,
+    Component,
     Input,
-	OnInit
+    OnInit
 } from '@angular/core';
 
 import { ListEvent }         from 'patternfly-ng/list/list-event';

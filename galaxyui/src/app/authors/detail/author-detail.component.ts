@@ -1,11 +1,11 @@
 import {
-	Component,
-	OnInit
+    Component,
+    OnInit
 } from '@angular/core';
 
 import {
-	ActivatedRoute,
-	Router
+    ActivatedRoute,
+    Router
 } from '@angular/router';
 
 import * as moment            from 'moment';
@@ -54,9 +54,9 @@ import {
 export class AuthorDetailComponent implements OnInit {
 
     constructor(
-    	private router: Router,
-  	    private route: ActivatedRoute,
-  	    private repositoryService: RepositoryService
+        private router: Router,
+          private route: ActivatedRoute,
+          private repositoryService: RepositoryService
     ) {}
 
     pageTitle: string = '';
