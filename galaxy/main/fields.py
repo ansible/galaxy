@@ -15,17 +15,45 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from distutils.version import LooseVersion
+import semver
+import distutils.version
 
 from django.db import models
 
 
 __all__ = [
-    'LooseVersionField',
     'TruncatingCharField',
+    'VersionField',
 ]
 
 
+class VersionField(models.CharField):
+    """Semantic version field"""
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('max_length', 64)
+        super(VersionField, self).__init__(*args, **kwargs)
+
+    def from_db_value(self, value, expression, connection, context):
+        if value is None:
+            return value
+        return semver.parse_version_info(value)
+
+    def to_python(self, value):
+        if isinstance(value, semver.VersionInfo):
+            return value
+        if value is None:
+            return value
+        return semver.parse_version_info(value)
+
+    def get_prep_value(self, value):
+        if value is None:
+            return value
+        return str(value)
+
+
+# TODO(cutwater): LooseVersionField is not used in actual models and is kept
+# only because it's referenced by migration 0001_initial.py
 class LooseVersionField(models.Field):
     """ store and return values as a LooseVersion """
 
@@ -40,7 +68,7 @@ class LooseVersionField(models.Field):
         return self.get_prep_value(value)
 
     def to_python(self, value):
-        return LooseVersion(value)
+        return distutils.version.LooseVersion(value)
 
     def get_prep_value(self, value):
         return str(value)

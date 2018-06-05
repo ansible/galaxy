@@ -193,27 +193,42 @@ def _update_repo_info(repository, gh_repo, commit_info):
 
 
 def _update_repository_versions(repository, github_repo, logger):
-    logger.info('Adding repo tags as versions')
-    git_tag_list = github_repo.get_tags()
-    for tag in git_tag_list:
+    logger.info('Updating repository versions...')
+
+    git_tags = {tag.name: tag for tag in github_repo.get_tags()}
+    db_tags = {v.raw_version: v for v in repository.versions.all()}
+
+    to_delete = set(db_tags) - set(git_tags)
+    for version in to_delete:
+        db_tags[version].delete()
+
+    to_add = set(git_tags) - set(db_tags)
+    for version in to_add:
+        tag = git_tags[version]
+        try:
+            version = utils.parse_version_tag(tag.name)
+        except ValueError:
+            continue
+
         release_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
-        models.RepositoryVersion.objects.update_or_create(
-            name=tag.name, repository=repository,
-            defaults={'release_date': release_date}
+        version_obj, created = models.RepositoryVersion.objects.get_or_create(
+            repository=repository,
+            version=version,
+            defaults={
+                'raw_version': tag.name,
+                'release_date': release_date,
+            },
         )
+        if not created:
+            logger.warning('Version conflict: {}'.format(tag.name))
 
-    if git_tag_list:
-        remove_versions = []
-        for version in repository.versions.all():
-            found = False
-            for tag in git_tag_list:
-                if tag.name == version.name:
-                    found = True
-                    break
-            if not found:
-                remove_versions.append(version.name)
-
-        if remove_versions:
-            for version_name in remove_versions:
-                models.RepositoryVersion.objects.filter(
-                    name=version_name, repository=repository).delete()
+    to_update = set(git_tags) & set(db_tags)
+    for version in to_update:
+        tag = git_tags[version]
+        version_obj = db_tags[version]
+        release_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
+        if version_obj.release_date != release_date:
+            logger.warning('Release date of version {} has changed.'
+                           .format(version_obj.raw_version))
+            version_obj.release_date = release_date
+            version_obj.save()

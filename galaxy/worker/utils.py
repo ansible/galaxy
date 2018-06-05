@@ -18,6 +18,7 @@
 from __future__ import absolute_import
 
 import six
+import semver
 
 from galaxy.main import models
 
@@ -48,3 +49,12 @@ def update_readme(repository, readme_obj, readme, github_api, github_repo):
                 readme.text, context=github_repo)
             readme_obj.save()
         return readme_obj
+
+
+def parse_version_tag(value):
+    value = str(value)
+    if not value:
+        raise ValueError('Empty version value')
+    if value[0].lower() == 'v':
+        return value[1:]
+    return semver.parse_version_info(value)
