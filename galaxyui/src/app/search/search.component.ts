@@ -197,16 +197,20 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     this.preparePlatforms(data.platforms);
                     this.prepareContentTypes(data.contentTypes);
                     this.prepareCloudPlatforms(data.cloudPlatforms);
-
-                    this.setAppliedFilters(params);
-                    this.setSortConfig(params['order_by']);
-                    this.setPageSize(params);
-
-                       this.prepareContent(data.content.results, data.content.count);
-                       this.setQuery();
-                    this.pageLoading = false;
-                }
-            );
+                    if (!data.content.results.length && !Object.keys(params).length) {
+                        // No vendors exists
+                        let default_params = {vendor: false};
+                        this.setAppliedFilters(default_params);
+                        this.searchContent();
+                    } else {
+                           this.setSortConfig(params['order_by']);
+                        this.setPageSize(params);
+                           this.setAppliedFilters(params);
+                           this.prepareContent(data.content.results, data.content.count);
+                        this.setQuery();
+                        this.pageLoading = false;
+                    }
+                });
         });
     }
 
@@ -383,82 +387,82 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 });
                 this.filterConfig.appliedFilters.push(ffield);
                 this.appliedFilters.push(ffield);
-        	} else {
-	        	var field = this.getFilterField(key);
-	        	if (!field)
-	        		continue;
+            } else {
+                var field = this.getFilterField(key);
+                if (!field)
+                    continue;
 
-	        	if (filterParams != '')
-	                filterParams += '&';
-	            filterParams += `${key}=${encodeURIComponent(params[key])}`;
+                if (filterParams != '')
+                    filterParams += '&';
+                filterParams += `${key}=${encodeURIComponent(params[key])}`;
 
-	        	var values: string[] = params[key].split(' ');
-	        	values.forEach(v => {
-	        		var ffield: Filter = {} as Filter;
-	        		ffield.field = field;
-	        		if (field.type == FilterType.TEXT) {
-	        		  	ffield.value = v;
-	        		} else if (field.type == FilterType.TYPEAHEAD) {
-	        			field.queries.forEach((query: FilterQuery) => {
-	        				if (query.id == v) {
-	        					ffield.query = query;
-	        					ffield.value = query.value;
-	        				}
-	        			});
-	        		}
-	        		this.filterConfig.appliedFilters.push(ffield);
-	                this.appliedFilters.push(ffield);
-	        	});
-	        }
-	    }
-	    this.filterParams = filterParams;
-	}
+                var values: string[] = params[key].split(' ');
+                values.forEach(v => {
+                    var ffield: Filter = {} as Filter;
+                    ffield.field = field;
+                    if (field.type == FilterType.TEXT) {
+                          ffield.value = v;
+                    } else if (field.type == FilterType.TYPEAHEAD) {
+                        field.queries.forEach((query: FilterQuery) => {
+                            if (query.id == v) {
+                                ffield.query = query;
+                                ffield.value = query.value;
+                            }
+                        });
+                    }
+                    this.filterConfig.appliedFilters.push(ffield);
+                    this.appliedFilters.push(ffield);
+                });
+            }
+        }
+        this.filterParams = filterParams;
+    }
 
-	private getBasePath(): string {
-		let path = this.location.path();
-		return path.replace(/\?.*$/,'');
-	}
+    private getBasePath(): string {
+        let path = this.location.path();
+        return path.replace(/\?.*$/,'');
+    }
 
-	private getFilterField(id: string): FilterField {
-		let result: FilterField = null;
-		this.filterConfig.fields.forEach((item: FilterField) => {
-			if (item.id == id) {
-				result = item;
-			}
-		})
-		return result;
-	}
+    private getFilterField(id: string): FilterField {
+        let result: FilterField = null;
+        this.filterConfig.fields.forEach((item: FilterField) => {
+            if (item.id == id) {
+                result = item;
+            }
+        })
+        return result;
+    }
 
-	private getFilterFieldQuery(field: FilterField, value: string): FilterQuery {
-		let result: FilterQuery = null;
-		field.queries.forEach((item: FilterQuery) => {
-			if (item.value == value) {
-				result = item;
-			}
-		});
-		return result;
-	}
+    private getFilterFieldQuery(field: FilterField, value: string): FilterQuery {
+        let result: FilterQuery = null;
+        field.queries.forEach((item: FilterQuery) => {
+            if (item.value == value) {
+                result = item;
+            }
+        });
+        return result;
+    }
 
-	private addToFilter(filter: Filter) {
-		let filterExists: boolean = false;
-		this.appliedFilters.forEach( (item: Filter) => {
-			if (item.field.id == filter.field.id && item.value == filter.value) {
-				filterExists = true;
-			}
-		});
-		if (!filterExists) {
-			this.appliedFilters.push(JSON.parse(JSON.stringify(filter)));
-		}
-	}
+    private addToFilter(filter: Filter) {
+        let filterExists: boolean = false;
+        this.appliedFilters.forEach( (item: Filter) => {
+            if (item.field.id == filter.field.id && item.value == filter.value) {
+                filterExists = true;
+            }
+        });
+        if (!filterExists) {
+            this.appliedFilters.push(JSON.parse(JSON.stringify(filter)));
+        }
+    }
 
-	private setQuery(): string {
-		let paging = '&page_size=' + this.pageSize.toString();
-		if (this.pageNumber > 1)
-    		paging += `&page=${this.pageNumber}`;
-    	let query = (this.filterParams + this.sortParams + paging).replace(/^&/,'');  // remove leading &
-    	this.location.replaceState(this.getBasePath(), query);   // update browser URL
-    	return query;
-	}
+    private setQuery(): string {
+        let paging = '&page_size=' + this.pageSize.toString();
+        if (this.pageNumber > 1)
+            paging += `&page=${this.pageNumber}`;
+        let query = (this.filterParams + this.sortParams + paging).replace(/^&/,'');  // remove leading &
+        this.location.replaceState(this.getBasePath(), query);   // update browser URL
+        return query;
+    }
 
     private searchContent() {
         this.pageLoading = true;
