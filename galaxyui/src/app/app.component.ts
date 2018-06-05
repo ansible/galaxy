@@ -123,9 +123,9 @@ export class AppComponent implements OnInit {
                 });
 
                 if (this.authenticated){
-                  this.addNavButtons();
+                    this.addNavButtons();
                 } else {
-                  this.removeNavButtons();
+                    this.removeNavButtons();
                 }
             }
         );
@@ -141,28 +141,28 @@ export class AppComponent implements OnInit {
     }
 
     removeNavButtons(): void{
-      for (var i = 0; i < this.navItems.length; i++){
-        let title = this.navItems[i].title;
-        if (title == "My Content" || title == "My Imports"){
-          this.navItems.splice(i, 1);
-          i--;
+        for (var i = 0; i < this.navItems.length; i++){
+            let title = this.navItems[i].title;
+            if (title == "My Content" || title == "My Imports"){
+                this.navItems.splice(i, 1);
+                i--;
+            }
         }
-      }
     }
 
     addNavButtons(): void{
-      this.navItems.push(
-        {
-            title: 'My Content',
-            iconStyleClass: 'fa fa-list',
-            url: '/my-content'
-        },
-        {
-            title: 'My Imports',
-            iconStyleClass: 'fa fa-upload',
-            url: '/my-imports'
-        }
-      );
+        this.navItems.push(
+            {
+                title: 'My Content',
+                iconStyleClass: 'fa fa-list',
+                url: '/my-content'
+            },
+            {
+                title: 'My Imports',
+                iconStyleClass: 'fa fa-upload',
+                url: '/my-imports'
+            }
+        );
     }
 
     logout(): void {
