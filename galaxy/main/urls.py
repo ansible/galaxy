@@ -21,21 +21,9 @@ from django.views.decorators.cache import never_cache
 from django.contrib.staticfiles.views import serve as serve_staticfiles
 from django.views.static import serve as serve_static
 
-from galaxy.main import views
 
+urlpatterns = []
 
-urlpatterns = [
-    url(r'^accounts/landing[/]?$', views.accounts_landing,
-        name='accounts-landing'),
-
-    # Logged in/secured URLs
-    url(r'^accounts/connect/$', views.accounts_connect),
-    url(r'^accounts/connect/success/$', views.accounts_connect_success,
-        name='accounts-connect-success'),
-    url(r'^accounts/profile/$', views.accounts_profile, name='accounts-profile'),
-]
-
-# FIX
 if settings.DEBUG:
     urlpatterns += [
         url(r'^static/(?P<path>.*)$', never_cache(serve_staticfiles))
