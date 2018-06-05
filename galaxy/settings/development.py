@@ -57,15 +57,6 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': 'memcache:11211',
     },
-    'download_count': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'main_download_count_cache',
-        'TIMEOUT': None,
-        'OPTIONS': {
-            'MAX_ENTRIES': 100000,
-            'CULL_FREQUENCY': 0
-        }
-    }
 }
 
 # Email settings
