@@ -34,7 +34,6 @@ ALLOWED_HOSTS = ['*']
 # ---------------------------------------------------------
 
 INSTALLED_APPS += (  # noqa: F405
-    'autofixture',
     'debug_toolbar',
 )
 

@@ -26,9 +26,6 @@ djangorestframework>=3.7,<3.8
 django-allauth==0.34.0
 
 # TODO(cutwater): Review usage of this package
-django-autofixture
-
-# TODO(cutwater): Review usage of this package
 django-bootstrap-form
 django-celery
 
