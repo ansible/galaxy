@@ -170,15 +170,6 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': 'memcache:11211',
     },
-    'download_count': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'main_download_count_cache',
-        'TIMEOUT': None,
-        'OPTIONS': {
-            'MAX_ENTRIES': 100000,
-            'CULL_FREQUENCY': 0
-        }
-    }
 }
 
 # Database
@@ -207,12 +198,6 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'galaxy.api.filters.OrderByBackend',
     ),
-    'DEFAULT_THROTTLE_CLASSES': (
-        'galaxy.api.throttling.RoleDownloadCountThrottle',
-    ),
-    'DEFAULT_THROTTLE_RATES': {
-        'download_count': '1/day',
-    }
 }
 
 # Celery

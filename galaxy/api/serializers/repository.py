@@ -50,6 +50,7 @@ class RepositorySerializer(serializers.BaseSerializer):
             'watchers_count',
             'forks_count',
             'open_issues_count',
+            'download_count',
             'travis_build_url',
             'travis_status_url',
             'clone_url',

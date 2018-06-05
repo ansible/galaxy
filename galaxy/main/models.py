@@ -387,9 +387,6 @@ class Content(CommonModelNameNotUnique):
         null=True,
         verbose_name="Last Import"
     )
-    download_count = models.IntegerField(
-        default=0
-    )
 
     search_vector = psql_search.SearchVectorField()
 
@@ -414,6 +411,10 @@ class Content(CommonModelNameNotUnique):
     @property
     def travis_build_url(self):
         return self.repository.travis_build_url
+
+    @property
+    def download_count(self):
+        return self.repository.download_count
 
     def get_absolute_url(self):
         return reverse('api:content_detail', args=(self.pk,))
@@ -973,6 +974,9 @@ class Repository(BaseModel):
         blank=True,
         null=True,
         verbose_name="Issue Tracker URL",
+    )
+    download_count = models.IntegerField(
+        default=0
     )
 
     @property
