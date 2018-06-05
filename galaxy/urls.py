@@ -19,7 +19,6 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
-import autofixture
 
 
 handler404 = 'galaxy.main.views.handle_404_view'
@@ -27,7 +26,7 @@ handler400 = 'galaxy.main.views.handle_400_view'
 handler500 = 'galaxy.main.views.handle_500_view'
 
 admin.autodiscover()
-autofixture.autodiscover()
+
 
 urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
