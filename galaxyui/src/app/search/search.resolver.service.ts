@@ -65,16 +65,6 @@ export class SearchContentResolver implements Resolve<ContentResponse> {
                 params += '&';
             params += 'order_by=-relevance';
         }
-        if (!route.queryParams['page_size']) {
-            if (params != '')
-                params += '&';
-            params += 'page_size=10';
-        }
-        if (!route.queryParams['page']) {
-            if (params != '')
-                params += '&';
-            params += 'page=1';
-        }
         return this.contentService.query(params);
     }
 }

@@ -452,8 +452,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
 	}
 
 	private setQuery(): string {
-		let paging = '&page_size=' + this.pageSize.toString() +
-    		'&page=' + this.pageNumber;
+		let paging = '&page_size=' + this.pageSize.toString();
+		if (this.pageNumber > 1)
+    		paging += `&page=${this.pageNumber}`;
     	let query = (this.filterParams + this.sortParams + paging).replace(/^&/,'');  // remove leading &
     	this.location.replaceState(this.getBasePath(), query);   // update browser URL
     	return query;
