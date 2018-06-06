@@ -463,7 +463,7 @@ class StargazerList(base_views.ListCreateAPIView):
 
         try:
             token = SocialToken.objects.get(account__user=request.user, account__provider='github')
-        except:
+        except Exception:
             msg = "Failed to get GitHub token for user {0} ".format(request.user.username) + \
                   "You must first authenticate with GitHub."
             raise ValidationError(dict(detail=msg))
@@ -522,7 +522,7 @@ class StargazerDetail(base_views.RetrieveUpdateDestroyAPIView):
 
         try:
             token = SocialToken.objects.get(account__user=request.user, account__provider='github')
-        except:
+        except Exception:
             msg = (
                 "Failed to connect to GitHub account for Galaxy user {}. "
                 "You must first authenticate with Github."
@@ -593,7 +593,7 @@ class SubscriptionList(base_views.ListCreateAPIView):
 
         try:
             token = SocialToken.objects.get(account__user=request.user, account__provider='github')
-        except:
+        except Exception:
             msg = (
                 "Failed to connect to GitHub account for Galaxy user {}. "
                 "You must first authenticate with Github."
@@ -677,7 +677,7 @@ class SubscriptionDetail(base_views.RetrieveUpdateDestroyAPIView):
 
         try:
             token = SocialToken.objects.get(account__user=request.user, account__provider='github')
-        except:
+        except Exception:
             msg = (
                 "Failed to access GitHub account for Galaxy user {}. "
                 "You must first authenticate with GitHub."
@@ -806,7 +806,7 @@ class UserMeList(base_views.RetrieveAPIView):
     def get_object(self):
         try:
             obj = self.model.objects.get(pk=self.request.user.pk)
-        except:
+        except Exception:
             obj = AnonymousUser()
         return obj
 
@@ -827,7 +827,7 @@ class RemoveRole(base_views.APIView):
             # Verify via GitHub API that user has access to requested role
             try:
                 token = SocialToken.objects.get(account__user=request.user, account__provider='github')
-            except:
+            except Exception:
                 msg = (
                     "Failed to get Github account for Galaxy user {}. "
                     "You must first authenticate with Github."
@@ -848,7 +848,7 @@ class RemoveRole(base_views.APIView):
 
             try:
                 ghu = gh_api.get_user()
-            except:
+            except Exception:
                 raise ValidationError(dict(detail="Failed to get Github authorized user."))
 
             allowed = False
@@ -923,7 +923,7 @@ class RefreshUserRepos(base_views.APIView):
         # Return a the list of user's repositories directly from GitHub
         try:
             token = SocialToken.objects.get(account__user=request.user, account__provider='github')
-        except:
+        except Exception:
             msg = (
                 "Failed to connect to GitHub account for Galaxy user {} "
                 "You must first authenticate with GitHub."
@@ -946,13 +946,13 @@ class RefreshUserRepos(base_views.APIView):
 
         try:
             ghu = gh_api.get_user()
-        except:
+        except Exception:
             msg = "Failed to get GitHub authorized user."
             logger.error(msg)
             return HttpResponseBadRequest({'detail': msg})
         try:
             user_repos = ghu.get_repos()
-        except:
+        except Exception:
             msg = "Failed to get user repositories from GitHub."
             logger.error(msg)
             return HttpResponseBadRequest({'detail': msg})
@@ -991,7 +991,7 @@ class TokenView(base_views.APIView):
         try:
             git_status = requests.get(settings.GITHUB_SERVER)
             git_status.raise_for_status()
-        except:
+        except Exception:
             raise ValidationError(dict(detail="Error accessing GitHub API. Please try again later."))
 
         try:
@@ -1001,7 +1001,7 @@ class TokenView(base_views.APIView):
             gh_user = gh_user.json()
             if hasattr(gh_user, 'message'):
                 raise ValidationError(dict(detail=gh_user['message']))
-        except:
+        except Exception:
             raise ValidationError(dict(detail="Error accessing GitHub with provided token."))
 
         if SocialAccount.objects.filter(provider='github', uid=gh_user['id']).count() > 0:
