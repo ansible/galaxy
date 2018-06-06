@@ -8,6 +8,7 @@ import {
 } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
+import { of }         from 'rxjs/observable/of';
 
 import {
     CanActivate,
@@ -44,7 +45,7 @@ export class AuthService implements CanActivate {
 
     me(): Observable<Me> {
         if (this.meCache) {
-            return Observable.of(this.meCache);
+            return of(this.meCache);
         }
         return this.http.get<Me>(this.meUrl, {headers: this.headers})
             .map((result) => { this.meCache = result; return result; });
@@ -60,25 +61,35 @@ export class AuthService implements CanActivate {
             });
     }
 
+    checkPermissions(route: ActivatedRouteSnapshot): boolean {
+        let result = true;
+        if (!this.meCache.authenticated) {
+            // User is not authenticated
+            this.router.navigate(['/login', {error: true}]);
+            result = false;
+        }
+        if (route['data'] && route['data']['expectedRole']) {
+            if (route['data']['expectedRole'] === 'isStaff' && !this.meCache.staff) {
+                // User does not have is_staff=True
+                this.router.navigate(['/login', {error: true}]);
+                result = false;
+            }
+        }
+        return result;
+    }
+
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
         this.redirectUrl = state.url;
         if (this.meCache) {
-            return new Observable<boolean>(
-                observer => {
-                    if (!this.meCache.authenticated) {
-                        this.router.navigate(['/login', {error: true}]);
-                    }
-                    observer.next(this.meCache.authenticated);
-                }
-            );
+            return Observable.create(observer => {
+                observer.next(this.checkPermissions(route));
+                observer.complete();
+            });
         }
         return this.http.get<Me>(this.meUrl, {headers: this.headers})
             .map((result) => {
                 this.meCache = result;
-                if (!result.authenticated) {
-                    this.router.navigate(['/login', {error: true}]);
-                }
-                return result.authenticated;
+                return this.checkPermissions(route);
             });
     }
 }
