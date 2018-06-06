@@ -17,40 +17,40 @@
 
         <div class="row btn-row" *ngIf="!showEmptyState">
             <div class="col-sm-12">
-                <button type="button" class="btn btn-primary" [disabled]="showingView == ViewTypes.detail"
+                <button type="button" class="btn btn-primary" [disabled]="showingView === ViewTypes.detail"
                     tooltip="Return to main content view"
                     (click)="toggleView(ViewTypes.detail)"><i class="fa fa-info-circle"></i> Details</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="hasReadme" [disabled]="showingView == ViewTypes.readme"
+                    *ngIf="hasReadme" [disabled]="showingView === ViewTypes.readme"
                     tooltip="View the repository's README file"
                     (click)="toggleView(ViewTypes.readme)"><i class="fa fa-eye"></i> README</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="hasMetadata" [disabled]="showingView == ViewTypes.meta"
+                    *ngIf="hasMetadata" [disabled]="showingView === ViewTypes.meta"
                     tooltip="View the {{ metadataFilename }} file"
                     (click)="toggleView(ViewTypes.meta)"><i class="fa fa-table"></i> Metadata</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.module" [disabled]="showingView == ViewTypes.modules"
+                    *ngIf="contentCounts.module" [disabled]="showingView === ViewTypes.modules"
                     tooltip="View modules"
                     (click)="toggleView(ViewTypes.modules)"><i class="fa fa-microchip"></i> {{ contentCounts.module }} Modules</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.moduleUtils" [disabled]="showingView == ViewTypes.moduleUtils"
+                    *ngIf="contentCounts.moduleUtils" [disabled]="showingView === ViewTypes.moduleUtils"
                     tooltip="View module utils"
                     (click)="toggleView(ViewTypes.moduleUtils)"><i class="fa fa-microchip"></i>
                     {{ contentCounts.moduleUtils }} Module Utils</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.plugin" [disabled]="showingView == ViewTypes.plugins"
+                    *ngIf="contentCounts.plugin" [disabled]="showingView === ViewTypes.plugins"
                     tooltip="View plugins"
                     (click)="toggleView(ViewTypes.plugins)"><i class="fa fa-plug"></i>
                     {{ contentCounts.plugin }} Plugins</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.role" [disabled]="showingView == ViewTypes.roles"
+                    *ngIf="contentCounts.role" [disabled]="showingView === ViewTypes.roles"
                     tooltip="View modules"
                     (click)="toggleView(ViewTypes.roles)"><i class="fa fa-gear"></i>
                     {{ contentCounts.role }} Roles</button>
             </div>
         </div>
 
-        <div *ngIf="!showEmptyState && showingView == ViewTypes.detail">
+        <div *ngIf="!showEmptyState && showingView === ViewTypes.detail">
             <div class="row detail">
                 <div class="col-sm-12">
                     <card-info
@@ -61,7 +61,7 @@
                     </card-info>
                 </div>
             </div>
-            <div class="row detail" *ngIf="repoType != RepoFormats.multi">
+            <div class="row detail" *ngIf="repoType !== RepoFormats.multi">
                 <div class="col-sm-3"
                     *ngIf="repoContent && repoContent['hasPlatforms']">
                     <card-platforms [platforms]="repoContent['platforms']"></card-platforms>
@@ -85,32 +85,32 @@
             </div>
         </div>
 
-        <div class="row row-readme" *ngIf="!showEmptyState && showingView == ViewTypes.readme">
+        <div class="row row-readme" *ngIf="!showEmptyState && showingView === ViewTypes.readme">
             <div class="col-sm-12">
                 <div class="readme" [innerHTML]="repoContent.readme_html"></div>
             </div>
         </div>
-        <div class="row meta" *ngIf="!showEmptyState && showingView == ViewTypes.meta">
+        <div class="row meta" *ngIf="!showEmptyState && showingView === ViewTypes.meta">
             <div class="col-sm-12">
                 <pre>{{ metadata | json }}</pre>
             </div>
         </div>
-        <div class="row modules" *ngIf="!showEmptyState && showingView == ViewTypes.modules">
+        <div class="row modules" *ngIf="!showEmptyState && showingView === ViewTypes.modules">
             <div class="col-sm-12">
                 <modules-detail [repository]="repository" [selectedContent]="selectedContent"></modules-detail>
             </div>
         </div>
-        <div class="row modules" *ngIf="!showEmptyState && showingView == ViewTypes.roles">
+        <div class="row modules" *ngIf="!showEmptyState && showingView === ViewTypes.roles">
             <div class="col-sm-12">
                 <roles-detail [repository]="repository" [selectedContent]="selectedContent"></roles-detail>
             </div>
         </div>
-        <div class="row modules" *ngIf="!showEmptyState && showingView == ViewTypes.plugins">
+        <div class="row modules" *ngIf="!showEmptyState && showingView === ViewTypes.plugins">
             <div class="col-sm-12">
                 <plugins-detail [repository]="repository" [selectedContent]="selectedContent"></plugins-detail>
             </div>
         </div>
-        <div class="row modules" *ngIf="!showEmptyState && showingView == ViewTypes.moduleUtils">
+        <div class="row modules" *ngIf="!showEmptyState && showingView === ViewTypes.moduleUtils">
             <div class="col-sm-12">
                 <module-utils-detail [repository]="repository" [selectedContent]="selectedContent">
                 </module-utils-detail>

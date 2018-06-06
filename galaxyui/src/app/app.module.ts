@@ -25,7 +25,6 @@ import {
 
 import { NotificationModule }         from 'patternfly-ng/notification/notification.module';
 import { NotificationService }        from 'patternfly-ng/notification/notification-service/notification.service';
-import { CardModule }                 from 'patternfly-ng/card/card.module';
 
 import { HomeModule }                 from './home/home.module';
 import { LoginModule }                from './login/login.module';
@@ -70,7 +69,6 @@ import { AppComponent }               from './app.component';
         BsDropdownModule.forRoot(),
         BsModalModule.forRoot(),
         NotificationModule,
-        CardModule,
         HomeModule,
         LoginModule,
         MyContentModule,

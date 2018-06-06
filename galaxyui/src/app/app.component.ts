@@ -57,7 +57,7 @@ export class AppComponent implements OnInit {
         this.router.events.subscribe(event => {
             if (event instanceof NavigationEnd || event instanceof NavigationStart) {
                 // When user navigates away from a page, remove any lingering notifications
-                let notices: Notification[] = notificationService.getNotifications();
+                const notices: Notification[] = notificationService.getNotifications();
                 notices.forEach((notice: Notification) => {
                     notificationService.remove(notice);
                 });
@@ -67,9 +67,9 @@ export class AppComponent implements OnInit {
 
     navItems:      NavigationItemConfig[] = [];
     modalRef:      BsModalRef;
-    authenticated: boolean = false;
+    authenticated = false;
     username:      string = null;
-    showAbout:     boolean = false;
+    showAbout = false;
     aboutConfig:   AboutModalConfig;
     redirectUrl:   string = null;
 
@@ -122,7 +122,7 @@ export class AppComponent implements OnInit {
                     value: (me.staff) ? 'Staff' : 'User'
                 });
 
-                if (this.authenticated){
+                if (this.authenticated) {
                     this.addNavButtons();
                 } else {
                     this.removeNavButtons();
@@ -140,17 +140,17 @@ export class AppComponent implements OnInit {
         this.modalRef.hide();
     }
 
-    removeNavButtons(): void{
-        for (var i = 0; i < this.navItems.length; i++){
-            let title = this.navItems[i].title;
-            if (title == "My Content" || title == "My Imports"){
+    removeNavButtons(): void {
+        for (let i = 0; i < this.navItems.length; i++) {
+            const title = this.navItems[i].title;
+            if (title === 'My Content' || title === 'My Imports') {
                 this.navItems.splice(i, 1);
                 i--;
             }
         }
     }
 
-    addNavButtons(): void{
+    addNavButtons(): void {
         this.navItems.push(
             {
                 title: 'My Content',

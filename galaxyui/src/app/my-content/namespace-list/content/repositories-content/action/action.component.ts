@@ -27,7 +27,7 @@ export class NamespaceRepositoryActionComponent implements OnInit {
     @ViewChild('importButtonTemplate') public buttonTemplate: TemplateRef<any>;
 
     @Input()
-    set repository(data:Repository) {
+    set repository(data: Repository) {
         this._repository = data;
     }
 
@@ -45,7 +45,7 @@ export class NamespaceRepositoryActionComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        let importing: boolean = false;
+        let importing = false;
         if (this.repository['latest_import'] &&
             (this.repository['latest_import']['state'] === 'PENDING' ||
                 this.repository['latest_import']['state'] === 'RUNNING')) {
@@ -70,10 +70,10 @@ export class NamespaceRepositoryActionComponent implements OnInit {
     }
 
     handleListAction($event: Action) {
-        let event = {
+        const event = {
             id: $event.id,
             item: this.repository
-        }
+        };
         this.handleAction.emit(event);
     }
 }

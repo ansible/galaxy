@@ -31,11 +31,11 @@ export class VendorCardComponent implements OnInit {
     _vendor: Namespace;
 
     @Input()
-    set vendor(data:Namespace) {
+    set vendor(data: Namespace) {
         this._vendor = data;
     }
 
-    get vendor():Namespace {
+    get vendor(): Namespace {
         return this._vendor;
     }
 
@@ -49,8 +49,10 @@ export class VendorCardComponent implements OnInit {
             }
             this.vendor['contentCount'] = 0;
             if (this.vendor['summary_fields']['content_counts']) {
-                for (var key in this.vendor['summary_fields']['content_counts']) {
-                    this.vendor['contentCount'] += this.vendor['summary_fields']['content_counts'][key];
+                for (const key in this.vendor['summary_fields']['content_counts']) {
+                    if (this.vendor['summary_fields']['content_counts'].hasOwnProperty(key)) {
+                        this.vendor['contentCount'] += this.vendor['summary_fields']['content_counts'][key];
+                    }
                 }
             }
         }

@@ -22,21 +22,21 @@ import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
 
 import { AuthService }                 from '../../auth/auth.service';
-import { Namespace }                   from "../../resources/namespaces/namespace";
-import { NamespaceService }            from "../../resources/namespaces/namespace.service";
+import { Namespace }                   from '../../resources/namespaces/namespace';
+import { NamespaceService }            from '../../resources/namespaces/namespace.service';
 import { BsModalService, BsModalRef }  from 'ngx-bootstrap';
-import { AddRepositoryModalComponent } from "../add-repository-modal/add-repository-modal.component";
-import { Me }                          from "../../auth/auth.service";
-import { FilterConfig }                from "patternfly-ng/filter/filter-config";
-import { ToolbarConfig }               from "patternfly-ng/toolbar/toolbar-config";
-import { FilterType }                  from "patternfly-ng/filter/filter-type";
-import { SortConfig }                  from "patternfly-ng/sort/sort-config";
-import { FilterField }                 from "patternfly-ng/filter/filter-field";
-import { SortField }                   from "patternfly-ng/sort/sort-field";
-import { ToolbarView }                 from "patternfly-ng/toolbar/toolbar-view";
-import { SortEvent }                   from "patternfly-ng/sort/sort-event";
-import { Filter }                      from "patternfly-ng/filter/filter";
-import { FilterEvent }                 from "patternfly-ng/filter/filter-event";
+import { AddRepositoryModalComponent } from '../add-repository-modal/add-repository-modal.component';
+import { Me }                          from '../../auth/auth.service';
+import { FilterConfig }                from 'patternfly-ng/filter/filter-config';
+import { ToolbarConfig }               from 'patternfly-ng/toolbar/toolbar-config';
+import { FilterType }                  from 'patternfly-ng/filter/filter-type';
+import { SortConfig }                  from 'patternfly-ng/sort/sort-config';
+import { FilterField }                 from 'patternfly-ng/filter/filter-field';
+import { SortField }                   from 'patternfly-ng/sort/sort-field';
+import { ToolbarView }                 from 'patternfly-ng/toolbar/toolbar-view';
+import { SortEvent }                   from 'patternfly-ng/sort/sort-event';
+import { Filter }                      from 'patternfly-ng/filter/filter';
+import { FilterEvent }                 from 'patternfly-ng/filter/filter-event';
 import { PagedResponse }               from '../../resources/paged-response';
 
 
@@ -51,29 +51,29 @@ export class NamespaceListComponent implements OnInit {
     namespaces: Namespace[] = [];
     me: Me;
 
-    pageTitle: string = "My Content";
-    pageLoading: boolean = true;
+    pageTitle = 'My Content';
+    pageLoading = true;
 
     toolbarActionConfig: ActionConfig;
     filterConfig: FilterConfig;
-    filtersText: string = '';
-    isAscendingSort: boolean = true;
+    filtersText = '';
+    isAscendingSort = true;
     sortConfig: SortConfig;
     currentSortField: SortField;
     toolbarConfig: ToolbarConfig;
     paginationConfig: PaginationConfig;
 
-    pageNumber: number = 1;
-    pageSize: number = 10;
+    pageNumber = 1;
+    pageSize = 10;
 
-    actionsText: string = '';
+    actionsText = '';
     listConfig: ListConfig;
     bsModalRef: BsModalRef;
 
     filterBy: any = {};
-    sortBy: string = 'name';
+    sortBy = 'name';
 
-    contentAdded: number = 0;
+    contentAdded = 0;
 
     constructor(
         private route: ActivatedRoute,
@@ -159,7 +159,7 @@ export class NamespaceListComponent implements OnInit {
 
         this.route.data
             .subscribe(data => {
-                var results = data['namespaces'] as PagedResponse;
+                const results = data['namespaces'] as PagedResponse;
                 this.me = data['me'];
                 this.items = this.prepForList(results.results as Namespace[]);
                 this.filterConfig.resultsCount = results.count;
@@ -168,10 +168,8 @@ export class NamespaceListComponent implements OnInit {
             });
     }
 
-    ngDoCheck(): void {}
-
     handleListAction($event: any): void {
-        let item = $event['item'] as Namespace;
+        const item = $event['item'] as Namespace;
         switch ($event['id']) {
             case 'addContent':
                 this.addContent(item);
@@ -194,7 +192,7 @@ export class NamespaceListComponent implements OnInit {
     filterChanged($event): void {
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach(filter => {
-                if (filter.field.type == 'typeahead') {
+                if (filter.field.type === 'typeahead') {
                     this.filterBy['or__' + filter.field.id + '__icontains'] = filter.query.id;
                 } else {
                     this.filterBy['or__' + filter.field.id + '__icontains'] = filter.value;
@@ -226,7 +224,7 @@ export class NamespaceListComponent implements OnInit {
     }
 
     handlePageSizeChange($event: PaginationEvent) {
-        if ($event.pageSize && this.pageSize != $event.pageSize) {
+        if ($event.pageSize && this.pageSize !== $event.pageSize) {
             this.pageSize = $event.pageSize;
             this.pageNumber = 1;
             this.searchNamespaces();
@@ -234,16 +232,16 @@ export class NamespaceListComponent implements OnInit {
     }
 
     handlePageNumberChange($event: PaginationEvent) {
-        if ($event.pageNumber && this.pageNumber != $event.pageNumber) {
+        if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
             this.pageNumber = $event.pageNumber;
             this.searchNamespaces();
         }
     }
 
-    //private
+    // private
 
     private prepForList(namespaces: Namespace[]): Namespace[] {
-        let clonedNamespaces = cloneDeep(namespaces);
+        const clonedNamespaces = cloneDeep(namespaces);
         return clonedNamespaces;
     }
 
@@ -257,7 +255,7 @@ export class NamespaceListComponent implements OnInit {
     private enableDisableNamespace(namespace: Namespace) {
         namespace.active = !namespace.active;
         this.namespaceService.save(namespace)
-            .subscribe(_ => { this.searchNamespaces() });
+            .subscribe(_ => { this.searchNamespaces(); });
     }
 
     private searchNamespaces() {

@@ -12,17 +12,17 @@ import { Action }             from 'patternfly-ng/action/action';
 import { ActionConfig }       from 'patternfly-ng/action/action-config';
 import { ListEvent }          from 'patternfly-ng/list/list-event';
 import { ListConfig }         from 'patternfly-ng/list/basic-list/list-config';
-import { FilterConfig }       from "patternfly-ng/filter/filter-config";
-import { ToolbarConfig }      from "patternfly-ng/toolbar/toolbar-config";
-import { FilterType }         from "patternfly-ng/filter/filter-type";
-import { SortConfig }         from "patternfly-ng/sort/sort-config";
-import { FilterField }        from "patternfly-ng/filter/filter-field";
-import { SortField }          from "patternfly-ng/sort/sort-field";
-import { ToolbarView }        from "patternfly-ng/toolbar/toolbar-view";
-import { SortEvent }          from "patternfly-ng/sort/sort-event";
-import { Filter }             from "patternfly-ng/filter/filter";
-import { FilterEvent }        from "patternfly-ng/filter/filter-event";
-import { EmptyStateConfig }   from "patternfly-ng/empty-state/empty-state-config";
+import { FilterConfig }       from 'patternfly-ng/filter/filter-config';
+import { ToolbarConfig }      from 'patternfly-ng/toolbar/toolbar-config';
+import { FilterType }         from 'patternfly-ng/filter/filter-type';
+import { SortConfig }         from 'patternfly-ng/sort/sort-config';
+import { FilterField }        from 'patternfly-ng/filter/filter-field';
+import { SortField }          from 'patternfly-ng/sort/sort-field';
+import { ToolbarView }        from 'patternfly-ng/toolbar/toolbar-view';
+import { SortEvent }          from 'patternfly-ng/sort/sort-event';
+import { Filter }             from 'patternfly-ng/filter/filter';
+import { FilterEvent }        from 'patternfly-ng/filter/filter-event';
+import { EmptyStateConfig }   from 'patternfly-ng/empty-state/empty-state-config';
 import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
 
@@ -48,8 +48,8 @@ export class VendorsComponent implements OnInit {
           private namespaceService: NamespaceService
     ) {}
 
-    pageTitle: string = `<i class="fa fa-star"></i> Vendors`;
-    pageLoading: boolean = true;
+    pageTitle = `<i class="fa fa-star"></i> Vendors`;
+    pageLoading = true;
     items: Namespace[] = [];
 
     emptyStateConfig: EmptyStateConfig;
@@ -59,12 +59,12 @@ export class VendorsComponent implements OnInit {
     toolbarConfig: ToolbarConfig;
     listConfig: ListConfig;
     paginationConfig: PaginationConfig;
-    sortBy: string = "name";
+    sortBy = 'name';
     filterBy: any = {
         'is_vendor': 'true'
     };
-    pageNumber: number = 1;
-    pageSize: number = 10;
+    pageNumber = 1;
+    pageSize = 10;
 
     ngOnInit() {
         this.emptyStateConfig = {
@@ -150,7 +150,7 @@ export class VendorsComponent implements OnInit {
     filterChanged($event): void {
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach(filter => {
-                if (filter.field.type == 'typeahead') {
+                if (filter.field.type === 'typeahead') {
                     this.filterBy['or__' + filter.field.id + '__icontains'] = filter.query.id;
                 } else {
                     this.filterBy['or__' + filter.field.id + '__icontains'] = filter.value;
@@ -175,7 +175,7 @@ export class VendorsComponent implements OnInit {
     }
 
     handlePageSizeChange($event: PaginationEvent) {
-        if ($event.pageSize && this.pageSize != $event.pageSize) {
+        if ($event.pageSize && this.pageSize !== $event.pageSize) {
             this.pageSize = $event.pageSize;
             this.pageNumber = 1;
             this.searchNamespaces();
@@ -183,7 +183,7 @@ export class VendorsComponent implements OnInit {
     }
 
     handlePageNumberChange($event: PaginationEvent) {
-        if ($event.pageNumber && this.pageNumber != $event.pageNumber) {
+        if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
             this.pageNumber = $event.pageNumber;
             this.searchNamespaces();
         }
@@ -194,29 +194,33 @@ export class VendorsComponent implements OnInit {
         if (this.items) {
             this.items.forEach(item => {
                 // Creat an array of {'Content Type': {count: <int>, iconClass: 'icon-class'}}
-                let contentCounts = [];
-                for (let ct in ContentTypes) {
-                    if (ct == ContentTypes.plugin) {
-                        // summarize plugins
-                        let count = 0;
-                        let countObj = {};
-                        for (let count_key in item['summary_fields']['content_counts']) {
-                            if (count_key.indexOf('plugin') > -1) {
-                                count += item['summary_fields']['content_counts'][count_key];
+                const contentCounts = [];
+                for (const ct in ContentTypes) {
+                    if (ContentTypes.hasOwnProperty(ct)) {
+                        if (ct === ContentTypes.plugin) {
+                            // summarize plugins
+                            let count = 0;
+                            const countObj = {};
+                            for (const count_key in item['summary_fields']['content_counts']) {
+                                if (item['summary_fields']['content_counts'].hasOwnProperty(count_key)) {
+                                    if (count_key.indexOf('plugin') > -1) {
+                                        count += item['summary_fields']['content_counts'][count_key];
+                                    }
+                                }
                             }
-                        }
-                        if (count > 0) {
+                            if (count > 0) {
+                                countObj['title'] = ContentTypesPluralChoices[ct];
+                                countObj['count'] = count;
+                                countObj['iconClass'] = ContentTypesIconClasses[ct];
+                                contentCounts.push(countObj);
+                            }
+                        } else if (item['summary_fields']['content_counts'][ContentTypes[ct]] > 0) {
+                            const countObj = {};
                             countObj['title'] = ContentTypesPluralChoices[ct];
-                            countObj['count'] = count;
+                            countObj['count'] = item['summary_fields']['content_counts'][ContentTypes[ct]];
                             countObj['iconClass'] = ContentTypesIconClasses[ct];
                             contentCounts.push(countObj);
                         }
-                    } else if (item['summary_fields']['content_counts'][ContentTypes[ct]] > 0) {
-                        let countObj = {}
-                        countObj['title'] = ContentTypesPluralChoices[ct];
-                        countObj['count'] = item['summary_fields']['content_counts'][ContentTypes[ct]];
-                        countObj['iconClass'] = ContentTypesIconClasses[ct];
-                        contentCounts.push(countObj);
                     }
                 }
                 item['contentCounts'] = contentCounts;

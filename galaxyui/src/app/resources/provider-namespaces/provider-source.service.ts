@@ -1,12 +1,12 @@
 import { Injectable }           from '@angular/core';
-import { NotificationService }  from "patternfly-ng/notification/notification-service/notification.service";
-import { catchError, map, tap } from "rxjs/operators";
-import { HttpClient }           from "@angular/common/http";
-import { Observable }           from "rxjs/Observable";
-import { of }                   from "rxjs/observable/of";
-import { ProviderNamespace }    from "./provider-namespace";
-import { ProviderSource }       from "./provider-source";
-import { RepositorySource }     from "../repositories/repository-source";
+import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
+import { catchError, map, tap } from 'rxjs/operators';
+import { HttpClient }           from '@angular/common/http';
+import { Observable }           from 'rxjs/Observable';
+import { of }                   from 'rxjs/observable/of';
+import { ProviderNamespace }    from './provider-namespace';
+import { ProviderSource }       from './provider-source';
+import { RepositorySource }     from '../repositories/repository-source';
 
 @Injectable()
 export class ProviderSourceService {
@@ -25,7 +25,7 @@ export class ProviderSourceService {
             );
     }
 
-    getRepoSources(params):  Observable<RepositorySource[]>{
+    getRepoSources(params):  Observable<RepositorySource[]> {
         return this.http.get<RepositorySource[]>(`${this.url}/${params.providerName}/${params.name}/`)
         .pipe(
             tap(providerNamespaces => this.log('fetched source repositories')),

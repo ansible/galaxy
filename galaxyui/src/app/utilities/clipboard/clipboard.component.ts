@@ -29,20 +29,20 @@ export class ClipboardComponent implements OnInit {
         this.guid = this.calcGuid();
     }
 
-    s4():string {
+    s4(): string {
         return Math.floor((1 + Math.random()) * 0x10000)
           .toString(16)
           .substring(1);
     }
 
-    calcGuid():string {
+    calcGuid(): string {
       return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + this.s4() + this.s4();
     }
 
     copyToClipboard() {
-        let element = document.getElementById(this.guid);
-        let val = element.textContent;
-        let txtArea = document.createElement('textarea');
+        const element = document.getElementById(this.guid);
+        const val = element.textContent;
+        const txtArea = document.createElement('textarea');
         txtArea.setAttribute('readonly', '');
         txtArea.style.position = 'absolute';
         txtArea.style.left = '-9999px';

@@ -27,7 +27,7 @@ export class NamespaceActionComponent implements OnInit {
     @ViewChild('addContentButtonTemplate') public buttonTemplate: TemplateRef<any>;
 
     @Input()
-    set namespace(data:Namespace) {
+    set namespace(data: Namespace) {
         this._namespace = data;
     }
 
@@ -45,13 +45,15 @@ export class NamespaceActionComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        let provider_namespaces = this.namespace['summary_fields']['provider_namespaces'];
+        const provider_namespaces = this.namespace['summary_fields']['provider_namespaces'];
 
         let primaryTooltip = 'Add yor Ansible content repositories';
-        if (!this.namespace.active)
+        if (!this.namespace.active) {
              primaryTooltip = 'Namespace is disabled';
-        if (!provider_namespaces.length)
+        }
+        if (!provider_namespaces.length) {
              primaryTooltip = 'Missing provider namespaces';
+        }
 
         this.actionConfig = {
             primaryActions: [{
@@ -89,14 +91,13 @@ export class NamespaceActionComponent implements OnInit {
             moreActionsVisible: true,
             moreActionsStyleClass: ''
         } as ActionConfig;
-        //console.log(this.actionConfig);
     }
 
     handleListAction($event: Action) {
-        let event = {
+        const event = {
             id: $event.id,
             item: this.namespace
-        }
+        };
         this.handleAction.emit(event);
     }
 }

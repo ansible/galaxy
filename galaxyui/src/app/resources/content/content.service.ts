@@ -1,11 +1,11 @@
 import { Injectable }           from '@angular/core';
-import { NotificationService }  from "patternfly-ng/notification/notification-service/notification.service";
-import { catchError, map, tap } from "rxjs/operators";
+import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
+import { catchError, map, tap } from 'rxjs/operators';
 
 import {
     HttpClient,
     HttpHeaders,
-} from "@angular/common/http";
+} from '@angular/common/http';
 
 import { Observable }    from 'rxjs/Observable';
 import { of }            from 'rxjs/observable/of';
@@ -27,7 +27,7 @@ export class ContentService {
         private notificationService: NotificationService
     ) { }
 
-    private url: string = '/api/v1/content/';
+    private url = '/api/v1/content/';
 
     query(params?: any): Observable<Content[]> {
         return this.http.get<PagedResponse>(this.url, {params: params})
@@ -39,14 +39,14 @@ export class ContentService {
     }
 
     pagedQuery(params?: any): Observable<PagedResponse> {
-        if (params && typeof params == 'object') {
+        if (params && typeof params === 'object') {
             return this.http.get<PagedResponse>(this.url, {params: params})
                 .pipe(
                     tap(_ => this.log('fetched paged content')),
                      catchError(this.handleError('Query', {} as PagedResponse))
                 );
         }
-        if (params && typeof params == 'string') {
+        if (params && typeof params === 'string') {
             return this.http.get<PagedResponse>(this.url + params)
                 .pipe(
                     tap(_ => this.log('fetched paged content')),

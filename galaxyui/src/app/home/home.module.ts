@@ -11,9 +11,7 @@ import { PopularComponent }     from './popular/popular.component';
 import { HomeComponent }        from './home.component';
 import { HomeRoutingModule }    from './home.routing.module';
 
-import {
-    CardModule
-} from 'patternfly-ng/card/card.module';
+import { CardModule }           from 'patternfly-ng/card/basic-card/card.module';
 
 import { PageHeaderModule }     from '../page-header/page-header.module';
 import { PageLoadingModule }    from '../page-loading/page-loading.module';

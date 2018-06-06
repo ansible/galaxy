@@ -9,7 +9,7 @@ import {
     RouterStateSnapshot
 } from '@angular/router';
 
-import { Observable }            from "rxjs/Observable";
+import { Observable }            from 'rxjs/Observable';
 import { forkJoin }              from 'rxjs/observable/forkJoin';
 
 import { ContentService }        from '../resources/content/content.service';
@@ -24,7 +24,7 @@ export class NamespaceListResolver implements Resolve<PagedResponse> {
     constructor(
         private namespaceService: NamespaceService,
         private router: Router
-    ){}
+    ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<PagedResponse> {
         return this.namespaceService.pagedQuery({'is_vendor': false});
     }
@@ -35,12 +35,12 @@ export class NamespaceDetailResolver implements Resolve<Namespace> {
     constructor(
         private namespaceService: NamespaceService,
         private router: Router
-    ){}
+    ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Namespace> {
-        let namespace = route.params['namespace'].toLowerCase();
-        let params = {
+        const namespace = route.params['namespace'].toLowerCase();
+        const params = {
             name__iexact: namespace
-        }
+        };
         return this.namespaceService.query(params).map(results => {
             if (results && results.length) {
                 return results[0] as Namespace;
@@ -56,10 +56,10 @@ export class RepositoryResolver implements Resolve<PagedResponse> {
     constructor(
         private repositoryService: RepositoryService,
         private router: Router
-    ){}
+    ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<PagedResponse> {
-        let namespace = route.params['namespace'].toLowerCase();
-        let params = {
+        const namespace = route.params['namespace'].toLowerCase();
+        const params = {
             'provider_namespace__namespace__name__iexact': namespace,
         };
         return this.repositoryService.pagedQuery(params);

@@ -1,11 +1,11 @@
 import { Injectable }           from '@angular/core';
-import { catchError, map, tap } from "rxjs/operators";
-import { NotificationService }  from "patternfly-ng/notification/notification-service/notification.service";
-import { Observable }           from "rxjs/Observable";
-import { HttpClient }           from "@angular/common/http";
-import { PagedResponse }        from "../paged-response";
-import { ContentBlock }         from "./content-block";
-import { of }                   from "rxjs/observable/of";
+import { catchError, map, tap } from 'rxjs/operators';
+import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
+import { Observable }           from 'rxjs/Observable';
+import { HttpClient }           from '@angular/common/http';
+import { PagedResponse }        from '../paged-response';
+import { ContentBlock }         from './content-block';
+import { of }                   from 'rxjs/observable/of';
 
 
 @Injectable()
@@ -23,16 +23,16 @@ export class ContentBlocksService {
                 map(response => response.results as ContentBlock[]),
                 tap(_ => this.log('fetched content blocks')),
                 catchError(this.handleError<ContentBlock[]>('Query', []))
-            )
+            );
     }
 
     get(name: string): Observable<ContentBlock> {
-        let url = `${this.url}${name}/`;
+        const url = `${this.url}${name}/`;
         return this.http.get<ContentBlock>(url)
             .pipe(
                 tap(_ => this.log('fetched content block')),
                 catchError(this.handleError<ContentBlock>(`Get content block ${name}`))
-            )
+            );
     }
 
     private handleError<T>(operation = '', result?: T) {

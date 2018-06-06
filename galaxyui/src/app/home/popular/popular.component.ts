@@ -29,7 +29,7 @@ export class PopularComponent implements OnInit {
     categories: Category[] = [];
 
     constructor(
-        private router:Router
+        private router: Router
     ) {}
 
     ngOnInit() {
@@ -77,9 +77,9 @@ export class PopularComponent implements OnInit {
         ] as Category[];
     }
 
-    handleCategoryClick(category:Category) {
-        let params = {};
-        if (category.name == 'Playbook Bundles') {
+    handleCategoryClick(category: Category) {
+        const params = {};
+        if (category.name === 'Playbook Bundles') {
             params['content_type'] = ContentTypes.apb;
         } else {
             params['tags'] = category.name.toLowerCase();

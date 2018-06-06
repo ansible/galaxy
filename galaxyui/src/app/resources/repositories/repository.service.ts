@@ -6,8 +6,8 @@ import { of }                   from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { Repository }          from './repository';
-import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service'
-import { PagedResponse }       from "../paged-response";
+import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
+import { PagedResponse }       from '../paged-response';
 
 const httpOptions = {
     headers: new HttpHeaders({
@@ -34,14 +34,14 @@ export class RepositoryService {
     }
 
     pagedQuery(params?: any): Observable<PagedResponse> {
-        if (params && typeof params == 'object') {
+        if (params && typeof params === 'object') {
             return this.http.get<PagedResponse>(this.url + '/', {params: params})
                 .pipe(
                     tap(_ => this.log('fetched repositories')),
                     catchError(this.handleError('Query', {} as PagedResponse))
                 );
         }
-        if (params && typeof params == 'string') {
+        if (params && typeof params === 'string') {
             return this.http.get<PagedResponse>(this.url + '/' + params)
                 .pipe(
                     tap(_ => this.log('fetched repositories')),
@@ -91,11 +91,13 @@ export class RepositoryService {
             let data = error;
             if (error['error']) {
                 // Check if API returned a field-level validation error
-                let msg = error['error'];
-                if (typeof msg == 'object') {
-                    for (var key in msg) {
-                        data = {message: msg[key]};
-                        break;
+                const msg = error['error'];
+                if (typeof msg === 'object') {
+                    for (const key in msg) {
+                        if (msg.hasOwnProperty(key)) {
+                            data = {message: msg[key]};
+                            break;
+                        }
                     }
                 }
             }

@@ -1,11 +1,11 @@
 import { Injectable }              from '@angular/core';
-import { catchError, map, tap }    from "rxjs/operators";
-import { NotificationService }     from "patternfly-ng/notification/notification-service/notification.service";
-import { PagedResponse }           from "../paged-response";
-import { of }                      from "rxjs/observable/of";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Observable }              from "rxjs/Observable";
-import { RepositoryImport }        from "./repository-import";
+import { catchError, map, tap }    from 'rxjs/operators';
+import { NotificationService }     from 'patternfly-ng/notification/notification-service/notification.service';
+import { PagedResponse }           from '../paged-response';
+import { of }                      from 'rxjs/observable/of';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable }              from 'rxjs/Observable';
+import { RepositoryImport }        from './repository-import';
 
 const httpOptions = {
     headers: new HttpHeaders({
@@ -32,7 +32,6 @@ export class RepositoryImportService {
     }
 
     save(params: any): Observable<RepositoryImport> {
-        let httpResult: Observable<Object>;
         return this.http.post<RepositoryImport>(`${this.url}/`, params, httpOptions)
             .pipe(
                 tap((newImport: RepositoryImport) => this.log(`Saved repository import`)),

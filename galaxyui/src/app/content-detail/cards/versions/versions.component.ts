@@ -39,6 +39,6 @@ export class CardVersionsComponent implements OnInit {
         this.config = {
             titleBorder: true,
             topBorder: true
-        } as CardConfig
+        } as CardConfig;
     }
 }

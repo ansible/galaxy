@@ -27,7 +27,7 @@ export class NamespaceDetailResolver implements Resolve<Namespace> {
         private router: Router) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Namespace> {
-        let id = route.paramMap.get('id');
+        const id = route.paramMap.get('id');
 
         if (id === 'new') {
             return null;

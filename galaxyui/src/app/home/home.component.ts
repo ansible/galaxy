@@ -31,9 +31,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
     downloadContent: string;
     shareContent: string;
     featuredBlogContent: string;
-    headerTitle: string = "Home";
-    searchText: string = '';
-    showCards: boolean = false;
+    headerTitle = 'Home';
+    searchText = '';
+    showCards = false;
     vendors: Namespace[] = [];
 
     constructor(
@@ -54,22 +54,22 @@ export class HomeComponent implements OnInit, AfterViewInit {
                         break;
                     case 'main-featured-blog':
                         this.featuredBlogContent = item.content;
-                        break
+                        break;
                 }
             });
         });
 
         this.downloadConfig = {
             titleBorder: true
-        } as CardConfig
+        } as CardConfig;
 
         this.shareConfig = {
             titleBorder: true
-        } as CardConfig
+        } as CardConfig;
 
         this.featureConfig = {
             titleBorder: true
-        } as CardConfig
+        } as CardConfig;
     }
 
     onResize($event) {
@@ -90,15 +90,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private setCardHeight(): void {
         // Set the cards to a consistent height
         setTimeout(_ => {
-            let windowHeight = window.innerHeight;
-            let windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const windowWidth = window.innerWidth;
             $('#card-1 .pfng-card').css('height', 'auto');
             $('#card-2 .pfng-card').css('height', 'auto');
             $('#card-3 .pfng-card').css('height', 'auto');
-            let height1 = $('#card-1 .pfng-card').height();
-            let height2 = $('#card-2 .pfng-card').height();
-            let height3 = $('#card-3 .pfng-card').height();
-            let height = Math.max(height1, height2, height3);
+            const height1 = $('#card-1 .pfng-card').height();
+            const height2 = $('#card-2 .pfng-card').height();
+            const height3 = $('#card-3 .pfng-card').height();
+            const height = Math.max(height1, height2, height3);
             if (windowWidth > 768 && !isNaN(height)) {
                 $('#card-1 .pfng-card').css('height', height);
                 $('#card-2 .pfng-card').css('height', height);

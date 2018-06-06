@@ -1,6 +1,6 @@
 export enum ImportState {
-    pending = "PENDING",
-    running = "RUNNING",
-    failed = "FAILED",
-    success = "SUCCESS"
+    pending = 'PENDING',
+    running = 'RUNNING',
+    failed = 'FAILED',
+    success = 'SUCCESS'
 }

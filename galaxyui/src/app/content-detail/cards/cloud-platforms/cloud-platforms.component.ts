@@ -26,6 +26,6 @@ export class CardCloudPlatformsComponent implements OnInit {
         this.config = {
             titleBorder: true,
             topBorder: true
-        } as CardConfig
+        } as CardConfig;
     }
 }

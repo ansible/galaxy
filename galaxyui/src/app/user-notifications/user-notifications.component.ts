@@ -16,7 +16,7 @@ import { NotificationEvent }    from 'patternfly-ng';
     styleUrls: ['./user-notifications.component.less']
 })
 export class UserNotificationsComponent implements OnInit {
-    showClose: boolean = true;
+    showClose = true;
     notifications: Notification[];
 
     constructor(private notificationService: NotificationService) {

@@ -22,13 +22,13 @@ export class CardDependenciesComponent implements OnInit {
 
     @Input()
     set dependencies(deps: any[]) {
-        this._dependencies = []
+        this._dependencies = [];
         if (deps) {
             deps.forEach(d => {
                 this._dependencies.push({
                     name: `${d.namespace}.${d.name}`,
                     url: `/${d.namespace}/${d.name}`
-                })
+                });
             });
         }
     }
@@ -43,6 +43,6 @@ export class CardDependenciesComponent implements OnInit {
         this.config = {
             titleBorder: true,
             topBorder: true
-        } as CardConfig
+        } as CardConfig;
     }
 }
