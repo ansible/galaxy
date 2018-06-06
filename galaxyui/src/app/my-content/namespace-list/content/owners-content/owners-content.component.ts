@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
-import { Namespace }                                   from "../../../../resources/namespaces/namespace";
+import { Namespace }                                   from '../../../../resources/namespaces/namespace';
 
 @Component({
     encapsulation: ViewEncapsulation.None,

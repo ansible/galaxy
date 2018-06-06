@@ -1,5 +1,5 @@
 export class ContentBlock {
-    url: string; 
+    url: string;
     related: object;
     summary_fields: object;
     content: string;

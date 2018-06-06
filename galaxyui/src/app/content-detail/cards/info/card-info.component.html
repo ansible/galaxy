@@ -5,7 +5,7 @@
         <ng-template #headerTemplate>
             <div class="card-heading"><div class="icon-container"><span class="fa fa-info-circle fa-2x"></span></div> <div class="title-text">Info</div></div>
         </ng-template>
-        <div class="card-info-body" *ngIf="repoType == RepoFormats.role">
+        <div class="card-info-body" *ngIf="repoType === RepoFormats.role">
             <table>
                 <tr>
                     <td>Minimum Ansible Version</td>
@@ -35,7 +35,7 @@
                 </tr>
             </table>
         </div>
-        <div class="card-info-body apb" *ngIf="repoType == RepoFormats.apb">
+        <div class="card-info-body apb" *ngIf="repoType === RepoFormats.apb">
             <div class="title" *ngIf="metadata && metadata['metadata'] && metadata['metadata']['imageUrl']">
                 <img [src]="metadata['metadata']['imageUrl']" /> {{ metadata['metadata']['displayName'] }}
             </div>
@@ -70,7 +70,7 @@
                 </tr>
             </table>
         </div>
-        <div class="card-info-body" *ngIf="repoType == RepoFormats.multi">
+        <div class="card-info-body" *ngIf="repoType === RepoFormats.multi">
             <div *ngIf="repoContent">
                 <table class="multi-table">
                     <tr>

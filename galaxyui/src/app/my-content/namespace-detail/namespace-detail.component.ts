@@ -23,12 +23,12 @@ import { FilterComponent }       from 'patternfly-ng/filter/filter.component';
 
 import { Me }                    from '../../auth/auth.service';
 import { Namespace }             from '../../resources/namespaces/namespace';
-import { NamespaceService }      from "../../resources/namespaces/namespace.service";
-import { UserService }           from "../../resources/users/user.service";
-import { User }                  from "../../resources/users/user";
-import { ProviderNamespace }     from "../../resources/provider-namespaces/provider-namespace";
-import { ProviderSource }        from "../../resources/provider-namespaces/provider-source";
-import { ProviderSourceService } from "../../resources/provider-namespaces/provider-source.service";
+import { NamespaceService }      from '../../resources/namespaces/namespace.service';
+import { UserService }           from '../../resources/users/user.service';
+import { User }                  from '../../resources/users/user';
+import { ProviderNamespace }     from '../../resources/provider-namespaces/provider-namespace';
+import { ProviderSource }        from '../../resources/provider-namespaces/provider-source';
+import { ProviderSourceService } from '../../resources/provider-namespaces/provider-source.service';
 
 class Owner {
     username: string;
@@ -71,8 +71,8 @@ export class NamespaceDetailComponent implements OnInit {
     _namespace: Namespace;
     me: Me;
 
-    pageTitle: string = 'My Content;/my-content;Add Namespace';
-    pageLoading: boolean = true;
+    pageTitle = 'My Content;/my-content;Add Namespace';
+    pageLoading = true;
 
 
     namespaceForm: FormGroup;
@@ -84,8 +84,8 @@ export class NamespaceDetailComponent implements OnInit {
     providerSources: ProviderSource[];
     providerSourcesFiltered: ProviderSource[];
     selectedNamespaces: Source[] = [];
-    usersLoading: boolean = true;
-    namespacesLoading: boolean = true;
+    usersLoading = true;
+    namespacesLoading = true;
 
     constructor(
         private route: ActivatedRoute,
@@ -137,7 +137,7 @@ export class NamespaceDetailComponent implements OnInit {
     }
 
     saveNamespace($event) {
-        let namespace: Namespace = this.prepareSaveNamespace();
+        const namespace: Namespace = this.prepareSaveNamespace();
         this.namespaceService.save(namespace)
             .subscribe(
                 result => {
@@ -149,12 +149,12 @@ export class NamespaceDetailComponent implements OnInit {
     }
 
     toggleUser(id: number): void {
-        let match: boolean = false;
-        let matchedIdx: number = -1;
+        let match = false;
+        let matchedIdx = -1;
         let user: User;
 
         this.users.forEach(item => {
-            if (item.id == id) {
+            if (item.id === id) {
                 user = item;
             }
         });
@@ -162,7 +162,7 @@ export class NamespaceDetailComponent implements OnInit {
         user.selected = !user.selected;
 
         this.selectedUsers.forEach((owner: User, idx: number) => {
-            if (owner.id == user.id) {
+            if (owner.id === user.id) {
                 match = true;
                 matchedIdx = idx;
             }
@@ -179,12 +179,12 @@ export class NamespaceDetailComponent implements OnInit {
     }
 
     toggleNamespace(name: string, provider: number): void {
-        let match: boolean = false;
-        let matchedIdx: number = -1;
+        let match = false;
+        let matchedIdx = -1;
         let namespace: ProviderSource;
 
         this.providerSources.forEach(item => {
-            if (item.name == name && item.provider == provider) {
+            if (item.name === name && item.provider === provider) {
                 namespace = item;
             }
         });
@@ -192,7 +192,7 @@ export class NamespaceDetailComponent implements OnInit {
         namespace.selected = !namespace.selected;
 
         this.selectedNamespaces.forEach((ns: Source, idx: number) => {
-            if (ns.name == namespace.name && ns.provider == namespace.provider) {
+            if (ns.name === namespace.name && ns.provider === namespace.provider) {
                 match = true;
                 matchedIdx = idx;
             }
@@ -200,7 +200,7 @@ export class NamespaceDetailComponent implements OnInit {
 
         if (!match && namespace.selected) {
             // add selected namespace
-            let source = new Source();
+            const source = new Source();
             source.description = namespace.description;
             source.html_url = namespace.html_url;
             source.display_name = namespace.display_name;
@@ -238,10 +238,11 @@ export class NamespaceDetailComponent implements OnInit {
 
     userFilterChanged($event: FilterEvent): void {
         if ($event.appliedFilters.length) {
-            let queryStr: string = '';
+            let queryStr = '';
             $event.appliedFilters.forEach((filter: any, idx: number) => {
-                if (idx > 0)
+                if (idx > 0) {
                     queryStr += '&';
+                }
                 queryStr += `or__username__icontains=${filter.value}`;
             });
             this.getUsers(queryStr);
@@ -294,14 +295,14 @@ export class NamespaceDetailComponent implements OnInit {
     }
 
     private prepUsersForList(users: User[]): User[] {
-        let clone = cloneDeep(users);
+        const clone = cloneDeep(users);
         clone.forEach(item => {
             if (!item.github_avatar) {
                 item.github_avatar = '/assets/avatar.png';
             }
             item.selected = false;
             this.selectedUsers.forEach(selected => {
-                if (selected.id == item.id) {
+                if (selected.id === item.id) {
                     item.selected = true;
                 }
             });
@@ -310,14 +311,14 @@ export class NamespaceDetailComponent implements OnInit {
     }
 
     private prepProviderSourcesForList(providerSources: ProviderSource[]): ProviderSource[] {
-        let clone = cloneDeep(providerSources);
+        const clone = cloneDeep(providerSources);
         clone.forEach(item => {
             if (!item.avatar_url) {
                 item.avatar_url = '/assets/avatar.png';
             }
             item.selected = false;
             this.selectedNamespaces.forEach(selected => {
-                if (selected.provider == item.provider && selected.name == item.name) {
+                if (selected.provider === item.provider && selected.name === item.name) {
                     item.selected = true;
                 }
             });
@@ -327,7 +328,7 @@ export class NamespaceDetailComponent implements OnInit {
 
     private prepareSaveNamespace(): Namespace {
         const formModel = this.namespaceForm.value;
-        let ns: Namespace = new Namespace();
+        const ns: Namespace = new Namespace();
 
         if (this.namespace.id) {
             ns.id = this.namespace.id;
@@ -340,17 +341,17 @@ export class NamespaceDetailComponent implements OnInit {
         ns.email = formModel.email as string;
         ns.html_url = formModel.html_url as string;
         ns.active = true;
-        ns.is_vendor = (formModel.namespaceType == 'vendor') ? true : false;
+        ns.is_vendor = (formModel.namespaceType === 'vendor') ? true : false;
 
-        let owners: User[] = [];
-        let pns: ProviderNamespace[] = [];
+        const owners: User[] = [];
+        const pns: ProviderNamespace[] = [];
         this.selectedUsers.forEach(item => {
-            let owner: User = new User();
+            const owner: User = new User();
             owner.id = item.id;
             owners.push(owner);
         });
         this.selectedNamespaces.forEach(item => {
-            let pn: ProviderNamespace = new ProviderNamespace();
+            const pn: ProviderNamespace = new ProviderNamespace();
             pn.description = item.description;
             pn.html_url = item.html_url;
             pn.display_name = item.display_name;

@@ -47,7 +47,7 @@
             </div>
         </div>
         <div *ngIf="importTask && !importTask.summary_fields.task_messages.length">
-            <div class="message" *ngIf="importTask.state == ImportState.pending">
+            <div class="message" *ngIf="importTask.state === ImportState.pending">
                 <span class="text warning">Waiting for import to start...</span>
             </div>
         </div>

@@ -7,10 +7,7 @@ import {
     HttpHeaders
 } from '@angular/common/http';
 
-import {
-    Observable,
-    Subject
-} from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 
 import {
     CanActivate,
@@ -42,8 +39,8 @@ export class AuthService implements CanActivate {
 
     headers: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json');
     meCache: Me = null;
-    meUrl: string = '/api/v1/me/';
-    redirectUrl: string = '/home';
+    meUrl = '/api/v1/me/';
+    redirectUrl = '/home';
 
     me(): Observable<Me> {
         if (this.meCache) {

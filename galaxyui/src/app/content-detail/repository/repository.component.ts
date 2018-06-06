@@ -76,7 +76,7 @@ export class RepositoryComponent implements OnInit {
     }
 
     // private
-    private setRepositoryView(){
+    private setRepositoryView() {
         // Determine repoType: role, apb, multiconent
         this.repositoryView = {} as RepositoryView;
         this.repositoryView.repoType = RepoFormats[this.repository.format];

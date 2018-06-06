@@ -33,13 +33,13 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
     private _importTask: Import;
     private _refreshing: boolean;
 
-    scroll: boolean = false;
+    scroll = false;
 
     ImportState: typeof ImportState = ImportState;
 
     @Input()
     set importTask(data: Import) {
-        if (this._importTask && this.importTask.id != data.id) {
+        if (this._importTask && this.importTask.id !== data.id) {
             this.scroll = false;
             this.scrollToggled.emit(this.scroll);
         }
@@ -73,7 +73,7 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {}
 
-    startImport():void {
+    startImport(): void {
         this.repositoryImportService.save({'repository_id': this.importTask.summary_fields.repository.id})
             .subscribe(response => {
                 console.log(
@@ -84,10 +84,10 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
     }
 
     affix(): void {
-        var $cache = $('#log-follow-button');
-        var $idcontainer = $('#import-details-container');
+        const $cache = $('#log-follow-button');
+        const $idcontainer = $('#import-details-container');
         $($idcontainer).scroll(_ => {
-            var y = $($idcontainer).scrollTop();
+            const y = $($idcontainer).scrollTop();
             if (y > 165) {
                 $cache.addClass('fixed');
             } else {

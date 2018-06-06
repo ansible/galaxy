@@ -38,10 +38,7 @@ import {
     Router
 } from '@angular/router';
 
-import {
-    Observable,
-    Subject
-} from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/switchMap';
 
@@ -55,8 +52,8 @@ import { AuthService } from '../auth/auth.service';
 export class LoginComponent implements OnInit {
 
     config: CardConfig;
-    msgText: string = 'Log into Galaxy by clicking on one of the above SCMs';
-    connectingMsg: string = '';
+    msgText = 'Log into Galaxy by clicking on one of the above SCMs';
+    connectingMsg = '';
     errorParam: Observable<boolean>;
     redirectUrl: string = null;
 
@@ -77,7 +74,7 @@ export class LoginComponent implements OnInit {
         this.errorParam = this.route.paramMap
             .switchMap((params: ParamMap) => {
                 return new Observable<boolean>(observer => {
-                    return observer.next((params.get('error') == 'true') ? true : false);
+                    return observer.next((params.get('error') === 'true') ? true : false);
                 });
             });
 
@@ -93,7 +90,6 @@ export class LoginComponent implements OnInit {
     login(): void {
         console.log('here');
         this.connectingMsg = 'Connecting to the mother ship...';
-        //this.location.go('/accounts/github/login/', 'next=' + this.redirectUrl);
-        window.location.href='/accounts/github/login/?next=' + this.redirectUrl;
+        window.location.href = '/accounts/github/login/?next=' + this.redirectUrl;
     }
 }

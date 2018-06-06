@@ -30,7 +30,7 @@ export class CarouselComponent implements OnInit {
                 vendor['displayClass'] = '';
                 vendor['displayName'] = '';
             }
-        })
+        });
     }
 
     get vendors(): Namespace[] {
@@ -55,11 +55,11 @@ export class CarouselComponent implements OnInit {
         console.log(document.getElementById('slider-inner').scrollLeft);
     }
 
-    handleVendorClick(vendor:Namespace) {
-        let params = {
+    handleVendorClick(vendor: Namespace) {
+        const params = {
             'vendor': 'true',
             'namespaces': vendor.name
-        }
+        };
         this.router.navigate(['/', 'search'], {queryParams: params});
     }
 }

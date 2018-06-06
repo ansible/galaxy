@@ -1,11 +1,11 @@
 import { Injectable }           from '@angular/core';
-import { catchError, map, tap } from "rxjs/operators";
-import { NotificationService }  from "patternfly-ng/notification/notification-service/notification.service";
-import { Observable }           from "rxjs/Observable";
-import { HttpClient }           from "@angular/common/http";
-import { PagedResponse }        from "../paged-response";
-import { User }                 from "./user";
-import { of }                   from "rxjs/observable/of";
+import { catchError, map, tap } from 'rxjs/operators';
+import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
+import { Observable }           from 'rxjs/Observable';
+import { HttpClient }           from '@angular/common/http';
+import { PagedResponse }        from '../paged-response';
+import { User }                 from './user';
+import { of }                   from 'rxjs/observable/of';
 
 
 @Injectable()
@@ -21,7 +21,7 @@ export class UserService {
         let userUrl = this.url;
         let userParams = null;
         if (params) {
-            if (typeof params == 'string') {
+            if (typeof params === 'string') {
                 userUrl += `?${params}`;
             } else {
                 userParams = params;
@@ -30,7 +30,7 @@ export class UserService {
         return this.http.get<PagedResponse>(userUrl, {'params':  userParams})
             .pipe(
                 map(response => response.results as User[]),
-                tap(_=> this.log('fetched users')),
+                tap(_ => this.log('fetched users')),
                 catchError(this.handleError('Query', []))
             );
     }

@@ -26,12 +26,12 @@ import { FilterField }       from 'patternfly-ng/filter/filter-field';
 import { FilterEvent }       from 'patternfly-ng/filter/filter-event';
 import { FilterQuery }       from 'patternfly-ng/filter/filter-query';
 import { FilterType }        from 'patternfly-ng/filter/filter-type';
-import { Filter }            from "patternfly-ng/filter/filter";
+import { Filter }            from 'patternfly-ng/filter/filter';
 
 import { PaginationConfig }  from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
 
-import { Observable }        from "rxjs/Observable";
+import { Observable }        from 'rxjs/Observable';
 import { forkJoin }          from 'rxjs/observable/forkJoin';
 
 
@@ -50,8 +50,8 @@ export class PluginsComponent implements OnInit {
     filterConfig: FilterConfig;
     listConfig: ListConfig;
     paginationConfig: PaginationConfig;
-    pageSize: number = 10;
-    pageNumber: number = 1;
+    pageSize = 10;
+    pageNumber = 1;
     query: string;
     items: Content[] = [];
     loading: Boolean = true;
@@ -59,8 +59,8 @@ export class PluginsComponent implements OnInit {
     _repository: Repository;
     _selectedContent: Content;
 
-    PluginNames: typeof PluginNames = PluginNames
-    PluginTypes: typeof PluginTypes = PluginTypes
+    PluginNames: typeof PluginNames = PluginNames;
+    PluginTypes: typeof PluginTypes = PluginTypes;
 
     @Input()
     set repository(data: Repository) {
@@ -132,11 +132,13 @@ export class PluginsComponent implements OnInit {
             appliedFilters: []
         } as FilterConfig;
 
-        for (let key in PluginTypes) {
-            this.filterConfig.fields[2].queries.push({
-                id: key,
-                value: PluginTypes[key]
-            });
+        for (const key in PluginTypes) {
+            if (PluginTypes.hasOwnProperty(key)) {
+                this.filterConfig.fields[2].queries.push({
+                    id: key,
+                    value: PluginTypes[key]
+                });
+            }
         }
 
         if (this._selectedContent) {
@@ -150,7 +152,7 @@ export class PluginsComponent implements OnInit {
     }
 
     handlePageSizeChange($event: PaginationEvent) {
-        if ($event.pageSize && this.pageSize != $event.pageSize) {
+        if ($event.pageSize && this.pageSize !== $event.pageSize) {
             this.pageSize = $event.pageSize;
             this.pageNumber = 1;
             this.queryContentList();
@@ -158,20 +160,20 @@ export class PluginsComponent implements OnInit {
     }
 
     handlePageNumberChange($event: PaginationEvent) {
-        if ($event.pageNumber && this.pageNumber != $event.pageNumber) {
+        if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
             this.pageNumber = $event.pageNumber;
             this.queryContentList();
         }
     }
 
     applyFilters($event: FilterEvent) {
-        let params: string[] = []
+        const params: string[] = [];
         let query: string = null;
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach((filter: Filter) => {
-                if (filter.field.id == 'name' || filter.field.id == 'description') {
+                if (filter.field.id === 'name' || filter.field.id === 'description') {
                     params.push(`or__${filter.field.id}__icontains=${filter.value.toLowerCase()}`);
-                } else if (filter.field.id == 'plugin_type') {
+                } else if (filter.field.id === 'plugin_type') {
                     params.push(`content_type__name=${filter.value.toLowerCase().replace(' ', '_')}`);
                 }
             });
@@ -187,7 +189,7 @@ export class PluginsComponent implements OnInit {
     private queryContentList(contentName?: string) {
         this.loading = true;
         let queryString = (this.query) ? this.query : '?';
-        let params = {
+        const params = {
             'page_size': this.pageSize,
             'page': this.pageNumber,
             'repository__id': this.repository.id
@@ -198,11 +200,13 @@ export class PluginsComponent implements OnInit {
         if (contentName) {
             params['name'] = contentName;
         }
-        let _tmp = [];
-        for (var key in params) {
-            _tmp.push(`${key}=${params[key]}`);
+        const _tmp = [];
+        for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+                _tmp.push(`${key}=${params[key]}`);
+            }
         }
-        queryString += (queryString == '?') ? _tmp.join('&') : '&' + _tmp.join('&');
+        queryString += (queryString === '?') ? _tmp.join('&') : '&' + _tmp.join('&');
         this.contentService.pagedQuery(queryString).subscribe(
             results => {
                 this._plugins = results.results as Content[];
@@ -210,7 +214,7 @@ export class PluginsComponent implements OnInit {
                 this.paginationConfig.totalItems = results.count;
                 this.getContentDetail();
             }
-        )
+        );
     }
 
     private getContentDetail() {
@@ -220,7 +224,7 @@ export class PluginsComponent implements OnInit {
             return;
         }
 
-        let queries: Observable<Content>[] = [];
+        const queries: Observable<Content>[] = [];
         this._plugins.forEach((plugin: Content) => {
             queries.push(this.contentService.get(plugin.id));
         });

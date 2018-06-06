@@ -17,13 +17,13 @@
  */
 
 import { Injectable } from '@angular/core';
-import { NotificationService }  from "patternfly-ng/notification/notification-service/notification.service";
-import { catchError, map, tap } from "rxjs/operators";
+import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
+import { catchError, map, tap } from 'rxjs/operators';
 
 import {
     HttpClient,
     HttpHeaders,
-} from "@angular/common/http";
+} from '@angular/common/http';
 
 import { Observable }           from 'rxjs/Observable';
 import { of }                   from 'rxjs/observable/of';
@@ -48,14 +48,15 @@ export class ImportsService {
     constructor(
         private http: HttpClient,
         private notificationService: NotificationService
-    ){}
+    ) {}
 
-    private url: string  = '/api/v1/imports';
+    private url  = '/api/v1/imports';
 
     latest(query?: string): Observable<PagedResponse> {
         let requestUrl = `${this.url}/latest/`;
-        if (query)
+        if (query) {
             requestUrl += `?${query}`;
+        }
         return this.http.get<PagedResponse>(requestUrl)
             .pipe(
                 tap(_ => this.log('fetched latest imports')),

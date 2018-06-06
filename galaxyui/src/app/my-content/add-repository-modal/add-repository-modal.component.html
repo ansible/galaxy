@@ -12,12 +12,12 @@
                 <div class="form-group add-repo-modal-dropdown-group">
                     <div class="dropdown btn-group" dropdown>
                         <button dropdownToggle id="add-repo-modal-dropdown-button" type="button" class="btn btn-default add-repo-modal-dropdown-button">
-                            <i class="fa fa-github" *ngIf="selectedPNS.provider_name == 'github'"></i> {{ selectedPNS.name }} <span class="caret"></span>
+                            <i class="fa fa-github" *ngIf="selectedPNS.provider_name === 'github'"></i> {{ selectedPNS.name }} <span class="caret"></span>
                         </button>
                         <ul *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="single-button">
                             <li role="menuitem" disabled><i>Select provider namespace...</i></li>
                             <li role="menuitem" *ngFor="let pns of providerNamespaces">
-                                <a (click)="selectProviderNamespace(pns)"><i class="fa fa-github" *ngIf="pns.provider_name == 'github'"></i> {{ pns.name }}</a>
+                                <a (click)="selectProviderNamespace(pns)"><i class="fa fa-github" *ngIf="pns.provider_name === 'github'"></i> {{ pns.name }}</a>
                             </li>
                         </ul>
                     </div>

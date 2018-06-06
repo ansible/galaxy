@@ -21,12 +21,12 @@ import { FilterField }       from 'patternfly-ng/filter/filter-field';
 import { FilterEvent }       from 'patternfly-ng/filter/filter-event';
 import { FilterQuery }       from 'patternfly-ng/filter/filter-query';
 import { FilterType }        from 'patternfly-ng/filter/filter-type';
-import { Filter }            from "patternfly-ng/filter/filter";
+import { Filter }            from 'patternfly-ng/filter/filter';
 
 import { PaginationConfig }  from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
 
-import { Observable }        from "rxjs/Observable";
+import { Observable }        from 'rxjs/Observable';
 import { forkJoin }          from 'rxjs/observable/forkJoin';
 
 
@@ -45,8 +45,8 @@ export class ModulesComponent implements OnInit {
     filterConfig: FilterConfig;
     listConfig: ListConfig;
     paginationConfig: PaginationConfig;
-    pageSize: number = 10;
-    pageNumber: number = 1;
+    pageSize = 10;
+    pageNumber = 1;
     query: string;
     items: Content[] = [];
     loading: Boolean = true;
@@ -65,7 +65,7 @@ export class ModulesComponent implements OnInit {
 
     @Input()
     set selectedContent(data: Content) {
-        if (data && data.content_type == ContentTypes.module) {
+        if (data && data.content_type === ContentTypes.module) {
             this._selectedContent = data;
             if (this.filterConfig && this.filterConfig.fields) {
                 this.filterConfig.appliedFilters.push({
@@ -130,7 +130,7 @@ export class ModulesComponent implements OnInit {
     }
 
     handlePageSizeChange($event: PaginationEvent) {
-        if ($event.pageSize && this.pageSize != $event.pageSize) {
+        if ($event.pageSize && this.pageSize !== $event.pageSize) {
             this.pageSize = $event.pageSize;
             this.pageNumber = 1;
             this.queryContentList();
@@ -138,14 +138,14 @@ export class ModulesComponent implements OnInit {
     }
 
     handlePageNumberChange($event: PaginationEvent) {
-        if ($event.pageNumber && this.pageNumber != $event.pageNumber) {
+        if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
             this.pageNumber = $event.pageNumber;
             this.queryContentList();
         }
     }
 
     applyFilters($event: FilterEvent) {
-        let params: string[] = []
+        const params: string[] = [];
         let query: string = null;
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach((filter: Filter) => {
@@ -163,7 +163,7 @@ export class ModulesComponent implements OnInit {
     private queryContentList(contentName?: string) {
         this.loading = true;
         let queryString = (this.query) ? this.query : '?';
-        let params = {
+        const params = {
             'page_size': this.pageSize,
             'page': this.pageNumber,
             'content_type__name': ContentTypes.module,
@@ -172,11 +172,13 @@ export class ModulesComponent implements OnInit {
         if (contentName) {
             params['name'] = contentName;
         }
-        let _tmp = [];
-        for (var key in params) {
-            _tmp.push(`${key}=${params[key]}`);
+        const _tmp = [];
+        for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+                _tmp.push(`${key}=${params[key]}`);
+            }
         }
-        queryString += (queryString == '?') ? _tmp.join('&') : '&' + _tmp.join('&');
+        queryString += (queryString === '?') ? _tmp.join('&') : '&' + _tmp.join('&');
         this.contentService.pagedQuery(queryString).subscribe(
             results => {
                 this._modules = results.results as Content[];
@@ -184,11 +186,11 @@ export class ModulesComponent implements OnInit {
                 this.paginationConfig.totalItems = results.count;
                 this.getContentDetail();
             }
-        )
+        );
     }
 
     private getContentDetail() {
-        let queries: Observable<Content>[] = [];
+        const queries: Observable<Content>[] = [];
         this._modules.forEach((module: Content) => {
             queries.push(this.contentService.get(module.id));
         });
@@ -200,7 +202,7 @@ export class ModulesComponent implements OnInit {
                 item['moduleSupport'] = null;
 
                 if (item.metadata['ansible_metadata']) {
-                    let metadata = item.metadata['ansible_metadata'];
+                    const metadata = item.metadata['ansible_metadata'];
                     item['moduleStatus'] = metadata['status'].join(', ');
                     item['moduleSupport'] = metadata['supported_by'];
                 }

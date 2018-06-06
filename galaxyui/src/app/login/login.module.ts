@@ -12,7 +12,7 @@ import {
 
 import {
     CardModule
-} from 'patternfly-ng/card/card.module';
+} from 'patternfly-ng/card/basic-card/card.module';
 
 @NgModule({
     declarations: [

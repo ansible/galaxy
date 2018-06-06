@@ -3,7 +3,7 @@ import {
     OnInit
 } from '@angular/core';
 
-import { EmptyStateConfig }        from "patternfly-ng/empty-state/empty-state-config";
+import { EmptyStateConfig }        from 'patternfly-ng/empty-state/empty-state-config';
 import { ListEvent }               from 'patternfly-ng/list/list-event';
 import { ListConfig }              from 'patternfly-ng/list/basic-list/list-config';
 
@@ -50,7 +50,7 @@ class ProviderNamespace {
     related: object;
     summary_fields: any;
     repoSources: RepositorySource[];
-    filteredSources : RepositorySource[];
+    filteredSources: RepositorySource[];
 }
 
 
@@ -68,9 +68,9 @@ export class AddRepositoryModalComponent implements OnInit {
     originalRepos: any[] = [];
     displayedRepos: any[] = [];
     saveInProgress: boolean;
-    repositoriesAdded: boolean = false;
+    repositoriesAdded = false;
     listConfig: ListConfig;
-    filterValue: string = '';
+    filterValue = '';
 
     constructor(public bsModalRef: BsModalRef,
                 private repositoryService: RepositoryService,
@@ -84,7 +84,7 @@ export class AddRepositoryModalComponent implements OnInit {
             this.providerNamespaces.push(cloneDeep(pns));
         });
         if (this.providerNamespaces.length > 0) {
-            this.selectedPNS = this.providerNamespaces[0]
+            this.selectedPNS = this.providerNamespaces[0];
         }
 
         this.setLoadingStateConfig();
@@ -103,12 +103,12 @@ export class AddRepositoryModalComponent implements OnInit {
         this.getRepoSources();
     }
 
-    selectProviderNamespace(pns:ProviderNamespace) {
+    selectProviderNamespace(pns: ProviderNamespace) {
         this.selectedPNS = pns;
         this.getRepoSources();
     }
 
-    filterRepos(filterValue:string) {
+    filterRepos(filterValue: string) {
         if (filterValue) {
             this.filterValue = filterValue;
             this.selectedPNS.filteredSources = this.selectedPNS.repoSources.filter(
@@ -123,7 +123,7 @@ export class AddRepositoryModalComponent implements OnInit {
         this.selectedPNS.repoSources.forEach((repo: RepositorySource) => {
             repo.isSelected = false;
             $event.selectedItems.forEach((selectedRepo: RepositorySource) => {
-                if (selectedRepo.name == repo.name) {
+                if (selectedRepo.name === repo.name) {
                     repo.isSelected = true;
                 }
             });
@@ -131,7 +131,7 @@ export class AddRepositoryModalComponent implements OnInit {
         this.selectedPNS.filteredSources.forEach((repo: RepositorySource) => {
             repo.isSelected = false;
             $event.selectedItems.forEach((selectedRepo: RepositorySource) => {
-                if (selectedRepo.name == repo.name) {
+                if (selectedRepo.name === repo.name) {
                     repo.isSelected = true;
                 }
             });
@@ -141,18 +141,17 @@ export class AddRepositoryModalComponent implements OnInit {
     saveRepos() {
         this.repositoriesAdded = true;
         this.saveInProgress = true;
-        let saveRequests: Observable<Repository>[] = [];
+        const saveRequests: Observable<Repository>[] = [];
         this.selectedPNS.repoSources
             .filter((repoSource) => repoSource.isSelected)
             .forEach(repoSource => {
-                let newRepo = new Repository();
+                const newRepo = new Repository();
                 newRepo.name = repoSource.name;
                 newRepo.original_name = repoSource.name;
                 newRepo.description = repoSource.description ? repoSource.description : repoSource.name;
                 newRepo.provider_namespace = this.selectedPNS.id;
                 newRepo.is_enabled = true;
                 saveRequests.push(this.repositoryService.save(newRepo));
-                //TODO catch errors from the save and ignore them or else forkjoin will fail.
             });
 
         forkJoin(saveRequests).subscribe((results: Repository[]) => {

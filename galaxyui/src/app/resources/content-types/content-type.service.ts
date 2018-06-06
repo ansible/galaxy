@@ -10,7 +10,7 @@ import { of }                   from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { ContentType }          from './content-type';
-import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service'
+import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
 import { PagedResponse }        from '../paged-response';
 
 const httpOptions = {

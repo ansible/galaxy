@@ -10,7 +10,7 @@ import {
 
 import * as moment          from 'moment';
 
-import { Observable }       from "rxjs/Observable";
+import { Observable }       from 'rxjs/Observable';
 import { forkJoin }         from 'rxjs/observable/forkJoin';
 
 import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
@@ -47,23 +47,23 @@ export class ContentDetailComponent implements OnInit {
         private contentService: ContentService
     ) {}
 
-    pageTitle: string = '';
+    pageTitle = '';
     content: Content[];
     repository: Repository;
     namespace: Namespace;
-    showEmptyState: boolean = false;
+    showEmptyState = false;
     emptyStateConfig: EmptyStateConfig;
     selectedContent: Content;
-    pageLoading: boolean = true;
+    pageLoading = true;
 
     ViewTypes: typeof ViewTypes = ViewTypes;
     RepoFormats: typeof RepoFormats = RepoFormats;
 
     repoType: RepoFormats;
     repoContent: Content;
-    hasReadme: boolean = false;
-    hasMetadata: boolean = false;
-    metadataFilename: string = '';
+    hasReadme = false;
+    hasMetadata = false;
+    metadataFilename = '';
     showingView: string = ViewTypes.detail;  // Control what's displayed on lower half of page
     metadata: object;
 
@@ -78,8 +78,8 @@ export class ContentDetailComponent implements OnInit {
     ngOnInit() {
         this.emptyStateConfig = {
             iconStyleClass: 'pficon-warning-triangle-o',
-            info: "The requested content could not be found. It may not exist in the Galaxy search index. " +
-            "Check the Search page, to see if it has been imported into Galaxy.",
+            info: 'The requested content could not be found. It may not exist in the Galaxy search index. ' +
+            'Check the Search page, to see if it has been imported into Galaxy.',
               helpLink: {
                 hypertext: 'Search page',
                 text: 'To locate the content, please visit the',
@@ -94,16 +94,17 @@ export class ContentDetailComponent implements OnInit {
                 this.namespace = data['namespace'];
                 this.content = data['content'];
 
-                if (this.repository)
+                if (this.repository) {
                     this.repoType = RepoFormats[this.repository.format];
+                }
 
-                let req_content_name = params['content_name'];
+                const req_content_name = params['content_name'];
 
                 if (req_content_name && data['content'] && data['content'].length) {
                     this.selectedContent = this.findSelectedContent(req_content_name);
                 }
                 if (!this.repository || !this.content ||
-                    (this.repository.format == RepoFormats.multi &&
+                    (this.repository.format === RepoFormats.multi &&
                     req_content_name && !this.selectedContent)) {
                     // Requested content from a multicontent repo not found || No content found
                     this.showEmptyState = true;
@@ -151,10 +152,11 @@ export class ContentDetailComponent implements OnInit {
     private findSelectedContent(name: String): Content {
         // Find matching content by name
         let result: Content;
-        if (!name)
+        if (!name) {
             return result;
+        }
         this.content.forEach((item: Content) => {
-            if (item.name == name) {
+            if (item.name === name) {
                 result = JSON.parse(JSON.stringify(item));
             }
         });
@@ -168,7 +170,7 @@ export class ContentDetailComponent implements OnInit {
             this.metadataFilename = '';
             this.metadata = null;
             this.hasReadme = false;
-            if (this.repoContent.content_type == RepoFormats.role) {
+            if (this.repoContent.content_type === RepoFormats.role) {
                 if (this.repoContent.metadata['container_meta']) {
                     this.hasMetadata = true;
                     this.metadataFilename = 'container.yml';
@@ -176,7 +178,7 @@ export class ContentDetailComponent implements OnInit {
                 }
                 this.hasReadme = (this.repoContent.readme_html) ? true : false;
             }
-            if (this.repoContent.content_type == RepoFormats.apb) {
+            if (this.repoContent.content_type === RepoFormats.apb) {
                 if (this.repoContent.metadata['apb_metadata']) {
                     this.hasMetadata = true;
                     this.metadataFilename = 'apb.yml';
@@ -184,7 +186,7 @@ export class ContentDetailComponent implements OnInit {
                 }
                 this.hasReadme = (this.repoContent.readme_html) ? true : false;
             }
-            if (this.repository.format == RepoFormats.multi) {
+            if (this.repository.format === RepoFormats.multi) {
                 if (this.repository.readme_html) {
                     this.hasReadme = true;
                     this.repoContent.readme_html = this.repository.readme_html;
@@ -197,7 +199,7 @@ export class ContentDetailComponent implements OnInit {
                 hasKey = hasKey.replace(/\_(\w)/, this.toCamel);
                 this.repoContent[hasKey] = (this.repoContent[key] && this.repoContent[key].length) ? true : false;
             });
-            if (this.repository.format == RepoFormats.multi) {
+            if (this.repository.format === RepoFormats.multi) {
                 this.getContentTypeCounts();
             } else {
                 this.pageLoading = false;
@@ -210,28 +212,30 @@ export class ContentDetailComponent implements OnInit {
     }
 
     private getContentTypeCounts() {
-        let queries: Observable<PagedResponse>[] = [];
-        for (var content_type in ContentTypes) {
-            if (ContentTypes[content_type] == 'plugin') {
-                queries.push(this.contentService.pagedQuery({
-                    'repository__id': this.repository.id,
-                    'content_type__name__icontains': ContentTypes[content_type]
-                }));
-            } else {
-                queries.push(this.contentService.pagedQuery({
-                    'repository__id': this.repository.id,
-                    'content_type__name': ContentTypes[content_type]
-                }));
+        const queries: Observable<PagedResponse>[] = [];
+        for (const content_type in ContentTypes) {
+            if (ContentTypes.hasOwnProperty(content_type)) {
+                if (ContentTypes[content_type] === 'plugin') {
+                    queries.push(this.contentService.pagedQuery({
+                        'repository__id': this.repository.id,
+                        'content_type__name__icontains': ContentTypes[content_type]
+                    }));
+                } else {
+                    queries.push(this.contentService.pagedQuery({
+                        'repository__id': this.repository.id,
+                        'content_type__name': ContentTypes[content_type]
+                    }));
+                }
             }
         }
         forkJoin(queries).subscribe((results: PagedResponse[]) => {
             results.forEach((result: PagedResponse) => {
                 if (result['results'] && result['results'].length) {
-                    let ct = result['results'][0]['content_type'];
+                    const ct = result['results'][0]['content_type'];
                     if (ct.indexOf('plugin') > -1) {
                         this.contentCounts.plugin = result.count;
                     } else {
-                        let ctKey = ct.replace(/\_(\w)/, this.toCamel)
+                        const ctKey = ct.replace(/\_(\w)/, this.toCamel);
                         this.contentCounts[ctKey] = result.count;
                     }
                 }
@@ -239,13 +243,13 @@ export class ContentDetailComponent implements OnInit {
             this.pageLoading = false;
             if (this.selectedContent) {
                 // For multi-content repo, set the detail view to the selected content item
-                if (this.selectedContent.content_type == ContentTypes.module) {
+                if (this.selectedContent.content_type === ContentTypes.module) {
                     this.showingView = ViewTypes.modules;
-                } else if (this.selectedContent.content_type == ContentTypes.moduleUtils) {
+                } else if (this.selectedContent.content_type === ContentTypes.moduleUtils) {
                     this.showingView = ViewTypes.moduleUtils;
                 } else if (this.selectedContent.content_type.indexOf('plugin') > -1) {
                     this.showingView = ViewTypes.plugins;
-                } else if (this.selectedContent.content_type == ContentTypes.role) {
+                } else if (this.selectedContent.content_type === ContentTypes.role) {
                     this.showingView = ViewTypes.roles;
                 }
             }

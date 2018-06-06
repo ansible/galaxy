@@ -14,17 +14,17 @@ import { Action }             from 'patternfly-ng/action/action';
 import { ActionConfig }       from 'patternfly-ng/action/action-config';
 import { ListEvent }          from 'patternfly-ng/list/list-event';
 import { ListConfig }         from 'patternfly-ng/list/basic-list/list-config';
-import { FilterConfig }       from "patternfly-ng/filter/filter-config";
-import { ToolbarConfig }      from "patternfly-ng/toolbar/toolbar-config";
-import { FilterType }         from "patternfly-ng/filter/filter-type";
-import { SortConfig }         from "patternfly-ng/sort/sort-config";
-import { FilterField }        from "patternfly-ng/filter/filter-field";
-import { SortField }          from "patternfly-ng/sort/sort-field";
-import { ToolbarView }        from "patternfly-ng/toolbar/toolbar-view";
-import { SortEvent }          from "patternfly-ng/sort/sort-event";
-import { Filter }             from "patternfly-ng/filter/filter";
-import { FilterEvent }        from "patternfly-ng/filter/filter-event";
-import { EmptyStateConfig }   from "patternfly-ng/empty-state/empty-state-config";
+import { FilterConfig }       from 'patternfly-ng/filter/filter-config';
+import { ToolbarConfig }      from 'patternfly-ng/toolbar/toolbar-config';
+import { FilterType }         from 'patternfly-ng/filter/filter-type';
+import { SortConfig }         from 'patternfly-ng/sort/sort-config';
+import { FilterField }        from 'patternfly-ng/filter/filter-field';
+import { SortField }          from 'patternfly-ng/sort/sort-field';
+import { ToolbarView }        from 'patternfly-ng/toolbar/toolbar-view';
+import { SortEvent }          from 'patternfly-ng/sort/sort-event';
+import { Filter }             from 'patternfly-ng/filter/filter';
+import { FilterEvent }        from 'patternfly-ng/filter/filter-event';
+import { EmptyStateConfig }   from 'patternfly-ng/empty-state/empty-state-config';
 import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
 
@@ -59,15 +59,15 @@ export class AuthorDetailComponent implements OnInit {
           private repositoryService: RepositoryService
     ) {}
 
-    pageTitle: string = '';
-    pageLoading: boolean = true;
+    pageTitle = '';
+    pageLoading = true;
 
     namespace: Namespace;
     items: Repository[] = [];
 
     emptyStateConfig: EmptyStateConfig;
     nameEmptyStateConfig: EmptyStateConfig;
-    authorNotFound: boolean = false;
+    authorNotFound = false;
     toolbarActionConfig: ActionConfig;
     filterConfig: FilterConfig;
     sortConfig: SortConfig;
@@ -75,10 +75,10 @@ export class AuthorDetailComponent implements OnInit {
     listConfig: ListConfig;
     paginationConfig: PaginationConfig;
 
-    pageSize: number = 10;
-    pageNumber: number = 1;
+    pageSize = 10;
+    pageNumber = 1;
     filterBy: any = {};
-    sortBy: string = 'name';
+    sortBy = 'name';
 
     RepoFormats: typeof RepoFormats = RepoFormats;
 
@@ -187,7 +187,7 @@ export class AuthorDetailComponent implements OnInit {
     }
 
     handleListClick($event: ListEvent): void {
-        let repository = $event.item;
+        const repository = $event.item;
         this.router.navigate(['/', repository.summary_fields['namespace']['name'],
                     repository.name]);
     }
@@ -195,7 +195,7 @@ export class AuthorDetailComponent implements OnInit {
     filterChanged($event: FilterEvent): void {
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach((filter: Filter) => {
-                if (filter.field.type == 'typeahead') {
+                if (filter.field.type === 'typeahead') {
                     this.filterBy['or__' + filter.field.id] = filter.query.id;
                 } else {
                     this.filterBy['or__' + filter.field.id + '__icontains'] = filter.value;
@@ -218,7 +218,7 @@ export class AuthorDetailComponent implements OnInit {
     }
 
     handlePageSizeChange($event: PaginationEvent) {
-        if ($event.pageSize && this.pageSize != $event.pageSize) {
+        if ($event.pageSize && this.pageSize !== $event.pageSize) {
             this.pageSize = $event.pageSize;
             this.pageNumber = 1;
             this.searchRepositories();
@@ -226,7 +226,7 @@ export class AuthorDetailComponent implements OnInit {
     }
 
     handlePageNumberChange($event: PaginationEvent) {
-        if ($event.pageNumber && this.pageNumber != $event.pageNumber) {
+        if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
             this.pageNumber = $event.pageNumber;
             this.searchRepositories();
         }
@@ -253,13 +253,13 @@ export class AuthorDetailComponent implements OnInit {
 
     private parepareNamespace() {
         // Creat an array of {'Content Type': {count: <int>, iconClass: 'icon-class'}}
-        let contentCounts = [];
-        for (let ct in ContentTypes) {
-            if (ct == ContentTypes.plugin) {
+        const contentCounts = [];
+        for (const ct in ContentTypes) {
+            if (ct === ContentTypes.plugin) {
                 // summarize plugins
                 let count = 0;
-                let countObj = {};
-                for (let count_key in this.namespace['summary_fields']['content_counts']) {
+                const countObj = {};
+                for (const count_key in this.namespace['summary_fields']['content_counts']) {
                     if (count_key.indexOf('plugin') > -1) {
                         count += this.namespace['summary_fields']['content_counts'][count_key];
                     }
@@ -271,7 +271,7 @@ export class AuthorDetailComponent implements OnInit {
                     contentCounts.push(countObj);
                 }
             } else if (this.namespace['summary_fields']['content_counts'][ContentTypes[ct]] > 0) {
-                let countObj = {}
+                const countObj = {};
                 countObj['title'] = ContentTypesPluralChoices[ct];
                 countObj['count'] = this.namespace['summary_fields']['content_counts'][ContentTypes[ct]];
                 countObj['iconClass'] = ContentTypesIconClasses[ct];
@@ -310,7 +310,7 @@ export class AuthorDetailComponent implements OnInit {
             if (!item.description) {
                 // Legacy Repository objects are missing a description. Will get fixed on first import.
                 if (item.summary_fields['content_objects']) {
-                    for (var i=0; i< item.summary_fields['content_objects'].length; i++) {
+                    for (let i = 0; i < item.summary_fields['content_objects'].length; i++) {
                         if (item.summary_fields['content_objects'][i]['description']) {
                             item.description = item.summary_fields['content_objects'][i]['description'];
                             break;

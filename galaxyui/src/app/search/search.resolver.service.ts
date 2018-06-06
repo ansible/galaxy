@@ -37,32 +37,36 @@ export class SearchContentResolver implements Resolve<ContentResponse> {
         private contentService: ContentSearchService,
         private router: Router,
         private location: Location
-    ){}
+    ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ContentResponse> {
         let params = '';
-        for (var key in route.queryParams) {
-            if (params != '')
-                params += '&';
-            if (key == 'contributor_type') {
-                switch (route.queryParams[key]) {
-                    case ContributorTypes.community:
-                        params += 'vendor=false';
-                        break;
-                    case ContributorTypes.vendor:
-                        params += 'vendor=true';
+        for (const key in route.queryParams) {
+            if (route.queryParams.hasOwnProperty(key)) {
+                if (params !== '') {
+                    params += '&';
                 }
-            } else {
-                params += `${key}=${encodeURIComponent(route.queryParams[key])}`;
+                if (key === 'contributor_type') {
+                    switch (route.queryParams[key]) {
+                        case ContributorTypes.community:
+                            params += 'vendor=false';
+                            break;
+                        case ContributorTypes.vendor:
+                            params += 'vendor=true';
+                    }
+                } else {
+                    params += `${key}=${encodeURIComponent(route.queryParams[key])}`;
+                }
             }
         }
-        if (params == '') {
+        if (params === '') {
             // When no prior query, default Contributor Type to vendor.
             params += 'vendor=true';
         }
         // Add default params
         if (!route.queryParams['order_by']) {
-            if (params != '')
+            if (params !== '') {
                 params += '&';
+            }
             params += 'order_by=-relevance';
         }
         return this.contentService.query(params);
@@ -74,7 +78,7 @@ export class SearchPlatformResolver implements Resolve<Platform[]> {
     constructor(
         private platformService: PlatformService,
         private router: Router
-    ){}
+    ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Platform[]> {
         return this.platformService.query({'page_size': 1000});
     }
@@ -85,7 +89,7 @@ export class SearchContentTypeResolver implements Resolve<ContentType[]> {
     constructor(
         private contentTypeService: ContentTypeService,
         private router: Router
-    ){}
+    ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ContentType[]> {
         return this.contentTypeService.query({'page_size': 1000, 'order': 'description'});
     }
@@ -96,7 +100,7 @@ export class SearchCloudPlatformResolver implements Resolve<CloudPlatform[]> {
     constructor(
         private contentTypeService: CloudPlatformService,
         private router: Router
-    ){}
+    ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CloudPlatform[]> {
         return this.contentTypeService.query({'page_size': 1000});
     }
@@ -107,7 +111,7 @@ export class PopularTagsResolver implements Resolve<Tag[]> {
     constructor(
         private tagsService: TagsService,
         private router: Router
-    ){}
+    ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Tag[]> {
         return this.tagsService.search({'order_by': '-roles_count'});
     }
@@ -118,23 +122,25 @@ export class PopularPlatformsResolver implements Resolve<Platform[]> {
     constructor(
         private platformService: PlatformService,
         private router: Router
-    ){}
+    ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Platform[]> {
         return this.platformService.search({'page_size': 1000, 'order_by': '-roles_count'}).map(result => {
             // Sum roles_count per platforms, sans release
-            let summary = {}
-            let platforms: Platform[] = [];
+            const summary = {};
+            const platforms: Platform[] = [];
             result.forEach((item: Platform) => {
-                if (summary[item.name] == undefined) {
-                    summary[item.name] = 0
+                if (summary[item.name] === undefined) {
+                    summary[item.name] = 0;
                 }
                 summary[item.name] += item.roles_count;
             });
-            for (var key in summary) {
-                platforms.push({
-                    name: key,
-                    roles_count: summary[key]
-                } as Platform)
+            for (const key in summary) {
+                if (summary.hasOwnProperty(key)) {
+                    platforms.push({
+                        name: key,
+                        roles_count: summary[key]
+                    } as Platform);
+                }
             }
             return platforms;
         });
@@ -146,7 +152,7 @@ export class PopularCloudPlatformsResolver implements Resolve<CloudPlatform[]> {
     constructor(
         private cloudPlatformService: CloudPlatformService,
         private router: Router
-    ){}
+    ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CloudPlatform[]> {
         return this.cloudPlatformService.search({'order_by': '-roles_count'});
     }

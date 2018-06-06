@@ -82,13 +82,13 @@ export class CardInfoComponent implements OnInit {
             title: 'Info',
             titleBorder: true,
             topBorder: true
-        } as CardConfig
+        } as CardConfig;
     }
 
     copyToClipboard(elementId: string) {
-        let element = document.getElementById(elementId);
-        let val = element.textContent;
-        let txtArea = document.createElement('textarea');
+        const element = document.getElementById(elementId);
+        const val = element.textContent;
+        const txtArea = document.createElement('textarea');
         txtArea.setAttribute('readonly', '');
         txtArea.style.position = 'absolute';
         txtArea.style.left = '-9999px';

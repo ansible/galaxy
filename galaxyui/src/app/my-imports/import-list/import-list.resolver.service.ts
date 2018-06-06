@@ -22,26 +22,29 @@ export class ImportListResolver implements Resolve<PagedResponse> {
         private importsService: ImportsService,
         private router: Router,
         private authService: AuthService
-    ){}
+    ) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<PagedResponse> {
         let params = '';
-        for (var key in route.queryParams) {
-            let values = (typeof route.queryParams[key] == 'object') ? route.queryParams[key] : [route.queryParams[key]];
-            values.forEach(value => {
-                if (params != '')
-                    params += '&';
-                if (key == 'namespace') {
-                    params += `repository__provider_namespace__namespace__name__icontains=${value.toLowerCase()}`;
-                } else if (key == 'repository_name') {
-                    params += `repository__name__icontains=${value.toLowerCase()}`;
-                } else if (key != 'selected') {
-                    params += `${key}=${value}`;
-                }
-            });
+        for (const key in route.queryParams) {
+            if (route.queryParams.hasOwnProperty(key)) {
+                const values = (typeof route.queryParams[key] === 'object') ? route.queryParams[key] : [route.queryParams[key]];
+                values.forEach(value => {
+                    if (params !== '') {
+                        params += '&';
+                    }
+                    if (key === 'namespace') {
+                        params += `repository__provider_namespace__namespace__name__icontains=${value.toLowerCase()}`;
+                    } else if (key === 'repository_name') {
+                        params += `repository__name__icontains=${value.toLowerCase()}`;
+                    } else if (key !== 'selected') {
+                        params += `${key}=${value}`;
+                    }
+                });
+            }
         }
         if (!route.queryParams['namespace']) {
-            let username = this.authService.meCache.username.toLowerCase();
+            const username = this.authService.meCache.username.toLowerCase();
             params += `repository__provider_namespace__namespace__name__icontains=${username}`;
         }
         return this.importsService.latest(params);

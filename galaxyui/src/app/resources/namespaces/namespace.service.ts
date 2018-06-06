@@ -8,8 +8,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { Namespace } from './namespace';
 
-import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service'
-import { PagedResponse }       from "../paged-response";
+import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
+import { PagedResponse }       from '../paged-response';
 
 
 const httpOptions = {
@@ -27,7 +27,7 @@ export class NamespaceService {
                 private notificationService: NotificationService) {
     }
 
-    encounteredErrors: boolean = false;
+    encounteredErrors = false;
 
     query(params?: any): Observable<Namespace[]> {
         return this.http.get<PagedResponse>(this.url + '/', {params: params})
@@ -38,15 +38,15 @@ export class NamespaceService {
             );
     }
 
-    pagedQuery(params:any): Observable<PagedResponse> {
-        if (params && typeof params == 'object') {
+    pagedQuery(params: any): Observable<PagedResponse> {
+        if (params && typeof params === 'object') {
             return this.http.get<PagedResponse>(this.url + '/', {params: params})
                 .pipe(
                     tap(_ => this.log('fetched paged content')),
                     catchError(this.handleError('Query', {} as PagedResponse))
                 );
         }
-        if (params && typeof params == 'string') {
+        if (params && typeof params === 'string') {
             return this.http.get<PagedResponse>(this.url + '/' + params)
                 .pipe(
                     tap(_ => this.log('fetched paged content')),
@@ -98,16 +98,18 @@ export class NamespaceService {
             this.log(`${operation} namespace error: ${error.message}`);
             if ('error' in error && result !== undefined) {
                 // Unpack error messages, sending each to the notification service
-                for (var fld in error['error']) {
-                    if (typeof error['error'][fld] != 'object') {
-                        let msg = result[fld]
-                        this.notificationService.httpError(error['error'][fld], {data: {message: msg}});
-                    } else {
-                        for (var idx in error['error'][fld]) {
-                            if (result[fld]) {
-                                if (Array.isArray(result[fld]) && idx < result[fld].length) {
-                                    let msg = result[fld][idx]['name']
-                                    this.notificationService.httpError(error['error'][fld][idx], {data: {message: msg}});
+                for (const fld in error['error']) {
+                    if (error['error'].hasOwnProperty(fld)) {
+                        if (typeof error['error'][fld] !== 'object') {
+                            const msg = result[fld];
+                            this.notificationService.httpError(error['error'][fld], {data: {message: msg}});
+                        } else {
+                            for (const idx in error['error'][fld]) {
+                                if (result[fld]) {
+                                    if (Array.isArray(result[fld]) && idx < result[fld].length) {
+                                        const msg = result[fld][idx]['name'];
+                                        this.notificationService.httpError(error['error'][fld][idx], {data: {message: msg}});
+                                    }
                                 }
                             }
                         }

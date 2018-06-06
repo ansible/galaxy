@@ -1,6 +1,7 @@
 import {
     Component,
     OnInit,
+    OnDestroy,
     ViewChild,
     AfterViewInit,
 } from '@angular/core';
@@ -19,7 +20,7 @@ import {
     SaveParams
 } from '../../resources/imports/imports.service';
 
-import { Observable }    from "rxjs/Observable";
+import { Observable }    from 'rxjs/Observable';
 
 import { Import }        from '../../resources/imports/import';
 import { ImportLatest }  from '../../resources/imports/import-latest';
@@ -37,7 +38,7 @@ import { FilterField }   from 'patternfly-ng/filter/filter-field';
 import { FilterEvent }   from 'patternfly-ng/filter/filter-event';
 import { FilterQuery }   from 'patternfly-ng/filter/filter-query';
 import { FilterType }    from 'patternfly-ng/filter/filter-type';
-import { Filter }        from "patternfly-ng/filter/filter";
+import { Filter }        from 'patternfly-ng/filter/filter';
 
 import { PaginationConfig }  from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
@@ -52,7 +53,7 @@ import * as $            from 'jquery';
     templateUrl: './import-list.component.html',
     styleUrls: ['./import-list.component.less']
 })
-export class ImportListComponent implements OnInit, AfterViewInit {
+export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     @ViewChild(ListComponent) pfList: ListComponent;
 
@@ -65,15 +66,16 @@ export class ImportListComponent implements OnInit, AfterViewInit {
 
     selected: Import = null;
     selectedId: number;
+    checking = false;
 
-    pageTitle: string = "My Imports";
-    pageLoading: boolean = true;
-    refreshing: boolean = false;
+    pageTitle = 'My Imports';
+    pageLoading = true;
+    refreshing = false;
     polling = null;
-    filterParams: string = '';
+    filterParams = '';
     scroll: boolean;
-    pageSize: number = 10;
-    pageNumber: number = 1;
+    pageSize = 10;
+    pageNumber = 1;
     appliedFilters: Filter[] = [];
 
     constructor(
@@ -82,7 +84,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         private importsService: ImportsService,
         private location: Location,
         private authService: AuthService
-    ){}
+    ) {}
 
     ngOnInit() {
 
@@ -117,15 +119,15 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         } as PaginationConfig;
 
         this.route.queryParams.subscribe(params => {
-            let event: FilterEvent = new FilterEvent();
+            const event: FilterEvent = new FilterEvent();
             this.setPageSize(params);
             this.setAppliedFilters(params);
             this.setQuery();
 
             this.route.data.subscribe(
                 (data) => {
-                    let imports: PagedResponse = data['imports'] as PagedResponse;
-                    this.items = imports.results
+                    const imports: PagedResponse = data['imports'] as PagedResponse;
+                    this.items = imports.results;
                     this.filterConfig.resultsCount = this.items.length;
                     this.paginationConfig.totalItems = imports.count;
                     this.prepareImports(this.items);
@@ -145,19 +147,20 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        //this.setVerticalScroll();
+        // this.setVerticalScroll();
         if (this.selected) {
             this.selectItem(this.selected.id);
         }
     }
 
     ngOnDestroy(): void {
-        if (this.polling)
+        if (this.polling) {
             this.polling.unsubscribe();
+        }
     }
 
     handlePageSizeChange($event: PaginationEvent) {
-        if ($event.pageSize && this.pageSize != $event.pageSize) {
+        if ($event.pageSize && this.pageSize !== $event.pageSize) {
             this.pageSize = $event.pageSize;
             this.pageNumber = 1;
             this.searchImports();
@@ -165,7 +168,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     }
 
     handlePageNumberChange($event: PaginationEvent) {
-        if ($event.pageNumber && this.pageNumber != $event.pageNumber) {
+        if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
             this.pageNumber = $event.pageNumber;
             this.searchImports();
         }
@@ -173,8 +176,8 @@ export class ImportListComponent implements OnInit, AfterViewInit {
 
     handleClick(event): void {
         if (event['item']) {
-            let clickedId = event['item']['id'];
-            if (clickedId != this.selected.id) {
+            const clickedId = event['item']['id'];
+            if (clickedId !== this.selected.id) {
                 if (this.polling) {
                     this.polling.unsubscribe();
                 }
@@ -185,16 +188,16 @@ export class ImportListComponent implements OnInit, AfterViewInit {
 
     selectItem(select: number, deselect?: number): void {
         this.items.forEach(item => {
-            if (deselect != null && select != deselect && item.id == deselect) {
+            if (deselect !== null && select !== deselect && item.id === deselect) {
                 this.pfList.selectItem(item, false);
-            } else if (item.id == select) {
+            } else if (item.id === select) {
                 this.pfList.selectItem(item, true);
             }
         });
     }
 
     getImport(id: number, showPageLoader: boolean): void {
-        if(showPageLoader) {
+        if (showPageLoader) {
             this.pageLoading = true;
         }
         let deselectId: number;
@@ -207,7 +210,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         }
         this.importsService.get(id).subscribe(
             result => {
-                this.prepareImport(result)
+                this.prepareImport(result);
                 this.selected = result;
                 this.selectedId = result.id;
                 this.setQuery();
@@ -215,8 +218,8 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                     this.selectItem(this.selected.id, deselectId);
                 }
                 this.cancelPageLoading();
-                if (this.selected.state == ImportState.running ||
-                    this.selected.state == ImportState.pending) {
+                if (this.selected.state === ImportState.running ||
+                    this.selected.state === ImportState.pending) {
                         // monitor the state of a running import
                         this.polling = Observable.interval(5000)
                             .subscribe(_ => this.refreshImport());
@@ -235,9 +238,9 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 query += idx > 0 ? '&' : '';
                 location += idx > 0 ? '&' : '';
                 location += `${filter.field.id}=${filter.value.toLowerCase()}`;
-                if (filter.field.id == 'namespace' && filter.value) {
+                if (filter.field.id === 'namespace' && filter.value) {
                     query += `repository__provider_namespace__namespace__name__icontains=${filter.value.toLowerCase()}`;
-                } else if (filter.field.id == 'repository_name' && filter.value) {
+                } else if (filter.field.id === 'repository_name' && filter.value) {
                     query += `repository__name__icontains=${filter.value.toLowerCase()}`;
                 }
             });
@@ -252,11 +255,6 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         }
         this.selectedId = 0;
         this.searchImports();
-    }
-
-    onResize($event): void {
-        // On browser resize
-        //this.setVerticalScroll();
     }
 
     startedImport($event): void {
@@ -275,10 +273,10 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     // private
 
     private scrollDetails() {
-        $('#import-details-container').animate({scrollTop:$('#import-details-container')[0].scrollHeight}, 1000);
+        $('#import-details-container').animate({scrollTop: $('#import-details-container')[0].scrollHeight}, 1000);
     }
 
-    private setPageSize(params:any) {
+    private setPageSize(params: any) {
         if (params['page_size']) {
             this.paginationConfig.pageSize = params['page_size'];
             this.pageSize = params['page_size'];
@@ -293,19 +291,17 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     private prepareImport(data: Import): void {
         if (!data.import_branch) {
             // TODO: a default value for import branch should be set on the backend
-            data.import_branch = "master";
+            data.import_branch = 'master';
             if (data.summary_fields.repository.import_branch) {
                 data.import_branch = data.summary_fields.repository.import_branch;
             }
         }
-        if (data.state == ImportState.pending) {
-            data.last_run = "Waiting to start...";
-        }
-        else if (data.state == ImportState.running) {
-            data.last_run = "Running...";
-        }
-        else if (data.state == ImportState.failed || data.state == ImportState.success) {
-            let state = data.state.charAt(0).toUpperCase() +
+        if (data.state === ImportState.pending) {
+            data.last_run = 'Waiting to start...';
+        } else if (data.state === ImportState.running) {
+            data.last_run = 'Running...';
+        } else if (data.state === ImportState.failed || data.state === ImportState.success) {
+            const state = data.state.charAt(0).toUpperCase() +
                 data.state.slice(1).toLowerCase();
             data.last_run = state + ' ' + moment(data.finished).fromNow();
         }
@@ -313,7 +309,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
 
     private prepareImports(imports: ImportLatest[]): void {
         imports.forEach((item: ImportLatest) => {
-            if (this.selected && this.selected.summary_fields.repository.id == item.id) {
+            if (this.selected && this.selected.summary_fields.repository.id === item.id) {
                 item['selected'] = true;
             }
             item.finished = moment(item.modified).fromNow();
@@ -324,73 +320,77 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     private getFilterField(id: string): FilterField {
         let result: FilterField = null;
         this.filterConfig.fields.forEach((item: FilterField) => {
-            if (item.id == id) {
+            if (item.id === id) {
                 result = item;
             }
-        })
+        });
         return result;
     }
 
-    private setAppliedFilters(queryParams:any) {
+    private setAppliedFilters(queryParams: any) {
         // Convert query params to filters
         let filterParams = '';
         let location = '';
-        let params = JSON.parse(JSON.stringify(queryParams));
+        const params = JSON.parse(JSON.stringify(queryParams));
         if (!params['namespace']) {
             params['namespace'] = this.authService.meCache.username;
         }
-        for (var key in params) {
-            var field = this.getFilterField(key);
-            if (!field)
-                continue;
-            let values = (typeof params[key] == 'object') ? params[key] : [params[key]];
-            values.forEach(value => {
-                if (filterParams != '') {
-                    filterParams += '&';
-                    location += '&';
+        for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+                const field = this.getFilterField(key);
+                if (!field) {
+                    continue;
                 }
-                if (key == 'namespace') {
-                    filterParams += `repository__provider_namespace__namespace__name__icontains=${value.toLowerCase()}`;
-                    location += `${key}=${value.toLowerCase()}`;
-                } else if (key == 'repository_name') {
-                    filterParams += `repository__name__icontains=${value.toLowerCase()}`;
-                    location += `${key}=${value.toLowerCase()}`;
-                }
-                let ffield: Filter = {} as Filter;
-                ffield.field = field;
-                if (field.type == FilterType.TEXT) {
-                      ffield.value = value;
-                } else if (field.type == FilterType.TYPEAHEAD) {
-                    field.queries.forEach((query: FilterQuery) => {
-                        if (query.id == value) {
-                            ffield.query = query;
-                            ffield.value = query.value;
-                        }
-                    });
-                }
-                this.filterConfig.appliedFilters.push(ffield);
-                this.appliedFilters.push(ffield);
-            });
+                const values = (typeof params[key] === 'object') ? params[key] : [params[key]];
+                values.forEach(value => {
+                    if (filterParams !== '') {
+                        filterParams += '&';
+                        location += '&';
+                    }
+                    if (key === 'namespace') {
+                        filterParams += `repository__provider_namespace__namespace__name__icontains=${value.toLowerCase()}`;
+                        location += `${key}=${value.toLowerCase()}`;
+                    } else if (key === 'repository_name') {
+                        filterParams += `repository__name__icontains=${value.toLowerCase()}`;
+                        location += `${key}=${value.toLowerCase()}`;
+                    }
+                    const ffield: Filter = {} as Filter;
+                    ffield.field = field;
+                    if (field.type === FilterType.TEXT) {
+                          ffield.value = value;
+                    } else if (field.type === FilterType.TYPEAHEAD) {
+                        field.queries.forEach((query: FilterQuery) => {
+                            if (query.id === value) {
+                                ffield.query = query;
+                                ffield.value = query.value;
+                            }
+                        });
+                    }
+                    this.filterConfig.appliedFilters.push(ffield);
+                    this.appliedFilters.push(ffield);
+                });
+            }
         }
         this.filterParams = filterParams;
         this.locationParams = location;
     }
 
     private getBasePath(): string {
-        let path = this.location.path();
-        return path.replace(/\?.*$/,'');
+        const path = this.location.path();
+        return path.replace(/\?.*$/, '');
     }
 
     private setQuery(): string {
         let paging = '&page_size=' + this.pageSize.toString();
-        if (this.pageNumber > 1)
+        if (this.pageNumber > 1) {
             paging += '&page=' + this.pageNumber;
+        }
 
-        let query = (this.filterParams + paging).replace(/^&/,'');  // remove leading &
-        let selected = (this.selectedId) ? `&selected=${this.selectedId}` : '';
+        const query = (this.filterParams + paging).replace(/^&/, '');  // remove leading &
+        const selected = (this.selectedId) ? `&selected=${this.selectedId}` : '';
 
         // Refresh params on location URL
-        let location = (this.locationParams + selected + paging).replace(/^&/,''); // remove leading &
+        const location = (this.locationParams + selected + paging).replace(/^&/, ''); // remove leading &
         this.location.replaceState(this.getBasePath(), location);
 
         return query;
@@ -401,7 +401,7 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         if (this.polling) {
             this.polling.unsubscribe();
         }
-        let query = this.setQuery();
+        const query = this.setQuery();
         this.importsService.latest(query).subscribe(results => {
             this.items = results.results;
             this.filterConfig.resultsCount = this.items.length;
@@ -418,33 +418,33 @@ export class ImportListComponent implements OnInit, AfterViewInit {
     private refreshImport(): void {
         // Refresh the attributes of the currently selected import
         if (this.selected) {
-            let selectedId = this.selected.id;
+            const selectedId = this.selected.id;
             this.refreshing = true;
-            let params: any = {
+            const params: any = {
                 'repository__id': this.selected.summary_fields.repository.id,
                 'order_by': '-id'
-            }
+            };
             this.importsService.query(params).subscribe(
                 result => {
                     if (result.length) {
-                        let import_result: Import = result[0];
+                        const import_result: Import = result[0];
                         this.prepareImport(import_result);
                         this.items.forEach((item: ImportLatest) => {
-                            if (item.repository_id == import_result.summary_fields.repository.id) {
+                            if (item.repository_id === import_result.summary_fields.repository.id) {
                                 item.finished = moment(import_result.modified).fromNow();
                                 item.state = import_result.state.charAt(0).toUpperCase() +
                                     import_result.state.slice(1).toLowerCase();
                             }
                         });
-                        if (this.selected.id == selectedId) {
+                        if (this.selected.id === selectedId) {
                             // If the selected item has not changed,
                             //   copy result property values -> this.selected
-                            let keys = Object.keys(import_result);
-                            for (var i=0; i < keys.length; i++ ) {
+                            const keys = Object.keys(import_result);
+                            for (let i = 0; i < keys.length; i++ ) {
                                 this.selected[keys[i]] = import_result[keys[i]];
                             }
-                            if (this.selected.state == ImportState.failed ||
-                                this.selected.state == ImportState.success) {
+                            if (this.selected.state === ImportState.failed ||
+                                this.selected.state === ImportState.success) {
                                 // The import finished
                                 if (this.polling) {
                                     this.polling.unsubscribe();
@@ -453,8 +453,9 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                         }
                     }
                     this.refreshing = false;
-                    if (this.scroll)
+                    if (this.scroll) {
                         this.scrollDetails();
+                    }
                 });
         }
     }

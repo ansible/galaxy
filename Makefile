@@ -57,6 +57,7 @@ clean:
 build/static:
 	cd galaxyui; yarn install
 	cd galaxyui; ng build --prod
+	cd galaxyui; ng lint
 	rm -rf galaxyui/node_modules
 
 .PHONY: build/dist

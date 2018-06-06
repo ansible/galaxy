@@ -2,7 +2,7 @@
     <div class="row" *ngFor="let provider of namespace.summary_fields.provider_namespaces">
         <div class="col-sm-12">
             <div class="scm-logo">
-                <i class="fa fa-github fa-2x" *ngIf="provider.provider_name.toLowerCase() == 'github'"></i>
+                <i class="fa fa-github fa-2x" *ngIf="provider.provider_name.toLowerCase() === 'github'"></i>
             </div>
             <div class="namespace-img">
                 <img src="{{ provider.avatar_url }}" class="github-avatar" *ngIf="provider.avatar_url">

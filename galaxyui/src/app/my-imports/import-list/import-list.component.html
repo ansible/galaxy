@@ -8,7 +8,7 @@
                  (onChange)="applyFilters($event)">
             </pfng-filter>
         </div>
-        <div id="import-list" (window:resize)="onResize($event)">
+        <div id="import-list">
             <pfng-list #importList
                 [config]="listConfig"
                 [items]="items"
@@ -17,14 +17,14 @@
                 <ng-template #itemTemplate let-item="item">
                     <div class="list-pf-left">
                         <span class="fa fa-circle"
-                              [ngClass]="{'color-green': item.state == 'Success' || item.state == 'Running', 'color-red': item.state == 'Failed', 'color-orange': item.state == 'Pending'}"></span>
+                              [ngClass]="{'color-green': item.state === 'Success' || item.state === 'Running', 'color-red': item.state === 'Failed', 'color-orange': item.state === 'Pending'}"></span>
                     </div>
                     <div class="list-pf-content-wrapper">
                         <div class="list-pf-main-content">
                             <div class="list-pf-title">
                                 {{ item.namespace + '.' + item.repository_name }}
-                                <p *ngIf="item.state == 'Success' || item.state == 'Failed'">Status: {{ item.state + ' ' + item.finished }}</p>
-                                <p *ngIf="item.state != 'Success' && item.state != 'Failed'">Status: {{ item.state }}</p>
+                                <p *ngIf="item.state === 'Success' || item.state === 'Failed'">Status: {{ item.state + ' ' + item.finished }}</p>
+                                <p *ngIf="item.state !== 'Success' && item.state !== 'Failed'">Status: {{ item.state }}</p>
                             </div>
                         </div>
                     </div>
