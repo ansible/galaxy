@@ -87,7 +87,7 @@ build/docker-release: build/docker-build
 
 .PHONY: test/flake8
 test/flake8:
-	flake8 --config=tox.ini galaxy
+	flake8 galaxy
 
 .PHONY: test/jslint
 test/jslint:
@@ -137,7 +137,7 @@ dev/flake8:
 .PHONY: dev/jslint
 dev/jslint:
 	@echo "Linting Javascript..."
-	@$(DOCKER_COMPOSE) exec galaxy bash -c 'cd galaxyui; ng lint' 
+	@$(DOCKER_COMPOSE) exec galaxy bash -c 'cd galaxyui; ng lint'
 
 .PHONY: dev/test
 dev/test:
