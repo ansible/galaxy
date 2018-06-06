@@ -53,12 +53,13 @@ clean:
 # Build targets
 # ---------------------------------------------------------
 
+.PHONY: build/yarn
+build/yarn:
+	cd galaxyui; yarn install
+
 .PHONY: build/static
 build/static:
-	cd galaxyui; yarn install
 	cd galaxyui; ng build --prod
-	cd galaxyui; ng lint
-	rm -rf galaxyui/node_modules
 
 .PHONY: build/dist
 build/dist: build/static
@@ -87,6 +88,10 @@ build/docker-release: build/docker-build
 .PHONY: test/flake8
 test/flake8:
 	flake8 --config=tox.ini galaxy
+
+.PHONY: test/jslint
+test/jslint:
+	cd galaxyui; ng lint
 
 # ---------------------------------------------------------
 # Docker targets
@@ -128,6 +133,11 @@ dev/logf:
 dev/flake8:
 	@echo "Running flake8"
 	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/flake8 --config=tox.ini galaxy
+
+.PHONY: dev/jslint
+dev/jslint:
+	@echo "Linting Javascript..."
+	@$(DOCKER_COMPOSE) exec galaxy bash -c 'cd galaxyui; ng lint' 
 
 .PHONY: dev/test
 dev/test:
