@@ -224,6 +224,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         let filterby = {}
         let params: string = '';
         this.pageNumber = 1;
+        this.paginationConfig.pageNumber = 1;
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach(filter => {
                 if (filterby[filter.field.id] == undefined)
@@ -335,6 +336,16 @@ export class SearchComponent implements OnInit, AfterViewInit {
             this.router.navigate(['/', namespace, repository, name]);
         } else {
             this.router.navigate(['/', namespace, repository]);
+        }
+    }
+
+    // private
+
+    private setPageSize(params:any) {
+        if (params['page_size']) {
+            this.paginationConfig.pageSize = params['page_size'];
+            this.pageSize = params['page_size'];
+            this.pageNumber = 1;
         }
     }
 

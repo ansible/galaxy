@@ -391,8 +391,7 @@ class ImportTaskLatestList(base_views.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         qs = models.ImportTask.objects.filter(
-            repository__provider_namespace__namespace__isnull=False,
-            repository__provider_namespace__namespace__owners=request.user
+            repository__provider_namespace__namespace__isnull=False
         ).values(
             'repository__provider_namespace__namespace__name',
             'repository__name',

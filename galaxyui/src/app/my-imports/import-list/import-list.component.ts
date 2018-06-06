@@ -11,6 +11,10 @@ import {
 } from '@angular/router';
 
 import {
+    Location
+} from '@angular/common';
+
+import {
     ImportsService,
     SaveParams
 } from '../../resources/imports/imports.service';
@@ -21,6 +25,7 @@ import { Import }        from '../../resources/imports/import';
 import { ImportLatest }  from '../../resources/imports/import-latest';
 
 import { ImportState }   from '../../enums/import-state.enum';
+import { PagedResponse } from '../../resources/paged-response';
 
 import { PageHeaderComponent } from '../../page-header/page-header.component';
 
@@ -33,6 +38,11 @@ import { FilterEvent }   from 'patternfly-ng/filter/filter-event';
 import { FilterQuery }   from 'patternfly-ng/filter/filter-query';
 import { FilterType }    from 'patternfly-ng/filter/filter-type';
 import { Filter }        from "patternfly-ng/filter/filter";
+
+import { PaginationConfig }  from 'patternfly-ng/pagination/pagination-config';
+import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
+
+import { AuthService }   from '../../auth/auth.service';
 
 import * as moment       from 'moment';
 import * as $            from 'jquery';
@@ -48,36 +58,33 @@ export class ImportListComponent implements OnInit, AfterViewInit {
 
     listConfig: ListConfig;
     filterConfig: FilterConfig;
+    locationParams: string;
+    paginationConfig: PaginationConfig;
 
     items: ImportLatest[] = [];
+
     selected: Import = null;
-    checking: boolean = false;
+    selectedId: number;
 
     pageTitle: string = "My Imports";
     pageLoading: boolean = true;
     refreshing: boolean = false;
     polling = null;
-    query: string;
+    filterParams: string = '';
     scroll: boolean;
+    pageSize: number = 10;
+    pageNumber: number = 1;
+    appliedFilters: Filter[] = [];
 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private importsService: ImportsService
+        private importsService: ImportsService,
+        private location: Location,
+        private authService: AuthService
     ){}
 
     ngOnInit() {
-        this.route.data.subscribe(
-            (data) => {
-                this.items = data['imports'];
-                this.prepareImports(this.items);
-                if (this.items.length) {
-                    this.getImport(this.items[0].id, true);
-                } else {
-                    this.cancelPageLoading();
-                }
-            }
-        );
 
         this.listConfig = {
             dblClick: false,
@@ -99,41 +106,46 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                 placeholder: 'Filter by Namespace...',
                 type: FilterType.TEXT,
             }] as FilterField[],
-            resultsCount: this.items.length,
+            resultsCount: 0,
             appliedFilters: []
         } as FilterConfig;
 
+        this.paginationConfig = {
+            pageSize: 10,
+            pageNumber: 1,
+            totalItems: 0
+        } as PaginationConfig;
+
         this.route.queryParams.subscribe(params => {
             let event: FilterEvent = new FilterEvent();
-            event.appliedFilters = [];
-            if (params['namespace']) {
-                event.appliedFilters.push({
-                    field: this.filterConfig.fields[1],
-                    value: params['namesspace']
-                } as Filter);
-                this.filterConfig.appliedFilters.push({
-                    field: this.filterConfig.fields[1],
-                    value: params['namesspace']
-                } as Filter);
-            }
-            if (params['repository_name']) {
-                event.appliedFilters.push({
-                    field: this.filterConfig.fields[0],
-                    value: params['repository_name']
-                } as Filter);
-                this.filterConfig.appliedFilters.push({
-                    field: this.filterConfig.fields[1],
-                    value: params['namesspace']
-                } as Filter);
-            }
-            if (event.appliedFilters.length) {
-                this.applyFilters(event);
-            }
+            this.setPageSize(params);
+            this.setAppliedFilters(params);
+            this.setQuery();
+
+            this.route.data.subscribe(
+                (data) => {
+                    let imports: PagedResponse = data['imports'] as PagedResponse;
+                    this.items = imports.results
+                    this.filterConfig.resultsCount = this.items.length;
+                    this.paginationConfig.totalItems = imports.count;
+                    this.prepareImports(this.items);
+                    if (this.items.length) {
+                        if (params['selected']) {
+                            this.getImport(Number(params['selected']), true);
+                        } else {
+                            this.getImport(this.items[0].id, true);
+                        }
+                    } else {
+                        this.cancelPageLoading();
+                    }
+                }
+            );
+            this.cancelPageLoading();
         });
     }
 
     ngAfterViewInit() {
-        this.setVerticalScroll();
+        //this.setVerticalScroll();
         if (this.selected) {
             this.selectItem(this.selected.id);
         }
@@ -144,7 +156,20 @@ export class ImportListComponent implements OnInit, AfterViewInit {
             this.polling.unsubscribe();
     }
 
-    handleAction(event, msg): void {}
+    handlePageSizeChange($event: PaginationEvent) {
+        if ($event.pageSize && this.pageSize != $event.pageSize) {
+            this.pageSize = $event.pageSize;
+            this.pageNumber = 1;
+            this.searchImports();
+        }
+    }
+
+    handlePageNumberChange($event: PaginationEvent) {
+        if ($event.pageNumber && this.pageNumber != $event.pageNumber) {
+            this.pageNumber = $event.pageNumber;
+            this.searchImports();
+        }
+    }
 
     handleClick(event): void {
         if (event['item']) {
@@ -184,11 +209,12 @@ export class ImportListComponent implements OnInit, AfterViewInit {
             result => {
                 this.prepareImport(result)
                 this.selected = result;
+                this.selectedId = result.id;
+                this.setQuery();
                 if (this.pfList) {
                     this.selectItem(this.selected.id, deselectId);
                 }
                 this.cancelPageLoading();
-                setTimeout(_ => { this.setVerticalScroll(); }, 1000);
                 if (this.selected.state == ImportState.running ||
                     this.selected.state == ImportState.pending) {
                         // monitor the state of a running import
@@ -198,27 +224,39 @@ export class ImportListComponent implements OnInit, AfterViewInit {
             });
     }
 
-    applyFilters(filters: FilterEvent): void {
-        this.query = null;
-        if (filters.appliedFilters.length) {
+    applyFilters($event: FilterEvent): void {
+        this.filterParams = '';
+        this.pageNumber = 1;
+        this.paginationConfig.pageNumber = 1;
+        if ($event.appliedFilters.length) {
             let query = '';
-            filters.appliedFilters.forEach((filter: Filter, idx: number) => {
+            let location = '';
+            $event.appliedFilters.forEach((filter: Filter, idx: number) => {
                 query += idx > 0 ? '&' : '';
+                location += idx > 0 ? '&' : '';
+                location += `${filter.field.id}=${filter.value.toLowerCase()}`;
                 if (filter.field.id == 'namespace' && filter.value) {
-                    query += `or__repository__provider_namespace__namespace__name__icontains=${filter.value.toLowerCase()}`;
+                    query += `repository__provider_namespace__namespace__name__icontains=${filter.value.toLowerCase()}`;
                 } else if (filter.field.id == 'repository_name' && filter.value) {
-                    query += `or__repository__name__icontains=${filter.value.toLowerCase()}`;
+                    query += `repository__name__icontains=${filter.value.toLowerCase()}`;
                 }
             });
-            this.query = query;
-            console.log('this.query: ' + this.query);
+            this.appliedFilters = JSON.parse(JSON.stringify($event.appliedFilters));
+            this.filterParams = query;
+            this.locationParams = location;
+        } else {
+            this.appliedFilters = [];
+            this.items = [];
+            this.filterParams = '';
+            this.locationParams = '';
         }
-        this.searchImports(this.query);
+        this.selectedId = 0;
+        this.searchImports();
     }
 
     onResize($event): void {
         // On browser resize
-        this.setVerticalScroll();
+        //this.setVerticalScroll();
     }
 
     startedImport($event): void {
@@ -238,6 +276,18 @@ export class ImportListComponent implements OnInit, AfterViewInit {
 
     private scrollDetails() {
         $('#import-details-container').animate({scrollTop:$('#import-details-container')[0].scrollHeight}, 1000);
+    }
+
+    private setPageSize(params:any) {
+        if (params['page_size']) {
+            this.paginationConfig.pageSize = params['page_size'];
+            this.pageSize = params['page_size'];
+            this.pageNumber = 1;
+        }
+           if (params['page']) {
+               this.paginationConfig.pageNumber = params['page'];
+               this.pageNumber = params['page'];
+           }
     }
 
     private prepareImport(data: Import): void {
@@ -271,48 +321,97 @@ export class ImportListComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private setVerticalScroll(): void {
-        let windowHeight = window.innerHeight;
-        let windowWidth = window.innerWidth;
-        let $importList = $('#import-list');
-        let $importDetails = $('#import-details-container');
-        if (windowWidth > 768) {
-            let headerh = $('.page-header').outerHeight(true);
-            let navbarh = $('.navbar-pf-vertical').outerHeight(true);
-            let filterh = $('#import-filter').outerHeight(true);
-            let listHeight = windowHeight - headerh - navbarh - filterh - 60;
-            if (!isNaN(listHeight)) {
-                $importList.css('height', listHeight);
+    private getFilterField(id: string): FilterField {
+        let result: FilterField = null;
+        this.filterConfig.fields.forEach((item: FilterField) => {
+            if (item.id == id) {
+                result = item;
             }
-
-            let detailHeight = windowHeight - headerh - navbarh - 60;
-            if (!isNaN(detailHeight)) {
-                $importDetails.css('height', detailHeight);
-            }
-        } else {
-            $importList.css('height', '100%');
-            $importDetails.css('height', '100%');
-        }
-        if (this.scroll) {
-             this.scrollDetails();
-        }
+        })
+        return result;
     }
 
-    private searchImports(query?: string): void {
+    private setAppliedFilters(queryParams:any) {
+        // Convert query params to filters
+        let filterParams = '';
+        let location = '';
+        let params = JSON.parse(JSON.stringify(queryParams));
+        if (!params['namespace']) {
+            params['namespace'] = this.authService.meCache.username;
+        }
+        for (var key in params) {
+            var field = this.getFilterField(key);
+            if (!field)
+                continue;
+            let values = (typeof params[key] == 'object') ? params[key] : [params[key]];
+            values.forEach(value => {
+                if (filterParams != '') {
+                    filterParams += '&';
+                    location += '&';
+                }
+                if (key == 'namespace') {
+                    filterParams += `repository__provider_namespace__namespace__name__icontains=${value.toLowerCase()}`;
+                    location += `${key}=${value.toLowerCase()}`;
+                } else if (key == 'repository_name') {
+                    filterParams += `repository__name__icontains=${value.toLowerCase()}`;
+                    location += `${key}=${value.toLowerCase()}`;
+                }
+                let ffield: Filter = {} as Filter;
+                ffield.field = field;
+                if (field.type == FilterType.TEXT) {
+                      ffield.value = value;
+                } else if (field.type == FilterType.TYPEAHEAD) {
+                    field.queries.forEach((query: FilterQuery) => {
+                        if (query.id == value) {
+                            ffield.query = query;
+                            ffield.value = query.value;
+                        }
+                    });
+                }
+                this.filterConfig.appliedFilters.push(ffield);
+                this.appliedFilters.push(ffield);
+            });
+        }
+        this.filterParams = filterParams;
+        this.locationParams = location;
+    }
+
+    private getBasePath(): string {
+        let path = this.location.path();
+        return path.replace(/\?.*$/,'');
+    }
+
+    private setQuery(): string {
+        let paging = '&page_size=' + this.pageSize.toString();
+        if (this.pageNumber > 1)
+            paging += '&page=' + this.pageNumber;
+
+        let query = (this.filterParams + paging).replace(/^&/,'');  // remove leading &
+        let selected = (this.selectedId) ? `&selected=${this.selectedId}` : '';
+
+        // Refresh params on location URL
+        let location = (this.locationParams + selected + paging).replace(/^&/,''); // remove leading &
+        this.location.replaceState(this.getBasePath(), location);
+
+        return query;
+    }
+
+    private searchImports(): void {
         this.pageLoading = true;
         if (this.polling) {
             this.polling.unsubscribe();
         }
+        let query = this.setQuery();
         this.importsService.latest(query).subscribe(results => {
-            this.items = results;
-            this.prepareImports(this.items);
+            this.items = results.results;
             this.filterConfig.resultsCount = this.items.length;
+            this.paginationConfig.totalItems = results.count;
+            this.prepareImports(this.items);
             if (this.items.length) {
                 this.getImport(this.items[0].id, true);
             } else {
                 this.cancelPageLoading();
             }
-            setTimeout(_ => { this.setVerticalScroll(); }, 1000);
         });
     }
 
@@ -356,15 +455,12 @@ export class ImportListComponent implements OnInit, AfterViewInit {
                     this.refreshing = false;
                     if (this.scroll)
                         this.scrollDetails();
-                    setTimeout(_ => { this.setVerticalScroll(); }, 1000);
                 });
         }
     }
 
     private cancelPageLoading(): void {
-        setTimeout(_ => {
-            this.pageLoading = false;
-            this.refreshing = false;
-        }, 500);
+        this.pageLoading = false;
+        this.refreshing = false;
     }
 }
