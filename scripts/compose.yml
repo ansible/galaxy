@@ -9,12 +9,10 @@ services:
       - GALAXY_DB_URL="postgres://galaxy:galaxy@postgres:5432/galaxy"
       - GALAXY_RABBITMQ_HOST=rabbitmq
       - GALAXY_RABBITMQ_PASSWORD=galaxy
-      - GALAXY_MEMCACHE_HOST=memcache
     ports:
       - '8000:8000'
     links:
       - postgres
-      - memcache
       - rabbitmq
 
   worker:
@@ -25,7 +23,6 @@ services:
       - GALAXY_DB_URL="postgres://galaxy:galaxy@postgres:5432/galaxy"
       - GALAXY_RABBITMQ_HOST=rabbitmq
       - GALAXY_RABBITMQ_PASSWORD=galaxy
-      - GALAXY_MEMCACHE_HOST=memcache
       - GALAXY_ELASTICSEARCH_HOST=elastic
       - C_FORCE_ROOT=1
     links:
@@ -39,9 +36,6 @@ services:
       - POSTGRES_DB=galaxy
       - POSTGRES_USER=galaxy
       - POSTGRES_PASSWORD=galaxy
-
-  memcache:
-    image: memcached:latest
 
   rabbitmq:
     image: rabbitmq:latest

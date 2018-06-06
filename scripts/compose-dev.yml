@@ -16,7 +16,6 @@ services:
       - '8000:8000'
     links:
       - postgres
-      - memcache
       - rabbitmq
 
   postgres:
@@ -28,9 +27,6 @@ services:
       - POSTGRESQL_USER=galaxy
       - POSTGRESQL_PASSWORD=galaxy
       - POSTGRESQL_ADMIN_PASSWORD=postgres
-
-  memcache:
-    image: memcached:latest
 
   rabbitmq:
     image: rabbitmq:latest

@@ -49,16 +49,6 @@ DATABASES['logging'] = DATABASES['default'].copy()
 # Set the test database name
 DATABASES['default']['TEST'] = {'NAME': 'test_galaxy'}
 
-# Cache
-# ---------------------------------------------------------
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'memcache:11211',
-    },
-}
-
 # Email settings
 # ---------------------------------------------------------
 
@@ -91,7 +81,6 @@ SITE_NAME = 'localhost'
 WAIT_FOR = [
     {'host': 'postgres', 'port': 5432},
     {'host': 'rabbitmq', 'port': 5672},
-    {'host': 'memcache', 'port': 11211},
 ]
 
 STATIC_ROOT = ''
