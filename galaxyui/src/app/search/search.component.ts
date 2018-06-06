@@ -197,16 +197,20 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     this.preparePlatforms(data.platforms);
                     this.prepareContentTypes(data.contentTypes);
                     this.prepareCloudPlatforms(data.cloudPlatforms);
-
-                    this.setAppliedFilters(params);
-                    this.setSortConfig(params['order_by']);
-                    this.setPageSize(params);
-
-                       this.prepareContent(data.content.results, data.content.count);
-                       this.setQuery();
-                    this.pageLoading = false;
-                }
-            );
+                    if (!data.content.results.length && !Object.keys(params).length) {
+                        // No vendors exists
+                        let default_params = {vendor: false};
+                        this.setAppliedFilters(default_params);
+                        this.searchContent();
+                    } else {
+                           this.setSortConfig(params['order_by']);
+                        this.setPageSize(params);
+                           this.setAppliedFilters(params);
+                           this.prepareContent(data.content.results, data.content.count);
+                        this.setQuery();
+                        this.pageLoading = false;
+                    }
+                });
         });
     }
 
@@ -463,8 +467,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
 
     private setQuery(): string {
-        let paging = '&page_size=' + this.pageSize.toString() +
-            '&page=' + this.pageNumber;
+        let paging = '&page_size=' + this.pageSize.toString();
+        if (this.pageNumber > 1)
+            paging += `&page=${this.pageNumber}`;
         let query = (this.filterParams + this.sortParams + paging).replace(/^&/,'');  // remove leading &
         this.location.replaceState(this.getBasePath(), query);   // update browser URL
         return query;
