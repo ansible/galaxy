@@ -1,8 +1,0 @@
-recursive-include galaxy *.py
-recursive-include galaxy/static *
-recursive-include galaxy/templates *
-recursive-include galaxy/lib/site-packages *
-recursive-include config *
-include galaxy/importer/linters/yamllint.yaml
-prune galaxy/static/js
-prune galaxy/static/less

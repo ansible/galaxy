@@ -112,8 +112,6 @@ class ContentSearchView(base.ListAPIView):
 
         queryset = self.add_relevance(queryset)
 
-        print(queryset.query)
-
         return self.make_response(queryset)
 
     @staticmethod
