@@ -11,6 +11,21 @@ SET version = substring(version from 2)
 WHERE version ILIKE 'v%'
 """
 
+DELETE_VERSION_DUPLICATES = """
+DELETE FROM main_repositoryversion
+WHERE id IN (
+  SELECT t.id FROM (
+    SELECT 
+      id, 
+      row_number() OVER (
+        PARTITION BY repository_id, version ORDER BY id DESC
+      ) AS row
+    FROM main_repositoryversion 
+  ) t 
+  WHERE t.row > 1
+)
+"""
+
 
 class Migration(migrations.Migration):
 
@@ -19,6 +34,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL('SET CONSTRAINTS ALL IMMEDIATE',
+                          reverse_sql=migrations.RunSQL.noop),
+        migrations.AlterUniqueTogether(
+            name='repositoryversion',
+            unique_together=set(),
+        ),
         migrations.RemoveField(
             model_name='repositoryversion',
             name='active',
@@ -48,7 +69,8 @@ class Migration(migrations.Migration):
             new_name='raw_version',
         ),
         migrations.RunSQL(
-            sql=STRIP_VERSION_SUFFIX,
+            sql=(STRIP_VERSION_SUFFIX,
+                 DELETE_VERSION_DUPLICATES),
         ),
         migrations.AlterUniqueTogether(
             name='repositoryversion',
