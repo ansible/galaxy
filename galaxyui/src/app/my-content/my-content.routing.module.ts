@@ -28,7 +28,10 @@ const myContentRoutes: Routes = [
         component: NamespaceDetailComponent,
         resolve: {
             me: MeResolver,
-            namespace: NamespaceDetailResolver
+            namespace: NamespaceDetailResolver,
+        },
+        data: {
+            expectedRole: 'isUser'
         },
         canActivate: [AuthService]
     },
