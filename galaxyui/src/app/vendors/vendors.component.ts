@@ -11,7 +11,6 @@ import {
 import { Action }             from 'patternfly-ng/action/action';
 import { ActionConfig }       from 'patternfly-ng/action/action-config';
 import { ListEvent }          from 'patternfly-ng/list/list-event';
-import { ListConfig }         from 'patternfly-ng/list/basic-list/list-config';
 import { FilterConfig }       from 'patternfly-ng/filter/filter-config';
 import { ToolbarConfig }      from 'patternfly-ng/toolbar/toolbar-config';
 import { FilterType }         from 'patternfly-ng/filter/filter-type';
@@ -57,7 +56,6 @@ export class VendorsComponent implements OnInit {
     filterConfig: FilterConfig;
     sortConfig: SortConfig;
     toolbarConfig: ToolbarConfig;
-    listConfig: ListConfig;
     paginationConfig: PaginationConfig;
     sortBy = 'name';
     filterBy: any = {
@@ -69,7 +67,7 @@ export class VendorsComponent implements OnInit {
     ngOnInit() {
         this.emptyStateConfig = {
             info: '',
-            title: 'No authors match your search',
+            title: 'No vendors match your search',
             iconStyleClass: 'pficon pficon-filter'
         } as EmptyStateConfig;
 
@@ -119,16 +117,6 @@ export class VendorsComponent implements OnInit {
             sortConfig: this.sortConfig,
             views: []
         } as ToolbarConfig;
-
-        this.listConfig = {
-            dblClick: false,
-            multiSelect: false,
-            selectItems: false,
-            selectionMatchProp: 'name',
-            showCheckbox: false,
-            useExpandItems: false,
-            emptyStateConfig: this.emptyStateConfig
-        } as ListConfig;
 
         this.paginationConfig = {
             pageSize: 10,

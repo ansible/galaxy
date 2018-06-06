@@ -10,7 +10,6 @@ import {
     Router
 } from '@angular/router';
 
-
 import { cloneDeep }    from 'lodash';
 
 import { Action }       from 'patternfly-ng/action/action';

@@ -55,8 +55,8 @@ export class AuthorDetailComponent implements OnInit {
 
     constructor(
         private router: Router,
-          private route: ActivatedRoute,
-          private repositoryService: RepositoryService
+        private route: ActivatedRoute,
+        private repositoryService: RepositoryService
     ) {}
 
     pageTitle = '';
@@ -88,18 +88,6 @@ export class AuthorDetailComponent implements OnInit {
             info: '',
             title: 'No repositories match your search',
             iconStyleClass: 'pficon pficon-filter'
-        } as EmptyStateConfig;
-
-        this.nameEmptyStateConfig = {
-            title: 'Author not found!',
-            info: 'The requested content author was not found. Try using the Search page to browse  ' +
-            'available content.',
-            iconStyleClass: 'pficon-warning-triangle-o',
-            helpLink: {
-                hypertext: 'Visit the Search page',
-                text: '',
-                url: '/search'
-            },
         } as EmptyStateConfig;
 
         this.filterConfig = {
@@ -169,6 +157,7 @@ export class AuthorDetailComponent implements OnInit {
             this.namespace = data['namespace'];
             this.items = data['repositories']['results'];
             this.paginationConfig.totalItems = data['repositories']['count'];
+            this.pageLoading = false;
             if (this.namespace && this.namespace.name) {
                 if (this.namespace.is_vendor) {
                     this.pageTitle = `<i class="fa fa-star"></i> Vendors;/vendors;${this.namespace.name}`;
@@ -176,13 +165,13 @@ export class AuthorDetailComponent implements OnInit {
                     this.pageTitle = `<i class="fa fa-users"></i> Community Authors;/authors;${this.namespace.name}`;
                 }
                 this.parepareNamespace();
+                if (this.items && this.items.length) {
+                    this.prepareRepositories();
+                }
             } else {
-                this.authorNotFound = true;
+                // author not found
+                this.router.navigate(['/not-found']);
             }
-            if (this.items && this.items.length) {
-                this.prepareRepositories();
-            }
-            this.pageLoading = false;
         });
     }
 

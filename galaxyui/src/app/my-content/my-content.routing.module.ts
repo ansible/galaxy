@@ -24,14 +24,23 @@ const myContentRoutes: Routes = [
         canActivate: [AuthService]
     },
     {
-        path: 'my-content/namespaces/:id',
+        path: 'my-content/namespaces/new',
         component: NamespaceDetailComponent,
         resolve: {
             me: MeResolver,
             namespace: NamespaceDetailResolver,
         },
         data: {
-            expectedRole: 'isUser'
+            expectedRole: 'isStaff'
+        },
+        canActivate: [AuthService]
+    },
+    {
+        path: 'my-content/namespaces/:id',
+        component: NamespaceDetailComponent,
+        resolve: {
+            me: MeResolver,
+            namespace: NamespaceDetailResolver,
         },
         canActivate: [AuthService]
     },

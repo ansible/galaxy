@@ -52,7 +52,7 @@ import { ContentService }             from './resources/content/content.service'
 import { AppRoutingModule }           from './app-routing.module';
 import { AppComponent }               from './app.component';
 import { ApiRootService }             from './resources/api-root/api-root.service';
-
+import { ExceptionPagesModule }       from './exception-pages/exception-pages.module';
 
 @NgModule({
     declarations: [
@@ -78,6 +78,7 @@ import { ApiRootService }             from './resources/api-root/api-root.servic
         SearchModule,
         ModalModule,
         ContentDetailModule,
+        ExceptionPagesModule,
         VendorsModule,
         AuthorsModule,
         AppRoutingModule

@@ -69,7 +69,7 @@ export class AuthorsComponent implements OnInit {
     ngOnInit() {
         this.emptyStateConfig = {
             info: '',
-            title: 'No authors match your search',
+            title: 'No contributors match your search',
             iconStyleClass: 'pficon pficon-filter'
         } as EmptyStateConfig;
 

@@ -29,7 +29,7 @@ export class NamespaceDetailResolver implements Resolve<Namespace> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Namespace> {
         const id = route.paramMap.get('id');
 
-        if (id === 'new') {
+        if (id === null || id === 'new') {
             return null;
         }
 
