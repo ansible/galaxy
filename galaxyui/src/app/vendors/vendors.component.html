@@ -10,7 +10,12 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <div id="vendors-list">
+            <div id="empty-vendors-list" *ngIf="!items || !items.length">
+                <pfng-empty-state
+                    [config]="emptyStateConfig">
+                </pfng-empty-state>
+            </div>
+            <div id="vendors-list" *ngIf="items && items.length">
                 <div *ngFor="let item of items">
                     <vendor-card [vendor]="item"></vendor-card>
                 </div>

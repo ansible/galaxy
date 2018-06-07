@@ -15,6 +15,11 @@ import { forkJoin }         from 'rxjs/observable/forkJoin';
 
 import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
 
+import {
+    ActionConfig,
+    Action
+} from 'patternfly-ng/action';
+
 import { Repository }       from '../resources/repositories/repository';
 import { Content }          from '../resources/content/content';
 import { Namespace }        from '../resources/namespaces/namespace';
@@ -43,7 +48,7 @@ export class ContentDetailComponent implements OnInit {
 
     constructor(
         private router: Router,
-          private route: ActivatedRoute,
+        private route: ActivatedRoute,
         private contentService: ContentService
     ) {}
 
@@ -52,6 +57,7 @@ export class ContentDetailComponent implements OnInit {
     repository: Repository;
     namespace: Namespace;
     showEmptyState = false;
+    actionConfig: ActionConfig;
     emptyStateConfig: EmptyStateConfig;
     selectedContent: Content;
     pageLoading = true;
@@ -76,15 +82,20 @@ export class ContentDetailComponent implements OnInit {
     } as ContentTypeCounts;
 
     ngOnInit() {
+        this.actionConfig = {
+            primaryActions: [{
+                id: 'search',
+                title: 'Search',
+                tooltip: 'View the search page'
+            }]
+        } as ActionConfig;
+
         this.emptyStateConfig = {
-            iconStyleClass: 'pficon-warning-triangle-o',
-            info: 'The requested content could not be found. It may not exist in the Galaxy search index. ' +
-            'Check the Search page, to see if it has been imported into Galaxy.',
-              helpLink: {
-                hypertext: 'Search page',
-                text: 'To locate the content, please visit the',
-                url: '/search'
-            },
+            actions: this.actionConfig,
+            iconStyleClass: 'fa fa-frown-o',
+            info: 'Well this is embarrassing. The content you requested could not be found. ' +
+            'It may not exist in the Galaxy search index. Click the Search button below, ' +
+            'to search our index.',
             title: 'Content Not Found'
         } as EmptyStateConfig;
 
@@ -144,7 +155,10 @@ export class ContentDetailComponent implements OnInit {
 
     toggleView(view: string) {
         this.showingView = ViewTypes[view];
-        console.log('showingView: ' + this.showingView);
+    }
+
+    handleActionClicked($event: Action) {
+        this.router.navigate(['/search']);
     }
 
     // private

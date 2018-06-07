@@ -2,14 +2,6 @@
 
 <div id="author-detail" class="container-fluid">
 
-    <div class="row" *ngIf="authorNotFound">
-        <div class="col-sm-12">
-            <pfng-empty-state
-                [config]="nameEmptyStateConfig">
-            </pfng-empty-state>
-        </div>
-    </div>
-
     <div class="row" *ngIf="!authorNotFound">
         <div class="col-sm-12">
             <div class="namespace">

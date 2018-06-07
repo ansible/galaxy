@@ -101,13 +101,18 @@ export class NamespaceDetailComponent implements OnInit {
             .subscribe(data => {
                 this.me = data['me'];
                 this.namespace = new Namespace();
+                this.pageLoading = false;
                 if (data['namespace']) {
                     this.namespace = data['namespace'];
-                    this.selectedUsers = this.namespace.summary_fields['owners'] as Owner[];
-                    this.selectedNamespaces = this.namespace.summary_fields['provider_namespaces'] as Source[];
-                    this.pageTitle = 'My Content;/my-content;Edit Namespace';
+                    if (this.namespace && this.namespace['summary_fields']) {
+                        this.selectedUsers = this.namespace.summary_fields['owners'] as Owner[];
+                        this.selectedNamespaces = this.namespace.summary_fields['provider_namespaces'] as Source[];
+                        this.pageTitle = 'My Content;/my-content;Edit Namespace';
+                    } else {
+                        // Requested namespace not found
+                        this.router.navigate(['/not-found']);
+                    }
                 }
-                this.pageLoading = false;
                 this.createForm();
                 this.getUsers();
                 this.getProviderSources();

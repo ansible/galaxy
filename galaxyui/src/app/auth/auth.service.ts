@@ -71,7 +71,7 @@ export class AuthService implements CanActivate {
         if (route['data'] && route['data']['expectedRole']) {
             if (route['data']['expectedRole'] === 'isStaff' && !this.meCache.staff) {
                 // User does not have is_staff=True
-                this.router.navigate(['/login', {error: true}]);
+                this.router.navigate(['/access-denied', {error: true}]);
                 result = false;
             }
         }
