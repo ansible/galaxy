@@ -126,6 +126,9 @@ class RepositorySerializer(serializers.BaseSerializer):
 
         content_counts = {c['content_type__name']: c['count'] for c in instance.content_counts}
 
+        versions = [dict(id=g.id, name=str(g.version), raw=g.raw_version,
+                         release_date=g.release_date) for g in instance.all_versions()]
+
         return {
             'owners': owners,
             'provider_namespace': provider_namespace,
@@ -133,7 +136,8 @@ class RepositorySerializer(serializers.BaseSerializer):
             'namespace': namespace,
             'latest_import': latest_import,
             'content_objects': content_objects,
-            'content_counts': content_counts
+            'content_counts': content_counts,
+            'versions': versions
         }
 
     def get_external_url(self, instance):
