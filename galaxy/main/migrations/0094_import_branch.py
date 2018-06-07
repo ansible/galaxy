@@ -4,7 +4,7 @@ from django.db import migrations
 
 
 UPGRADE_SET_IMPORT_BRANCH_DEFAULT_VALUE = """
-UPDATE main_repository 
+UPDATE main_repository
 SET import_branch = 'master'
 WHERE import_branch IS NULL
 """

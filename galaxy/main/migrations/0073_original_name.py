@@ -70,6 +70,6 @@ class Migration(migrations.Migration):
                 UPGRADE_FIX_CONTENT_EMPTY_NAME,
                 UPGRADE_REPOSITORY_ALIAS,
                 UPGRADE_SET_CONTENT_ORIGINAL_NAME
-             ),
+            ),
             reverse_sql=migrations.RunSQL.noop),
     ]

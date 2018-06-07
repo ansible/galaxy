@@ -23,9 +23,9 @@ HAVING count(*) > 1
 SELECT_INVALID_CONTENT = """
 SELECT c.id
 FROM main_repository r
-JOIN main_content c 
+JOIN main_content c
     ON r.id = c.repository_id
-WHERE 
+WHERE
     (r.provider_namespace_id, r.name) IN ({0}) AND c.is_valid = FALSE
 
 """.format(SELECT_DUPLICATE_REPOS)
@@ -33,9 +33,9 @@ WHERE
 SELECT_INVALID_REPOS = """
 SELECT r.id
 FROM main_repository r
-LEFT JOIN main_content c 
+LEFT JOIN main_content c
     ON r.id = c.repository_id
-WHERE 
+WHERE
     (r.provider_namespace_id, r.name) IN ({0}) AND (c.id IS NULL OR c.is_valid = FALSE)
 """.format(SELECT_DUPLICATE_REPOS)
 

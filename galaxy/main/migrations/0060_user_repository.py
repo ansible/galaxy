@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 from django.conf import settings
-import galaxy.main.mixins
+
 
 UPGRADE_USER_REPOSITORY_DATA = """
 INSERT INTO main_repository_owners (

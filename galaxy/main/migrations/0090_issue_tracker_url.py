@@ -16,7 +16,6 @@ UPDATE main_repository rp SET (issue_tracker_url) = (
 """
 
 
-
 class Migration(migrations.Migration):
 
     dependencies = [

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
-import galaxy.main.mixins
+from django.db import migrations
+
 
 MAIN_TITLE_BLOCK = ""
 
@@ -35,6 +35,7 @@ MAIN_FEATURED_BLOG_BLOCK = """
     Read the latest from The Inside Playbook, and keep up with what's
     happening in the Ansible universe.</a>
 """
+
 
 def upgrade_contentblocks_data(apps, schema_editor):
     ContentBlock = apps.get_model("main", "ContentBlock")

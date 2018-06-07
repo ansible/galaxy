@@ -10,10 +10,10 @@ import galaxy.main.fields
 
 COPY_NAMESPACE_DATA = """
 INSERT INTO main_providernamespace (
-  description, created, modified, active, name, display_name, 
-  avatar_url, location, company, email, html_url, followers) 
-SELECT 
-  description, created, modified, active, a.namespace, name, 
+  description, created, modified, active, name, display_name,
+  avatar_url, location, company, email, html_url, followers)
+SELECT
+  description, created, modified, active, a.namespace, name,
   avatar_url, location, company, email, html_url, followers
 FROM main_namespace as a INNER JOIN
   (SELECT namespace, min(id) as id
@@ -22,38 +22,38 @@ FROM main_namespace as a INNER JOIN
 """
 
 ADD_REPO_GITHUB_USERS = """
-INSERT INTO main_providernamespace 
+INSERT INTO main_providernamespace
   (created, modified, active, name, description)
 SELECT created, modified, true, b.github_user, b.github_user
 FROM main_repository as a INNER JOIN
   (SELECT github_user, min(id) as id
    FROM main_repository
-   GROUP BY github_user) as b 
+   GROUP BY github_user) as b
    ON a.github_user = b.github_user and a.id = b.id
 WHERE a.github_user not in (
-  SELECT name FROM main_providernamespace WHERE name = a.github_user)   
+  SELECT name FROM main_providernamespace WHERE name = a.github_user)
 """
 
 ADD_ROLE_NAMESPACE = """
-INSERT INTO main_providernamespace 
+INSERT INTO main_providernamespace
   (created, modified, active, name, description)
-SELECT 
-  created, modified, true, a.namespace, a.namespace 
+SELECT
+  created, modified, true, a.namespace, a.namespace
 FROM main_content as a INNER JOIN
   (SELECT namespace, min(id) as id
    FROM main_content
    GROUP BY namespace) as b ON a.namespace = b.namespace and a.id = b.id
 WHERE a.namespace not in (
-  SELECT name FROM main_providernamespace WHERE name = a.namespace)   
+  SELECT name FROM main_providernamespace WHERE name = a.namespace)
 """
 
 NAMESPACE_FROM_PROVIDER_NAMESPACE = """
 INSERT INTO main_namespace (
-  name, description, created, modified, active, original_name, 
+  name, description, created, modified, active, original_name,
   avatar_url, location, company, email, html_url
 )
-SELECT 
-  a.name, description, created, modified, true, a.name, 
+SELECT
+  a.name, description, created, modified, true, a.name,
   avatar_url, location, company, email, html_url
 FROM main_providernamespace as a INNER JOIN
   (SELECT name, min(id) as id
@@ -85,9 +85,9 @@ WHERE u.github_user = n.name
 """
 
 ADD_GITHUB_PROVIDER = """
-INSERT INTO main_provider 
+INSERT INTO main_provider
   (created, modified, description, name, original_name, active)
-VALUES 
+VALUES
   (CURRENT_DATE, CURRENT_DATE, 'Public GitHub', 'GitHub', 'GitHub', true)
 """
 
@@ -103,11 +103,11 @@ FROM (
   SELECT
     c.id AS namespace_id,
     a.customuser_id AS customuser_id
-  FROM 
+  FROM
     main_repository_owners a,
     main_repository b,
     main_namespace c
-  WHERE 
+  WHERE
     a.repository_id = b.id
     AND b.github_user = c.name
 ) AS a
@@ -136,7 +136,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('description', galaxy.main.fields.TruncatingCharField(
-                     default=b'', max_length=255, blank=True)),
+                    default=b'', max_length=255, blank=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),
                 ('name', models.CharField(
                     unique=True, max_length=512, db_index=True)),
@@ -155,7 +155,7 @@ class Migration(migrations.Migration):
                     verbose_name='ID', serialize=False, auto_created=True,
                     primary_key=True)),
                 ('description', galaxy.main.fields.TruncatingCharField(
-                     default=b'', max_length=255, blank=True)),
+                    default=b'', max_length=255, blank=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),

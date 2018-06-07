@@ -6,11 +6,11 @@ from django.db import models, migrations
 
 UPGRADE_STARGAZER_ROLE = """
 UPDATE main_stargazer
-SET 
+SET
   role_id = main_role.id
 FROM main_role
 WHERE main_stargazer.github_user = main_role.github_user
-  AND main_stargazer.github_repo = main_role.github_repo 
+  AND main_stargazer.github_repo = main_role.github_repo
 """
 
 DELETE_STARGAZER_ROLE_ID_NULL = """
@@ -20,11 +20,11 @@ WHERE role_id IS NULL
 
 DOWNGRADE_STARGAZER_ROLE = """
 UPDATE main_stargazer
-SET 
+SET
   github_user = main_role.github_user,
   github_repo = main_role.github_repo
 FROM main_role
-WHERE main_stargazer.role_id = main_role.id 
+WHERE main_stargazer.role_id = main_role.id
 """
 
 
