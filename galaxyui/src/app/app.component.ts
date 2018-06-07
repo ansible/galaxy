@@ -40,6 +40,9 @@ import { NotificationService }  from 'patternfly-ng/notification/notification-se
 import { Notification }         from 'patternfly-ng/notification';
 
 import { AuthService }          from './auth/auth.service';
+import { ApiRootService }       from './resources/api-root/api-root.service';
+import { ApiRoot }              from './resources/api-root/api-root';
+
 
 @Component({
     selector: 'galaxy-nav',
@@ -51,6 +54,7 @@ export class AppComponent implements OnInit {
     constructor(
         private router:       Router,
         private authService:  AuthService,
+        private apiRootService: ApiRootService,
         private modalService: BsModalService,
         private notificationService: NotificationService
     ) {
@@ -76,13 +80,12 @@ export class AppComponent implements OnInit {
     ngOnInit(): void {
         // TODO add unsecured API endpoint for retrieving Galaxy version
         this.aboutConfig = {
-            additionalInfo: '',
+            additionalInfo: 'Ansible Galaxy is Ansible’s official hub for sharing Ansible content.',
             copyright: '© Copyright 2018 Red Hat, Inc.',
             logoImageAlt: 'Ansible Galaxy',
-            logoImageSrc: '/assets/galaxy-brand-03.svg',
+            logoImageSrc: '/assets/galaxy-logo-03.svg',
             title: 'Galaxy',
             productInfo: [
-                { name: 'Version', value: '????' },
                 { name: 'Server', value: window.location.host }
             ]
         } as AboutModalConfig;
@@ -109,20 +112,29 @@ export class AppComponent implements OnInit {
             },
         ] as NavigationItemConfig[];
 
+        this.apiRootService.get().subscribe(
+            (apiInfo) => {
+                this.aboutConfig.productInfo.push({name: 'Server Version', value: apiInfo.server_version });
+                this.aboutConfig.productInfo.push({name: 'Api Version', value: apiInfo.current_version });
+
+            }
+        );
+
         this.authService.me().subscribe(
             (me) => {
                 this.authenticated = me.authenticated;
                 this.username = me.username;
-                this.aboutConfig.productInfo.push({
-                    name: 'User Name',
-                    value: me.username
-                });
-                this.aboutConfig.productInfo.push({
-                    name: 'User Role',
-                    value: (me.staff) ? 'Staff' : 'User'
-                });
-
                 if (this.authenticated) {
+
+                    this.aboutConfig.productInfo.push({
+                        name: 'User Name',
+                        value: me.username
+                    });
+                    this.aboutConfig.productInfo.push({
+                        name: 'User Role',
+                        value: (me.staff) ? 'Staff' : 'User'
+                    });
+
                     this.addNavButtons();
                 } else {
                     this.removeNavButtons();
