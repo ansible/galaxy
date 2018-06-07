@@ -51,6 +51,8 @@ import { TagsService }                from './resources/tags/tags.service';
 import { ContentService }             from './resources/content/content.service';
 import { AppRoutingModule }           from './app-routing.module';
 import { AppComponent }               from './app.component';
+import { ApiRootService }             from './resources/api-root/api-root.service';
+
 
 @NgModule({
     declarations: [
@@ -95,7 +97,8 @@ import { AppComponent }               from './app.component';
         RepositoryService,
         TagsService,
         UserService,
-        ContentService
+        ContentService,
+        ApiRootService
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA
