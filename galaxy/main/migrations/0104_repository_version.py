@@ -22,7 +22,7 @@ WHERE version !~ ('^' ||
                   '(0|[1-9A-Za-z-][0-9A-Za-z-]*)' ||
                   '(\.(0|[1-9A-Za-z-][0-9A-Za-z-]*))*)?' ||
                   '(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?' ||
-                  '$'); 
+                  '$');
 """
 
 DELETE_VERSION_DUPLICATES = """
