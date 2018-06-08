@@ -21,13 +21,16 @@ class NotificationSecretSerializer(BaseSerializer):
         model = NotificationSecret
         fields = (
             'id',
+            'url',
+            'related',
+            'summary_fields',
+            'created',
+            'modified',
             'owner',
             'github_user',
             'github_repo',
             'source',
             'secret',
-            'created',
-            'modified',
             'active'
         )
 
@@ -54,6 +57,11 @@ class NotificationSerializer(BaseSerializer):
         model = Notification
         fields = (
             'id',
+            'url',
+            'related',
+            'summary_fields',
+            'created',
+            'modified',
             'owner',
             'source',
             'github_branch',
@@ -61,9 +69,7 @@ class NotificationSerializer(BaseSerializer):
             'travis_status',
             'commit_message',
             'committed_at',
-            'commit',
-            'created',
-            'modified'
+            'commit'
         )
 
     def get_url(self, obj):

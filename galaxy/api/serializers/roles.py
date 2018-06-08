@@ -225,10 +225,15 @@ class RoleSearchSerializer(RoleListSerializer):
     relevance = drf_serializers.FloatField()
     search_rank = drf_serializers.FloatField()
     download_rank = drf_serializers.FloatField()
+    username = drf_serializers.SerializerMethodField()
 
     class Meta(RoleListSerializer.Meta):
         fields = RoleListSerializer.Meta.fields + (
             'relevance',
             'search_rank',
             'download_rank',
+            'username'
         )
+
+    def get_username(self, obj):
+        return obj.namespace.name

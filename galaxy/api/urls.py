@@ -44,7 +44,9 @@ role_urls = [
     url(r'^(?P<pk>[0-9]+)/imports/$',
         views.RoleImportTaskList.as_view(), name='role_import_task_list'),
     url(r'^(?P<pk>[0-9]+)/downloads/$', views.RoleDownloads.as_view(),
-        name='role_downloads')
+        name='role_downloads'),
+    url(r'^(?P<pk>[0-9]+)/versions/$', views.RoleVersionList.as_view(),
+        name='role_versions'),
 ]
 
 platform_urls = [

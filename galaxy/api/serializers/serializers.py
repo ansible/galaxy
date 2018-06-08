@@ -52,6 +52,7 @@ __all__ = [
     'PlatformSerializer',
     'PlatformSearchSerializer',
     'RepositoryVersionSerializer',
+    'RoleVersionSerializer',
     'TopContributorsSerializer',
     'ImportTaskSerializer',
     'ImportTaskLatestSerializer',
@@ -218,6 +219,11 @@ class UserListSerializer(BaseSerializer):
         model = User
         fields = (
             'id',
+            'url',
+            'related',
+            'summary_fields',
+            'created',
+            'modified',
             'username',
             'email',
             'staff',
@@ -282,9 +288,15 @@ class UserDetailSerializer(BaseSerializer):
         model = User
         fields = (
             'id',
+            'url',
+            'related',
+            'summary_fields',
+            'created',
+            'modified',
             'username',
             'password',
-            'email', 'karma',
+            'email',
+            'karma',
             'staff',
             'full_name',
             'date_joined',
@@ -455,6 +467,22 @@ class RepositoryVersionSerializer(BaseSerializer):
         return obj.repository.get_download_url(obj.tag)
 
 
+class RoleVersionSerializer(BaseSerializer):
+    download_url = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RepositoryVersion
+        fields = BASE_FIELDS + ('id', 'version', 'name', 'commit_date',
+                                'commit_sha', 'download_url')
+
+    def get_download_url(self, obj):
+        return obj.repository.get_download_url(obj.tag)
+
+    def get_name(self, obj):
+        return obj.tag
+
+
 class TopContributorsSerializer(serializers.BaseSerializer):
 
     def to_representation(self, obj):
@@ -470,6 +498,11 @@ class ImportTaskSerializer(BaseSerializer):
         model = ImportTask
         fields = (
             'id',
+            'url',
+            'related', 
+            'summary_fields',
+            'created',
+            'modified',
             'owner',
             'celery_task_id',
             'state',
@@ -529,11 +562,14 @@ class ImportTaskSerializer(BaseSerializer):
             ('commit', n.commit)
         ]) for n in obj.notifications.all().order_by('id')]
 
+        # Support ansible-galaxy <= 2.6 by excluding unsupported messges
+        supported_types = ('INFO', 'WARNING', 'ERROR', 'SUCCESS', 'FAILED')
         summary['task_messages'] = [OrderedDict([
             ('id', g.id),
             ('message_type', g.message_type),
             ('message_text', g.message_text)
-        ]) for g in obj.messages.all().order_by('id')]
+        ]) for g in obj.messages.filter(
+            message_type__in=supported_types).order_by('id')]
 
         summary['namespace'] = {}
         if obj.repository.provider_namespace.namespace:
@@ -565,6 +601,11 @@ class ImportTaskLatestSerializer(BaseSerializer):
         model = ImportTask
         fields = (
             'id',
+            'url',
+            'related',
+            'summary_fields',
+            'created',
+            'modified',
             'namespace',
             'repository_name',
             'repository_id',
