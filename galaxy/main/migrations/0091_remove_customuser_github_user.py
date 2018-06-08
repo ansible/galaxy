@@ -8,6 +8,7 @@ ALTER_CUSTOMUSER = """
 ALTER TABLE accounts_customuser DROP COLUMN github_user CASCADE
 """
 
+
 class Migration(migrations.Migration):
 
     dependencies = [

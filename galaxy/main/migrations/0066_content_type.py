@@ -2,13 +2,12 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import datetime
 import galaxy.main.mixins
-from django.utils.timezone import utc
 import galaxy.main.fields
 
+
 UPGRADE_INSERT_CONTENT_TYPES = """
-INSERT INTO main_contenttype 
+INSERT INTO main_contenttype
   (name, description, created, modified)
 VALUES
     ('action_plugin', 'Action Plugin', now(), now()),

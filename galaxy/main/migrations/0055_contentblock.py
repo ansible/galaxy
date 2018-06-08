@@ -5,7 +5,7 @@ from django.db import models, migrations
 import galaxy.main.mixins
 
 MAIN_TITLE_BLOCK = """
-<h1><span class="ansible-color">Galaxy</span> is your hub for finding, 
+<h1><span class="ansible-color">Galaxy</span> is your hub for finding,
 reusing and sharing Ansible content</h1>
 """
 
@@ -15,10 +15,10 @@ MAIN_SHARE_BLOCK = """
 <div class="content-txt">
    <p>Help other Ansible users by sharing the awesome roles you create.</p>
    <p>Maybe you have a role for installing and configuring a popular software
-      package, or a role for deploying software built by your company. Whatever 
+      package, or a role for deploying software built by your company. Whatever
       it is, use Galaxy to share it with the community.</p>
-   <p>Top content authors will be featured on the 
-   <a href="/explore#">Explore page</a>, achieving worldwide fame! 
+   <p>Top content authors will be featured on the
+   <a href="/explore#">Explore page</a>, achieving worldwide fame!
    Or at least fame on the internet among other developers and sysadmins.</p>
 </div>
 
@@ -31,17 +31,17 @@ MAIN_DOWNLOADS_BLOCK = """
 <div class="content-txt">
 
 <p>Jump-start your automation project with great content from the Ansible
-   community. Galaxy provides pre-packaged units of work known to Ansible 
-   as <a href="http://docs.ansible.com/playbooks_roles.html#roles" 
+   community. Galaxy provides pre-packaged units of work known to Ansible
+   as <a href="http://docs.ansible.com/playbooks_roles.html#roles"
        target="_blank">roles</a>.</p>
-<p>Roles can be dropped into Ansible PlayBooks and immediately put to work. 
-   You'll find roles for provisioning infrastructure, deploying 
+<p>Roles can be dropped into Ansible PlayBooks and immediately put to work.
+   You'll find roles for provisioning infrastructure, deploying
    applications, and all of the tasks you do everyday.</p>
 
-<p>Use <a href="/list#/roles">Search</a> to find roles for your project, 
+<p>Use <a href="/list#/roles">Search</a> to find roles for your project,
    then download them onto your Ansible host using the
-<a href="http://docs.ansible.com/ansible/galaxy.html#the-ansible-galaxy-command-line-tool" 
-   target="_blank">ansible-galaxy</a> command that comes bundled 
+<a href="http://docs.ansible.com/ansible/galaxy.html#the-ansible-galaxy-command-line-tool"
+   target="_blank">ansible-galaxy</a> command that comes bundled
    with Ansible.</p>
 <p>For example:</p>
 <pre>
@@ -53,7 +53,7 @@ $ ansible-galaxy install username.rolename
 MAIN_FEATURED_BLOG_BLOCK = """
 <span class="upcase title">BLOG:</span>
 <a href="https://ansible.com/blog" target="_blank" class="blog-link">
-Read the latest from The Inside Playbook, and keep up with what's happening 
+Read the latest from The Inside Playbook, and keep up with what's happening
 in the Ansible universe.</a>
 """
 

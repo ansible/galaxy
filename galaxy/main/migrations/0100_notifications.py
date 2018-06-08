@@ -22,12 +22,12 @@ WITH notifications_to_delete AS (
   WHERE n.import_task_id IS NULL OR n.repository_id IS NULL
 ), d1 AS (
   DELETE FROM main_notification_imports
-  WHERE notification_id IN (SELECT id FROM notifications_to_delete) 
+  WHERE notification_id IN (SELECT id FROM notifications_to_delete)
 ), d2 AS (
   DELETE FROM main_notification_roles
   WHERE notification_id IN (SELECT id FROM notifications_to_delete)
 )
-DELETE FROM main_notification 
+DELETE FROM main_notification
 WHERE id IN (SELECT id FROM notifications_to_delete);
 """
 

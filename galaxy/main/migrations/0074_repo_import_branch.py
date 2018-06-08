@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-from django.conf import settings
+
 
 MIGRATE_IMPORT_BRANCH = """
 WITH
@@ -35,10 +35,10 @@ WITH
     LEFT JOIN cnt ON r1.id = cnt.repository_id
     WHERE COALESCE(it.github_reference, cnt.github_branch) IS NOT NULL
 )
-UPDATE main_repository rp2 
+UPDATE main_repository rp2
 SET import_branch = rp.import_branch
 FROM rp
-WHERE rp.id = rp2.id 
+WHERE rp.id = rp2.id
 """
 
 

@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 INSERT_APB_CONTENT_TYPE = """
-INSERT INTO main_contenttype 
+INSERT INTO main_contenttype
   (name, description, created, modified)
 VALUES
   ('apb', 'Ansible Playbook Bundle', now(), now())

@@ -29,13 +29,13 @@ DELETE_VERSION_DUPLICATES = """
 DELETE FROM main_repositoryversion
 WHERE id IN (
   SELECT t.id FROM (
-    SELECT 
-      id, 
+    SELECT
+      id,
       row_number() OVER (
         PARTITION BY repository_id, version ORDER BY id DESC
       ) AS row
-    FROM main_repositoryversion 
-  ) t 
+    FROM main_repositoryversion
+  ) t
   WHERE t.row > 1
 )
 """

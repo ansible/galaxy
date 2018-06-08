@@ -6,12 +6,12 @@ from django.db import migrations, models
 
 
 UPGRADE_SET_FORMAT_FOR_ROLE_REPOS = """
-UPDATE main_repository 
+UPDATE main_repository
 SET "format" = 'role'
 WHERE id IN (
   SELECT DISTINCT c.repository_id FROM main_content c
   JOIN main_contenttype ct on c.content_type_id = ct.id
-  WHERE 
+  WHERE
     ct.name = 'role' AND
     c.repository_id IN (
       SELECT repository_id FROM main_content
@@ -21,28 +21,28 @@ WHERE id IN (
 """
 
 UPGRADE_SET_FORMAT_FOR_APB_REPOS = """
-UPDATE main_repository 
+UPDATE main_repository
 SET "format" = 'apb'
 WHERE id IN (
   SELECT DISTINCT c.repository_id FROM main_content c
   JOIN main_contenttype ct on c.content_type_id = ct.id
-  WHERE 
-    ct.name = 'apb' AND 
+  WHERE
+    ct.name = 'apb' AND
     c.repository_id IN (
       SELECT repository_id FROM main_content
       GROUP BY repository_id HAVING count(*) = 1
-    ) 
+    )
 )
 """
 
 UPGRADE_SET_FORMAT_FOR_MULTI_REPOS = """
-UPDATE main_repository 
+UPDATE main_repository
 SET "format" = 'multi'
 WHERE id IN (
   SELECT DISTINCT c.repository_id FROM main_content c
   JOIN main_contenttype ct on c.content_type_id = ct.id
-  WHERE 
-    ct.name NOT IN ('role', 'apb') OR 
+  WHERE
+    ct.name NOT IN ('role', 'apb') OR
     c.repository_id IN (
       SELECT repository_id FROM main_content
       GROUP BY repository_id HAVING count(*) > 1

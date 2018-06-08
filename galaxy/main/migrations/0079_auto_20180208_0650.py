@@ -4,14 +4,14 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 UPGRADE_SET_EMPTY_IMPORT_BRANCH_TO_NULL = """
-UPDATE main_importtask 
-SET import_branch = NULL 
+UPDATE main_importtask
+SET import_branch = NULL
 WHERE import_branch = ''
 """
 
 UPGRADE_SET_EMPTY_ALT_NAME_TO_NULL = """
-UPDATE main_importtask 
-SET repository_alt_name = NULL 
+UPDATE main_importtask
+SET repository_alt_name = NULL
 WHERE repository_alt_name = ''
 """
 

@@ -5,7 +5,7 @@ from django.db import models, migrations
 
 
 UPGRADE_SET_REPOSITORY_REF = """
-UPDATE main_stargazer s SET repository_id = c.repository_id 
+UPDATE main_stargazer s SET repository_id = c.repository_id
 FROM main_content c
 WHERE s.role_id = c.id
 """
