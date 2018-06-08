@@ -1,3 +1,8 @@
 # Python: Byte-compiled / files
 **/__pycache__/
 **/*.pyc
+
+build/
+dist/
+galaxy.egg-info/
+galaxyui/node_modules

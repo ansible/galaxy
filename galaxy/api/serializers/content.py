@@ -163,8 +163,8 @@ class ContentDetailSerializer(ContentSerializer):
                  'name': d.name}
                 for d in instance.dependencies.all()],
             'versions': [
-                {'id': v.id, 'name': str(v.version), 'raw': v.raw_version,
-                 'release_date': v.release_date}
+                {'id': v.id, 'version': str(v.version), 'tag': v.tag,
+                 'commit_date': v.commit_date, 'commit_sha': v.commit_sha}
                 for v in instance.repository.all_versions()
             ],
         })
