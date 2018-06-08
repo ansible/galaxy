@@ -1,0 +1,18 @@
+# Old compiled python stuff
+*.py[co]
+# package building stuff
+build
+# Emacs backup files...
+*~
+.\#*
+.doctrees
+# Generated docs stuff
+ansible*.xml
+.buildinfo
+objects.inv
+.doctrees
+*.min.css
+_build
+_static
+_themes
+rst_warnings
