@@ -660,26 +660,14 @@ class ProviderNamespace(PrimordialModel):
 @six.python_2_unicode_compatible
 class RepositoryVersion(BaseModel):
     class Meta:
-        ordering = ('-version',)
         unique_together = ('repository', 'version')
 
-    # Foreign keys
-    # -------------------------------------------------------------------------
+    repository = models.ForeignKey('Repository', related_name='versions')
 
-    repository = models.ForeignKey(
-        'Repository',
-        related_name='versions'
-    )
-
-    # Regular fields
-    # -------------------------------------------------------------------------
-
-    version = fields.VersionField()
-    raw_version = models.CharField(max_length=64)
-    release_date = models.DateTimeField(blank=True, null=True)
-
-    # Other functions and properties
-    # -------------------------------------------------------------------------
+    version = fields.VersionField(null=True)
+    tag = models.CharField(max_length=64)
+    commit_sha = models.CharField(max_length=40, null=True)
+    commit_date = models.DateTimeField(null=True)
 
     def __str__(self):
         return "{}.{}-{}".format(
@@ -1001,7 +989,7 @@ class Repository(BaseModel):
         if ref is None:
             last_version = self.last_version()
             if last_version:
-                ref = last_version.raw_version
+                ref = last_version.tag
             else:
                 ref = self.import_branch
 
@@ -1012,7 +1000,7 @@ class Repository(BaseModel):
         )
 
     def all_versions(self):
-        return sorted(self.versions.all(),
+        return sorted(self.versions.filter(version__isnull=False).all(),
                       key=operator.attrgetter('version'),
                       reverse=True)
 

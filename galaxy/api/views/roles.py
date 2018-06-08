@@ -62,7 +62,8 @@ class RoleList(ListAPIView):
 
     def get_queryset(self):
         qs = super(RoleList, self).get_queryset()
-        qs = qs.prefetch_related('platforms', 'tags', 'versions', 'dependencies')
+        qs = qs.prefetch_related(
+            'platforms', 'tags', 'repository__versions', 'dependencies')
         return filter_role_queryset(qs)
 
 

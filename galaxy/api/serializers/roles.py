@@ -135,9 +135,8 @@ class RoleListSerializer(BaseRoleSerializer):
             format=obj.repository.format)
         d['tags'] = [g.name for g in obj.tags.all()]
         d['versions'] = [
-            {'id': g.id, 'name': str(g.version), 'raw': g.raw_version,
-             'release_date': g.release_date}
-            for g in obj.repository.all_version()]
+            {'id': g.id, 'name': g.tag, 'release_date': g.commit_date}
+            for g in obj.repository.versions.all()]
         d['videos'] = [dict(url=v.url, description=v.description)
                        for v in obj.videos.all()]
         return d
@@ -200,11 +199,14 @@ class RoleDetailSerializer(BaseRoleSerializer):
             name=obj.repository.provider_namespace.name)
         d['repository'] = dict(id=obj.repository.pk, name=obj.repository.name)
         d['tags'] = [g.name for g in obj.tags.all()]
-        d['versions'] = [dict(id=g.id, name=g.name,
-                              release_date=g.release_date)
-                         for g in obj.repository.versions.all()]
-        d['videos'] = [dict(url=v.url, description=v.description)
-                       for v in obj.videos.all()]
+        d['versions'] = [
+            dict(id=g.id, name=g.tag, release_date=g.commit_date)
+            for g in obj.repository.versions.all()
+        ]
+        d['videos'] = [
+            dict(url=v.url, description=v.description)
+            for v in obj.videos.all()
+        ]
         return d
 
     def get_readme(self, obj):

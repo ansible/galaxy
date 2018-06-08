@@ -196,7 +196,7 @@ def _update_repository_versions(repository, github_repo, logger):
     logger.info('Updating repository versions...')
 
     git_tags = {tag.name: tag for tag in github_repo.get_tags()}
-    db_tags = {v.raw_version: v for v in repository.versions.all()}
+    db_tags = {v.tag: v for v in repository.versions.all()}
 
     to_delete = set(db_tags) - set(git_tags)
     for version in to_delete:
@@ -210,13 +210,13 @@ def _update_repository_versions(repository, github_repo, logger):
         except ValueError:
             continue
 
-        release_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
+        commit_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
         version_obj, created = models.RepositoryVersion.objects.get_or_create(
             repository=repository,
             version=version,
             defaults={
-                'raw_version': tag.name,
-                'release_date': release_date,
+                'tag': tag.name,
+                'release_date': commit_date,
             },
         )
         if not created:
@@ -226,9 +226,9 @@ def _update_repository_versions(repository, github_repo, logger):
     for version in to_update:
         tag = git_tags[version]
         version_obj = db_tags[version]
-        release_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
-        if version_obj.release_date != release_date:
+        commit_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
+        if version_obj.commit_date != commit_date:
             logger.warning('Release date of version {} has changed.'
-                           .format(version_obj.raw_version))
-            version_obj.release_date = release_date
+                           .format(version_obj.tag))
+            version_obj.commit_date = commit_date
             version_obj.save()
