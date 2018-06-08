@@ -134,10 +134,9 @@ class RoleListSerializer(BaseRoleSerializer):
             travis_build_url=obj.repository.travis_build_url,
             format=obj.repository.format)
         d['tags'] = [g.name for g in obj.tags.all()]
-        d['versions'] = [
-            {'id': g.id, 'name': str(g.version), 'raw': g.raw_version,
-             'release_date': g.release_date}
-            for g in obj.repository.all_version()]
+        d['versions'] = [dict(id=g.id, name=str(g.version), raw=g.raw_version,
+                              release_date=g.release_date)
+                         for g in obj.repository.all_versions()]
         d['videos'] = [dict(url=v.url, description=v.description)
                        for v in obj.videos.all()]
         return d
@@ -200,9 +199,9 @@ class RoleDetailSerializer(BaseRoleSerializer):
             name=obj.repository.provider_namespace.name)
         d['repository'] = dict(id=obj.repository.pk, name=obj.repository.name)
         d['tags'] = [g.name for g in obj.tags.all()]
-        d['versions'] = [dict(id=g.id, name=g.name,
+        d['versions'] = [dict(id=g.id, name=str(g.version), raw=g.raw_version,
                               release_date=g.release_date)
-                         for g in obj.repository.versions.all()]
+                         for g in obj.repository.all_versions()]
         d['videos'] = [dict(url=v.url, description=v.description)
                        for v in obj.videos.all()]
         return d

@@ -165,8 +165,7 @@ class ContentDetailSerializer(ContentSerializer):
             'versions': [
                 {'id': v.id, 'name': str(v.version), 'raw': v.raw_version,
                  'release_date': v.release_date}
-                for v in instance.repository.all_versions()
-            ],
+                for v in instance.repository.all_verions()],
         })
         return result
 
