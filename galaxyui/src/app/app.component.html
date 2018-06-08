@@ -51,5 +51,21 @@
     </div>
 </div>
 <ng-template #aboutTemplate>
-    <pfng-about-modal [config]="aboutConfig" (onCancel)="closeAbout($event)"></pfng-about-modal>
+    <pfng-about-modal [config]="aboutConfig" (onCancel)="closeAbout($event)">
+        <div>
+            Ansible Galaxy is Ansible’s official hub for sharing Ansible content.
+        </div>
+        <br />
+        <div>
+            <span style="font-weight: bold"><span class="fa fa-lg fa-github"></span> Galaxy Source:</span>
+            <a href="https://github.com/ansible/galaxy" target="blank">github.com/ansible/galaxy</a>
+        </div>
+        <div>
+            <span style="font-weight: bold"><span class="fa fa-lg fa-github"></span> Galaxy Team:</span>
+            <span *ngFor="let profile of teamMembers; let last=last">
+                <a href="https://github.com/{{profile}}" target="blank">{{ profile }}</a>{{last ? '' : ', '}}
+            </span>
+        </div>
+
+    </pfng-about-modal>
 </ng-template>
