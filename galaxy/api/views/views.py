@@ -303,7 +303,7 @@ class RoleUsersList(base_views.SubListAPIView):
 class RoleImportTaskList(base_views.ListAPIView):
     model = models.ImportTask
     serializer_class = serializers.ImportTaskSerializer
-    
+
     def list(self, request, *args, **kwargs):
         id = kwargs.pop('pk')
         try:

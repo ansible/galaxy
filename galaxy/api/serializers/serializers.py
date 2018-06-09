@@ -499,7 +499,7 @@ class ImportTaskSerializer(BaseSerializer):
         fields = (
             'id',
             'url',
-            'related', 
+            'related',
             'summary_fields',
             'created',
             'modified',
