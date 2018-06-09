@@ -6,11 +6,9 @@ from django.db import migrations, models
 
 UPGRADE_REPOSITORY_DOWNLOAD_COUNTS = """
 UPDATE main_repository r SET download_count = (
-  SELECT sum(download_count) FROM main_content c
+  SELECT coalesce(sum(download_count), 0) FROM main_content c
   WHERE r.id = c.repository_id
 );
-
-
 """
 
 
