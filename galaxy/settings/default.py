@@ -125,7 +125,7 @@ LOGIN_REDIRECT_URL = '/home'
 # Sessions
 # ---------------------------------------------------------
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 SESSION_SAVE_EVERY_REQUEST = True
 
