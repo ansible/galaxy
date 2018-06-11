@@ -216,7 +216,7 @@ def _update_repository_versions(repository, github_repo, logger):
             version=version,
             defaults={
                 'tag': tag.name,
-                'release_date': commit_date,
+                'commit_date': commit_date,
             },
         )
         if not created:
