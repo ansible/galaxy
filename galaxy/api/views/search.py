@@ -110,6 +110,14 @@ class ContentSearchView(base.ListAPIView):
         is_vendor = request.GET.get('vendor', None)
         queryset = self.add_vendor_filter(queryset, is_vendor)
 
+        # Support for ansible-galaxy <= 2.6 autocomplete params
+        tags = request.GET.get('tags_autocomplete', '').split()
+        queryset = self.add_tags_filter(queryset, tags)
+        platforms = request.GET.get('platforms_autocomplete', '').split()
+        queryset = self.add_platforms_filter(queryset, platforms)
+        namespaces = request.GET.get('username_autocomplete', '').split()
+        queryset = self.add_namespaces_filter(queryset, namespaces)
+
         queryset = self.add_relevance(queryset)
 
         return self.make_response(queryset)

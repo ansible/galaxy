@@ -85,6 +85,7 @@ __all__ = [
     'RoleImportTaskList',
     'RoleTypes',
     'RoleUsersList',
+    'RoleVersionList',
     'StargazerDetail',
     'StargazerList',
     'SubscriptionDetail',
@@ -299,11 +300,24 @@ class RoleUsersList(base_views.SubListAPIView):
         return filter_user_queryset(qs)
 
 
-class RoleImportTaskList(base_views.SubListAPIView):
+class RoleImportTaskList(base_views.ListAPIView):
     model = models.ImportTask
     serializer_class = serializers.ImportTaskSerializer
-    parent_model = models.Content
-    relationship = 'import_tasks'
+
+    def list(self, request, *args, **kwargs):
+        id = kwargs.pop('pk')
+        try:
+            content = models.Content.objects.get(pk=id)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        qs = content.repository.import_tasks.all()
+        qs = self.filter_queryset(qs)
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
 
 
 class RoleDownloads(base_views.APIView):
@@ -315,6 +329,26 @@ class RoleDownloads(base_views.APIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
+class RoleVersionList(base_views.ListAPIView):
+    model = models.RepositoryVersion
+    serializer_class = serializers.RoleVersionSerializer
+
+    def list(self, request, *args, **kwargs):
+        id = kwargs.pop('pk')
+        try:
+            content = models.Content.objects.get(pk=id)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        qs = content.repository.versions.all()
+        qs = self.filter_queryset(qs)
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
+
+
 class ImportTaskList(base_views.ListCreateAPIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (ModelAccessPermission,)
@@ -323,6 +357,24 @@ class ImportTaskList(base_views.ListCreateAPIView):
 
     def get_queryset(self):
         return super(ImportTaskList, self).get_queryset()
+
+    def list(self, request, *args, **kwargs):
+        github_user = request.GET.get('github_user')
+        github_repo = request.GET.get('github_repo')
+        if github_user and github_repo:
+            # Support ansible-galaxy <= 2.6
+            qs = models.ImportTask.objects.filter(
+                repository__provider_namespace__name=github_user,
+                repository__name=github_repo)
+        else:
+            qs = self.get_queryset()
+            qs = self.filter_queryset(qs)
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         github_user = request.data.get('github_user')
@@ -898,18 +950,14 @@ class RemoveRole(base_views.APIView):
                 "github_repo": role.github_repo
             })
 
-            for notification in role.notifications.all():
-                notification.delete()
-
-        # Update the repository cache
         repo = models.Repository.objects.get(
             provider_namespace__name=gh_user,
             name=gh_repo)
-        repo.is_enabled = False
-        repo.save()
 
+        models.Notification.objects.filter(repository=repo).delete()
         models.Content.objects.filter(repository=repo).delete()
         models.ImportTask.objects.filter(repository=repo).delete()
+        repo.delete()
 
         return Response(response)
 
