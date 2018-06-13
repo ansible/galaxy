@@ -56,7 +56,7 @@ from galaxy.api import tasks
 from galaxy.api.views import base_views
 from galaxy.main.celerytasks import tasks as celerytasks
 from galaxy.main import models
-from galaxy.common.version import get_git_version, get_version_name, get_team_members
+from galaxy.common import version
 
 
 logger = logging.getLogger(__name__)
@@ -142,8 +142,8 @@ class ApiRootView(base_views.APIView):
                 v1=current
             ),
             server_version=version.get_package_version('galaxy'),
-            version_name=get_version_name(),
-            team_members=get_team_members(),
+            version_name=version.get_version_name(),
+            team_members=version.get_team_members(),
         )
         return Response(data)
 
