@@ -56,11 +56,7 @@ from galaxy.api import tasks
 from galaxy.api.views import base_views
 from galaxy.main.celerytasks import tasks as celerytasks
 from galaxy.main import models
-<<<<<<< HEAD
-from galaxy.common import version
-=======
 from galaxy.common.version import get_git_version, get_version_name, get_team_members
->>>>>>> added authors, version name and source code to about modal
 
 
 logger = logging.getLogger(__name__)
