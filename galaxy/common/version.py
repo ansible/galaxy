@@ -61,6 +61,7 @@ def get_git_version():
 
     return '0.0.0.dev0+{0}'.format(tag_info)
 
+
 def get_version_name():
     """
     Returns the version name. Minor releases for 3.0.0 will be named after
@@ -68,6 +69,7 @@ def get_version_name():
     """
 
     return "Doin' it Right"
+
 
 def get_team_members():
     """
