@@ -95,6 +95,12 @@
                                 <span class="count">{{ item.forks_count }}</span>
                                 <span class="count-label">Forks</span>
                             </div>
+                            <div class="travis" *ngIf="item.travis_build_url">
+                                <a href="{{ item.travis_build_url }}" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
+                                    <img src="{{ item.travis_status_url }}"
+                                        class="travis-status-img" title="Travis Build Status" />
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </ng-template>
