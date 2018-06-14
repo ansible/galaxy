@@ -2,7 +2,7 @@ GALAXY_RELEASE_IMAGE ?= galaxy
 GALAXY_RELEASE_TAG ?= latest
 
 VENV_BIN=/var/lib/galaxy/venv/bin
-DOCKER_COMPOSE=docker-compose -f ./scripts/compose-dev.yml -p galaxy
+DOCKER_COMPOSE=docker-compose -p galaxy -f ./scripts/docker/dev/compose.yml
 
 .PHONY: help
 help:
@@ -67,19 +67,24 @@ build/dist: build/static
 	GALAXY_VERSION=$$(python setup.py --version) \
 		&& ln -sf galaxy-$$GALAXY_VERSION-py2-none-any.whl dist/galaxy.whl
 
-.PHONY: build/docker-build
-build/docker-build:
-	docker build --rm -t galaxy-build -f scripts/docker-release/Dockerfile.build .
-
 .PHONY: build/docker-dev
-build/docker-dev: build/docker-build
-	docker build --rm -t galaxy-dev -f scripts/docker-dev/Dockerfile .
+build/docker-dev:
+	docker build --rm -t galaxy-dev -f scripts/docker/dev/Dockerfile .
 
-.PHONY: build/docker-release
-build/docker-release: build/docker-build
-	docker run --rm -v $(CURDIR):/galaxy galaxy-build
-	docker build --rm -t $(GALAXY_RELEASE_IMAGE):$(GALAXY_RELEASE_TAG) \
-		-f scripts/docker-release/Dockerfile .
+.PHONY: build/release
+build/release:
+	@echo "Building base container..."
+	@docker build -t galaxy-base:latest \
+		-f scripts/docker/release/Dockerfile.base .
+	@echo "Building build container..."
+	@docker build -t galaxy-build:latest \
+		-f scripts/docker/release/Dockerfile.build .
+	@echo "Building galaxy container..."
+	@docker build -t $(GALAXY_RELEASE_IMAGE):$(GALAXY_RELEASE_TAG) \
+		-f scripts/docker/release/Dockerfile .
+	@echo "Building static container..."
+	@docker build -t $(GALAXY_RELEASE_IMAGE)-static:$(GALAXY_RELEASE_TAG) \
+		-f scripts/docker/release/Dockerfile.static .
 
 # ---------------------------------------------------------
 # Test targets
@@ -194,9 +199,9 @@ dev/rm:
 dev/tmux_noattach:
 	tmux new-session -d -s galaxy -n galaxy \; \
 		 set-option -g allow-rename off \; \
-		 send-keys "scripts/docker-dev/entrypoint.sh make runserver" Enter \; \
+		 send-keys "scripts/docker/dev/entrypoint.sh make runserver" Enter \; \
 		 new-window -n celery \; \
-		 send-keys "scripts/docker-dev/entrypoint.sh make celery" Enter \; \
+		 send-keys "scripts/docker/dev/entrypoint.sh make celery" Enter \; \
 		 new-window -n ng \; \
 		 send-keys "make ng_server" Enter
 

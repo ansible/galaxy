@@ -1,0 +1,18 @@
+FROM galaxy-base:latest
+
+# Install nodejs and yarn
+# TODO(cutwater): Use direct package link instead of
+# setup_8.x script execution.
+RUN yum -y install wget \
+    && wget -O - https://rpm.nodesource.com/setup_8.x | bash - \
+    && wget -O /etc/yum.repos.d/yarn.repo https://dl.yarnpkg.com/rpm/yarn.repo \
+    && yum -y install nodejs yarn \
+    && yum -y remove wget \
+    && yum -y clean all \
+    && rm -rf /var/cache/yum
+
+RUN mkdir -p /galaxy
+COPY . /galaxy
+WORKDIR /galaxy
+
+RUN /galaxy/scripts/docker/release/build.sh

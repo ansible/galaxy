@@ -16,8 +16,8 @@ if [ "${TEST}" != "1" ]; then
     make migrate
 fi
 
-if [ "${TMUX}" == "1" ] || [ "${TEST}" == "1" ]; then 
-    scripts/docker-dev/sleep.sh
+if [ "${TMUX}" == "1" ] || [ "${TEST}" == "1" ]; then
+    scripts/docker/dev/sleep.sh
 else
-    ${VENV_BIN}/honcho start -f "scripts/docker-dev/Procfile"
+    ${VENV_BIN}/honcho start -f "scripts/docker/dev/Procfile"
 fi

@@ -33,7 +33,7 @@ script:
 # check images running
 - docker ps -a
 - docker images
-- docker-compose -f scripts/compose-dev.yml -p galaxy logs galaxy
+- docker-compose -f scripts/docker/dev/compose.yml -p galaxy logs galaxy
 
 # Run simple web server test
 - pushd testing/simple
@@ -50,7 +50,7 @@ script:
 # Build release image
 - |
   if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-    make build/docker-release
+    make build/release
   fi
 
 after_success:
