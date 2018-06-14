@@ -59,7 +59,7 @@ If you have not done so already, you'll need to fork the Galaxy repo on GitHub. 
 
 #### Build the galaxy-dev image
 
-The first step to running a local Galaxy instance is building the images. You're going to run a script that will build the`galaxy-dev` image, which will contain everything needed to run the Galaxy frontend web server, backend Django server, and Celery task runner.
+The first step to running a local Galaxy instance is building the images. You're going to run a script that will build the `galaxy-dev` image, which will contain everything needed to run the Galaxy frontend web server, backend Django server, and Celery task runner.
 
 Prior to building this image, the script will first build the `galaxy-build` image, which contains all of the required OS packages, Python dependencies, and frontend tools and packages. The `galaxy-build` image is then used as the base image to create `galaxy-dev`.
 
