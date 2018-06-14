@@ -72,7 +72,7 @@ build/docker-build:
 	docker build --rm -t galaxy-build -f scripts/docker/release/Dockerfile.build .
 
 .PHONY: build/docker-dev
-build/docker-dev: build/docker-build
+build/docker-dev:
 	docker build --rm -t galaxy-dev -f scripts/docker/dev/Dockerfile .
 
 .PHONY: build/docker-release
