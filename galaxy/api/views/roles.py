@@ -20,7 +20,7 @@ import logging
 from rest_framework.response import Response
 from django.http import Http404
 
-from galaxy.main.models import Content, Repository
+from galaxy.main.models import Content
 
 from .views import filter_role_queryset
 from .base_views import ListAPIView, RetrieveAPIView
