@@ -17,7 +17,7 @@ services:
 
 
   ui:
-    image: galaxy-ui:latest
+    image: galaxy-static:latest
     ports:
       - '8080:80'
 

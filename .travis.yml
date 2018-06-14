@@ -50,7 +50,7 @@ script:
 # Build release image
 - |
   if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-    make build/docker-release
+    make build/release
   fi
 
 after_success:

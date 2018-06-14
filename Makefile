@@ -73,10 +73,18 @@ build/docker-dev:
 
 .PHONY: build/release
 build/release:
-	docker build --rm -t galaxy-base:latest -f scripts/docker/release/Dockerfile.base .
-	docker build --rm -t galaxy-build:latest -f scripts/docker/release/Dockerfile.build .
-	docker build --rm -t $(GALAXY_RELEASE_IMAGE):$(GALAXY_RELEASE_TAG) -f scripts/docker/release/Dockerfile .
-	docker build --rm -t $(GALAXY_RELEASE_IMAGE)-ui:$(GALAXY_RELEASE_TAG) -f scripts/docker/release/Dockerfile.ui .
+	@echo "Building base container..."
+	@docker build -t galaxy-base:latest \
+		-f scripts/docker/release/Dockerfile.base .
+	@echo "Building build container..."
+	@docker build -t galaxy-build:latest \
+		-f scripts/docker/release/Dockerfile.build .
+	@echo "Building galaxy container..."
+	@docker build -t $(GALAXY_RELEASE_IMAGE):$(GALAXY_RELEASE_TAG) \
+		-f scripts/docker/release/Dockerfile .
+	@echo "Building static container..."
+	@docker build -t $(GALAXY_RELEASE_IMAGE)-static:$(GALAXY_RELEASE_TAG) \
+		-f scripts/docker/release/Dockerfile.static .
 
 # ---------------------------------------------------------
 # Test targets
