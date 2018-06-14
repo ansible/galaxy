@@ -141,7 +141,9 @@ class ApiRootView(base_views.APIView):
             available_versions=dict(
                 v1=current
             ),
-            server_version=version.get_package_version('galaxy')
+            server_version=version.get_package_version('galaxy'),
+            version_name=version.get_version_name(),
+            team_members=version.get_team_members(),
         )
         return Response(data)
 

@@ -60,3 +60,28 @@ def get_git_version():
         return tag_info.lstrip(TAG_PREFIX)
 
     return '0.0.0.dev0+{0}'.format(tag_info)
+
+
+def get_version_name():
+    """
+    Returns the version name. Minor releases for 3.0.0 will be named after
+    Daft Punk songs.
+    """
+
+    return "Doin' it Right"
+
+
+def get_team_members():
+    """
+    Returns list of team members who have worked on Ansible Galaxy
+    """
+    members = [
+        "chouseknecht",
+        "cutwater",
+        "alikins",
+        "newswangerd",
+        "tima",
+        "gregdek"
+    ]
+
+    return members

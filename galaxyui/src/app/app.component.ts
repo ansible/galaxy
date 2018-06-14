@@ -76,11 +76,12 @@ export class AppComponent implements OnInit {
     showAbout = false;
     aboutConfig:   AboutModalConfig;
     redirectUrl:   string = null;
+    teamMembers:   string[];
 
     ngOnInit(): void {
         // TODO add unsecured API endpoint for retrieving Galaxy version
         this.aboutConfig = {
-            additionalInfo: 'Ansible Galaxy is Ansible’s official hub for sharing Ansible content.',
+            additionalInfo: '',
             copyright: '© Copyright 2018 Red Hat, Inc.',
             logoImageAlt: 'Ansible Galaxy',
             logoImageSrc: '/assets/galaxy-logo-03.svg',
@@ -115,8 +116,10 @@ export class AppComponent implements OnInit {
         this.apiRootService.get().subscribe(
             (apiInfo) => {
                 this.aboutConfig.productInfo.push({name: 'Server Version', value: apiInfo.server_version });
+                this.aboutConfig.productInfo.push({name: 'Version Name', value: apiInfo.version_name});
                 this.aboutConfig.productInfo.push({name: 'Api Version', value: apiInfo.current_version });
 
+                this.teamMembers = apiInfo.team_members;
             }
         );
 
