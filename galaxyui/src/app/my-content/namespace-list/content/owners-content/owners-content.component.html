@@ -28,8 +28,8 @@
     <div class="row" *ngFor="let owner of namespace.summary_fields.owners">
         <div class="col-sm-12">
             <div class="owner-img">
-                <img src="{{ owner.github_avatar }}" class="github-avatar" *ngIf="owner['github_avatar']">
-                <img src="/static/img/avatar.png" class="github-avatar" *ngIf="!owner['github_avatar']">
+                <img src="{{ owner.avatar_url }}" class="github-avatar" *ngIf="owner['avatar_url']">
+                <img src="/static/img/avatar.png" class="github-avatar" *ngIf="!owner['avatar_url']">
             </div>
             <div class="description">
                 <span class="title">{{ owner.username }}</span>
