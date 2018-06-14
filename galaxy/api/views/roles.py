@@ -54,10 +54,11 @@ class RoleList(ListAPIView):
             qs = qs.filter(**params)
             page = self.paginate_queryset(qs)
 
-            if request.query_params.get('name') and qs.count() == 1:
-                repo = qs.first().repository
-                repo.download_count += 1
-                repo.save()
+            if request.query_params.get('name'):
+                content = qs.first()
+                if content is not None:
+                    content.repository.download_count += 1
+                    content.repository.save()
 
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
