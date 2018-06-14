@@ -67,19 +67,15 @@ build/dist: build/static
 	GALAXY_VERSION=$$(python setup.py --version) \
 		&& ln -sf galaxy-$$GALAXY_VERSION-py2-none-any.whl dist/galaxy.whl
 
-.PHONY: build/docker-build
-build/docker-build:
-	docker build --rm -t galaxy-build -f scripts/docker/release/Dockerfile.build .
-
 .PHONY: build/docker-dev
 build/docker-dev:
 	docker build --rm -t galaxy-dev -f scripts/docker/dev/Dockerfile .
 
-.PHONY: build/docker-release
-build/docker-release: build/docker-build
-	docker run --rm -v $(CURDIR):/galaxy galaxy-build
-	docker build --rm -t $(GALAXY_RELEASE_IMAGE):$(GALAXY_RELEASE_TAG) \
-		-f scripts/docker/release/Dockerfile .
+.PHONY: build/release
+build/release:
+	docker build --rm -t galaxy-base:latest -f scripts/docker/release/Dockerfile.base .
+	docker build --rm -t galaxy-build:latest -f scripts/docker/release/Dockerfile.build .
+	docker build --rm -t $(GALAXY_RELEASE_IMAGE):$(GALAXY_RELEASE_TAG) -f scripts/docker/release/Dockerfile .
 
 # ---------------------------------------------------------
 # Test targets

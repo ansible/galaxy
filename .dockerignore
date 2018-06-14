@@ -2,5 +2,7 @@
 **/__pycache__/
 **/*.pyc
 
+build/
+dist/
 galaxy.egg-info/
 galaxyui/node_modules

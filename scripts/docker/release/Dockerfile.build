@@ -1,4 +1,4 @@
-FROM centos:7
+FROM galaxy-base:latest
 
 # Install nodejs and yarn
 # TODO(cutwater): Use direct package link instead of
@@ -11,26 +11,8 @@ RUN yum -y install wget \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
-# Install packages and create virtual environment
-ENV PIP_NO_CACHE_DIR off
-RUN yum -y install epel-release \
-    && yum -y install gcc git make python python-pip python-devel \
-    && pip install virtualenv \
-    && yum -y clean all \
-    && rm -rf /var/cache/yum
-
-# Install node dependencies
-RUN yarn global add @angular/cli \
-    && ng set --global packageManager=yarn
-
-# Install python dependencies
-COPY requirements.txt /tmp/requirements.txt
-ENV VENV_BIN /var/lib/galaxy/venv/bin
-RUN mkdir -p /var/lib/galaxy/ \
-    && virtualenv /var/lib/galaxy/venv \
-    && ${VENV_BIN}/pip install -U pip wheel \
-    && ${VENV_BIN}/pip install -r /tmp/requirements.txt
-
-
+RUN mkdir -p /galaxy
+COPY . /galaxy
 WORKDIR /galaxy
-CMD /galaxy/scripts/docker/release/build.sh
+
+RUN /galaxy/scripts/docker/release/build.sh
