@@ -2,15 +2,20 @@
 __pycache__/
 *.pyc
 
+# Python: Distribution \ packaging
+*.egg-info/
+
+# Project directories
+/build/
+/dist/
+
+# Other
 *.swp
 *.retry
 .idea/
 .develop/
 .cache/
 .pytest_cache/
-build/
-dist/
-galaxy.egg-info/
 galaxy/celerybeat-schedule
 known_hosts
 provisioning/library/
