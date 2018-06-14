@@ -3,8 +3,6 @@ version: '3'
 services:
   galaxy:
     image: galaxy-dev:latest
-    build:
-      context: ./docker-dev
     volumes:
       - ${PWD}:/galaxy:z
     environment:

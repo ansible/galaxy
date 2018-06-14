@@ -39,7 +39,7 @@ RUN virtualenv /var/lib/galaxy/venv \
     && ${VENV_BIN}/pip install -U pip \
     && ${VENV_BIN}/pip install -r /tmp/requirements.txt
 
-COPY scripts/docker-release/entrypoint.sh /entrypoint.sh
+COPY scripts/docker/release/entrypoint.sh /entrypoint.sh
 COPY dist/ /tmp/dist
 COPY build/static/ /var/lib/galaxy/public/static
 COPY galaxyui/dist/ /var/lib/galaxy/public/static

@@ -33,4 +33,4 @@ RUN mkdir -p /var/lib/galaxy/ \
 
 
 WORKDIR /galaxy
-CMD /galaxy/scripts/docker-release/build.sh
+CMD /galaxy/scripts/docker/release/build.sh

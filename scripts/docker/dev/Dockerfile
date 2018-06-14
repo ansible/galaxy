@@ -17,8 +17,8 @@ ENV LC_ALL en_US.UTF-8
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONIOENCODING utf8
 
-COPY scripts/docker-dev/entrypoint.sh /entrypoint.sh
+COPY scripts/docker/dev/entrypoint.sh /entrypoint.sh
 
 WORKDIR /galaxy
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/galaxy/scripts/docker-dev/start-develop.sh"]
+CMD ["/galaxy/scripts/docker/dev/start-develop.sh"]

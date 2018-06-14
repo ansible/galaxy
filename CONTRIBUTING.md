@@ -59,11 +59,11 @@ If you have not done so already, you'll need to fork the Galaxy repo on GitHub. 
 
 #### Build the galaxy-dev image
 
-The first step to running a local Galaxy instance is building the images. You're going to run a script that will build the`galaxy-dev` image, which will contain everything needed to run the Galaxy frontend web server, backend Django server, and Celery task runner. 
+The first step to running a local Galaxy instance is building the images. You're going to run a script that will build the`galaxy-dev` image, which will contain everything needed to run the Galaxy frontend web server, backend Django server, and Celery task runner.
 
 Prior to building this image, the script will first build the `galaxy-build` image, which contains all of the required OS packages, Python dependencies, and frontend tools and packages. The `galaxy-build` image is then used as the base image to create `galaxy-dev`.
 
-If you're curious about what actually goes into building the images, you'll find the Dockerfile for `galaxy-build` in [scripts/docker-release](./scripts/docker-release). The actual filename is `Dockerfile.build`. And you'll find the Dockerfile for `galaxy-dev` in [scripts/docker-dev](./scripts/docker-dev).
+If you're curious about what actually goes into building the images, you'll find the Dockerfile for `galaxy-build` in [scripts/docker/release](./scripts/docker/release). The actual filename is `Dockerfile.build`. And you'll find the Dockerfile for `galaxy-dev` in [scripts/docker/dev](./scripts/docker/dev).
 
 Run the following to build the image:
 
@@ -88,11 +88,11 @@ centos              7                   196e0ce0c9fb        6 weeks ago         
 
 ### Start the containers
 
-We use `docker-compose` to run the containers. If you're curious about the services, and and how they're configured, the compose file is [scripts/compose-dev.yml](./scripts/compose-dev.yml)
+We use `docker-compose` to run the containers. If you're curious about the services, and and how they're configured, the compose file is [scripts/docker/dev/compose.yml](./scripts/docker/dev/compose.yml)
 
 #### Quick start
 
-There are a couple different ways to start the development containers. If all of this is new, and you just want to get things going, run the following command to start the containers in an attached mode. All that means is that the STDOUT and STDERR for each container will stream to the STDOUT and STDERR of your terminal session. 
+There are a couple different ways to start the development containers. If all of this is new, and you just want to get things going, run the following command to start the containers in an attached mode. All that means is that the STDOUT and STDERR for each container will stream to the STDOUT and STDERR of your terminal session.
 
 After running the command, your session will be totally consumed with the output, which is OK. Seeing the output lets you know what's actually happening in the containers. So afterwards, to run additional commands from your terminal, you'll need to start a second session.
 
@@ -111,7 +111,7 @@ Any missing images (i.e., postgresql, memcachd, rabbitmq, elasticsearch) will be
 Aftr the above commands completes, you can take a look at the containers by running `docker ps` in your second terminal session.
 
 ```bash
-$ docker ps 
+$ docker ps
 
 CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS                                NAMES
 fc06225cdfd5        galaxy-dev:latest     "/bin/sh -c /galax..."   6 hours ago         Up 5 hours          0.0.0.0:8000->8000/tcp               galaxy_galaxy_1
@@ -174,11 +174,11 @@ If you're familiar with `tmux`, and you would prefer to view the container outpu
     All documents removed.
     Indexing 0 roles
     + '[' 1 == 1 ']'
-    + scripts/docker-dev/sleep.sh
+    + scripts/docker/dev/sleep.sh
     ```
 
-    Once you see the very last line, `scripts/docker-dev/sleep.sh`, you're ready for step 2. 
-    
+    Once you see the very last line, `scripts/docker/dev/sleep.sh`, you're ready for step 2.
+
 2. Now you'll start `tmux` and launch the processes inside the `galaxy` service container by running the following. If you're streaming the logging ouptut still, use `Ctrl-c` to stop the stream.
 
     ```bash
@@ -259,7 +259,7 @@ After you save the new application, access your local Galaxy admin site at [http
 
 Click on *Sites*. You'll see one site defined, *example.com*. Click on *example.com* to modify it. On the next page, change both the *Domain Name* and *Display Name* from *example.com* to *localhost*. Click the *Save* button.
 
-#### Create a new social application 
+#### Create a new social application
 
 Next, create a new social application. Start by finding `Social applications` at the bottom of the list, on the admin site home page. Click the *Add* button to its right, and on the next page, complete the following to configure the new application:
 
@@ -275,6 +275,6 @@ Now test the authentication. Log out of your admin account, and go back to the h
 
 The Javascript, CSS and HTML components for the web site can be found in the [galaxy/static](./galaxy/static) folder. Within this folder, the *gulp* service watches for modifications to `less/*.less` stylesheets, and automatically recompiles the CSS and refreshes your browser. It also refreshes your browser whenever changes are made to `js/*/*.js` and `partion/*.html` files.
 
-### Stop services 
+### Stop services
 
 To stop all services, run `make dev/down`.
