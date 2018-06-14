@@ -1,12 +1,11 @@
 version: '3'
-
 services:
-  web:
+  galaxy:
     image: galaxy:latest
     command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv && /entrypoint.sh manage migrate --noinput && /entrypoint.sh run web']
     environment:
       - GALAXY_SECRET_KEY=secret
-      - GALAXY_DB_URL="postgres://galaxy:galaxy@postgres:5432/galaxy"
+      - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
       - GALAXY_RABBITMQ_HOST=rabbitmq
       - GALAXY_RABBITMQ_PASSWORD=galaxy
     ports:
@@ -14,6 +13,14 @@ services:
     links:
       - postgres
       - rabbitmq
+      - ui
+
+
+  ui:
+    image: galaxy-ui:latest
+    ports:
+      - '8080:80'
+
 
   worker:
     image: galaxy:latest
@@ -35,6 +42,7 @@ services:
       - POSTGRES_DB=galaxy
       - POSTGRES_USER=galaxy
       - POSTGRES_PASSWORD=galaxy
+
 
   rabbitmq:
     image: rabbitmq:latest
