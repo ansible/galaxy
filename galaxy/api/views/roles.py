@@ -20,7 +20,7 @@ import logging
 from rest_framework.response import Response
 from django.http import Http404
 
-from galaxy.main.models import Content
+from galaxy.main.models import Content, Repository
 
 from .views import filter_role_queryset
 from .base_views import ListAPIView, RetrieveAPIView
@@ -53,6 +53,12 @@ class RoleList(ListAPIView):
             qs = self.get_queryset()
             qs = qs.filter(**params)
             page = self.paginate_queryset(qs)
+
+            if request.query_params.get('name') and qs.count() == 1:
+                repo = qs.first().repository
+                repo.download_count += 1
+                repo.save()
+
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
                 return self.get_paginated_response(serializer.data)
