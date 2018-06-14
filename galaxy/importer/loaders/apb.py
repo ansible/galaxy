@@ -17,6 +17,8 @@
 
 import os
 import re
+import semver
+import six
 import yaml
 
 from galaxy import constants
@@ -29,7 +31,6 @@ from galaxy.importer.loaders import base
 class APBMetaParser(object):
     # Tags should contain lowercase letters and digits only
     TAG_REGEXP = re.compile('^[a-z0-9]+$')
-    VERSIONS = ['1.0']
 
     def __init__(self, metadata, logger=None):
         self.metadata = metadata
@@ -52,16 +53,15 @@ class APBMetaParser(object):
 
     def _check_version(self):
         version = self._get_key('version')
+        if not isinstance(version, six.string_types):
+            self.log.warning('Version value in metadata is not a string')
+            return
         try:
-            version_string = '{:.1f}'.format(version)
+            semver.parse(version)
         except ValueError:
-            raise exc.APBContentLoadError(
-                'Version "{0}" in metadata is an invalid version '
-                'format'.format(version))
-        if version_string not in self.VERSIONS:
-            raise exc.APBContentLoadError(
-                'Version "{0}" in metadata is not a valid version of '
-                'the APB spec'.format(version_string))
+            self.log.warning(
+                'Version "{0}" in metadata does not match the expected '
+                'version format'.format(version))
 
     def _check_bindable(self):
         fieldname = 'bindable'
