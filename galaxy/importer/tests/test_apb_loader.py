@@ -26,7 +26,7 @@ from galaxy.importer import loaders
 from galaxy.importer.loaders import apb as apb_loader
 
 APB_DATA = """
-version: 1.0
+version: '1.0.0'
 name: mssql-apb
 description: Deployment of Microsoft SQL Server on Linux
 bindable: true
@@ -330,18 +330,17 @@ class TestAPBMetaParser(unittest.TestCase):
     def test_version_format(self):
         self.data['version'] = 'foo'
         parser = apb_loader.APBMetaParser(self.data, self.log)
-        with pytest.raises(exc.APBContentLoadError) as excinfo:
-            parser.check_data()
-        msg = 'Version "foo" in metadata is an invalid version format'
-        assert msg in excinfo.value.message
+        parser._check_version()
+        self.log.warning.assert_called_once_with(
+            'Version "foo" in metadata does not match the expected version '
+            'format')
 
     def test_invalid_version(self):
         self.data['version'] = 1.1
         parser = apb_loader.APBMetaParser(self.data, self.log)
-        with pytest.raises(exc.APBContentLoadError) as excinfo:
-            parser.check_data()
-        msg = 'Version "1.1" in metadata is not a valid version'
-        assert msg in excinfo.value.message
+        parser._check_version()
+        self.log.warning.assert_called_once_with(
+            'Version value in metadata is not a string')
 
 
 class TestRoleLoader(unittest.TestCase):
