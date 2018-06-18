@@ -103,7 +103,7 @@ export class RepositoryComponent implements OnInit {
 
         this.repositoryView.watchersCount = this.repository.watchers_count;
         this.repositoryView.stargazersCount = this.repository.stargazers_count;
-        this.repositoryView.downloadCount = 0;
+        this.repositoryView.downloadCount = this.repository.download_count;
         this.repositoryView.forksCount = this.repository.forks_count;
         this.repositoryView.issueTrackerUrl = this.repository.issue_tracker_url;
         this.repositoryView.scmUrl = this.repository.external_url;
