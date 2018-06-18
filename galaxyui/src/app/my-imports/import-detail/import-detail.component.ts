@@ -19,6 +19,8 @@ import { ImportState }             from '../../enums/import-state.enum';
 import { RepositoryImportService } from '../../resources/repository-imports/repository-import.service';
 import { RepositoryImport }        from '../../resources/repository-imports/repository-import';
 
+import { AuthService }             from '../../auth/auth.service';
+
 import * as $       from 'jquery';
 import * as lodash  from 'lodash';
 
@@ -32,6 +34,7 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
 
     private _importTask: Import;
     private _refreshing: boolean;
+    private canImport: boolean;
 
     scroll = false;
 
@@ -39,6 +42,18 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
 
     @Input()
     set importTask(data: Import) {
+        this.canImport = false;
+
+        if (data){
+            this.authService.me().subscribe(
+                (me) => {
+                    console.log(me.username);
+                    console.log(data.summary_fields.owner.username);
+                    this.canImport = me.username === data.summary_fields.owner.username;
+                }
+            );
+        }
+
         if (this._importTask && this.importTask.id !== data.id) {
             this.scroll = false;
             this.scrollToggled.emit(this.scroll);
@@ -66,7 +81,8 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
     @Output() scrollToggled = new EventEmitter<boolean>();
 
     constructor(
-        private repositoryImportService: RepositoryImportService
+        private repositoryImportService: RepositoryImportService,
+        private authService: AuthService
     ) {}
 
     ngOnInit() {}
@@ -77,7 +93,7 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
         this.repositoryImportService.save({'repository_id': this.importTask.summary_fields.repository.id})
             .subscribe(response => {
                 console.log(
-                  `Started import for repoostiroy ${this.importTask.summary_fields.repository.id}`
+                  `Started import for repository ${this.importTask.summary_fields.repository.id}`
                 );
                 this.startedImport.emit(true);
             });

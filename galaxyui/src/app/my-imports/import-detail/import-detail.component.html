@@ -5,12 +5,19 @@
         <div class="refreshing-icon" [ngClass]="{refreshing: refreshing}" ><i class="fa fa-spinner fa-spin"></i></div>
     </div>
 
-    <div class="import-btn-container">
+    <div class="import-btn-container" *ngIf="canImport">
         <button class="btn btn-default btn-sm"
             type="button"
             (click)="startImport()"
             tooltip="Restart import"
             placement="top"><i class="fa fa-upload"></i></button>
+    </div>
+
+    <div class="import-btn-container" *ngIf="!canImport">
+        <button class="btn btn-default btn-sm"
+            type="button"
+            tooltip="Permission denied"
+            placement="top" disabled><i class="fa fa-upload"></i></button>
     </div>
 
     <div class="title-bar" >
