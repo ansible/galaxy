@@ -34,7 +34,7 @@ class Owner {
     username: string;
     github_user: string;
     id: number;
-    github_avatar: string;
+    avatar_url: string;
     selected: boolean;
 }
 
@@ -302,8 +302,8 @@ export class NamespaceDetailComponent implements OnInit {
     private prepUsersForList(users: User[]): User[] {
         const clone = cloneDeep(users);
         clone.forEach(item => {
-            if (!item.github_avatar) {
-                item.github_avatar = '/assets/avatar.png';
+            if (!item.avatar_url) {
+                item.avatar_url = '/assets/avatar.png';
             }
             item.selected = false;
             this.selectedUsers.forEach(selected => {

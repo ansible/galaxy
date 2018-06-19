@@ -98,7 +98,7 @@
                                 <li *ngFor="let user of users; index as i" (click)="toggleUser(user.id)" >
                                     <input *ngIf="user.selected" type="checkbox" class="form-control" checked>
                                     <input *ngIf="!user.selected" type="checkbox" class="form-control">
-                                    <img class="avatar" src="{{ user.github_avatar }}" >
+                                    <img class="avatar" src="{{ user.avatar_url }}" >
                                     <span class="username">{{ user.username }}</span>
                                 </li>
                             </ul>
@@ -111,7 +111,7 @@
                         <ul>
                             <li *ngFor="let owner of this.selectedUsers; index as i">
                                 <a [routerLink]="" class="remove-item" (click)="toggleUser(owner.id)"><span class="pficon pficon-close"></span></a>
-                                <img class="avatar" src="{{ owner.github_avatar }}" >
+                                <img class="avatar" src="{{ owner.avatar_url }}" >
                                 <span class="username">{{ owner.username }}</span>
                             </li>
                         </ul>

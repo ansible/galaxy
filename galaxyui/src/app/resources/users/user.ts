@@ -6,7 +6,7 @@ export class User {
     staff: boolean;
     full_name: string;
     date_joined: string;
-    github_avatar: string;
+    avatar_url: string;
     github_user: string;
     url: string;
     cache_refreshed: boolean;
