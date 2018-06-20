@@ -407,6 +407,10 @@ class ImportTaskList(base_views.ListCreateAPIView):
                     dict(detail="Repository {0} not found, or you do not have access".format(repository_id))
                 )
 
+        # Verify that the user is an owner before letting them import
+        if not repository.owners.filter(username=request.user.get_username()):
+            raise PermissionDenied(detail="You are not an owner of {0}".format(repository.name))
+
         task = tasks.create_import_task(
             repository, request.user,
             import_branch=github_reference)
