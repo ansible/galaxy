@@ -595,7 +595,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 title: 'Contributor Name',
                 sortType: 'alpha'
             }, {
-                id: 'download_count',
+                id: 'repository__download_count',
                 title: 'Download Count',
                 sortType: 'numeric'
 
