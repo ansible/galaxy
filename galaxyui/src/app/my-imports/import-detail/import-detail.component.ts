@@ -47,8 +47,6 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
         if (data) {
             this.authService.me().subscribe(
                 (me) => {
-                    console.log(me.username);
-                    console.log(data.summary_fields.owner.username);
                     this.canImport = me.username === data.summary_fields.owner.username;
                 }
             );
