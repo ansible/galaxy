@@ -592,7 +592,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 sortType: 'numeric'
             }, {
                 id: 'namespace__name,name',
-                title: 'Contributor, Name',
+                title: 'Contributor Name',
                 sortType: 'alpha'
             }, {
                 id: 'download_count',
