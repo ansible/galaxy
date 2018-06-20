@@ -245,8 +245,11 @@ class RepositoryContentList(views.SubListAPIView):
     relationship = "content_objects"
 
 
-class RepositoryVersionList(views.SubListAPIView):
-    model = models.RepositoryVersion
+class RepositoryVersionList(views.ListAPIView):
+    model = models.Repository
     serializer_class = serializers.RepositoryVersionSerializer
-    parent_model = models.Repository
-    relationship = 'versions'
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance.all_versions(), many=True)
+        return Response(serializer.data)
