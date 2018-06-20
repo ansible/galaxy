@@ -137,7 +137,7 @@ dev/logf:
 .PHONY: dev/flake8
 dev/flake8:
 	@echo "Running flake8"
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/flake8 --config=tox.ini galaxy
+	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/flake8 galaxy
 
 .PHONY: dev/jslint
 dev/jslint:
