@@ -86,7 +86,7 @@ def _import_repository(import_task, logger):
         repo_info = i_repo.import_repository(
             repository.clone_url,
             branch=repository.import_branch,
-            temp_dir=settings.WORKER_DIR_BASE,
+            temp_dir=settings.CONTENT_DOWNLOAD_DIR,
             logger=logger)
     except i_exc.ImporterError as e:
         raise exc.TaskError(str(e))

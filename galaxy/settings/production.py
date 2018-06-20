@@ -162,6 +162,8 @@ WAIT_FOR = [
 
 ADMIN_URL_PATTERN = r'^%s/' % os.environ.get('GALAXY_ADMIN_PATH', 'admin')
 
+CONTENT_DOWNLOAD_DIR = '/var/lib/galaxy/downloads'
+
 # =========================================================
 # System Settings
 # =========================================================
