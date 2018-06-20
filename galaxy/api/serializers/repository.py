@@ -18,7 +18,7 @@
 from django.core.urlresolvers import reverse
 from rest_framework import serializers as drf_serializers
 
-from galaxy.main.models import Repository
+from galaxy.main.models import Repository, RepositoryVersion
 from . import serializers
 
 
@@ -126,6 +126,14 @@ class RepositorySerializer(serializers.BaseSerializer):
 
         content_counts = {c['content_type__name']: c['count'] for c in instance.content_counts}
 
+        versions = []
+
+        for version in RepositoryVersion.objects.filter(repository=instance.pk):
+            versions.append({
+                'download_url': version.repository.get_download_url(version.tag),
+                'version': str(version.version)
+            })
+
         return {
             'owners': owners,
             'provider_namespace': provider_namespace,
@@ -133,7 +141,8 @@ class RepositorySerializer(serializers.BaseSerializer):
             'namespace': namespace,
             'latest_import': latest_import,
             'content_objects': content_objects,
-            'content_counts': content_counts
+            'content_counts': content_counts,
+            'versions': versions
         }
 
     def get_external_url(self, instance):
