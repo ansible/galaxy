@@ -251,5 +251,9 @@ class RepositoryVersionList(views.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance.all_versions(), many=True)
+        qs = instance.all_versions()
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
