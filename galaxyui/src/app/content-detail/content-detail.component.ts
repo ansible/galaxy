@@ -131,7 +131,7 @@ export class ContentDetailComponent implements OnInit {
                     }
 
                     // Append author namespace and repository name to breadcrumb
-                    this.pageTitle += `${this.namespace.name};/${this.namespace.name};${params['repository']};`
+                    this.pageTitle += `${this.namespace.name};/${this.namespace.name};${params['repository']};`;
 
                     // If content is specified, append it to the breadcrumb
                     if (this.selectedContent) {
