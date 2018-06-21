@@ -277,7 +277,8 @@ TRAVIS_CONFIG_URL = 'https://api.travis-ci.org/config'
 # TODO(cutwater): Consider removing wait_for from settings
 WAIT_FOR = []
 
-ADMIN_URL_PATTERN = r'^admin/'
+ADMIN_URL_PATH = 'admin'
+ADMIN_URL_PATTERN = r'^{}/'.format(ADMIN_URL_PATH)
 
 ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
 
