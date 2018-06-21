@@ -16,12 +16,15 @@ RUN yum -y install wget \
 RUN mkdir -p /etc/galaxy \
              /var/log/galaxy \
              /var/lib/galaxy/public \
+             /var/lib/galaxy/downloads \
     && chown galaxy:root /etc/galaxy \
                          /var/log/galaxy \
                          /var/lib/galaxy/public \
+                         /var/lib/galaxy/downloads \
     && chmod g+w /etc/galaxy \
                  /var/log/galaxy \
-                 /var/lib/galaxy/public
+                 /var/lib/galaxy/public \
+                 /var/lib/galaxy/downloads
 
 COPY scripts/docker/release/entrypoint.sh /entrypoint.sh
 COPY --from=galaxy-build:latest /galaxy/dist/VERSION /var/lib/galaxy
