@@ -128,7 +128,7 @@ class RepositorySerializer(serializers.BaseSerializer):
 
         versions = []
 
-        for version in RepositoryVersion.objects.filter(repository=instance.pk):
+        for version in instance.all_versions():
             versions.append({
                 'download_url': version.repository.get_download_url(version.tag),
                 'version': str(version.version)
