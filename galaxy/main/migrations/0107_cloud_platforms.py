@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations
 
-DELETE_CLOUDS= """
-DELETE FROM main_cloudplatform
-"""
 
 CLOUDS = [
     {
@@ -15,25 +12,26 @@ CLOUDS = [
         'name': 'amazon',
         'description': 'Amazon Web Services'
     }, {
-       'name': 'azure',
-       'description': 'Microsoft Azure'
+        'name': 'azure',
+        'description': 'Microsoft Azure'
     }, {
-       'name': 'rackspace',
-       'description': 'Rackspace'
+        'name': 'rackspace',
+        'description': 'Rackspace'
     }, {
-       'name': 'centurylink',
-       'description': 'CenturyLink'
+        'name': 'centurylink',
+        'description': 'CenturyLink'
     }, {
-       'name': 'openstack',
-       'description': 'OpenStack'
+        'name': 'openstack',
+        'description': 'OpenStack'
     }, {
-       'name': 'ovirt',
-       'description': 'oVirt'
+        'name': 'ovirt',
+        'description': 'oVirt'
     }, {
-       'name': 'vmware',
-       'description': 'VMware'
-    } 
+        'name': 'vmware',
+        'description': 'VMware'
+    }
 ]
+
 
 def create_clouds(apps, schema_editor):
     db_alias = schema_editor.connection.alias
@@ -42,6 +40,7 @@ def create_clouds(apps, schema_editor):
     for cloud in CLOUDS:
         CloudPlatform.objects.using(db_alias).create(
             name=cloud['name'], description=cloud['description'])
+
 
 class Migration(migrations.Migration):
 
@@ -53,4 +52,3 @@ class Migration(migrations.Migration):
         migrations.RunPython(code=create_clouds,
                              reverse_code=migrations.RunPython.noop,),
     ]
-
