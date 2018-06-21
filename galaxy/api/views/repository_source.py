@@ -40,6 +40,7 @@ logger = logging.getLogger(__name__)
 
 class RepositorySourceList(ListAPIView):
     """ Repositories available for a given provider and namespace """
+    model = Repository
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = RepositorySourceSerializer
