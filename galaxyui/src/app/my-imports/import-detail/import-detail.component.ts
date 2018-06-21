@@ -60,7 +60,6 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
                             }
                         }
                     )
-                    this.canImport = me.username === data.summary_fields.owner.username;
                 }
             );
         }
