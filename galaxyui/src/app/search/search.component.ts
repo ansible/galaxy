@@ -15,10 +15,6 @@ import {
 } from '@angular/common';
 
 import { ListConfig }     from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent }      from 'patternfly-ng/list/list-event';
-import { ListComponent }  from 'patternfly-ng/list/basic-list/list.component';
-
-import { ToolbarView }    from 'patternfly-ng/toolbar/toolbar-view';
 import { ToolbarConfig }  from 'patternfly-ng/toolbar/toolbar-config';
 
 import { FilterConfig }   from 'patternfly-ng/filter/filter-config';
@@ -41,9 +37,9 @@ import { ContentSearchService } from '../resources/content-search/content-search
 import { Platform }             from '../resources/platforms/platform';
 import { ContentType }          from '../resources/content-types/content-type';
 import { CloudPlatform }        from '../resources/cloud-platforms/cloud-platform';
+import { ContentTypes }         from '../enums/content-types.enum';
 
 import {
-    ContentTypes,
     ContentTypesIconClasses
 } from '../enums/content-types.enum';
 
@@ -60,7 +56,6 @@ import { PopularEvent }     from './popular/popular.component';
 
 import {
     Content,
-    ContentResponse
 } from '../resources/content-search/content';
 
 import * as moment        from 'moment';
@@ -448,7 +443,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     private getFilterFieldQuery(field: FilterField, value: string): FilterQuery {
         let result: FilterQuery = null;
         field.queries.forEach((item: FilterQuery) => {
-            if (item.value === value) {
+            if (item.id === value) {
                 result = item;
             }
         });
@@ -526,7 +521,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     private preparePlatforms(platforms: Platform[]): void {
         // Add Platforms to filterConfig
-        const idx = this.getFilterConfigFieldIdx('platform');
+        const idx = this.getFilterConfigFieldIdx('platforms');
         if (idx !== null) {
             const platformMap = {};
             platforms.forEach(platform => {
@@ -550,7 +545,15 @@ export class SearchComponent implements OnInit, AfterViewInit {
         if (idx !== null) {
             const contentTypeMap = {};
             contentTypes.forEach(ct => {
-                contentTypeMap[ct.name] = ct.description;
+                if (ct.name === ContentTypes.apb) {
+                    contentTypeMap[ct.name] = 'APB';
+                } else {
+                    // Limit to 'role' until we're ready to support more
+                    // content types.
+                    if (ct.name === ContentTypes.role) {
+                        contentTypeMap[ct.name] = ct.description;
+                    }
+                }
             });
             this.toolbarConfig.filterConfig.fields[idx].queries = [];
             for (const key in contentTypeMap) {
@@ -566,7 +569,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     private prepareCloudPlatforms(contentTypes: CloudPlatform[]): void {
         // Add Cloud Platforms to filterConfig
-        const idx = this.getFilterConfigFieldIdx('cloud_platform');
+        const idx = this.getFilterConfigFieldIdx('cloud_platforms');
         if (idx !== null) {
             const cpMap = {};
             contentTypes.forEach(cp => {
