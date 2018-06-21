@@ -26,7 +26,7 @@ export class CardVersionsComponent implements OnInit {
         this._versions = data;
         if (data) {
             data.forEach(version => {
-                version['date'] = moment(version['release_date']).fromNow();
+                version['date'] = moment(version['commit_date']).fromNow();
             });
         }
     }
