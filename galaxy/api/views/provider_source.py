@@ -39,6 +39,7 @@ logger = logging.getLogger(__name__)
 
 class ProviderSourceList(ListAPIView):
     """ User namespaces available within each active provider """
+    model = ProviderNamespace
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = ProviderSourceSerializer
@@ -54,7 +55,6 @@ class ProviderSourceList(ListAPIView):
                         'id': provider.pk,
                         'name': provider.name.lower()
                     }
-                    print(source['name'])
                     try:
                         provider_namespace = ProviderNamespace.objects.get(provider=provider,
                                                                            name__iexact=source['name'])

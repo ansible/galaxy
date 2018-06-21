@@ -18,7 +18,7 @@
 from django.core.urlresolvers import reverse
 from rest_framework import serializers as drf_serializers
 
-from galaxy.main.models import Repository, RepositoryVersion
+from galaxy.main.models import Repository
 from . import serializers
 
 
