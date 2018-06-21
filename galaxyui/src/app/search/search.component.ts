@@ -72,7 +72,7 @@ import * as moment        from 'moment';
 })
 export class SearchComponent implements OnInit, AfterViewInit {
 
-    pageTitle = 'Search';
+    pageTitle = '<i class="fa fa-search"></i> Search';
     toolbarConfig: ToolbarConfig;
     filterConfig: FilterConfig;
     sortConfig: SortConfig;
