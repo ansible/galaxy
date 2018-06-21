@@ -162,7 +162,7 @@ export class AuthorDetailComponent implements OnInit {
                 if (this.namespace.is_vendor) {
                     this.pageTitle = `<i class="fa fa-star"></i> Vendors;/vendors;${this.namespace.name}`;
                 } else {
-                    this.pageTitle = `<i class="fa fa-users"></i> Community Authors;/authors;${this.namespace.name}`;
+                    this.pageTitle = `<i class="fa fa-users"></i> Community Authors;/community;${this.namespace.name}`;
                 }
                 this.parepareNamespace();
                 if (this.items && this.items.length) {
