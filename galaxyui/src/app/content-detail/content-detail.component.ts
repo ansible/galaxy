@@ -141,7 +141,6 @@ export class ContentDetailComponent implements OnInit {
                     }
                     if (this.content && this.content.length) {
                         this.repoContent = this.content[0];
-                        console.log(this.repoContent);
                         this.fetchContentDetail(this.repoContent.id);
                     } else {
                         // Repo has no child Content Objects
