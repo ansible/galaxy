@@ -52,14 +52,14 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
                 (me) => {
                     this.namespaceService.get(data.summary_fields.namespace.id).subscribe(
                         (namespace) => {
-                            for (let owner of namespace.summary_fields.owners){
-                                if (me.username === owner.username){
+                            for (const owner of namespace.summary_fields.owners) {
+                                if (me.username === owner.username) {
                                     this.canImport = true;
                                     break;
                                 }
                             }
                         }
-                    )
+                    );
                 }
             );
         }
