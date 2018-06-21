@@ -19,6 +19,9 @@ import { ImportState }             from '../../enums/import-state.enum';
 import { RepositoryImportService } from '../../resources/repository-imports/repository-import.service';
 import { RepositoryImport }        from '../../resources/repository-imports/repository-import';
 
+import { NamespaceService }        from '../../resources/namespaces/namespace.service';
+import { Namespace }               from '../../resources/namespaces/namespace';
+
 import { AuthService }             from '../../auth/auth.service';
 
 import * as $       from 'jquery';
@@ -47,6 +50,16 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
         if (data) {
             this.authService.me().subscribe(
                 (me) => {
+                    this.namespaceService.get(data.summary_fields.namespace.id).subscribe(
+                        (namespace) => {
+                            for (let owner of namespace.summary_fields.owners){
+                                if (me.username === owner.username){
+                                    this.canImport = true;
+                                    break;
+                                }
+                            }
+                        }
+                    )
                     this.canImport = me.username === data.summary_fields.owner.username;
                 }
             );
@@ -80,7 +93,8 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
 
     constructor(
         private repositoryImportService: RepositoryImportService,
-        private authService: AuthService
+        private authService: AuthService,
+        private namespaceService: NamespaceService
     ) {}
 
     ngOnInit() {}
