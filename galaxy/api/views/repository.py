@@ -62,13 +62,13 @@ def get_repo(provider_namespace, user, repo_name):
 def check_name(name):
     if not name:
         raise ValidationError(detail={'name': 'Name is required'})
-
-    if not re.match('^[\w-]+$', name):
-        # Allow only names containing word chars and '-'
-        raise ValidationError(detail={
-            'name': 'Name contains invalid characters. '
-                    'Must match [A-Za-z0-9-_].'
-        })
+    elif not re.match('^[\.\w-]+$', name):
+        # Allow only names containing word chars
+        raise ValidationError(detail={'name': "Name can only contain [A-Za-z0-9_]"})
+    elif(len(name) <= 2):
+        raise ValidationError(detail={'name': "Name must be longer than 2 characters"})
+    elif(name[0] == '_'):
+        raise ValidationError(detail={'name': "Name cannot begin with '_'"})
 
 
 GITHUB_REPO_FIELDS = [
@@ -111,6 +111,8 @@ class RepositoryList(views.ListCreateAPIView):
         original_name = data.get('original_name', data['name'])
 
         data['name'] = data['name'].lower()
+        data['name'] = data['name'].replace(".", "_")
+        data['name'] = data['name'].replace("-", "_")
 
         if not request.user.is_staff:
             repo = get_repo(provider_namespace, request.user, original_name)
