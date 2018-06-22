@@ -48,9 +48,13 @@ logger = logging.getLogger(__name__)
 def check_basic(data, errors):
     if not data.get('name'):
         errors['name'] = "Attribute 'name' is required"
-    elif not re.match('^[\w-]+$', data['name']):
+    elif not re.match('^[\w]+$', data['name']):
         # Allow only names containing word chars and '-'
-        errors['name'] = "Name can only contain [A-Za-z0-9-_]"
+        errors['name'] = "Name can only contain [A-Za-z0-9_]"
+    elif(len(data.get('name')) <= 2):
+        errors['name'] = "Name must be longer than 2 characters"
+    elif(data.get('name')[0] == '_'):
+        errors['name'] = "Name cannot begin with '_'"
 
 
 def check_owners(data_owners):
