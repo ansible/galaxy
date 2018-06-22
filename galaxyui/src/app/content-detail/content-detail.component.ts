@@ -122,10 +122,20 @@ export class ContentDetailComponent implements OnInit {
                     this.pageTitle = 'Content Not Found';
                     this.pageLoading = false;
                 } else {
-                    // Requested content exists
-                    this.pageTitle = `${params['namespace']}.${params['repository']}`;
+
+                    // Append author type to breadcrumb
+                    if (this.namespace.is_vendor) {
+                        this.pageTitle = `<i class="fa fa-star"></i> Vendors;/vendors;`;
+                    } else {
+                        this.pageTitle = `<i class="fa fa-users"></i> Community Authors;/authors;`;
+                    }
+
+                    // Append author namespace and repository name to breadcrumb
+                    this.pageTitle += `${this.namespace.name};/${this.namespace.name};${params['repository']};`;
+
+                    // If content is specified, append it to the breadcrumb
                     if (this.selectedContent) {
-                        this.pageTitle += `.${req_content_name}`;
+                        this.pageTitle += `/${this.namespace.name}/${params['repository']};${req_content_name}`;
                     }
                     this.repository.last_import = 'NA';
                     this.repository.last_commit = 'NA';
