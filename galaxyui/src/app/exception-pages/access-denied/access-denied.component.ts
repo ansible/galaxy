@@ -31,7 +31,7 @@ export class AccessDeniedComponent implements OnInit {
         private router: Router
     ) {}
 
-    pageTitle = 'Access Denied';
+    pageTitle = '<i class="fa fa-exclamation-triangle"></i> Access Denied';
     actionConfig: ActionConfig;
     emptyStateConfig: EmptyStateConfig;
 

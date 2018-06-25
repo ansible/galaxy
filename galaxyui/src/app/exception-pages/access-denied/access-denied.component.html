@@ -1,6 +1,8 @@
 <app-page-header [headerTitle]="pageTitle"></app-page-header>
 
-<pfng-empty-state
-    [config]="emptyStateConfig"
-    (onActionSelect)="handleActionClicked($event)">
-</pfng-empty-state>
+<div class="container-fluid">
+    <pfng-empty-state
+        [config]="emptyStateConfig"
+        (onActionSelect)="handleActionClicked($event)">
+    </pfng-empty-state>
+</div>

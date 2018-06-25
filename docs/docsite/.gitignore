@@ -13,6 +13,4 @@ objects.inv
 .doctrees
 *.min.css
 _build
-_static
-_themes
 rst_warnings
