@@ -132,7 +132,7 @@ role_name
 
 platforms
     Provide a list of valid platforms, and for each platform, a list of valid versions. The obvious question of course is, where does one
-    find the list of valid platforms? You can find the `list of platforms here <https://galaxy.ansible.com/api/v1/platforms/>`_. The list
+    find the list of valid platforms? You can find the `list of platforms here </api/v1/platforms/>`_. The list
     is paginated. Click on the ``next_link`` value to get to view the next page. It's not the pretiest interface, but for now, it works.
     
     You can also search by name. For example, to search for all Ubuntu versions by adding ``?name__icontains=ubuntu`` to the query. The full

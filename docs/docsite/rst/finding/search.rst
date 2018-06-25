@@ -15,7 +15,7 @@ This topic describes how to use the Galaxy web site to find Ansible content.
 Search
 ======
 
-The easiest way to find the right Ansible content for your automation project, is to visit the `Search page <https://galaxy.ansible.com/search>`_. 
+The easiest way to find the right Ansible content for your automation project, is to visit the `Search page </search>`_. 
 
 At the top of the Search page, you'll find a filter toolbar that looks similar to the following:
 
@@ -133,7 +133,7 @@ the arrow to reverse the order. As the arrow is clicked, search results will be 
 Vendors
 =======
 
-Use the `Vendors page <https://galaxy.ansible.com/vendors>`_. To quickly find content available from a specific vendor.
+Use the `Vendors page </vendors>`_. To quickly find content available from a specific vendor.
 At the top of the page is a filter toolbar that can be used to filter vendors by name and description.
 
 .. image:: vendors-toolbar-01.png
@@ -156,7 +156,7 @@ image below, to switch between ascending and descending order. The arrow points 
 Community
 =========
 
-Use the `Community page <https://galaxy.ansible.com/community>`_. To quickly find content available from a specific community
+Use the `Community page </community>`_. To quickly find content available from a specific community
 author. At the top of the page is a filter toolbar that can be used to filter authors by name and description.
 
 .. image:: community-toolbar-01.png

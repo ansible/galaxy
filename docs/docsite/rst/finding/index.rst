@@ -3,4 +3,3 @@
 
    search
    content_types
- 
