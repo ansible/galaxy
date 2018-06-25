@@ -150,7 +150,7 @@ dependencies
     install and execution, dependencies are recursive, meaning dependencies can have dependencies. If a role appears more than once in the
     dependency chaing, it will only be executed one time, provided that parameters defined on the dependency are not different. 
 
-    If the above sounds confusing, and you need more information, and an example or two, `view the Role Dependencies topic at the Ansible docs site _<https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html#role-dependencies>`.
+    If the above sounds confusing, and you need more information, and an example or two, `view the Role Dependencies topic at the Ansible docs site <https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html#role-dependencies>`_.
 
 .. _creating_multirole_repos:
 
