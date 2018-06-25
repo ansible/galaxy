@@ -19,6 +19,14 @@ yarn run ng build --prod --output-path /galaxy/build/static
 popd
 
 # TODO(cutwater): Use make commands for build
-${VENV_BIN}/python setup.py --version > /galaxy/dist/VERSION
-${VENV_BIN}/python setup.py bdist_wheel
-${VENV_BIN}/python manage.py collectstatic --noinput
+python setup.py --version > /galaxy/dist/VERSION
+python setup.py bdist_wheel
+python manage.py collectstatic --noinput
+
+# Build docs
+pushd /galaxy/docs/docsite/
+make docs
+popd
+
+mkdir /galaxy/build/static/docs
+rsync -av /galaxy/docs/docsite/_build/html/ /galaxy/build/static/docs

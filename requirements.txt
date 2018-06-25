@@ -45,3 +45,6 @@ six
 mock
 pytest
 pytest-django
+
+# Docs
+Sphinx
