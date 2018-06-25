@@ -4,5 +4,7 @@
 
 build/
 dist/
+docs/docsite/_build/
 galaxy.egg-info/
 galaxyui/node_modules
+
