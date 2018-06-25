@@ -39,7 +39,7 @@
                             <tr>
                                 <td>Installation</td>
                                 <td>
-                                    <copy-to-clipboard [copyText]="'ansible-galaxy install -t role ' + item.summary_fields['namespace']['name'] + '.' + item.summary_fields['repository']['name']"></copy-to-clipboard>
+                                    <copy-to-clipboard [copyText]="'ansible-galaxy install ' + item.summary_fields['namespace']['name'] + '.' + item.summary_fields['repository']['name']"></copy-to-clipboard>
                                 </td>
                             </tr>
                             <tr *ngIf="item['hasTags']">
