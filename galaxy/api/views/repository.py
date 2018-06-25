@@ -71,6 +71,10 @@ def check_name(name):
         raise ValidationError(detail={'name': "Name cannot begin with '_'"})
 
 
+def sanitize_repo_name(name):
+    return name.lower().replace(".", "_").replace("-", "_")
+
+
 GITHUB_REPO_FIELDS = [
     'commit',
     'commit_message',
@@ -109,10 +113,7 @@ class RepositoryList(views.ListCreateAPIView):
                 detail={'provider_namespace': 'Invalid value'})
 
         original_name = data.get('original_name', data['name'])
-
-        data['name'] = data['name'].lower()
-        data['name'] = data['name'].replace(".", "_")
-        data['name'] = data['name'].replace("-", "_")
+        data['name'] = sanitize_repo_name(data['original_name'])
 
         if not request.user.is_staff:
             repo = get_repo(provider_namespace, request.user, original_name)
@@ -176,6 +177,7 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
             provider_namespace = instance.provider_namespace
 
         check_name(data.get('name'))
+        data['name'] = sanitize_repo_name(data['name'])
 
         original_name = data.get('original_name', instance.original_name)
 
