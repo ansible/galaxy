@@ -14,7 +14,7 @@ This topic describes how to import Ansible content into the public Galaxy web si
 Getting Started
 ===============
 
-At present, Galaxy only imports content from `GitHub <https://github.com>`_, and importing content to the `public Galaxy server <https://galaxy.ansible.com>`_
+At present, Galaxy only imports content from `GitHub <https://github.com>`_, and importing content to the `public Galaxy server </>`_
 requires authentication using a GitHub account.
 
 Logging In
@@ -76,13 +76,149 @@ If you wish to revoke Galaxy access to an organization, click the *Revoke* butto
 logout and log back into Galaxy using your GitHub credentials, and GitHub will present the permissions page, where you can grant access
 to your organizations, and authorize access to your GitHub namespace, as discussed above in :ref:`import_get_started`.
 
-
-
 Web Interface
 =============
 
+Before importing content into Galaxy, you must first authenticate using your GitHub credentials as discussed in :ref:`import_get_started`.
 
+Go to `My Content </my-content/namespaces>`_, where you will see one or more Galaxy namespaces, as depected in the image below. The first
+time you logged in, Galaxy created a namespace matching your GitHub namespace, so you should see at least one namespace. You'll
+import content from GitHub into a Galaxy namespace.
 
+.. image:: mycontent-01.png
+
+Click the expansion arrow, as depicted below, to view any repositories associated with the namespace. If this is your first time accessing
+Galaxy, then there likely aren't any repositories associated with it yet.
+
+.. image:: mycontent-02.png
+
+Adding Repositories
+-------------------
+
+To add GitHub repositories to the namespace, click the *Add Content* button, as depicted in the image below:
+
+.. image:: mycontent-03.png
+
+In the dialog box, as shown in the image below, choose the repositories you wish to add, and click the *OK* button to add them:
+
+.. image:: mycontent-04.png
+
+Galaxy will attempt to import each of the selected repositories, and as shown in the next image, the satus of each import will be
+updated every few seconds.
+
+.. image:: mycontent-05.png
+
+The import process analyzes metadata and performs static analysis on the repository contents, so it's quite possible it will find
+an issue that prevents the content from bein imported. If this happens, and the status of the import shows *Failed*, click on the
+import status message, as shown below, to view more details:
+
+.. image:: mycontent-06.png
+
+Clicking the status message will take you to My Imports, and show the full details of the import process. Below is sample output
+from a failed import, where several issues were found by YamlLint:
+
+.. image:: myimports-01.png
+
+With the issue resolved, restart the import process by clicking the import button near the top-right corner of My Imports, as shown
+below:
+
+.. image:: myimports-02.png
+
+You can also restart the import by clicking the import button on My Content for the repository, as shown here:
+
+.. image:: mycontent-07.png
+
+Adding GitHub Organizations
+---------------------------
+
+Content from multiple GitHub organizations can be imported into a Galaxy Namespace. To add additional organizations, on My Content,
+expand the menu for the Namespace, and choose *Edit Properties*, as shown here:
+
+.. image:: mycontent-08.png
+
+On the next page, scroll to the bottom of the page, where a list of available GitHub organizations is displayed. It's labeled
+*Provider Namespaces*, and represents the list of namespaces or ogranizations you have access to in GitHub.
+
+As indicated in the image below, click on an organization to select it and add it to the *Selected Provider Namespaces* on the right.
+Clicking the *X* next to the name on the right will remove it.
+
+.. image:: mycontent-09.png
+
+At the top of the list of Provider Namespace is a search box. If you don't see an organization listed, try typing the name in the
+box and pressing Enter. 
+
+Click the *Save* button at the bottom of the page to update the Namespace with your changes, as shown below:
+
+.. image:: mycontent-10.png
+
+Adding Administrators
+---------------------
+
+Multiple Galaxy users can own or have administration rights to a Namespace. To add additional owners to a Namespace, expand the Namespace
+menu on My Content, and choose *Edit Properties*, as depicted below:
+
+.. image:: mycontent-11.png
+
+On the next page, scroll toward the bottom of the page, where a list of *Namespace Owners* appears. Use the search box to find
+specific users by Galaxy username. Click on a user to add them to the list of *Selected Galaxy Users* on the right, or click the *X*
+next to the username to remove them from the list. The image below provides an example:
+
+.. image:: mycontent-12.png
+
+Anyone in the list of owners can import content into the Namespace. They can also modify properties of the Namespace, remove content,
+and disable the Namespace altogehter, removing content from search results, and making it unavailable for download.
+
+After making changes to the list of owners, click the *Save* button at the bottom of the page to update the Namespace with your
+changes, as shown below:
+
+.. image:: mycontent-10.png
 
 Travis CI
 =========
+
+After logging into Galaxy for the first time, you can initiate content imports directly from Travis. In your ``.travis.yml`` file,
+add a webhook to the notifications section, as shown below:
+
+
+.. code-block:: yaml
+
+    ---
+    language: python
+    python: "2.7"
+
+    # Use the new container infrastructure
+    sudo: false
+
+    # Install ansible
+    addons:
+      apt:
+        packages:
+        - python-pip
+
+    install:
+      # Install ansible
+      - pip install ansible
+
+      # Check ansible version
+      - ansible --version
+
+      # Create ansible.cfg with correct roles_path
+      - printf '[defaults]\nroles_path=../' >ansible.cfg
+
+    script:
+      # Basic role syntax check
+      - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+
+    notifications:
+      webhooks: https://galaxy.ansible.com/api/v1/notifications/
+
+.. note::
+
+   The Galaxy webhook only works with integration tests running at ``travis-ci.org``. It is not configured
+   to work with ``travis-ci.com``.
+
+.. note::
+   
+   You must first log into Galaxy to create a Namespace and associate GitHub organizations with the
+   Namespace. If a Namespace does not exist, or the GitHub organization where the content exists is not
+   associated with a Namespace, then Galaxy will not know how to import the content.

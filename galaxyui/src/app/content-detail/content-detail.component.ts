@@ -119,7 +119,7 @@ export class ContentDetailComponent implements OnInit {
                     req_content_name && !this.selectedContent)) {
                     // Requested content from a multicontent repo not found || No content found
                     this.showEmptyState = true;
-                    this.pageTitle = 'Content Not Found';
+                    this.pageTitle = '<i class="fa fa-frown-o"></i> Content Not Found';
                     this.pageLoading = false;
                 } else {
 
