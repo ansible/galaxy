@@ -1,14 +1,12 @@
-.. _creating_content:
+.. _creating_content_roles:
 
-****************
-Creating Content
-****************
+**************
+Creating Roles
+**************
 
 .. contents:: Topics
 
-
-This topic describes how to create Ansible content that can be imported into Galaxy.
-
+This topic describes how to create Ansible roles that can be imported into Galaxy.
 
 .. _creating_roles:
 
@@ -50,7 +48,7 @@ For a full explanation of all subdirectories and files listed above, and how the
 `Roles topic at the Ansible docs site <https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html?highlight=roles>`_
 
 Role Metadata
--------------
+=============
 
 When Galaxy imports a role, the import process looks for metadata found in the role's ``meta/main.yml`` file. The following shows
 the default metadata file created by the ``init`` command:
@@ -146,86 +144,30 @@ dependencies
 
     If the above sounds confusing, and you need more information, and an example or two, `view the Role Dependencies topic at the Ansible docs site <https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html#role-dependencies>`_.
 
+Role Names
+==========
+
+Prior to Galaxy v3.0, the role import process would alter the GitHub repository name to create the role name. Specifically, it would
+apply a regular expression, and remove 'ansible-' and 'role-' from the repository name. For example, a repository name of
+*ansible-role-apache* would become *apache*.
+
+Starting in v3.0, Galaxy no longer perform this calculation. Instead, the default role name is the unaltered repository name, with a
+couple minor exceptions, including: converting the name to all lowercase, and replacing any '-' or '.' characters with '_'.
+
+To override the default name, set the ``role_name`` attribute in the role ``meta/main.yml`` file. The following snipet from a 
+``meta/main.yml`` file provides an example of setting the *role_name* attribute:
+
+..code-block:: yaml
+
+    galaxy_info:
+        role_name: apache
+        description: Install the httpd service
+        company: Acme, Inc.
+        ...
+
+..note::
+
+    Role names are limited to lowercase word characters (i.e., a-z, 0-9) and '_'. No special characters are allowed, including '.',
+    '-', and space. During import, any '.' and '-' characters contained in the repository name or role_name will be replaced with '_'.
+
 .. _creating_multirole_repos:
-
-Multi-role Repositories
-=======================
-
-As the name suggests, a multi-role repository can contain many roles. Traditionally, a role is a single GitHub repository. Galaxy v3.0 introduces a tech-preview
-feature that enables importing a repository containing many roles.
-
-.. note::
-    This is a Tech-Preview feature. Future Galaxy releases may introduce breaking changes.
-
-For the import to find the roles, you'll need to place them in a ``roles`` subdirectory, or provide a ``roles`` symbolic link to a directory containing
-the roles. The following shows the directory structure of a multi-role repository:
-
-.. code-block:: bash
-    
-    .travis.yml
-    README.md
-    roles/
-        role-a/
-        role-b/
-        role-c/
-
-There is no top-level ``meta/main.yml`` file in a multi-role repository; instead, each role within the ``roles`` subdirectory will have its own
-metadata file, and for each role, follow the guide above to create it, and set the metadata values.
-
-.. note::
-    Installing roles from a multi-role repository requires using `mazer <https://github.com/ansible/mazer>`_.
-
-To install roles from a mutli-role repository, use the new `mazer CLI tool <https://github.com/ansible/mazer>`_. For more on installing content,
-view the :ref:`installing_content`. 
-
-.. _creating_apbs:
-
-Ansible Playbook Bundles
-========================
-
-If you're unfamiliar with Ansible Playbook Bundles (APBs), view the :ref:`ansible_playbook_bundles` topic.
-
-Using the `mazer <https://github.com/ansible/mazer>`_ command line tool, you can create an APB using the ``init`` command.
-For example, the following will create a directory structure called ``test-apb-1`` in the current working directory:
-
-.. code-block:: bash
-
-    $ mazer init --type apb test-apb-1
-
-.. note::
-    APBs can be created using the ``ansible-galaxy`` command that comes bundled with Ansible. The command to create an APB
-    is ``ansible-galaxy init --type apb``
-    
-    Be aware ``ansible-galaxy`` will be deprecated over time, and may not support the latest features offered by the Galaxy server.
-
-The *test-apb-1* directory will contain the following:
-
-.. code-block:: bash
-
-    .travis.yml
-    Dockerfile
-    Makefile
-    README.md
-    apb.yml
-    defaults/
-        main.yml
-    files/
-    handlers/
-        main.yml
-    meta/
-        main.yml
-    playbooks/
-        deprovision.yml
-        provision.yml
-    tasks/
-        main.yml
-    templates/
-    tests/
-        ansible.cfg
-        inventory
-        test.yml
-    vars/
-        main.yml
-
-For more on developing and using APBs to deploy applications on OpenShift, visit the `ansibleplaybookbundle/ansible-playbook-bundle
-project <https://github.com/ansibleplaybookbundle/ansible-playbook-bundle>`_.

@@ -1,14 +1,12 @@
 .. _installing_content:
 
 ******************
-Installing Content
+Installing content
 ******************
 
 .. contents:: Topics
 
-
-This topic describes how to install Ansible content from Galaxy.
-
+This topic describes how to download and install Ansible content from Galaxy.
 
 .. _installing_roles:
 
@@ -35,7 +33,7 @@ demonstrated by the following example:
 
     $ ansible-galaxy install --roles-path ~/ansible-roles debops.apt
 
-Override the default behavior by setting the environment variable :envvar:`ANSIBLE_ROLES_PATH`. When set, the
+Override the default behavior by setting the environment variable ``ANSIBLE_ROLES_PATH``. When set, the
 *ANSIBLE_ROLES_PATH* variable is used during playbook execution to locate installed roles, and by ``ansible-galaxy``
 to determine where to install roles. It can be set to a single directory path, or to a list of paths
 (e.g., */etc/ansible/roles:~/.ansible/roles*). If set to a list, ``ansible-galaxy`` will install roles to 
@@ -53,14 +51,14 @@ versions. In turn, a specific version of a role can be downloaded by specifying 
 
 To see the available versions, locate the role on the search page, and click on the name to view more details. You
 can also navigate directly to the role using the */<namespace>/<role name>*. For example, to view the
-role *geerlingguy.apache*, go to `https://galaxy.ansible.com/geerlingguy/apache <https://galaxy.ansible.com/geerlingguy/apache`_.
+role *geerlingguy.apache*, go to `https://galaxy.ansible.com/geerlingguy/apache <https://galaxy.ansible.com/geerlingguy/apache>`_.
 
 .. note::
 
     For multi-role repositories, now supported in Galaxy v3.0+, the direct path to an individual role
     contained in the repository is */<namespace>/<repository_name>/<role_name>*.
 
-Install a specific version of a role by appending a comma and a version tag. For example, the following installs ``v1.0.0` of the
+Install a specific version of a role by appending a comma and a version tag. For example, the following installs *v1.0.0* of the
 role.
 
 .. code-block:: bash
@@ -227,7 +225,7 @@ the Ansible doc site <https://docs.ansible.com/ansible/latest/user_guide/playboo
     Galaxy expects all role dependencies to exist in Galaxy, and therefore dependencies to be specified 
     using the *namespace.role_name* format.
 
-.. _installing_multi_roles:
+.. _installing_multi_repos:
 
 Multi-role Repositories
 =======================
@@ -240,20 +238,14 @@ Mazer project <https://github.com/ansible/mazer>`_.
 
 .. note::
   
-  This is a tech-preview feature. Future releases of Galaxy may change or break support of mulit-role
+  This is a tech-preview feature. Future releases of Galaxy may change or break support of multi-role
   repositories.
 
-All the roles from a multi-role repository can be installed using the following command:
+All the roles from a multi-role repository can be installed using mazer's ``install`` command, and passing the 
+*namespace.repository_name*, as demonstrated by the following command:
 
 .. code-block:: bash
 
-  $ mazer install namespace.mulitrole_repo_name
+  $ mazer install testing.multi_role_repository
 
 For more on installing, configuring, and using Mazer, visit the `Ansible Mazer project <https://github.com/ansible/mazer>`_
-
-.. _installing_apbs:
-
-Ansible Playbook Bundles
-========================
-
-More info coming soon...
