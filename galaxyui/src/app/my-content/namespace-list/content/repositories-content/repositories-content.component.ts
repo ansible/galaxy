@@ -30,7 +30,7 @@ import {
     AlternateNameModalComponent
 } from './alternate-name-modal/alternate-name-modal.component';
 
-import { Observable }              from 'rxjs/Observable';
+import { Observable }              from 'rxjs/Rx';
 import { forkJoin }                from 'rxjs/observable/forkJoin';
 
 import * as moment                 from 'moment';
