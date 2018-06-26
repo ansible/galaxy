@@ -121,7 +121,7 @@
                     <div class="selected-items">
                         <ul>
                             <li *ngFor="let owner of this.selectedUsers; index as i">
-                                <a [routerLink]="" class="remove-item" (click)="toggleUser(owner.id)"><span class="pficon pficon-close"></span></a>
+                                <a style="cursor:pointer" class="remove-item" (click)="toggleUser(owner.id)"><span class="pficon pficon-close"></span></a>
                                 <img class="avatar" src="{{ owner.avatar_url }}" >
                                 <span class="username">{{ owner.username }}</span>
                             </li>
@@ -159,7 +159,7 @@
                     <div class="selected-items">
                         <ul>
                             <li *ngFor="let namespace of this.selectedNamespaces; index as i">
-                                <a [routerLink]="" class="remove-item"
+                                <a style="cursor:pointer" class="remove-item"
                                    (click)="toggleNamespace(namespace.name, namespace.provider)"><span class="pficon pficon-close"></span></a>
                                 <img class="avatar" src="{{ namespace.avatar_url }}" >
                                 <span class="names">{{ namespace.name }}</span>
