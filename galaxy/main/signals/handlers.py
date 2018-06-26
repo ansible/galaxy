@@ -47,7 +47,7 @@ def user_logged_in_handler(request, user, **kwargs):
     try:
         namespace = models.ProviderNamespace.objects.get(name=username)
         return
-    except models.Namespace.DoesNotExist:
+    except models.ProviderNamespace.DoesNotExist:
         namespace = None
 
     # User is not associated with any Namespaces, so we'll attempt
