@@ -173,6 +173,47 @@ changes, as shown below:
 
 .. image:: mycontent-10.png
 
+Namespace Limitations
+=====================
+
+Namespace names in Galaxy are limited to lowercase word characters (i.e., A-Z, a-z, 0-9) and '_', must have a minimum length of 2
+characters, and cannot start with an '_'.
+
+No other characters are allowed, including '.', '-', and space. The first time you log into Galaxy, the server will create a Namespace
+for you, if one does not already exist, by converting your username to lowercase, and replacing any '-' characters with '_'.
+
+.. Note::
+
+   During the upgrade of the Galaxy server from v2.4 to v3.0 Galaxy Namespaces were created for any GitHub usernames and organization
+   names associated with role repositories, and '-' characters were converted to '_'. You may have previously accessed a role from Galaxy
+   where the namespace contained a '-'; however, to access that same role now, you'll need to replace '-' with '_'.
+
+Role Name Limitations
+=====================
+
+Prior to Galaxy v3.0, the role import process would alter the GitHub repository name to create the role name. Specifically, it would
+apply a regular expression, and remove 'ansible-' and 'role-' from the repository name. For example, a repository name of
+*ansible-role-apache* would become *apache*.
+
+Starting in v3.0, Galaxy no longer perform this calculation. Instead, the default role name is the unaltered repository name, with a
+couple minor exceptions, including: converting the name to all lowercase, and replacing any '-' or '.' characters with '_'.
+
+To override the default name, set the ``role_name`` attribute in the role ``meta/main.yml`` file. The following snipet from a 
+``meta/main.yml`` file provides an example of setting the *role_name* attribute:
+
+..code-block:: yaml
+
+    galaxy_info:
+        role_name: apache
+        description: Install the httpd service
+        company: Acme, Inc.
+        ...
+
+..note::
+
+    Role names are limited to lowercase word characters (i.e., a-z, 0-9) and '_'. No special characters are allowed, including '.',
+    '-', and space. During import, any '.' and '-' characters contained in the repository name or role_name will be replaced with '_'.
+
 Travis CI
 =========
 
