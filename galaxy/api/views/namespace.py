@@ -78,6 +78,14 @@ def check_owners(data_owners):
     return errors, owners
 
 
+def can_update(namespace_id, user_id):
+    namespace = models.Namespace.objects.get(pk=namespace_id)
+    if not namespace.owners.filter(pk=user_id):
+        return False
+
+    return True
+
+
 def check_providers(data_providers, parent=None):
     errors = {}
 
@@ -209,7 +217,7 @@ class NamespaceList(base_views.ListCreateAPIView):
         if errors:
             raise ValidationError(detail=errors)
 
-        if not request.user.is_staff and request.user.pk not in owners:
+        if not request.user.is_staff and not can_update(data['id'], request.user.id):
             owners.append(request.user.id)
 
         namespace_attributes = {
@@ -257,7 +265,7 @@ class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
         if errors:
             raise ValidationError(detail=errors)
 
-        if not request.user.is_staff and request.user.pk not in owners:
+        if not request.user.is_staff and not can_update(data['id'], request.user.id):
             raise PermissionDenied("User does not have access to Namespace {0}".format(
                 data.get('name', '')))
 
