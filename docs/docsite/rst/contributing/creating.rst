@@ -17,18 +17,12 @@ Roles
 
 If you're unfamiliar with the concept of an Ansible role, view :ref:`ansible_roles`.
 
-Using the `mazer <https://github.com/ansible/mazer>`_ command line tool, you can create a role using the ``init`` command.
+Using the ``ansible-galaxy`` command line tool that comes bundled with Ansible, you can create a role with the ``init`` command.
 For example, the following will create a role directory structure called ``test-role-1`` in the current working directory:
 
 .. code-block:: bash
 
-    $ mazer init test-role-1
-
-.. note::
-    Roles can be created using the ``ansible-galaxy`` command that comes bundled with Ansible. The command to create a role
-    is ``ansible-galaxy init``
-    
-    Be aware ``ansible-galaxy`` will be deprecated over time, and may not support the latest features offered by the Galaxy server.
+    $ ansible-galaxy init test-role-1
 
 The *test-role-1* directory will contain the following:
 
