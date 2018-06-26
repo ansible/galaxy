@@ -41,15 +41,17 @@ def user_logged_in_handler(request, user, **kwargs):
     user.avatar_url = social.extra_data.get('avatar_url')
     user.save()
 
-    if user.namespaces.count():
-        # User is associated with one or more namespaces.
-        # Even though the Namespaces may be inactive, we'll assume
-        # the user has been here before, and knows how to manage Namespaces.
+    username = social.extra_data.get('login')
+    sanitized_username = username.lower().replace('-', '_')
+
+    try:
+        namespace = models.ProviderNamespace.objects.get(name=username)
         return
+    except models.Namespace.DoesNotExist:
+        namespace = None
 
     # User is not associated with any Namespaces, so we'll attempt
     # to create one, along with associated Provider Namespaces.
-    namespace = None
     for provider in models.Provider.objects.all():
         try:
             social = auth_models.SocialAccount.objects.get(
@@ -59,7 +61,7 @@ def user_logged_in_handler(request, user, **kwargs):
 
         if provider.name.lower() == 'github':
 
-            login = social.extra_data.get('login')
+            login = sanitized_username
             name = social.extra_data.get('name')
             defaults = {
                 'description': name,
