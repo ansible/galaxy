@@ -264,8 +264,13 @@ class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
         if data.get('owners'):
             update_owners(instance, owners)
 
-        for item in ('name', 'description', 'avatar_url', 'location', 'company', 'email',
-                     'html_url', 'active', 'is_vendor'):
+        to_update = ['description', 'avatar_url', 'location', 'company', 'email',
+                     'html_url', 'active', 'is_vendor']
+
+        if request.user.is_staff:
+            to_update.append('name')
+
+        for item in to_update:
             if item in data:
                 setattr(instance, item, data[item])
         instance.save()
