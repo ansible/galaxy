@@ -32,6 +32,7 @@ import {
 
 import { Observable }              from 'rxjs/Observable';
 import { forkJoin }                from 'rxjs/observable/forkJoin';
+import 'rxjs/add/observable/interval';
 
 import * as moment                 from 'moment';
 
