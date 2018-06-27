@@ -20,7 +20,6 @@ import logging
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
 
 from allauth.account.signals import user_logged_in
 from allauth.socialaccount import models as auth_models
