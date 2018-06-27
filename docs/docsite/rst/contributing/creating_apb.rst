@@ -1,9 +1,9 @@
 
 .. _creating_content_apb:
 
-**************
-Createing APBs
-**************
+*************
+Creating APBs
+*************
 
 .. contents:: Topics
 
