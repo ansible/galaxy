@@ -6,7 +6,7 @@ Have questions about this document or anything not covered here? Come chat with 
 
 ## Things to know prior to submitting code
 
-- All code submissions are done through pull requests against the `develop` branch.
+- All code submissions are done through pull requests against the `devel` branch.
 - You must use `git commit --signoff` for any commit to be merged, and agree that usage of --signoff constitutes agreement with the terms of [DCO 1.1](./DCO_1_1.md).
 - Take care to make sure no merge commits are in the submission, and use `git rebase` vs `git merge` for this reason.
 - If submitting a large code change, it's a good idea to join the `#ansible-community` channel on irc.freenode.net, and talk about what you would like to do or add first. This not only helps everyone know what's going on, it also helps save time and effort, if the community decides some changes are needed.
