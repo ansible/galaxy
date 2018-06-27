@@ -272,6 +272,7 @@ export class NamespaceDetailComponent implements OnInit {
         });
         if (!this.me.staff) {
             this.namespaceForm.controls['namespaceType'].disable();
+            this.namespaceForm.controls['name'].disable();
         }
     }
 

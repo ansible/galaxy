@@ -3,18 +3,7 @@
     <form [formGroup]="namespaceForm" novalidate>
         <div class="form-group">
             <label for="nameInput">Name <span class="required">*</span></label>
-            <input *ngIf="!me.staff"
-                   disabled
-                   type="text"
-                   id="nameInput"
-                   name="name"
-                   class="form-control"
-                   required
-                   placeholder="Name"
-                   formControlName="name">
-
-           <input *ngIf="me.staff"
-                  type="text"
+            <input type="text"
                   id="nameInput"
                   name="name"
                   class="form-control"
