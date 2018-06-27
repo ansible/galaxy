@@ -50,8 +50,10 @@ class ContentImporter(object):
         repo = self.ctx.repository
         ns = repo.provider_namespace.namespace
 
+        # Name is the content name, which in the case of multi content repos
+        # might not be the same as the repository name
         name = repo.name
-        original_name = repo.name
+        original_name = repo.original_name
 
         if self.data.name:
             name = self.data.name
