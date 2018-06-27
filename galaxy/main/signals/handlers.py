@@ -54,8 +54,8 @@ def user_logged_in_handler(request, user, **kwargs):
     provider = models.Provider.objects.get(name__iexact="github")
 
     # if name doesn't exist, set it to login
-    name = social.extra_data.get('name') or login
-    
+    name = social.extra_data.get('name') or username
+
     defaults = {
         'description': name,
         'avatar_url': social.extra_data.get('avatar_url'),
