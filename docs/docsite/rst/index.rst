@@ -38,3 +38,9 @@ use Galaxy to share it with the community.
    :caption: Contributing Content
 
    contributing/index
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Mazer
+
+   mazer/index
