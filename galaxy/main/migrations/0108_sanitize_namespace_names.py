@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
-STRIP_VERSION_SUFFIX = """
+REPLACE_DASH_WITH_UNDERSCORE = """
 UPDATE main_namespace
 SET name = replace(name, '-', '_')
 WHERE name LIKE '%-%'
@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL(
-            sql=(STRIP_VERSION_SUFFIX),
+            sql=(REPLACE_DASH_WITH_UNDERSCORE),
         ),
     ]

@@ -62,12 +62,12 @@ def get_repo(provider_namespace, user, repo_name):
 def check_name(name):
     if not name:
         raise ValidationError(detail={'name': 'Name is required'})
-    elif not re.match('^[\.\w-]+$', name):
+    if not re.match('^[\.\w-]+$', name):
         # Allow only names containing word chars
         raise ValidationError(detail={'name': "Name can only contain [A-Za-z0-9_]"})
-    elif(len(name) <= 2):
+    if(len(name) <= 2):
         raise ValidationError(detail={'name': "Name must be longer than 2 characters"})
-    elif(name[0] == '_'):
+    if(name.startswith('_')):
         raise ValidationError(detail={'name': "Name cannot begin with '_'"})
 
 

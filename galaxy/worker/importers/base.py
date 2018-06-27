@@ -52,7 +52,7 @@ class ContentImporter(object):
 
         # Name is the content name, which in the case of multi content repos
         # might not be the same as the repository name
-        name = repo.original_name
+        name = repo.name
         original_name = repo.original_name
 
         if self.data.name:

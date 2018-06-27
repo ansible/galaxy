@@ -45,43 +45,35 @@ def user_logged_in_handler(request, user, **kwargs):
     sanitized_username = username.lower().replace('-', '_')
 
     try:
-        namespace = models.ProviderNamespace.objects.get(name=username)
+        namespace = models.ProviderNamespace.objects.get(name__iexact=username)
         return
     except models.ProviderNamespace.DoesNotExist:
         namespace = None
 
     # User is not associated with any Namespaces, so we'll attempt
     # to create one, along with associated Provider Namespaces.
-    for provider in models.Provider.objects.all():
-        try:
-            social = auth_models.SocialAccount.objects.get(
-                provider__iexact=provider.name.lower(), user=user)
-        except ObjectDoesNotExist:
-            continue
+    provider = models.Provider.objects.get(name__iexact="github")
 
-        if provider.name.lower() == 'github':
-
-            login = sanitized_username
-            name = social.extra_data.get('name')
-            defaults = {
-                'description': name,
-                'avatar_url': social.extra_data.get('avatar_url'),
-                'location': social.extra_data.get('location'),
-                'company': social.extra_data.get('company'),
-                'email': social.extra_data.get('email'),
-                'html_url': social.extra_data.get('blog'),
-            }
-            if not namespace:
-                # Only create one Namespace
-                namespace, _ = models.Namespace.objects.get_or_create(
-                    name=login, defaults=defaults)
-                namespace.owners.add(user)
-            defaults['description'] = social.extra_data.get('bio') or name
-            defaults['followers'] = social.extra_data.get('followers')
-            defaults['display_name'] = social.extra_data.get('name')
-            models.ProviderNamespace.objects.get_or_create(
-                namespace=namespace, name=login, provider=provider,
-                defaults=defaults)
+    name = social.extra_data.get('name')
+    defaults = {
+        'description': name,
+        'avatar_url': social.extra_data.get('avatar_url'),
+        'location': social.extra_data.get('location'),
+        'company': social.extra_data.get('company'),
+        'email': social.extra_data.get('email'),
+        'html_url': social.extra_data.get('blog'),
+    }
+    if not namespace:
+        # Only create one Namespace
+        namespace, _ = models.Namespace.objects.get_or_create(
+            name=sanitized_username, defaults=defaults)
+        namespace.owners.add(user)
+    defaults['description'] = social.extra_data.get('bio') or name
+    defaults['followers'] = social.extra_data.get('followers')
+    defaults['display_name'] = social.extra_data.get('name')
+    models.ProviderNamespace.objects.get_or_create(
+        namespace=namespace, name=username, provider=provider,
+        defaults=defaults)
 
 
 @receiver(post_save, sender=models.ImportTask)
