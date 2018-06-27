@@ -53,7 +53,9 @@ def user_logged_in_handler(request, user, **kwargs):
     # to create one, along with associated Provider Namespaces.
     provider = models.Provider.objects.get(name__iexact="github")
 
-    name = social.extra_data.get('name')
+    # if name doesn't exist, set it to login
+    name = social.extra_data.get('name') or login
+    
     defaults = {
         'description': name,
         'avatar_url': social.extra_data.get('avatar_url'),
