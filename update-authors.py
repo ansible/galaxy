@@ -3,35 +3,17 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-import logging
-
-logger = logging.getLogger(__name__)
-
+import re
 import subprocess
-from collections import defaultdict
 
-user_scores = defaultdict(int)
+author_re = re.compile(r'^\s*\d+\t([\w ]+ <[^>]+>)$')
 
-git_log = subprocess.check_output("git log --shortstat --no-merges --pretty='%aN <%aE>'",
-                                  shell=True)
+git_log = subprocess.check_output(['git', 'shortlog', '--summary', '--email'])
 log_entries = git_log.decode('utf-8').strip().split('\n')
-while log_entries:
-    author = log_entries.pop(0)
-    _ = log_entries.pop(0)
-    commit_line = log_entries.pop(0)
-    commit_parts = [s.strip() for s in commit_line.split(', ')]
-    for clause in commit_parts:
-        count, action = clause.split(' ', 1)
-        if action.endswith('(+)'):
-            user_scores[author] += int(count)
-        elif action.endswith('(-)'):
-            user_scores[author] += int(count)
-        else:
-            user_scores[author] += int(count)
+authors = [author_re.match(entry).group(1) for entry in log_entries]
 
-sorted_user_scores = sorted(user_scores.items(), key=lambda tpl: tpl[1], reverse=True)
 
 print("Galaxy has been contribued to by the following authors:\n"
       "This list is automatically generated - please file an issue for corrections)\n")
-for author, _ in sorted_user_scores:
+for author in authors:
     print(author)
