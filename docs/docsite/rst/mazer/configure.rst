@@ -48,11 +48,14 @@ options
     Miscellaneous configuration options are set here, inlcuding: local_tmp, role_skeleton, role_skeleton_path,
     verbosity. 
 
-    *local_tmp* - path that Mazer can use for temporary work space, for doing things like expanding archive files.
+    local_tmp
+        Path that Mazer can use for temporary work space, for doing things like expanding archive files.
 
-    *role_skeleton_path* - path to a role structure to use with the ``init`` command. Overrides the default role
-    structure.
+    role_skeleton_path
+        Path to a role structure to use with the ``init`` command. Overrides the default role structure.
    
-    *role_skeleton_ignore* - List of file name patterns to ignore when copying the role skeleton path contents.
+    role_skeleton_ignore
+        List of file name patterns to ignore when copying the role skeleton path contents.
 
-    *verbosity* - controls the default level of output returned by Mazer.
+    verbosity
+        Controls the default level of output returned by Mazer.
