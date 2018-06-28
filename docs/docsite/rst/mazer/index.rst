@@ -5,16 +5,8 @@
 Mazer
 *****
 
-Mazer is a a new command-line tool for managing `Ansible <https://github.com/ansible/ansible>`_ content.
-
-The name Mazer comes from a character from Ender's Game, Mazer Rackham, that Wikipedia describes as "the half-Māori captain 
-who singlehandedly stopped the Second Invasion by realizing that the Buggers are a hive mind. Due to his inability to pass
-on his knowledge, he was forced to spend fifty years at relativistic speeds (eight years to Rackham) so that he could train
-the next commander — Ender Wiggin."
-
-A mazer is also a hardwood drinking vessel.
-
-Mazer is distributed under the `GNU General Public License v3.0 <https://github.com/ansible/mazer/LICENSE>`_.
+Mazer is a a new command-line tool for managing `Ansible <https://github.com/ansible/ansible>`_ content, and an open source project
+on GitHub at `ansible/mazer <https://github.com/ansible/mazer>`_.
 
 .. note::
     

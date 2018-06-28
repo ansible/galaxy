@@ -20,16 +20,16 @@ an example configuration file:
 
     version: 1
     server:
-        ignore_certs: false
-        url: https://galaxy-qa.ansible.com
+      ignore_certs: false
+      url: https://galaxy-qa.ansible.com
     content_path: ~/.ansible/content
     options:
-        local_tmp: ~/.ansible/tmp
-        role_skeleton_ignore:
-            - ^.git$
-            - ^.*/.git_keep$
-        role_skeleton_path: null
-        verbosity: 0
+      local_tmp: ~/.ansible/tmp
+      role_skeleton_ignore:
+         - ^.git$
+         - ^.*/.git_keep$
+      role_skeleton_path: null
+      verbosity: 0
 
 version
     The configuration format version. Defaults to 1.
