@@ -194,6 +194,8 @@ export class RolesComponent implements OnInit {
         forkJoin(queries).subscribe((results: Content[]) => {
             this.items = JSON.parse(JSON.stringify(results));
             this.items.forEach(item => {
+                item['install_cmd'] =
+                    `mazer install ${item.summary_fields['namespace']['name']}.${item.summary_fields['repository']['name']}`;
                 item['hasTags'] = false;
                 if (item.summary_fields['tags'] && item.summary_fields['tags'].length) {
                     item['tags'] = item.summary_fields['tags'];

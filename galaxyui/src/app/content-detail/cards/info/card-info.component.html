@@ -14,7 +14,7 @@
                 <tr>
                     <td>Installation</td>
                     <td class="install-instructions">
-                        <copy-to-clipboard [copyText]="'ansible-galaxy install ' + repoContent.summary_fields['namespace']['name'] + '.' + repoContent.summary_fields['repository']['name']"></copy-to-clipboard>
+                        <copy-to-clipboard [copyText]="repoContent['install_cmd']"></copy-to-clipboard>
                     </td>
                 </tr>
                 <tr>
@@ -76,7 +76,7 @@
                     <tr>
                         <td>Installation</td>
                         <td class="install-instructions">
-                            <copy-to-clipboard [copyText]="'ansible-galaxy install ' +  repoContent.summary_fields['namespace']['name'] + '.' + repoContent.summary_fields['repository']['name']"></copy-to-clipboard>
+                            <copy-to-clipboard [copyText]="repoContent['install_cmd']"></copy-to-clipboard>
                         </td>
                     </tr>
                     <tr>
