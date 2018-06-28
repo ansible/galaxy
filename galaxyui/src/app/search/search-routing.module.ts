@@ -19,7 +19,7 @@ import {
 
 const routes: Routes = [
     {
-        path: 'search',
+        path: '',
         component: SearchComponent,
         resolve: {
             cloudPlatforms: SearchCloudPlatformResolver,
