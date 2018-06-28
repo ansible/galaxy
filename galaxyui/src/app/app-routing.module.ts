@@ -15,6 +15,9 @@ const appRoutes: Routes = [
         redirectTo: '/home',
         pathMatch: 'full'
     }, {
+        path: 'my-imports',
+        loadChildren: './my-imports/my-imports.module#MyImportsModule'
+    }, {
         path: ':namespace',
         component: AuthorDetailComponent,
         resolve: {
