@@ -5,7 +5,7 @@
 Mazer
 *****
 
-Mazer is a a new command-line tool for managing `Ansible <https://github.com/ansible/ansible>`__ content.
+Mazer is a a new command-line tool for managing `Ansible <https://github.com/ansible/ansible>`_ content.
 
 The name Mazer comes from a character from Ender's Game, Mazer Rackham, that Wikipedia describes as "the half-Māori captain 
 who singlehandedly stopped the Second Invasion by realizing that the Buggers are a hive mind. Due to his inability to pass
@@ -14,7 +14,7 @@ the next commander — Ender Wiggin."
 
 A mazer is also a hardwood drinking vessel.
 
-Mazer is distributed under the `GNU General Public License v3.0 <https://github.com/ansible/mazer/LICENSE>`__.
+Mazer is distributed under the `GNU General Public License v3.0 <https://github.com/ansible/mazer/LICENSE>`_.
 
 .. note::
     
@@ -22,12 +22,17 @@ Mazer is distributed under the `GNU General Public License v3.0 <https://github.
     production environments, nor is it currently intended to replace the `ansible-galaxy` command-line tool.
 
     If you're installing Ansible content in a production environment, or need assistance with Ansible, please visit the `Ansible Project <https://github.com/ansible/ansible>`__,
-    or the `Ansible docs site <https://docs.ansible.com>`__.
+    or the `Ansible docs site <https://docs.ansible.com>`_.
 
+.. note::
+    
+    Before installing roles with Mazer, review :ref:`using_mazer_content`. Mazer installs content different from
+    the way ``ansible-galaxy`` does.
 
 .. toctree::
    :maxdepth: 2
 
    install
+   configure
    examples
    reference/index.rst

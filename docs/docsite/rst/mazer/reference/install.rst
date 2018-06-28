@@ -5,7 +5,7 @@ install
 
 .. program::mazer install [options] [-r FILE | repo_name(s)[,version] | scm+repo_url[,version] | tar_file(s)]
 
-Installs Ansible content from a content repository to the **.
+Installs Ansible content from a content repository to the local filesystem.
 
 .. option:: -c, --content-path
 

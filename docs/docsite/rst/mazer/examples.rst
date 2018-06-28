@@ -14,12 +14,17 @@ Installing Roles
 ----------------
 
 To install a role found on `Galaxy <https://galaxy.ansible.com>`_, pass the *namespace.role_name*. For example,
-the following install the role `geerlingguy.nginx _<https://galaxy.ansible.com/geerlingguy/nginx/>`_ from the
+the following install the role `geerlingguy.nginx <https://galaxy.ansible.com/geerlingguy/nginx/>`_ from the
 Galaxy server:
 
 .. code-block:: bash
 
     $ mazer install geerlingguy.nginx
+
+.. note::
+    
+    Before installing roles with Mazer, review :ref:`using_mazer_content`. Mazer installs content different from
+    the way ``ansible-galaxy`` does.
 
 To install a specific version of the Galaxy role, append `,<semantic version>` to the name, as demonstrated by the
 following:
@@ -57,104 +62,109 @@ Galaxy:
 
     $ mazer install testing.ansible-testing-content
 
+.. note::
+    
+    Before installing roles with Mazer, review :ref:`using_mazer_content`. Mazer installs content different from
+    the way ``ansible-galaxy`` does.
+
 This will install all of the roles to ``~/.ansible/content/testing.ansible-testing-content/roles/``. The following shows
 the complete directory tree created on the local file system by Mazer:
 
-.. cod-block:: bash
+.. code-block:: bash
 
     $ tree ~/.ansible/content/
-    /home/user/.ansible/content/
-    └── testing.ansible-testing-content
-        └── roles
-            ├── ansible-role-foobar
-            │   ├── defaults
-            │   │   └── main.yml
-            │   ├── handlers
-            │   │   └── main.yml
-            │   ├── meta
-            │   │   └── main.yml
-            │   ├── README.md
-            │   ├── tasks
-            │   │   └── main.yml
-            │   ├── tests
-            │   │   ├── inventory
-            │   │   └── test.yml
-            │   └── vars
-            │       └── main.yml
-            ├── ansible-test-role-1
-            │   ├── defaults
-            │   │   └── main.yml
-            │   ├── handlers
-            │   │   └── main.yml
-            │   ├── meta
-            │   │   └── main.yml
-            │   ├── README.md
-            │   ├── tasks
-            │   │   └── main.yml
-            │   ├── tests
-            │   │   ├── inventory
-            │   │   └── test.yml
-            │   └── vars
-            │       └── main.yml
-            ├── test-role-a
-            │   ├── defaults
-            │   │   └── main.yml
-            │   ├── handlers
-            │   │   └── main.yml
-            │   ├── meta
-            │   │   └── main.yml
-            │   ├── tasks
-            │   │   └── main.yml
-            │   ├── tests
-            │   │   ├── inventory
-            │   │   └── test.yml
-            │   └── vars
-            │       └── main.yml
-            ├── test-role-b
-            │   ├── defaults
-            │   │   └── main.yml
-            │   ├── handlers
-            │   │   └── main.yml
-            │   ├── meta
-            │   │   └── main.yml
-            │   ├── README.md
-            │   ├── tasks
-            │   │   └── main.yml
-            │   ├── tests
-            │   │   ├── inventory
-            │   │   └── test.yml
-            │   └── vars
-            │       └── main.yml
-            ├── test-role-c
-            │   ├── defaults
-            │   │   └── main.yml
-            │   ├── handlers
-            │   │   └── main.yml
-            │   ├── meta
-            │   │   └── main.yml
-            │   ├── README.md
-            │   ├── tasks
-            │   │   └── main.yml
-            │   ├── tests
-            │   │   ├── inventory
-            │   │   └── test.yml
-            │   └── vars
-            │       └── main.yml
-            └── test-role-d
-                ├── defaults
-                │   └── main.yml
-                ├── handlers
-                │   └── main.yml
-                ├── meta
-                │   └── main.yml
-                ├── README.md
-                ├── tasks
-                │   └── main.yml
-                ├── tests
-                │   ├── inventory
-                │   └── test.yml
-                └── vars
-                    └── main.yml
+        /home/user/.ansible/content/
+        └── testing.ansible-testing-content
+            └── roles
+                ├── ansible-role-foobar
+                │   ├── defaults
+                │   │   └── main.yml
+                │   ├── handlers
+                │   │   └── main.yml
+                │   ├── meta
+                │   │   └── main.yml
+                │   ├── README.md
+                │   ├── tasks
+                │   │   └── main.yml
+                │   ├── tests
+                │   │   ├── inventory
+                │   │   └── test.yml
+                │   └── vars
+                │       └── main.yml
+                ├── ansible-test-role-1
+                │   ├── defaults
+                │   │   └── main.yml
+                │   ├── handlers
+                │   │   └── main.yml
+                │   ├── meta
+                │   │   └── main.yml
+                │   ├── README.md
+                │   ├── tasks
+                │   │   └── main.yml
+                │   ├── tests
+                │   │   ├── inventory
+                │   │   └── test.yml
+                │   └── vars
+                │       └── main.yml
+                ├── test-role-a
+                │   ├── defaults
+                │   │   └── main.yml
+                │   ├── handlers
+                │   │   └── main.yml
+                │   ├── meta
+                │   │   └── main.yml
+                │   ├── tasks
+                │   │   └── main.yml
+                │   ├── tests
+                │   │   ├── inventory
+                │   │   └── test.yml
+                │   └── vars
+                │       └── main.yml
+                ├── test-role-b
+                │   ├── defaults
+                │   │   └── main.yml
+                │   ├── handlers
+                │   │   └── main.yml
+                │   ├── meta
+                │   │   └── main.yml
+                │   ├── README.md
+                │   ├── tasks
+                │   │   └── main.yml
+                │   ├── tests
+                │   │   ├── inventory
+                │   │   └── test.yml
+                │   └── vars
+                │       └── main.yml
+                ├── test-role-c
+                │   ├── defaults
+                │   │   └── main.yml
+                │   ├── handlers
+                │   │   └── main.yml
+                │   ├── meta
+                │   │   └── main.yml
+                │   ├── README.md
+                │   ├── tasks
+                │   │   └── main.yml
+                │   ├── tests
+                │   │   ├── inventory
+                │   │   └── test.yml
+                │   └── vars
+                │       └── main.yml
+                └── test-role-d
+                    ├── defaults
+                    │   └── main.yml
+                    ├── handlers
+                    │   └── main.yml
+                    ├── meta
+                    │   └── main.yml
+                    ├── README.md
+                    ├── tasks
+                    │   └── main.yml
+                    ├── tests
+                    │   ├── inventory
+                    │   └── test.yml
+                    └── vars
+                        └── main.yml
 
 Setting the Content path
 ------------------------
@@ -217,3 +227,42 @@ by the following:
 .. code-block:: bash
 
     $ mazer remove testing.ansible-testing-content
+
+.. _using_mazer_content:
+
+Using Content in Playbooks
+--------------------------
+
+Mazer places roles on the filesystem differently from the way ``ansible-galaxy`` does. For example, installing the
+role *geerlingguy.apache* with Mazer creates the following directory structure:
+
+.. code-block:: bash
+
+    $ tree ~/.ansible/content/
+        /home/user/.ansible/content/
+        └── geerlingguy.apache
+            └── roles
+                ├── apache
+                │   ├── defaults
+                │   │   └── main.yml
+                │   ├── handlers
+                │   │   └── main.yml
+                │   ├── meta
+                │   │   └── main.yml
+                │   ├── README.md
+                │   ├── tasks
+                │   │   └── main.yml
+                │   ├── tests
+                │   │   ├── inventory
+                │   │   └── test.yml
+                │   └── vars
+                │       └── main.yml
+
+In the above example, the actual role *apache* is located in the path ``~/.ansible/content/geerlingguy.apache/roles``. To reference
+the role in a playbook, *ANSIBLE_ROLES_PATH* must include this path, and the playbook must use *apache* as the role name.
+
+It's possible to use roles installed by Mazer, but obviously, having to update *ANSIBLE_ROLES_PATH* for each role, and change
+the role name in existing playbooks is less than ideal. In the near future, the role loader in Ansible core will be modified to
+support the way Mazer works.
+
+Stay tuned for updates.
