@@ -488,14 +488,10 @@ class Content(CommonModelNameNotUnique):
         if (not self.min_ansible_version
                 and self.role_type in (constants.RoleType.CONTAINER,
                                        constants.RoleType.ANSIBLE)):
-            # LOG.warn('Minimum Ansible version is not set, '
-            #          'setting it to "2.4"')
             self.min_ansible_version = u'2.4'
 
         if (not self.min_ansible_container_version
                 and self.role_type == constants.RoleType.CONTAINER_APP):
-            # LOG.warn(u'Minimum Ansible Container version is not set, '
-            #          u'setting it to "0.2.0"')
             self.min_ansible_container_version = u'0.9.0'
 
 
