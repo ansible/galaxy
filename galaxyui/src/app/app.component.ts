@@ -102,9 +102,9 @@ export class AppComponent implements OnInit {
                 url: '/search'
             },
             {
-                title: 'Vendors',
+                title: 'Partners',
                 iconStyleClass: 'fa fa-star',
-                url: '/vendors'
+                url: '/partners'
             },
             {
                 title: 'Community',
