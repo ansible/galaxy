@@ -13,24 +13,7 @@ import {
 } from './content-detail.resolver.service';
 
 const routes: Routes = [
-    {
-        path: ':namespace/:repository/:content_name',
-        component: ContentDetailComponent,
-        resolve: {
-            content: ContentResolver,
-            repository: RepositoryResolver,
-            namespace: NamespaceResolver
-        }
-    },
-    {
-        path: ':namespace/:repository',
-        component: ContentDetailComponent,
-        resolve: {
-            content: ContentResolver,
-            repository: RepositoryResolver,
-            namespace: NamespaceResolver
-        }
-    },
+
 ];
 
 @NgModule({

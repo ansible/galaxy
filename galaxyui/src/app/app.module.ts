@@ -28,7 +28,7 @@ import { NotificationService }        from 'patternfly-ng/notification/notificat
 
 import { HomeModule }                 from './home/home.module';
 import { LoginModule }                from './login/login.module';
-import { MyContentModule }            from './my-content/my-content.module';
+// import { MyContentModule }            from './my-content/my-content.module';
 // import { MyImportsModule }            from './my-imports/my-imports.module';
 import { SearchModule }               from './search/search.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
@@ -74,7 +74,7 @@ import { UserService }                from './resources/users/user.service';
         NotificationModule,
         HomeModule,
         LoginModule,
-        MyContentModule,
+        // MyContentModule,
         // MyImportsModule,
         SearchModule,
         ModalModule,
