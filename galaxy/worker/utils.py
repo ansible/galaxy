@@ -56,5 +56,5 @@ def parse_version_tag(value):
     if not value:
         raise ValueError('Empty version value')
     if value[0].lower() == 'v':
-        return value[1:]
+        value = value[1:]
     return semver.parse_version_info(value)
