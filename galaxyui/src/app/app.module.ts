@@ -29,7 +29,7 @@ import { NotificationService }        from 'patternfly-ng/notification/notificat
 import { HomeModule }                 from './home/home.module';
 import { LoginModule }                from './login/login.module';
 import { MyContentModule }            from './my-content/my-content.module';
-import { MyImportsModule }            from './my-imports/my-imports.module';
+// import { MyImportsModule }            from './my-imports/my-imports.module';
 import { SearchModule }               from './search/search.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
 import { AuthorsModule }              from './authors/authors.module';
@@ -75,7 +75,7 @@ import { UserService }                from './resources/users/user.service';
         HomeModule,
         LoginModule,
         MyContentModule,
-        MyImportsModule,
+        // MyImportsModule,
         SearchModule,
         ModalModule,
         ContentDetailModule,
