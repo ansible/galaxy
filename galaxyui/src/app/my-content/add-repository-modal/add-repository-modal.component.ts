@@ -142,9 +142,18 @@ export class AddRepositoryModalComponent implements OnInit {
         this.repositoriesAdded = true;
         this.saveInProgress = true;
         const saveRequests: Observable<Repository>[] = [];
-        this.selectedPNS.repoSources
-            .filter((repoSource) => repoSource.isSelected)
-            .forEach(repoSource => {
+        const selected: RepositorySource[] = this.selectedPNS.repoSources
+            .filter((repoSource) => repoSource.isSelected);
+
+        if (!selected.length) {
+            // nothing was selected
+            this.repositoriesAdded = false;
+            this.saveInProgress = false;
+            this.bsModalRef.hide();
+            return;
+        }
+
+        selected.forEach(repoSource => {
                 const newRepo = new Repository();
                 newRepo.name = repoSource.name;
                 newRepo.original_name = repoSource.name;
