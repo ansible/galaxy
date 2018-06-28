@@ -124,7 +124,7 @@ dev/migrate:
 
 .PHONY: dev/makemigrations
 dev/makemigrations:
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py makemigrations main
+	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py makemigrations
 
 .PHONY: dev/log
 dev/log:
