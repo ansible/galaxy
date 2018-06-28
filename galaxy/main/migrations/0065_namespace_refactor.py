@@ -121,8 +121,8 @@ WHERE b.namespace_id IS NULL
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('main', '0064_rename_role'),
+        ('accounts', '0003_auto_20151125_0840'),
     ]
 
     operations = [
