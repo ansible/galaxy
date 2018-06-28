@@ -8,7 +8,7 @@ import { CardConfig }     from 'patternfly-ng/card/basic-card/card-config';
 import { Content }        from '../../../resources/content/content';
 import { Repository }     from '../../../resources/repositories/repository';
 import { ViewTypes }      from '../../../enums/view-types.enum';
-import { RepoFormats }      from '../../../enums/repo-types.enum';
+import { RepoFormats }    from '../../../enums/repo-types.enum';
 
 import { ContentTypesPlural }   from '../../../enums/content-types.enum';
 
@@ -59,9 +59,18 @@ export class CardInfoComponent implements OnInit {
     set repoContent(data: Content) {
         this._repoContent = data;
         if (this._repoContent) {
-            this.repoContent['tags'] = this.repoContent.summary_fields['tags'];
-            this.repoContent['hasTags'] =
-                (this.repoContent.summary_fields['tags'] && this.repoContent.summary_fields['tags'].length) ? true : false;
+            if (this._repoType === 'multi') {
+                this._repoContent['install_cmd'] =
+                    `mazer install ${this._repoContent.summary_fields['namespace']['name']}.` +
+                    `${this._repoContent.summary_fields['repository']['name']}`;
+            } else {
+                this._repoContent['install_cmd'] =
+                    `ansible-galaxy install ${this._repoContent.summary_fields['namespace']['name']}.` +
+                    `${this._repoContent.name}`;
+            }
+            this._repoContent['tags'] = this._repoContent.summary_fields['tags'];
+            this._repoContent['hasTags'] =
+                (this.repoContent.summary_fields['tags'] && this._repoContent.summary_fields['tags'].length) ? true : false;
             this.example_name = this._repoContent.name;
             this.example_type = this._repoContent.content_type;
             this.example_type_plural = ContentTypesPlural[this._repoContent.content_type];
