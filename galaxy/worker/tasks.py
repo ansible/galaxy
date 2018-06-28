@@ -211,12 +211,14 @@ def _update_repository_versions(repository, github_repo, logger):
             continue
 
         commit_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
+        commit_sha = tag.commit.commit.sha
         version_obj, created = models.RepositoryVersion.objects.get_or_create(
             repository=repository,
             version=version,
             defaults={
                 'tag': tag.name,
                 'commit_date': commit_date,
+                'commit_sha': commit_sha,
             },
         )
         if not created:
@@ -231,4 +233,5 @@ def _update_repository_versions(repository, github_repo, logger):
             logger.warning('Release date of version {} has changed.'
                            .format(version_obj.tag))
             version_obj.commit_date = commit_date
+            version_obj.commit_sha = tag.commit.commit.sha
             version_obj.save()
