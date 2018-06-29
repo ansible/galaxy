@@ -20,7 +20,6 @@ import re
 
 from django.utils import timezone
 
-from galaxy import common
 from galaxy.main import models
 from galaxy.worker import exceptions as exc, utils
 
@@ -72,7 +71,7 @@ class ContentImporter(object):
             content_type=models.ContentType.get(self.data.content_type),
             original_name=original_name,
             defaults={
-                'name': common.sanitize_content_name(name),
+                'name': self.translate_content_name(name),
                 'is_valid': False,
             }
         )
@@ -85,6 +84,9 @@ class ContentImporter(object):
         content.description = self.data.description or ''
         content.metadata = self.data.metadata
         self._update_readme(content)
+
+    def translate_content_name(self, name):
+        return name
 
     def _update_readme(self, content):
         readme = self.data.readme

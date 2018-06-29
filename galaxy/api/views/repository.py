@@ -177,7 +177,7 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
             provider_namespace = instance.provider_namespace
 
         check_name(data.get('name'))
-        data['name'] = common.sanitize_repo_name(data['name'])
+        data['name'] = common.sanitize_content_name(data['name'])
 
         original_name = data.get('original_name', instance.original_name)
 

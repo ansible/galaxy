@@ -17,6 +17,7 @@
 
 from __future__ import absolute_import
 
+from galaxy import common
 from galaxy import constants
 from galaxy.main import models
 
@@ -50,6 +51,9 @@ class RoleImporter(base.ContentImporter):
         self._add_platforms(content, role_meta['platforms'])
         self._add_cloud_platforms(content, role_meta['cloud_platforms'])
         self._add_dependencies(content, role_meta['dependencies'])
+
+    def translate_content_name(self, name):
+        return common.sanitize_content_name(name)
 
     def _add_role_videos(self, role, videos):
         role.videos.all().delete()
