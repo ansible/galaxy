@@ -188,30 +188,54 @@ for you, if one does not already exist, by converting your username to lowercase
    names associated with role repositories, and '-' characters were converted to '_'. You may have previously accessed a role from Galaxy
    where the namespace contained a '-'; however, to access that same role now, you'll need to replace '-' with '_'.
 
-Role Name Limitations
-=====================
+Content Name Limitations
+========================
 
-Prior to Galaxy v3.0, the role import process would alter the GitHub repository name to create the role name. Specifically, it would
+Prior to Galaxy v3.0, the import process would alter the GitHub repository name to create the content name. Specifically, it would
 apply a regular expression, and remove 'ansible-' and 'role-' from the repository name. For example, a repository name of
 *ansible-role-apache* would become *apache*.
 
-Starting in v3.0, Galaxy no longer perform this calculation. Instead, the default role name is the unaltered repository name, with a
+Starting in v3.0, Galaxy no longer perform this calculation. Instead, the default content name is the unaltered repository name, with a
 couple minor exceptions, including: converting the name to all lowercase, and replacing any '-' or '.' characters with '_'.
 
-To override the default name, set the ``role_name`` attribute in the role ``meta/main.yml`` file. The following snipet from a 
-``meta/main.yml`` file provides an example of setting the *role_name* attribute:
+To override the default name for an Ansible role, set the ``role_name`` attribute in the role ``meta/main.yml`` file. The following snipet
+from a ``meta/main.yml`` file provides an example of setting the *role_name* attribute:
 
-..code-block:: yaml
+.. code-block:: yaml
 
-    galaxy_info:
-        role_name: apache
-        description: Install the httpd service
-        company: Acme, Inc.
-        ...
+  galaxy_info:
+    role_name: apache
+    description: Install the httpd service
+    company: Acme, Inc.
 
-..note::
+To override the default name for an APB, set the *name* attribute in the ``apb.yml`` metadata file. The following snipet from an
+``apb.yml`` file provides an example of setting the *name* attribute:
 
-    Role names are limited to lowercase word characters (i.e., a-z, 0-9) and '_'. No special characters are allowed, including '.',
+.. code-block:: yaml
+
+   version: 1.0
+   name: virtualization
+   description: KubeVirt installer
+   bindable: False
+   async: optional
+   metadata:
+     displayName: Kubevirt
+     longDescription: |
+       KubeVirt enables the migration of existing virtualized workloads directly into the development workflows supported by Kubernetes.
+       This provides a path to more rapid application modernization by:
+         - Supporting development of new microservice applications in containers that interact with existing virtualized applications.
+         - Combining existing virtualized workloads with new container workloads on the same platform, thereby making it easier to decompose monolithic virtualized workloads into containers over time.
+     documentationUrl: https://github.com/kubevirt/kubevirt/blob/master/README.md
+     imageUrl: https://cdn.pbrd.co/images/H5Gutd7.png
+     providerDisplayName: "Red Hat, Inc."
+
+
+Since the *name* attribute is set to 'virtualization' in the above example, Galaxy will import the APB with the name 'virtualization',
+rather than the repository name.
+
+.. note::
+
+    Content names are limited to lowercase word characters (i.e., a-z, 0-9) and '_'. No special characters are allowed, including '.',
     '-', and space. During import, any '.' and '-' characters contained in the repository name or role_name will be replaced with '_'.
 
 Travis CI
