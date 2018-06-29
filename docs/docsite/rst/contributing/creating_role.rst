@@ -120,7 +120,10 @@ role_name
     Use this to override the name of the role. In the past, Galaxy would apply a regex expression to the GitHub repository name and
     automatically remove 'ansible-' and 'ansible-role-'. For example, if your repository name was 'ansible-role-apache', the role name
     would translate to 'apache'. Galaxy no longer does this automatically. Instead, use the *role_name* setting to tell Galaxy what
-    the role name should be. If no value is provided, then the role name will match the repository name.
+    the role name should be.
+    
+    If no value is provided, then the role name will match the repository name, with a couple of exceptions, including:
+    converting the name to all lowercase, and replacing any '-' or '.' characters with '_'.
 
 platforms
     Provide a list of valid platforms, and for each platform, a list of valid versions. The obvious question of course is, where does one
@@ -157,15 +160,15 @@ couple minor exceptions, including: converting the name to all lowercase, and re
 To override the default name, set the ``role_name`` attribute in the role ``meta/main.yml`` file. The following snipet from a 
 ``meta/main.yml`` file provides an example of setting the *role_name* attribute:
 
-..code-block:: yaml
+.. code-block:: yaml
 
-    galaxy_info:
-        role_name: apache
-        description: Install the httpd service
-        company: Acme, Inc.
-        ...
+   galaxy_info:
+     role_name: apache
+     description: Install the httpd service
+     company: Acme, Inc.
 
-..note::
+
+.. note::
 
     Role names are limited to lowercase word characters (i.e., a-z, 0-9) and '_'. No special characters are allowed, including '.',
     '-', and space. During import, any '.' and '-' characters contained in the repository name or role_name will be replaced with '_'.
