@@ -28,6 +28,7 @@ from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework import status
 
+from galaxy import common
 from galaxy.accounts.models import CustomUser as User
 from galaxy.api.githubapi import GithubAPI
 from galaxy.api.filters import FieldLookupBackend, OrderByBackend
@@ -64,15 +65,14 @@ def check_name(name):
         raise ValidationError(detail={'name': 'Name is required'})
     if not re.match('^[\.\w-]+$', name):
         # Allow only names containing word chars
-        raise ValidationError(detail={'name': "Name can only contain [A-Za-z0-9_]"})
-    if(len(name) <= 2):
-        raise ValidationError(detail={'name': "Name must be longer than 2 characters"})
-    if(name.startswith('_')):
-        raise ValidationError(detail={'name': "Name cannot begin with '_'"})
-
-
-def sanitize_repo_name(name):
-    return name.lower().replace(".", "_").replace("-", "_")
+        raise ValidationError(detail={
+            'name': "Name can only contain [A-Za-z0-9_]"})
+    if len(name) <= 2:
+        raise ValidationError(detail={
+            'name': "Name must be longer than 2 characters"})
+    if name.startswith('_'):
+        raise ValidationError(detail={
+            'name': "Name cannot begin with '_'"})
 
 
 GITHUB_REPO_FIELDS = [
@@ -113,7 +113,7 @@ class RepositoryList(views.ListCreateAPIView):
                 detail={'provider_namespace': 'Invalid value'})
 
         original_name = data.get('original_name', data['name'])
-        data['name'] = sanitize_repo_name(data['original_name'])
+        data['name'] = common.sanitize_content_name(data['original_name'])
 
         if not request.user.is_staff:
             repo = get_repo(provider_namespace, request.user, original_name)
@@ -177,7 +177,7 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
             provider_namespace = instance.provider_namespace
 
         check_name(data.get('name'))
-        data['name'] = sanitize_repo_name(data['name'])
+        data['name'] = common.sanitize_repo_name(data['name'])
 
         original_name = data.get('original_name', instance.original_name)
 
@@ -226,7 +226,8 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         if not request.user.is_staff:
             try:
-                instance.provider_namespace.namespace.owners.get(pk=request.user.pk)
+                instance.provider_namespace.namespace.owners.get(
+                    pk=request.user.pk)
             except ObjectDoesNotExist:
                 raise PermissionDenied()
         self.perform_destroy(instance)

@@ -20,6 +20,7 @@ import re
 
 from django.utils import timezone
 
+from galaxy import common
 from galaxy.main import models
 from galaxy.worker import exceptions as exc, utils
 
@@ -67,12 +68,11 @@ class ContentImporter(object):
 
         obj, is_created = models.Content.objects.get_or_create(
             namespace=ns,
-            # FIXME(cutwater): Use in-memory cache for content types
+            repository=repo,
             content_type=models.ContentType.get(self.data.content_type),
-            name=name,
+            original_name=original_name,
             defaults={
-                'original_name': original_name,
-                'repository': repo,
+                'name': common.sanitize_content_name(name),
                 'is_valid': False,
             }
         )
