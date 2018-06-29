@@ -44,8 +44,8 @@ Contributor
     Name, or partial name, of a content author.
 
 Contributor Type
-    Choose from either *Community* or *Vendor*. For example, to view only content that's been contributed by community members, and
-    exclude any content contributed by vendors, select *Community*. 
+    Choose from either *Community* or *Partners*. For example, to view only content that's been contributed by community members, and
+    exclude any content contributed by partners, select *Community*. 
 
 Content Type
     Choose from the available content types, including: Ansible Playbook Bundle (APB), and Role.
@@ -130,15 +130,15 @@ the arrow to reverse the order. As the arrow is clicked, search results will be 
 
 .. image:: search-toolbar-07.png
 
-Vendors
-=======
+Partners
+========
 
-Use the `Vendors page </vendors>`_. To quickly find content available from a specific vendor.
-At the top of the page is a filter toolbar that can be used to filter vendors by name and description.
+Use the `Partners page </partners>`_. To quickly find content available from a specific partner.
+At the top of the page is a filter toolbar that can be used to filter partners by name and description.
 
 .. image:: vendors-toolbar-01.png
 
-To find vendors with *micro* in the name, for example, leave the filter dropdown set to *Name*, type *micro* in the
+To find partners with *micro* in the name, for example, leave the filter dropdown set to *Name*, type *micro* in the
 input field, and click the Enter key to apply the filter.
 
 .. image:: vendors-toolbar-02.png

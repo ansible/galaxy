@@ -47,7 +47,7 @@ export class VendorsComponent implements OnInit {
           private namespaceService: NamespaceService
     ) {}
 
-    pageTitle = `<i class="fa fa-star"></i> Vendors`;
+    pageTitle = '<i class="fa fa-star"></i> Partners';
     pageLoading = true;
     items: Namespace[] = [];
 
@@ -67,7 +67,7 @@ export class VendorsComponent implements OnInit {
     ngOnInit() {
         this.emptyStateConfig = {
             info: '',
-            title: 'No vendors match your search',
+            title: 'No partners match your search',
             iconStyleClass: 'pficon pficon-filter'
         } as EmptyStateConfig;
 

@@ -50,7 +50,7 @@ export class NotFoundComponent implements OnInit {
             info: 'Well this is embarrassing. The page you requested could not be found. ' +
                 'Choose one of the navigation options on the left, or click the Home button ' +
                 'below, to visit the home page',
-            title: this.pageTitle
+            title: 'Page Not Found'
         } as EmptyStateConfig;
     }
 

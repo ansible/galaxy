@@ -160,7 +160,7 @@ export class AuthorDetailComponent implements OnInit {
             this.pageLoading = false;
             if (this.namespace && this.namespace.name) {
                 if (this.namespace.is_vendor) {
-                    this.pageTitle = `<i class="fa fa-star"></i> Vendors;/vendors;${this.namespace.name}`;
+                    this.pageTitle = `<i class="fa fa-star"></i> Partners;/partners;${this.namespace.name}`;
                 } else {
                     this.pageTitle = `<i class="fa fa-users"></i> Community Authors;/community;${this.namespace.name}`;
                 }

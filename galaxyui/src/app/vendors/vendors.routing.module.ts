@@ -16,7 +16,7 @@ import { VendorsComponent }         from './vendors.component';
 
 
 const routes: Routes = [{
-    path: 'vendors',
+    path: 'partners',
     component: VendorsComponent,
     resolve: {
         vendors: VendorListResolver

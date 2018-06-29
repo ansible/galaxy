@@ -1,5 +1,5 @@
 export enum ContributorTypes {
-    vendor = 'vendor',
+    vendor = 'partner',
     community = 'community'
 }
 
