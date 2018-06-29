@@ -162,7 +162,10 @@ export class PluginsComponent implements OnInit {
     handlePageNumberChange($event: PaginationEvent) {
         if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
             this.pageNumber = $event.pageNumber;
-            this.queryContentList();
+            if (this.pageSize === this.paginationConfig.pageSize) {
+                // changed pageNumber without changing pageSize
+                this.queryContentList();
+            }
         }
     }
 

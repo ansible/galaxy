@@ -101,8 +101,8 @@
             <div class="pagination" *ngIf="contentItems && contentItems.length && paginationConfig.totalItems > paginationConfig.pageSize">
                 <pfng-pagination
                     [config]='paginationConfig'
-                    (onPageSizeChange)="handlePageSizeChange($event)"
-                    (onPageNumberChange)="handlePageNumberChange($event)">
+                    (onPageSizeChange)="handlePageChange($event)"
+                    (onPageNumberChange)="handlePageChange($event)">
                    </pfng-pagination>
                </div>
         </div>

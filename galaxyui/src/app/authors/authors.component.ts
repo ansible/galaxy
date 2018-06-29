@@ -185,9 +185,13 @@ export class AuthorsComponent implements OnInit {
     handlePageNumberChange($event: PaginationEvent) {
         if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
             this.pageNumber = $event.pageNumber;
-            this.searchNamespaces();
+            if (this.pageSize === this.paginationConfig.pageSize) {
+                // changed pageNumber without changing pageSize
+                this.searchNamespaces();
+            }
         }
     }
+
     // private
 
     private prepareNamespaces(): void {
