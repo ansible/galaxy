@@ -255,7 +255,10 @@ class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
         errors = {}
         owners = []
 
-        check_basic(data, errors)
+        # if no name is submitted on the form, it won't get updated so we can
+        # ignore the name check
+        if data.get('name') is not None:
+            check_basic(data, errors)
 
         if data.get('provider_namespaces'):
             provider_errors = check_providers(data['provider_namespaces'], parent=instance)
