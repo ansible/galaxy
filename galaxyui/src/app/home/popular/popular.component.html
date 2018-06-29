@@ -1,15 +1,18 @@
 <div class="row">
     <div class="col-sm-12">
-        <div class="popular-card">
-            <div class="popular-header">
-                <i class="fa fa-gear fa-2x"></i> <span class="title">Most Popular</span>
-            </div>
+        <pfng-card
+            [headerTemplate]="popularHeader">
+            <ng-template #popularHeader>
+                <div class="popular-header">
+                    <i class="fa fa-gear fa-2x"></i> <span class="title">Most Popular</span>
+                </div>
+            </ng-template>
             <div class="popular-body">
                 <div class="category" *ngFor="let category of categories"
                     (click)="handleCategoryClick(category)">
                     <i class="{{ category.iconClass }}"></i> <span class="title">{{ category.name }}</span>
                 </div>
             </div>
-        </div>
+        </pfng-card>
     </div>
 </div>
