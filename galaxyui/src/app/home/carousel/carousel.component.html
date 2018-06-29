@@ -1,30 +1,35 @@
 
 <div class="row" *ngIf="vendors && vendors.length">
     <div class="col-sm-12">
-        <div class="partner-carousel">
-            <div class="carousel-header">
-                <i class="fa fa-star fa-2x"></i> <span class="title">Featured Partners</span> <a [routerLink]="['/','search']">View All Partners</a>
-            </div>
-            <div class="carousel-left-control">
-                <a [href]="" (click)="handleLeftClick()"><i class="fa fa-chevron-left fa-2x"></i></a>
-            </div>
-            <div class="carousel-slider">
-                <div class="carousel-slider-inner" id="slider-inner">
-                      <div *ngFor="let vendor of vendors" (click)="handleVendorClick(vendor)" class="vendor">
-                          <table class="img-wrapper">
-                              <tr>
-                                <td>
-                                    <img [src]="vendor.avatar_url" class="{{ vendor['displayClass'] }}">
-                                      <p *ngIf="vendor['displayName']">{{ vendor['displayName'] }}</p>
-                                </td>
-                              </tr>
-                        </table>
+        <pfng-card
+            [headerTemplate]="carouselHeader">
+            <ng-temlate #carouselHeader>
+                <div class="carousel-header">
+                    <span class="header-icon"><i class="fa fa-star fa-2x"></i></span><span class="header-text">Featured Partners</span> <a [routerLink]="['/','search']">View All Partners</a>
+                </div>
+            </ng-temlate>
+            <div class="partner-carousel">
+                <div class="carousel-left-control">
+                    <a [href]="" (click)="handleLeftClick()"><i class="fa fa-caret-left fa-2x"></i></a>
+                </div>
+                <div class="carousel-slider">
+                    <div class="carousel-slider-inner" id="slider-inner">
+                          <div *ngFor="let vendor of vendors" (click)="handleVendorClick(vendor)" class="vendor">
+                              <table class="img-wrapper">
+                                  <tr>
+                                    <td>
+                                        <img [src]="vendor.avatar_url" class="{{ vendor['displayClass'] }}">
+                                          <p *ngIf="vendor['displayName']">{{ vendor['displayName'] }}</p>
+                                    </td>
+                                  </tr>
+                            </table>
+                          </div>
                       </div>
-                  </div>
+                </div>
+                <div class="carousel-right-control">
+                    <a [href]="" (click)="handleRightClick()"><i class="fa fa-caret-right fa-2x"></i></a>
+                </div>
             </div>
-            <div class="carousel-right-control">
-                <a [href]="" (click)="handleRightClick()"><i class="fa fa-chevron-right fa-2x"></i></a>
-            </div>
-        </div>
+        </pfng-card>
     </div>
 </div>
