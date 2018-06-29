@@ -28,6 +28,7 @@ from django.db import transaction
 from allauth.socialaccount import models as auth_models
 
 from galaxy import constants
+from galaxy import common
 from galaxy.common import logutils
 from galaxy.importer import repository as i_repo
 from galaxy.importer import exceptions as i_exc
@@ -97,7 +98,14 @@ def _import_repository(import_task, logger):
     repository.format = repo_info.format.value
 
     if repo_info.name:
-        repository.name = repo_info.name
+        old_name = repository.name
+        new_name = common.sanitize_content_name(repo_info.name)
+
+        if old_name != new_name:
+            logger.info(
+                u'Updating repository name "{old_name}" -> "{new_name}"'
+                .format(old_name=old_name, new_name=new_name))
+            repository.name = new_name
 
     context = utils.Context(
         repository=repository, github_token=token,
