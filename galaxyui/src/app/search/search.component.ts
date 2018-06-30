@@ -30,7 +30,6 @@ import { SortEvent }      from 'patternfly-ng/sort/sort-event';
 
 import { PaginationConfig }     from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }      from 'patternfly-ng/pagination/pagination-event';
-
 import { EmptyStateConfig }     from 'patternfly-ng/empty-state/empty-state-config';
 
 import { ContentSearchService } from '../resources/content-search/content-search.service';
@@ -272,17 +271,20 @@ export class SearchComponent implements OnInit, AfterViewInit {
         return this.toolbarConfig;
     }
 
-    handlePageSizeChange($event: PaginationEvent) {
+    handlePageChange($event: PaginationEvent) {
+        let changed = false;
         if ($event.pageSize && this.pageSize !== $event.pageSize) {
             this.pageSize = $event.pageSize;
             this.pageNumber = 1;
-            this.searchContent();
-        }
-    }
-
-    handlePageNumberChange($event: PaginationEvent) {
-        if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
+            changed = true;
+        } else if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
             this.pageNumber = $event.pageNumber;
+            if (this.pageSize === this.paginationConfig.pageSize) {
+                // changed pageNumber without changing pageSize
+                changed = true;
+            }
+        }
+        if (changed && !this.pageLoading) {
             this.searchContent();
         }
     }
@@ -503,8 +505,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
         });
         this.contentItems = data;
         this.filterConfig.resultsCount = count;
-           this.paginationConfig.totalItems = count;
-           if (!count) {
+        this.paginationConfig.totalItems = count;
+        if (!count) {
             this.emptyStateConfig.title = this.noResultsState;
         }
     }
