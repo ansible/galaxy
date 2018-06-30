@@ -1,0 +1,108 @@
+/* authors-detail.component.less */
+
+@import '../../../variables';
+
+#author-detail {
+    color: @black;
+    margin-bottom: 150px;
+
+    .pagination {
+        width: 100%;
+    }
+
+    .namespace {
+        display: flex;
+        flex-grow: 1;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 30px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .namespace-details,
+    .content-summary {
+        flex-grow: 1;
+        flex-shrink: 1;
+    }
+    .namespace-details {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .namespace-bio {
+        font-size: 14px;
+        p {
+            margin-bottom: 3px;
+        }
+        .name {
+            color: @black;
+            font-weight: 700;
+            font-size: 18px;
+            padding-bottom: 2px;
+        }
+    }
+    .namespace-img {
+        margin-right: 20px;
+        width: 120px;
+        height: 120px;
+        overflow: hidden;
+        padding-right: 20px;
+        border-right: 1px solid #ccc;
+        .img-wrapper {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            td {
+                text-align: center;
+                vertical-algin: middle;
+                img {
+                    max-width: 100px;
+                }
+            }
+        }
+    }
+    .content-count {
+        display: inline-block;
+        color: @black;
+        font-size: 14px;
+        margin-right: 15px;
+    }
+    .detail-search-toolbar {
+        margin-top: 40px;
+    }
+    .repository-list {
+        margin-top: 20px;
+    }
+    .repo-name,
+    .repo-description,
+    .repo-count {
+        font-size: 12px;
+    }
+    .list-pf-additional-content.counts {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: middle;
+    }
+
+    .list-pf-additional-content.counts > div {
+        font-size: 12px;
+        margin-right: 15px;
+        .fa {
+            font-size: 14px;
+        }
+        .count {
+            font-weight: 700;
+            padding: 0 5px;
+        }
+    }
+    .list-pf-additional-content.counts div:last-child {
+        margin-right: 0;
+    }
+}

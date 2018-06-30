@@ -20,15 +20,12 @@ import logging
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
-# allauth
 from allauth.account.signals import user_logged_in
-from allauth.socialaccount.models import SocialToken
+from allauth.socialaccount import models as auth_models
 
-# local
-from galaxy.main.models import ImportTask, Repository
-from galaxy.main.celerytasks.tasks import refresh_user_repos, refresh_user_stars
+from galaxy import constants
+from galaxy.main import models
 
 
 logger = logging.getLogger(__name__)
@@ -38,42 +35,54 @@ User = get_user_model()
 
 @receiver(user_logged_in)
 def user_logged_in_handler(request, user, **kwargs):
-    if user.repositories.count() > 1:
-        # User has entries in cache already, so no need to delay the login process.
-        user.cache_refreshed = True
-        user.save()
-        try:
-            token = SocialToken.objects.get(account__user=user, account__provider='github')
-            refresh_user_stars.delay(user, token.token)
-        except ObjectDoesNotExist:
-            logger.error(u'GitHub token not found for user: {}'.format(user.username))
-        except MultipleObjectsReturned:
-            logger.error(u'Found multiple GitHub tokens for user: {}'.format(user.username))
-    else:
-        # No entries found in cache, wait for a refresh to happen.
-        user.cache_refreshed = False
-        user.save()
-        try:
-            # Kick off a refresh
-            token = SocialToken.objects.get(account__user=user, account__provider='github')
-            refresh_user_repos.delay(user, token.token)
-            refresh_user_stars.delay(user, token.token)
-        except ObjectDoesNotExist:
-            logger.error(u'GitHub token not found for user: {}'.format(user.username))
-            user.cache_refreshed = True
-            user.save()
-        except MultipleObjectsReturned:
-            logger.error(u'Found multiple GitHub tokens for user: {}'.format(user.username))
-            user.cache_refreshed = True
-            user.save()
+    social = auth_models.SocialAccount.objects.get(
+        provider=constants.PROVIDER_GITHUB.lower(), user=user)
+    user.avatar_url = social.extra_data.get('avatar_url')
+    user.save()
+
+    username = social.extra_data.get('login')
+    sanitized_username = username.lower().replace('-', '_')
+
+    try:
+        namespace = models.ProviderNamespace.objects.get(name__iexact=username)
+        return
+    except models.ProviderNamespace.DoesNotExist:
+        namespace = None
+
+    # User is not associated with any Namespaces, so we'll attempt
+    # to create one, along with associated Provider Namespaces.
+    provider = models.Provider.objects.get(name__iexact="github")
+
+    # if name doesn't exist, set it to login
+    name = social.extra_data.get('name') or username
+
+    defaults = {
+        'description': name,
+        'avatar_url': social.extra_data.get('avatar_url'),
+        'location': social.extra_data.get('location'),
+        'company': social.extra_data.get('company'),
+        'email': social.extra_data.get('email'),
+        'html_url': social.extra_data.get('blog'),
+    }
+    if not namespace:
+        # Only create one Namespace
+        namespace, _ = models.Namespace.objects.get_or_create(
+            name=sanitized_username, defaults=defaults)
+        namespace.owners.add(user)
+    defaults['description'] = social.extra_data.get('bio') or name
+    defaults['followers'] = social.extra_data.get('followers')
+    defaults['display_name'] = social.extra_data.get('name')
+    models.ProviderNamespace.objects.get_or_create(
+        namespace=namespace, name=username, provider=provider,
+        defaults=defaults)
 
 
-@receiver(post_save, sender=ImportTask)
+@receiver(post_save, sender=models.ImportTask)
 def import_task_post_save(sender, **kwargs):
-    '''
+    """
     When a role is imported enable the role in the user's repository cache
-    '''
+    """
     instance = kwargs['instance']
-    for repo in Repository.objects.filter(github_user=instance.github_user, github_repo=instance.github_repo):
-        repo.is_enabled = True
-        repo.save()
+    repo = instance.repository
+    repo.is_enabled = True
+    repo.save()

@@ -48,6 +48,12 @@ class TestGetVersion(unittest.TestCase):
         version_ = version.get_git_version()
         self.assertEqual(version_, '2.3rc0')
 
+    def test_no_git_tag_fallback(self):
+        self.git_describe_mock.return_value = 'ef14bf1'
+        self.assertEqual(version.get_git_version(),
+                         '0.0.0.dev0+ef14bf1')
+        self.git_describe_mock.assert_called_once()
+
     def test_package_version(self):
         dist = self.get_distribution_mock.return_value
         dist.version = '1.0.0'

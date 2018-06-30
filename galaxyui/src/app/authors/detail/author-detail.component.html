@@ -1,0 +1,129 @@
+<app-page-header [headerTitle]="pageTitle"></app-page-header>
+
+<div id="author-detail" class="container-fluid">
+
+    <div class="row" *ngIf="!authorNotFound">
+        <div class="col-sm-12">
+            <div class="namespace">
+                <div class="namespace-details">
+                    <div class="namespace-img">
+                        <table class="img-wrapper">
+                            <tr>
+                                <td><img [src]="namespace.avatar_url"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="namespace-bio text-overflow-pf">
+                        <p class="name">{{ namespace.name }}</p>
+                        <p>{{ namespace.description }}</p>
+                        <p *ngIf="namespace.company">{{ namespace.company }}</p>
+                        <p *ngIf="namespace.location"><i class="fa fa-map-marker"></i> {{ namespace.location }}</p>
+                        <p *ngIf="namespace.email">
+                            <a [href]="'mailto:'+ namespace.email" tooltip="Send an email">
+                                <i class="fa fa-envelope"></i> {{ namespace.email }}
+                            </a>
+                        </p>
+                        <p *ngIf="namespace.html_url">
+                            <a [href]="namespace.html_url"
+                                target="_blank"
+                                tooltip="View site in new browser window or tab">
+                                <i class="fa fa-link"></i> {{ namespace.html_url }}
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                <div class="content-summary">
+                    <div *ngFor="let count of namespace.contentCounts" class="content-count">
+                         <span class="{{ count.iconClass }}"></span>
+                        <strong>{{count.count}}</strong> {{count.title}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row detail-search-toolbar" *ngIf="!authorNotFound">
+        <div class="col-sm-12">
+            <pfng-toolbar
+                [config]="toolbarConfig"
+                (onFilterChange)="filterChanged($event)"
+                (onSortChange)="sortChanged($event)">
+            </pfng-toolbar>
+        </div>
+    </div>
+
+    <div class="row repository-list" *ngIf="!authorNotFound">
+        <div class="col-sm-12">
+            <pfng-list
+                [config]="listConfig"
+                [items]="items"
+                [itemTemplate]="itemTemplate"
+                [actionTemplate]="actionTemplate"
+                (onClick)="handleListClick($event)">
+                <ng-template #itemTemplate let-item="item">
+                    <div class="list-pf-left">
+                        <span class="{{ item.iconClass }} list-pf-icon list-pf-icon-small"
+                            tooltip="{{ item.tooltip }}"
+                            container="body"></span>
+                    </div>
+                    <div class="list-pf-content-wrapper">
+                        <div class="list-pf-main-content">
+                            <div class="list-pf-title">
+                                <a [routerLink]="['/', item.summary_fields['namespace']['name'], item.name]"
+                                   class="repo-name" tooltip="View content details">{{ item.name }}</a>
+                            </div>
+                            <div class="list-pf-description text-overflow-pf"><span class="repo-description">{{ item.description }}</span></div>
+                        </div>
+                        <div class="list-pf-additional-content counts">
+                            <div class="repo-count">
+                                <i class="fa fa-download"></i>
+                                <span class="count">{{ item.download_count }}</span>
+                                <span class="count-label">Downloads</span>
+                            </div>
+                            <div class="repo-count">
+                                <i class="fa fa-eye"></i>
+                                <span class="count">{{ item.watchers_count }}</span>
+                                <span class="count-label">Watchers</span>
+                            </div>
+                            <div class="repo-count">
+                                <i class="fa fa-star"></i>
+                                <span class="count">{{ item.stargazers_count }}</span>
+                                <span class="count-label">Stars</span>
+                            </div>
+                            <div class="repo-count">
+                                <i class="fa fa-copy"></i>
+                                <span class="count">{{ item.forks_count }}</span>
+                                <span class="count-label">Forks</span>
+                            </div>
+                            <div class="travis" *ngIf="item.travis_build_url">
+                                <a href="{{ item.travis_build_url }}" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
+                                    <img src="{{ item.travis_status_url }}"
+                                        class="travis-status-img" title="Travis Build Status" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template #actionTemplate let-item="item" let-index="index">
+                    <author-detail-actions [repository]="item"></author-detail-actions>
+                </ng-template>
+            </pfng-list>
+        </div>
+    </div>
+
+    <div class="row repository-pagination" *ngIf="!authorNotFound">
+        <div class="col-sm-12">
+            <div class="pagination"
+                *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
+                <pfng-pagination
+                    [config]='paginationConfig'
+                    (onPageSizeChange)="handlePageSizeChange($event)"
+                    (onPageNumberChange)="handlePageNumberChange($event)">
+                   </pfng-pagination>
+               </div>
+        </div>
+    </div>
+
+</div>
+
+<app-page-loading [loading]="pageLoading"></app-page-loading>

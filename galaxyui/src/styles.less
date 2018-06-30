@@ -1,0 +1,233 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'variables';
+
+
+
+a:hover,
+a:focus {
+    text-decoration: none;
+}
+
+.color-green,
+.succeeded,
+.running,
+a.running,
+a.succeeded {
+    color: @green;
+}
+.color-red,
+.failed,
+a.failed {
+    color: @red;
+}
+.color-orange {
+    color: @warning;
+}
+
+/* Patternfly modal indexes are too low, when used with vertical nav */
+.modal {
+    z-index: 1250;
+}
+.modal-backdrop {
+    z-index: 1249;
+}
+
+.tooltip {
+    z-index: 1270;
+}
+
+/* Patternfly search results */
+
+.toolbar-pf-results {
+    border-top-color: @white;
+}
+.toolbar-pf-results .list-inline {
+    margin-left: 0;
+}
+
+/* My-Content detail */
+.item-select {
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .toolbar-pf-results {
+        border-top: none;
+        border-bottom: 1px solid #bbb;
+        margin-top: 5px;
+    }
+    .filter-pf .form-group {
+        margin-bottom: 0;
+    }
+    .filter-pf.filter-fields .form-group {
+        width: 100%;
+    }
+}
+
+#my-content-repository-modal {
+    input[type=checkbox] {
+        font-size: 14px;
+    }
+    .blank-slate-pf {
+        background-color: transparent;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        border-bottom: none;
+    }
+    @media (min-width: 992px) {
+        .list-pf-content-wrapper>*+* {
+            margin-left: 0;
+        }
+    }
+}
+
+.navbar-pf-vertical .navbar-brand .navbar-brand-icon {
+    max-height: 35px;
+    width: 120px;
+    height: 35px;
+}
+
+/* About dialog */
+.about-modal-pf {
+    .modal-body {
+        font-size: 14px;
+        h1 {
+            font-size: 36px;
+            font-weight: 400;
+        }
+        .trademark-pf {
+            font-size: 14px;
+        }
+    }
+    .modal-footer img {
+        height: 70px;
+        width: 240px;
+    }
+}
+
+/* Import list page */
+#import-list-page {
+    .list-column .filter-pf.filter-fields .form-group {
+        width: 100%;
+    }
+}
+
+
+/* Search page */
+#search-page {
+    .filter-pf.filter-fields .form-group {
+        width: 40%;
+    }
+    .toolbar-pf {
+        border-bottom: 1px solid @white;
+        box-shadow: none;
+    }
+    @media only screen and (max-width : 1255px) {
+        .filter-pf.filter-fields .form-group {
+            width: 100%;
+        }
+    }
+    @media only screen and (min-width : 1255px) {
+        .filter-pf.filter-fields .form-group {
+            width: 350px;
+        }
+    }
+}
+#search-list {
+    .list-pf-main-content {
+        align-items: flex-start;
+    }
+    .list-pf-container {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    @media only screen and (max-width : 992px) {
+        .list-pf-description {
+            padding-top: 15px;
+        }
+    }
+}
+.popular-widget {
+    .list-pf-container {
+        padding-bottom: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 10px;
+    }
+    .list-pf-item:first-child {
+        border-top: none;
+    }
+    .list-pf-item:last-child {
+        border-bottom: none;
+    }
+}
+
+/* Content Detail */
+#content-detail-page {
+    .card-pf {
+        margin: 0;
+    }
+    /*.cd-card.card-cloud-platforms,
+    .cd-card.card-dependencies,
+    .cd-card.card-platforms,
+    .cd-card.card-versions {
+        margin-top: 20px;
+    }
+    .cards-container {
+        margin-top: -20px;
+    }*/
+    .cd-card .card-pf-body {
+        height: 250px;
+        overflow-y: auto;
+    }
+    .modules-detail {
+        .list-pf-content {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+    }
+    code {
+        color: @black;
+        background-color: #f7f7f7;
+        font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        font-size: 13.6px;
+    }
+}
+
+/* Authors */
+#authors-page {
+    .toolbar-pf {
+        border-bottom: none;
+        box-shadow: none;
+    }
+}
+
+#author-detail {
+    .list-pf-main-content {
+        flex-basis: 50%;
+    }
+    .list-pf-chevron .fa, .list-pf-select .fa {
+        font-size: 14px;
+    }
+    .list-pf-expansion .list-pf {
+        margin-top: 40px;
+    }
+    .pfng-list-content {
+        align-items: center;
+    }
+    .toolbar-pf {
+        border-bottom: none;
+        box-shadow: none;
+    }
+}
+
+/* Vendors */
+#vendors-page {
+    .toolbar-pf {
+        border-bottom: 1px solid #fff;
+        box-shadow: none;
+        -webkit-box-shadow: none;
+    }
+}

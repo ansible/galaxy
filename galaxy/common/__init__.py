@@ -14,3 +14,7 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+
+
+def sanitize_content_name(name):
+    return name.lower().replace(".", "_").replace("-", "_")

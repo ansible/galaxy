@@ -1,9 +1,0 @@
-recursive-include galaxy *.py
-recursive-include galaxy/static *
-recursive-include galaxy/templates *
-recursive-include galaxy/lib/site-packages *
-recursive-include config *
-prune galaxy/static/js
-prune galaxy/static/less
-#include COPYING
-#prune galaxy/public

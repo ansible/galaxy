@@ -1,0 +1,39 @@
+<!-- <div class="list-group list-view-pf list-view-pf-view">
+    <div *ngFor="let owner of namespace.summary_fields.owners">
+        <div class="list-group-item">
+            <div class="list-view-pf-main-info">
+                <div class="list-view-pf-left" *ngIf="owner['github_avatar']">
+                    <img src="{{ owner.github_avatar }}" class="github-avatar">
+                </div>
+                <div class="list-view-pf-left" *ngIf="!owner['github_avatar']">
+                    <img src="/static/img/avatar.png" class="github-avatar">
+                </div>
+                <div class="list-view-pf-body">
+                    <div class="list-view-pf-description">
+                        <div class="list-group-item-heading">
+                            {{ owner.username }}
+                        </div>
+                        <div class="list-group-item-text" *ngIf="owner['github_user']">
+                            <a target="_blank" href="https://github.com/{{ owner.github_user }}"
+                               placement="top"
+                               tooltip="View user on GitHub">@{{ owner.github_user }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+<div class="owner-expansion-content container-fluid">
+    <div class="row" *ngFor="let owner of namespace.summary_fields.owners">
+        <div class="col-sm-12">
+            <div class="owner-img">
+                <img src="{{ owner.avatar_url }}" class="github-avatar" *ngIf="owner['avatar_url']">
+                <img src="/static/img/avatar.png" class="github-avatar" *ngIf="!owner['avatar_url']">
+            </div>
+            <div class="description">
+                <span class="title">{{ owner.username }}</span>
+            </div>
+        </div>
+    </div>
+</div>

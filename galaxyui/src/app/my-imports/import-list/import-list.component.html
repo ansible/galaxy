@@ -1,0 +1,53 @@
+<app-page-header [headerTitle]="pageTitle"></app-page-header>
+
+<div class="row padding-15" id="import-list-page">
+    <div class="col-sm-4 list-column">
+        <div id="import-filter">
+            <pfng-filter
+                 [config]="filterConfig"
+                 (onChange)="applyFilters($event)">
+            </pfng-filter>
+        </div>
+        <div id="import-list">
+            <pfng-list #importList
+                [config]="listConfig"
+                [items]="items"
+                [itemTemplate]="itemTemplate"
+                (onClick)="handleClick($event)">
+                <ng-template #itemTemplate let-item="item">
+                    <div class="list-pf-left">
+                        <span class="fa fa-circle"
+                              [ngClass]="{'color-green': item.state === 'Success' || item.state === 'Running', 'color-red': item.state === 'Failed', 'color-orange': item.state === 'Pending'}"></span>
+                    </div>
+                    <div class="list-pf-content-wrapper">
+                        <div class="list-pf-main-content">
+                            <div class="list-pf-title">
+                                {{ item.namespace + '.' + item.repository_name }}
+                                <p *ngIf="item.state === 'Success' || item.state === 'Failed'">Status: {{ item.state + ' ' + item.finished }}</p>
+                                <p *ngIf="item.state !== 'Success' && item.state !== 'Failed'">Status: {{ item.state }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </pfng-list>
+        </div>
+
+        <div class="pagination" *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
+            <pfng-pagination
+                [config]='paginationConfig'
+                (onPageSizeChange)="handlePageSizeChange($event)"
+                (onPageNumberChange)="handlePageNumberChange($event)">
+            </pfng-pagination>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <app-import-detail
+            [importTask]="selected"
+            [refreshing]="refreshing"
+            (startedImport)="startedImport($event)"
+            (scrollToggled)="toggleScroll($event)">
+        </app-import-detail>
+    </div>
+</div>
+
+<app-page-loading [loading]="pageLoading"></app-page-loading>

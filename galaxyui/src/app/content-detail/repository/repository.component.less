@@ -1,0 +1,60 @@
+/* repository.component.less */
+
+@import '../../../variables';
+
+.row.repository-container {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.repository-container {
+    color: @black;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 15px;
+
+    .title-box {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-content: middle;
+    }
+    .icon-container {
+        margin-right: 15px;
+    }
+    .title-container {
+        .title, .description {
+            margin-bottom: 5px;
+        }
+        .title {
+            font-weight: 700;
+            font-size: 22px;
+        }
+        .namespace {
+            font-size: 14px;
+            img {
+                max-height: 64px;
+                margin-right: 5px;
+            }
+        }
+        .namespace:hover {
+            cursor: pointer;
+        }
+    }
+    .repository-details {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: middle;
+    }
+
+    .repository-details > div {
+        font-size: 14px;
+        margin-right: 20px;
+        .count {
+            font-weight: 700;
+            padding: 0 5px;
+        }
+    }
+}

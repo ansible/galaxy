@@ -1,0 +1,35 @@
+/* card-list.component.less */
+
+@import '../../../../variables';
+
+.card-platforms {
+    color: @black;
+    font-size: 14px;
+    font-weight: 700;
+    .card-heading {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        .title-text {
+            font-size: 16px;
+            font-weight: 700;
+        }
+    }
+    table {
+        width: 100%;
+    }
+    .name, .release {
+        font-size: 14px;
+        font-weight: normal;
+        color: @white;
+        padding: 2px;
+        border-bottom: 4px solid @white;
+    }
+    .name {
+        background-color: @blue;
+        border-right: 4px solid @white;
+    }
+    .release {
+        background-color: @ansible-dark-grey;
+        text-align: right;
+    }
+}

@@ -1,0 +1,13 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <pfng-toast-notification-list
+                [notifications]="notifications"
+                (onActionSelect)="handleAction($event)"
+                (onCloseSelect)="handleClose($event)"
+                (onViewingChange)="handleViewingChange($event)"
+                [showClose]="showClose">
+            </pfng-toast-notification-list>
+        </div>
+    </div>
+</div>

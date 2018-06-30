@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
-
+from __future__ import unicode_literals
 
 import subprocess
 
@@ -42,15 +42,46 @@ def get_git_version():
     Returns package version in PEP440 format based on latest annotated
     version tag. Version tags should have prefix 'v'.
 
-    :return str: Package version string
-    :raises subprocess.CalledProcessError: If `git` command failed.
+    :return str: A version string.
+    :raises RuntimeError: If cannot determine git version string.
     """
-    tag_info = subprocess.check_output([
-        'git', 'describe', '--match', TAG_PREFIX + '*']
-    ).strip().lstrip(TAG_PREFIX)
-    chunks = tag_info.rsplit('-', 2)
+    try:
+        tag_info = subprocess.check_output([
+            'git', 'describe', '--always', '--match', TAG_PREFIX + '*']
+        ).decode().strip()
+    except subprocess.CalledProcessError:
+        raise RuntimeError('Cannot determine git version string.')
 
-    if len(chunks) == 1:
-        return chunks[0]
+    if '-' in tag_info:
+        chunks = tag_info.lstrip(TAG_PREFIX).rsplit('-', 2)
+        return '{0}.dev{1}+{2}'.format(*chunks)
 
-    return '{0}.dev{1}+{2}'.format(*chunks)
+    if '.' in tag_info:
+        return tag_info.lstrip(TAG_PREFIX)
+
+    return '0.0.0.dev0+{0}'.format(tag_info)
+
+
+def get_version_name():
+    """
+    Returns the version name. Minor releases for 3.0.0 will be named after
+    Daft Punk songs.
+    """
+
+    return "Doin' it Right"
+
+
+def get_team_members():
+    """
+    Returns list of team members who have worked on Ansible Galaxy
+    """
+    members = [
+        "chouseknecht",
+        "cutwater",
+        "alikins",
+        "newswangerd",
+        "tima",
+        "gregdek"
+    ]
+
+    return members

@@ -1,4 +1,0 @@
-# defaults/main.yml
-
-memcache_packages:
-  - memcached

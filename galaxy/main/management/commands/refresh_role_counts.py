@@ -15,6 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+from __future__ import print_function
+
 import time
 import logging
 
@@ -70,10 +72,16 @@ class Command(BaseCommand):
         for i in range(len(task_users)):
             start = size * i
             end = size * (i + 1)
-            logger.info(u"User: {0} Range: {1} - {2}".format(task_users[i]['username'], start, end))
+            logger.info(
+                u"User: {} Range: {} - {}"
+                .format(task_users[i]['username'], start, end)
+            )
             role_count = RefreshRoleCount.objects.create(
                 state='PENDING',
-                description='User: %s Range: %s-%s' % (task_users[i]['username'], start, end)
+                description=(
+                    'User: {} Range: {}-{}'
+                    .format(task_users[i]['username'], start, end)
+                )
             )
             in_list.append(role_count.id)
             refresh_role_counts.delay(start, end, task_users[i]['token'], role_count)
@@ -87,14 +95,14 @@ class Command(BaseCommand):
                 if not obj.state == 'FINISHED':
                     finished = False
                 else:
-                    print u"{0} Total: {1} Passed: {2} Failed: {3} Deleted: {4} Updated: {5}".format(
+                    print(u"{0} Total: {1} Passed: {2} Failed: {3} Deleted: {4} Updated: {5}".format(
                         obj.description,
                         obj.failed + obj.passed + obj.deleted + obj.updated,
                         obj.passed,
                         obj.failed,
                         obj.deleted,
                         obj.updated
-                    )
+                    ))
                     obj.state = 'COMPLETED'
                     obj.save()
             time.sleep(60)
@@ -103,4 +111,7 @@ class Command(BaseCommand):
         hours = floor(elapsed / 3600) if elapsed >= 3600 else 0
         minutes = floor((elapsed - (hours * 3600)) / 60) if (elapsed - (hours * 3600)) >= 60 else 0
         seconds = elapsed - (hours * 3600) - (minutes * 60)
-        logger.info(u"Elapsed time %02d.%02d.%02d" % (hours, minutes, seconds))
+        logger.info(
+            u"Elapsed time {0:0=2d}.{0:0=2d}.{0:0=2d}"
+            .format(hours, minutes, seconds)
+        )

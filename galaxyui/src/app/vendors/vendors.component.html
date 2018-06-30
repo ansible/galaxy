@@ -1,0 +1,40 @@
+<app-page-header [headerTitle]="pageTitle"></app-page-header>
+
+<div id="vendors-page" class="container-fluid">
+
+    <pfng-toolbar
+        [config]="toolbarConfig"
+        (onFilterChange)="filterChanged($event)"
+        (onSortChange)="sortChanged($event)">
+    </pfng-toolbar>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="empty-vendors-list" *ngIf="!items || !items.length">
+                <pfng-empty-state
+                    [config]="emptyStateConfig">
+                </pfng-empty-state>
+            </div>
+            <div id="vendors-list" *ngIf="items && items.length">
+                <div *ngFor="let item of items">
+                    <vendor-card [vendor]="item"></vendor-card>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row repository-pagination">
+        <div class="col-sm-12">
+            <div class="pagination" *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
+                <pfng-pagination
+                    [config]="paginationConfig"
+                    (onPageSizeChange)="handlePageSizeChange($event)"
+                    (onPageNumberChange)="handlePageNumberChange($event)">
+                </pfng-pagination>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<app-page-loading [loading]="pageLoading"></app-page-loading>

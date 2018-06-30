@@ -6,6 +6,7 @@ from django.db import models, migrations, IntegrityError, transaction
 import galaxy.main.fields
 import galaxy.main.mixins
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -22,9 +23,9 @@ class Migration(migrations.Migration):
                 try:
                     with transaction.atomic():
                         tag = Tag(
-                            name = name,
-                            description = name,
-                            active = True
+                            name=name,
+                            description=name,
+                            active=True
                         )
                         tag.save()
                 except IntegrityError:
@@ -41,7 +42,7 @@ class Migration(migrations.Migration):
                         t = Tags.objects.get(name=name)
                         role.tags.add(t)
                         role.save()
-        
+
     operations = [
         migrations.CreateModel(
             name='Tag',
@@ -61,9 +62,9 @@ class Migration(migrations.Migration):
             bases=(models.Model, galaxy.main.mixins.DirtyMixin),
         ),
         migrations.AddField(
-           model_name='role',
-           name='tags',
-           field=models.ManyToManyField(related_name='tags', verbose_name=b'Tags', editable=False, to='main.Tag', blank=True),
+            model_name='role',
+            name='tags',
+            field=models.ManyToManyField(related_name='tags', verbose_name=b'Tags', editable=False, to='main.Tag', blank=True),
         ),
         migrations.RunPython(copy_categories_to_tags),
         migrations.RunPython(copy_tags),

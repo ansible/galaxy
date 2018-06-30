@@ -1,0 +1,63 @@
+/* card-info.component.less */
+
+@import '../../../../variables';
+
+.card-info {
+    color: @black;
+    .card-heading {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        .icon-container, .title-text {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .icon-container {
+            margin-right: 6px;
+        }
+        .title-text {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .title-text {
+            font-size: 16px;
+            font-weight: 700;
+        }
+    }
+    .card-info-body {
+        font-size: 14px;
+        td {
+            padding-bottom: 20px;
+            vertical-align: top;
+        }
+        td:first-child {
+            padding-right: 15px;
+        }
+        .tag {
+            display: inline-block;
+            font-weight: normal;
+            margin-right: 5px;
+            margin-top: 5px;
+            padding: 1px 3px;
+            background-color: @blue;
+            color: @white;
+            border-radius: 1px;
+        }
+    }
+
+    .apb {
+        .title {
+            font-size: 16px;
+            font-weight: 700;
+            img {
+                width: 48px;
+                height: 48px;
+            }
+        }
+        table {
+            margin-top: 20px;
+        }
+        a, a:visited, a:active, a:hover {
+            text-decoration: none;
+        }
+    }
+}

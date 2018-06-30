@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations
 
-from galaxy.api.aggregators import *
+from galaxy.api.aggregators import AvgWithZeroForNull
+
 
 class Migration(migrations.Migration):
 

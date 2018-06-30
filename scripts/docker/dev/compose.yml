@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  galaxy:
+    image: galaxy-dev:latest
+    volumes:
+      - ${PWD}:/galaxy:z
+    environment:
+      - TMUX
+      - TEST
+      - DJANGO_SETTINGS_MODULE=galaxy.settings.development
+      - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
+    ports:
+      - '8000:8000'
+    links:
+      - postgres
+      - rabbitmq
+
+  postgres:
+    image: centos/postgresql-95-centos7
+    ports:
+      - '2345:5432'
+    environment:
+      - POSTGRESQL_DATABASE=galaxy
+      - POSTGRESQL_USER=galaxy
+      - POSTGRESQL_PASSWORD=galaxy
+      - POSTGRESQL_ADMIN_PASSWORD=postgres
+
+  rabbitmq:
+    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=galaxy
+      - RABBITMQ_DEFAULT_PASS=galaxy
+      - RABBITMQ_DEFAULT_VHOST=galaxy

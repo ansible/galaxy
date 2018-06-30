@@ -26,9 +26,10 @@ from django.http import Http404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import permissions
 
-# AWX
-from galaxy.api.access import check_user_access
-from galaxy.api.utils import get_object_or_400
+# galaxy
+from .access import check_user_access
+from .utils import get_object_or_400
+from galaxy.main.models import Namespace
 
 logger = logging.getLogger('galaxy.api.permissions')
 
@@ -49,7 +50,8 @@ class ModelAccessPermission(permissions.BasePermission):
 
     def check_get_permissions(self, request, view, obj=None):
         if hasattr(view, 'parent_model'):
-            parent_obj = get_object_or_400(view.parent_model, pk=view.kwargs['pk'])
+            parent_obj = get_object_or_400(view.parent_model,
+                                           pk=view.kwargs['pk'])
             if not check_user_access(request.user, view.parent_model, 'read',
                                      parent_obj):
                 return False
@@ -65,7 +67,8 @@ class ModelAccessPermission(permissions.BasePermission):
             if obj:
                 return True
             if hasattr(view, 'model'):
-                return check_user_access(request.user, view.model, 'add', request.DATA)
+                return check_user_access(request.user, view.model,
+                                         'add', request.data)
             return True
 
     def check_put_permissions(self, request, view, obj=None):
@@ -76,10 +79,10 @@ class ModelAccessPermission(permissions.BasePermission):
 
         if getattr(view, 'is_variable_data', False):
             return check_user_access(request.user, view.model, 'change', obj,
-                                     dict(variables=request.DATA))
+                                     dict(variables=request.data))
         else:
             return check_user_access(request.user, view.model, 'change', obj,
-                                     request.DATA)
+                                     request.data)
 
     def check_patch_permissions(self, request, view, obj=None):
         return self.check_put_permissions(request, view, obj)
@@ -101,7 +104,8 @@ class ModelAccessPermission(permissions.BasePermission):
         active = getattr(obj, 'active', getattr(obj, 'is_active', True))
         if callable(active):
             active = active()
-        if not active and not isinstance(obj, AnonymousUser):
+        if (not active and not isinstance(obj, AnonymousUser)
+                and not isinstance(obj, Namespace)):
             raise Http404()
 
         # Don't allow inactive users (and respond with a 403).
@@ -116,19 +120,21 @@ class ModelAccessPermission(permissions.BasePermission):
 
         # Check permissions for the given view and object, based on the request
         # method used.
-        check_method = getattr(self, 'check_%s_permissions' % request.method.lower(), None)
+        check_method = getattr(
+            self, 'check_%s_permissions' % request.method.lower(), None)
         result = check_method and check_method(request, view, obj)
         if not result:
-            raise PermissionDenied("You do not have permission to perform this action.")
+            raise PermissionDenied("You do not have permission to "
+                                   "perform this action.")
         return result
 
     def has_permission(self, request, view, obj=None):
         # logger.debug('has_permission(user=%s method=%s data=%r, %s, %r)',
-        #             request.user, request.method, request.DATA,
+        #             request.user, request.method, request.data,
         #             view.__class__.__name__, obj)
         try:
             response = self.check_permissions(request, view, obj)
-        except Exception, e:
+        except Exception as e:
             logger.debug('has_permission raised %r', e, exc_info=True)
             raise
         else:

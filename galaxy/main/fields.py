@@ -15,21 +15,47 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import django
+import semver
+import distutils.version
+
 from django.db import models
-from distutils.version import LooseVersion
-
-if django.VERSION < (1, 7):
-    from south.modelsinspector import add_introspection_rules
-else:
-    def add_introspection_rules(*args, **kwargs):
-        pass
-
-__all__ = ['LooseVersionField', 'TruncatingCharField']
 
 
+__all__ = [
+    'TruncatingCharField',
+    'VersionField',
+]
+
+
+class VersionField(models.CharField):
+    """Semantic version field"""
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('max_length', 64)
+        super(VersionField, self).__init__(*args, **kwargs)
+
+    def from_db_value(self, value, expression, connection, context):
+        if value is None:
+            return value
+        return semver.parse_version_info(value)
+
+    def to_python(self, value):
+        if isinstance(value, semver.VersionInfo):
+            return value
+        if value is None:
+            return value
+        return semver.parse_version_info(value)
+
+    def get_prep_value(self, value):
+        if value is None:
+            return value
+        return str(value)
+
+
+# TODO(cutwater): LooseVersionField is not used in actual models and is kept
+# only because it's referenced by migration 0001_initial.py
 class LooseVersionField(models.Field):
-    ''' store and return values as a LooseVersion '''
+    """ store and return values as a LooseVersion """
 
     def db_type(self, connection):
         return 'varchar(64)'
@@ -42,20 +68,13 @@ class LooseVersionField(models.Field):
         return self.get_prep_value(value)
 
     def to_python(self, value):
-        try:
-            return LooseVersion(value)
-        except:
-            return value
+        return distutils.version.LooseVersion(value)
 
     def get_prep_value(self, value):
         return str(value)
 
 
-add_introspection_rules([], ["^galaxy\.main\.fields\.LooseVersionField"])
-
-
-# From:
-# http://stackoverflow.com/questions/3459843/auto-truncating-fields-at-max-length-in-django-charfields
+# From: http://stackoverflow.com/questions/3459843/auto-truncating-fields-at-max-length-in-django-charfields
 class TruncatingCharField(models.CharField):
     def get_prep_value(self, value):
         value = super(TruncatingCharField, self).get_prep_value(value)
@@ -64,4 +83,34 @@ class TruncatingCharField(models.CharField):
         return value
 
 
-add_introspection_rules([], ["^galaxy\.main\.fields\.TruncatingCharField"])
+class KeyTransform(models.Transform):
+
+    def __init__(self, key_name, *args, **kwargs):
+        super(KeyTransform, self).__init__(*args, **kwargs)
+        self.key_name = key_name
+
+    def as_sql(self, compiler, connection):
+        key_transforms = [self.key_name]
+        previous = self.lhs
+        while isinstance(previous, KeyTransform):
+            key_transforms.insert(0, previous.key_name)
+            previous = previous.lhs
+        lhs, params = compiler.compile(previous)
+        if len(key_transforms) > 1:
+            return "{} #> %s".format(lhs), [key_transforms] + params
+        try:
+            int(self.key_name)
+        except ValueError:
+            lookup = "'{}'".format(self.key_name)
+        else:
+            lookup = "{}".format(self.key_name)
+        return "{} -> {}".format(lhs, lookup), params
+
+
+class KeyTransformFactory(object):
+
+    def __init__(self, key_name):
+        self.key_name = key_name
+
+    def __call__(self, *args, **kwargs):
+        return KeyTransform(self.key_name, *args, **kwargs)

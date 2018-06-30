@@ -1,0 +1,51 @@
+/* authors.component.less */
+
+@import '../../variables';
+
+#authors-page {
+    margin-bottom: 150px;
+    .pagination {
+        width: 100%;
+    }
+}
+
+#authors-list {
+    color: @black;
+    margin-top: 15px;
+    margin-bottom: 15px;
+
+    .img-container {
+        margin-right: 15px;
+        padding-right: 15px;
+        border-right: 1px solid #ccc;
+    }
+
+    .img-wrapper {
+        width: 64px;
+        height: 64px;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        td {
+            vertical-align: middle;
+            text-align: center;
+            img {
+                max-width: 64px;
+            }
+        }
+    }
+
+    .list-pf-item:first-child {
+        border: none;
+    }
+    .list-pf-container {
+        border-top: 1px solid #ededed;
+    }
+    .content-count {
+        margin-right: 15px;
+    }
+    .title-link:hover {
+        text-decoration: none;
+        cursor: pointer;
+    }
+}

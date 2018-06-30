@@ -1,0 +1,89 @@
+<app-page-header [headerTitle]="pageTitle"></app-page-header>
+
+<div id="my-content-page">
+
+    <div class="padding-15">
+        <div class="row">
+            <div class="col-sm-12">
+                <div>
+                    <pfng-toolbar [config]="toolbarConfig"
+                                  [actionTemplate]="toolbarActionTemplate"
+                                  (onFilterChange)="filterChanged($event)"
+                                  (onSortChange)="sortChanged($event)"
+                                  (onViewSelect)="viewSelected($event)">
+                        <ng-template #toolbarActionTemplate>
+                            <a class="btn btn-primary primary-action"
+                               type="button"
+                               routerLink="/my-content/namespaces/new" *ngIf="me.staff">
+                               <span class="fa fa-plus"></span> Add
+                            </a>
+                        </ng-template>
+                    </pfng-toolbar>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="my-content-list">
+                <pfng-list
+                    [actionTemplate]="listActionTemplate"
+                    [config]="listConfig"
+                    [expandTemplate]="listExpandTemplate"
+                    [items]="items"
+                    [itemTemplate]="itemTemplate"
+                    (onActionSelect)="handleListAction($event)">
+                    <ng-template #itemTemplate let-item="item">
+                        <div class="list-pf-left">
+                            <span class="fa fa-folder-o list-pf-icon list-pf-icon-bordered list-pf-icon-small"></span>
+                        </div>
+                        <div class="list-pf-content-wrapper">
+                            <div class="list-pf-main-content">
+                                <div class="list-pf-title">{{item.name}}</div>
+                                <div class="list-pf-description text-overflow-pf">{{item.description }}</div>
+                            </div>
+                            <div class="list-pf-additional-content">
+                                <pfng-list-expand-toggle [expandId]="'owners'" [item]="item" [template]="ownersTemplate">
+                                    <ng-template #ownersTemplate>
+                                        <span class="fa fa-users"></span>
+                                        <strong>{{item.summary_fields.owners.length}}</strong> Owners
+                                    </ng-template>
+                                </pfng-list-expand-toggle>
+                                <pfng-list-expand-toggle [expandId]="'provider-namespaces'" [item]="item" [template]="providerNamespacesTemplate">
+                                    <ng-template #providerNamespacesTemplate>
+                                        <span class="fa fa-list"></span>
+                                        <strong>{{item.summary_fields.provider_namespaces.length}}</strong> Provider Namespaces
+                                    </ng-template>
+                                </pfng-list-expand-toggle>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template #listActionTemplate let-item="item" let-index="index">
+                        <namespace-action
+                            [namespace]="item"
+                            (handleAction)="handleListAction($event)">
+                        </namespace-action>
+                    </ng-template>
+                    <ng-template #listExpandTemplate let-item="item" let-index="index">
+                        <repositories-content [namespace]="item" [contentAdded]="contentAdded" *ngIf="item.expandId === undefined"></repositories-content>
+                        <owners-content [namespace]="item" *ngIf="item.expandId === 'owners'"></owners-content>
+                        <provider-namespaces-content [namespace]="item" *ngIf="item.expandId === 'provider-namespaces'"></provider-namespaces-content>
+                    </ng-template>
+                </pfng-list>
+            </div>
+
+            <div class="pagination-widget" *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
+                <pfng-pagination
+                    [config]="paginationConfig"
+                    (onPageSizeChange)="handlePageSizeChange($event)"
+                    (onPageNumberChange)="handlePageNumberChange($event)">
+                </pfng-pagination>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<app-page-loading [loading]="pageLoading"></app-page-loading>

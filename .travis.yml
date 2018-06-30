@@ -1,14 +1,16 @@
 language: python
-dist: trusty
 sudo: required
+
+env:
+- PYTHONUNBUFFERED=1
 
 services:
 - docker
 
 # TODO(cutwater): Do we need this?
-before_install:
-- sudo apt-add-repository 'deb http://archive.ubuntu.com/ubuntu trusty-backports universe'
-- sudo apt-get update -qq
+# before_install:
+# - sudo apt-add-repository 'deb http://archive.ubuntu.com/ubuntu trusty-backports universe'
+# - sudo apt-get update -qq
 
 install:
 - pip install ansible flake8
@@ -29,12 +31,16 @@ script:
 # check images running
 - docker ps -a
 - docker images
-- docker-compose -f scripts/compose-dev.yml -p galaxy logs galaxy
+- docker-compose -f scripts/docker/dev/compose.yml -p galaxy logs galaxy
 
 # Run simple web server test
 - pushd testing/simple
 - ansible-playbook -i inventory test.yml
 - popd
+
+# Check the logs
+- docker ps -a
+- make dev/log
 
 # Stop the application
 - make dev/down
@@ -42,7 +48,7 @@ script:
 # Build release image
 - |
   if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-    make build/docker-release
+    make build/release
   fi
 
 after_success:

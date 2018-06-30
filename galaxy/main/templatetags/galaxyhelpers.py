@@ -17,10 +17,11 @@
 
 import markdown as md
 
-from django.conf import settings
 from django import template
 from django.utils import timezone
 from django.template.defaultfilters import stringfilter
+
+import galaxy
 
 register = template.Library()
 
@@ -102,6 +103,6 @@ def check_title(value):
         return value
 
 
-@register.assignment_tag
-def get_galaxy_version():
-    return settings.version
+@register.simple_tag
+def galaxy_version():
+    return galaxy.__version__

@@ -1,0 +1,53 @@
+/* vendor-card.component.less */
+
+.vendor-card {
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 1px 1px #dcdcdc;
+    width: 250px;
+    height: 210px;
+    padding: 10px 0;
+    margin-right: 15px;
+    margin-bottom: 15px;
+
+    .img-wrapper {
+        width: 100%;
+        height: 152px;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        td {
+            text-align: center;
+            vertical-align: middle;
+            .vendor-avatar {
+                max-width: 250px;
+                max-height: 152px;
+            }
+            .vendor-missing-avatar {
+                max-width: 250px;
+                max-height: 124px;
+            }
+        }
+    }
+
+    .vendor-name {
+        font-size: 14px;
+        font-weight: 700;
+        padding-top: 5px;
+    }
+
+    .content-count {
+        padding: 6px 0;
+        font-size: 14px;
+        width: 100%;
+        text-align: center;
+        .count {
+            font-size: 16px;
+            font-weight: 700;
+            padding-right: 3px;
+        }
+    }
+}
+
+.vendor-card:hover {
+    cursor: pointer;
+}

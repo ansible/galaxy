@@ -1,0 +1,141 @@
+@import '../../../variables';
+
+#import-details-container {
+    margin-top: -5px;
+    max-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    h5 {
+        font-weight: 600;
+        font-size: 14px;
+    }
+    div.no-imports {
+        color: #e1e1e1;
+        text-align:center;
+        margin-top: 100px;
+        font-size: 24px;
+    }
+    .title-container {
+        display: inline-block;
+        .title {
+            display: inline;
+            font-size: 18px;
+        }
+        .refreshing-icon {
+            display: inline;
+            font-size: 18px;
+            margin-left: 10px;
+            opacity: 0;
+            transition: 2s ease;
+        }
+        .refreshing-icon.refreshing {
+            opacity: 1;
+        }
+    }
+    .import-btn-container {
+        display: inline;
+        float: right;
+        margin-top: 5px;
+    }
+    .title-bar {
+        position: relative;
+        margin-top: 15px;
+        margin-bottom: 20px;
+        background-color: #f0f0f0;
+        height: 97px;
+        padding: 10px;
+        border: 1px solid #e1e1e1;
+        border-radius: 2px;
+        .branch {
+            font-weight: bold;
+            color: @black;
+            .commit {
+                width: 80%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .message {
+                font-size: 16px;
+            }
+            .last-run {
+                font-size: 12px;
+                font-weight: normal;
+                margin-top: 10px;
+            }
+
+            @media (max-width: 650px) {
+                .commit {
+                    width: 55%;
+                }
+            }
+        }
+        .stats {
+            text-align: right;
+            font-size: 12px;
+            color: @black;
+            .icon {
+                display: inline-block;
+                width: 20px;
+                text-align: center;
+            }
+            a, a:active, a:visited {
+                color: @black;
+            }
+            a:hover {
+                color: @black;
+                text-decoration: none;
+            }
+        }
+        .travis-status {
+            margin-top: 10px;
+        }
+    }
+    .message-list {
+        background-color: @black;
+        padding: 10px;
+        border: 1px solid @black;
+        border-radius: 2px;
+        color: @white;
+        line-height: 18px;
+
+        .message {
+            .error, .failed { color: @red }
+            .warning { color: @warning }
+            .success { color: @green }
+        }
+    }
+    #log-follow-button {
+        position: relative;
+        top: 0;
+        float: right;
+        font-size: 18px;
+        a, a:visited, a:active {
+            color: @white;
+        }
+        a:hover {
+            text-decoration: none;
+            cursor: pointer;
+        }
+        a.toggle-active {
+            color: @green;
+        }
+    }
+    #log-follow-button.fixed {
+        position: fixed;
+        top: 175px;
+        right: 60px;
+    }
+
+    @media(max-width: 768px) {
+        #log-follow-button {
+            display: none;
+        }
+    }
+}
+
+@media(max-width: 768px) {
+    #import-details-container {
+        margin-top: 20px;
+    }
+}

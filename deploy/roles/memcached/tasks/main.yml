@@ -1,7 +1,0 @@
-- name: Install packages 
-  yum: 
-    name: "{{ item }}"
-  with_items: "{{ memcache_packages }}"
-
-- name: Start memcached
-  service: name=memcached state=started enabled=yes 

@@ -24,13 +24,14 @@ The following environment variables are supported:
 * GALAXY_ALLOWED_HOSTS
 * GALAXY_EMAIL_HOST
 * GALAXY_DB_URL
+* GALAXY_DB_NAME
+* GALAXY_DB_USER
+* GALAXY_DB_PASSWORD
+* GALAXY_DB_HOST
+* GALAXY_DB_PORT
 * GALAXY_EMAIL_PORT
 * GALAXY_EMAIL_USER
 * GALAXY_EMAIL_PASSWORD
-* GALAXY_ELASTICSEARCH_HOST
-* GALAXY_ELASTICSEARCH_PORT
-* GALAXY_MEMCACHE_HOST
-* GALAXY_MEMCACHE_PORT
 * GALAXY_RABBITMQ_HOST
 * GALAXY_RABBITMQ_PORT
 * GALAXY_RABBITMQ_USER
@@ -80,28 +81,24 @@ ALLOWED_HOSTS = os.environ.get('GALAXY_ALLOWED_HOSTS', '*').split(',')
 # ---------------------------------------------------------
 
 # Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
-DATABASES = {'default': dj_database_url.config(env='GALAXY_DB_URL', conn_max_age=None)}
+DATABASES = {}
 
-# Cache
-# ---------------------------------------------------------
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '{0}:{1}'.format(
-            os.environ.get('GALAXY_MEMCACHE_HOST', ''),
-            os.environ.get('GALAXY_MEMCACHE_PORT', 11211)),
-    },
-    'download_count': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'main_download_count_cache',
-        'TIMEOUT': None,
-        'OPTIONS': {
-            'MAX_ENTRIES': 100000,
-            'CULL_FREQUENCY': 0
-        }
+if os.environ.get('GALAXY_DB_URL'):
+    DATABASES['default'] = dj_database_url.config(
+        env='GALAXY_DB_URL', conn_max_age=None)
+else:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('GALAXY_DB_NAME', 'galaxy'),
+        'USER': os.environ.get('GALAXY_DB_USER', 'galaxy'),
+        'PASSWORD': os.environ.get('GALAXY_DB_PASSWORD', ''),
+        'HOST': os.environ.get('GALAXY_DB_HOST', ''),
+        'PORT': int(os.environ.get('GALAXY_DB_PORT', 5432)),
+        'CONN_MAX_AGE': None,
     }
-}
+
+# Create default alias for worker logging
+DATABASES['logging'] = DATABASES['default'].copy()
 
 # Static files
 # ---------------------------------------------------------
@@ -130,32 +127,6 @@ EMAIL_USE_TLS = True
 # =========================================================
 # Third Party Apps Settings
 # =========================================================
-
-# Elasticsearch settings
-# ---------------------------------------------------------
-
-ELASTICSEARCH = {
-    'default': {
-        'hosts': [
-            '{0}:{1}'.format(
-                os.environ.get('GALAXY_ELASTICSEARCH_HOST'),
-                os.environ.get('GALAXY_ELASTICSEARCH_PORT', 9200))
-        ],
-    },
-}
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'galaxy.main.elasticsearch_backend'
-                  '.ElasticsearchSearchEngine',
-        'URL': [
-            'http://{0}:{1}'.format(
-                os.environ.get('GALAXY_ELASTICSEARCH_HOST'),
-                os.environ.get('GALAXY_ELASTICSEARCH_PORT', 9200))
-        ],
-        'INDEX_NAME': 'haystack',
-    },
-}
 
 # Celery settings
 # ---------------------------------------------------------
@@ -187,17 +158,12 @@ WAIT_FOR = [
         'host': os.environ.get('GALAXY_RABBITMQ_HOST', ''),
         'port': int(os.environ.get('GALAXY_RABBITMQ_PORT', 5672))
     },
-    {
-        'host': os.environ.get('GALAXY_MEMCACHE_HOST', ''),
-        'port': int(os.environ.get('GALAXY_MEMCACHE_PORT', 11211))
-    },
-    {
-        'host': os.environ.get('GALAXY_ELASTICSEARCH_HOST', ''),
-        'port': int(os.environ.get('GALAXY_ELASTICSEARCH_PORT', 9200)),
-    }
 ]
 
-ADMIN_URL_PATTERN = r'^%s/' % os.environ.get('GALAXY_ADMIN_PATH', 'admin')
+ADMIN_URL_PATH = os.environ.get('GALAXY_ADMIN_PATH', 'admin')
+ADMIN_URL_PATTERN = r'^{}/'.format(ADMIN_URL_PATH)
+
+CONTENT_DOWNLOAD_DIR = '/var/lib/galaxy/downloads'
 
 # =========================================================
 # System Settings

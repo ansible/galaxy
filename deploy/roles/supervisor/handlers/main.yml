@@ -1,5 +1,0 @@
----
-# Handlers for common notifications.
-
-- name: restart supervisor
-  service: name=supervisord state=restarted enabled=yes

@@ -1,0 +1,72 @@
+<div id="verticalNavLayout" class="layout-pf layout-pf-fixed faux-layout" style="background-color: white;">
+    <pfng-vertical-navigation
+        [brandAlt]="'Galaxy'"
+        [brandSrc]="'/assets/galaxy-logo-02.svg'"
+        [contentContainer]="contentContainer"
+        [items]="navItems"
+        [persistentSecondary]="false"
+        [pinnableMenus]="true"
+        [showBadges]="true"
+        [showIcons]="true"
+        [updateActiveItemsOnClick]="false">
+        <div>
+            <ul class="nav navbar-nav navbar-right navbar-iconic">
+                <li class="dropdown" dropdown>
+                    <a class="dropdown-toggle nav-item-iconic"
+                       id="dropdownMenu1"
+                       data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="true"
+                       dropdownToggle>
+                        <span title="Help" class="fa pficon-help"></span>
+                        <span class="caret"></span>
+                    </a>
+                    <ul *dropdownMenu class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="" [routerLink]="" (click)="about(aboutTemplate)">About</a></li>
+                        <li><a href="/docs/">Help</a></li>
+                    </ul>
+                </li>
+                <li class="navbar-iconic">
+                    <a class="nav-item-iconic nav-link" [routerLink]="['/login']" [queryParams]="{error: false}" *ngIf="!authenticated"><span class="fa fa-sign-in"></span> &nbsp;Login</a>
+                </li>
+                <li class="dropdown" dropdown *ngIf="authenticated">
+                    <a class="dropdown-toggle nav-item-iconic"
+                       id="dropdownMenu2"
+                       data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="true"
+                       dropdownToggle>
+                        <span class="fa pficon-user"></span> {{ username }} <span class="caret"></span>
+                    </a>
+                    <ul *dropdownMenu class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                        <li><a href="#">Preferences</a></li>
+                        <li><a [routerLink]="" (click)="logout()">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </pfng-vertical-navigation>
+    <div #contentContainer class="app-container container-fluid container-pf-nav-pf-vertical">
+        <router-outlet></router-outlet>
+        <user-notifications></user-notifications>
+    </div>
+</div>
+<ng-template #aboutTemplate>
+    <pfng-about-modal [config]="aboutConfig" (onCancel)="closeAbout($event)">
+        <div>
+            Ansible Galaxy is Ansible’s official hub for sharing Ansible content.
+        </div>
+        <br />
+        <div>
+            <span style="font-weight: bold"><span class="fa fa-lg fa-github"></span> Galaxy Source:</span>
+            <a href="https://github.com/ansible/galaxy" target="blank">github.com/ansible/galaxy</a>
+        </div>
+        <div>
+            <span style="font-weight: bold"><span class="fa fa-lg fa-github"></span> Galaxy Team:</span>
+            <span *ngFor="let profile of teamMembers; let last=last">
+                <a href="https://github.com/{{profile}}" target="blank">{{ profile }}</a>{{last ? '' : ', '}}
+            </span>
+        </div>
+
+    </pfng-about-modal>
+</ng-template>
