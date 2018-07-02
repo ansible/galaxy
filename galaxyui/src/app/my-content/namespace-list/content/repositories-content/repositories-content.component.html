@@ -19,19 +19,22 @@
                     </div>
                     <div class="list-pf-additional-content">
                         <div *ngIf="item['latest_import'] && (item['latest_import']['state'] === 'PENDING' || item['latest_import']['state'] === 'RUNNING')">
-                            <a [routerLink]="['/my-imports']" [queryParams]="{namespace: namespace.name, repository_name: item.name}" class="running">
+                            <a [routerLink]="['/my-imports']" [queryParams]="{namespace: namespace.name, repository_name: item.name}" class="running"
+                                tooltip="View import log">
                                 <i class="fa fa-spin fa-spinner"></i>
                                 <span class="text">{{ item['latest_import']['state'][0] + item['latest_import']['state'].substring(1, item['latest_import']['state'].length).toLowerCase() }}
                                 {{ item['latest_import']['as_of_dt'] }}</span>
                             </a>
                         </div>
                         <div *ngIf="item['latest_import'] && item['latest_import']['state'] === 'SUCCESS'">
-                            <a [routerLink]="['/my-imports']" [queryParams]="{namespace: namespace.name, repository_name: item.name}" class="succeeded">
+                            <a [routerLink]="['/my-imports']" [queryParams]="{namespace: namespace.name, repository_name: item.name}" class="succeeded"
+                                tooltip="View import log">
                                 <i class="fa fa-circle"></i> <span class="text">Succeeded {{ item['latest_import']['as_of_dt'] }}</span>
                             </a>
                         </div>
                         <div *ngIf="item['latest_import'] && item['latest_import']['state'] === 'FAILED'">
-                            <a [routerLink]="['/my-imports']" [queryParams]="{namespace: namespace.name, repository_name: item.name}" class="failed">
+                            <a [routerLink]="['/my-imports']" [queryParams]="{namespace: namespace.name, repository_name: item.name}" class="failed"
+                                tooltip="View import log">
                                 <i class="fa fa-circle"></i> <span class="text">Failed {{ item['latest_import']['as_of_dt'] }}</span>
                             </a>
                         </div>
