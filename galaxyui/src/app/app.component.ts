@@ -101,11 +101,11 @@ export class AppComponent implements OnInit {
                 iconStyleClass: 'fa fa-search',
                 url: '/search'
             },
-            {
+            /*{
                 title: 'Partners',
                 iconStyleClass: 'fa fa-star',
                 url: '/partners'
-            },
+            },*/
             {
                 title: 'Community',
                 iconStyleClass: 'fa fa-users',
