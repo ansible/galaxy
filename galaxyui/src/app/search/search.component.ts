@@ -194,6 +194,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     if (!data.content.results.length && !Object.keys(params).length) {
                         // No vendors exists
                         const default_params = {vendor: false};
+                        this.setSortConfig();
                         this.setAppliedFilters(default_params);
                         this.searchContent();
                     } else {
