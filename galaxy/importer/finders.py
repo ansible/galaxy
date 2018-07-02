@@ -66,7 +66,7 @@ class ApbFinder(BaseFinder):
     repository_format = constants.RepositoryFormat.APB
 
     def find_contents(self):
-        self.log.debug('Content search - Looking for file "apb.yml"')
+        self.log.info('Content search - Looking for file "apb.yml"')
         meta_path = _find_metadata(self.path, self.META_FILES)
         if meta_path:
             meta_path = os.path.join(self.path, meta_path)
@@ -81,7 +81,7 @@ class RoleFinder(BaseFinder):
     repository_format = constants.RepositoryFormat.ROLE
 
     def find_contents(self):
-        self.log.debug(
+        self.log.info(
             'Content search - Looking for top level role metadata file')
         meta_path = _find_metadata(self.path, ROLE_META_FILES)
         if meta_path:
@@ -97,7 +97,7 @@ class FileSystemFinder(BaseFinder):
     repository_format = constants.RepositoryFormat.MULTI
 
     def find_contents(self):
-        self.log.debug('Content search - Analyzing repository structure')
+        self.log.info('Content search - Analyzing repository structure')
         content = self._find_content()
         # Check if finder has found at least one content
         try:
