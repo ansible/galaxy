@@ -21,6 +21,7 @@ import {
 } from '../../resources/imports/imports.service';
 
 import { Observable }    from 'rxjs/Observable';
+import 'rxjs/add/observable/interval';
 
 import { Import }        from '../../resources/imports/import';
 import { ImportLatest }  from '../../resources/imports/import-latest';

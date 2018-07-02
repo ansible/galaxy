@@ -16,6 +16,7 @@ __pycache__/
 .develop/
 .cache/
 .pytest_cache/
+*.log
 galaxy/celerybeat-schedule
 known_hosts
 provisioning/library/
