@@ -570,6 +570,10 @@ class ImportTaskSerializer(BaseSerializer):
             ('message_text', g.message_text)
         ]) for g in obj.messages.filter(
             message_type__in=supported_types).order_by('id')]
+        summary['role'] = {
+            'namespace': obj.repository.provider_namespace.namespace.name,
+            'name': obj.repository.name
+        }
 
         summary['namespace'] = {}
         if obj.repository.provider_namespace.namespace:
