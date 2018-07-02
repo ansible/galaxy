@@ -19,6 +19,7 @@ import logging
 import re
 
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 from galaxy.main import models
 from galaxy.worker import exceptions as exc, utils
@@ -65,17 +66,27 @@ class ContentImporter(object):
             raise exc.TaskError('Invalid name, only aplhanumeric characters, '
                                 '"-" and "_" symbols are allowed.')
 
-        obj, is_created = models.Content.objects.get_or_create(
-            namespace=ns,
-            repository=repo,
-            content_type=models.ContentType.get(self.data.content_type),
-            original_name=original_name,
-            defaults={
-                'name': self.translate_content_name(name),
-                'is_valid': False,
-            }
-        )
+        try:
+            # Check for an existing Content object matching name
+            is_created = False
+            obj = models.Content.objects.get(
+                namespace=ns,
+                repository=repo,
+                content_type=models.ContentType.get(self.data.content_type),
+                name=name)
+        except ObjectDoesNotExist:
+            # Get or creae Content object based on translated named
+            obj, is_created = models.Content.objects.get_or_create(
+                namespace=ns,
+                repository=repo,
+                content_type=models.ContentType.get(self.data.content_type),
+                name=self.translate_content_name(name),
+                defaults={
+                    'original_name': original_name,
+                    'is_valid': False
+                })
 
+        self.data.name = obj.name
         self._log_create_content(obj.id, is_created)
 
         return obj
