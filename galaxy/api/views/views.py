@@ -367,7 +367,7 @@ class ImportTaskList(base_views.ListCreateAPIView):
             # Support ansible-galaxy <= 2.6
             qs = models.ImportTask.objects.filter(
                 repository__provider_namespace__name=github_user,
-                repository__name=github_repo)
+                repository__original_name=github_repo)
         else:
             qs = self.get_queryset()
             qs = self.filter_queryset(qs)
@@ -390,10 +390,16 @@ class ImportTaskList(base_views.ListCreateAPIView):
                 raise ValidationError(
                     dict(detail="Invalid request. Expecting github_user and github_repo.")
                 )
+
             namespace = models.ProviderNamespace.objects.get(
                 provider__name=constants.PROVIDER_GITHUB,
                 name=github_user
             )
+            if not request.user.is_staff and \
+               not namespace.namespace.owners.filter(username=request.user.get_username()):
+                # User is not an onwer of the Namespace
+                raise PermissionDenied("You are not an owner of {0}".format(namespace.namespace.name))
+
             try:
                 repository = models.Repository.objects.get(provider_namespace=namespace,
                                                            original_name=github_repo)
@@ -412,10 +418,10 @@ class ImportTaskList(base_views.ListCreateAPIView):
                     dict(detail="Repository {0} not found, or you do not have access".format(repository_id))
                 )
 
-        # Verify that the user is an owner before letting them import
-        if not request.user.is_staff and \
-           not repository.provider_namespace.namespace.owners.filter(username=request.user.get_username()):
-            raise PermissionDenied("You are not an owner of {0}".format(repository.name))
+            if not request.user.is_staff and \
+               not repository.provider_namespace.namespace.owners.filter(username=request.user.get_username()):
+                # User is not an onwer of the Namespace
+                raise PermissionDenied("You are not an owner of {0}".format(repository.name))
 
         task = tasks.create_import_task(
             repository, request.user,
