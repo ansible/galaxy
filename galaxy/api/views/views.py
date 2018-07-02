@@ -408,7 +408,8 @@ class ImportTaskList(base_views.ListCreateAPIView):
                 )
 
         # Verify that the user is an owner before letting them import
-        if not repository.provider_namespace.namespace.owners.filter(username=request.user.get_username()):
+        if not request.user.is_staff and \
+           not repository.provider_namespace.namespace.owners.filter(username=request.user.get_username()):
             raise PermissionDenied("You are not an owner of {0}".format(repository.name))
 
         task = tasks.create_import_task(
