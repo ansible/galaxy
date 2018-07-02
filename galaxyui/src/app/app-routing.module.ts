@@ -2,6 +2,7 @@ import { NgModule }              from '@angular/core';
 import { NotFoundComponent }     from './exception-pages/not-found/not-found.component';
 import { AuthorDetailComponent } from './authors/detail/author-detail.component';
 import { ContentDetailComponent } from './content-detail/content-detail.component';
+import { AuthService }           from './auth/auth.service';
 
 import {
     ContentResolver,
@@ -27,16 +28,26 @@ const appRoutes: Routes = [
         path: '',
         redirectTo: '/home',
         pathMatch: 'full'
-    }, {
+    },
+
+    // Lazily loaded modules
+    {
         path: 'search',
         loadChildren: './search/search.module#SearchModule'
     }, {
         path: 'my-content',
-        loadChildren: './my-content/my-content.module#MyContentModule'
+        loadChildren: './my-content/my-content.module#MyContentModule',
+        canLoad: [AuthService]
     }, {
         path: 'my-imports',
-        loadChildren: './my-imports/my-imports.module#MyImportsModule'
-    }, {
+        loadChildren: './my-imports/my-imports.module#MyImportsModule',
+        canLoad: [AuthService]
+    },
+
+    // Routes that resolve variables have to go in app-routing.module to ensure
+    // that they are resolved between the static routes ('/search', '/my-content' etc)
+    // and the wildcard ('**')
+     {
         path: ':namespace/:repository/:content_name',
         component: ContentDetailComponent,
         resolve: {
