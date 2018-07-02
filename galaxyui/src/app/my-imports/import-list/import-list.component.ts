@@ -239,7 +239,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                 location += idx > 0 ? '&' : '';
                 location += `${filter.field.id}=${filter.value.toLowerCase()}`;
                 if (filter.field.id === 'namespace' && filter.value) {
-                    query += `repository__provider_namespace__namespace__name__icontains=${filter.value.toLowerCase()}`;
+                    query += `repository__provider_namespace__namespace__name__iexact=${filter.value.toLowerCase()}`;
                 } else if (filter.field.id === 'repository_name' && filter.value) {
                     query += `repository__name__icontains=${filter.value.toLowerCase()}`;
                 }
@@ -348,7 +348,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                         location += '&';
                     }
                     if (key === 'namespace') {
-                        filterParams += `repository__provider_namespace__namespace__name__icontains=${value.toLowerCase()}`;
+                        filterParams += `repository__provider_namespace__namespace__name__iexact=${value.toLowerCase()}`;
                         location += `${key}=${value.toLowerCase()}`;
                     } else if (key === 'repository_name') {
                         filterParams += `repository__name__icontains=${value.toLowerCase()}`;

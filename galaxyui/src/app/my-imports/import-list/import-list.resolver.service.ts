@@ -34,7 +34,7 @@ export class ImportListResolver implements Resolve<PagedResponse> {
                         params += '&';
                     }
                     if (key === 'namespace') {
-                        params += `repository__provider_namespace__namespace__name__icontains=${value.toLowerCase()}`;
+                        params += `repository__provider_namespace__namespace__name__iexact=${value.toLowerCase()}`;
                     } else if (key === 'repository_name') {
                         params += `repository__name__icontains=${value.toLowerCase()}`;
                     } else if (key !== 'selected') {
