@@ -56,7 +56,7 @@ from galaxy.api import tasks
 from galaxy.api.views import base_views
 from galaxy.main.celerytasks import tasks as celerytasks
 from galaxy.main import models
-from galaxy.common import version
+from galaxy.common import version, sanitize_content_name
 
 
 logger = logging.getLogger(__name__)
@@ -385,6 +385,7 @@ class ImportTaskList(base_views.ListCreateAPIView):
         repository_id = request.data.get('repository_id')
 
         if not repository_id:
+            # request received from old client
             if not github_user or not github_repo:
                 raise ValidationError(
                     dict(detail="Invalid request. Expecting github_user and github_repo.")
@@ -393,12 +394,16 @@ class ImportTaskList(base_views.ListCreateAPIView):
                 provider__name=constants.PROVIDER_GITHUB,
                 name=github_user
             )
-            repository, created = models.Repository.objects.get_or_create(
-                provider_namespace=namespace,
-                name=github_repo,
-                defaults={'is_enabled': False,
-                          'original_name': github_repo}
-            )
+            try:
+                repository = models.Repository.objects.get(provider_namespace=namespace,
+                                                           original_name=github_repo)
+            except ObjectDoesNotExist:
+                repository, created = models.Repository.objects.get_or_create(
+                    provider_namespace=namespace,
+                    name=sanitize_content_name(github_repo),
+                    defaults={'is_enabled': False,
+                              'original_name': github_repo}
+                )
         else:
             try:
                 repository = models.Repository.objects.get(pk=repository_id)

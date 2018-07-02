@@ -69,10 +69,11 @@ class ContentImporter(object):
         try:
             # Check for an existing Content object matching name
             is_created = False
-            obj = models.Content.objects.get(namespace=ns,
-                                             repository=repo,
-                                             content_type=models.ContentType.get(self.data.content_type),
-                                             name=name)
+            obj = models.Content.objects.get(
+                namespace=ns,
+                repository=repo,
+                content_type=models.ContentType.get(self.data.content_type),
+                name=name)
         except ObjectDoesNotExist:
             # Get or creae Content object based on translated named
             obj, is_created = models.Content.objects.get_or_create(
@@ -111,7 +112,7 @@ class ContentImporter(object):
 
     def _log_create_content(self, content_id, is_created):
         action = 'Created new' if is_created else 'Found'
-        LOG.debug(
+        self.log.debug(
             '{action} Content instance: id={id}, content_type="{content_type}"'
             ', name="{name}"'.format(
                 action=action, id=content_id,
