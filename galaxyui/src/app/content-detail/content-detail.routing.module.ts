@@ -13,7 +13,8 @@ import {
 } from './content-detail.resolver.service';
 
 const routes: Routes = [
-
+    // ':namespace/:repository/:content_name' and ':namespace/:repository/ moved
+    // to app-routing.module
 ];
 
 @NgModule({

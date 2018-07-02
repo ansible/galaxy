@@ -24,7 +24,9 @@ const routes: Routes = [{
         resolve: {
             namespaces: NamespaceListResolver
         }
-    }];
+    }
+    // ':namespace/ moved to app-routing.module
+];
 
 @NgModule({
     imports: [
