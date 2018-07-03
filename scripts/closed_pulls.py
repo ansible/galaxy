@@ -1,27 +1,23 @@
 import requests
 import json
+import argparse
 
-from datetime import datetime
 
-
-SINCE_DT = '2018-07-01T00:00:00Z'
-TD_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
-def closed_pulls():
+def closed_pulls(branch):
     params = {
         'state': 'closed',
-        'base': 'release/3.0.1',
+        'base': branch
     }
-    since_date = datetime.strptime(SINCE_DT, TD_FORMAT) 
     response = requests.get('https://api.github.com/repos/ansible/galaxy/pulls', params=params)
     for issue in response.json():
-        closed_date = datetime.strptime(issue['closed_at'], TD_FORMAT)  
-        if closed_date > since_date:
-            print("- `{} {} <{}>`_".format(issue['number'], issue['title'], issue['html_url']))
+        print("- `{} {} <{}>`_".format(issue['number'], issue['title'], issue['html_url']))
 
 def main():
+    parser = argparse.ArgumentParser(description='List closed pull requests.') 
+    parser.add_argument('branch', help='Branch name from which to list closed PRs') 
+    args = parser.parse_args()
     print("\nClosed pull requests:")
-    closed_pulls()
+    closed_pulls(args.branch)
 
 if __name__ == '__main__':
     main()
