@@ -28,6 +28,7 @@ from galaxy import constants
 from galaxy.importer import models, linters
 from galaxy.importer.loaders import base
 from galaxy.importer import exceptions as exc
+from galaxy.common import sanitize_content_name
 
 
 ROLE_META_FILES = [
@@ -254,7 +255,10 @@ class RoleLoader(base.BaseLoader):
         data['video_links'] = meta_parser.parse_videos()
         readme = self._get_readme()
 
-        name = galaxy_info.get('role_name', self.name)
+        name = self.name
+        if galaxy_info.get('role_name'):
+            name = sanitize_content_name(galaxy_info['role_name'])
+
         return models.Content(
             name=name,
             original_name=self.name,
