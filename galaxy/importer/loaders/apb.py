@@ -26,6 +26,7 @@ from galaxy.importer import exceptions as exc
 from galaxy.importer import linters
 from galaxy.importer import models
 from galaxy.importer.loaders import base
+from galaxy.common import sanitize_content_name
 
 
 class APBMetaParser(object):
@@ -150,10 +151,10 @@ class APBMetaParser(object):
     def parse_name(self):
         fieldname = 'name'
         name = self._get_key(fieldname)
-        if not re.match('^[a-z0-9_.-]+$', name):
+        if not re.match('^[a-z0-9_]+$', name):
             raise exc.APBContentLoadError(
                 'Invalid "{0}" value in metadata. Must contain only lowercase '
-                'letters, digits, underscore, period and dash'.format(fieldname))
+                'letters, digits, and underscore'.format(fieldname))
         return name
 
     def parse_description(self):
@@ -189,7 +190,7 @@ class APBLoader(base.BaseLoader):
         self.log.info('Loading metadata file: {0}'.format(self.metadata_file))
         metadata = self._load_metadata()
         meta_parser = APBMetaParser(metadata, logger=self.log)
-        name = meta_parser.parse_name()
+        name = sanitize_content_name(meta_parser.parse_name())
         description = meta_parser.parse_description()
         meta_parser.check_data()
         data = {'tags': meta_parser.parse_tags()}
