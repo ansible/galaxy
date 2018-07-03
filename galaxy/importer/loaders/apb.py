@@ -150,7 +150,7 @@ class APBMetaParser(object):
 
     def parse_name(self):
         fieldname = 'name'
-        name = self._get_key(fieldname)
+        name = sanitize_content_name(self._get_key(fieldname))
         if not re.match('^[a-z0-9_]+$', name):
             raise exc.APBContentLoadError(
                 'Invalid "{0}" value in metadata. Must contain only lowercase '
@@ -190,7 +190,7 @@ class APBLoader(base.BaseLoader):
         self.log.info('Loading metadata file: {0}'.format(self.metadata_file))
         metadata = self._load_metadata()
         meta_parser = APBMetaParser(metadata, logger=self.log)
-        name = sanitize_content_name(meta_parser.parse_name())
+        name = meta_parser.parse_name()
         description = meta_parser.parse_description()
         meta_parser.check_data()
         data = {'tags': meta_parser.parse_tags()}
