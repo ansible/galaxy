@@ -4,11 +4,27 @@ Ansible Galaxy Changes by Release
 3.1.0 - Active development
 --------------------------
 
+3.0.2 - Release 03-Jul-2018
+---------------------------
+
+Bug Fixes
+`````````
+- Prevent existing repositories from being renamed with '-' converted to '_'
+- Stop failng imports for lint warnings
+- Revert namespace changes, where '-' was converted to '_' for existing namespaces.  
+
+Closed PRs
+``````````
+- `825 Disable mandatory linting <https://github.com/ansible/galaxy/pull/825>`_
+- `821 Fix APB name parse <https://github.com/ansible/galaxy/pull/821>`_
+- `820 Revert replacing underscores with dashes in existing namespaces <https://github.com/ansible/galaxy/pull/820>`_
+- `806 Prevent rename of exisiting repos <https://github.com/ansible/galaxy/pull/806>`_
+
 
 3.0.1 - Released 03-Jul-2018 
 ----------------------------
 
-Bug fixes
+Bug Fixes
 `````````
 - Removed Partner menu 
 - Fixed Sort dropdown not populating on Search page  
