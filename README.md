@@ -13,6 +13,10 @@ it has been removed from development branch. New installer is coming.
 
 To see what we're working on, and where we're headed, view the [road map](./ROADMAP.md)
 
+## Change Log 
+
+To view a release history and what changed, [view our change log](./CHANGELOG.rst)
+
 ## Contributing
 
  * If you're interested in jumping in and helping out, view the [contributing guide](./CONTRIBUTING.md).

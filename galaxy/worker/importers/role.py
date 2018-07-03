@@ -97,26 +97,26 @@ class RoleImporter(base.ContentImporter):
             name = platform.name
             versions = platform.versions
             if 'all' in versions:
-                platform_objs = models.Platform.objects.filter(name=name)
+                platform_objs = models.Platform.objects.filter(name__iexact=name)
                 if not platform_objs:
                     self.log.warning(
                         u'Invalid platform: "{}-all", skipping.'.format(name))
                     continue
                 for p in platform_objs:
                     role.platforms.add(p)
-                    new_platforms.append((name, p.release))
+                    new_platforms.append((p.name, p.release))
                 continue
 
             for version in versions:
                 try:
-                    p = models.Platform.objects.get(name=name, release=version)
+                    p = models.Platform.objects.get(name__iexact=name, release__iexact=str(version))
                 except models.Platform.DoesNotExist:
                     self.log.warning(
                         u'Invalid platform: "{0}-{1}", skipping.'
                         .format(name, version))
                 else:
                     role.platforms.add(p)
-                    new_platforms.append((name, p.release))
+                    new_platforms.append((p.name, p.release))
 
         # Remove platforms/versions that are no longer listed in the metadata
         for platform in role.platforms.all():
@@ -135,7 +135,7 @@ class RoleImporter(base.ContentImporter):
         # Add new cloud platforms
         for name in cloud_platforms:
             try:
-                platform = models.CloudPlatform.objects.get(name=name)
+                platform = models.CloudPlatform.objects.get(name__iexact=name)
             except models.CloudPlatform.DoesNotExist:
                 self.log.warning(
                     u'Invalid cloud platform: "{0}", skipping'.format(name))

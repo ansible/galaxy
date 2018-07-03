@@ -1,7 +1,6 @@
 # Roadmap
 
-## Release 3.0
-Target release date: 30 June 2018
+## Release 3.0 (Completed 30 June 2018)
 
 - Move deployment of the public site from EC2 to OpenShift Dedicated
 - Refactor the import process to support multiple static analysis tools, and to support future content testing

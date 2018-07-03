@@ -1,3 +1,9 @@
+.. _contribuging_content:
+
+********************
+Contributing Content
+********************
+
 .. toctree::
    :maxdepth: 2
 

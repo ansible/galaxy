@@ -50,16 +50,20 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
         if (data) {
             this.authService.me().subscribe(
                 (me) => {
-                    this.namespaceService.get(data.summary_fields.namespace.id).subscribe(
-                        (namespace) => {
-                            for (const owner of namespace.summary_fields.owners) {
-                                if (me.username === owner.username) {
-                                    this.canImport = true;
-                                    break;
+                    if (me.staff) {
+                        this.canImport = true;
+                    } else {
+                        this.namespaceService.get(data.summary_fields.namespace.id).subscribe(
+                            (namespace) => {
+                                for (const owner of namespace.summary_fields.owners) {
+                                    if (me.username === owner.username) {
+                                        this.canImport = true;
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                    );
+                        );
+                    }
                 }
             );
         }

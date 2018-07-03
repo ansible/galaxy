@@ -111,6 +111,8 @@ class ContentSearchView(base.ListAPIView):
         queryset = self.add_vendor_filter(queryset, is_vendor)
 
         # Support for ansible-galaxy <= 2.6 autocomplete params
+        keywords = request.GET.get('autocomplete', '').split()
+        queryset = self.add_keywords_filter(queryset, keywords)
         tags = request.GET.get('tags_autocomplete', '').split()
         queryset = self.add_tags_filter(queryset, tags)
         platforms = request.GET.get('platforms_autocomplete', '').split()
