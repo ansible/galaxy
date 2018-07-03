@@ -93,15 +93,4 @@ export class AuthService implements CanActivate {
                 return this.checkPermissions(route);
             });
     }
-
-    canLoad(route: Route): boolean {
-        if (this.meCache) {
-            if (this.meCache.authenticated) {
-                return true;
-            }
-        }
-
-        this.router.navigate(['/login', {error: true}]);
-        return false;
-    }
 }

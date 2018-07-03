@@ -37,11 +37,9 @@ const appRoutes: Routes = [
     }, {
         path: 'my-content',
         loadChildren: './my-content/my-content.module#MyContentModule',
-        canLoad: [AuthService]
     }, {
         path: 'my-imports',
         loadChildren: './my-imports/my-imports.module#MyImportsModule',
-        canLoad: [AuthService]
     },
 
     // Routes that resolve variables have to go in app-routing.module to ensure
