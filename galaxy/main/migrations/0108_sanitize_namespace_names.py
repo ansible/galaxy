@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL(
-            sql=(REPLACE_DASH_WITH_UNDERSCORE),
+            sql=REPLACE_DASH_WITH_UNDERSCORE,
         ),
     ]
