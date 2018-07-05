@@ -26,6 +26,10 @@
         .title, .description {
             margin-bottom: 5px;
         }
+        .description {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
         .title {
             font-weight: 700;
             font-size: 22px;
@@ -49,12 +53,24 @@
         align-items: middle;
     }
 
-    .repository-details > div {
-        font-size: 14px;
-        margin-right: 20px;
-        .count {
-            font-weight: 700;
-            padding: 0 5px;
+    .repository-details { 
+        .repo-count {
+            font-size: 16px;
+            margin-right: 20px;
+            .count {
+                font-size: 14px;
+                font-weight: 700;
+                padding: 0 5px;
+            }
+            .count-label {
+                font-size: 14px;
+            }
+        }
+    }
+    
+    .external-links {
+        a:last-child {
+            margin-left: 20px;
         }
     }
 }

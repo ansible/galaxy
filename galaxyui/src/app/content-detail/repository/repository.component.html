@@ -18,34 +18,34 @@
     <div class="col-sm-8">
         <div class="repository-details">
             <div class="repo-count">
-                <i class="fa fa-download fa-2x"></i>
+                <i class="fa fa-download"></i>
                 <span class="count">{{ repositoryView.downloadCount }}</span>
-                <span class="count-label">Downloads</span>
+                <div class="count-label">Downloads</div>
             </div>
             <div class="repo-count">
-                <i class="fa fa-eye fa-2x"></i>
+                <i class="fa fa-eye"></i>
                 <span class="count">{{ repositoryView.watchersCount }}</span>
-                <span class="count-label">Watchers</span>
+                <div class="count-label">Watchers</div>
             </div>
             <div class="repo-count">
-                <i class="fa fa-star fa-2x"></i>
+                <i class="fa fa-star"></i>
                 <span class="count">{{ repositoryView.stargazersCount }}</span>
-                <span class="count-label">Stars</span>
+                <div class="count-label">Stars</div>
             </div>
             <div class="repo-count">
-                <i class="fa fa-copy fa-2x"></i>
+                <i class="fa fa-copy"></i>
                 <span class="count">{{ repositoryView.forksCount }}</span>
-                <span class="count-label">Forks</span>
+                <div class="count-label">Forks</div>
             </div>
-            <div>
+            <div class="external-links">
                 <a [href]="repositoryView.issueTrackerUrl" *ngIf="repositoryView.issueTrackerUrl"
                     target="_blank"
                     tooltip="Visit the issue tracker. Opens in a new browser tab."
+                    container="body"
                     class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
-            </div>
-            <div>
                 <a [href]="repositoryView.scmUrl" target="_blank"
-                    tooltip="Visit the repository. Opens in a new browser tab." class="btn btn-default">
+                    tooltip="Visit the repository. Opens in a new browser tab."
+                    container="body" class="btn btn-default">
                         <i [ngClass]="repositoryView.scmIconClass"></i> {{ repositoryView.scmName }} Repo</a>
             </div>
         </div>
