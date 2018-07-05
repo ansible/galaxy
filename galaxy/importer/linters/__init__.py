@@ -53,7 +53,7 @@ class Flake8Linter(BaseLinter):
                '--ignore', FLAKE8_IGNORE_ERRORS,
                '--max-line-length', str(FLAKE8_MAX_LINE_LENGTH),
                '--'] + paths
-        logger.debug('CMD: ' + ' '.join(cmd))
+        logger.info('CMD: ' + ' '.join(cmd))
         proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
         for line in proc.stdout:
             yield line.strip()
@@ -67,8 +67,38 @@ class YamlLinter(BaseLinter):
 
     def _check_files(self, paths):
         cmd = [self.cmd, '-f', 'parsable', '-c', self.config, '--'] + paths
-        logger.debug('CMD: ' + ' '.join(cmd))
+        logger.info('CMD: ' + ' '.join(cmd))
         proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
         for line in proc.stdout:
             yield line.strip()
         proc.wait()
+
+
+class AnsibleReviewLinter(BaseLinter):
+
+    exclude_file = config = os.path.join(LINTERS_DIR, 'git-exclude.txt')
+    config = os.path.join(LINTERS_DIR, 'ansible-review.cfg')
+    ignore = os.path.join(LINTERS_DIR, 'ignore-files')
+
+    def _check_files(self, paths):
+        cmd = ['find', '.', '-type', 'f']
+        cmd += self._get_exclustions()
+        logger.info('CMD: ' + ' '.join(cmd))
+        proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
+        cmd2 = ['xargs', '/var/lib/galaxy/venv/bin/ansible-review', '-c',
+                self.config, '-f', 'json']
+        proc2 = subprocess.Popen(cmd2, cwd=self.root, stdout=subprocess.PIPE, stdin=proc.stdout,
+                                 stderr=subprocess.STDOUT)
+        for line in proc2.stdout:
+            yield line.strip()
+        proc.wait()
+
+    def _get_exclustions(self):
+        cmd = []
+        with open(self.ignore, 'r') as f:
+            lines = f.readlines()
+        for line in lines:
+            if not line.startswith('#'):
+                line_type = 'path' if '/' in line else 'name'
+                cmd += ['-not', '-%s' % line_type, line.rstrip('\n')]
+        return cmd
