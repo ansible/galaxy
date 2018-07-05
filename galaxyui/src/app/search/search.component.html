@@ -33,11 +33,11 @@
                         <div class="list-pf-content-wrapper">
                               <div class="list-pf-main-content">
                                 <div class="list-pf-title">
-                                    <div class="content-name cursor-pointer">
+                                    <div class="content-name">
                                         <div class="icon">
                                             <i class="{{ item['iconClass'] }}"></i>
                                         </div>
-                                        <div class="name"><a [href]="" (click)="itemClicked(item)" tooltip="View content details">{{ item.name }}</a></div>
+                                        <div class="name cursor-pointer"><a [routerLink]="[item['contentLink']]" tooltip="View content details">{{ item.name }}</a></div>
                                         <div class="type">{{ item.summary_fields.content_type.name }}</div>
                                         <div class="description">
                                             {{item.description}}
@@ -61,25 +61,25 @@
                                     </div>
                                     <div class="counts">
                                         <div class="repo-count">
-                                            <i class="fa fa-download fa-2x"></i>
+                                            <i class="fa fa-download"></i>
                                             <span class="count">{{ item.download_count }}</span>
                                             <span class="count-text">Downloads</span>
                                         </div>
 
                                         <div class="repo-count">
-                                            <i class="fa fa-eye fa-2x"></i>
+                                            <i class="fa fa-eye"></i>
                                             <span class="count">{{ item.summary_fields.repository.watchers_count }}</span>
                                             <span class="count-text">Watchers</span>
                                         </div>
 
                                         <div class="repo-count">
-                                            <i class="fa fa-star fa-2x"></i>
+                                            <i class="fa fa-star"></i>
                                             <span class="count">{{ item.summary_fields.repository.stargazers_count }}</span>
                                             <span class="count-text">Stars</span>
                                         </div>
 
                                         <div class="repo-count">
-                                            <i class="fa fa-copy fa-2x"></i>
+                                            <i class="fa fa-copy"></i>
                                             <span class="count">{{ item.summary_fields.repository.forks_count }}</span>
                                             <span class="count-text">Forks</span>
                                         </div>
