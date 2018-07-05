@@ -4,6 +4,8 @@
 
 This is the source code behind Galaxy - https://galaxy.ansible.com.
 
+For help using the public Galaxy web site to find and install Ansible content, or to share your Ansible content with the community, [visit the Galaxy docs site](https://galaxy.ansible.com/docs/). 
+
 ## Installing
 
 NOTE: Installation guide is out of date. Since old installer was out of date with latest architecture changes
