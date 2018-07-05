@@ -17,6 +17,10 @@ To see what we're working on, and where we're headed, view the [road map](./ROAD
 
 To view a release history and what changed, [view our change log](./CHANGELOG.rst)
 
+## Announcements
+
+For the [galaxy.ansible.com](https://galaxy.ansible.com) site, get alerted when maintenance windows are scheduled, or when a release is scheduled to deploy, by subscribing to the [ansible-project](https://groups.google.com/group/ansible-project) Google group.
+
 ## Contributing
 
  * If you're interested in jumping in and helping out, view the [contributing guide](./CONTRIBUTING.md).
