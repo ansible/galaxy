@@ -12,65 +12,46 @@
     border-bottom: 1px solid #ccc;
     padding-bottom: 15px;
 
-    .title-box {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        align-content: middle;
-    }
-    .icon-container {
-        margin-right: 15px;
-    }
-    .title-container {
-        .title, .description {
-            margin-bottom: 5px;
-        }
-        .description {
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-        .title {
-            font-weight: 700;
-            font-size: 22px;
-        }
-        .namespace {
-            font-size: 14px;
-            img {
-                max-height: 64px;
-                margin-right: 5px;
-            }
-        }
-        .namespace:hover {
-            cursor: pointer;
-        }
-    }
     .repository-details {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        align-items: middle;
+        height: 120px;
+        min-width: 270px;
+
+        .columns {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        ul {
+            list-style-type: none;
+            font-size: 14px;
+            padding: 0;
+        }
     }
 
-    .repository-details { 
-        .repo-count {
-            font-size: 16px;
-            margin-right: 20px;
-            .count {
-                font-size: 14px;
-                font-weight: 700;
-                padding: 0 5px;
+    .namespace-img {
+        min-width: 150px;
+        cursor: pointer;
+
+        @media(min-width: 1260px){
+            border-right: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .img-wrapper {
+            height: 120px;
+            @media(min-width: 1200px){
+                margin: auto;
             }
-            .count-label {
-                font-size: 14px;
-            }
+            padding: 0;
+            border: 0;
+            display: block;
         }
     }
-    
-    .external-links {
-        a:last-child {
-            margin-left: 20px;
-        }
+
+    .repo-name {
+        font-size: 14px;
+        color: @black;
+        font-weight: 700;
+        font-size: 18px;
     }
 }
