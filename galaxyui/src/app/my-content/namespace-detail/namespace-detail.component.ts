@@ -164,20 +164,22 @@ export class NamespaceDetailComponent implements OnInit {
             }
         });
 
-        user.selected = !user.selected;
+        if (user) {
+            user.selected = !user.selected;
+        }
 
         this.selectedUsers.forEach((owner: User, idx: number) => {
-            if (owner.id === user.id) {
+            if (owner.id === id) {
                 match = true;
                 matchedIdx = idx;
             }
         });
 
-        if (!match && user.selected) {
+        if (!match && user && user.selected) {
             // add selected user
             this.selectedUsers.push(user);
         }
-        if (match && !user.selected && matchedIdx > -1) {
+        if (match && (!user || !user.selected) && matchedIdx > -1) {
             // remove deselected user
             this.selectedUsers.splice(matchedIdx, 1);
         }
