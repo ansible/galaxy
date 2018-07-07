@@ -18,6 +18,8 @@
 import logging
 import re
 
+from six import string_types
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 
@@ -115,14 +117,18 @@ class RepositoryList(views.ListCreateAPIView):
         original_name = data.get('original_name', data['name'])
         data['name'] = common.sanitize_content_name(data['original_name'])
 
-        if not request.user.is_staff:
-            repo = get_repo(provider_namespace, request.user, original_name)
-            if not repo:
-                raise PermissionDenied(
-                    "User does not have access to {0}/{1} in "
-                    "GitHub".format(provider_namespace.name, original_name))
-            for field in GITHUB_REPO_FIELDS:
-                data[field] = repo[field]
+        repo = get_repo(provider_namespace, request.user, original_name)
+        if not repo:
+            raise PermissionDenied(
+                "User does not have access to {0}/{1} in "
+                "GitHub".format(provider_namespace.name, original_name))
+
+        for field in GITHUB_REPO_FIELDS:
+            if repo.get(field) is not None:
+                if isinstance(repo[field], string_types):
+                    data[field] = repo[field][:256]
+                else:
+                    data[field] = repo[field]
 
         if not data.get('original_name'):
             data['original_name'] = original_name
