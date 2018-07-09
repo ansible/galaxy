@@ -24,14 +24,9 @@ const routes: Routes = [{
         resolve: {
             namespaces: NamespaceListResolver
         }
-    }, {
-        path: ':namespace',
-        component: AuthorDetailComponent,
-        resolve: {
-            namespace: NamespaceDetailResolver,
-            repositories: RepositoryResolver
-        }
-    }];
+    }
+    // ':namespace/ moved to app-routing.module
+];
 
 @NgModule({
     imports: [

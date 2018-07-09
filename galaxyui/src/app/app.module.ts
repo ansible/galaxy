@@ -28,9 +28,9 @@ import { NotificationService }        from 'patternfly-ng/notification/notificat
 
 import { HomeModule }                 from './home/home.module';
 import { LoginModule }                from './login/login.module';
-import { MyContentModule }            from './my-content/my-content.module';
-import { MyImportsModule }            from './my-imports/my-imports.module';
-import { SearchModule }               from './search/search.module';
+// import { MyContentModule }            from './my-content/my-content.module';
+// import { MyImportsModule }            from './my-imports/my-imports.module';
+// import { SearchModule }               from './search/search.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
 import { AuthorsModule }              from './authors/authors.module';
 import { VendorsModule }              from './vendors/vendors.module';
@@ -73,9 +73,9 @@ import { ExceptionPagesModule }       from './exception-pages/exception-pages.mo
         NotificationModule,
         HomeModule,
         LoginModule,
-        MyContentModule,
-        MyImportsModule,
-        SearchModule,
+        // MyContentModule,
+        // MyImportsModule,
+        // SearchModule,
         ModalModule,
         ContentDetailModule,
         ExceptionPagesModule,

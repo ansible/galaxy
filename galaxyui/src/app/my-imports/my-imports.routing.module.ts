@@ -29,7 +29,7 @@ import { ImportListComponent }      from './import-list/import-list.component';
 
 const myImportRoutes: Routes = [
     {
-        path: 'my-imports',
+        path: '',
         component: ImportListComponent,
         resolve: {
             imports: ImportListResolver

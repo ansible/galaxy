@@ -18,13 +18,13 @@ import { NamespaceListResolver }    from './namespace-list/namespace-list-resolv
 
 const myContentRoutes: Routes = [
     {
-        path: 'my-content',
-        redirectTo: 'my-content/namespaces',
+        path: '',
+        redirectTo: 'namespaces',
         pathMatch: 'full',
         canActivate: [AuthService]
     },
     {
-        path: 'my-content/namespaces/new',
+        path: 'namespaces/new',
         component: NamespaceDetailComponent,
         resolve: {
             me: MeResolver,
@@ -36,7 +36,7 @@ const myContentRoutes: Routes = [
         canActivate: [AuthService]
     },
     {
-        path: 'my-content/namespaces/:id',
+        path: 'namespaces/:id',
         component: NamespaceDetailComponent,
         resolve: {
             me: MeResolver,
@@ -45,7 +45,7 @@ const myContentRoutes: Routes = [
         canActivate: [AuthService]
     },
     {
-        path: 'my-content/namespaces',
+        path: 'namespaces',
         component: NamespaceListComponent,
         resolve: {
             me: MeResolver,
