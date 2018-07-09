@@ -2,8 +2,12 @@
 
     <div class="col-lg-2">
         <div class="namespace-img">
-            <img class="img-wrapper" tooltip="View Author's Profile" [src]="namespace.avatar_url" (click)="viewAuthor()">
-            <a (click)="viewAuthor()"><span class="fa fa-user"></span> {{ namespace.name }}</a>
+            <a [routerLink]="['/', repositoryView.namespace]"
+                tooltip="View the author's profile." >
+                <img class="img-wrapper" [src]="namespace.avatar_url"></a>
+            <a [routerLink]="['/', repositoryView.namespace]"
+                tooltip="View the author's profile.">
+                <span class="fa fa-user"></span> {{ namespace.name }}</a>
         </div>
     </div>
 
