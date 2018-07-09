@@ -88,7 +88,6 @@ export class LoginComponent implements OnInit {
     }
 
     login(): void {
-        console.log('here');
         this.connectingMsg = 'Connecting to the mother ship...';
         window.location.href = '/accounts/github/login/?next=' + this.redirectUrl;
     }
