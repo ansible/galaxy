@@ -117,7 +117,9 @@ the default metadata file created by the ``init`` command:
 The following provides guidance on setting some of the metadata values that may not be so obvious:
 
 role_name
-    Use this to override the name of the role. In the past, Galaxy would apply a regex expression to the GitHub repository name and
+    Optional. Use to override the name of the role.
+    
+    In the past, Galaxy would apply a regex expression to the GitHub repository name and
     automatically remove 'ansible-' and 'ansible-role-'. For example, if your repository name was 'ansible-role-apache', the role name
     would translate to 'apache'. Galaxy no longer does this automatically. Instead, use the *role_name* setting to tell Galaxy what
     the role name should be.
@@ -125,8 +127,18 @@ role_name
     If no value is provided, then the role name will match the repository name, with a couple of exceptions, including:
     converting the name to all lowercase, and replacing any '-' or '.' characters with '_'.
 
+    .. note::
+
+        The value of *role_name* will be converted to lowercase, and '-' and '.' will be translated to '_'.
+
+    .. note::
+
+        Setting the value of *role_name* on an existing role will change the name of the role by
+        converting it to lowercase, and translating '-'  and '.' to '_'. If the name
+        of an existing role should not be altered, don't set the value of *role_name*.
+
 platforms
-    Provide a list of valid platforms, and for each platform, a list of valid versions. The obvious question of course is, where does one
+    Required. Provide a list of valid platforms, and for each platform, a list of valid versions. The obvious question of course is, where does one
     find the list of valid platforms? You can find the `list of platforms here </api/v1/platforms/>`_. The list
     is paginated. Click on the ``next_link`` value to get to view the next page. It's not the pretiest interface, but for now, it works.
     
@@ -134,14 +146,14 @@ platforms
     URL will be `https://galaxy.ansible.com/api/v1/platforms/?name__icontains=ubuntu <https://galaxy.ansible.com/api/v1/platforms/?name__icontains=ubuntu>`.
 
 galaxy_tags
-    Provide a list of tags. A tag is a single world that helps categorize your role. You can invent tags, or guess at tags other might be
+    Optional. Provide a list of tags. A tag is a single world that helps categorize your role. You can invent tags, or guess at tags other might be
     using to describe similar roles, but why do that, when you can see what others are using by `browsing existing tags here <https://galaxy-qa.ansible.com/api/v1/tags/>`_.
 
     As with *platforms*, you can search by name here as well. For example, to see if the 'database' tag exists, add ``?name_icontains=database``
     to the query. The full URL will be `https://galaxy.ansible.com/api/v1/tags/?name__icontains=database <https://galaxy.ansible.com/api/v1/tags/?name__icontains=database>`_.
 
 dependencies
-    In a nutshell, dependencies are installed when the role is installed, and dependencies are executed before the role is executed. During role
+    Optional. In a nutshell, dependencies are installed when the role is installed, and dependencies are executed before the role is executed. During role
     install and execution, dependencies are recursive, meaning dependencies can have dependencies. If a role appears more than once in the
     dependency chaing, it will only be executed one time, provided that parameters defined on the dependency are not different. 
 
@@ -173,4 +185,8 @@ To override the default name, set the ``role_name`` attribute in the role ``meta
     Role names are limited to lowercase word characters (i.e., a-z, 0-9) and '_'. No special characters are allowed, including '.',
     '-', and space. During import, any '.' and '-' characters contained in the repository name or role_name will be replaced with '_'.
 
-.. _creating_multirole_repos:
+.. note::
+
+    Setting the value of *role_name* on an existing role will change the name of the role by converting it
+    to lowercase, and translating '-'  and '.' to '_'. If the name of an existing role should not be
+    altered, don't set the value of *role_name*.

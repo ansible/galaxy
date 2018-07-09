@@ -71,10 +71,6 @@ export class RepositoryComponent implements OnInit {
         this.setRepositoryView();
     }
 
-    viewAuthor() {
-        this.router.navigate(['/', this.repositoryView.namespace]);
-    }
-
     // private
     private setRepositoryView() {
         // Determine repoType: role, apb, multiconent
