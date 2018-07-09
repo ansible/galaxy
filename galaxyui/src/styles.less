@@ -44,6 +44,12 @@ a.failed {
 }
 .toolbar-pf-results .list-inline {
     margin-left: 0;
+    .label.label-info:hover {
+        cursor: default;
+        .pficon.pficon-close {
+            cursor: pointer;
+        }
+    }
 }
 
 /* My-Content detail */
@@ -142,6 +148,9 @@ a.failed {
     .list-pf-container {
         padding-left: 0;
         padding-right: 0;
+    }
+    .list-pf-item:hover {
+        background-color: @white;
     }
     @media only screen and (max-width : 992px) {
         .list-pf-description {

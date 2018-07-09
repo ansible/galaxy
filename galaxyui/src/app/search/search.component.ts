@@ -336,17 +336,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
     }
 
-    itemClicked(item: Content) {
-        const namespace = item.summary_fields['namespace']['name'].toLowerCase();
-        const repository = item.summary_fields['repository']['name'].toLowerCase();
-        const name = item.name.toLowerCase();
-        if (item['repository_format'] === RepoFormats.multi) {
-            this.router.navigate(['/', namespace, repository, name]);
-        } else {
-            this.router.navigate(['/', namespace, repository]);
-        }
-    }
-
     // private
 
     private setPageSize(params: any) {
@@ -502,6 +491,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 item['iconClass'] = ContentTypesIconClasses.plugin;
             } else {
                 item['iconClass'] = ContentTypesIconClasses[item.summary_fields['content_type']['name']];
+            }
+            // Determine navigation for item click
+            const namespace = item.summary_fields['namespace']['name'].toLowerCase();
+            const repository = item.summary_fields['repository']['name'].toLowerCase();
+            const name = item.name.toLowerCase();
+            item['contentLink'] = `/${namespace}/${repository}`;
+            if (item['repository_format'] === RepoFormats.multi) {
+                item['contentLink'] += `/${name}`;
             }
         });
         this.contentItems = data;

@@ -248,7 +248,7 @@ class TestAPBMetaParser(unittest.TestCase):
     def test_parse_name(self):
         parser = apb_loader.APBMetaParser(self.data, self.log)
         name = parser.parse_name()
-        assert name == 'mssql-apb'
+        assert name == 'mssql_apb'
 
     def test_parse_description(self):
         parser = apb_loader.APBMetaParser(self.data, self.log)
@@ -354,7 +354,7 @@ class TestRoleLoader(unittest.TestCase):
         role_meta = apb.role_meta
         metadata = apb.metadata['apb_metadata']
 
-        assert apb.name == 'mssql-apb'
+        assert apb.name == 'mssql_apb'
         assert len(metadata['metadata']['dependencies']) == 1
         assert apb.description == 'Deployment of Microsoft SQL Server on Linux'
         assert role_meta['tags'] == ['database', 'mssql']

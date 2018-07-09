@@ -127,7 +127,7 @@ export class ContentDetailComponent implements OnInit {
                     if (this.namespace.is_vendor) {
                         this.pageTitle = `<i class="fa fa-star"></i> Vendors;/vendors;`;
                     } else {
-                        this.pageTitle = `<i class="fa fa-users"></i> Community Authors;/authors;`;
+                        this.pageTitle = `<i class="fa fa-users"></i> Community Authors;/community;`;
                     }
 
                     // Append author namespace and repository name to breadcrumb

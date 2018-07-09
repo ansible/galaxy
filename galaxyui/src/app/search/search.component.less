@@ -103,6 +103,9 @@
             color: @white;
             border-radius: 1px;
         }
+        .tag:hover {
+            cursor: default;
+        }
     }
 
     .counts {
@@ -114,11 +117,15 @@
     }
 
     .counts > div {
-        font-size: 12px;
+        font-size: 16px;
         margin-right: 15px;
         .count {
+            font-size: 14px;
             font-weight: 700;
             padding: 0 5px;
+        }
+        .count-text {
+            font-size: 14px;
         }
     }
     .counts div:last-child {

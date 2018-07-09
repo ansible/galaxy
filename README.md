@@ -4,6 +4,8 @@
 
 This is the source code behind Galaxy - https://galaxy.ansible.com.
 
+For help using the public Galaxy web site to find and install Ansible content, or to share your Ansible content with the community, [visit the Galaxy docs site](https://galaxy.ansible.com/docs/). 
+
 ## Installing
 
 NOTE: Installation guide is out of date. Since old installer was out of date with latest architecture changes
@@ -12,6 +14,14 @@ it has been removed from development branch. New installer is coming.
 ## Roadmap
 
 To see what we're working on, and where we're headed, view the [road map](./ROADMAP.md)
+
+## Change Log 
+
+To view a release history and what changed, [view our change log](./CHANGELOG.rst)
+
+## Announcements
+
+For the [galaxy.ansible.com](https://galaxy.ansible.com) site, get alerted when maintenance windows are scheduled, or when a release is scheduled to deploy, by subscribing to the [ansible-project](https://groups.google.com/group/ansible-project) Google group.
 
 ## Contributing
 
