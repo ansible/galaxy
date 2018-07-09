@@ -1,7 +1,17 @@
 # Roadmap
 
-## Release 3.0
-Target release date: 30 June 2018
+
+## Release 3.1 "Harder, Better, Faster, Stronger"
+
+Target Release Date: 30 September 2018
+
+- Static analysis of roles during import/upload using ansible-lint and additional Galaxy best practice rules
+- Roles quality scoring improved the search result ranking and presentation to make it even easier to find the best content
+- Introduce versioned content
+- Begin migration from a Github-specific pull model to an agnostic push model where contributors publish content collections that hosted on the public Galaxy server
+- Begin to introduce metrics collection and analytics to understand and display content usage patterns and to monitor and improve performance
+
+## Release 3.0 "Doin' It Right"
 
 - Move deployment of the public site from EC2 to OpenShift Dedicated
 - Refactor the import process to support multiple static analysis tools, and to support future content testing
