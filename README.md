@@ -20,9 +20,11 @@ To see what we're working on, and where we're headed, view the [road map](./ROAD
 
 ## Branch Information
 
+ * Releases are named after Daft Punk songs. 
  * The *devel* branch is the release actively under development.
  * The *master* branch corresponds to the latest stable release.
  * Submit pull requests for bug fixes and new features to *devel*.
+ * Various [release/X.Y.Z branches exist for previous releases](https://github.com/ansible/galaxy/tags).
  * Contributors welcome! Get started by reviewing [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## Authors
