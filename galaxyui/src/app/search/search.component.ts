@@ -188,6 +188,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.route.queryParams.subscribe(params => {
             this.route.data.subscribe(
                 (data) => {
+                    // This function is called each time the route updates, so
+                    // the default values have to be reset
+                    this.appliedFilters = [];
+                    this.paginationConfig.pageNumber = 1;
+                    this.pageNumber = 1;
+                    this.sortParams = '&order_by=-relevance';
+                    this.setSortConfig(this.sortParams);
+
                     this.preparePlatforms(data.platforms);
                     this.prepareContentTypes(data.contentTypes);
                     this.prepareCloudPlatforms(data.cloudPlatforms);
