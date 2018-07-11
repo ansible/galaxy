@@ -16,7 +16,6 @@
     "no-consecutive-blank-lines": false,
     "object-literal-key-quotes": false,
     "object-literal-shorthand": false,
-    "ordered-imports": false,
     "prefer-for-of": false,
     "trailing-comma": false,
     "class-name": true,
