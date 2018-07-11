@@ -75,9 +75,6 @@ def _import_repository(import_task, logger):
     logger.info(u'Starting import: task_id={}, repository={}'
                 .format(import_task.id, repo_full_name))
 
-    if import_task.import_branch:
-        repository.import_branch = import_task.import_branch
-
     token = _get_social_token(import_task)
     gh_api = github.Github(token)
     gh_repo = gh_api.get_repo(repo_full_name)
@@ -85,15 +82,12 @@ def _import_repository(import_task, logger):
     try:
         repo_info = i_repo.import_repository(
             repository.clone_url,
-            branch=repository.import_branch,
             temp_dir=settings.CONTENT_DOWNLOAD_DIR,
             logger=logger)
     except i_exc.ImporterError as e:
         raise exc.TaskError(str(e))
 
-    if repository.import_branch is None:
-        repository.import_branch = repo_info.branch
-
+    repository.import_branch = repo_info.branch
     repository.format = repo_info.format.value
 
     if repo_info.name:
