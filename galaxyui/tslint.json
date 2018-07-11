@@ -18,7 +18,6 @@
     "object-literal-shorthand": false,
     "ordered-imports": false,
     "prefer-for-of": false,
-    "space-before-function-paren": false,
     "trailing-comma": false,
     "arrow-return-shorthand": true,
     "callable-types": true,
