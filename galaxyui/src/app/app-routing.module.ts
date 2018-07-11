@@ -1,13 +1,13 @@
 import { NgModule }              from '@angular/core';
-import { NotFoundComponent }     from './exception-pages/not-found/not-found.component';
+import { AuthService }           from './auth/auth.service';
 import { AuthorDetailComponent } from './authors/detail/author-detail.component';
 import { ContentDetailComponent } from './content-detail/content-detail.component';
-import { AuthService }           from './auth/auth.service';
+import { NotFoundComponent }     from './exception-pages/not-found/not-found.component';
 
 import {
     ContentResolver,
-    RepositoryResolver as ContentRepositoryResolver,
-    NamespaceResolver
+    NamespaceResolver,
+    RepositoryResolver as ContentRepositoryResolver
 } from './content-detail/content-detail.resolver.service';
 
 import {
@@ -17,9 +17,9 @@ import {
 
 
 import {
+    PreloadAllModules,
     RouterModule,
-    Routes,
-    PreloadAllModules
+    Routes
 }  from '@angular/router';
 
 

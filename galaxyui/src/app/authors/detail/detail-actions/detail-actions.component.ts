@@ -1,7 +1,7 @@
 import {
     Component,
-    OnInit,
-    Input
+    Input,
+    OnInit
 } from '@angular/core';
 
 import { Router }           from '@angular/router';
@@ -13,8 +13,8 @@ import { Repository }       from '../../../resources/repositories/repository';
 
 import {
     RepoFormats,
-    RepoFormatsTooltips,
-    RepoFormatsIconClasses
+    RepoFormatsIconClasses,
+    RepoFormatsTooltips
 } from '../../../enums/repo-types.enum';
 
 

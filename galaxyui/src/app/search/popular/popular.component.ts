@@ -2,9 +2,9 @@ import {
     Component,
     EventEmitter,
     Input,
-    ViewChild,
     OnInit,
-    Output
+    Output,
+    ViewChild
 } from '@angular/core';
 
 import {
@@ -17,11 +17,11 @@ import { ListEvent }      from 'patternfly-ng/list/list-event';
 import { Tag }              from '../../resources/tags/tag';
 import { TagsService }      from '../../resources/tags/tags.service';
 
-import { PlatformService }  from '../../resources/platforms/platform.service';
 import { Platform }         from '../../resources/platforms/platform';
+import { PlatformService }  from '../../resources/platforms/platform.service';
 
-import { CloudPlatformService } from '../../resources/cloud-platforms/cloud-platform.service';
 import { CloudPlatform }        from '../../resources/cloud-platforms/cloud-platform';
+import { CloudPlatformService } from '../../resources/cloud-platforms/cloud-platform.service';
 
 class PopularData {
     tags: Tag[];

@@ -12,38 +12,38 @@ import * as moment            from 'moment';
 
 import { Action }             from 'patternfly-ng/action/action';
 import { ActionConfig }       from 'patternfly-ng/action/action-config';
-import { ListEvent }          from 'patternfly-ng/list/list-event';
-import { ListConfig }         from 'patternfly-ng/list/basic-list/list-config';
-import { FilterConfig }       from 'patternfly-ng/filter/filter-config';
-import { ToolbarConfig }      from 'patternfly-ng/toolbar/toolbar-config';
-import { FilterType }         from 'patternfly-ng/filter/filter-type';
-import { SortConfig }         from 'patternfly-ng/sort/sort-config';
-import { FilterField }        from 'patternfly-ng/filter/filter-field';
-import { SortField }          from 'patternfly-ng/sort/sort-field';
-import { ToolbarView }        from 'patternfly-ng/toolbar/toolbar-view';
-import { SortEvent }          from 'patternfly-ng/sort/sort-event';
-import { Filter }             from 'patternfly-ng/filter/filter';
-import { FilterEvent }        from 'patternfly-ng/filter/filter-event';
 import { EmptyStateConfig }   from 'patternfly-ng/empty-state/empty-state-config';
+import { Filter }             from 'patternfly-ng/filter/filter';
+import { FilterConfig }       from 'patternfly-ng/filter/filter-config';
+import { FilterEvent }        from 'patternfly-ng/filter/filter-event';
+import { FilterField }        from 'patternfly-ng/filter/filter-field';
+import { FilterType }         from 'patternfly-ng/filter/filter-type';
+import { ListConfig }         from 'patternfly-ng/list/basic-list/list-config';
+import { ListEvent }          from 'patternfly-ng/list/list-event';
 import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
+import { SortConfig }         from 'patternfly-ng/sort/sort-config';
+import { SortEvent }          from 'patternfly-ng/sort/sort-event';
+import { SortField }          from 'patternfly-ng/sort/sort-field';
+import { ToolbarConfig }      from 'patternfly-ng/toolbar/toolbar-config';
+import { ToolbarView }        from 'patternfly-ng/toolbar/toolbar-view';
 
 import { Namespace }          from '../../resources/namespaces/namespace';
 import { PFBodyService }      from '../../resources/pf-body/pf-body.service';
 
-import { RepositoryService }  from '../../resources/repositories/repository.service';
 import { Repository }         from '../../resources/repositories/repository';
+import { RepositoryService }  from '../../resources/repositories/repository.service';
 
 import {
     ContentTypes,
-    ContentTypesPluralChoices,
-    ContentTypesIconClasses
+    ContentTypesIconClasses,
+    ContentTypesPluralChoices
 } from '../../enums/content-types.enum';
 
 import {
     RepoFormats,
-    RepoFormatsTooltips,
-    RepoFormatsIconClasses
+    RepoFormatsIconClasses,
+    RepoFormatsTooltips
 } from '../../enums/repo-types.enum';
 
 

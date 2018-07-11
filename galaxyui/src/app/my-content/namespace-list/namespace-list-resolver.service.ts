@@ -8,10 +8,10 @@ import {
 } from '@angular/router';
 
 import { Observable }            from 'rxjs/Observable';
-import { NamespaceService }      from '../../resources/namespaces/namespace.service';
-import { Namespace }             from '../../resources/namespaces/namespace';
-import { PagedResponse }         from '../../resources/paged-response';
 import { AuthService }           from '../../auth/auth.service';
+import { Namespace }             from '../../resources/namespaces/namespace';
+import { NamespaceService }      from '../../resources/namespaces/namespace.service';
+import { PagedResponse }         from '../../resources/paged-response';
 
 @Injectable()
 export class NamespaceListResolver implements Resolve<PagedResponse> {

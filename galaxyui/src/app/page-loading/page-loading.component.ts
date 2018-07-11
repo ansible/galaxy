@@ -1,7 +1,7 @@
 import {
     Component,
-    OnInit,
-    Input
+    Input,
+    OnInit
 } from '@angular/core';
 
 @Component({

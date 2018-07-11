@@ -5,10 +5,10 @@ import {
 } from '@angular/core';
 
 import { CardConfig }     from 'patternfly-ng/card/basic-card/card-config';
+import { RepoFormats }    from '../../../enums/repo-types.enum';
+import { ViewTypes }      from '../../../enums/view-types.enum';
 import { Content }        from '../../../resources/content/content';
 import { Repository }     from '../../../resources/repositories/repository';
-import { ViewTypes }      from '../../../enums/view-types.enum';
-import { RepoFormats }    from '../../../enums/repo-types.enum';
 
 import { ContentTypesPlural }   from '../../../enums/content-types.enum';
 

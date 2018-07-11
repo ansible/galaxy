@@ -11,8 +11,8 @@ import {
 
 import { Observable }            from 'rxjs/Observable';
 
-import { NamespaceService }      from '../resources/namespaces/namespace.service';
 import { Namespace }             from '../resources/namespaces/namespace';
+import { NamespaceService }      from '../resources/namespaces/namespace.service';
 import { PagedResponse }         from '../resources/paged-response';
 
 @Injectable()
