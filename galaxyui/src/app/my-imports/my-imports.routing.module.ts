@@ -24,8 +24,8 @@ import {
 } from '@angular/router';
 
 import { AuthService }              from '../auth/auth.service';
-import { ImportListResolver }       from './import-list/import-list.resolver.service';
 import { ImportListComponent }      from './import-list/import-list.component';
+import { ImportListResolver }       from './import-list/import-list.resolver.service';
 
 const myImportRoutes: Routes = [
     {

@@ -12,8 +12,8 @@ import {
 } from './home.component';
 
 import {
-    VendorListResolver,
-    ContentBlockResolver
+    ContentBlockResolver,
+    VendorListResolver
 } from './home.resolver.service';
 
 const homeRoutes: Routes = [

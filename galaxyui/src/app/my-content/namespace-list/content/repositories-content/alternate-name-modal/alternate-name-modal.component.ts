@@ -5,20 +5,20 @@ import {
     } from '@angular/core';
 
 import {
+    AbstractControl,
     FormControl,
-    Validators,
     ValidatorFn,
-    AbstractControl
+    Validators
     } from '@angular/forms';
 
 import { BsModalRef }              from 'ngx-bootstrap';
 
 import { Subject }                 from 'rxjs';
-import { forkJoin }                from 'rxjs/observable/forkJoin';
 import { Observable }              from 'rxjs/Observable';
+import { forkJoin }                from 'rxjs/observable/forkJoin';
 
-import { RepositoryService }       from '../../../../../resources/repositories/repository.service';
 import { Repository }              from '../../../../../resources/repositories/repository';
+import { RepositoryService }       from '../../../../../resources/repositories/repository.service';
 import { RepositoryImportService } from '../../../../../resources/repository-imports/repository-import.service';
 
 

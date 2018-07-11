@@ -1,10 +1,10 @@
+import { HttpClient }           from '@angular/common/http';
 import { Injectable }           from '@angular/core';
-import { catchError, tap }      from 'rxjs/operators';
 import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
 import { Observable }           from 'rxjs/Observable';
-import { HttpClient }           from '@angular/common/http';
-import { ApiRoot }              from './api-root';
 import { of }                   from 'rxjs/observable/of';
+import { catchError, tap }      from 'rxjs/operators';
+import { ApiRoot }              from './api-root';
 
 
 @Injectable()

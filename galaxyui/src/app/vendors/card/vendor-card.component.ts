@@ -13,8 +13,8 @@ import { Namespace }     from '../../resources/namespaces/namespace';
 
 import {
     ContentTypes,
-    ContentTypesPluralChoices,
-    ContentTypesIconClasses
+    ContentTypesIconClasses,
+    ContentTypesPluralChoices
 } from '../../enums/content-types.enum';
 
 @Component({

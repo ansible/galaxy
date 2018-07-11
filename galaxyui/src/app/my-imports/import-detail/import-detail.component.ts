@@ -2,9 +2,9 @@ import {
     AfterViewInit,
     Component,
     EventEmitter,
+    Input,
     OnInit,
-    Output,
-    Input
+    Output
 } from '@angular/core';
 
 import {
@@ -12,15 +12,15 @@ import {
     SaveParams
 } from '../../resources/imports/imports.service';
 
+import { ImportState }             from '../../enums/import-state.enum';
 import { Import }                  from '../../resources/imports/import';
 import { ImportLatest }            from '../../resources/imports/import-latest';
-import { ImportState }             from '../../enums/import-state.enum';
 
-import { RepositoryImportService } from '../../resources/repository-imports/repository-import.service';
 import { RepositoryImport }        from '../../resources/repository-imports/repository-import';
+import { RepositoryImportService } from '../../resources/repository-imports/repository-import.service';
 
-import { NamespaceService }        from '../../resources/namespaces/namespace.service';
 import { Namespace }               from '../../resources/namespaces/namespace';
+import { NamespaceService }        from '../../resources/namespaces/namespace.service';
 
 import { AuthService }             from '../../auth/auth.service';
 

@@ -2,23 +2,23 @@ import {
     Component,
     EventEmitter,
     Input,
-    Output,
-    OnInit
+    OnInit,
+    Output
 } from '@angular/core';
 
 import {
     Router
 } from '@angular/router';
 
-import { Repository }       from '../../resources/repositories/repository';
 import { Content }          from '../../resources/content/content';
-import { Namespace }        from '../../resources/namespaces/namespace';
 import { ContentService }   from '../../resources/content/content.service';
+import { Namespace }        from '../../resources/namespaces/namespace';
+import { Repository }       from '../../resources/repositories/repository';
 
 import {
     RepoFormats,
-    RepoFormatsTooltips,
-    RepoFormatsIconClasses
+    RepoFormatsIconClasses,
+    RepoFormatsTooltips
 } from '../../enums/repo-types.enum';
 
 import * as moment          from 'moment';

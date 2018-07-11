@@ -16,18 +16,18 @@ import { forkJoin }         from 'rxjs/observable/forkJoin';
 import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
 
 import {
-    ActionConfig,
-    Action
+    Action,
+    ActionConfig
 } from 'patternfly-ng/action';
 
-import { Repository }       from '../resources/repositories/repository';
+import { ContentTypes }     from '../enums/content-types.enum';
+import { RepoFormats }      from '../enums/repo-types.enum';
+import { ViewTypes }        from '../enums/view-types.enum';
 import { Content }          from '../resources/content/content';
 import { Namespace }        from '../resources/namespaces/namespace';
 import { PagedResponse }    from '../resources/paged-response';
+import { Repository }       from '../resources/repositories/repository';
 import { RepoChangeEvent }  from './repository/repository.component';
-import { ViewTypes }        from '../enums/view-types.enum';
-import { RepoFormats }      from '../enums/repo-types.enum';
-import { ContentTypes }     from '../enums/content-types.enum';
 
 import { ContentService }   from '../resources/content/content.service';
 
