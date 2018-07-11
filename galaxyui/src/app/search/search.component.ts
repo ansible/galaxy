@@ -484,7 +484,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     private prepareContent(data: Content[], count: number) {
         data.forEach(item => {
-            item.imported = moment(item.imported).fromNow();
+            if (item.imported === null) {
+                item.imported = 'NA';
+            } else {
+                item.imported = moment(item.imported).fromNow();
+            }
             item['repository_format'] = item.summary_fields['repository']['format'];
             item['avatar_url'] = item.summary_fields['namespace']['avatar_url'] || '/assets/avatar.png';
             if (!item.summary_fields['namespace']['is_vendor']) {
