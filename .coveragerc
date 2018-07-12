@@ -1,0 +1,3 @@
+# pytest-cov config
+[run]
+omit = */migrations/*
