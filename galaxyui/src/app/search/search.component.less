@@ -1,5 +1,8 @@
 @import '../../variables';
 
+@small-laptop: 1281px;
+@large-phone: 450px;
+
 #search-page {
     margin-bottom: 150px;
     .pagination {
@@ -11,35 +14,52 @@
     margin-top: 20px;
     color: @black;
 
-    .list-pf-left {
-        align-items: center;
-        .namespace-container {
+    .list-row{
+        width: 100%;
+    }
+
+    .search-list-left {
+        @media(min-width: @large-phone){
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+        }
+    }
+
+    .namespace-container {
+        @media(min-width: 1050px){
             border-right: 1px solid #ccc;
-            padding-right: 10px;
-            .img-wrapper {
-                width: 64px;
-                height: 64px;
-                border: 0;
-                margin: 0;
-                padding: 0;
-                td {
-                    text-align: center;
-                    vertical-align: middle;
-                    img {
-                        max-width: 64px;
-                        max-height: 64px;
-                    }
-                }
+            margin-right: 15px;
+        }
+        @media(max-width: @large-phone){
+            width: 100%;
+        }
+
+        padding-right: 10px;
+        width: 120px;
+        display: inline-block;
+
+        .avatar-image {
+            display: block;
+            width: 64px;
+            height: 64px;
+            @media(min-width: @large-phone){
+                margin: auto;
             }
-            .namespace-name {
-                font-size: 12px;
-                padding-top: 10px;
-                width: 90px;
-                text-align: center;
-                  white-space: nowrap;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  min-height: 15px;
+        }
+        .namespace-name {
+            font-size: 12px;
+            padding-top: 10px;
+            width: 90px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 15px;
+            @media(min-width: @large-phone){
+                margin: auto;
             }
         }
     }
@@ -55,6 +75,10 @@
             font-size: 20px;
         }
         .name {
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             font-size: 16px;
             margin-right: 5px;
             color: @blue;
@@ -108,55 +132,90 @@
         }
     }
 
-    .counts {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: flex-end;
-        align-items: middle;
+    .col-reduced-margin{
+        margin-left: 10px;
     }
 
-    .counts > div {
-        font-size: 16px;
-        margin-right: 15px;
-        .count {
-            font-size: 14px;
-            font-weight: 700;
-            padding: 0 5px;
-        }
-        .count-text {
-            font-size: 14px;
-        }
-    }
-    .counts div:last-child {
-        margin-right: 0;
-    }
+    .repository-details {
 
-    .import {
-        text-align: right;
-        margin-top: 10px;
-        .import-text, .import-date {
-            display: inline-block;
+        @media(min-width: @small-laptop){
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            -webkit-justify-content: flex-end;
+            -moz-justify-content: flex-end;
+            -ms-justify-content: flex-end;
+            -justify-content: flex-end;
+
         }
-        .import-text {
+
+        .count-digits {
             font-weight: 600;
         }
+
+        .columns {
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .count-left {
+            min-width: 141px;
+        }
+
+        .count-right {
+            min-width: 80px;
+        }
+
+        ul {
+            list-style-type: none;
+            font-size: 14px;
+            padding: 0;
+        }
     }
+
+    .extra-detail {
+        width: 100%;
+        display: block;
+
+        .relevance {
+            @media(min-width: @small-laptop){
+                text-align: right;
+            }
+
+            .relevance-text {
+                padding-right: 10px;
+                font-weight: 600;
+            }
+        }
+
+        .import {
+            @media(min-width: @small-laptop){
+                text-align: right;
+            }
+
+            .import-text, .import-date {
+                display: inline-block;
+            }
+            .import-text {
+                font-weight: 600;
+            }
+        }
+    }
+
+
     .travis {
-        text-align: right;
+        @media(min-width: @small-laptop){
+            text-align: right;
+        }
         margin-bottom: 10px;
         img {
             width: 90px;
             height: 20px;
-        }
-    }
-    .relevance {
-        text-align: right;
-        margin-top: 10px;
-
-        .relevance-text {
-            padding-right: 10px;
-            font-weight: 600;
         }
     }
 }
