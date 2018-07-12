@@ -12,10 +12,10 @@ import {
 
 import { Observable }            from 'rxjs/Observable';
 
-import { ContentBlocksService }  from '../resources/content-blocks/content-blocks.service';
 import { ContentBlock }          from '../resources/content-blocks/content-block';
-import { NamespaceService }      from '../resources/namespaces/namespace.service';
+import { ContentBlocksService }  from '../resources/content-blocks/content-blocks.service';
 import { Namespace }             from '../resources/namespaces/namespace';
+import { NamespaceService }      from '../resources/namespaces/namespace.service';
 import { PagedResponse }         from '../resources/paged-response';
 
 @Injectable()

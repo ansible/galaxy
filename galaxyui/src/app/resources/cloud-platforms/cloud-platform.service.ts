@@ -9,9 +9,9 @@ import { Observable }           from 'rxjs/Observable';
 import { of }                   from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { CloudPlatform }          from './cloud-platform';
 import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
 import { PagedResponse }        from '../paged-response';
+import { CloudPlatform }          from './cloud-platform';
 
 const httpOptions = {
     headers: new HttpHeaders({

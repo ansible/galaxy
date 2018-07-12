@@ -1,13 +1,13 @@
-import { Injectable }              from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable }              from '@angular/core';
 
 import { Observable }           from 'rxjs/Observable';
 import { of }                   from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { Repository }          from './repository';
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
 import { PagedResponse }       from '../paged-response';
+import { Repository }          from './repository';
 
 const httpOptions = {
     headers: new HttpHeaders({

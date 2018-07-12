@@ -11,11 +11,11 @@ import { Observable } from 'rxjs/Observable';
 import { of }         from 'rxjs/observable/of';
 
 import {
-    CanActivate,
-    Router,
-    RouterStateSnapshot,
     ActivatedRouteSnapshot,
-    Route
+    CanActivate,
+    Route,
+    Router,
+    RouterStateSnapshot
 } from '@angular/router';
 
 

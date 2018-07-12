@@ -14,20 +14,20 @@ import {
 } from '@angular/common';
 
 import { Observable }            from 'rxjs/Observable';
-import { ContentSearchService }  from '../resources/content-search/content-search.service';
 import { ContentResponse }       from '../resources/content-search/content';
+import { ContentSearchService }  from '../resources/content-search/content-search.service';
 
-import { PlatformService }       from '../resources/platforms/platform.service';
 import { Platform }              from '../resources/platforms/platform';
+import { PlatformService }       from '../resources/platforms/platform.service';
 
-import { ContentTypeService }    from '../resources/content-types/content-type.service';
 import { ContentType }           from '../resources/content-types/content-type';
+import { ContentTypeService }    from '../resources/content-types/content-type.service';
 
-import { CloudPlatformService }  from '../resources/cloud-platforms/cloud-platform.service';
 import { CloudPlatform }         from '../resources/cloud-platforms/cloud-platform';
+import { CloudPlatformService }  from '../resources/cloud-platforms/cloud-platform.service';
 
-import { TagsService }           from '../resources/tags/tags.service';
 import { Tag }                   from '../resources/tags/tag';
+import { TagsService }           from '../resources/tags/tags.service';
 
 import { ContributorTypes }      from '../enums/contributor-types.enum';
 

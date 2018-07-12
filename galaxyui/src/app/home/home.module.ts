@@ -1,15 +1,15 @@
 import {
-    NgModule,
-    CUSTOM_ELEMENTS_SCHEMA
+    CUSTOM_ELEMENTS_SCHEMA,
+    NgModule
 } from '@angular/core';
 
 import { CommonModule }         from '@angular/common';
 import { FormsModule }          from '@angular/forms';
 
 import { CarouselComponent }    from './carousel/carousel.component';
-import { PopularComponent }     from './popular/popular.component';
 import { HomeComponent }        from './home.component';
 import { HomeRoutingModule }    from './home.routing.module';
+import { PopularComponent }     from './popular/popular.component';
 
 import { CardModule }           from 'patternfly-ng/card/basic-card/card.module';
 

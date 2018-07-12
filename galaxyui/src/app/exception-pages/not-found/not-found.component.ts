@@ -15,8 +15,8 @@ import {
 } from 'patternfly-ng/empty-state';
 
 import {
-    ActionConfig,
-    Action
+    Action,
+    ActionConfig
 } from 'patternfly-ng/action';
 
 @Component({

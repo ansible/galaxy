@@ -1,5 +1,5 @@
-import { Injectable }              from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable }              from '@angular/core';
 
 
 import { Observable }           from 'rxjs/Observable';
@@ -81,7 +81,7 @@ export class NamespaceService {
         );
     }
 
-    delete (namespace: Namespace | number): Observable<any> {
+    delete(namespace: Namespace | number): Observable<any> {
         const id = typeof namespace === 'number' ? namespace : namespace.id;
         const url = `${this.url}/${id}`;
 

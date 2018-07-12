@@ -23,9 +23,9 @@ import {
 } from '@angular/core';
 
 import {
-    Router,
+    NavigationEnd,
     NavigationStart,
-    NavigationEnd
+    Router
 } from '@angular/router';
 
 import { DOCUMENT }             from '@angular/common';
@@ -33,15 +33,15 @@ import { DOCUMENT }             from '@angular/common';
 import { BsModalService }       from 'ngx-bootstrap/modal';
 import { BsModalRef }           from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
-import { NavigationItemConfig } from 'patternfly-ng/navigation/navigation-item-config';
 import { AboutModalConfig }     from 'patternfly-ng/modal/about-modal-config';
 import { AboutModalEvent }      from 'patternfly-ng/modal/about-modal-event';
-import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
+import { NavigationItemConfig } from 'patternfly-ng/navigation/navigation-item-config';
 import { Notification }         from 'patternfly-ng/notification';
+import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
 
 import { AuthService }          from './auth/auth.service';
-import { ApiRootService }       from './resources/api-root/api-root.service';
 import { ApiRoot }              from './resources/api-root/api-root';
+import { ApiRootService }       from './resources/api-root/api-root.service';
 
 
 @Component({

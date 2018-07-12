@@ -9,12 +9,12 @@ import { AuthService }              from '../auth/auth.service';
 import { NamespaceDetailComponent } from './namespace-detail/namespace-detail.component';
 
 import {
-    NamespaceDetailResolver,
-    MeResolver
+    MeResolver,
+    NamespaceDetailResolver
 }  from './namespace-detail/namespace-detail.resolver.service';
 
-import { NamespaceListComponent }   from './namespace-list/namespace-list.component';
 import { NamespaceListResolver }    from './namespace-list/namespace-list-resolver.service';
+import { NamespaceListComponent }   from './namespace-list/namespace-list.component';
 
 const myContentRoutes: Routes = [
     {

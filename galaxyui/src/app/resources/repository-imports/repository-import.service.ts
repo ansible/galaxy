@@ -1,10 +1,10 @@
-import { Injectable }              from '@angular/core';
-import { catchError, map, tap }    from 'rxjs/operators';
-import { NotificationService }     from 'patternfly-ng/notification/notification-service/notification.service';
-import { PagedResponse }           from '../paged-response';
-import { of }                      from 'rxjs/observable/of';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable }              from '@angular/core';
+import { NotificationService }     from 'patternfly-ng/notification/notification-service/notification.service';
 import { Observable }              from 'rxjs/Observable';
+import { of }                      from 'rxjs/observable/of';
+import { catchError, map, tap }    from 'rxjs/operators';
+import { PagedResponse }           from '../paged-response';
 import { RepositoryImport }        from './repository-import';
 
 const httpOptions = {
