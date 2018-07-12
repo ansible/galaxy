@@ -59,7 +59,7 @@ build/yarn:
 
 .PHONY: build/static
 build/static:
-	cd galaxyui; ng build --prod
+	cd galaxyui; ng build --prod --source-map
 
 .PHONY: build/dist
 build/dist: build/static
