@@ -22,6 +22,9 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterIndexTogether(
             name='repository',
-            index_together=set([('github_user', 'github_repo'), ('owner', 'github_user', 'github_repo', 'is_enabled')]),
+            index_together={
+                ('github_user', 'github_repo'),
+                ('owner', 'github_user', 'github_repo', 'is_enabled')
+            },
         )
     ]
