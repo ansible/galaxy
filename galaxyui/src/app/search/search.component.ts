@@ -483,10 +483,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
 
     private prepareContent(data: Content[], count: number) {
+        const datePattern = /^\d{4}.*$/;
         data.forEach(item => {
             if (item.imported === null) {
                 item.imported = 'NA';
-            } else {
+            } else if (datePattern.exec(item.imported) !== null) {
                 item.imported = moment(item.imported).fromNow();
             }
             item['repository_format'] = item.summary_fields['repository']['format'];
