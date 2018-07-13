@@ -9,12 +9,12 @@ import {
     Router
 } from '@angular/router';
 
-import { Namespace }    from '../../resources/namespaces/namespace';
+import { Namespace } from '../../resources/namespaces/namespace';
 
 @Component({
-    selector:    'carousel-component',
+    selector: 'carousel-component',
     templateUrl: './carousel.component.html',
-    styleUrls:   ['./carousel.component.less']
+    styleUrls: ['./carousel.component.less']
 })
 export class CarouselComponent implements OnInit {
 
@@ -41,18 +41,16 @@ export class CarouselComponent implements OnInit {
 
     constructor(
         private router: Router
-    ) {}
+    ) { }
 
-    ngOnInit() {}
+    ngOnInit() { }
 
     handleLeftClick() {
         document.getElementById('slider-inner').scrollLeft += 260;
-        console.log(document.getElementById('slider-inner').scrollLeft);
     }
 
     handleRightClick() {
         document.getElementById('slider-inner').scrollLeft -= 260;
-        console.log(document.getElementById('slider-inner').scrollLeft);
     }
 
     handleVendorClick(vendor: Namespace) {
@@ -60,6 +58,6 @@ export class CarouselComponent implements OnInit {
             'vendor': 'true',
             'namespaces': vendor.name
         };
-        this.router.navigate(['/', 'search'], {queryParams: params});
+        this.router.navigate(['/', 'search'], { queryParams: params });
     }
 }
