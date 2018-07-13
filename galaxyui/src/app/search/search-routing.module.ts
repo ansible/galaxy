@@ -21,6 +21,7 @@ const routes: Routes = [
     {
         path: '',
         component: SearchComponent,
+        runGuardsAndResolvers: 'always',
         resolve: {
             cloudPlatforms: SearchCloudPlatformResolver,
             content: SearchContentResolver,
