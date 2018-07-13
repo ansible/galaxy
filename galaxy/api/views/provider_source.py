@@ -30,22 +30,24 @@ from ..githubapi import GithubAPI
 from ..serializers import ProviderSourceSerializer
 
 
-__all__ = (
-    'ProviderSourceList',
-)
+__all__ = ['ProviderSourceList']
 
 logger = logging.getLogger(__name__)
 
 
 class ProviderSourceList(ListAPIView):
-    """ User namespaces available within each active provider """
+    """User namespaces available within each active provider."""
+
     model = ProviderNamespace
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = ProviderSourceSerializer
 
     def get(self, request, *args, **kwargs):
-        # Return a list of namespaces from all providers for the requesting user
+        """
+        Return a list of namespaces from all providers
+        for the requesting user.
+        """
         sources = []
         for provider in Provider.objects.filter(active=True):
             if provider.name.lower() == 'github':
@@ -53,16 +55,19 @@ class ProviderSourceList(ListAPIView):
                 for source in sources:
                     source['provider'] = {
                         'id': provider.pk,
-                        'name': provider.name.lower()
+                        'name': provider.name.lower(),
                     }
                     try:
-                        provider_namespace = ProviderNamespace.objects.get(provider=provider,
-                                                                           name__iexact=source['name'])
+                        provider_namespace = ProviderNamespace.objects.get(
+                            provider=provider, name__iexact=source['name']
+                        )
                         source['provider_namespace'] = {
                             'id': provider_namespace.id,
-                            'name': provider_namespace.name.lower()
+                            'name': provider_namespace.name.lower(),
                         }
-                        source['provider_namespace_url'] = provider_namespace.get_absolute_url()
+                        source[
+                            'provider_namespace_url'
+                        ] = provider_namespace.get_absolute_url()
                     except ObjectDoesNotExist:
                         provider_namespace = None
                         source['provider_namespace'] = None
@@ -71,9 +76,11 @@ class ProviderSourceList(ListAPIView):
                     if provider_namespace and provider_namespace.namespace:
                         source['namespace'] = {
                             'id': provider_namespace.namespace.pk,
-                            'name': provider_namespace.namespace.name
+                            'name': provider_namespace.namespace.name,
                         }
-                        source['namespace_url'] = provider_namespace.namespace.get_absolute_url()
+                        source[
+                            'namespace_url'
+                        ] = provider_namespace.namespace.get_absolute_url()
                     else:
                         source['namespace'] = None
                         source['namespace_url'] = None

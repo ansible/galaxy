@@ -25,7 +25,9 @@ from rest_framework.filters import SearchFilter
 from ..filters import FieldLookupBackend, OrderByBackend
 
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, APIException, PermissionDenied
+from rest_framework.exceptions import (
+    ValidationError, APIException, PermissionDenied
+)
 from rest_framework.response import Response
 
 from galaxy.accounts.models import CustomUser as User
@@ -119,9 +121,14 @@ def check_providers(data_providers, parent=None):
                 name__iexact=pns['name'].lower(),
                 namespace__isnull=False)
             if parent:
-                existing_namespaces = existing_namespaces.exclude(namespace=parent)
+                existing_namespaces = existing_namespaces.exclude(
+                    namespace=parent
+                )
             if existing_namespaces:
-                errors[i] = 'This provider namespace is already associated with a Galaxy namespace'
+                errors[i] = (
+                    'This provider namespace is already associated '
+                    'with a Galaxy namespace'
+                )
     return errors
 
 
@@ -129,12 +136,14 @@ def update_provider_namespaces(namespace, provider_namespaces):
     # Update provider namespaces in the list
     for pns in provider_namespaces:
         pns_attributes = {}
-        for item in ('display_name', 'avatar_url', 'location', 'company', 'email', 'html_url',
-                     'followers'):
+        for item in ('display_name', 'avatar_url', 'location', 'company',
+                     'email', 'html_url', 'followers'):
             if item in pns:
                 pns_attributes[item] = pns[item]
 
-        pns_attributes['description'] = pns['description'] if pns.get('description') is not None else ''
+        pns_attributes['description'] = (
+            pns['description'] if pns.get('description') is not None else ''
+        )
 
         try:
             provider = models.Provider.objects.get(pk=pns['provider'])
@@ -145,8 +154,9 @@ def update_provider_namespaces(namespace, provider_namespaces):
             pns_attributes['namespace'] = namespace
 
             try:
-                pns_obj, _ = models.ProviderNamespace.objects.update_or_create(name=pns['name'],
-                                                                               defaults=pns_attributes)
+                pns_obj, _ = models.ProviderNamespace.objects.update_or_create(
+                    name=pns['name'], defaults=pns_attributes
+                )
                 pns['id'] = pns_obj.pk
             except Exception as exc:
                 raise APIException(
@@ -154,14 +164,18 @@ def update_provider_namespaces(namespace, provider_namespaces):
                     .format(exc.message)
                 )
     # Disassociate provider namespaces not in the list
-    for id in [obj.pk for obj in models.ProviderNamespace.objects.filter(namespace=namespace)]:
+    for id in [
+        obj.pk for obj
+        in models.ProviderNamespace.objects.filter(namespace=namespace)
+    ]:
         found = False
         for pns in provider_namespaces:
             if pns['id'] == id:
                 found = True
                 break
         if not found:
-            # The provider namespace is no longer associated with the Galaxy namespace
+            # The provider namespace is no longer associated with
+            # the Galaxy namespace
             try:
                 obj = models.ProviderNamespace.objects.get(pk=id)
             except ObjectDoesNotExist as exc:
@@ -190,7 +204,9 @@ def update_owners(instance, owners):
 class NamespaceList(base_views.ListCreateAPIView):
     model = models.Namespace
     serializer_class = serializers.NamespaceSerializer
-    filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)  # excludes ActiveOnly
+
+    # excludes ActiveOnly
+    filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)
 
     def post(self, request, *args, **kwargs):
         data = request.data
@@ -208,7 +224,9 @@ class NamespaceList(base_views.ListCreateAPIView):
 
         if not request.user.is_staff:
             if not data.get('provider_namespaces'):
-                errors['provider_namespaces'] = 'A minimum of one provider namespace is required'
+                errors['provider_namespaces'] = (
+                    'A minimum of one provider namespace is required'
+                )
             else:
                 provider_errors = check_providers(data['provider_namespaces'])
                 if provider_errors:
@@ -222,20 +240,26 @@ class NamespaceList(base_views.ListCreateAPIView):
         if errors:
             raise ValidationError(detail=errors)
 
-        if not request.user.is_staff and not can_update(data['id'], request.user.id):
+        if not request.user.is_staff and not can_update(
+                data['id'], request.user.id):
             owners.append(request.user.id)
 
         namespace_attributes = {
             'name': data['name'],
-            'description': data['description'] if data.get('description') is not None else ''
+            'description':
+                data['description']
+                if data.get('description') is not None else ''
         }
-        for item in ('avatar_url', 'location', 'company', 'email', 'html_url', 'is_vendor'):
+        for item in ('avatar_url', 'location', 'company', 'email',
+                     'html_url', 'is_vendor'):
             if item in data:
                 namespace_attributes[item] = data[item]
         try:
             namespace = models.Namespace.objects.create(**namespace_attributes)
         except Exception as exc:
-            raise APIException('Error creating namespace: {0}'.format(exc.message))
+            raise APIException(
+                'Error creating namespace: {0}'.format(exc.message)
+            )
 
         update_owners(namespace, owners)
         update_provider_namespaces(namespace, data['provider_namespaces'])
@@ -247,7 +271,9 @@ class NamespaceList(base_views.ListCreateAPIView):
 class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
     model = models.Namespace
     serializer_class = serializers.NamespaceSerializer
-    filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)  # excludes ActiveOnly
+
+    # excludes ActiveOnly
+    filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)
 
     def update(self, request, *args, **kwargs):
         data = request.data
@@ -261,7 +287,9 @@ class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
             check_basic(data, errors)
 
         if data.get('provider_namespaces'):
-            provider_errors = check_providers(data['provider_namespaces'], parent=instance)
+            provider_errors = check_providers(
+                data['provider_namespaces'], parent=instance
+            )
             if provider_errors:
                 errors['provider_namespaces'] = provider_errors
 
@@ -273,15 +301,18 @@ class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
         if errors:
             raise ValidationError(detail=errors)
 
-        if not request.user.is_staff and not can_update(data['id'], request.user.id):
-            raise PermissionDenied("User does not have access to Namespace {0}".format(
-                data.get('name', '')))
+        if not request.user.is_staff and not can_update(
+                data['id'], request.user.id):
+            raise PermissionDenied(
+                "User does not have access to "
+                "Namespace {0}".format(data.get('name', ''))
+            )
 
         if data.get('owners'):
             update_owners(instance, owners)
 
-        to_update = ['description', 'avatar_url', 'location', 'company', 'email',
-                     'html_url', 'active', 'is_vendor']
+        to_update = ['description', 'avatar_url', 'location',
+                     'company', 'email', 'html_url', 'active', 'is_vendor']
 
         if request.user.is_staff:
             to_update.append('name')

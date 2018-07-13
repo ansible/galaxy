@@ -30,16 +30,17 @@ from .base_views import ListAPIView
 from ..githubapi import GithubAPI
 from ..serializers import RepositorySourceSerializer
 
-__all__ = (
+
+__all__ = [
     'RepositorySourceList',
     'RepositorySourceDetail',
-)
+]
 
 logger = logging.getLogger(__name__)
 
 
 class RepositorySourceList(ListAPIView):
-    """ Repositories available for a given provider and namespace """
+    """Repositories available for a given provider and namespace."""
     model = Repository
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -51,17 +52,23 @@ class RepositorySourceList(ListAPIView):
         request_namespace = kwargs.get('provider_namespace')
         repos = []
         try:
-            provider = Provider.objects.get(name__iexact=request_provider.lower(), active=True)
+            provider = Provider.objects.get(
+                name__iexact=request_provider.lower(), active=True
+            )
         except ObjectDoesNotExist:
             raise APIException("Invalid provider {0}".format(request_provider))
 
         try:
-            provider_namespace = ProviderNamespace.objects.get(provider=provider, name__iexact=request_namespace)
+            provider_namespace = ProviderNamespace.objects.get(
+                provider=provider, name__iexact=request_namespace
+            )
         except ObjectDoesNotExist:
             provider_namespace = None
 
         if provider.name.lower() == 'github':
-            repos = GithubAPI(user=request.user).get_namespace_repositories(request_namespace)
+            repos = GithubAPI(user=request.user).get_namespace_repositories(
+                request_namespace
+            )
 
         for repo in repos:
             repo['source_namespace'] = request_namespace
@@ -79,7 +86,10 @@ class RepositorySourceList(ListAPIView):
 
             if provider_namespace:
                 try:
-                    repository_obj = Repository.objects.get(provider_namespace=provider_namespace, original_name=repo['name'])
+                    repository_obj = Repository.objects.get(
+                        provider_namespace=provider_namespace,
+                        original_name=repo['name']
+                    )
                 except ObjectDoesNotExist:
                     repository_obj = None
 
@@ -88,12 +98,16 @@ class RepositorySourceList(ListAPIView):
                         'id': provider_namespace.pk,
                         'name': provider_namespace.name
                     }
-                    repo['provider_namespace_url'] = provider_namespace.get_absolute_url()
+                    repo[
+                        'provider_namespace_url'
+                    ] = provider_namespace.get_absolute_url()
                     repo['namespace'] = {
                         'id': provider_namespace.namespace.pk,
                         'name': provider_namespace.namespace.name
                     }
-                    repo['namespace_url'] = provider_namespace.namespace.get_absolute_url()
+                    repo[
+                        'namespace_url'
+                    ] = provider_namespace.namespace.get_absolute_url()
                     repo['repository'] = {
                         'id': repository_obj.pk,
                         'name': repository_obj.name,
@@ -119,17 +133,23 @@ class RepositorySourceDetail(ListAPIView):
         repo = {}
 
         try:
-            provider = Provider.objects.get(name__iexact=request_provider.lower(), active=True)
+            provider = Provider.objects.get(
+                name__iexact=request_provider.lower(), active=True
+            )
         except ObjectDoesNotExist:
             raise APIException("Invalid provider {0}".format(request_provider))
 
         try:
-            provider_namespace = ProviderNamespace.objects.get(provider=provider, name__iexact=request_namespace)
+            provider_namespace = ProviderNamespace.objects.get(
+                provider=provider, name__iexact=request_namespace
+            )
         except ObjectDoesNotExist:
             provider_namespace = None
 
         if provider.name.lower() == 'github':
-            repos = GithubAPI(user=request.user).get_namespace_repositories(request_namespace, name=request_repo)
+            repos = GithubAPI(user=request.user).get_namespace_repositories(
+                request_namespace, name=request_repo
+            )
             if len(repos):
                 repo = repos[0]
 
@@ -149,8 +169,10 @@ class RepositorySourceDetail(ListAPIView):
 
             if provider_namespace:
                 try:
-                    repository_obj = Repository.objects.get(provider_namespace=provider_namespace,
-                                                            original_name=repo['name'])
+                    repository_obj = Repository.objects.get(
+                        provider_namespace=provider_namespace,
+                        original_name=repo['name']
+                    )
                 except ObjectDoesNotExist:
                     repository_obj = None
 
@@ -159,12 +181,16 @@ class RepositorySourceDetail(ListAPIView):
                         'id': provider_namespace.pk,
                         'name': provider_namespace.name
                     }
-                    repo['provider_namespace_url'] = provider_namespace.get_absolute_url()
+                    repo[
+                        'provider_namespace_url'
+                    ] = provider_namespace.get_absolute_url()
                     repo['namespace'] = {
                         'id': provider_namespace.namespace.pk,
                         'name': provider_namespace.namespace.name
                     }
-                    repo['namespace_url'] = provider_namespace.namespace.get_absolute_url()
+                    repo[
+                        'namespace_url'
+                    ] = provider_namespace.namespace.get_absolute_url()
                     repo['repository'] = {
                         'id': repository_obj.pk,
                         'name': repository_obj.name,

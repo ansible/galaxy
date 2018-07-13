@@ -9,8 +9,9 @@ from django.db import IntegrityError
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import status
-from rest_framework.authentication import TokenAuthentication, \
-    SessionAuthentication
+from rest_framework.authentication import (
+    TokenAuthentication, SessionAuthentication
+)
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -34,13 +35,13 @@ __all__ = [
 
 
 class NotificationSecretList(base_views.ListCreateAPIView):
-    '''
+    """
     Integration tokens.
-    '''
+    """
     model = models.NotificationSecret
     serializer_class = serializers.NotificationSecretSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (IsAuthenticated, ModelAccessPermission,)
+    permission_classes = (IsAuthenticated, ModelAccessPermission)
 
     def list(self, request, *args, **kwargs):
         # only list secrets belonging to the authenticated user
@@ -56,13 +57,21 @@ class NotificationSecretList(base_views.ListCreateAPIView):
         github_repo = request.data.get('github_repo', None)
 
         if not secret or not source or not github_user or not github_repo:
-            raise ValidationError(dict(detail="Invalid request. Missing one or more required values."))
+            raise ValidationError({
+                'detail': "Invalid request. "
+                          "Missing one or more required values."
+            })
 
         if source not in ['github', 'travis']:
-            raise ValidationError(dict(detail="Invalid source value. Expecting one of: [github, travis]"))
+            raise ValidationError({
+                'detail': "Invalid source value. "
+                          "Expecting one of: [github, travis]"
+            })
 
         if source == 'travis':
-            secret = sha256(github_user + '/' + github_repo + secret).hexdigest()
+            secret = sha256(
+                github_user + '/' + github_repo + secret
+            ).hexdigest()
 
         secret, create = models.NotificationSecret.objects.get_or_create(
             source=source,
@@ -78,14 +87,19 @@ class NotificationSecretList(base_views.ListCreateAPIView):
         )
 
         if not create:
-            msg = "Duplicate key. An integration for {0} {1} {2} already exists.".format(source,
-                                                                                         github_user,
-                                                                                         github_repo)
-            raise ValidationError(dict(detail=msg))
+            msg = (
+                "Duplicate key. An integration for {0} {1} {2} "
+                "already exists.".format(source, github_user, github_repo)
+            )
+            raise ValidationError({'detail': msg})
 
         serializer = self.get_serializer(instance=secret)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
 
 
 class NotificationSecretDetail(base_views.RetrieveUpdateDestroyAPIView):
@@ -101,15 +115,23 @@ class NotificationSecretDetail(base_views.RetrieveUpdateDestroyAPIView):
         github_repo = request.data.get('github_repo', None)
 
         if not secret or not source or not github_user or not github_repo:
-            raise ValidationError(dict(detail="Invalid request. Missing one or more required values."))
+            raise ValidationError({
+                'detail': "Invalid request. "
+                          "Missing one or more required values."
+            })
 
         if source not in ['github', 'travis']:
-            raise ValidationError(dict(detail="Invalid source value. Expecting one of: [github, travis]"))
+            raise ValidationError({
+                'detail': "Invalid source value. "
+                          "Expecting one of: [github, travis]"
+            })
 
         instance = self.get_object()
 
         if source == 'travis':
-            secret = sha256(github_user + '/' + github_repo + secret).hexdigest()
+            secret = sha256(
+                github_user + '/' + github_repo + secret
+            ).hexdigest()
 
         try:
             instance.source = source
@@ -118,8 +140,11 @@ class NotificationSecretDetail(base_views.RetrieveUpdateDestroyAPIView):
             instance.github_repo = github_repo
             instance.save()
         except IntegrityError:
-            msg = "An integration for {0} {1} {2} already exists.".format(source, github_user, github_repo)
-            raise ValidationError(dict(detail=msg))
+            msg = (
+                "An integration for {0} {1} {2} already exists.".format(
+                    source, github_user, github_repo)
+            )
+            raise ValidationError({'detail': msg})
 
         serializer = self.get_serializer(instance=instance)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
