@@ -18,43 +18,96 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Stargazer',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('description', galaxy.main.fields.TruncatingCharField(default=b'', max_length=255, blank=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        verbose_name='ID',
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                (
+                    'description',
+                    galaxy.main.fields.TruncatingCharField(
+                        default=b'', max_length=255, blank=True
+                    ),
+                ),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),
-                ('github_user', models.CharField(max_length=256, verbose_name=b'Github Username')),
-                ('github_repo', models.CharField(max_length=256, verbose_name=b'Github Repository')),
-                ('owner', models.ForeignKey(related_name='starred', to=settings.AUTH_USER_MODEL)),
+                (
+                    'github_user',
+                    models.CharField(
+                        max_length=256, verbose_name=b'Github Username'
+                    ),
+                ),
+                (
+                    'github_repo',
+                    models.CharField(
+                        max_length=256, verbose_name=b'Github Repository'
+                    ),
+                ),
+                (
+                    'owner',
+                    models.ForeignKey(
+                        related_name='starred', to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('owner', 'github_user', 'github_repo'),
-            },
+            options={'ordering': ('owner', 'github_user', 'github_repo')},
             bases=(models.Model, galaxy.main.mixins.DirtyMixin),
         ),
         migrations.CreateModel(
             name='Subscription',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('description', galaxy.main.fields.TruncatingCharField(default=b'', max_length=255, blank=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        verbose_name='ID',
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                (
+                    'description',
+                    galaxy.main.fields.TruncatingCharField(
+                        default=b'', max_length=255, blank=True
+                    ),
+                ),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),
-                ('github_user', models.CharField(max_length=256, verbose_name=b'Github Username')),
-                ('github_repo', models.CharField(max_length=256, verbose_name=b'Github Repository')),
-                ('owner', models.ForeignKey(related_name='subscriptions', to=settings.AUTH_USER_MODEL)),
+                (
+                    'github_user',
+                    models.CharField(
+                        max_length=256, verbose_name=b'Github Username'
+                    ),
+                ),
+                (
+                    'github_repo',
+                    models.CharField(
+                        max_length=256, verbose_name=b'Github Repository'
+                    ),
+                ),
+                (
+                    'owner',
+                    models.ForeignKey(
+                        related_name='subscriptions',
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('owner', 'github_user', 'github_repo'),
-            },
+            options={'ordering': ('owner', 'github_user', 'github_repo')},
             bases=(models.Model, galaxy.main.mixins.DirtyMixin),
         ),
         migrations.AlterIndexTogether(
             name='subscription',
-            index_together=set([('owner', 'github_user', 'github_repo')]),
+            index_together={('owner', 'github_user', 'github_repo')},
         ),
         migrations.AlterIndexTogether(
             name='stargazer',
-            index_together=set([('owner', 'github_user', 'github_repo')]),
+            index_together={('owner', 'github_user', 'github_repo')},
         ),
     ]

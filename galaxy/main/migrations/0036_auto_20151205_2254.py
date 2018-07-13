@@ -6,20 +6,28 @@ from django.db import models, migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('main', '0035_remove_roleversion_release_date'),
-    ]
+    dependencies = [('main', '0035_remove_roleversion_release_date')]
 
     operations = [
         migrations.AddField(
             model_name='importtask',
             name='travis_build_url',
-            field=models.CharField(default=b'', max_length=256, verbose_name=b'Travis Build URL', blank=True),
+            field=models.CharField(
+                default=b'',
+                max_length=256,
+                verbose_name=b'Travis Build URL',
+                blank=True,
+            ),
         ),
         migrations.AddField(
             model_name='importtask',
             name='travis_status_url',
-            field=models.CharField(default=b'', max_length=256, verbose_name=b'Travis Build Status', blank=True),
+            field=models.CharField(
+                default=b'',
+                max_length=256,
+                verbose_name=b'Travis Build Status',
+                blank=True,
+            ),
         ),
         migrations.AddField(
             model_name='notification',
@@ -29,11 +37,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='role',
             name='travis_build_url',
-            field=models.CharField(default=b'', max_length=256, verbose_name=b'Travis Build URL', blank=True),
+            field=models.CharField(
+                default=b'',
+                max_length=256,
+                verbose_name=b'Travis Build URL',
+                blank=True,
+            ),
         ),
         migrations.AlterField(
             model_name='importtask',
             name='github_reference',
-            field=models.CharField(default=b'', max_length=256, null=True, verbose_name=b'Github Reference', blank=True),
+            field=models.CharField(
+                default=b'',
+                max_length=256,
+                null=True,
+                verbose_name=b'Github Reference',
+                blank=True,
+            ),
         ),
     ]

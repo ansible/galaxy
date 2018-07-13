@@ -48,7 +48,7 @@ MAIN_DOWNLOADS_BLOCK = """
 $ ansible-galaxy install username.rolename
 </pre>
 </div>
-"""
+"""  # noqa: E501
 
 MAIN_FEATURED_BLOG_BLOCK = """
 <span class="upcase title">BLOG:</span>
@@ -61,13 +61,16 @@ in the Ansible universe.</a>
 def upgrade_contentblocks_data(apps, schema_editor):
     ContentBlock = apps.get_model("main", "ContentBlock")
     db_alias = schema_editor.connection.alias
-    ContentBlock.objects.using(db_alias).bulk_create([
-        ContentBlock(name='main-title', content=MAIN_TITLE_BLOCK),
-        ContentBlock(name='main-share', content=MAIN_SHARE_BLOCK),
-        ContentBlock(name='main-downloads', content=MAIN_DOWNLOADS_BLOCK),
-        ContentBlock(name='main-featured-blog',
-                     content=MAIN_FEATURED_BLOG_BLOCK),
-    ])
+    ContentBlock.objects.using(db_alias).bulk_create(
+        [
+            ContentBlock(name='main-title', content=MAIN_TITLE_BLOCK),
+            ContentBlock(name='main-share', content=MAIN_SHARE_BLOCK),
+            ContentBlock(name='main-downloads', content=MAIN_DOWNLOADS_BLOCK),
+            ContentBlock(
+                name='main-featured-blog', content=MAIN_FEATURED_BLOG_BLOCK
+            ),
+        ]
+    )
 
 
 def downgrade_contentblocks_data(apps, schema_editor):
@@ -76,27 +79,33 @@ def downgrade_contentblocks_data(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('main', '0054_role_type_demo'),
-    ]
+    dependencies = [('main', '0054_role_type_demo')]
 
     operations = [
         migrations.CreateModel(
             name='ContentBlock',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False,
-                                        auto_created=True, primary_key=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        verbose_name='ID',
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('name', models.SlugField(unique=True)),
-                ('content', models.TextField(verbose_name=b'content',
-                                             blank=True)),
+                (
+                    'content',
+                    models.TextField(verbose_name=b'content', blank=True),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
+            options={'abstract': False},
             bases=(models.Model, galaxy.main.mixins.DirtyMixin),
         ),
-        migrations.RunPython(upgrade_contentblocks_data,
-                             downgrade_contentblocks_data)
+        migrations.RunPython(
+            upgrade_contentblocks_data, downgrade_contentblocks_data
+        ),
     ]

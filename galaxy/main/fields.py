@@ -74,7 +74,7 @@ class LooseVersionField(models.Field):
         return str(value)
 
 
-# From: http://stackoverflow.com/questions/3459843/auto-truncating-fields-at-max-length-in-django-charfields
+# From: http://stackoverflow.com/questions/3459843/auto-truncating-fields-at-max-length-in-django-charfields # noqa: E501
 class TruncatingCharField(models.CharField):
     def get_prep_value(self, value):
         value = super(TruncatingCharField, self).get_prep_value(value)

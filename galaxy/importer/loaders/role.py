@@ -247,7 +247,9 @@ class RoleLoader(base.BaseLoader):
 
         description = data.pop('description')
 
-        data['role_type'] = self._get_role_type(galaxy_info, container_yml_type)
+        data['role_type'] = self._get_role_type(
+            galaxy_info, container_yml_type
+        )
         data['tags'] = meta_parser.parse_tags()
         data['platforms'] = meta_parser.parse_platforms()
         data['cloud_platforms'] = meta_parser.parse_cloud_platforms()

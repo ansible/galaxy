@@ -97,7 +97,9 @@ class RoleImporter(base.ContentImporter):
             name = platform.name
             versions = platform.versions
             if 'all' in versions:
-                platform_objs = models.Platform.objects.filter(name__iexact=name)
+                platform_objs = models.Platform.objects.filter(
+                    name__iexact=name
+                )
                 if not platform_objs:
                     self.log.warning(
                         u'Invalid platform: "{}-all", skipping.'.format(name))
@@ -109,7 +111,9 @@ class RoleImporter(base.ContentImporter):
 
             for version in versions:
                 try:
-                    p = models.Platform.objects.get(name__iexact=name, release__iexact=str(version))
+                    p = models.Platform.objects.get(
+                        name__iexact=name, release__iexact=str(version)
+                    )
                 except models.Platform.DoesNotExist:
                     self.log.warning(
                         u'Invalid platform: "{0}-{1}", skipping.'

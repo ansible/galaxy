@@ -132,7 +132,8 @@ provider_namespace_urls = [
         name='provider_namespace_list'),
     url(r'^(?P<pk>[0-9]+)/$', views.ProviderNamespaceDetail.as_view(),
         name='provider_namespace_detail'),
-    url(r'^(?P<pk>[0-9]+)/repositories/$', views.ProviderNamespaceRepositoriesList.as_view(),
+    url(r'^(?P<pk>[0-9]+)/repositories/$',
+        views.ProviderNamespaceRepositoriesList.as_view(),
         name='provider_namespace_repositories_list'),
 ]
 

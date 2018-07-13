@@ -18,15 +18,45 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Repository',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('description', galaxy.main.fields.TruncatingCharField(default=b'', max_length=255, blank=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        verbose_name='ID',
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                (
+                    'description',
+                    galaxy.main.fields.TruncatingCharField(
+                        default=b'', max_length=255, blank=True
+                    ),
+                ),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),
-                ('github_user', models.CharField(max_length=256, verbose_name=b'Github Username')),
-                ('github_repo', models.CharField(max_length=256, verbose_name=b'Github Repository')),
+                (
+                    'github_user',
+                    models.CharField(
+                        max_length=256, verbose_name=b'Github Username'
+                    ),
+                ),
+                (
+                    'github_repo',
+                    models.CharField(
+                        max_length=256, verbose_name=b'Github Repository'
+                    ),
+                ),
                 ('is_enabled', models.BooleanField(default=False)),
-                ('owner', models.ForeignKey(related_name='repositories', editable=False, to=settings.AUTH_USER_MODEL)),
+                (
+                    'owner',
+                    models.ForeignKey(
+                        related_name='repositories',
+                        editable=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             bases=(models.Model, galaxy.main.mixins.DirtyMixin),
         ),
@@ -37,6 +67,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterIndexTogether(
             name='repository',
-            index_together=set([('owner', 'github_user', 'github_repo', 'is_enabled')]),
+            index_together={
+                ('owner', 'github_user', 'github_repo', 'is_enabled')
+            },
         ),
     ]

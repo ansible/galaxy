@@ -25,7 +25,7 @@ MAIN_DOWNLOADS_BLOCK = """
    <a href="https://docs.ansible.com/ansible/latest/reference_appendices/galaxy.html#the-command-line-tool"
    target="_blanck">ansible-galaxy</a>, the command line tool that comes
    bundled with Ansible.</p>
-"""
+"""  # noqa: E501
 
 MAIN_FEATURED_BLOG_BLOCK = """
 <a href="https://ansible.com/blog" target="_blank">
@@ -37,14 +37,18 @@ MAIN_FEATURED_BLOG_BLOCK = """
 def upgrade_contentblocks_data(apps, schema_editor):
     ContentBlock = apps.get_model("main", "ContentBlock")
     db_alias = schema_editor.connection.alias
+    ContentBlock.objects.using(db_alias).filter(name='main-title').update(
+        content=MAIN_TITLE_BLOCK
+    )
+    ContentBlock.objects.using(db_alias).filter(name='main-share').update(
+        content=MAIN_SHARE_BLOCK
+    )
+    ContentBlock.objects.using(db_alias).filter(name='main-downloads').update(
+        content=MAIN_DOWNLOADS_BLOCK
+    )
     ContentBlock.objects.using(db_alias).filter(
-        name='main-title').update(content=MAIN_TITLE_BLOCK)
-    ContentBlock.objects.using(db_alias).filter(
-        name='main-share').update(content=MAIN_SHARE_BLOCK)
-    ContentBlock.objects.using(db_alias).filter(
-        name='main-downloads').update(content=MAIN_DOWNLOADS_BLOCK)
-    ContentBlock.objects.using(db_alias).filter(
-        name='main-featured-blog').update(content=MAIN_FEATURED_BLOG_BLOCK)
+        name='main-featured-blog'
+    ).update(content=MAIN_FEATURED_BLOG_BLOCK)
 
 
 def downgrade_contentblocks_data(apps, schema_editor):
@@ -53,11 +57,10 @@ def downgrade_contentblocks_data(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('main', '0104_repository_version'),
-    ]
+    dependencies = [('main', '0104_repository_version')]
 
     operations = [
-        migrations.RunPython(upgrade_contentblocks_data,
-                             downgrade_contentblocks_data)
+        migrations.RunPython(
+            upgrade_contentblocks_data, downgrade_contentblocks_data
+        )
     ]

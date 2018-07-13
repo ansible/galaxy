@@ -36,12 +36,15 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = (u"Update each role's GitHub stargazer and watcher counts, and remove any roles "
-            u"that no longer exist on GitHub.")
+    help = (
+        u"Update each role's GitHub stargazer and watcher counts, "
+        u"and remove any roles that no longer exist on GitHub."
+    )
 
     def handle(self, *args, **options):
 
-        # Users should already be authenticated to Galaxy via GitHub and have a valid token.
+        # Users should already be authenticated to Galaxy via GitHub
+        # and have a valid token.
         task_users = []
         for task_user in settings.GITHUB_TASK_USERS:
             try:
@@ -50,9 +53,13 @@ class Command(BaseCommand):
                 logger.info(u"USER NOT FOUND: {0}".format(task_user))
                 continue
             try:
-                token = SocialToken.objects.get(account__user=user, account__provider='github')
+                token = SocialToken.objects.get(
+                    account__user=user, account__provider='github'
+                )
             except ObjectDoesNotExist:
-                logger.info(u"GITHUB TOKEN NOT FOUND: for user {0}".format(task_user))
+                logger.info(
+                    u"GITHUB TOKEN NOT FOUND: for user {0}".format(task_user)
+                )
                 continue
             task_users.append({
                 u'username': task_user,
@@ -60,10 +67,13 @@ class Command(BaseCommand):
             })
 
         if len(task_users) == 0:
-            raise Exception(u"No task workers found with valid GitHub tokens. "
-                            u"Make sure your task workers are configured properly.")
+            raise Exception(
+                u"No task workers found with valid GitHub tokens. "
+                u"Make sure your task workers are configured properly."
+            )
 
-        agg = Role.objects.filter(is_valid=True, active=True).aggregate(Max('id'))
+        agg = Role.objects.filter(
+            is_valid=True, active=True).aggregate(Max('id'))
         max_id = agg['id__max']
         size = ceil(max_id / float(len(settings.GITHUB_TASK_USERS)))
         in_list = []
@@ -84,32 +94,45 @@ class Command(BaseCommand):
                 )
             )
             in_list.append(role_count.id)
-            refresh_role_counts.delay(start, end, task_users[i]['token'], role_count)
+            refresh_role_counts.delay(
+                start, end, task_users[i]['token'], role_count
+            )
 
-        logger.info(u"Requests submitted to Celery. Waiting for task completion...")
+        logger.info(u"Requests submitted to Celery. "
+                    u"Waiting for task completion...")
         finished = False
         started = time.time()
         while not finished:
             finished = True
-            for obj in RefreshRoleCount.objects.filter(Q(pk__in=in_list), ~Q(state='COMPLETED')):
+            for obj in RefreshRoleCount.objects.filter(
+                    Q(pk__in=in_list), ~Q(state='COMPLETED')):
                 if not obj.state == 'FINISHED':
                     finished = False
                 else:
-                    print(u"{0} Total: {1} Passed: {2} Failed: {3} Deleted: {4} Updated: {5}".format(
-                        obj.description,
-                        obj.failed + obj.passed + obj.deleted + obj.updated,
-                        obj.passed,
-                        obj.failed,
-                        obj.deleted,
-                        obj.updated
-                    ))
+                    print(
+                        u"{0} Total: {1} Passed: {2} Failed: {3} "
+                        u"Deleted: {4} Updated: {5}"
+                        .format(
+                            obj.description,
+                            (obj.failed + obj.passed
+                             + obj.deleted + obj.updated),
+                            obj.passed,
+                            obj.failed,
+                            obj.deleted,
+                            obj.updated
+                        )
+                    )
                     obj.state = 'COMPLETED'
                     obj.save()
             time.sleep(60)
 
         elapsed = time.time() - started
         hours = floor(elapsed / 3600) if elapsed >= 3600 else 0
-        minutes = floor((elapsed - (hours * 3600)) / 60) if (elapsed - (hours * 3600)) >= 60 else 0
+        minutes = (
+            floor((elapsed - (hours * 3600)) / 60)
+            if (elapsed - (hours * 3600)) >= 60
+            else 0
+        )
         seconds = elapsed - (hours * 3600) - (minutes * 60)
         logger.info(
             u"Elapsed time {0:0=2d}.{0:0=2d}.{0:0=2d}"
