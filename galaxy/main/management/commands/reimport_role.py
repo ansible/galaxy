@@ -32,7 +32,11 @@ class Command(BaseCommand):
             raise Exception("Please provide a role ID.")
         role_id = options.get('role_id')[0]
         role = Content.objects.get(id=role_id)
-        last_task = ImportTask.objects.filter(role=role, state='SUCCESS').order_by('-id').first()
+        last_task = (
+            ImportTask.objects
+            .filter(role=role, state='SUCCESS')
+            .order_by('-id').first()
+        )
         task = ImportTask.objects.create(
             github_user=role.github_user,
             github_repo=role.github_repo,

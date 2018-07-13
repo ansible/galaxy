@@ -52,8 +52,8 @@ class TestRoleMetaParser(unittest.TestCase):
 
         assert tags == ['database']
         self.log.warning.assert_called_once_with(
-            "'s q l' is not a valid tag. Tags must container lowercase letters "
-            "and digits only. Skipping.")
+            "'s q l' is not a valid tag. "
+            "Tags must container lowercase letters and digits only. Skipping.")
 
     def test_parse_categories(self):
         parser = role_loader.RoleMetaParser({
@@ -117,13 +117,14 @@ class TestRoleMetaParser(unittest.TestCase):
             'galaxy_info': {
                 'video_links': [{
                     'title': 'Google Drive Video',
-                    'url': 'https://drive.google.com/file/d/gxH17k3EzzJP3g/browse'
+                    'url': 'https://drive.google.com/'
+                           'file/d/gxH17k3EzzJP3g/browse',
                 }, {
                     'title': 'Vimeo Video',
                     'url': 'https://vimeo.com/1733124',
                 }, {
                     'title': 'Youtube Video',
-                    'url': 'https://youtu.be/TxHPpfkGms9eDQ'
+                    'url': 'https://youtu.be/TxHPpfkGms9eDQ',
                 }]
             },
             'dependencies': []
@@ -134,13 +135,16 @@ class TestRoleMetaParser(unittest.TestCase):
         assert videos == [
             models.VideoLink(
                 'https://drive.google.com/file/d/gxH17k3EzzJP3g/preview',
-                'Google Drive Video'),
+                'Google Drive Video'
+            ),
             models.VideoLink(
                 'https://player.vimeo.com/video/1733124',
-                'Vimeo Video'),
+                'Vimeo Video'
+            ),
             models.VideoLink(
                 'https://www.youtube.com/embed/TxHPpfkGms9eDQ',
-                'Youtube Video'),
+                'Youtube Video'
+            ),
         ]
 
 
