@@ -445,8 +445,8 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                             // If the selected item has not changed,
                             //   copy result property values -> this.selected
                             const keys = Object.keys(import_result);
-                            for (let i = 0; i < keys.length; i++ ) {
-                                this.selected[keys[i]] = import_result[keys[i]];
+                            for (const key of keys) {
+                                this.selected[key] = import_result[key];
                             }
                             if (this.selected.state === ImportState.failed ||
                                 this.selected.state === ImportState.success) {
