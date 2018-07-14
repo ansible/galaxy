@@ -141,6 +141,7 @@ class Platform(CommonModelNameNotUnique):
     class Meta:
         ordering = ['name', 'release']
 
+    # FIXME: release should be required, because it's used in __str__
     release = models.CharField(
         max_length=50,
         verbose_name="Distribution Release Version",
