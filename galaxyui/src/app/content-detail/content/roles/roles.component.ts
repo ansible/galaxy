@@ -189,7 +189,7 @@ export class RolesComponent implements OnInit {
             return;
         }
 
-        const queries: Observable<Content>[] = [];
+        const queries: Array<Observable<Content>> = [];
         this._roles.forEach((role: Content) => {
             queries.push(this.contentService.get(role.id));
         });
