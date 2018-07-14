@@ -129,6 +129,7 @@ class Tag(CommonModel):
     def get_absolute_url(self):
         return reverse('api:tag_detail', args=(self.pk,))
 
+    # FIXME: This method looks unused
     def get_num_roles(self):
         return self.roles.filter(active=True, is_valid=True).count()
 
