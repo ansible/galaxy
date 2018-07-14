@@ -15,7 +15,6 @@ import { VendorCardComponent }     from './card/vendor-card.component';
 import { VendorsComponent }        from './vendors.component';
 import { VendorsRoutingModule }    from './vendors.routing.module';
 
-
 @NgModule({
     imports: [
         CommonModule,

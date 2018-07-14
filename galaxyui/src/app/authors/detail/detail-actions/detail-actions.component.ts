@@ -17,7 +17,6 @@ import {
     RepoFormatsTooltips
 } from '../../../enums/repo-types.enum';
 
-
 @Component({
     selector: 'author-detail-actions',
     templateUrl: './detail-actions.component.html',

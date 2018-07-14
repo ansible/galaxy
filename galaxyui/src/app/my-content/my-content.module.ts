@@ -13,7 +13,6 @@ import {
     BsDropdownModule
 } from 'ngx-bootstrap';
 
-
 import { TooltipModule }    from 'ngx-bootstrap/tooltip';
 import { ModalModule }      from 'patternfly-ng';
 import { ActionModule }     from 'patternfly-ng/action/action.module';

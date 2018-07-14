@@ -15,13 +15,11 @@ import {
     RepositoryResolver as AuthorRepositoryResolver
 }  from './authors/authors.resolver.service';
 
-
 import {
     PreloadAllModules,
     RouterModule,
     Routes
 }  from '@angular/router';
-
 
 const appRoutes: Routes = [
     {

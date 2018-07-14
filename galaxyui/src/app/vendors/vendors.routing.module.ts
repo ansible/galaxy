@@ -14,7 +14,6 @@ import {
 
 import { VendorsComponent }         from './vendors.component';
 
-
 const routes: Routes = [{
     path: 'partners',
     component: VendorsComponent,

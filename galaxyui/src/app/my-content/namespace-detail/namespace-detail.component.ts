@@ -75,7 +75,6 @@ export class NamespaceDetailComponent implements OnInit {
     pageIcon = 'fa fa-list';
     pageLoading = true;
 
-
     namespaceForm: FormGroup;
     namespaceFilterConfig: FilterConfig;
     userFilterConfig: FilterConfig;
@@ -258,7 +257,6 @@ export class NamespaceDetailComponent implements OnInit {
             this.getUsers();
         }
     }
-
 
     // private
 

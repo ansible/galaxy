@@ -16,7 +16,6 @@ import { AuthorsRoutingModule }      from './authors.routing.module';
 import { AuthorDetailComponent }     from './detail/author-detail.component';
 import { DetailActionsComponent }    from './detail/detail-actions/detail-actions.component';
 
-
 @NgModule({
     imports: [
         CommonModule,

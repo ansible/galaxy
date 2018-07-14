@@ -45,7 +45,6 @@ import { forkJoin }                from 'rxjs/observable/forkJoin';
 
 import * as moment                 from 'moment';
 
-
 @Component({
     encapsulation: ViewEncapsulation.None,
     selector: 'repositories-content',
