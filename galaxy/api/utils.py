@@ -64,9 +64,9 @@ def camelcase_to_underscore(s):
 
 
 class RequireDebugTrueOrTest(logging.Filter):
-    '''
+    """
     Logging filter to output when in DEBUG mode or running tests.
-    '''
+    """
 
     def filter(self, record):
         from django.conf import settings
