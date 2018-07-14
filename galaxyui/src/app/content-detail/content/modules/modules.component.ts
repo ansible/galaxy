@@ -29,7 +29,6 @@ import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
 import { Observable }        from 'rxjs/Observable';
 import { forkJoin }          from 'rxjs/observable/forkJoin';
 
-
 @Component({
     selector: 'modules-detail',
     templateUrl: './modules.component.html',
@@ -118,7 +117,6 @@ export class ModulesComponent implements OnInit {
             appliedFilters: []
         } as FilterConfig;
 
-
         if (this._selectedContent) {
             this.filterConfig.appliedFilters.push({
                 field: this.filterConfig.fields[0],
@@ -156,7 +154,6 @@ export class ModulesComponent implements OnInit {
         this.query = query;
         this.queryContentList();
     }
-
 
     // private
 

@@ -13,7 +13,6 @@
     "interface-name": false,
     "jsdoc-format": false,
     "max-classes-per-file": false,
-    "no-consecutive-blank-lines": false,
     "object-literal-key-quotes": false,
     "object-literal-shorthand": false,
     "prefer-for-of": false,

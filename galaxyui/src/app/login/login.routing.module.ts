@@ -11,14 +11,12 @@ import {
     LoginComponent
 } from './login.component';
 
-
 const loginRoutes: Routes = [
     {
         path: 'login',
         component: LoginComponent
     }
 ];
-
 
 @NgModule({
     imports: [

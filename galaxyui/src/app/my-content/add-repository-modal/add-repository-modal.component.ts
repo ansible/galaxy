@@ -53,7 +53,6 @@ class ProviderNamespace {
     filteredSources: RepositorySource[];
 }
 
-
 @Component({
     selector: 'add-repository-modal',
     templateUrl: './add-repository-modal.component.html',

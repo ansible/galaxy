@@ -6,7 +6,6 @@ import { of }                   from 'rxjs/observable/of';
 import { catchError, tap }      from 'rxjs/operators';
 import { ApiRoot }              from './api-root';
 
-
 @Injectable()
 export class ApiRootService {
 

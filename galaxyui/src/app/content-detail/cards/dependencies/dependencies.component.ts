@@ -8,7 +8,6 @@ import { CardConfig }     from 'patternfly-ng/card/basic-card/card-config';
 import { Content }        from '../../../resources/content/content';
 import { Repository }     from '../../../resources/repositories/repository';
 
-
 @Component({
     selector: 'card-dependencies',
     templateUrl: './dependencies.component.html',

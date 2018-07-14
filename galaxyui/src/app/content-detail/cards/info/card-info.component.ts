@@ -12,7 +12,6 @@ import { Repository }     from '../../../resources/repositories/repository';
 
 import { ContentTypesPlural }   from '../../../enums/content-types.enum';
 
-
 @Component({
     selector: 'card-info',
     templateUrl: './card-info.component.html',
@@ -79,7 +78,6 @@ export class CardInfoComponent implements OnInit {
     get repoContent(): Content {
         return this._repoContent;
     }
-
 
     config: CardConfig;
 

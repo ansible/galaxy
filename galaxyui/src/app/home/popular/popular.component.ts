@@ -13,7 +13,6 @@ import {
     ContentTypes
 } from '../../enums/content-types.enum';
 
-
 class Category {
     name: string;
     iconClass: string;

@@ -74,7 +74,6 @@ export class NamespaceDetailComponent implements OnInit {
     pageTitle = 'My Content;/my-content;Add Namespace';
     pageLoading = true;
 
-
     namespaceForm: FormGroup;
     namespaceFilterConfig: FilterConfig;
     userFilterConfig: FilterConfig;
@@ -257,7 +256,6 @@ export class NamespaceDetailComponent implements OnInit {
             this.getUsers();
         }
     }
-
 
     // private
 

@@ -15,7 +15,6 @@ import { ActionConfig }     from 'patternfly-ng/action/action-config';
 import { AuthService }      from '../../../../../auth/auth.service';
 import { Repository }        from '../../../../../resources/repositories/repository';
 
-
 @Component({
     encapsulation: ViewEncapsulation.None,
     selector: 'namespace-repository-action',
