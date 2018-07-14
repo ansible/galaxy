@@ -18,8 +18,7 @@ import {
     RouterStateSnapshot
 } from '@angular/router';
 
-
-export interface Me {
+export interface IMe {
     url:            string;
     related:        object;
     summary_fields: object;
@@ -40,15 +39,15 @@ export class AuthService implements CanActivate {
     ) {}
 
     headers: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json');
-    meCache: Me = null;
+    meCache: IMe = null;
     meUrl = '/api/v1/me/';
     redirectUrl = '/home';
 
-    me(): Observable<Me> {
+    me(): Observable<IMe> {
         if (this.meCache) {
             return of(this.meCache);
         }
-        return this.http.get<Me>(this.meUrl, {headers: this.headers})
+        return this.http.get<IMe>(this.meUrl, {headers: this.headers})
             .map((result) => { this.meCache = result; return result; });
     }
 
@@ -87,7 +86,7 @@ export class AuthService implements CanActivate {
                 observer.complete();
             });
         }
-        return this.http.get<Me>(this.meUrl, {headers: this.headers})
+        return this.http.get<IMe>(this.meUrl, {headers: this.headers})
             .map((result) => {
                 this.meCache = result;
                 return this.checkPermissions(route);
