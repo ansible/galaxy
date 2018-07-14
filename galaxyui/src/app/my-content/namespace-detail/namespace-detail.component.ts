@@ -21,7 +21,7 @@ import { FilterField }           from 'patternfly-ng/filter/filter-field';
 import { FilterType }            from 'patternfly-ng/filter/filter-type';
 import { FilterComponent }       from 'patternfly-ng/filter/filter.component';
 
-import { Me }                    from '../../auth/auth.service';
+import { IMe }                   from '../../auth/auth.service';
 import { Namespace }             from '../../resources/namespaces/namespace';
 import { NamespaceService }      from '../../resources/namespaces/namespace.service';
 import { ProviderNamespace }     from '../../resources/provider-namespaces/provider-namespace';
@@ -69,7 +69,7 @@ export class NamespaceDetailComponent implements OnInit {
     }
 
     _namespace: Namespace;
-    me: Me;
+    me: IMe;
 
     pageTitle = 'My Content;/my-content;Add Namespace';
     pageLoading = true;
