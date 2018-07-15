@@ -24,7 +24,7 @@ elif [[ "$TRAVIS_TAG" =~ $GALAXY_VERSION_TAG ]]; then
 
     docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     echo "Pushing docker image: ansible/galaxy:$IMAGE_TAG"
-    docker push ansible/galaxy:$IMAGE_TAG
+    docker "push ansible/galaxy:$IMAGE_TAG"
     echo "Updating ansible/galaxy:latest to ansible/galaxy:$IMAGE_TAG"
     docker push ansible/galaxy:latest
 else
