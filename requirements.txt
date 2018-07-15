@@ -19,6 +19,7 @@ semver
 # Linting
 yamllint
 flake8
+git+https://github.com/chouseknecht/ansible-review.git@feature/structured-logging
 
 # Django
 django>=1.11,<2.0
