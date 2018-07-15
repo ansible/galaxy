@@ -22,7 +22,6 @@ import six
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from django.utils.safestring import mark_safe
 
 from rest_framework.authentication import get_authorization_header
 from rest_framework.exceptions import PermissionDenied
@@ -61,26 +60,6 @@ def get_view_name(cls, suffix=None):
     if name:
         return ('%s %s' % (name, suffix)) if suffix else name
     return views.get_view_name(cls, suffix=None)
-
-
-def get_view_description(cls, html=False):
-    """
-    Wrapper around REST framework get_view_description() to support
-    get_description() method and view_description property on a view class.
-    """
-    if hasattr(cls, 'get_description') and callable(cls.get_description):
-        desc = cls().get_description(html=html)
-        cls = type(cls.__name__, (object,), {'__doc__': desc})
-    elif hasattr(cls, 'view_description'):
-        if callable(cls.view_description):
-            view_desc = cls.view_description()
-        else:
-            view_desc = cls.view_description
-        cls = type(cls.__name__, (object,), {'__doc__': view_desc})
-    desc = views.get_view_description(cls, html=html)
-    if html:
-        desc = '<div class="description">%s</div>' % desc
-    return mark_safe(desc)
 
 
 class APIView(views.APIView):
