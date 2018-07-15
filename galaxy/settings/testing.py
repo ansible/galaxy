@@ -1,5 +1,3 @@
-# (c) 2012-2018, Ansible by Red Hat
-#
 # This file is part of Ansible Galaxy
 #
 # Ansible Galaxy is free software: you can redistribute it and/or modify
@@ -15,6 +13,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 # Django settings for galaxy project.
+
+# FIXME: This module is copy-paste of dev settings. It needs review and fixes.
 
 import os
 import dj_database_url
@@ -47,8 +47,15 @@ DATABASES = {
     )
 }
 
+# By default prod user is "galaxy", so we want to protect ourselves that
+# tests will not run on prod accidentally.
+assert DATABASES["default"]["USER"] != "galaxy"
+
 # Create default alias for worker logging
 DATABASES['logging'] = DATABASES['default'].copy()
+
+# Set the test database name
+DATABASES['default']['TEST'] = {'NAME': 'test_galaxy'}
 
 # Email settings
 # ---------------------------------------------------------
