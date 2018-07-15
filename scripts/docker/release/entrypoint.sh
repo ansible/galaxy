@@ -5,8 +5,9 @@ set -o errexit
 
 readonly VENV_BIN=${VENV_BIN:-/var/lib/galaxy/venv/bin}
 
+# shellcheck disable=SC2034
 VIRTUAL_ENV_DISABLE_PROMPT=1
-source ${VENV_BIN}/activate
+source "${VENV_BIN}/activate"
 
 # FIXME(cutwater): Yet another workaround for running entrypoint not as PID 1
 # All run commands should be implemented outside entrypoint (e.g. in manage.py)
