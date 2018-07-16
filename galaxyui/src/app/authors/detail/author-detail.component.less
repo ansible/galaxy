@@ -15,17 +15,34 @@
         flex-grow: 1;
         flex-wrap: nowrap;
         align-items: center;
-        justify-content: flex-start;
-        margin-top: 30px;
         padding-left: 15px;
         padding-right: 15px;
+    }
+
+    .namespace-header-left{
+        justify-content: flex-start;
+    }
+
+    .namespace-header-right{
+        @media(min-width: 800px){
+            height: 120px;
+            justify-content: flex-end;
+        }
     }
 
     .namespace-details,
     .content-summary {
         flex-grow: 1;
         flex-shrink: 1;
+
     }
+
+    .namespace-content-count {
+        font-size: 16px;
+        font-weight: 700;
+        color: @black;
+    }
+
     .namespace-details {
         display: flex;
         flex-wrap: nowrap;
@@ -65,9 +82,6 @@
                 }
             }
         }
-    }
-    .detail-search-toolbar {
-        margin-top: 40px;
     }
     .repository-list {
         margin-top: 20px;
