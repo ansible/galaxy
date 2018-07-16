@@ -41,8 +41,9 @@ class CustomUserAdmin(admin.ModelAdmin):
     """
     The default UserAdmin class, but with changes for our CustomUser
     where `first_name` and `last_name` are replaced by `full_name` and
-    `short_name`
+    `short_name`.
     """
+
     add_form_template = 'admin/auth/user/add_form.html'
     change_user_password_template = None
     fieldsets = (
@@ -71,9 +72,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         return super(CustomUserAdmin, self).get_fieldsets(request, obj)
 
     def get_form(self, request, obj=None, **kwargs):
-        """
-        Use special form during user creation
-        """
+        """Use special form during user creation."""
         defaults = {}
         if obj is None:
             defaults.update({

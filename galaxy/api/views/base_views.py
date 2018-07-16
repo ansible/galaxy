@@ -81,7 +81,8 @@ class APIView(views.APIView):
 
 
 class GenericAPIView(generics.GenericAPIView, APIView):
-    """Base class for all model-based views.
+    """
+    Base class for all model-based views.
 
     Subclasses should define:
       model = ModelClass

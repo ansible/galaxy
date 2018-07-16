@@ -34,7 +34,8 @@ logger = logging.getLogger(__name__)
 
 
 class LogoutView(CreateAPIView):
-    """ User namespaces available within each active provider """
+    """User namespaces available within each active provider."""
+
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 

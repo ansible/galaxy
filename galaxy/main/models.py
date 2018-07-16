@@ -49,8 +49,10 @@ __all__ = [
 
 @six.python_2_unicode_compatible
 class BaseModel(models.Model, DirtyMixin):
-    """Common model for objects not needing name, description,
-    active attributes."""
+    """
+    Common model for objects not needing name, description,
+    active attributes.
+    """
 
     class Meta:
         abstract = True
@@ -220,6 +222,7 @@ class Video(PrimordialModel):
 @six.python_2_unicode_compatible
 class ContentType(BaseModel):
     """A model that represents content type (e.g. role, module, etc.)."""
+
     name = models.CharField(max_length=512, unique=True, db_index=True,
                             choices=constants.ContentType.choices())
     description = fields.TruncatingCharField(
@@ -496,9 +499,7 @@ class Content(CommonModelNameNotUnique):
 
 
 class Namespace(CommonModel):
-    """
-    Represents the aggregation of multiple namespaces across providers.
-    """
+    """Represents the aggregation of multiple namespaces across providers."""
 
     class Meta:
         ordering = ('name',)
@@ -554,9 +555,7 @@ class Namespace(CommonModel):
 
 
 class Provider(CommonModel):
-    """
-    Valid SCM providers (e.g., GitHub, GitLab, etc.)
-    """
+    """Valid SCM providers (e.g., GitHub, GitLab, etc.)."""
 
     download_url = models.CharField(max_length=256, null=True)
 
@@ -568,9 +567,7 @@ class Provider(CommonModel):
 
 
 class ProviderNamespace(PrimordialModel):
-    """
-    A one-to-one mapping to namespaces within each provider.
-    """
+    """A one-to-one mapping to namespaces within each provider."""
 
     class Meta:
         ordering = ('provider', 'name')

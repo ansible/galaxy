@@ -17,7 +17,8 @@
 
 
 class ImporterError(Exception):
-    """Base class for importer exceptions"""
+    """Base class for importer exceptions."""
+
     pass
 
 

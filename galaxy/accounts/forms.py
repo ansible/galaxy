@@ -27,6 +27,7 @@ class CustomUserCreationForm(forms.ModelForm):
     A form that creates a user, with no privileges, from the given username and
     password.
     """
+
     error_messages = {
         'duplicate_username': _("A user with that username already exists."),
         'password_mismatch': _("The two password fields didn't match."),

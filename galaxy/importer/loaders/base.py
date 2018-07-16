@@ -35,7 +35,8 @@ class BaseLoader(object):
     linters = None
 
     def __init__(self, content_type, path, root, logger=None):
-        """
+        """Initializes a `BaseLoader` object.
+
         :param content_type: Content type.
         :param path: Path to content file or directory relative to
             repository root.

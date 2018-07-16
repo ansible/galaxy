@@ -28,9 +28,7 @@ register = template.Library()
 
 @register.filter
 def querysort(value, arg):
-    """
-    Sorts a query set based on a field
-    """
+    """Sorts a query set based on a field."""
     value = value.order_by(arg)
     return value
 

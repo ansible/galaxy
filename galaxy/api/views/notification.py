@@ -35,9 +35,8 @@ __all__ = [
 
 
 class NotificationSecretList(base_views.ListCreateAPIView):
-    """
-    Integration tokens.
-    """
+    """Integration tokens."""
+
     model = models.NotificationSecret
     serializer_class = serializers.NotificationSecretSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
@@ -232,7 +231,6 @@ class NotificationList(base_views.ListCreateAPIView):
 
     def _get_repo_info(self, request):
         """Return github username and repository from request headers."""
-
         slug = request.META.get('HTTP_TRAVIS_REPO_SLUG')
         if not slug:
             raise ValidationError('Expected "TRAVIS_REPO_SLUG" header')
@@ -240,14 +238,15 @@ class NotificationList(base_views.ListCreateAPIView):
 
     def _get_signature(self, request):
         """
-        Extract the raw bytes of the request signature provided by travis
+        Extract the raw bytes of the request
+        signature provided by travis.
         """
         signature = request.META['HTTP_SIGNATURE']
         return base64.b64decode(signature)
 
     def _get_travis_public_key(self):
         """
-        Returns the PEM encoded public key from the Travis CI /config endpoint
+        Returns the PEM encoded public key from the Travis CI /config endpoint.
         """
         response = requests.get(settings.TRAVIS_CONFIG_URL, timeout=10.0)
         response.raise_for_status()

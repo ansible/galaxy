@@ -224,8 +224,9 @@ class RoleLoader(base.BaseLoader):
     linters = (linters.Flake8Linter, linters.YamlLinter)
 
     def __init__(self, content_type, path, root, metadata_path, logger=None):
-        """
-        :param str path: Path to role directory within repository
+        """Initializes a `RoleLoader` object.
+
+        :param str path: Path to role directory within repository.
         """
         super(RoleLoader, self).__init__(
             content_type, path, root, logger=logger)

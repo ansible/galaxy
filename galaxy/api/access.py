@@ -66,9 +66,7 @@ def check_user_access(user, model_class, action, *args, **kwargs):
 
 
 def get_pk_from_dict(_dict, key):
-    """
-    Helper for obtaining a pk from user data dict or None if not present.
-    """
+    """Helper for obtaining a pk from user data dict or None if not present."""
     try:
         return int(_dict[key])
     except (TypeError, KeyError, ValueError):

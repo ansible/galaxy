@@ -57,6 +57,7 @@ class Content(object):
 
 class Repository(object):
     """Represents repository metadata."""
+
     def __init__(self, branch, commit, format, contents,
                  readme=None, name=None):
         self.branch = branch
@@ -99,6 +100,7 @@ class VideoLinkSchema(mm.Schema):
 
 class ReadmeFileSchema(mm.Schema):
     """A schema for Readme class."""
+
     mimetype = fields.Str()
     raw = fields.Str()
     checksum = fields.Str()
@@ -110,6 +112,7 @@ class ReadmeFileSchema(mm.Schema):
 
 class CommitInfoSchema(mm.Schema):
     """A schema for CommitInfo class."""
+
     sha = fields.Str(validate=validate.Length(equal=SHA1_LEN))
     author = fields.Str()
     author_email = fields.Str()
@@ -143,6 +146,7 @@ class RoleMetaSchema(mm.Schema):
 
 class ContentSchema(mm.Schema):
     """A schema for Content class."""
+
     name = fields.Str()
     original_name = fields.Str()
     path = fields.Str()
@@ -161,6 +165,7 @@ class ContentSchema(mm.Schema):
 
 class RepositorySchema(mm.Schema):
     """A schema for Repository class."""
+
     name = fields.Str()
     branch = fields.Str()
     commit = fields.Nested(CommitInfoSchema())

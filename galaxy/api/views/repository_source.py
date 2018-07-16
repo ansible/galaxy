@@ -120,7 +120,8 @@ class RepositorySourceList(ListAPIView):
 
 
 class RepositorySourceDetail(ListAPIView):
-    """ Details for a specific repo """
+    """Details for a specific repo."""
+
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = RepositorySourceSerializer

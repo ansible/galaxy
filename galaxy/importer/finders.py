@@ -61,6 +61,7 @@ class BaseFinder(object):
 
 class ApbFinder(BaseFinder):
     """Searches for APB repository."""
+
     META_FILES = ['apb.yml', 'apb.yaml']
 
     repository_format = constants.RepositoryFormat.APB

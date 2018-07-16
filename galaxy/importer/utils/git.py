@@ -31,12 +31,14 @@ TIMEOUT_RETCODE = 124
 
 class RepositoryNotExist(Exception):
     """Repository does not exist exception."""
+
     pass
 
 
 @contextlib.contextmanager
 def make_clone_dir(basedir=None):
-    """Creates temporary directory and deletes at the end.
+    """
+    Creates temporary directory and deletes at the end.
 
     Temporary directory may be deleted by `git clone` if clone failed with
     error.
@@ -60,7 +62,8 @@ def make_clone_dir(basedir=None):
 
 
 def clone_repository(clone_url, directory, branch=None):
-    """Clones a git repository to destination directory.
+    """
+    Clones a git repository to destination directory.
 
     :param str clone_url: The repository URL to clone from.
     :param str directory: The name of a directory to clone into.
@@ -95,7 +98,8 @@ def clone_repository(clone_url, directory, branch=None):
 
 
 def get_current_branch(directory=None):
-    """Returns branch name referenced by HEAD.
+    """
+    Returns branch name referenced by HEAD.
 
     :param str directory: Repository directory.
     :returns: Branch name if HEAD refers to branch.
@@ -124,7 +128,8 @@ CommitInfo = collections.namedtuple(
 
 
 def get_raw_commit_info(commit_id='HEAD', directory=None, date_format=None):
-    """Returns metadata for the specified commit.
+    """
+    Returns metadata for the specified commit.
 
     :param commit_id: Commit id, by default HEAD is used.
     :param directory: Repository directory.
@@ -146,7 +151,8 @@ def get_raw_commit_info(commit_id='HEAD', directory=None, date_format=None):
 
 
 def get_commit_info(commit_id='HEAD', directory=None):
-    """Returns metadata for the specified commit.
+    """
+    Returns metadata for the specified commit.
 
     :returns: Commit metadata (e.g. sha, author, comitter, message, etc.)
     :rtype: CommitInfo

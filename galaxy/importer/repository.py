@@ -41,7 +41,8 @@ def import_repository(url, branch=None, temp_dir=None, logger=None):
 
 
 def load_repository(directory, logger=None):
-    """
+    """Loads repository and content info.
+
     :param directory: Repository directory path.
     :type logger: logging.Logger
     :param logger: Optional logger instance.
@@ -61,7 +62,8 @@ class RepositoryLoader(object):
     ]
 
     def __init__(self, path, name=None, logger=None):
-        """
+        """Initializes a `RepositoryLoader` object.
+
         :param str path: Path to the repository directory.
         :param str name: Repository name.
         :param logging.Logger: Logger instance.

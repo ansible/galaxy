@@ -99,7 +99,6 @@ class ModelAccessPermission(permissions.BasePermission):
         Perform basic permissions checking before delegating to the appropriate
         method based on the request method.
         """
-
         # Check that obj (if given) is active, otherwise raise a 404.
         active = getattr(obj, 'active', getattr(obj, 'is_active', True))
         if callable(active):

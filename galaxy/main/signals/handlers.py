@@ -80,7 +80,8 @@ def user_logged_in_handler(request, user, **kwargs):
 @receiver(post_save, sender=models.ImportTask)
 def import_task_post_save(sender, **kwargs):
     """
-    When a role is imported enable the role in the user's repository cache
+    When a role is imported enable the role
+    in the user's repository cache.
     """
     instance = kwargs['instance']
     repo = instance.repository

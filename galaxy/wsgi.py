@@ -15,9 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-"""
-WSGI config for Galaxy project.
-"""
+"""WSGI config for Galaxy project."""
+
 import os
 
 from django.core.wsgi import get_wsgi_application

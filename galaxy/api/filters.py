@@ -39,9 +39,7 @@ GalaxyUser = get_user_model()
 
 
 class ActiveOnlyBackend(BaseFilterBackend):
-    """
-    Filter to show only objects where is_active/active is True.
-    """
+    """Filter to show only objects where is_active/active is True."""
 
     def filter_queryset(self, request, queryset, view):
         for field in queryset.model._meta.fields:
@@ -53,9 +51,7 @@ class ActiveOnlyBackend(BaseFilterBackend):
 
 
 class FieldLookupBackend(BaseFilterBackend):
-    """
-    Filter using field lookups provided via query string parameters.
-    """
+    """Filter using field lookups provided via query string parameters."""
 
     RESERVED_NAMES = ('page', 'page_size', 'format', 'order', 'order_by',
                       'search')
@@ -239,9 +235,7 @@ class FieldLookupBackend(BaseFilterBackend):
 
 
 class OrderByBackend(BaseFilterBackend):
-    """
-    Filter to apply ordering based on query string parameters.
-    """
+    """Filter to apply ordering based on query string parameters."""
 
     def filter_queryset(self, request, queryset, view):
         try:

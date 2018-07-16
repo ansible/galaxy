@@ -180,7 +180,8 @@ class ApiV1RootView(base_views.APIView):
 
 
 class ProviderRootView(base_views.APIView):
-    """ Provider resources """
+    """Provider resources."""
+
     permission_classes = (AllowAny,)
 
     def get(self, request, format=None):
@@ -191,7 +192,8 @@ class ProviderRootView(base_views.APIView):
 
 
 class ActiveProviderList(base_views.ListAPIView):
-    """ Active providers """
+    """Active providers."""
+
     model = models.Provider
     serializer_class = serializers.ProviderSerializer
     permission_classes = (AllowAny,)
@@ -201,7 +203,8 @@ class ActiveProviderList(base_views.ListAPIView):
 
 
 class ActiveProviderDetail(base_views.RetrieveAPIView):
-    """ Active providers """
+    """Active providers."""
+
     model = models.Provider
     serializer_class = serializers.ProviderSerializer
     permission_classes = (AllowAny,)
@@ -469,6 +472,7 @@ class ImportTaskNotificationList(base_views.SubListAPIView):
 
 class ImportTaskLatestList(base_views.ListAPIView):
     """Return the most recent import for each of the user's repositories."""
+
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated,)
     model = models.ImportTask
@@ -1043,6 +1047,7 @@ class RefreshUserRepos(base_views.APIView):
     Return user GitHub repos directly from GitHub.
     Use to refresh cache for the authenticated user.
     """
+
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -1104,9 +1109,8 @@ class RefreshUserRepos(base_views.APIView):
 
 
 class TokenView(base_views.APIView):
-    """
-    Allows ansible-galaxy CLI to retrieve an auth token
-    """
+    """Allows ansible-galaxy CLI to retrieve an auth token."""
+
     def post(self, request, *args, **kwargs):
 
         gh_user = None

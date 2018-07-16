@@ -28,7 +28,7 @@ __all__ = [
 
 
 class VersionField(models.CharField):
-    """Semantic version field"""
+    """Semantic version field."""
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('max_length', 64)
@@ -55,7 +55,7 @@ class VersionField(models.CharField):
 # TODO(cutwater): LooseVersionField is not used in actual models and is kept
 # only because it's referenced by migration 0001_initial.py
 class LooseVersionField(models.Field):
-    """ store and return values as a LooseVersion """
+    """Store and return values as a LooseVersion."""
 
     def db_type(self, connection):
         return 'varchar(64)'

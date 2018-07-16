@@ -22,7 +22,7 @@ from . import models
 
 
 def import_repository(url, output=None, branch=None):
-    """Imports repository and serializes
+    """Imports repository and serializes.
 
     :param url: Remote repository URL.
     :param ouptut: Output file to write import results.

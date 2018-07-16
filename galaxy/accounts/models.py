@@ -43,6 +43,7 @@ class CustomUser(auth_models.AbstractBaseUser,
 
     http://www.w3.org/International/questions/qa-personal-names
     """
+
     username = models.CharField(
         _('username'),
         max_length=30,
@@ -108,9 +109,7 @@ class CustomUser(auth_models.AbstractBaseUser,
         return self.roles.filter(active=True, is_valid=True).count()
 
     def email_user(self, subject, message, from_email=None):
-        """
-        Sends an email to this User.
-        """
+        """Sends an email to this User."""
         send_mail(subject, message, from_email, [self.email])
 
     def hasattr(self, attr):

@@ -64,9 +64,7 @@ def camelcase_to_underscore(s):
 
 
 class RequireDebugTrueOrTest(logging.Filter):
-    """
-    Logging filter to output when in DEBUG mode or running tests.
-    """
+    """Logging filter to output when in DEBUG mode or running tests."""
 
     def filter(self, record):
         from django.conf import settings
@@ -96,7 +94,8 @@ def get_version():
 
 def get_encryption_key(instance, field_name):
     """
-    Generate key for encrypted password based on instance pk and field name.
+    Generate key for encrypted password based on
+    instance pk and field name.
     """
     from django.conf import settings
     h = hashlib.sha1()

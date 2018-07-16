@@ -63,7 +63,7 @@ class GithubAPI(object):
         return client
 
     def user_namespaces(self):
-        """ Return a list of user namespaces """
+        """Return a list of user namespaces."""
         result = []
         try:
             gh_user = self.client.get_user()
@@ -103,7 +103,7 @@ class GithubAPI(object):
         return result
 
     def get_namespace_repositories(self, namespace, name=None):
-        """ Return a list of repositories for a given namespace """
+        """Return a list of repositories for a given namespace."""
         gh_user = self.client.get_user()
         repos = []
         for gh_repo in gh_user.get_repos(type='public'):
