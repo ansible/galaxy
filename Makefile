@@ -155,8 +155,6 @@ dev/test:
 # TODO:  Revert to $(DOCKER_COMPOSE)
 # Currently `docker exec` offers -e option for setting Env variables, and `docker-compose exec` does not.
 # Setting the postgres connetion string to use postgres user, to have authority to create and destroy the test database.
-# TODO: Add note about testing and configuring coverage.xml to be used with  pyCharm (pro only),
-# VSCode f.ex. coverage-gutters + config "coverage-gutters.xmlname": "coverage.xml
 	@docker exec -e GALAXY_DB_URL=postgres://postgres:postgres@postgres:5432/galaxy galaxy_galaxy_1 \
     bash -c '\
       source $(VENV_BIN)/activate; \
