@@ -152,17 +152,16 @@ dev/shellcheck:
 .PHONY: dev/test
 dev/test:
 	@echo "Running tests"
-# TODO:  Revert to $(DOCKER_COMPOSE)
-# Currently `docker exec` offers -e option for setting Env variables, and `docker-compose exec` does not.
-# Setting the postgres connetion string to use postgres user, to have authority to create and destroy the test database.
-	@docker exec -e GALAXY_DB_URL=postgres://postgres:postgres@postgres:5432/galaxy galaxy_galaxy_1 \
-    bash -c '\
-      source $(VENV_BIN)/activate; \
-      pytest galaxy \
-        --cov galaxy \
-        --cov-report xml \
-        --cov-report term \
-        --cov-report html '
+# TODO: Revert to $(VENV_BIN)/python. Some tests (flake8 and yamllint) require
+# tools on $PATH, this cannot be chieved with just $(VENV_BIN)/python command.
+# So virtual environment must be activated in order to expose these utilities.
+# TODO: Since app is isolated in container already, it's probably acceptable to
+# get rid of virtual environment and install python packages in system dirs.
+# Other option are:
+# - install side packages globally or
+# - call tools using python api instead of shell commands.
+	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
+		source $(VENV_BIN)/activate; pytest galaxy'
 
 .PHONY: dev/waitenv
 dev/waitenv:
