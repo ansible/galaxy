@@ -1104,9 +1104,9 @@ class RefreshUserRepos(base_views.APIView):
 
 
 class TokenView(base_views.APIView):
-    '''
+    """
     Allows ansible-galaxy CLI to retrieve an auth token
-    '''
+    """
     def post(self, request, *args, **kwargs):
 
         gh_user = None

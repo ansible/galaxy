@@ -37,10 +37,10 @@ __all__ = ['ModelAccessPermission']
 
 
 class ModelAccessPermission(permissions.BasePermission):
-    '''
+    """
     Default permissions class to check user access based on the model and
     request method, optionally verifying the request data.
-    '''
+    """
 
     def check_options_permissions(self, request, view, obj=None):
         return self.check_get_permissions(request, view, obj)
@@ -95,10 +95,10 @@ class ModelAccessPermission(permissions.BasePermission):
         return check_user_access(request.user, view.model, 'delete', obj)
 
     def check_permissions(self, request, view, obj=None):
-        '''
+        """
         Perform basic permissions checking before delegating to the appropriate
         method based on the request method.
-        '''
+        """
 
         # Check that obj (if given) is active, otherwise raise a 404.
         active = getattr(obj, 'active', getattr(obj, 'is_active', True))
