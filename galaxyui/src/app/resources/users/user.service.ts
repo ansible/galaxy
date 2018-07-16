@@ -7,7 +7,6 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { PagedResponse }        from '../paged-response';
 import { User }                 from './user';
 
-
 @Injectable()
 export class UserService {
 

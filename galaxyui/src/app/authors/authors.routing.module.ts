@@ -17,7 +17,6 @@ import {
 import { AuthorsComponent }         from './authors.component';
 import { AuthorDetailComponent }    from './detail/author-detail.component';
 
-
 const routes: Routes = [{
         path: 'community',
         component: AuthorsComponent,

@@ -4,7 +4,6 @@ import {
     OnInit
 } from '@angular/core';
 
-
 @Component({
     selector: 'copy-to-clipboard',
     templateUrl: './clipboard.component.html',

@@ -29,7 +29,6 @@ import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
 import { Observable }        from 'rxjs/Observable';
 import { forkJoin }          from 'rxjs/observable/forkJoin';
 
-
 @Component({
     selector: 'module-utils-detail',
     templateUrl: './module-utils.component.html',
@@ -158,7 +157,6 @@ export class ModuleUtilsComponent implements OnInit {
         this.query = query;
         this.queryContentList();
     }
-
 
     // private
 

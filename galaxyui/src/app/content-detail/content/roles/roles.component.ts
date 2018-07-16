@@ -27,7 +27,6 @@ import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
 import { Observable }        from 'rxjs/Observable';
 import { forkJoin }          from 'rxjs/observable/forkJoin';
 
-
 @Component({
     selector: 'roles-detail',
     templateUrl: './roles.component.html',
@@ -149,7 +148,6 @@ export class RolesComponent implements OnInit {
         this.query = query;
         this.queryContentList();
     }
-
 
     // private
 

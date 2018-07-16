@@ -26,7 +26,6 @@ import { PluginsComponent }            from './content/plugins/plugins.component
 import { RolesComponent }              from './content/roles/roles.component';
 import { RepositoryComponent }         from './repository/repository.component';
 
-
 @NgModule({
     imports: [
         TooltipModule.forRoot(),

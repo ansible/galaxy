@@ -18,7 +18,6 @@ import {
     RouterStateSnapshot
 } from '@angular/router';
 
-
 export interface Me {
     url:            string;
     related:        object;

@@ -43,7 +43,6 @@ import { AuthService }          from './auth/auth.service';
 import { ApiRoot }              from './resources/api-root/api-root';
 import { ApiRootService }       from './resources/api-root/api-root.service';
 
-
 @Component({
     selector: 'galaxy-nav',
     styleUrls:   ['./app.component.less'],

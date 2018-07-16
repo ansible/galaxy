@@ -5,7 +5,6 @@ import { TooltipModule }       from 'ngx-bootstrap/tooltip';
 
 import { ClipboardComponent }  from './clipboard/clipboard.component';
 
-
 @NgModule({
     imports: [
         CommonModule,
