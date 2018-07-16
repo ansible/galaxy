@@ -44,24 +44,6 @@ __all__ = [
 logger = logging.getLogger('galaxy.api.base_views')
 
 
-def get_view_name(cls, suffix=None):
-    """
-    Wrapper around REST framework get_view_name() to support get_name() method
-    and view_name property on a view class.
-    """
-    name = ''
-    if hasattr(cls, 'get_name') and callable(cls.get_name):
-        name = cls().get_name()
-    elif hasattr(cls, 'view_name'):
-        if callable(cls.view_name):
-            name = cls.view_name()
-        else:
-            name = cls.view_name
-    if name:
-        return ('%s %s' % (name, suffix)) if suffix else name
-    return views.get_view_name(cls, suffix=None)
-
-
 class APIView(views.APIView):
 
     def get_authenticate_header(self, request):

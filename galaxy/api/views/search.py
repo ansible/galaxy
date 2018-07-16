@@ -265,11 +265,11 @@ class PlatformsSearchView(base.ListAPIView):
         if releases:
             queryset = queryset.filter(release__in=releases)
         if autocomplete:
-            where_clause = '''
+            where_clause = """
                 to_tsvector(
                     name || ' ' || release || ' ' || coalesce(alias, ''))
                 @@ to_tsquery(quote_literal(%s) || ':*')
-            '''
+            """
             queryset = queryset.extra(where=[where_clause],
                                       params=[autocomplete])
         return self.make_response(queryset)
