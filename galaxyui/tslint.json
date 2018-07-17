@@ -7,7 +7,6 @@
   ],
   "rules": {
     "align": false,
-    "array-type": false,
     "arrow-parens": false,
     "ban-types": false,
     "interface-name": false,

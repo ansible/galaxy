@@ -235,7 +235,7 @@ export class ContentDetailComponent implements OnInit {
     }
 
     private getContentTypeCounts() {
-        const queries: Observable<PagedResponse>[] = [];
+        const queries: Array<Observable<PagedResponse>> = [];
         for (const content_type in ContentTypes) {
             if (ContentTypes.hasOwnProperty(content_type)) {
                 if (ContentTypes[content_type] === 'plugin') {

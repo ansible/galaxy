@@ -187,7 +187,7 @@ export class ModulesComponent implements OnInit {
     }
 
     private getContentDetail() {
-        const queries: Observable<Content>[] = [];
+        const queries: Array<Observable<Content>> = [];
         this._modules.forEach((module: Content) => {
             queries.push(this.contentService.get(module.id));
         });

@@ -225,7 +225,7 @@ export class PluginsComponent implements OnInit {
             return;
         }
 
-        const queries: Observable<Content>[] = [];
+        const queries: Array<Observable<Content>> = [];
         this._plugins.forEach((plugin: Content) => {
             queries.push(this.contentService.get(plugin.id));
         });

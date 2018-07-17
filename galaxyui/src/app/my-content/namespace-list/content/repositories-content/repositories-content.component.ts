@@ -150,7 +150,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
     private getRepositories() {
         this.loading = true;
-        const queries: Observable<Repository[]>[] = [];
+        const queries: Array<Observable<Repository[]>> = [];
         this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
             queries.push(this.repositoryService.query({ 'provider_namespace__id': pns.id, 'page_size': 1000}));
         });
@@ -211,7 +211,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     }
 
     private refreshRepositories() {
-        const queries: Observable<Repository[]>[] = [];
+        const queries: Array<Observable<Repository[]>> = [];
         this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
             queries.push(this.repositoryService.query({'provider_namespace__id': pns.id, 'page_size': 1000}));
         });

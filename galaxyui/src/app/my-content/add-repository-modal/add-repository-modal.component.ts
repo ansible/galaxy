@@ -140,7 +140,7 @@ export class AddRepositoryModalComponent implements OnInit {
     saveRepos() {
         this.repositoriesAdded = true;
         this.saveInProgress = true;
-        const saveRequests: Observable<Repository>[] = [];
+        const saveRequests: Array<Observable<Repository>> = [];
         const selected: RepositorySource[] = this.selectedPNS.repoSources
             .filter((repoSource) => repoSource.isSelected);
 
