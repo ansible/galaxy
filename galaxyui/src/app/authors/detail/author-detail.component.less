@@ -15,34 +15,17 @@
         flex-grow: 1;
         flex-wrap: nowrap;
         align-items: center;
+        justify-content: flex-start;
+        margin-top: 30px;
         padding-left: 15px;
         padding-right: 15px;
-    }
-
-    .namespace-header-left{
-        justify-content: flex-start;
-    }
-
-    .namespace-header-right{
-        @media(min-width: 800px){
-            height: 120px;
-            justify-content: flex-end;
-        }
     }
 
     .namespace-details,
     .content-summary {
         flex-grow: 1;
         flex-shrink: 1;
-
     }
-
-    .namespace-content-count {
-        font-size: 16px;
-        font-weight: 700;
-        color: @black;
-    }
-
     .namespace-details {
         display: flex;
         flex-wrap: nowrap;
@@ -83,6 +66,15 @@
             }
         }
     }
+    .content-count {
+        display: inline-block;
+        color: @black;
+        font-size: 14px;
+        margin-right: 15px;
+    }
+    .detail-search-toolbar {
+        margin-top: 40px;
+    }
     .repository-list {
         margin-top: 20px;
     }
@@ -91,15 +83,26 @@
     .repo-count {
         font-size: 12px;
     }
+    .list-pf-additional-content.counts {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: middle;
+    }
 
-    .content-count{
+    .list-pf-additional-content.counts > div {
         font-size: 12px;
-        margin-right: 5px;
+        margin-right: 15px;
         .fa {
             font-size: 14px;
         }
         .count {
             font-weight: 700;
+            padding: 0 5px;
         }
+    }
+    .list-pf-additional-content.counts div:last-child {
+        margin-right: 0;
     }
 }
