@@ -16,24 +16,19 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from datetime import timedelta
-
 from django.core.exceptions import ValidationError
 from django.db.models.manager import Manager
 from django.db.utils import DataError, IntegrityError
-from django.utils import timezone
 from django.test import TestCase
 
 import mock
 import pytest
 
 from galaxy.main.models import Category
+from galaxy.common.testing import NOW, LATER
 
 
 class CategoryModelTest(TestCase):
-    NOW = timezone.now()
-    LATER = NOW + timedelta(hours=1)
-
     VALID_NAME = "NAME"
 
     NAME_MAX_LENGTH = 512
@@ -53,12 +48,12 @@ class CategoryModelTest(TestCase):
 
         # check defaults
         assert category.name == ""
-        assert category.created == self.NOW
-        assert category.modified == self.NOW
+        assert category.created == NOW
+        assert category.modified == NOW
 
         category.save()
-        assert category.modified != self.NOW
-        assert category.modified == self.LATER
+        assert category.modified != NOW
+        assert category.modified == LATER
         assert fake_now.call_count == 3
 
     @pytest.mark.model_fields_validation

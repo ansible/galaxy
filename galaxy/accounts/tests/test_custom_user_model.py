@@ -25,11 +25,10 @@ import mock
 import pytest
 
 from galaxy.accounts.models import CustomUser
+from galaxy.common.testing import NOW
 
 
 class CustomUserModelTest(TestCase):
-    NOW = timezone.now()
-
     VALID_EMAIL = "user@example.com"
     VALID_PASSWORD = "****"
     VALID_USERNAME = "USERNAME"
@@ -66,7 +65,7 @@ class CustomUserModelTest(TestCase):
         assert not user.is_staff
         assert user.email == ""
         assert user.is_active
-        assert user.date_joined == self.NOW
+        assert user.date_joined == NOW
         assert user.karma == 0
         assert user.avatar_url == ""
         assert not user.cache_refreshed
