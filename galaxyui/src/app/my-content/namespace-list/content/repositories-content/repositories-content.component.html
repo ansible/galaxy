@@ -1,3 +1,11 @@
+<div class="toolbar" *ngIf="maxItems > 5"
+    [ngClass]="{'toolbar-empty': filterConfig.appliedFilters.length === 0,
+                'toolbar-with-search': filterConfig.appliedFilters.length > 0}">
+    <pfng-toolbar [config]="toolbarConfig"
+                  (onFilterChange)="filterChanged($event)">
+    </pfng-toolbar>
+</div>
+
 <div class="repos-container">
     <!--div class="content-refresh" [ngClass]="{'hide-content': !refreshing}"><i class="fa fa-spinner fa-spin"></i>  Refreshing...</div-->
     <div *ngIf="namespace.active">
@@ -48,6 +56,15 @@
                 </namespace-repository-action>
             </ng-template>
             </pfng-list>
+
+        <div class="pagination" *ngIf="maxItems > 5">
+            <pfng-pagination
+                [config]='paginationConfig'
+                (onPageSizeChange)="handlePageChange($event)"
+                (onPageNumberChange)="handlePageChange($event)">
+               </pfng-pagination>
+        </div>
+
         <div class="content-loader" [ngClass]="{'hide-content': !loading}">
             <div class="content-loader-inner">
                 <i class="fa fa-spinner fa-spin fa-3x"></i>
