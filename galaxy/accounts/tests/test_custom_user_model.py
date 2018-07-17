@@ -52,7 +52,8 @@ class CustomUserModelTest(TestCase):
     @mock.patch.object(
         CustomUser._meta.get_field('date_joined'),
         "get_default",
-        side_effect=[NOW])
+        side_effect=[NOW]
+    )
     def test_create_minimal(self, fake_now):
         # no mandatory fields
         user = CustomUser.objects.create()
@@ -76,26 +77,34 @@ class CustomUserModelTest(TestCase):
     def test_username_length_is_limited_in_db(self):
         # does not raise
         CustomUser.objects.create(
-            username='*' * self.USERNAME_MAX_LENGTH)
+            username='*' * self.USERNAME_MAX_LENGTH
+        )
 
         with pytest.raises(DataError) as excinfo:
             CustomUser.objects.create(
-                username='*' * (self.USERNAME_MAX_LENGTH + 1))
+                username='*' * (self.USERNAME_MAX_LENGTH + 1)
+            )
+
         assert str(excinfo.value) == (
             'value too long for type character varying({max_allowed})\n'
-            .format(max_allowed=self.USERNAME_MAX_LENGTH))
+        ).format(
+            max_allowed=self.USERNAME_MAX_LENGTH
+        )
 
     @pytest.mark.database_integrity
     def test_username_must_be_unique_in_db(self):
-        duplicated_name = 'duplicated_name'
+
         with pytest.raises(IntegrityError) as excinfo:
-            CustomUser.objects.create(username=duplicated_name)
-            CustomUser.objects.create(username=duplicated_name)
+            CustomUser.objects.create(username=self.VALID_USERNAME)
+            CustomUser.objects.create(username=self.VALID_USERNAME)
+
         assert str(excinfo.value) == (
             'duplicate key value violates unique constraint '
             '"accounts_customuser_username_key"\n'
             'DETAIL:  Key (username)=({duplicated_name}) already exists.\n'
-            .format(duplicated_name=duplicated_name))
+        ).format(
+            duplicated_name=self.VALID_USERNAME
+        )
 
     @pytest.mark.model_fields_validation
     def test_username_must_match_regex(self):
@@ -103,67 +112,94 @@ class CustomUserModelTest(TestCase):
         CustomUser(
             username='Abc',
             password=self.VALID_PASSWORD,
-            email=self.VALID_EMAIL).full_clean()
+            email=self.VALID_EMAIL
+        ).full_clean()
 
         # does not raise
         CustomUser(
             username='A',
             password=self.VALID_PASSWORD,
-            email=self.VALID_EMAIL).full_clean()
+            email=self.VALID_EMAIL
+        ).full_clean()
 
         # does not raise
         CustomUser(
             username='007',
             password=self.VALID_PASSWORD,
-            email=self.VALID_EMAIL).full_clean()
+            email=self.VALID_EMAIL
+        ).full_clean()
 
         # does not raise
         CustomUser(
             username='@',
             password=self.VALID_PASSWORD,
-            email=self.VALID_EMAIL).full_clean()
+            email=self.VALID_EMAIL
+        ).full_clean()
 
         # does not raise
         CustomUser(
             username='+++',
             password=self.VALID_PASSWORD,
-            email=self.VALID_EMAIL).full_clean()
+            email=self.VALID_EMAIL
+        ).full_clean()
 
         # does not raise
         CustomUser(
             username='---',
             password=self.VALID_PASSWORD,
-            email=self.VALID_EMAIL).full_clean()
+            email=self.VALID_EMAIL
+        ).full_clean()
 
         with pytest.raises(ValidationError) as excinfo:
             CustomUser(
                 username='',
                 password=self.VALID_PASSWORD,
                 email=self.VALID_EMAIL).full_clean()
+
         assert str(excinfo.value) == (
-            "{'username': [u'This field cannot be blank.']}")
+            "{'username': [u'This field cannot be blank.']}"
+        )
 
         with pytest.raises(ValidationError) as excinfo:
             CustomUser(
                 username='~',
                 password=self.VALID_PASSWORD,
-                email=self.VALID_EMAIL).full_clean()
+                email=self.VALID_EMAIL
+            ).full_clean()
+
         assert str(excinfo.value) == (
-            "{'username': [u'Enter a valid username.']}")
+            "{'username': [u'Enter a valid username.']}"
+        )
 
         with pytest.raises(ValidationError) as excinfo:
             CustomUser(
                 username='$',
                 password=self.VALID_PASSWORD,
-                email=self.VALID_EMAIL).full_clean()
+                email=self.VALID_EMAIL
+            ).full_clean()
+
         assert str(excinfo.value) == (
-            "{'username': [u'Enter a valid username.']}")
+            "{'username': [u'Enter a valid username.']}"
+        )
 
         with pytest.raises(ValidationError) as excinfo:
             CustomUser(
                 username='"',
                 password=self.VALID_PASSWORD,
-                email=self.VALID_EMAIL).full_clean()
+                email=self.VALID_EMAIL
+            ).full_clean()
+
+        assert str(excinfo.value) == (
+            "{'username': [u'Enter a valid username.']}"
+        )
+
+        with pytest.raises(ValidationError) as excinfo:
+            CustomUser(
+                username=u'юникод',
+                password=self.VALID_PASSWORD,
+                email=self.VALID_EMAIL
+            ).full_clean()
+
         assert str(excinfo.value) == (
             "{'username': [u'Enter a valid username.']}")
 
@@ -171,17 +207,12 @@ class CustomUserModelTest(TestCase):
             CustomUser(
                 username=u'юникод',
                 password=self.VALID_PASSWORD,
-                email=self.VALID_EMAIL).full_clean()
-        assert str(excinfo.value) == (
-            "{'username': [u'Enter a valid username.']}")
+                email=self.VALID_EMAIL
+            ).full_clean()
 
-        with pytest.raises(ValidationError) as excinfo:
-            CustomUser(
-                username=u'юникод',
-                password=self.VALID_PASSWORD,
-                email=self.VALID_EMAIL).full_clean()
         assert str(excinfo.value) == (
-            "{'username': [u'Enter a valid username.']}")
+            "{'username': [u'Enter a valid username.']}"
+        )
 
     @pytest.mark.database_integrity
     def test_full_name_length_is_limited_in_db(self):
@@ -191,10 +222,14 @@ class CustomUserModelTest(TestCase):
 
         with pytest.raises(DataError) as excinfo:
             CustomUser.objects.create(
-                full_name='*' * (self.FULL_NAME_MAX_LENGTH + 1))
+                full_name='*' * (self.FULL_NAME_MAX_LENGTH + 1)
+            )
+
         assert str(excinfo.value) == (
             'value too long for type character varying({max_allowed})\n'
-            .format(max_allowed=self.FULL_NAME_MAX_LENGTH))
+        ).format(
+            max_allowed=self.FULL_NAME_MAX_LENGTH
+        )
 
     @pytest.mark.model_fields_validation
     def test_full_name_length_is_limited(self):
@@ -203,17 +238,24 @@ class CustomUserModelTest(TestCase):
             username=self.VALID_USERNAME,
             password=self.VALID_PASSWORD,
             email=self.VALID_EMAIL,
-            full_name='*' * self.EMAIL_MAX_LENGTH).full_clean()
+            full_name='*' * self.EMAIL_MAX_LENGTH
+        ).full_clean()
 
         with pytest.raises(ValidationError) as excinfo:
             CustomUser(
                 username=self.VALID_USERNAME,
                 password=self.VALID_PASSWORD,
                 email=self.VALID_EMAIL,
-                full_name='*' * (self.EMAIL_MAX_LENGTH + 1)).full_clean()
+                full_name='*' * (self.EMAIL_MAX_LENGTH + 1)
+            ).full_clean()
+
         assert str(excinfo.value) == (
-            "{'full_name': [u'Ensure this value has at most 254 "
-            "characters (it has 255).']}")
+            "{{'full_name': [u'Ensure this value has at most {valid} "
+            "characters (it has {given}).']}}"
+        ).format(
+            valid=self.FULL_NAME_MAX_LENGTH,
+            given=self.FULL_NAME_MAX_LENGTH + 1
+        )
 
     @pytest.mark.database_integrity
     def test_short_name_length_is_limited_in_db(self):
@@ -223,10 +265,14 @@ class CustomUserModelTest(TestCase):
 
         with pytest.raises(DataError) as excinfo:
             CustomUser.objects.create(
-                short_name='*' * (self.SHORT_NAME_MAX_LENGTH + 1))
+                short_name='*' * (self.SHORT_NAME_MAX_LENGTH + 1)
+            )
+
         assert str(excinfo.value) == (
             'value too long for type character varying({max_allowed})\n'
-            .format(max_allowed=self.SHORT_NAME_MAX_LENGTH))
+        ).format(
+            max_allowed=self.SHORT_NAME_MAX_LENGTH
+        )
 
     @pytest.mark.database_integrity
     def test_email_length_is_limited_in_db(self):
@@ -239,7 +285,9 @@ class CustomUserModelTest(TestCase):
                 email='*' * (self.EMAIL_MAX_LENGTH + 1))
         assert str(excinfo.value) == (
             'value too long for type character varying({max_allowed})\n'
-            .format(max_allowed=self.EMAIL_MAX_LENGTH))
+        ).format(
+            max_allowed=self.EMAIL_MAX_LENGTH
+        )
 
     @pytest.mark.database_integrity
     def test_email_must_be_unique_in_db(self):
@@ -270,7 +318,8 @@ class CustomUserModelTest(TestCase):
         user = CustomUser(
             username=self.VALID_USERNAME,
             password=self.VALID_PASSWORD,
-            email=self.VALID_EMAIL)
+            email=self.VALID_EMAIL
+        )
 
         assert str(user) == self.VALID_USERNAME
 
@@ -280,40 +329,47 @@ class CustomUserModelTest(TestCase):
         user = CustomUser(
             username=self.VALID_USERNAME,
             password=self.VALID_PASSWORD,
-            email=self.VALID_EMAIL)
+            email=self.VALID_EMAIL
+        )
 
         assert repr(user) == (
             '<CustomUser: {username}>'
-            .format(username=self.VALID_USERNAME))
+        ).format(username=self.VALID_USERNAME)
 
     @pytest.mark.model_methods
     def test_get_full_name(self):
         # this method strips whitespaces from full name
         user = CustomUser(
-            full_name="Full name")
+            full_name="Full name"
+        )
         assert user.get_full_name() == "Full name"
 
         user = CustomUser(
-            full_name="Full name with trailing spaces         ")
+            full_name="Full name with trailing spaces         "
+        )
         assert user.get_full_name() == "Full name with trailing spaces"
 
         user = CustomUser(
-            full_name="Full name with newlines \n\n\n")
+            full_name="Full name with newlines \n\n\n"
+        )
         assert user.get_full_name() == "Full name with newlines"
 
     @pytest.mark.model_methods
     def test_get_short_name(self):
         # this method strips whitespaces from short name
         user = CustomUser(
-            short_name="Short name")
+            short_name="Short name"
+        )
         assert user.get_short_name() == "Short name"
 
         user = CustomUser(
-            short_name="Short name with trailing spaces         ")
+            short_name="Short name with trailing spaces         "
+        )
         assert user.get_short_name() == "Short name with trailing spaces"
 
         user = CustomUser(
-            short_name="Short name with newlines \n\n\n")
+            short_name="Short name with newlines \n\n\n"
+        )
         assert user.get_short_name() == "Short name with newlines"
 
     @pytest.mark.model_methods
@@ -324,9 +380,13 @@ class CustomUserModelTest(TestCase):
 
         assert user.get_absolute_url() == (
             '/users/{username}/'
-            .format(username=self.VALID_USERNAME))
+        ).format(
+            username=self.VALID_USERNAME
+        )
 
         user = CustomUser(
-            username="Aaa123@")
+            username="Aaa123@"
+        )
         assert user.get_absolute_url() == (
-            '/users/Aaa123%40/')
+            '/users/Aaa123%40/'
+        )
