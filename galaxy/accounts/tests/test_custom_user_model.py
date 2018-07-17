@@ -241,6 +241,27 @@ class CustomUserModelTest(TestCase):
             'value too long for type character varying({max_allowed})\n'
             .format(max_allowed=self.EMAIL_MAX_LENGTH))
 
+    @pytest.mark.database_integrity
+    def test_email_must_be_unique_in_db(self):
+
+        with pytest.raises(IntegrityError) as excinfo:
+            CustomUser.objects.create(
+                username=self.VALID_USERNAME,
+                email=self.VALID_EMAIL
+            )
+            CustomUser.objects.create(
+                username=self.VALID_USERNAME + "_",
+                email=self.VALID_EMAIL
+            )
+
+        assert str(excinfo.value) == (
+            'duplicate key value violates unique constraint '
+            '"accounts_customuser_email_key"\n'
+            'DETAIL:  Key (email)=({duplicated_name}) already exists.\n'
+        ).format(
+            duplicated_name=self.VALID_EMAIL
+        )
+
     # testing custom methods
 
     @pytest.mark.model_methods
