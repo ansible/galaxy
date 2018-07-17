@@ -3,8 +3,8 @@
 <div id="author-detail" class="container-fluid">
 
     <div class="row" *ngIf="!authorNotFound">
-        <div class="col-sm-6">
-            <div class="namespace namespace-header-left">
+        <div class="col-sm-12">
+            <div class="namespace">
                 <div class="namespace-details">
                     <div class="namespace-img">
                         <table class="img-wrapper">
@@ -32,22 +32,12 @@
                         </p>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-sm-3">
-            <div class="namespace namespace-header-right">
                 <div class="content-summary">
-                    <div *ngFor="let count of namespace.contentCounts" class="namespace-content-count">
+                    <div *ngFor="let count of namespace.contentCounts" class="content-count">
                          <span class="{{ count.iconClass }}"></span>
                         <strong>{{count.count}}</strong> {{count.title}}
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="namespace namespace-header-right" *ngIf="namespace.html_url">
-                <a target="_blank" href="{{ namespace.html_url }}" class="btn btn-default primary-action"><span class="fa fa-github"></span> View on GitHub</a>
             </div>
         </div>
     </div>
@@ -82,40 +72,34 @@
                                 <a [routerLink]="['/', item.summary_fields['namespace']['name'], item.name]"
                                    class="repo-name" tooltip="View content details">{{ item.name }}</a>
                             </div>
-                            <div class="list-pf-description">{{ item.description }}</div>
+                            <div class="list-pf-description text-overflow-pf"><span class="repo-description">{{ item.description }}</span></div>
                         </div>
-                        <div class="list-pf-additional-content">
-                            <div class="content-count">
+                        <div class="list-pf-additional-content counts">
+                            <div class="repo-count">
                                 <i class="fa fa-download"></i>
                                 <span class="count">{{ item.download_count }}</span>
                                 <span class="count-label">Downloads</span>
                             </div>
-
-                            <div class="content-count">
+                            <div class="repo-count">
                                 <i class="fa fa-eye"></i>
                                 <span class="count">{{ item.watchers_count }}</span>
                                 <span class="count-label">Watchers</span>
                             </div>
-
-                            <div class="content-count">
+                            <div class="repo-count">
                                 <i class="fa fa-star"></i>
                                 <span class="count">{{ item.stargazers_count }}</span>
                                 <span class="count-label">Stars</span>
                             </div>
-
-                            <div class="content-count">
+                            <div class="repo-count">
                                 <i class="fa fa-copy"></i>
                                 <span class="count">{{ item.forks_count }}</span>
                                 <span class="count-label">Forks</span>
                             </div>
-
-                            <div *ngIf="item.travis_build_url">
-                                <div class="travis">
-                                    <a href="{{ item.travis_build_url }}" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
-                                        &nbsp; <img src="{{ item.travis_status_url }}"
-                                            class="travis-status-img" title="Travis Build Status" />
-                                    </a>
-                                </div>
+                            <div class="travis" *ngIf="item.travis_build_url">
+                                <a href="{{ item.travis_build_url }}" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
+                                    <img src="{{ item.travis_status_url }}"
+                                        class="travis-status-img" title="Travis Build Status" />
+                                </a>
                             </div>
                         </div>
                     </div>
