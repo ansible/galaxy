@@ -55,6 +55,7 @@ class CustomUser(auth_models.AbstractBaseUser,
                                       'invalid')
         ])
     full_name = models.CharField(_('full name'), max_length=254, blank=True)
+    # FIXME: This field looks unused
     short_name = models.CharField(_('short name'), max_length=30, blank=True)
     email = models.EmailField(_('email address'), max_length=254, unique=True)
     is_staff = models.BooleanField(
@@ -90,9 +91,11 @@ class CustomUser(auth_models.AbstractBaseUser,
     def __str__(self):
         return self.username
 
+    # FIXME: replace with django.core.urlresolvers.reverse(..)
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.username)
 
+    # FIXME: This method looks unused
     def get_full_name(self):
         """
         Returns the first_name plus the last_name, with a space in between.
@@ -100,19 +103,23 @@ class CustomUser(auth_models.AbstractBaseUser,
         full_name = self.full_name
         return full_name.strip()
 
+    # FIXME: This method looks unused
     def get_short_name(self):
         """Returns the short name for the user."""
         return self.short_name.strip()
 
+    # FIXME: This method looks unused
     def get_num_roles(self):
         return self.roles.filter(active=True, is_valid=True).count()
 
+    # FIXME: This method looks unused
     def email_user(self, subject, message, from_email=None):
         """
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email])
 
+    # FIXME: This method looks unused
     def hasattr(self, attr):
         return hasattr(self, attr)
 
@@ -130,6 +137,7 @@ class CustomUser(auth_models.AbstractBaseUser,
             'github_repo': g.repository.github_repo,
         } for g in self.starred.select_related('repository').all()]
 
+    # FIXME: This method looks unused
     def get_subscriber(self, github_user, github_repo):
         try:
             return self.subscriptions.get(
@@ -138,6 +146,7 @@ class CustomUser(auth_models.AbstractBaseUser,
         except exceptions.ObjectDoesNotExist:
             return None
 
+    # FIXME: This method looks unused
     def get_stargazer(self, github_user, github_repo):
         try:
             star = self.starred.get(
@@ -147,6 +156,7 @@ class CustomUser(auth_models.AbstractBaseUser,
         except exceptions.ObjectDoesNotExist:
             return None
 
+    # FIXME: This method looks unused
     def is_connected_to_github(self):
         connected = False
         for account in self.socialaccount_set.all():

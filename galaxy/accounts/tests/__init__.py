@@ -1,5 +1,4 @@
-# (c) 2012-2018, Ansible by Red Hat
-#
+# (c) 2012-2018, Ansible
 # This file is part of Ansible Galaxy
 #
 # Ansible Galaxy is free software: you can redistribute it and/or modify
@@ -14,20 +13,3 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
-
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
-
-from django.test import TestCase
-
-
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
