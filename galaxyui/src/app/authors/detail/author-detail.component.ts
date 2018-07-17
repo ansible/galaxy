@@ -299,9 +299,9 @@ export class AuthorDetailComponent implements OnInit {
             if (!item.description) {
                 // Legacy Repository objects are missing a description. Will get fixed on first import.
                 if (item.summary_fields['content_objects']) {
-                    for (let i = 0; i < item.summary_fields['content_objects'].length; i++) {
-                        if (item.summary_fields['content_objects'][i]['description']) {
-                            item.description = item.summary_fields['content_objects'][i]['description'];
+                    for (const contentObject of item.summary_fields.content_objects) {
+                        if (contentObject.description) {
+                            item.description = contentObject.description;
                             break;
                         }
                     }
