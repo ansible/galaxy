@@ -14,6 +14,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='customuser',
             name='cache_refreshed',
-            field=models.BooleanField(default=False, verbose_name='cache refreshed'),
+            field=models.BooleanField(
+                default=False, verbose_name='cache refreshed'
+            ),
         ),
     ]

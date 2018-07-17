@@ -14,30 +14,29 @@ import { cloneDeep }    from 'lodash';
 
 import { Action }       from 'patternfly-ng/action/action';
 import { ActionConfig } from 'patternfly-ng/action/action-config';
-import { ListEvent }    from 'patternfly-ng/list/list-event';
 import { ListConfig }   from 'patternfly-ng/list/basic-list/list-config';
+import { ListEvent }    from 'patternfly-ng/list/list-event';
 
 import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
 
+import { BsModalRef, BsModalService }  from 'ngx-bootstrap';
+import { Filter }                      from 'patternfly-ng/filter/filter';
+import { FilterConfig }                from 'patternfly-ng/filter/filter-config';
+import { FilterEvent }                 from 'patternfly-ng/filter/filter-event';
+import { FilterField }                 from 'patternfly-ng/filter/filter-field';
+import { FilterType }                  from 'patternfly-ng/filter/filter-type';
+import { SortConfig }                  from 'patternfly-ng/sort/sort-config';
+import { SortEvent }                   from 'patternfly-ng/sort/sort-event';
+import { SortField }                   from 'patternfly-ng/sort/sort-field';
+import { ToolbarConfig }               from 'patternfly-ng/toolbar/toolbar-config';
+import { ToolbarView }                 from 'patternfly-ng/toolbar/toolbar-view';
+import { Me }                          from '../../auth/auth.service';
 import { AuthService }                 from '../../auth/auth.service';
 import { Namespace }                   from '../../resources/namespaces/namespace';
 import { NamespaceService }            from '../../resources/namespaces/namespace.service';
-import { BsModalService, BsModalRef }  from 'ngx-bootstrap';
-import { AddRepositoryModalComponent } from '../add-repository-modal/add-repository-modal.component';
-import { Me }                          from '../../auth/auth.service';
-import { FilterConfig }                from 'patternfly-ng/filter/filter-config';
-import { ToolbarConfig }               from 'patternfly-ng/toolbar/toolbar-config';
-import { FilterType }                  from 'patternfly-ng/filter/filter-type';
-import { SortConfig }                  from 'patternfly-ng/sort/sort-config';
-import { FilterField }                 from 'patternfly-ng/filter/filter-field';
-import { SortField }                   from 'patternfly-ng/sort/sort-field';
-import { ToolbarView }                 from 'patternfly-ng/toolbar/toolbar-view';
-import { SortEvent }                   from 'patternfly-ng/sort/sort-event';
-import { Filter }                      from 'patternfly-ng/filter/filter';
-import { FilterEvent }                 from 'patternfly-ng/filter/filter-event';
 import { PagedResponse }               from '../../resources/paged-response';
-
+import { AddRepositoryModalComponent } from '../add-repository-modal/add-repository-modal.component';
 
 @Component({
     encapsulation: ViewEncapsulation.None,

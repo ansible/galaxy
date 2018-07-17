@@ -1,5 +1,5 @@
-import { NgModule }     from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule }     from '@angular/core';
 
 import {
     FormsModule,
@@ -13,20 +13,19 @@ import {
     BsDropdownModule
 } from 'ngx-bootstrap';
 
-
+import { TooltipModule }    from 'ngx-bootstrap/tooltip';
+import { ModalModule }      from 'patternfly-ng';
 import { ActionModule }     from 'patternfly-ng/action/action.module';
 import { EmptyStateModule } from 'patternfly-ng/empty-state/empty-state.module';
 import { FilterModule }     from 'patternfly-ng/filter/filter.module';
-import { ToolbarModule }    from 'patternfly-ng/toolbar/toolbar.module';
-import { TooltipModule }    from 'ngx-bootstrap/tooltip';
 import { ListModule }       from 'patternfly-ng/list/basic-list/list.module';
-import { ModalModule }      from 'patternfly-ng';
 import { PaginationModule } from 'patternfly-ng/pagination/pagination.module';
+import { ToolbarModule }    from 'patternfly-ng/toolbar/toolbar.module';
 
-import { NamespaceListComponent }             from './namespace-list/namespace-list.component';
 import { NamespaceDetailComponent }           from './namespace-detail/namespace-detail.component';
-import { RepositoriesContentComponent }       from './namespace-list/content/repositories-content/repositories-content.component';
 import { OwnersContentComponent }             from './namespace-list/content/owners-content/owners-content.component';
+import { RepositoriesContentComponent }       from './namespace-list/content/repositories-content/repositories-content.component';
+import { NamespaceListComponent }             from './namespace-list/namespace-list.component';
 
 import {
     ProviderNamespacesContentComponent

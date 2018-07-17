@@ -36,7 +36,8 @@ FROM main_repository r
 LEFT JOIN main_content c
     ON r.id = c.repository_id
 WHERE
-    (r.provider_namespace_id, r.name) IN ({0}) AND (c.id IS NULL OR c.is_valid = FALSE)
+    (r.provider_namespace_id, r.name) IN ({0})
+    AND (c.id IS NULL OR c.is_valid = FALSE)
 """.format(SELECT_DUPLICATE_REPOS)
 
 

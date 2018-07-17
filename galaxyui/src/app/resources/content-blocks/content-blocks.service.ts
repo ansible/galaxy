@@ -1,12 +1,11 @@
+import { HttpClient }           from '@angular/common/http';
 import { Injectable }           from '@angular/core';
-import { catchError, map, tap } from 'rxjs/operators';
 import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
 import { Observable }           from 'rxjs/Observable';
-import { HttpClient }           from '@angular/common/http';
+import { of }                   from 'rxjs/observable/of';
+import { catchError, map, tap } from 'rxjs/operators';
 import { PagedResponse }        from '../paged-response';
 import { ContentBlock }         from './content-block';
-import { of }                   from 'rxjs/observable/of';
-
 
 @Injectable()
 export class ContentBlocksService {

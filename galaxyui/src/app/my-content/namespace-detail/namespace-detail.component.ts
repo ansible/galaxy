@@ -4,7 +4,7 @@ import {
     OnInit
 } from '@angular/core';
 
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { cloneDeep } from 'lodash';
 
@@ -24,11 +24,11 @@ import { FilterComponent }       from 'patternfly-ng/filter/filter.component';
 import { Me }                    from '../../auth/auth.service';
 import { Namespace }             from '../../resources/namespaces/namespace';
 import { NamespaceService }      from '../../resources/namespaces/namespace.service';
-import { UserService }           from '../../resources/users/user.service';
-import { User }                  from '../../resources/users/user';
 import { ProviderNamespace }     from '../../resources/provider-namespaces/provider-namespace';
 import { ProviderSource }        from '../../resources/provider-namespaces/provider-source';
 import { ProviderSourceService } from '../../resources/provider-namespaces/provider-source.service';
+import { User }                  from '../../resources/users/user';
+import { UserService }           from '../../resources/users/user.service';
 
 class Owner {
     username: string;
@@ -73,7 +73,6 @@ export class NamespaceDetailComponent implements OnInit {
 
     pageTitle = 'My Content;/my-content;Add Namespace';
     pageLoading = true;
-
 
     namespaceForm: FormGroup;
     namespaceFilterConfig: FilterConfig;
@@ -257,7 +256,6 @@ export class NamespaceDetailComponent implements OnInit {
             this.getUsers();
         }
     }
-
 
     // private
 

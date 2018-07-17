@@ -1,4 +1,4 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 
 import { ContentService } from './content.service';
 
@@ -9,7 +9,7 @@ describe('ContentSearchService', () => {
     });
   });
 
-  it('should be created', inject([ContenthService], (service: ContentService) => {
+  it('should be created', inject([ContentService], (service: ContentService) => {
     expect(service).toBeTruthy();
   }));
 });

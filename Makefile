@@ -144,13 +144,25 @@ dev/jslint:
 	@echo "Linting Javascript..."
 	@$(DOCKER_COMPOSE) exec galaxy bash -c 'cd galaxyui; ng lint'
 
+.PHONY: dev/shellcheck
+dev/shellcheck:
+	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
+		find ./scripts -name *.sh | xargs shellcheck'
+
 .PHONY: dev/test
 dev/test:
 	@echo "Running tests"
 # TODO:  Revert to $(DOCKER_COMPOSE)
 # Currently `docker exec` offers -e option for setting Env variables, and `docker-compose exec` does not.
 # Setting the postgres connetion string to use postgres user, to have authority to create and destroy the test database.
-	@docker exec -e GALAXY_DB_URL=postgres://postgres:postgres@postgres:5432/galaxy galaxy_galaxy_1 bash -c 'source $(VENV_BIN)/activate; pytest galaxy'
+	@docker exec -e GALAXY_DB_URL=postgres://postgres:postgres@postgres:5432/galaxy galaxy_galaxy_1 \
+    bash -c '\
+      source $(VENV_BIN)/activate; \
+      pytest galaxy \
+        --cov galaxy \
+        --cov-report xml \
+        --cov-report term \
+        --cov-report html '
 
 .PHONY: dev/waitenv
 dev/waitenv:

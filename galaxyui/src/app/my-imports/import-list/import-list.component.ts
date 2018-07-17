@@ -1,9 +1,9 @@
 import {
-    Component,
-    OnInit,
-    OnDestroy,
-    ViewChild,
     AfterViewInit,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewChild,
 } from '@angular/core';
 
 import {
@@ -20,8 +20,8 @@ import {
     SaveParams
 } from '../../resources/imports/imports.service';
 
-import { Observable }    from 'rxjs/Observable';
 import 'rxjs/add/observable/interval';
+import { Observable }    from 'rxjs/Observable';
 
 import { Import }        from '../../resources/imports/import';
 import { ImportLatest }  from '../../resources/imports/import-latest';
@@ -31,23 +31,23 @@ import { PagedResponse } from '../../resources/paged-response';
 
 import { PageHeaderComponent } from '../../page-header/page-header.component';
 
-import { ListConfig }    from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent }     from 'patternfly-ng/list/list-event';
-import { ListComponent } from 'patternfly-ng/list/basic-list/list.component';
+import { Filter }        from 'patternfly-ng/filter/filter';
 import { FilterConfig }  from 'patternfly-ng/filter/filter-config';
-import { FilterField }   from 'patternfly-ng/filter/filter-field';
 import { FilterEvent }   from 'patternfly-ng/filter/filter-event';
+import { FilterField }   from 'patternfly-ng/filter/filter-field';
 import { FilterQuery }   from 'patternfly-ng/filter/filter-query';
 import { FilterType }    from 'patternfly-ng/filter/filter-type';
-import { Filter }        from 'patternfly-ng/filter/filter';
+import { ListConfig }    from 'patternfly-ng/list/basic-list/list-config';
+import { ListComponent } from 'patternfly-ng/list/basic-list/list.component';
+import { ListEvent }     from 'patternfly-ng/list/list-event';
 
 import { PaginationConfig }  from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
 
 import { AuthService }   from '../../auth/auth.service';
 
-import * as moment       from 'moment';
 import * as $            from 'jquery';
+import * as moment       from 'moment';
 
 @Component({
     selector: 'import-list',
@@ -444,8 +444,8 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                             // If the selected item has not changed,
                             //   copy result property values -> this.selected
                             const keys = Object.keys(import_result);
-                            for (let i = 0; i < keys.length; i++ ) {
-                                this.selected[keys[i]] = import_result[keys[i]];
+                            for (const key of keys) {
+                                this.selected[key] = import_result[key];
                             }
                             if (this.selected.state === ImportState.failed ||
                                 this.selected.state === ImportState.success) {

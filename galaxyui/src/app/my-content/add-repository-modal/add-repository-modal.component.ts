@@ -4,20 +4,20 @@ import {
 } from '@angular/core';
 
 import { EmptyStateConfig }        from 'patternfly-ng/empty-state/empty-state-config';
-import { ListEvent }               from 'patternfly-ng/list/list-event';
 import { ListConfig }              from 'patternfly-ng/list/basic-list/list-config';
+import { ListEvent }               from 'patternfly-ng/list/list-event';
 
-import { BsModalRef }              from 'ngx-bootstrap';
 import { cloneDeep }               from 'lodash';
+import { BsModalRef }              from 'ngx-bootstrap';
 
 import { Subject }                 from 'rxjs';
-import { forkJoin }                from 'rxjs/observable/forkJoin';
 import { Observable }              from 'rxjs/Observable';
+import { forkJoin }                from 'rxjs/observable/forkJoin';
 
 import { Namespace }               from '../../resources/namespaces/namespace';
 import { ProviderSourceService }   from '../../resources/provider-namespaces/provider-source.service';
-import { RepositoryService }       from '../../resources/repositories/repository.service';
 import { Repository }              from '../../resources/repositories/repository';
+import { RepositoryService }       from '../../resources/repositories/repository.service';
 import { RepositoryImport }        from '../../resources/repository-imports/repository-import';
 import { RepositoryImportService } from '../../resources/repository-imports/repository-import.service';
 
@@ -52,7 +52,6 @@ class ProviderNamespace {
     repoSources: RepositorySource[];
     filteredSources: RepositorySource[];
 }
-
 
 @Component({
     selector: 'add-repository-modal',

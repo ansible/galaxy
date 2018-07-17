@@ -45,6 +45,7 @@ six
 mock
 pytest
 pytest-django
+pytest-cov==2.5.1
 
 # Docs
 Sphinx

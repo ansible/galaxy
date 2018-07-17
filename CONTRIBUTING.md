@@ -278,3 +278,67 @@ The Javascript, CSS and HTML components for the web site can be found in the [ga
 ### Stop services
 
 To stop all services, run `make dev/down`.
+
+### Validating your changes
+
+Once you have galaxy composed and running, you may also run different commands to check your changes.
+
+To do this you need galaxy running in detached state or run commands from separate terminal session.
+
+Full list of commands is available in Makefile, however we want to highlight the most useful here.
+
+#### Linting your code
+
+To run lint checks against Python sources, execute:
+
+```
+$ make dev/flake8
+```
+
+To run lint checks against JavaScript/TypeScript sources, execute:
+
+```
+$ make dev/jslint
+```
+
+#### Testing your code
+
+To run unit and functional tests against execute:
+
+```
+$ make dev/test
+```
+
+This command will test Python code and also will produce test coverage reports.
+
+There are 3 kinds of reports produced:
+
+- console report, that shows coverage in console
+
+- static HTML files located in htmlcov with htmlcov/index.html as entry point
+
+- coverage.xml, that may be used by your IDE/CodeEditor
+
+These files are not part of git repository and will not be commited.
+
+If you use VSCode as your CodeEditor and want to integrate coverage.xml report and highlight code accordingly, then you may be interested in [Coverage Gutters](https://marketplace.visualstudio.com/items?itemName=ryanluker.vscode-coverage-gutters) plugin. In order to make it working, you need to install it and add following lines into your VSCode configuration:
+
+```
+"coverage-gutters.xmlname": "coverage.xml",
+```
+
+If you use pyCharm PRO, then you may configure it according to [documentation](https://www.jetbrains.com/help/pycharm/code-coverage.html)
+
+Static HTML files may be used simply by opening them in your favourite web browser.
+
+### Commiting
+
+Once you have all lint and tests passed and you are ready to commit your patch and propose pull request, install pre-commit hook, provided by this repository.
+
+```
+$ cp pre-commit .git/hooks/pre-commit
+```
+
+Don't forget to commit your code with `git commit --signoff` as described in the top of this document and follow other guidelines.
+
+Thank you for your contribution!

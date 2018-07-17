@@ -11,5 +11,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL("ALTER TABLE accounts_customuser ALTER COLUMN last_login DROP NOT NULL;")
+        migrations.RunSQL(
+            "ALTER TABLE accounts_customuser "
+            "ALTER COLUMN last_login DROP NOT NULL;"
+        )
     ]

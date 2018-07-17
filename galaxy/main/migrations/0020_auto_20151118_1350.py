@@ -6,9 +6,7 @@ from django.db import models, migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('main', '0019_auto_20151113_0936'),
-    ]
+    dependencies = [('main', '0019_auto_20151113_0936')]
 
     operations = [
         migrations.AddField(
@@ -34,6 +32,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='role',
             name='travis_status_url',
-            field=models.CharField(default=b'', max_length=256, verbose_name=b'Travis Build Status', blank=True),
+            field=models.CharField(
+                default=b'',
+                max_length=256,
+                verbose_name=b'Travis Build Status',
+                blank=True,
+            ),
         ),
     ]

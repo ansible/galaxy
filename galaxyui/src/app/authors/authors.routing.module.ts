@@ -4,8 +4,8 @@ import {
 } from '@angular/core';
 
 import {
-    Routes,
-    RouterModule
+    RouterModule,
+    Routes
 } from '@angular/router';
 
 import {
@@ -17,21 +17,15 @@ import {
 import { AuthorsComponent }         from './authors.component';
 import { AuthorDetailComponent }    from './detail/author-detail.component';
 
-
 const routes: Routes = [{
         path: 'community',
         component: AuthorsComponent,
         resolve: {
             namespaces: NamespaceListResolver
         }
-    }, {
-        path: ':namespace',
-        component: AuthorDetailComponent,
-        resolve: {
-            namespace: NamespaceDetailResolver,
-            repositories: RepositoryResolver
-        }
-    }];
+    }
+    // ':namespace/ moved to app-routing.module
+];
 
 @NgModule({
     imports: [

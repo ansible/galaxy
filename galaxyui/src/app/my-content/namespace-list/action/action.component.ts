@@ -2,8 +2,8 @@ import {
     Component,
     EventEmitter,
     Input,
-    Output,
     OnInit,
+    Output,
     TemplateRef,
     ViewChild,
     ViewEncapsulation
@@ -12,9 +12,8 @@ import {
 import { Action }           from 'patternfly-ng/action/action';
 import { ActionConfig }     from 'patternfly-ng/action/action-config';
 
-import { Namespace }        from '../../../resources/namespaces/namespace';
 import { AuthService }      from '../../../auth/auth.service';
-
+import { Namespace }        from '../../../resources/namespaces/namespace';
 
 @Component({
     encapsulation: ViewEncapsulation.None,

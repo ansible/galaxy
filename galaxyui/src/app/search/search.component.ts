@@ -1,8 +1,8 @@
 import {
+    AfterViewInit,
     Component,
     OnInit,
-    ViewChild,
-    AfterViewInit
+    ViewChild
 } from '@angular/core';
 
 import {
@@ -17,26 +17,26 @@ import {
 import { ListConfig }     from 'patternfly-ng/list/basic-list/list-config';
 import { ToolbarConfig }  from 'patternfly-ng/toolbar/toolbar-config';
 
-import { FilterConfig }   from 'patternfly-ng/filter/filter-config';
 import { Filter }         from 'patternfly-ng/filter/filter';
-import { FilterField }    from 'patternfly-ng/filter/filter-field';
+import { FilterConfig }   from 'patternfly-ng/filter/filter-config';
 import { FilterEvent }    from 'patternfly-ng/filter/filter-event';
+import { FilterField }    from 'patternfly-ng/filter/filter-field';
 import { FilterQuery }    from 'patternfly-ng/filter/filter-query';
 import { FilterType }     from 'patternfly-ng/filter/filter-type';
 
 import { SortConfig }     from 'patternfly-ng/sort/sort-config';
-import { SortField }      from 'patternfly-ng/sort/sort-field';
 import { SortEvent }      from 'patternfly-ng/sort/sort-event';
+import { SortField }      from 'patternfly-ng/sort/sort-field';
 
+import { EmptyStateConfig }     from 'patternfly-ng/empty-state/empty-state-config';
 import { PaginationConfig }     from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }      from 'patternfly-ng/pagination/pagination-event';
-import { EmptyStateConfig }     from 'patternfly-ng/empty-state/empty-state-config';
 
-import { ContentSearchService } from '../resources/content-search/content-search.service';
-import { Platform }             from '../resources/platforms/platform';
-import { ContentType }          from '../resources/content-types/content-type';
-import { CloudPlatform }        from '../resources/cloud-platforms/cloud-platform';
 import { ContentTypes }         from '../enums/content-types.enum';
+import { CloudPlatform }        from '../resources/cloud-platforms/cloud-platform';
+import { ContentSearchService } from '../resources/content-search/content-search.service';
+import { ContentType }          from '../resources/content-types/content-type';
+import { Platform }             from '../resources/platforms/platform';
 
 import {
     ContentTypesIconClasses

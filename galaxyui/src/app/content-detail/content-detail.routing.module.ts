@@ -1,36 +1,20 @@
 import { NgModule } from '@angular/core';
 
 import {
-    Routes,
-    RouterModule
+    RouterModule,
+    Routes
 } from '@angular/router';
 
 import { ContentDetailComponent } from './content-detail.component';
 import {
     ContentResolver,
-    RepositoryResolver,
-    NamespaceResolver
+    NamespaceResolver,
+    RepositoryResolver
 } from './content-detail.resolver.service';
 
 const routes: Routes = [
-    {
-        path: ':namespace/:repository/:content_name',
-        component: ContentDetailComponent,
-        resolve: {
-            content: ContentResolver,
-            repository: RepositoryResolver,
-            namespace: NamespaceResolver
-        }
-    },
-    {
-        path: ':namespace/:repository',
-        component: ContentDetailComponent,
-        resolve: {
-            content: ContentResolver,
-            repository: RepositoryResolver,
-            namespace: NamespaceResolver
-        }
-    },
+    // ':namespace/:repository/:content_name' and ':namespace/:repository/ moved
+    // to app-routing.module
 ];
 
 @NgModule({

@@ -1,25 +1,25 @@
 import { NgModule } from '@angular/core';
 
 import {
-    Routes,
-    RouterModule
+    RouterModule,
+    Routes
 } from '@angular/router';
 
 import { SearchComponent } from './search.component';
 
 import {
+    PopularCloudPlatformsResolver,
+    PopularPlatformsResolver,
+    PopularTagsResolver,
     SearchCloudPlatformResolver,
     SearchContentResolver,
     SearchContentTypeResolver,
-    SearchPlatformResolver,
-    PopularTagsResolver,
-    PopularPlatformsResolver,
-    PopularCloudPlatformsResolver
+    SearchPlatformResolver
 }  from './search.resolver.service';
 
 const routes: Routes = [
     {
-        path: 'search',
+        path: '',
         component: SearchComponent,
         runGuardsAndResolvers: 'always',
         resolve: {

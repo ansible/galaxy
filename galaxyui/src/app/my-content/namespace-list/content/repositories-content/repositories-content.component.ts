@@ -1,41 +1,40 @@
 import {
     Component,
-    OnInit,
+    Input,
     OnDestroy,
+    OnInit,
     TemplateRef,
     ViewEncapsulation,
-    Input,
 } from '@angular/core';
 
 import { flatten }           from 'lodash';
 import { Action }            from 'patternfly-ng/action/action';
 import { ActionConfig }      from 'patternfly-ng/action/action-config';
 import { EmptyStateConfig }  from 'patternfly-ng/empty-state/empty-state-config';
-import { ListEvent }         from 'patternfly-ng/list/list-event';
 import { ListConfig }        from 'patternfly-ng/list/basic-list/list-config';
+import { ListEvent }         from 'patternfly-ng/list/list-event';
 
 import {
-    BsModalService,
-    BsModalRef
+    BsModalRef,
+    BsModalService
 } from 'ngx-bootstrap';
 
 import { Namespace }               from '../../../../resources/namespaces/namespace';
+import { ProviderNamespace }       from '../../../../resources/provider-namespaces/provider-namespace';
 import { Repository }              from '../../../../resources/repositories/repository';
 import { RepositoryService }       from '../../../../resources/repositories/repository.service';
-import { ProviderNamespace }       from '../../../../resources/provider-namespaces/provider-namespace';
-import { RepositoryImportService } from '../../../../resources/repository-imports/repository-import.service';
 import { RepositoryImport }        from '../../../../resources/repository-imports/repository-import';
+import { RepositoryImportService } from '../../../../resources/repository-imports/repository-import.service';
 
 import {
     AlternateNameModalComponent
 } from './alternate-name-modal/alternate-name-modal.component';
 
+import 'rxjs/add/observable/interval';
 import { Observable }              from 'rxjs/Observable';
 import { forkJoin }                from 'rxjs/observable/forkJoin';
-import 'rxjs/add/observable/interval';
 
 import * as moment                 from 'moment';
-
 
 @Component({
     encapsulation: ViewEncapsulation.None,

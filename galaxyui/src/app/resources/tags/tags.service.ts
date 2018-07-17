@@ -5,13 +5,13 @@ import {
     HttpHeaders
 } from '@angular/common/http';
 
+import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
 import { Observable }           from 'rxjs/Observable';
 import { of }                   from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
-import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
 
-import { Tag }                  from './tag';
 import { PagedResponse }        from '../paged-response';
+import { Tag }                  from './tag';
 
 const httpOptions = {
     headers: new HttpHeaders({

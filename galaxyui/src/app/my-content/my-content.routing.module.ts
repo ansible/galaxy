@@ -9,22 +9,22 @@ import { AuthService }              from '../auth/auth.service';
 import { NamespaceDetailComponent } from './namespace-detail/namespace-detail.component';
 
 import {
-    NamespaceDetailResolver,
-    MeResolver
+    MeResolver,
+    NamespaceDetailResolver
 }  from './namespace-detail/namespace-detail.resolver.service';
 
-import { NamespaceListComponent }   from './namespace-list/namespace-list.component';
 import { NamespaceListResolver }    from './namespace-list/namespace-list-resolver.service';
+import { NamespaceListComponent }   from './namespace-list/namespace-list.component';
 
 const myContentRoutes: Routes = [
     {
-        path: 'my-content',
-        redirectTo: 'my-content/namespaces',
+        path: '',
+        redirectTo: 'namespaces',
         pathMatch: 'full',
         canActivate: [AuthService]
     },
     {
-        path: 'my-content/namespaces/new',
+        path: 'namespaces/new',
         component: NamespaceDetailComponent,
         resolve: {
             me: MeResolver,
@@ -36,7 +36,7 @@ const myContentRoutes: Routes = [
         canActivate: [AuthService]
     },
     {
-        path: 'my-content/namespaces/:id',
+        path: 'namespaces/:id',
         component: NamespaceDetailComponent,
         resolve: {
             me: MeResolver,
@@ -45,7 +45,7 @@ const myContentRoutes: Routes = [
         canActivate: [AuthService]
     },
     {
-        path: 'my-content/namespaces',
+        path: 'namespaces',
         component: NamespaceListComponent,
         resolve: {
             me: MeResolver,

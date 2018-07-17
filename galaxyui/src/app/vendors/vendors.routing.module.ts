@@ -4,8 +4,8 @@ import {
 } from '@angular/core';
 
 import {
-    Routes,
-    RouterModule
+    RouterModule,
+    Routes
 } from '@angular/router';
 
 import {
@@ -13,7 +13,6 @@ import {
 }  from './vendors.resolver.service';
 
 import { VendorsComponent }         from './vendors.component';
-
 
 const routes: Routes = [{
     path: 'partners',

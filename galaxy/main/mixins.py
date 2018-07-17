@@ -17,11 +17,11 @@
 
 __all__ = ['DirtyMixin']
 
-###################################################################################
-# A mixin object that lets us check if a model object has been modified
-
 
 class DirtyMixin(object):
+    """
+    A mixin object that lets us check if a model object has been modified.
+    """
     def __init__(self, *args, **kwargs):
         super(DirtyMixin, self).__init__(*args, **kwargs)
         self._original_state = dict(self.__dict__)

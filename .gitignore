@@ -5,6 +5,11 @@ __pycache__/
 # Python: Distribution \ packaging
 *.egg-info/
 
+# Python: coverage reports
+.coverage
+htmlcov/
+coverage.xml
+
 # Project directories
 /build/
 /dist/

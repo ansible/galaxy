@@ -5,10 +5,10 @@ import { Injectable }        from '@angular/core';
 import { Observable }        from 'rxjs/Observable';
 
 import {
-    Router,
+    ActivatedRouteSnapshot,
     Resolve,
-    RouterStateSnapshot,
-    ActivatedRouteSnapshot
+    Router,
+    RouterStateSnapshot
 } from '@angular/router';
 
 import { Namespace }         from '../../resources/namespaces/namespace';
@@ -18,7 +18,6 @@ import {
     AuthService,
     Me
 } from '../../auth/auth.service';
-
 
 @Injectable()
 export class NamespaceDetailResolver implements Resolve<Namespace> {

@@ -11,12 +11,12 @@ import { Observable } from 'rxjs/Observable';
 import { of }         from 'rxjs/observable/of';
 
 import {
+    ActivatedRouteSnapshot,
     CanActivate,
+    Route,
     Router,
-    RouterStateSnapshot,
-    ActivatedRouteSnapshot
+    RouterStateSnapshot
 } from '@angular/router';
-
 
 export interface Me {
     url:            string;

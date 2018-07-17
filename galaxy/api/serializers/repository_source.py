@@ -19,9 +19,8 @@ from collections import OrderedDict
 from django.core.urlresolvers import reverse
 from rest_framework.serializers import BaseSerializer
 
-__all__ = [
-    'RepositorySourceSerializer',
-]
+
+__all__ = ['RepositorySourceSerializer']
 
 
 class RepositorySourceSerializer(BaseSerializer):
@@ -33,14 +32,14 @@ class RepositorySourceSerializer(BaseSerializer):
         'watchers_count',
         'forks_count',
         'open_issues_count',
-        'default_branch'
+        'default_branch',
     ]
 
     optional_fields = [
         'commit',
         'commit_message',
         'commit_url',
-        'commit_created'
+        'commit_created',
     ]
 
     def to_representation(self, instance):
@@ -54,27 +53,34 @@ class RepositorySourceSerializer(BaseSerializer):
         name = instance['name'].replace('.', '-')
 
         result['related'] = {
-            'provider': reverse('api:active_provider_detail', kwargs={'pk': provider_id}),
-            'source_repository': reverse('api:repository_source_detail', kwargs={
-                'provider_name': provider_name,
-                'provider_namespace': source_namespace,
-                'repo_name': name
-            })
+            'provider': reverse(
+                'api:active_provider_detail', kwargs={'pk': provider_id}
+            ),
+            'source_repository': reverse(
+                'api:repository_source_detail',
+                kwargs={
+                    'provider_name': provider_name,
+                    'provider_namespace': source_namespace,
+                    'repo_name': name,
+                },
+            ),
         }
 
         if instance.get('namespace_url'):
             result['related']['namespace'] = instance['namespace_url']
         if instance.get('provider_namespace_url'):
-            result['related']['provider_namespace'] = instance['provider_namespace_url']
+            result['related']['provider_namespace'] = instance[
+                'provider_namespace_url'
+            ]
         if instance.get('repository_url'):
             result['related']['repository'] = instance['repository_url']
 
-        result['summary_fields'] = {
-            'provider': instance['provider'],
-        }
+        result['summary_fields'] = {'provider': instance['provider']}
 
         if instance.get('provider_namespace'):
-            result['summary_fields']['provider_namespace'] = instance['provider_namespace']
+            result['summary_fields']['provider_namespace'] = instance[
+                'provider_namespace'
+            ]
         if instance.get('namespace'):
             result['summary_fields']['namespace'] = instance['namespace']
         if instance.get('repository'):

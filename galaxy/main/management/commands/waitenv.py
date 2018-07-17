@@ -26,15 +26,20 @@ def wait_for_connection(host, port, attempts=10):
             pass
         time.sleep(6)
         attempts -= 1
-    logger.error('manage.py waitenv: Failed to connect to {}:{}'.format(host, port))
+    logger.error('manage.py waitenv: Failed to connect to {}:{}'
+                 .format(host, port))
     raise IOError('Cannot connect to {0}:{1}'.format(host, port))
 
 
 class Command(management.BaseCommand):
 
     def add_arguments(self, parser):
-        parser.add_argument('--wait-for', action='store', dest='services', default=[], nargs='+',
-                            help="Override settings.WAIT_FOR with a list of 'host:port' services to wait on")
+        parser.add_argument(
+            '--wait-for', action='store', dest='services',
+            default=[], nargs='+',
+            help="Override settings.WAIT_FOR with a list "
+                 "of 'host:port' services to wait on",
+        )
 
     def handle(self, *args, **options):
         logger.info('manage.py waitenv...')

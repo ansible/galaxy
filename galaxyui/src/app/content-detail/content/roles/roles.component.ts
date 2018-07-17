@@ -4,29 +4,28 @@ import {
     OnInit
 } from '@angular/core';
 
-import { ListEvent }         from 'patternfly-ng/list/list-event';
 import { ListConfig }        from 'patternfly-ng/list/basic-list/list-config';
+import { ListEvent }         from 'patternfly-ng/list/list-event';
 
 import { Content }           from '../../../resources/content/content';
 import { ContentService }    from '../../../resources/content/content.service';
-import { Repository }        from '../../../resources/repositories/repository';
 import { PagedResponse }     from '../../../resources/paged-response';
+import { Repository }        from '../../../resources/repositories/repository';
 
 import { ContentTypes }      from '../../../enums/content-types.enum';
 
+import { Filter }            from 'patternfly-ng/filter/filter';
 import { FilterConfig }      from 'patternfly-ng/filter/filter-config';
-import { FilterField }       from 'patternfly-ng/filter/filter-field';
 import { FilterEvent }       from 'patternfly-ng/filter/filter-event';
+import { FilterField }       from 'patternfly-ng/filter/filter-field';
 import { FilterQuery }       from 'patternfly-ng/filter/filter-query';
 import { FilterType }        from 'patternfly-ng/filter/filter-type';
-import { Filter }            from 'patternfly-ng/filter/filter';
 
 import { PaginationConfig }  from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
 
 import { Observable }        from 'rxjs/Observable';
 import { forkJoin }          from 'rxjs/observable/forkJoin';
-
 
 @Component({
     selector: 'roles-detail',
@@ -149,7 +148,6 @@ export class RolesComponent implements OnInit {
         this.query = query;
         this.queryContentList();
     }
-
 
     // private
 

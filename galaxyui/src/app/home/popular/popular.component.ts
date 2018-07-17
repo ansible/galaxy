@@ -1,8 +1,8 @@
 import {
+    AfterViewInit,
     Component,
-    OnInit,
     Input,
-    AfterViewInit
+    OnInit
 } from '@angular/core';
 
 import {
@@ -12,7 +12,6 @@ import {
 import {
     ContentTypes
 } from '../../enums/content-types.enum';
-
 
 class Category {
     name: string;

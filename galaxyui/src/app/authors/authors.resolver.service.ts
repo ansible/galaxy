@@ -12,12 +12,12 @@ import {
 import { Observable }            from 'rxjs/Observable';
 import { forkJoin }              from 'rxjs/observable/forkJoin';
 
-import { ContentService }        from '../resources/content/content.service';
 import { Content }               from '../resources/content/content';
-import { NamespaceService }      from '../resources/namespaces/namespace.service';
+import { ContentService }        from '../resources/content/content.service';
 import { Namespace }             from '../resources/namespaces/namespace';
-import { RepositoryService }     from '../resources/repositories/repository.service';
+import { NamespaceService }      from '../resources/namespaces/namespace.service';
 import { PagedResponse }         from '../resources/paged-response';
+import { RepositoryService }     from '../resources/repositories/repository.service';
 
 @Injectable()
 export class NamespaceListResolver implements Resolve<PagedResponse> {

@@ -5,11 +5,12 @@ from django.db import migrations, transaction
 
 
 class Migration(migrations.Migration):
-
     @transaction.atomic
     def set_namespace(apps, schema_editor):
         Roles = apps.get_model("main", "Role")
-        for role in Roles.objects.all().order_by('github_user', 'name', '-modified'):
+        for role in Roles.objects.all().order_by(
+            'github_user', 'name', '-modified'
+        ):
             try:
                 with transaction.atomic():
                     role.namespace = role.owner.username
@@ -17,10 +18,6 @@ class Migration(migrations.Migration):
             except Exception:
                 pass
 
-    dependencies = [
-        ('main', '0017_auto_20151104_1700'),
-    ]
+    dependencies = [('main', '0017_auto_20151104_1700')]
 
-    operations = [
-        migrations.RunPython(set_namespace),
-    ]
+    operations = [migrations.RunPython(set_namespace)]

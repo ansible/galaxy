@@ -24,7 +24,7 @@ import sys
 from rest_framework.exceptions import ParseError, PermissionDenied
 
 __all__ = ['get_object_or_400', 'get_object_or_403', 'camelcase_to_underscore',
-           'get_ansible_version', 'get_version', 'html_decode']
+           'get_ansible_version', 'get_version']
 
 
 def get_object_or_400(klass, *args, **kwargs):
@@ -64,9 +64,9 @@ def camelcase_to_underscore(s):
 
 
 class RequireDebugTrueOrTest(logging.Filter):
-    '''
+    """
     Logging filter to output when in DEBUG mode or running tests.
-    '''
+    """
 
     def filter(self, record):
         from django.conf import settings
@@ -104,19 +104,3 @@ def get_encryption_key(instance, field_name):
     h.update(str(instance.pk))
     h.update(field_name)
     return h.digest()[:16]
-
-
-def html_decode(s):
-    """
-    Returns the ASCII decoded version of the given HTML string. This does
-    NOT remove normal HTML tags like <p>.
-    """
-    for code in (
-        ("'", '&#39;'),
-        ('"', '&quot;'),
-        ('>', '&gt;'),
-        ('<', '&lt;'),
-        ('&', '&amp;')
-        ):                                 # noqa
-        s = s.replace(code[1], code[0])    # noqa
-    return s

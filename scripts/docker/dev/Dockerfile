@@ -31,7 +31,7 @@ RUN mkdir -p /var/lib/galaxy/ \
     && ${VENV_BIN}/pip install -U pip wheel \
     && ${VENV_BIN}/pip install -r /tmp/requirements.txt
 
-RUN yum -y install vim tmux make
+RUN yum -y install vim tmux make ShellCheck
 RUN ${VENV_BIN}/pip install honcho flake8
 RUN localedef -c -i en_US -f UTF-8 en_US.UTF-8
 

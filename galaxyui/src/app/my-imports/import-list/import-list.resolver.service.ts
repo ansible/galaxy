@@ -10,9 +10,9 @@ import {
 } from '@angular/router';
 
 import { Observable }            from 'rxjs/Observable';
-import { ImportsService }        from '../../resources/imports/imports.service';
-import { ImportLatest }          from '../../resources/imports/import-latest';
 import { AuthService }           from '../../auth/auth.service';
+import { ImportLatest }          from '../../resources/imports/import-latest';
+import { ImportsService }        from '../../resources/imports/imports.service';
 import { PagedResponse }         from '../../resources/paged-response';
 
 @Injectable()

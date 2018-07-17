@@ -104,12 +104,13 @@ class RepositorySerializer(serializers.BaseSerializer):
             'id': instance.provider_namespace.provider.id,
         }
         namespace = {}
-        if instance.provider_namespace.namespace:
+        namespace_obj = instance.provider_namespace.namespace
+        if namespace_obj:
             namespace = {
-                'id': instance.provider_namespace.namespace.pk,
-                'name': instance.provider_namespace.namespace.name,
-                'description': instance.provider_namespace.namespace.description,
-                'is_vendor': instance.provider_namespace.namespace.is_vendor
+                'id': namespace_obj.pk,
+                'name': namespace_obj.name,
+                'description': namespace_obj.description,
+                'is_vendor': namespace_obj.is_vendor
             }
         latest_import = {}
         import_tasks = instance.import_tasks.order_by('-id')
@@ -121,16 +122,27 @@ class RepositorySerializer(serializers.BaseSerializer):
             latest_import['created'] = import_tasks[0].created
             latest_import['modified'] = import_tasks[0].modified
 
-        content_objects = [{'id': c.id, 'name': c.name, 'content_type': c.content_type.name,
-                           'description': c.description} for c in instance.content_objects.all()]
+        content_objects = [
+            {
+                'id': c.id,
+                'name': c.name,
+                'content_type': c.content_type.name,
+                'description': c.description,
+            }
+            for c in instance.content_objects.all()
+        ]
 
-        content_counts = {c['content_type__name']: c['count'] for c in instance.content_counts}
+        content_counts = {
+            c['content_type__name']: c['count']
+            for c in instance.content_counts
+        }
 
         versions = []
 
         for version in instance.all_versions():
             versions.append({
-                'download_url': version.repository.get_download_url(version.tag),
+                'download_url':
+                    version.repository.get_download_url(version.tag),
                 'version': str(version.version)
             })
 

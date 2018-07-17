@@ -231,9 +231,9 @@ def refresh_user_stars(user, token):
 
 @celery.task(name="galaxy.main.celerytasks.tasks.refresh_role_counts")
 def refresh_role_counts(start, end, token, tracker):
-    '''
+    """
     Update each role with latest counts from GitHub
-    '''
+    """
     tracker.state = 'RUNNING'
     tracker.save()
 
