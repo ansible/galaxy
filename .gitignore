@@ -6,7 +6,7 @@ __pycache__/
 *.egg-info/
 
 # Python: coverage reports
-.coverage
+.coverage*
 htmlcov/
 coverage.xml
 
