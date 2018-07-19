@@ -34,6 +34,7 @@ import { ContentDetailModule }        from './content-detail/content-detail.modu
 import { ExceptionPagesModule }       from './exception-pages/exception-pages.module';
 import { HomeModule }                 from './home/home.module';
 import { LoginModule }                from './login/login.module';
+import { MyContentModule }            from './my-content/my-content.module';
 import { ApiRootService }             from './resources/api-root/api-root.service';
 import { CloudPlatformService }       from './resources/cloud-platforms/cloud-platform.service';
 import { ContentBlocksService }       from './resources/content-blocks/content-blocks.service';
@@ -48,7 +49,6 @@ import { RepositoryService }          from './resources/repositories/repository.
 import { RepositoryImportService }    from './resources/repository-imports/repository-import.service';
 import { TagsService }                from './resources/tags/tags.service';
 import { UserService }                from './resources/users/user.service';
-// import { MyContentModule }            from './my-content/my-content.module';
 // import { MyImportsModule }            from './my-imports/my-imports.module';
 // import { SearchModule }               from './search/search.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
@@ -73,7 +73,7 @@ import { VendorsModule }              from './vendors/vendors.module';
         NotificationModule,
         HomeModule,
         LoginModule,
-        // MyContentModule,
+        MyContentModule,
         // MyImportsModule,
         // SearchModule,
         ModalModule,
