@@ -4,8 +4,52 @@ Ansible Galaxy Changes by Release
 3.1.0 - Active development
 --------------------------
 
-3.0.2 - Release 03-Jul-2018
----------------------------
+3.0.3 - Released 20-Jul-2018
+----------------------------
+
+Bug Fixes
+`````````
+- Improve mobile view of home, search, and author detail pages.
+- For missing import date on search results, bypass call to moment.js.
+- Add JS source maps to enable better debugging and troubleshooting.
+- Fix partner carousel template on landing page.
+- Add Nginx redirects for '/docs' and '/intro', redirecting to '/docs/'.
+- Prevent random tag being added to search params during navigation. Issue `#809 <https://github.com/ansible/galaxy/issues/809>`_.
+- During import process, default to the repository default branch, not 'master'. Issue `#857 <https://github.com/ansible/galaxy/issues/857>`_.
+- Fix JS error that prevented removal of existing Namespace owners and provider namespaces.
+- Limit repository attributes (i.e. commit message, description, etc.) to 256 chars.
+- For content details, show the git tag value, rather than the strict semantic format value.
+- Show Red Hat logo On production docs site.
+- Document git tag version requirements.
+- On search page, enable right-click on links, adjust icon sizing, fix confusing hover
+  styles, fix ordering of cloud platforms. Issues: `#744 <https://github.com/ansible/galaxy/issues/744>`_, `#720 <https://github.com/ansible/galaxy/issues/720>`_, `#812 <https://github.com/ansible/galaxy/issues/812>`_, `#813 <https://github.com/ansible/galaxy/issues/813>`_, `#817 <https://github.com/ansible/galaxy/issues/817>`_.
+- Fix broken 'Community' link on content detail page. Issue `#850 <https://github.com/ansible/galaxy/issues/850>`_.
+
+Closed PRs
+``````````
+- `930 Fix Nginx static route <https://github.com/ansible/galaxy/pull/930>`_ 
+- `913 Merge pull request #912 from newswangerd/author-detail-extravaganza-r <https://github.com/ansible/galaxy/pull/913>`_
+- `910 Author detail extravaganza <https://github.com/ansible/galaxy/pull/910>`_
+- `880 Add regex to check if dates are valid before passing to moment. <https://github.com/ansible/galaxy/pull/880>`_
+- `877 Responsive search <https://github.com/ansible/galaxy/pull/877>`_
+- `872 Generate source maps during build <https://github.com/ansible/galaxy/pull/872>`_
+- `871 Should be ng-template <https://github.com/ansible/galaxy/pull/871>`_
+- `864 Fix nginx redirects <https://github.com/ansible/galaxy/pull/864>`_
+- `863 Fix tagging issue on search page. <https://github.com/ansible/galaxy/pull/863>`_
+- `862 Make home page more responsive <https://github.com/ansible/galaxy/pull/862>`_
+- `858 Use only default branch for import <https://github.com/ansible/galaxy/pull/858>`_
+- `847 Fixes broken owner removal <https://github.com/ansible/galaxy/pull/847>`_
+- `845 Limit Repository char fields to 256 chars <https://github.com/ansible/galaxy/pull/845>`_
+- `844 Show version tag <https://github.com/ansible/galaxy/pull/844>`_
+- `842 Fix docs logo <https://github.com/ansible/galaxy/pull/842>`_
+- `838 Add version requirements to docs <https://github.com/ansible/galaxy/pull/838>`_
+- `836 Use default cursor for tag hover <https://github.com/ansible/galaxy/pull/836>`_
+- `835 Add 'name' to order_by params <https://github.com/ansible/galaxy/pull/835>`_
+- `834 Fix broken community link <https://github.com/ansible/galaxy/pull/834>`_
+- `833 Fix search links and icon sizing <https://github.com/ansible/galaxy/pull/833>`_
+
+3.0.2 - Released 03-Jul-2018
+----------------------------
 
 Bug Fixes
 `````````
