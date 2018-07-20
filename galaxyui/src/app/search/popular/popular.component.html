@@ -8,16 +8,10 @@
         [itemTemplate]="itemTemplate"
         (onClick)="handleClick($event)">
         <ng-template #itemTemplate let-item="item" let-index="index">
-            <div class="list-pf-content-wrapper">
-                  <div class="list-pf-main-content">
-                      <div class="list-pf-title text-overflow-pf">
-                          <span class="item-name">{{item.name}}</span>
-                      </div>
-                    <div class="list-pf-description text-right item-hide">
-                        <span class="item-count">{{ item.roles_count | number }}</span>
-                    </div>
-                </div>
+            <div class="list-wrapper">
+                        <div class="item-name">{{item.name}}</div>
+                        <div class="item-count">{{ item.roles_count | number }}</div>
             </div>
-        </ng-template>       
+        </ng-template>
     </pfng-list>
 </div>

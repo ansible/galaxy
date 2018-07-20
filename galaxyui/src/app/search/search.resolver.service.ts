@@ -113,7 +113,7 @@ export class PopularTagsResolver implements Resolve<Tag[]> {
         private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Tag[]> {
-        return this.tagsService.search({'order_by': '-roles_count'});
+        return this.tagsService.search({'order_by': '-roles_count,name'});
     }
 }
 
@@ -124,7 +124,7 @@ export class PopularPlatformsResolver implements Resolve<Platform[]> {
         private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Platform[]> {
-        return this.platformService.search({'page_size': 1000, 'order_by': '-roles_count'}).map(result => {
+        return this.platformService.search({'page_size': 1000, 'order_by': '-roles_count,name'}).map(result => {
             // Sum roles_count per platforms, sans release
             const summary = {};
             const platforms: Platform[] = [];
@@ -154,6 +154,6 @@ export class PopularCloudPlatformsResolver implements Resolve<CloudPlatform[]> {
         private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CloudPlatform[]> {
-        return this.cloudPlatformService.search({'order_by': '-roles_count'});
+        return this.cloudPlatformService.search({'order_by': '-roles_count,name'});
     }
 }

@@ -188,6 +188,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.route.queryParams.subscribe(params => {
             this.route.data.subscribe(
                 (data) => {
+                    // This function is called each time the route updates, so
+                    // the default values have to be reset
+                    this.appliedFilters = [];
+                    this.paginationConfig.pageNumber = 1;
+                    this.pageNumber = 1;
+                    this.sortParams = '&order_by=-relevance';
+                    this.setSortConfig(this.sortParams);
+
                     this.preparePlatforms(data.platforms);
                     this.prepareContentTypes(data.contentTypes);
                     this.prepareCloudPlatforms(data.cloudPlatforms);
@@ -336,17 +344,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
     }
 
-    itemClicked(item: Content) {
-        const namespace = item.summary_fields['namespace']['name'].toLowerCase();
-        const repository = item.summary_fields['repository']['name'].toLowerCase();
-        const name = item.name.toLowerCase();
-        if (item['repository_format'] === RepoFormats.multi) {
-            this.router.navigate(['/', namespace, repository, name]);
-        } else {
-            this.router.navigate(['/', namespace, repository]);
-        }
-    }
-
     // private
 
     private setPageSize(params: any) {
@@ -486,8 +483,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
 
     private prepareContent(data: Content[], count: number) {
+        const datePattern = /^\d{4}.*$/;
         data.forEach(item => {
-            item.imported = moment(item.imported).fromNow();
+            if (item.imported === null) {
+                item.imported = 'NA';
+            } else if (datePattern.exec(item.imported) !== null) {
+                item.imported = moment(item.imported).fromNow();
+            }
             item['repository_format'] = item.summary_fields['repository']['format'];
             item['avatar_url'] = item.summary_fields['namespace']['avatar_url'] || '/assets/avatar.png';
             if (!item.summary_fields['namespace']['is_vendor']) {
@@ -502,6 +504,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 item['iconClass'] = ContentTypesIconClasses.plugin;
             } else {
                 item['iconClass'] = ContentTypesIconClasses[item.summary_fields['content_type']['name']];
+            }
+            // Determine navigation for item click
+            const namespace = item.summary_fields['namespace']['name'].toLowerCase();
+            const repository = item.summary_fields['repository']['name'].toLowerCase();
+            const name = item.name.toLowerCase();
+            item['contentLink'] = `/${namespace}/${repository}`;
+            if (item['repository_format'] === RepoFormats.multi) {
+                item['contentLink'] += `/${name}`;
             }
         });
         this.contentItems = data;

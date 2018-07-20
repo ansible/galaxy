@@ -51,7 +51,6 @@ export class MeResolver implements Resolve<Me> {
         private router: Router) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Me> {
-        console.log('HERE');
         return this.authService.me();
     }
 }

@@ -11,22 +11,26 @@
         padding: 8px;
         border-bottom: 1px solid @ansible-dark-grey;
     }
-    .text-right {
-        text-align: right;
-    }
-    .item-name {
-        padding: 2px 4px;
-        border-radius: 1px;
-        background-color: @blue;
-        color: @white;
-    }
-    .item-name:hover {
-        cursor: pointer;
-    }
-    .item-count {
-        padding: 2px 4px;
-        border-radius: 1px;
-        color: @white;
-        background-color: @ansible-dark-grey;
+
+    .list-wrapper {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        .item-name {
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 1px;
+            background-color: @blue;
+            color: @white;
+        }
+        .item-name:hover {
+            cursor: pointer;
+        }
+        .item-count {
+            padding: 2px 4px;
+            border-radius: 1px;
+            color: @white;
+            background-color: @ansible-dark-grey;
+        }
     }
 }

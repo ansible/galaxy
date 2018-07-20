@@ -44,6 +44,12 @@ a.failed {
 }
 .toolbar-pf-results .list-inline {
     margin-left: 0;
+    .label.label-info:hover {
+        cursor: default;
+        .pficon.pficon-close {
+            cursor: pointer;
+        }
+    }
 }
 
 /* My-Content detail */
@@ -143,6 +149,9 @@ a.failed {
         padding-left: 0;
         padding-right: 0;
     }
+    .list-pf-item:hover {
+        background-color: @white;
+    }
     @media only screen and (max-width : 992px) {
         .list-pf-description {
             padding-top: 15px;
@@ -229,5 +238,15 @@ a.failed {
         border-bottom: 1px solid #fff;
         box-shadow: none;
         -webkit-box-shadow: none;
+    }
+}
+
+/* Search */
+#search-page {
+
+    // Override the default PF config which is display: flex. This allows list
+    // items to be flush with the right hand side of the list.
+    .list-pf-content-flex {
+        display: block;
     }
 }
