@@ -49,7 +49,7 @@
                             <div class="col-sm-5 col-reduced-margin">
                                 <div class="list-pf-description">
                                     <div class="travis" *ngIf="item.summary_fields.repository.travis_build_url">
-                                        <a href="{{ item.summary_fields.repository.travis_build_url }}" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
+                                        <a href="{{ item.summary_fields.repository.travis_build_url }}" container="body" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
                                             <img src="{{ item.summary_fields.repository.travis_status_url }}"
                                                 class="travis-status-img" title="Travis Build Status" />
                                         </a>
