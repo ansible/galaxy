@@ -337,42 +337,6 @@ class CustomUserModelTest(TestCase):
         ).format(username=self.VALID_USERNAME)
 
     @pytest.mark.model_methods
-    def test_get_full_name(self):
-        # this method strips whitespaces from full name
-        user = CustomUser(
-            full_name="Full name"
-        )
-        assert user.get_full_name() == "Full name"
-
-        user = CustomUser(
-            full_name="Full name with trailing spaces         "
-        )
-        assert user.get_full_name() == "Full name with trailing spaces"
-
-        user = CustomUser(
-            full_name="Full name with newlines \n\n\n"
-        )
-        assert user.get_full_name() == "Full name with newlines"
-
-    @pytest.mark.model_methods
-    def test_get_short_name(self):
-        # this method strips whitespaces from short name
-        user = CustomUser(
-            short_name="Short name"
-        )
-        assert user.get_short_name() == "Short name"
-
-        user = CustomUser(
-            short_name="Short name with trailing spaces         "
-        )
-        assert user.get_short_name() == "Short name with trailing spaces"
-
-        user = CustomUser(
-            short_name="Short name with newlines \n\n\n"
-        )
-        assert user.get_short_name() == "Short name with newlines"
-
-    @pytest.mark.model_methods
     def test_get_absolute_url(self):
         # this method creates url with urlencoded username
         user = CustomUser(
