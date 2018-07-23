@@ -6,16 +6,9 @@ import {
 
 import { Router }           from '@angular/router';
 
-import { Action }           from 'patternfly-ng/action/action';
 import { ActionConfig }     from 'patternfly-ng/action/action-config';
 
 import { Repository }       from '../../../resources/repositories/repository';
-
-import {
-    RepoFormats,
-    RepoFormatsIconClasses,
-    RepoFormatsTooltips
-} from '../../../enums/repo-types.enum';
 
 @Component({
     selector: 'author-detail-actions',

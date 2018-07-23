@@ -5,17 +5,10 @@ import {
 } from '@angular/core';
 
 import {
-    ActivatedRoute,
     Router
 } from '@angular/router';
 
 import { Namespace }     from '../../resources/namespaces/namespace';
-
-import {
-    ContentTypes,
-    ContentTypesIconClasses,
-    ContentTypesPluralChoices
-} from '../../enums/content-types.enum';
 
 @Component({
     selector: 'vendor-card',
