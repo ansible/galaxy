@@ -8,7 +8,6 @@ import {
 
 import {
     ActivatedRoute,
-    Router
 } from '@angular/router';
 
 import {
@@ -16,8 +15,7 @@ import {
 } from '@angular/common';
 
 import {
-    ImportsService,
-    SaveParams
+    ImportsService
 } from '../../resources/imports/imports.service';
 
 import 'rxjs/add/observable/interval';
@@ -29,8 +27,6 @@ import { ImportLatest }  from '../../resources/imports/import-latest';
 import { ImportState }   from '../../enums/import-state.enum';
 import { PagedResponse } from '../../resources/paged-response';
 
-import { PageHeaderComponent } from '../../page-header/page-header.component';
-
 import { Filter }        from 'patternfly-ng/filter/filter';
 import { FilterConfig }  from 'patternfly-ng/filter/filter-config';
 import { FilterEvent }   from 'patternfly-ng/filter/filter-event';
@@ -39,7 +35,6 @@ import { FilterQuery }   from 'patternfly-ng/filter/filter-query';
 import { FilterType }    from 'patternfly-ng/filter/filter-type';
 import { ListConfig }    from 'patternfly-ng/list/basic-list/list-config';
 import { ListComponent } from 'patternfly-ng/list/basic-list/list.component';
-import { ListEvent }     from 'patternfly-ng/list/list-event';
 
 import { PaginationConfig }  from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
@@ -82,7 +77,6 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private route: ActivatedRoute,
-        private router: Router,
         private importsService: ImportsService,
         private location: Location,
         private authService: AuthService
@@ -121,7 +115,6 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
         } as PaginationConfig;
 
         this.route.queryParams.subscribe(params => {
-            const event: FilterEvent = new FilterEvent();
             this.setPageSize(params);
             this.setAppliedFilters(params);
             this.setQuery();

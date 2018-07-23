@@ -13,7 +13,6 @@ import { of }         from 'rxjs/observable/of';
 import {
     ActivatedRouteSnapshot,
     CanActivate,
-    Route,
     Router,
     RouterStateSnapshot
 } from '@angular/router';

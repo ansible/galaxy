@@ -10,7 +10,6 @@ import { ListEvent }               from 'patternfly-ng/list/list-event';
 import { cloneDeep }               from 'lodash';
 import { BsModalRef }              from 'ngx-bootstrap';
 
-import { Subject }                 from 'rxjs';
 import { Observable }              from 'rxjs/Observable';
 import { forkJoin }                from 'rxjs/observable/forkJoin';
 
@@ -18,8 +17,6 @@ import { Namespace }               from '../../resources/namespaces/namespace';
 import { ProviderSourceService }   from '../../resources/provider-namespaces/provider-source.service';
 import { Repository }              from '../../resources/repositories/repository';
 import { RepositoryService }       from '../../resources/repositories/repository.service';
-import { RepositoryImport }        from '../../resources/repository-imports/repository-import';
-import { RepositoryImportService } from '../../resources/repository-imports/repository-import.service';
 
 class RepositorySource {
     name: string;
@@ -71,11 +68,11 @@ export class AddRepositoryModalComponent implements OnInit {
     listConfig: ListConfig;
     filterValue = '';
 
-    constructor(public bsModalRef: BsModalRef,
-                private repositoryService: RepositoryService,
-                private repositoryImportService: RepositoryImportService,
-                private providerSourceService: ProviderSourceService) {
-    }
+    constructor(
+        public bsModalRef: BsModalRef,
+        private repositoryService: RepositoryService,
+        private providerSourceService: ProviderSourceService
+    ) {}
 
     ngOnInit() {
         this.providerNamespaces = [];

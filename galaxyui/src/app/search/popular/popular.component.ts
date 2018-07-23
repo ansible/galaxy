@@ -3,8 +3,7 @@ import {
     EventEmitter,
     Input,
     OnInit,
-    Output,
-    ViewChild
+    Output
 } from '@angular/core';
 
 import {
@@ -12,16 +11,12 @@ import {
 } from '@angular/router';
 
 import { ListConfig }     from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent }      from 'patternfly-ng/list/list-event';
 
 import { Tag }              from '../../resources/tags/tag';
-import { TagsService }      from '../../resources/tags/tags.service';
 
 import { Platform }         from '../../resources/platforms/platform';
-import { PlatformService }  from '../../resources/platforms/platform.service';
 
 import { CloudPlatform }        from '../../resources/cloud-platforms/cloud-platform';
-import { CloudPlatformService } from '../../resources/cloud-platforms/cloud-platform.service';
 
 class PopularData {
     tags: Tag[];
@@ -50,9 +45,6 @@ export class PopularComponent implements OnInit {
     items: any;
 
     constructor(
-        private tagsService: TagsService,
-        private platformService: PlatformService,
-        private cloudPlatformService: CloudPlatformService,
         private route: ActivatedRoute
     ) {}
 

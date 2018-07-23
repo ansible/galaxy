@@ -12,7 +12,6 @@ import {
 import { Action }           from 'patternfly-ng/action/action';
 import { ActionConfig }     from 'patternfly-ng/action/action-config';
 
-import { AuthService }      from '../../../../../auth/auth.service';
 import { Repository }        from '../../../../../resources/repositories/repository';
 
 @Component({
@@ -40,7 +39,6 @@ export class NamespaceRepositoryActionComponent implements OnInit {
     actionConfig: ActionConfig;
 
     constructor(
-        private authService: AuthService
     ) {}
 
     ngOnInit(): void {

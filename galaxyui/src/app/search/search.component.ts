@@ -1,13 +1,11 @@
 import {
     AfterViewInit,
     Component,
-    OnInit,
-    ViewChild
+    OnInit
 } from '@angular/core';
 
 import {
     ActivatedRoute,
-    Router
 } from '@angular/router';
 
 import {
@@ -95,7 +93,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     constructor(
         private route: ActivatedRoute,
-        private router: Router,
         private contentSearch: ContentSearchService,
         private location: Location,
         private notificationService: NotificationService,

@@ -1,5 +1,4 @@
 import { NgModule }              from '@angular/core';
-import { AuthService }           from './auth/auth.service';
 import { AuthorDetailComponent } from './authors/detail/author-detail.component';
 import { ContentDetailComponent } from './content-detail/content-detail.component';
 import { NotFoundComponent }     from './exception-pages/not-found/not-found.component';

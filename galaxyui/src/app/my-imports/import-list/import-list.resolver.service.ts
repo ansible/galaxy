@@ -5,13 +5,10 @@ import {
 import {
     ActivatedRouteSnapshot,
     Resolve,
-    Router,
-    RouterStateSnapshot
 } from '@angular/router';
 
 import { Observable }            from 'rxjs/Observable';
 import { AuthService }           from '../../auth/auth.service';
-import { ImportLatest }          from '../../resources/imports/import-latest';
 import { ImportsService }        from '../../resources/imports/imports.service';
 import { PagedResponse }         from '../../resources/paged-response';
 
@@ -20,11 +17,12 @@ export class ImportListResolver implements Resolve<PagedResponse> {
 
     constructor(
         private importsService: ImportsService,
-        private router: Router,
         private authService: AuthService
     ) {}
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<PagedResponse> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+    ): Observable<PagedResponse> {
         let params = '';
         for (const key in route.queryParams) {
             if (route.queryParams.hasOwnProperty(key)) {

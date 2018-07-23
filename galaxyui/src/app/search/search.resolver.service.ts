@@ -5,13 +5,8 @@ import {
 import {
     ActivatedRouteSnapshot,
     Resolve,
-    Router,
     RouterStateSnapshot
 } from '@angular/router';
-
-import {
-    Location
-} from '@angular/common';
 
 import { Observable }            from 'rxjs/Observable';
 import { ContentResponse }       from '../resources/content-search/content';
@@ -35,8 +30,6 @@ import { ContributorTypes }      from '../enums/contributor-types.enum';
 export class SearchContentResolver implements Resolve<ContentResponse> {
     constructor(
         private contentService: ContentSearchService,
-        private router: Router,
-        private location: Location
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ContentResponse> {
         let params = '';
@@ -77,7 +70,6 @@ export class SearchContentResolver implements Resolve<ContentResponse> {
 export class SearchPlatformResolver implements Resolve<Platform[]> {
     constructor(
         private platformService: PlatformService,
-        private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Platform[]> {
         return this.platformService.query({'page_size': 1000});
@@ -88,7 +80,6 @@ export class SearchPlatformResolver implements Resolve<Platform[]> {
 export class SearchContentTypeResolver implements Resolve<ContentType[]> {
     constructor(
         private contentTypeService: ContentTypeService,
-        private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ContentType[]> {
         return this.contentTypeService.query({'page_size': 1000, 'order': 'description'});
@@ -99,7 +90,6 @@ export class SearchContentTypeResolver implements Resolve<ContentType[]> {
 export class SearchCloudPlatformResolver implements Resolve<CloudPlatform[]> {
     constructor(
         private contentTypeService: CloudPlatformService,
-        private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CloudPlatform[]> {
         return this.contentTypeService.query({'page_size': 1000});
@@ -110,7 +100,6 @@ export class SearchCloudPlatformResolver implements Resolve<CloudPlatform[]> {
 export class PopularTagsResolver implements Resolve<Tag[]> {
     constructor(
         private tagsService: TagsService,
-        private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Tag[]> {
         return this.tagsService.search({'order_by': '-roles_count,name'});
@@ -121,7 +110,6 @@ export class PopularTagsResolver implements Resolve<Tag[]> {
 export class PopularPlatformsResolver implements Resolve<Platform[]> {
     constructor(
         private platformService: PlatformService,
-        private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Platform[]> {
         return this.platformService.search({'page_size': 1000, 'order_by': '-roles_count,name'}).map(result => {
@@ -151,7 +139,6 @@ export class PopularPlatformsResolver implements Resolve<Platform[]> {
 export class PopularCloudPlatformsResolver implements Resolve<CloudPlatform[]> {
     constructor(
         private cloudPlatformService: CloudPlatformService,
-        private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CloudPlatform[]> {
         return this.cloudPlatformService.search({'order_by': '-roles_count,name'});

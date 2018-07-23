@@ -7,11 +7,9 @@ import {
 import { EmptyStateConfig }  from 'patternfly-ng/empty-state/empty-state-config';
 
 import { ListConfig }        from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent }         from 'patternfly-ng/list/list-event';
 
 import { Content }           from '../../../resources/content/content';
 import { ContentService }    from '../../../resources/content/content.service';
-import { PagedResponse }     from '../../../resources/paged-response';
 import { Repository }        from '../../../resources/repositories/repository';
 
 import { ContentTypes }      from '../../../enums/content-types.enum';
@@ -25,7 +23,6 @@ import { Filter }            from 'patternfly-ng/filter/filter';
 import { FilterConfig }      from 'patternfly-ng/filter/filter-config';
 import { FilterEvent }       from 'patternfly-ng/filter/filter-event';
 import { FilterField }       from 'patternfly-ng/filter/filter-field';
-import { FilterQuery }       from 'patternfly-ng/filter/filter-query';
 import { FilterType }        from 'patternfly-ng/filter/filter-type';
 
 import { PaginationConfig }  from 'patternfly-ng/pagination/pagination-config';

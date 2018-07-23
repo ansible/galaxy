@@ -28,8 +28,6 @@ import {
     Router
 } from '@angular/router';
 
-import { DOCUMENT }             from '@angular/common';
-
 import { BsModalService }       from 'ngx-bootstrap/modal';
 import { BsModalRef }           from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
@@ -40,7 +38,6 @@ import { Notification }         from 'patternfly-ng/notification';
 import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
 
 import { AuthService }          from './auth/auth.service';
-import { ApiRoot }              from './resources/api-root/api-root';
 import { ApiRootService }       from './resources/api-root/api-root.service';
 
 @Component({
@@ -60,9 +57,9 @@ export class AppComponent implements OnInit {
         this.router.events.subscribe(event => {
             if (event instanceof NavigationEnd || event instanceof NavigationStart) {
                 // When user navigates away from a page, remove any lingering notifications
-                const notices: Notification[] = notificationService.getNotifications();
+                const notices: Notification[] = this.notificationService.getNotifications();
                 notices.forEach((notice: Notification) => {
-                    notificationService.remove(notice);
+                    this.notificationService.remove(notice);
                 });
             }
         });

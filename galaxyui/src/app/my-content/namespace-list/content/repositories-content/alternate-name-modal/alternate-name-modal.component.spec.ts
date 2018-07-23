@@ -1,7 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddRepositoryModalComponent } from './alternate-name-modal.component';
-
 describe('AlternateNameModalComponent', () => {
   let component: AlternateNameModalComponent;
   let fixture: ComponentFixture<AlternateNameModalComponent>;
