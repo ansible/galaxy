@@ -41,10 +41,17 @@
         width: 120px;
         display: inline-block;
 
+        .avatar-wrapper {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
         .avatar-image {
             display: block;
             width: 64px;
-            height: 64px;
             @media(min-width: @large-phone){
                 margin: auto;
             }

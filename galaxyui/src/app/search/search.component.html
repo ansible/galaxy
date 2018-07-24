@@ -21,7 +21,9 @@
                                     <a [routerLink]="['/', item.summary_fields.namespace.name]"
                                        [tooltip]="'View more content from ' + item['displayNamespace']"
                                        container="body">
-                                        <img [src]="item.avatar_url" class="avatar-image" >
+                                       <div class="avatar-wrapper">
+                                           <img [src]="item.avatar_url" class="avatar-image" >
+                                       </div>
                                         <div class="namespace-name">{{ item['namespace_name'] }}</div>
                                     </a>
                                 </div>
