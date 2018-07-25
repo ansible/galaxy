@@ -72,6 +72,7 @@ export class NamespaceDetailComponent implements OnInit {
     me: Me;
 
     pageTitle = 'My Content;/my-content;Add Namespace';
+    pageIcon = 'fa fa-list';
     pageLoading = true;
 
 

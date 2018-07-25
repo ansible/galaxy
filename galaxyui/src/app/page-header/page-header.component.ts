@@ -17,6 +17,7 @@ class Title {
 export class PageHeaderComponent implements OnInit {
 
     _headerTitle: Title[];
+    _headerIcon: string;
 
     @Input()
     set headerTitle(headerTitle: string) {
@@ -39,6 +40,11 @@ export class PageHeaderComponent implements OnInit {
                 this._headerTitle.push(title);
             }
         });
+    }
+
+    @Input()
+    set headerIcon(icon: string) {
+        this._headerIcon = icon;
     }
 
     constructor() {}
