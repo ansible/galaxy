@@ -2,12 +2,11 @@
 
 ## Release 3.1 "Harder, Better, Faster, Stronger" (Target Release Date: 30 September 2018)
 
-- Static analysis of roles during import/upload using ansible-lint and additional Galaxy best practice rules
+- Improve content versioning by developing a process for contributors to build release artifacts in GitHub
 - Role quality scoring to improve the search result ranking and presentation to make it even easier to find the best content
-- Introduce semantic versioned content
-- Add push model where contributors upload content that Galaxy hosts 
-- Begin to introduce metrics collection and analytics to understand and display content usage patterns and to monitor and improve performance
-
+- Begin to introduce metrics collection and web analytics to understand and display content usage patterns, enhance the Galaxy user experience and to monitor and improve performance
+- Adopt and promote a framework as the preferred method for testing and validating content
+ 
 ## Release 3.0 "Doin' It Right" (Completed 30 June 2018)
 
 - Move deployment of the public site from EC2 to OpenShift Dedicated
