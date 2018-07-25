@@ -48,7 +48,8 @@ export class AuthorsComponent implements OnInit {
           private namespaceService: NamespaceService
     ) {}
 
-    pageTitle = `<i class="fa fa-users"></i> Community Authors`;
+    pageTitle = 'Community Authors';
+    pageIcon = 'fa fa-users';
     pageLoading = true;
     items: Namespace[] = [];
 

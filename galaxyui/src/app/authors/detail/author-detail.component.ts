@@ -59,6 +59,7 @@ export class AuthorDetailComponent implements OnInit {
     ) {}
 
     pageTitle = '';
+    pageIcon = '';
     pageLoading = true;
 
     namespace: Namespace;
@@ -159,9 +160,11 @@ export class AuthorDetailComponent implements OnInit {
             this.pageLoading = false;
             if (this.namespace && this.namespace.name) {
                 if (this.namespace.is_vendor) {
-                    this.pageTitle = `<i class="fa fa-star"></i> Partners;/partners;${this.namespace.name}`;
+                    this.pageTitle = `Partners;/partners;${this.namespace.name}`;
+                    this.pageIcon = 'fa fa-star';
                 } else {
-                    this.pageTitle = `<i class="fa fa-users"></i> Community Authors;/community;${this.namespace.name}`;
+                    this.pageTitle = `Community Authors;/community;${this.namespace.name}`;
+                    this.pageIcon = 'fa fa-users';
                 }
                 this.parepareNamespace();
                 if (this.items && this.items.length) {

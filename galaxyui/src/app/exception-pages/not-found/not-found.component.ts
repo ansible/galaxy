@@ -31,7 +31,8 @@ export class NotFoundComponent implements OnInit {
         private router: Router
     ) {}
 
-    pageTitle = '<i class="fa fa-frown-o"></i> Page Not Found';
+    pageTitle = 'Page Not Found';
+    pageIcon = 'fa fa-frown-o';
     actionConfig: ActionConfig;
     emptyStateConfig: EmptyStateConfig;
 
