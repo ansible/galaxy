@@ -20,8 +20,6 @@ import re
 
 from django.contrib.auth import models as auth_models
 
-from django.core import exceptions
-from django.core.mail import send_mail
 from django.core import validators
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -95,34 +93,6 @@ class CustomUser(auth_models.AbstractBaseUser,
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.username)
 
-    # FIXME: This method looks unused
-    def get_full_name(self):
-        """
-        Returns the first_name plus the last_name, with a space in between.
-        """
-        full_name = self.full_name
-        return full_name.strip()
-
-    # FIXME: This method looks unused
-    def get_short_name(self):
-        """Returns the short name for the user."""
-        return self.short_name.strip()
-
-    # FIXME: This method looks unused
-    def get_num_roles(self):
-        return self.roles.filter(active=True, is_valid=True).count()
-
-    # FIXME: This method looks unused
-    def email_user(self, subject, message, from_email=None):
-        """
-        Sends an email to this User.
-        """
-        send_mail(subject, message, from_email, [self.email])
-
-    # FIXME: This method looks unused
-    def hasattr(self, attr):
-        return hasattr(self, attr)
-
     def get_subscriptions(self):
         return [{
             'id': g.id,
@@ -136,30 +106,3 @@ class CustomUser(auth_models.AbstractBaseUser,
             'github_user': g.repository.github_user,
             'github_repo': g.repository.github_repo,
         } for g in self.starred.select_related('repository').all()]
-
-    # FIXME: This method looks unused
-    def get_subscriber(self, github_user, github_repo):
-        try:
-            return self.subscriptions.get(
-                github_user=github_user,
-                github_repo=github_repo)
-        except exceptions.ObjectDoesNotExist:
-            return None
-
-    # FIXME: This method looks unused
-    def get_stargazer(self, github_user, github_repo):
-        try:
-            star = self.starred.get(
-                repository__provider_namespace__name=github_user,
-                repository__name=github_repo)
-            return star
-        except exceptions.ObjectDoesNotExist:
-            return None
-
-    # FIXME: This method looks unused
-    def is_connected_to_github(self):
-        connected = False
-        for account in self.socialaccount_set.all():
-            if account.provider == 'github':
-                connected = True
-        return connected
