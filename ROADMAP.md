@@ -3,8 +3,8 @@
 ## Release 3.1 "Harder, Better, Faster, Stronger" (Target Release Date: 30 September 2018)
 
 - Improve content versioning by developing a process for contributors to build release artifacts in GitHub
-- Role quality scoring to improve the search result ranking and presentation to make it even easier to find the best content
-- Begin to introduce metrics collection and web analytics to understand and display content usage patterns, enhance the Galaxy user experience and to monitor and improve performance
+- Add role quality scoring metrics to improve search result ranking and presentation, and make it even easier to find the best content
+- Begin introducing metrics collection and web analytics that help us understand content usage patterns, enhance the Galaxy user experience, and monitor and improve performance
 - Adopt and promote a framework as the preferred method for testing and validating content
  
 ## Release 3.0 "Doin' It Right" (Completed 30 June 2018)
