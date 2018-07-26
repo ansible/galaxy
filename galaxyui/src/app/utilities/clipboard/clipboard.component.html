@@ -1,4 +1,5 @@
 <div class="copy-to-clipboard">
-    <code [id]="guid">{{ copyText | lowercase }}</code>
+    <div class="code">$</div>
+    <div class="code" [id]="guid">{{ copyText | lowercase }}</div>
     <a [href]="" (click)="copyToClipboard()" class="btn btn-default" tooltip="Copy to clipboard"><i class="fa fa-copy"></i></a>
 </div>
