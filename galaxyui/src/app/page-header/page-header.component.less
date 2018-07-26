@@ -1,9 +1,15 @@
 .page-header {
-    margin-top: 15px;
-    margin-left: 15px;
-    margin-right: 15px;
-    border-bottom: 1px solid #bbb;
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-bottom: 20px;
+
+    margin-top: 0px;
+
+    padding-left: 35px;
+    padding-right: 35px;
     padding-bottom: 20px;
+
+    border-bottom: 1px solid #bbb;
     font-size: 16px;
 }
 
@@ -21,5 +27,17 @@
     }
     .separator {
         padding-left: 3px;
+    }
+
+    .hide-on-mobile {
+        @media(max-width: 1000px){
+            display: none;
+        }
+    }
+
+    .show-on-mobile {
+        @media(min-width: 1000px){
+            display: none;
+        }
     }
 }
