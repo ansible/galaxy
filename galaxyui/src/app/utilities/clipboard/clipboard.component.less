@@ -1,23 +1,29 @@
 /* clipboard.component.less */
 
-.copy-to-clipboard {
+@import '../../../variables';
 
-    code {
-        background-color: #fff;
-        border-top: 1px solid #bbb;
-        border-bottom: 1px solid #bbb;
-        border-left: 1px solid #bbb;
-        border-right: 1px solid #fff;
-        padding: 4px 5px 5px 5px;
-        border-radius: 1px;
-        margin: 0;
+.copy-to-clipboard {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    .code {
+        vertical-align: middle;
+        padding-left: 5px;
+        padding-right: 5px;
+        font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        display: inline-block;
+        background-color: #F9F2F4;
+        color: #C20F45;
+        height: 27px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .btn {
-        margin-left: -5px;
-        padding-bottom: 2.75px;
-        padding-top: 2.75px;
-        margin-bottom: 1px;
+        display: inline-block;
+        height: 27px;
         box-shadow: none;
         text-shadow: none;
+        font-weight: bold;
     }
 }
