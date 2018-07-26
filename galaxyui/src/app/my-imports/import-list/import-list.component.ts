@@ -69,7 +69,8 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedId: number;
     checking = false;
 
-    pageTitle = '<i class="fa fa-upload"></i> My Imports';
+    pageTitle = 'My Imports';
+    pageIcon = 'fa fa-upload';
     pageLoading = true;
     refreshing = false;
     polling = null;

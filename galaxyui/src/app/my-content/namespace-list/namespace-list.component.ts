@@ -49,7 +49,8 @@ export class NamespaceListComponent implements OnInit {
     namespaces: Namespace[] = [];
     me: IMe;
 
-    pageTitle = '<i class="fa fa-list"></i> My Content';
+    pageTitle = 'My Content';
+    pageIcon = 'fa fa-list';
     pageLoading = true;
 
     toolbarActionConfig: ActionConfig;
