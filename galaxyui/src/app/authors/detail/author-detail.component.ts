@@ -10,7 +10,6 @@ import {
 
 import * as moment            from 'moment';
 
-import { Action }             from 'patternfly-ng/action/action';
 import { ActionConfig }       from 'patternfly-ng/action/action-config';
 import { EmptyStateConfig }   from 'patternfly-ng/empty-state/empty-state-config';
 import { Filter }             from 'patternfly-ng/filter/filter';
@@ -24,9 +23,7 @@ import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
 import { SortConfig }         from 'patternfly-ng/sort/sort-config';
 import { SortEvent }          from 'patternfly-ng/sort/sort-event';
-import { SortField }          from 'patternfly-ng/sort/sort-field';
 import { ToolbarConfig }      from 'patternfly-ng/toolbar/toolbar-config';
-import { ToolbarView }        from 'patternfly-ng/toolbar/toolbar-view';
 
 import { Namespace }          from '../../resources/namespaces/namespace';
 

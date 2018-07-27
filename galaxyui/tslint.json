@@ -16,6 +16,7 @@
     "object-literal-shorthand": false,
     "trailing-comma": false,
     "class-name": true,
+    "no-unused-variable": true,
     "comment-format": [
       true,
       "check-space"

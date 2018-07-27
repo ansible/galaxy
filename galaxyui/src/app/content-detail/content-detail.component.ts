@@ -27,7 +27,6 @@ import { Content }          from '../resources/content/content';
 import { Namespace }        from '../resources/namespaces/namespace';
 import { PagedResponse }    from '../resources/paged-response';
 import { Repository }       from '../resources/repositories/repository';
-import { RepoChangeEvent }  from './repository/repository.component';
 
 import { ContentService }   from '../resources/content/content.service';
 

@@ -1,12 +1,10 @@
 import {
     Component,
     OnInit,
-    TemplateRef,
     ViewEncapsulation
 } from '@angular/core';
 
 import {
-    ActivatedRoute,
     Router
 } from '@angular/router';
 

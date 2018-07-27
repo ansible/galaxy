@@ -5,9 +5,7 @@ import {
 } from '@angular/core';
 
 import { CardConfig }     from 'patternfly-ng/card/basic-card/card-config';
-import { Content }        from '../../../resources/content/content';
 import { Platform }       from '../../../resources/platforms/platform';
-import { Repository }     from '../../../resources/repositories/repository';
 
 @Component({
     selector: 'card-platforms',

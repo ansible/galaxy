@@ -1,7 +1,5 @@
 import {
-    AfterViewInit,
     Component,
-    Input,
     OnInit
 } from '@angular/core';
 

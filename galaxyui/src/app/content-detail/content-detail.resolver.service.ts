@@ -5,12 +5,10 @@ import {
 import {
     ActivatedRouteSnapshot,
     Resolve,
-    Router,
     RouterStateSnapshot
 } from '@angular/router';
 
 import { Observable }            from 'rxjs/Observable';
-import { forkJoin }              from 'rxjs/observable/forkJoin';
 
 import { Content }               from '../resources/content/content';
 import { ContentService }        from '../resources/content/content.service';
@@ -23,7 +21,6 @@ import { RepositoryService }     from '../resources/repositories/repository.serv
 export class ContentResolver implements Resolve<Content[]> {
     constructor(
         private contentService: ContentService,
-        private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Content[]> {
         const repository = route.params['repository'].toLowerCase();
@@ -44,7 +41,6 @@ export class ContentResolver implements Resolve<Content[]> {
 export class RepositoryResolver implements Resolve<Repository> {
     constructor(
         private repositoryService: RepositoryService,
-        private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Repository> {
         const repository = route.params['repository'].toLowerCase();
@@ -61,7 +57,6 @@ export class RepositoryResolver implements Resolve<Repository> {
 export class NamespaceResolver implements Resolve<Namespace> {
     constructor(
         private namespaceService: NamespaceService,
-        private router: Router
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Namespace> {
         const namespace = route.params['namespace'].toLowerCase();

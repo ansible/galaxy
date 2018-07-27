@@ -8,12 +8,10 @@ import {
     Router
 } from '@angular/router';
 
-import { Action }             from 'patternfly-ng/action/action';
 import { ActionConfig }       from 'patternfly-ng/action/action-config';
 import { EmptyStateConfig }   from 'patternfly-ng/empty-state/empty-state-config';
 import { Filter }             from 'patternfly-ng/filter/filter';
 import { FilterConfig }       from 'patternfly-ng/filter/filter-config';
-import { FilterEvent }        from 'patternfly-ng/filter/filter-event';
 import { FilterField }        from 'patternfly-ng/filter/filter-field';
 import { FilterType }         from 'patternfly-ng/filter/filter-type';
 import { ListEvent }          from 'patternfly-ng/list/list-event';
@@ -21,9 +19,7 @@ import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
 import { SortConfig }         from 'patternfly-ng/sort/sort-config';
 import { SortEvent }          from 'patternfly-ng/sort/sort-event';
-import { SortField }          from 'patternfly-ng/sort/sort-field';
 import { ToolbarConfig }      from 'patternfly-ng/toolbar/toolbar-config';
-import { ToolbarView }        from 'patternfly-ng/toolbar/toolbar-view';
 
 import { Namespace }          from '../resources/namespaces/namespace';
 import { NamespaceService }   from '../resources/namespaces/namespace.service';

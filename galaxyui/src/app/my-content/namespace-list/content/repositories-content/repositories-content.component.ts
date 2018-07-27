@@ -3,16 +3,12 @@ import {
     Input,
     OnDestroy,
     OnInit,
-    TemplateRef,
     ViewEncapsulation,
 } from '@angular/core';
 
-import { flatten }           from 'lodash';
-import { Action }            from 'patternfly-ng/action/action';
 import { ActionConfig }      from 'patternfly-ng/action/action-config';
 import { EmptyStateConfig }  from 'patternfly-ng/empty-state/empty-state-config';
 import { ListConfig }        from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent }         from 'patternfly-ng/list/list-event';
 
 import {
     BsModalRef,
@@ -32,7 +28,6 @@ import { PagedResponse }           from '../../../../resources/paged-response';
 import { ProviderNamespace }       from '../../../../resources/provider-namespaces/provider-namespace';
 import { Repository }              from '../../../../resources/repositories/repository';
 import { RepositoryService }       from '../../../../resources/repositories/repository.service';
-import { RepositoryImport }        from '../../../../resources/repository-imports/repository-import';
 import { RepositoryImportService } from '../../../../resources/repository-imports/repository-import.service';
 
 import {

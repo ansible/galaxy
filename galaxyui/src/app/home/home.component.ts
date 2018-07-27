@@ -91,7 +91,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private setCardHeight(): void {
         // Set the cards to a consistent height
         setTimeout(_ => {
-            const windowHeight = window.innerHeight;
             const windowWidth = window.innerWidth;
             $('#card-1 .pfng-card').css('height', 'auto');
             $('#card-2 .pfng-card').css('height', 'auto');
