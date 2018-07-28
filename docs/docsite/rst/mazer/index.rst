@@ -21,6 +21,10 @@ on GitHub at `ansible/mazer <https://github.com/ansible/mazer>`_.
     Before installing roles with Mazer, review :ref:`using_mazer_content`. Mazer installs content different from
     the way ``ansible-galaxy`` does.
 
+    Mazer is most useful when used with a version of Ansible that understands mazer installed content.
+    Currently that means the `'mazer_role_loader' branch of ansible <https://github.com/ansible/ansible/tree/mazer_role_loader>`_.
+    See :ref:`installing_the_companion_branch_of_ansible` for details.
+
 .. toctree::
    :maxdepth: 2
 
