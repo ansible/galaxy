@@ -85,7 +85,7 @@ DATABASES = {}
 
 if os.environ.get('GALAXY_DB_URL'):
     DATABASES['default'] = dj_database_url.config(
-        env='GALAXY_DB_URL', conn_max_age=60)
+        env='GALAXY_DB_URL', conn_max_age=0)
 else:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -94,7 +94,7 @@ else:
         'PASSWORD': os.environ.get('GALAXY_DB_PASSWORD', ''),
         'HOST': os.environ.get('GALAXY_DB_HOST', ''),
         'PORT': int(os.environ.get('GALAXY_DB_PORT', 5432)),
-        'CONN_MAX_AGE': 60,
+        'CONN_MAX_AGE': 0,
     }
 
 # Create default alias for worker logging
