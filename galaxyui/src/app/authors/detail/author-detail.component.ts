@@ -29,6 +29,7 @@ import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
 
 import { Namespace }          from '../../resources/namespaces/namespace';
+import { PFBodyService }      from '../../resources/pf-body/pf-body.service';
 
 import { RepositoryService }  from '../../resources/repositories/repository.service';
 import { Repository }         from '../../resources/repositories/repository';
@@ -56,7 +57,8 @@ export class AuthorDetailComponent implements OnInit {
     constructor(
         private router: Router,
         private route: ActivatedRoute,
-        private repositoryService: RepositoryService
+        private repositoryService: RepositoryService,
+        private pfBody: PFBodyService,
     ) {}
 
     pageTitle = '';
@@ -84,6 +86,7 @@ export class AuthorDetailComponent implements OnInit {
     RepoFormats: typeof RepoFormats = RepoFormats;
 
     ngOnInit() {
+        this.pfBody.scrollToTop();
 
         this.emptyStateConfig = {
             info: '',
@@ -221,6 +224,7 @@ export class AuthorDetailComponent implements OnInit {
         if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
             this.pageNumber = $event.pageNumber;
             this.searchRepositories();
+            this.pfBody.scrollToTop();
         }
     }
 

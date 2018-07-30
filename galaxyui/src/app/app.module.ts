@@ -37,14 +37,14 @@ import { VendorsModule }              from './vendors/vendors.module';
 import { ContentDetailModule }        from './content-detail/content-detail.module';
 import { AuthService }                from './auth/auth.service';
 import { NamespaceService }           from './resources/namespaces/namespace.service';
-import { UserService }                from './resources/users/user.service';
-import { RepositoryService }          from './resources/repositories/repository.service';
+import { PFBodyService }              from './resources/pf-body/pf-body.service';
+import { PlatformService }            from './resources/platforms/platform.service';
 import { ProviderSourceService }      from './resources/provider-namespaces/provider-source.service';
+import { RepositoryService }          from './resources/repositories/repository.service';
 import { RepositoryImportService }    from './resources/repository-imports/repository-import.service';
 import { ImportsService }             from './resources/imports/imports.service';
 import { ContentBlocksService }       from './resources/content-blocks/content-blocks.service';
 import { ContentSearchService }       from './resources/content-search/content-search.service';
-import { PlatformService }            from './resources/platforms/platform.service';
 import { ContentTypeService }         from './resources/content-types/content-type.service';
 import { CloudPlatformService }       from './resources/cloud-platforms/cloud-platform.service';
 import { TagsService }                from './resources/tags/tags.service';
@@ -53,6 +53,7 @@ import { AppRoutingModule }           from './app-routing.module';
 import { AppComponent }               from './app.component';
 import { ApiRootService }             from './resources/api-root/api-root.service';
 import { ExceptionPagesModule }       from './exception-pages/exception-pages.module';
+import { UserService }                from './resources/users/user.service';
 
 @NgModule({
     declarations: [
@@ -99,7 +100,8 @@ import { ExceptionPagesModule }       from './exception-pages/exception-pages.mo
         TagsService,
         UserService,
         ContentService,
-        ApiRootService
+        ApiRootService,
+        PFBodyService
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA
