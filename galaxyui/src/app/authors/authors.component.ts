@@ -24,6 +24,7 @@ import { ToolbarConfig }      from 'patternfly-ng/toolbar/toolbar-config';
 
 import { Namespace }          from '../resources/namespaces/namespace';
 import { NamespaceService }   from '../resources/namespaces/namespace.service';
+import { PFBodyService }      from '../resources/pf-body/pf-body.service';
 
 import {
     ContentTypes,
@@ -41,7 +42,8 @@ export class AuthorsComponent implements OnInit {
     constructor(
         private router: Router,
           private route: ActivatedRoute,
-          private namespaceService: NamespaceService
+          private namespaceService: NamespaceService,
+          private pfBody: PFBodyService,
     ) {}
 
     pageTitle = 'Community Authors';
@@ -64,6 +66,7 @@ export class AuthorsComponent implements OnInit {
     pageSize = 10;
 
     ngOnInit() {
+        this.pfBody.scrollToTop();
         this.emptyStateConfig = {
             info: '',
             title: 'No contributors match your search',
@@ -185,6 +188,7 @@ export class AuthorsComponent implements OnInit {
             if (this.pageSize === this.paginationConfig.pageSize) {
                 // changed pageNumber without changing pageSize
                 this.searchNamespaces();
+                this.pfBody.scrollToTop();
             }
         }
     }
