@@ -22,8 +22,8 @@
                         <span class="caret"></span>
                     </a>
                     <ul *dropdownMenu class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li><a href="" [routerLink]="" (click)="about(aboutTemplate)">About</a></li>
-                        <li><a href="/docs/">Help</a></li>
+                        <li><a appLogEvent href="" [routerLink]="" (click)="about(aboutTemplate)">About</a></li>
+                        <li><a appLogEvent href="/docs/">Help</a></li>
                     </ul>
                 </li>
                 <li class="navbar-iconic">
@@ -39,8 +39,8 @@
                         <span class="fa pficon-user"></span> {{ username }} <span class="caret"></span>
                     </a>
                     <ul *dropdownMenu class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                        <li><a href="#">Preferences</a></li>
-                        <li><a [routerLink]="" (click)="logout()">Logout</a></li>
+                        <li><a appLogEvent href="#">Preferences</a></li>
+                        <li><a appLogEvent [routerLink]="" (click)="logout()">Logout</a></li>
                     </ul>
                 </li>
             </ul>

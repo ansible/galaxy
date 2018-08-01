@@ -26,6 +26,8 @@ import { PluginsComponent }            from './content/plugins/plugins.component
 import { RolesComponent }              from './content/roles/roles.component';
 import { RepositoryComponent }         from './repository/repository.component';
 
+import { SharedModule }                from '../shared/shared.module';
+
 @NgModule({
     imports: [
         TooltipModule.forRoot(),
@@ -38,7 +40,9 @@ import { RepositoryComponent }         from './repository/repository.component';
         PageLoadingModule,
         PageHeaderModule,
         ListModule,
-        UtilitiesModule
+        UtilitiesModule,
+        SharedModule
+
     ],
     declarations: [
           ContentDetailComponent,
@@ -51,7 +55,7 @@ import { RepositoryComponent }         from './repository/repository.component';
         ModulesComponent,
         RolesComponent,
         ModuleUtilsComponent,
-        PluginsComponent
+        PluginsComponent,
     ]
 })
 export class ContentDetailModule { }

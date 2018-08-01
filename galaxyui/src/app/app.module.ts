@@ -33,6 +33,8 @@ import { AuthorsModule }              from './authors/authors.module';
 import { ContentDetailModule }        from './content-detail/content-detail.module';
 import { ExceptionPagesModule }       from './exception-pages/exception-pages.module';
 import { HomeModule }                 from './home/home.module';
+import { SharedModule }               from './shared/shared.module';
+
 import { LoginModule }                from './login/login.module';
 import { MyContentModule }            from './my-content/my-content.module';
 import { ApiRootService }             from './resources/api-root/api-root.service';
@@ -42,6 +44,7 @@ import { ContentSearchService }       from './resources/content-search/content-s
 import { ContentTypeService }         from './resources/content-types/content-type.service';
 import { ContentService }             from './resources/content/content.service';
 import { ImportsService }             from './resources/imports/imports.service';
+import { EventLoggerService }         from './resources/logger/event-logger.service';
 import { NamespaceService }           from './resources/namespaces/namespace.service';
 import { PFBodyService }              from './resources/pf-body/pf-body.service';
 import { PlatformService }            from './resources/platforms/platform.service';
@@ -58,7 +61,7 @@ import { VendorsModule }              from './vendors/vendors.module';
 @NgModule({
     declarations: [
         AppComponent,
-        UserNotificationsComponent
+        UserNotificationsComponent,
     ],
     imports: [
         HttpClientModule,
@@ -82,7 +85,8 @@ import { VendorsModule }              from './vendors/vendors.module';
         ExceptionPagesModule,
         VendorsModule,
         AuthorsModule,
-        AppRoutingModule
+        AppRoutingModule,
+        SharedModule,
     ],
     providers: [
         AuthService,
@@ -101,7 +105,8 @@ import { VendorsModule }              from './vendors/vendors.module';
         UserService,
         ContentService,
         ApiRootService,
-        PFBodyService
+        PFBodyService,
+        EventLoggerService,
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA

@@ -5,10 +5,13 @@ import { TooltipModule }       from 'ngx-bootstrap/tooltip';
 
 import { ClipboardComponent }  from './clipboard/clipboard.component';
 
+import { SharedModule }        from '../shared/shared.module';
+
 @NgModule({
     imports: [
         CommonModule,
-        TooltipModule
+        TooltipModule,
+        SharedModule
     ],
     declarations: [
         ClipboardComponent
