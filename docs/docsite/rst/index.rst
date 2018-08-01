@@ -44,3 +44,9 @@ use Galaxy to share it with the community.
    :caption: Mazer
 
    mazer/index
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Developer's Guide
+
+   developers/index
