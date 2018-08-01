@@ -68,6 +68,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     items: Repository[] = [];
 
     emptyStateConfig: EmptyStateConfig;
+    nonEmptyStateConfig: EmptyStateConfig;
     disabledStateConfig: EmptyStateConfig;
     paginationConfig: PaginationConfig = {
         pageSize: 10,
@@ -132,6 +133,17 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             helpLink: {}
         } as EmptyStateConfig;
 
+        this.nonEmptyStateConfig = {
+            actions: {
+                primaryActions: [],
+                moreActions: []
+            } as ActionConfig,
+            iconStyleClass: '',
+            title: '',
+            info: '',
+            helpLink: {}
+        } as EmptyStateConfig;
+
         this.disabledStateConfig = {
             iconStyleClass: 'pficon-warning-triangle-o',
             info: `The Namespace ${this.namespace.name} is disabled. You'll need to re-enable it before viewing and modifying its content.`,
@@ -140,7 +152,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
         this.listConfig = {
             dblClick: false,
-            emptyStateConfig: null,
+            emptyStateConfig: this.nonEmptyStateConfig,
             multiSelect: false,
             selectItems: false,
             selectionMatchProp: 'name',
@@ -290,7 +302,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         if (this.items.length === 0) {
             this.listConfig.emptyStateConfig = this.emptyStateConfig;
         } else {
-            this.listConfig.emptyStateConfig = null;
+            this.listConfig.emptyStateConfig = this.nonEmptyStateConfig;
         }
     }
 
