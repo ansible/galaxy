@@ -244,7 +244,7 @@ using ``tmux``.
    When all the migrations and setup work is done, the output stream will stop,
    and you'll see output similar to the following:
 
-   .. code-block:: console
+   .. code-block:: none
 
         Applying socialaccount.0003_extra_data_default_dict... OK
         + make build_indexes
@@ -291,7 +291,9 @@ service container.
 Check the output stream from the ``galaxy`` service container, and look for
 the completion of database migrations, and the start of the ``gulp`` web server.
 If you see output similar to the following, then you know that ``gulp`` is
-running and accepting connections::
+running and accepting connections:
+
+.. code-block:: none
 
     [03:10:00] Using gulpfile /galaxy/gulpfile.js
     [03:10:01] Starting 'less'...
