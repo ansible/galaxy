@@ -118,10 +118,25 @@ export class AuthorDetailComponent implements OnInit {
                     sortType: 'alpha'
                 },
                 {
-                    id: 'description',
-                    title: 'Description',
-                    sortType: 'alpha'
-                }
+                    id: 'download_count',
+                    title: 'Downloads',
+                    sortType: 'numeric'
+                },
+                {
+                    id: 'stargazers_count',
+                    title: 'Stars',
+                    sortType: 'numeric'
+                },
+                {
+                    id: 'watchers_count',
+                    title: 'Watchers',
+                    sortType: 'numeric'
+                },
+                {
+                    id: 'forks_count',
+                    title: 'Forks',
+                    sortType: 'numeric'
+                },
             ],
             isAscending: true
         } as SortConfig;
