@@ -43,6 +43,7 @@ import { ContentTypeService }         from './resources/content-types/content-ty
 import { ContentService }             from './resources/content/content.service';
 import { ImportsService }             from './resources/imports/imports.service';
 import { NamespaceService }           from './resources/namespaces/namespace.service';
+import { PFBodyService }              from './resources/pf-body/pf-body.service';
 import { PlatformService }            from './resources/platforms/platform.service';
 import { ProviderSourceService }      from './resources/provider-namespaces/provider-source.service';
 import { RepositoryService }          from './resources/repositories/repository.service';
@@ -99,7 +100,8 @@ import { VendorsModule }              from './vendors/vendors.module';
         TagsService,
         UserService,
         ContentService,
-        ApiRootService
+        ApiRootService,
+        PFBodyService
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA
