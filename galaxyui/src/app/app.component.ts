@@ -44,6 +44,11 @@ import { ApiRootService }       from './resources/api-root/api-root.service';
 import { ApiRoot }              from './resources/api-root/api-root';
 
 
+import {
+    BodyCommand,
+    PFBodyService
+} from './resources/pf-body/pf-body.service';
+
 @Component({
     selector: 'galaxy-nav',
     styleUrls:   ['./app.component.less'],
@@ -56,7 +61,8 @@ export class AppComponent implements OnInit {
         private authService:  AuthService,
         private apiRootService: ApiRootService,
         private modalService: BsModalService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private pfBodyService: PFBodyService,
     ) {
         this.router.events.subscribe(event => {
             if (event instanceof NavigationEnd || event instanceof NavigationStart) {
@@ -77,8 +83,26 @@ export class AppComponent implements OnInit {
     aboutConfig:   AboutModalConfig;
     redirectUrl:   string = null;
     teamMembers:   string[];
+    pfBody: any;
 
     ngOnInit(): void {
+        // Patternfly embeds everything not related to navigation in a div with
+        // it's own scrollbar. This means that the window never scrolls and the
+        // browser thinks that the scroll height of the window is always 0.
+        // Therefore, in order to scroll the page programatically, we need to
+        // scroll the div that contains the main body of the web app. Child
+        // components can't access this div directly, because it's part of
+        // app.component, so requests to scroll the div have to be routed through
+        // this service.
+
+        this.pfBody = document.getElementById('pfContentBody');
+
+        this.pfBodyService.currentMessage.subscribe(
+            (message: BodyCommand) => {
+                this.pfBody[message.propertyName] = message.propertyValue;
+            }
+        );
+
         // TODO add unsecured API endpoint for retrieving Galaxy version
         this.aboutConfig = {
             additionalInfo: '',

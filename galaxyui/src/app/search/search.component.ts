@@ -38,8 +38,9 @@ import { NotificationType }     from 'patternfly-ng/notification/notification-ty
 import { ContentTypes }         from '../enums/content-types.enum';
 import { CloudPlatform }        from '../resources/cloud-platforms/cloud-platform';
 import { ContentSearchService } from '../resources/content-search/content-search.service';
-import { Platform }             from '../resources/platforms/platform';
 import { ContentType }          from '../resources/content-types/content-type';
+import { PFBodyService }        from '../resources/pf-body/pf-body.service';
+import { Platform }             from '../resources/platforms/platform';
 
 import {
     ContentTypesIconClasses
@@ -99,9 +100,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
         private contentSearch: ContentSearchService,
         private location: Location,
         private notificationService: NotificationService,
+        private pfBody: PFBodyService,
     ) {}
 
     ngOnInit() {
+        this.pfBody.scrollToTop();
         this.filterConfig = {
             fields: [
                 {
@@ -316,6 +319,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
             this.pageNumber = $event.pageNumber;
             if (this.pageSize === this.paginationConfig.pageSize) {
                 // changed pageNumber without changing pageSize
+                this.pfBody.scrollToTop();
                 changed = true;
             }
         }
@@ -358,6 +362,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
         if (filter) {
             // Update applied filters, and refresh the search result
+            this.pfBody.scrollToTop();
             this.addToFilter(filter);
             event = new FilterEvent();
             event.appliedFilters = JSON.parse(JSON.stringify(this.appliedFilters)) as Filter[];
