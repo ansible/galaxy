@@ -16,8 +16,6 @@ import { PopularComponent }    from './popular/popular.component';
 import { SearchRoutingModule } from './search-routing.module';
 import { SearchComponent }     from './search.component';
 
-import { PageHeaderModule }    from '../page-header/page-header.module';
-import { PageLoadingModule }   from '../page-loading/page-loading.module';
 import { SharedModule }        from '../shared/shared.module';
 
 @NgModule({
@@ -31,8 +29,6 @@ import { SharedModule }        from '../shared/shared.module';
         ListModule,
         CommonModule,
         SearchRoutingModule,
-        PageHeaderModule,
-        PageLoadingModule,
         PaginationModule,
         BsDropdownModule.forRoot(),
         SharedModule

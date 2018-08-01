@@ -10,11 +10,11 @@ import { ToolbarModule }             from 'patternfly-ng/toolbar/toolbar.module'
 
 import { TooltipModule }             from 'ngx-bootstrap/tooltip';
 
-import { PageHeaderModule }          from '../page-header/page-header.module';
-import { PageLoadingModule }         from '../page-loading/page-loading.module';
 import { ImportDetailComponent }     from './import-detail/import-detail.component';
 import { ImportListComponent }       from './import-list/import-list.component';
 import { MyImportsRoutingModule }    from './my-imports.routing.module';
+
+import { SharedModule }                from '../shared/shared.module';
 
 @NgModule({
     imports: [
@@ -25,10 +25,9 @@ import { MyImportsRoutingModule }    from './my-imports.routing.module';
         ToolbarModule,
         ListModule,
         CommonModule,
-        PageHeaderModule,
-        PageLoadingModule,
         PaginationModule,
-        MyImportsRoutingModule
+        MyImportsRoutingModule,
+        SharedModule
     ],
     declarations: [
         ImportListComponent,

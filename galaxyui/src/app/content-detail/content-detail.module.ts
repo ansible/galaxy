@@ -9,10 +9,6 @@ import { PaginationModule }            from 'patternfly-ng/pagination/pagination
 
 import { TooltipModule }               from 'ngx-bootstrap/tooltip';
 
-import { UtilitiesModule }             from '../utilities/utilities.module';
-
-import { PageHeaderModule }            from '../page-header/page-header.module';
-import { PageLoadingModule }           from '../page-loading/page-loading.module';
 import { CardCloudPlatformsComponent } from './cards/cloud-platforms/cloud-platforms.component';
 import { CardDependenciesComponent }   from './cards/dependencies/dependencies.component';
 import { CardInfoComponent }           from './cards/info/card-info.component';
@@ -37,12 +33,8 @@ import { SharedModule }                from '../shared/shared.module';
         ContentDetailRoutingModule,
         EmptyStateModule,
         CardModule,
-        PageLoadingModule,
-        PageHeaderModule,
         ListModule,
-        UtilitiesModule,
         SharedModule
-
     ],
     declarations: [
           ContentDetailComponent,

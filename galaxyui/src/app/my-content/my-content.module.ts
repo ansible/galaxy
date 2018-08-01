@@ -39,13 +39,13 @@ import {
     AlternateNameModalComponent
 } from './namespace-list/content/repositories-content/alternate-name-modal/alternate-name-modal.component';
 
-import { PageHeaderModule }                   from '../page-header/page-header.module';
-import { PageLoadingModule }                  from '../page-loading/page-loading.module';
 import { NamespaceActionComponent }           from './namespace-list/action/action.component';
 
 import {
     NamespaceRepositoryActionComponent
 } from './namespace-list/content/repositories-content/action/action.component';
+
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
     entryComponents: [
@@ -76,9 +76,8 @@ import {
         TooltipModule,
         ListModule,
         PaginationModule,
-        PageHeaderModule,
-        PageLoadingModule,
-        MyContentRoutingModule
+        MyContentRoutingModule,
+        SharedModule
     ],
     providers: [
         BsDropdownConfig

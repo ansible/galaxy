@@ -9,11 +9,11 @@ import { ListModule }              from 'patternfly-ng/list/basic-list/list.modu
 import { PaginationModule }        from 'patternfly-ng/pagination/pagination.module';
 import { ToolbarModule }           from 'patternfly-ng/toolbar/toolbar.module';
 
-import { PageHeaderModule }        from '../page-header/page-header.module';
-import { PageLoadingModule }       from '../page-loading/page-loading.module';
 import { VendorCardComponent }     from './card/vendor-card.component';
 import { VendorsComponent }        from './vendors.component';
 import { VendorsRoutingModule }    from './vendors.routing.module';
+
+import { SharedModule }            from '../shared/shared.module';
 
 @NgModule({
     imports: [
@@ -25,9 +25,8 @@ import { VendorsRoutingModule }    from './vendors.routing.module';
         ToolbarModule,
         TooltipModule,
         VendorsRoutingModule,
-        PageHeaderModule,
-        PageLoadingModule,
-        ActionModule
+        ActionModule,
+        SharedModule
     ],
     declarations: [
         VendorsComponent,

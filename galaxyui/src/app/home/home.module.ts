@@ -13,8 +13,7 @@ import { PopularComponent }     from './popular/popular.component';
 
 import { CardModule }           from 'patternfly-ng/card/basic-card/card.module';
 
-import { PageHeaderModule }     from '../page-header/page-header.module';
-import { PageLoadingModule }    from '../page-loading/page-loading.module';
+import { SharedModule }         from '../shared/shared.module';
 
 @NgModule({
     declarations: [
@@ -24,11 +23,10 @@ import { PageLoadingModule }    from '../page-loading/page-loading.module';
     ],
     imports: [
         CardModule,
-        PageHeaderModule,
-        PageLoadingModule,
         HomeRoutingModule,
         FormsModule,
-        CommonModule
+        CommonModule,
+        SharedModule
     ],
     providers: [],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

@@ -9,12 +9,12 @@ import { ListModule }              from 'patternfly-ng/list/basic-list/list.modu
 import { PaginationModule }        from 'patternfly-ng/pagination/pagination.module';
 import { ToolbarModule }           from 'patternfly-ng/toolbar/toolbar.module';
 
-import { PageHeaderModule }          from '../page-header/page-header.module';
-import { PageLoadingModule }         from '../page-loading/page-loading.module';
 import { AuthorsComponent }          from './authors.component';
 import { AuthorsRoutingModule }      from './authors.routing.module';
 import { AuthorDetailComponent }     from './detail/author-detail.component';
 import { DetailActionsComponent }    from './detail/detail-actions/detail-actions.component';
+
+import { SharedModule }                from '../shared/shared.module';
 
 @NgModule({
     imports: [
@@ -26,9 +26,8 @@ import { DetailActionsComponent }    from './detail/detail-actions/detail-action
         ToolbarModule,
         TooltipModule,
         AuthorsRoutingModule,
-        PageHeaderModule,
-        PageLoadingModule,
-        ActionModule
+        ActionModule,
+        SharedModule
     ],
     declarations: [
         DetailActionsComponent,
