@@ -110,7 +110,7 @@ feature branch, handling merge conflicts as necessary::
     git cherry-pick -x [SHA_FROM_DEVEL]
 
 
-Add a changelog entry for the change, and commit it. Then push your feature 
+Add a changelog entry for the change, and commit it. Then push your feature
 branch to your fork on GitHub::
 
     git push origin backport/3.0/[PR_NUMBER_FROM_DEVEL]
@@ -119,11 +119,13 @@ branch to your fork on GitHub::
 Submit the pull request for ``backport/3.0/[PR_NUMBER_FROM_DEVEL]`` against
 the ``release/3.0`` branch.
 
-Name your pull request accordingly to the original one. 
-Include a reference to the original pull request into description 
+Name your pull request accordingly to the original one.
+Include a reference to the original pull request into description
 in format (. Assign a ``backport`` label.
 
 Example:
+
+.. code-block:: none
 
     Improve breadcrumbs
 
