@@ -8,7 +8,8 @@ import {
     Router
 } from '@angular/router';
 
-import { Namespace }     from '../../resources/namespaces/namespace';
+import { EventLoggerService} from '../../resources/logger/event-logger.service';
+import { Namespace }         from '../../resources/namespaces/namespace';
 
 @Component({
     selector: 'vendor-card',
@@ -18,7 +19,8 @@ import { Namespace }     from '../../resources/namespaces/namespace';
 export class VendorCardComponent implements OnInit {
 
     constructor(
-        private router: Router
+        private router: Router,
+        private eventLoggerService: EventLoggerService,
     ) {}
 
     _vendor: Namespace;
@@ -52,6 +54,7 @@ export class VendorCardComponent implements OnInit {
     }
 
     handleCardClick() {
+        this.eventLoggerService.logLink(this.vendor.name, '/' + this.vendor.name);
         this.router.navigate(['/', this.vendor.name]);
     }
 }

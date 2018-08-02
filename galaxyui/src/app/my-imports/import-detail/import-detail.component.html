@@ -6,7 +6,7 @@
     </div>
 
     <div class="import-btn-container" *ngIf="canImport">
-        <button class="btn btn-default btn-sm"
+        <button appLogEvent="Re Import" class="btn btn-default btn-sm"
             type="button"
             (click)="startImport()"
             tooltip="Restart import"

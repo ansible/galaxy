@@ -18,7 +18,7 @@
                         <div class="list-pf-content-wrapper row list-row">
                             <div class="col-sm-7 search-list-left">
                                 <div class="namespace-container">
-                                    <a [routerLink]="['/', item.summary_fields.namespace.name]"
+                                    <a appLogEvent [routerLink]="['/', item.summary_fields.namespace.name]"
                                        [tooltip]="'View more content from ' + item['displayNamespace']"
                                        container="body">
                                        <div class="avatar-wrapper">
@@ -51,7 +51,7 @@
                             <div class="col-sm-5 col-reduced-margin">
                                 <div class="list-pf-description">
                                     <div class="travis" *ngIf="item.summary_fields.repository.travis_build_url">
-                                        <a href="{{ item.summary_fields.repository.travis_build_url }}" container="body" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
+                                        <a appLogEvent="Travis" href="{{ item.summary_fields.repository.travis_build_url }}" container="body" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
                                             <img src="{{ item.summary_fields.repository.travis_status_url }}"
                                                 class="travis-status-img" title="Travis Build Status" />
                                         </a>

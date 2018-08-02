@@ -23,7 +23,8 @@ export class LogEventDirective {
         const name = this.appLogEvent || this.el.nativeElement.text || this.el.nativeElement.innerText;
 
         if (this.el.nativeElement.nodeName === 'A') {
-            this.eventLoggerService.logLink(name, this.el.nativeElement.href);
+            // TODO Add logic to use href when link not on our site
+            this.eventLoggerService.logLink(name, this.el.nativeElement.pathname);
         } else if (this.el.nativeElement.nodeName === 'BUTTON') {
             this.eventLoggerService.logButton(name);
         }

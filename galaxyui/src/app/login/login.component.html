@@ -6,7 +6,7 @@
                            [config]="config">
                     <div class="custom-blank-slate-card">
                         <div class="custom-blank-slate-icon">
-                            <a [routerLink]="" (click)="login()"><i class="fa fa-github"></i></a>
+                            <a appLogEvent="GitHub Login" [routerLink]="" (click)="login()"><i class="fa fa-github"></i></a>
                         </div>
                         <h3>{{ connectingMsg || msgText }}</h3>
                     </div>

@@ -34,7 +34,7 @@
                         <div class="list-pf-content-wrapper">
                             <div class="list-pf-main-content">
                                 <div class="list-pf-title">
-                                    <a [routerLink]="['/', item.name]" class="title-link"
+                                    <a appLogEvent [routerLink]="['/', item.name]" class="title-link"
                                         tooltip="View author profile and content">{{item.name}}</a>
                                 </div>
                                 <div class="list-pf-description text-overflow-pf">{{item.description }}</div>

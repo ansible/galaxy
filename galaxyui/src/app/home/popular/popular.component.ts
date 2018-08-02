@@ -16,6 +16,8 @@ class Category {
     iconClass: string;
 }
 
+import { EventLoggerService } from '../../resources/logger/event-logger.service';
+
 @Component({
     selector:    'popular-component',
     templateUrl: './popular.component.html',
@@ -26,7 +28,8 @@ export class PopularComponent implements OnInit {
     categories: Category[] = [];
 
     constructor(
-        private router: Router
+        private router: Router,
+        private eventLoggerService: EventLoggerService,
     ) {}
 
     ngOnInit() {
@@ -81,6 +84,9 @@ export class PopularComponent implements OnInit {
         } else {
             params['tags'] = category.name.toLowerCase();
         }
+
+        this.eventLoggerService.logLink(category.name, '/search');
+
         this.router.navigate(['/', 'search'], {queryParams: params});
     }
 

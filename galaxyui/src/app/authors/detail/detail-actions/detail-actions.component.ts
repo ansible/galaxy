@@ -8,7 +8,8 @@ import { Router }           from '@angular/router';
 
 import { ActionConfig }     from 'patternfly-ng/action/action-config';
 
-import { Repository }       from '../../../resources/repositories/repository';
+import { EventLoggerService } from '../../../resources/logger/event-logger.service';
+import { Repository }         from '../../../resources/repositories/repository';
 
 @Component({
     selector: 'author-detail-actions',
@@ -18,7 +19,8 @@ import { Repository }       from '../../../resources/repositories/repository';
 export class DetailActionsComponent implements OnInit {
 
     constructor(
-        private router: Router
+        private router: Router,
+        private eventLoggerService: EventLoggerService,
     ) {}
 
     _repository: Repository;
@@ -45,7 +47,7 @@ export class DetailActionsComponent implements OnInit {
                 title: 'View SCM Repository',
                 tooltip: 'Opens the SCM repository in new browser window or tab'
             }, {
-                disabled: (this._repository.issue_tracker_url) ? true : false,
+                disabled: (!this.repository.issue_tracker_url) ? true : false,
                 id: 'issueLog',
                 title: 'Visit the Issue Log',
                 tooltip: 'Opens the Issue Log in new browser window or tab'
@@ -56,13 +58,17 @@ export class DetailActionsComponent implements OnInit {
     handleAction($event) {
         switch ($event.id) {
             case 'more':
+                const url = `/${ this.repository.summary_fields['namespace']['name'] }/${ this.repository.name }`;
+                this.eventLoggerService.logLink('View Content', url);
                 this.router.navigate(['/', this.repository.summary_fields['namespace']['name'],
                     this.repository.name]);
                 break;
             case 'scmView':
+                this.eventLoggerService.logLink('View SCM Repository', this.repository.external_url);
                 window.open(this.repository.external_url, '_blank');
                 break;
             case 'issueLog':
+                this.eventLoggerService.logLink('Visit the Issue Log', this.repository.issue_tracker_url);
                 window.open(this.repository.issue_tracker_url, '_blank');
                 break;
         }

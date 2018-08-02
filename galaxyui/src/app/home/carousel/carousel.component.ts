@@ -8,7 +8,8 @@ import {
     Router
 } from '@angular/router';
 
-import { Namespace } from '../../resources/namespaces/namespace';
+import { EventLoggerService } from '../../resources/logger/event-logger.service';
+import { Namespace }          from '../../resources/namespaces/namespace';
 
 @Component({
     selector: 'carousel-component',
@@ -39,7 +40,8 @@ export class CarouselComponent implements OnInit {
     _vendors: Namespace[] = [];
 
     constructor(
-        private router: Router
+        private router: Router,
+        private eventLoggerService: EventLoggerService,
     ) { }
 
     ngOnInit() { }
@@ -57,6 +59,7 @@ export class CarouselComponent implements OnInit {
             'vendor': 'true',
             'namespaces': vendor.name
         };
+        this.eventLoggerService.logLink(vendor.name, '/search');
         this.router.navigate(['/', 'search'], { queryParams: params });
     }
 }

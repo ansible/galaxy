@@ -12,11 +12,10 @@ import {
 
 import { ListConfig }     from 'patternfly-ng/list/basic-list/list-config';
 
-import { Tag }              from '../../resources/tags/tag';
-
-import { Platform }         from '../../resources/platforms/platform';
-
-import { CloudPlatform }        from '../../resources/cloud-platforms/cloud-platform';
+import { CloudPlatform }     from '../../resources/cloud-platforms/cloud-platform';
+import { EventLoggerService} from '../../resources/logger/event-logger.service';
+import { Platform }          from '../../resources/platforms/platform';
+import { Tag }               from '../../resources/tags/tag';
 
 class PopularData {
     tags: Tag[];
@@ -45,7 +44,8 @@ export class PopularComponent implements OnInit {
     items: any;
 
     constructor(
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private eventLoggerService: EventLoggerService,
     ) {}
 
     handleClick($event) {
@@ -54,6 +54,7 @@ export class PopularComponent implements OnInit {
         e.itemType = this.popularType;
         e.item = $event.item;
         this.click.emit(e);
+        this.eventLoggerService.logButton(this.popularTitle + ': ' + $event.item.name);
     }
 
     ngOnInit() {

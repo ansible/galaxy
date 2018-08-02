@@ -8,7 +8,8 @@
         [pinnableMenus]="true"
         [showBadges]="true"
         [showIcons]="true"
-        [updateActiveItemsOnClick]="false">
+        [updateActiveItemsOnClick]="false"
+        (onItemClickEvent)='onItemClickEvent($event)'>
         <div>
             <ul class="nav navbar-nav navbar-right navbar-iconic">
                 <li class="dropdown" dropdown>
@@ -27,7 +28,7 @@
                     </ul>
                 </li>
                 <li class="navbar-iconic">
-                    <a class="nav-item-iconic nav-link" [routerLink]="['/login']" [queryParams]="{error: false}" *ngIf="!authenticated"><span class="fa fa-sign-in"></span> &nbsp;Login</a>
+                    <a appLogEvent class="nav-item-iconic nav-link" [routerLink]="['/login']" [queryParams]="{error: false}" *ngIf="!authenticated"><span class="fa fa-sign-in"></span> &nbsp;Login</a>
                 </li>
                 <li class="dropdown" dropdown *ngIf="authenticated">
                     <a class="dropdown-toggle nav-item-iconic"

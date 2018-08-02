@@ -14,13 +14,16 @@ import {
     CardModule
 } from 'patternfly-ng/card/basic-card/card.module';
 
+import { SharedModule } from '../shared/shared.module';
+
 @NgModule({
     declarations: [
         LoginComponent
     ],
     imports: [
         CardModule,
-        LoginRoutingModule
+        LoginRoutingModule,
+        SharedModule
     ],
     providers: []
 })

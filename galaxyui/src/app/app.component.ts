@@ -39,6 +39,7 @@ import { NotificationService }  from 'patternfly-ng/notification/notification-se
 
 import { AuthService }          from './auth/auth.service';
 import { ApiRootService }       from './resources/api-root/api-root.service';
+import { EventLoggerService }   from './resources/logger/event-logger.service';
 
 import {
     BodyCommand,
@@ -59,6 +60,7 @@ export class AppComponent implements OnInit {
         private modalService: BsModalService,
         private notificationService: NotificationService,
         private pfBodyService: PFBodyService,
+        private eventLoggerService: EventLoggerService,
     ) {
         this.router.events.subscribe(event => {
             if (event instanceof NavigationEnd || event instanceof NavigationStart) {
@@ -213,13 +215,7 @@ export class AppComponent implements OnInit {
         this.removeNavButtons();
     }
 
-    onItemClicked($event: NavigationItemConfig): void {
-        console.log('item clicked');
-        console.log($event);
-    }
-
-    onNavigation($event: NavigationItemConfig): void {
-        console.log('navigation started');
-        console.log($event);
+    onItemClickEvent($event: any): void {
+        this.eventLoggerService.logLink($event.title, $event.url);
     }
 }

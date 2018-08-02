@@ -12,8 +12,9 @@ import {
 import { Action }           from 'patternfly-ng/action/action';
 import { ActionConfig }     from 'patternfly-ng/action/action-config';
 
-import { AuthService }      from '../../../auth/auth.service';
-import { Namespace }        from '../../../resources/namespaces/namespace';
+import { AuthService }        from '../../../auth/auth.service';
+import { EventLoggerService } from '../../../resources/logger/event-logger.service';
+import { Namespace }          from '../../../resources/namespaces/namespace';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -40,7 +41,8 @@ export class NamespaceActionComponent implements OnInit {
     actionConfig: ActionConfig;
 
     constructor(
-        private authService: AuthService
+        private authService: AuthService,
+        private eventLoggerService: EventLoggerService,
     ) {}
 
     ngOnInit(): void {
@@ -97,6 +99,8 @@ export class NamespaceActionComponent implements OnInit {
             id: $event.id,
             item: this.namespace
         };
+
+        this.eventLoggerService.logButton($event.title);
         this.handleAction.emit(event);
     }
 }

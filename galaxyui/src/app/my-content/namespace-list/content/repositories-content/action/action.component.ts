@@ -12,7 +12,8 @@ import {
 import { Action }           from 'patternfly-ng/action/action';
 import { ActionConfig }     from 'patternfly-ng/action/action-config';
 
-import { Repository }        from '../../../../../resources/repositories/repository';
+import { EventLoggerService } from '../../../../../resources/logger/event-logger.service';
+import { Repository }         from '../../../../../resources/repositories/repository';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -39,6 +40,7 @@ export class NamespaceRepositoryActionComponent implements OnInit {
     actionConfig: ActionConfig;
 
     constructor(
+        private eventLoggerService: EventLoggerService,
     ) {}
 
     ngOnInit(): void {
@@ -71,6 +73,8 @@ export class NamespaceRepositoryActionComponent implements OnInit {
             id: $event.id,
             item: this.repository
         };
+
+        this.eventLoggerService.logButton($event.title);
         this.handleAction.emit(event);
     }
 }
