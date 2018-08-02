@@ -11,56 +11,48 @@ import { Repository } from './repository';
 
 const httpOptions = {
     headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-    })
+        'Content-Type': 'application/json',
+    }),
 };
 
 @Injectable()
 export class RepositoryService {
-
     private url = '/api/v1/repositories';
 
-    constructor(private http: HttpClient,
-        private notificationService: NotificationService) {
-    }
+    constructor(private http: HttpClient, private notificationService: NotificationService) {}
 
     query(params?: any): Observable<Repository[]> {
-        return this.http.get<PagedResponse>(this.url + '/', { params: params })
-            .pipe(
-                map(response => response.results as Repository[]),
-                tap(_ => this.log('fetched repositories')),
-                catchError(this.handleError('Query', [] as Repository[]))
-            );
+        return this.http.get<PagedResponse>(this.url + '/', { params: params }).pipe(
+            map(response => response.results as Repository[]),
+            tap(_ => this.log('fetched repositories')),
+            catchError(this.handleError('Query', [] as Repository[])),
+        );
     }
 
     pagedQuery(params?: any): Observable<PagedResponse> {
         if (params && typeof params === 'object') {
-            return this.http.get<PagedResponse>(this.url + '/', { params: params })
-                .pipe(
-                    tap(_ => this.log('fetched repositories')),
-                    catchError(this.handleError('Query', {} as PagedResponse))
-                );
+            return this.http.get<PagedResponse>(this.url + '/', { params: params }).pipe(
+                tap(_ => this.log('fetched repositories')),
+                catchError(this.handleError('Query', {} as PagedResponse)),
+            );
         }
         if (params && typeof params === 'string') {
-            return this.http.get<PagedResponse>(this.url + '/' + params)
-                .pipe(
-                    tap(_ => this.log('fetched repositories')),
-                    catchError(this.handleError('Query', {} as PagedResponse))
-                );
-        }
-        return this.http.get<PagedResponse>(this.url + '/')
-            .pipe(
+            return this.http.get<PagedResponse>(this.url + '/' + params).pipe(
                 tap(_ => this.log('fetched repositories')),
-                catchError(this.handleError('Query', {} as PagedResponse))
+                catchError(this.handleError('Query', {} as PagedResponse)),
             );
+        }
+        return this.http.get<PagedResponse>(this.url + '/').pipe(
+            tap(_ => this.log('fetched repositories')),
+            catchError(this.handleError('Query', {} as PagedResponse)),
+        );
     }
 
     get(id: number): Observable<Repository> {
-        return this.http.get<Repository>(`${this.url}/${id.toString()}/`)
-            .pipe(
-                tap(_ => this.log('Fetched repository')),
-                catchError(this.handleError('Get', {} as Repository))
-            );
+        return this.http.get<Repository>(`${this.url}/${id.toString()}/`).pipe(
+            tap(_ => this.log('Fetched repository')),
+            catchError(this.handleError('Get', {} as Repository)),
+        );
     }
 
     save(repository: Repository): Observable<Repository> {
@@ -73,16 +65,15 @@ export class RepositoryService {
 
         return httpResult.pipe(
             tap((newRepo: Repository) => this.log(`Saved repository w/ id=${newRepo.id}`)),
-            catchError(this.handleError<Repository>('Save'))
+            catchError(this.handleError<Repository>('Save')),
         );
     }
 
     destroy(repository: Repository): Observable<any> {
-        return this.http.delete<any>(`${this.url}/${repository.id}/`)
-            .pipe(
-                tap(_ => this.log(`Deleted repository w/ id=${repository.id}`)),
-                catchError(this.handleError<any>('Save'))
-            );
+        return this.http.delete<any>(`${this.url}/${repository.id}/`).pipe(
+            tap(_ => this.log(`Deleted repository w/ id=${repository.id}`)),
+            catchError(this.handleError<any>('Save')),
+        );
     }
 
     private handleError<T>(operation = '', result?: T) {
@@ -112,5 +103,4 @@ export class RepositoryService {
     private log(message: string) {
         console.log('RepositoryService: ' + message);
     }
-
 }

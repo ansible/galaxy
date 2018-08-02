@@ -1,9 +1,6 @@
 import { NgModule } from '@angular/core';
 
-import {
-    RouterModule,
-    Routes
-} from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { SearchComponent } from './search.component';
 
@@ -14,8 +11,8 @@ import {
     SearchCloudPlatformResolver,
     SearchContentResolver,
     SearchContentTypeResolver,
-    SearchPlatformResolver
-}  from './search.resolver.service';
+    SearchPlatformResolver,
+} from './search.resolver.service';
 
 const routes: Routes = [
     {
@@ -29,26 +26,22 @@ const routes: Routes = [
             platforms: SearchPlatformResolver,
             popularTags: PopularTagsResolver,
             popularCloudPlatforms: PopularCloudPlatformsResolver,
-            popularPlatforms: PopularPlatformsResolver
+            popularPlatforms: PopularPlatformsResolver,
         },
-    }
+    },
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(routes)
-    ],
-    exports: [
-          RouterModule
-      ],
-      providers: [
-          SearchCloudPlatformResolver,
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule],
+    providers: [
+        SearchCloudPlatformResolver,
         SearchContentResolver,
         SearchContentTypeResolver,
         SearchPlatformResolver,
         PopularTagsResolver,
         PopularPlatformsResolver,
-        PopularCloudPlatformsResolver
-      ]
+        PopularCloudPlatformsResolver,
+    ],
 })
-export class SearchRoutingModule { }
+export class SearchRoutingModule {}

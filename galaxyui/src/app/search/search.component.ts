@@ -1,73 +1,55 @@
-import {
-    AfterViewInit,
-    Component,
-    OnInit
-} from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 
-import {
-    ActivatedRoute,
-} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
-import {
-    Location
-} from '@angular/common';
+import { Location } from '@angular/common';
 
-import { ListConfig }     from 'patternfly-ng/list/basic-list/list-config';
-import { ToolbarConfig }  from 'patternfly-ng/toolbar/toolbar-config';
+import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
+import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 
-import { Filter }         from 'patternfly-ng/filter/filter';
-import { FilterConfig }   from 'patternfly-ng/filter/filter-config';
-import { FilterEvent }    from 'patternfly-ng/filter/filter-event';
-import { FilterField }    from 'patternfly-ng/filter/filter-field';
-import { FilterQuery }    from 'patternfly-ng/filter/filter-query';
-import { FilterType }     from 'patternfly-ng/filter/filter-type';
+import { Filter } from 'patternfly-ng/filter/filter';
+import { FilterConfig } from 'patternfly-ng/filter/filter-config';
+import { FilterEvent } from 'patternfly-ng/filter/filter-event';
+import { FilterField } from 'patternfly-ng/filter/filter-field';
+import { FilterQuery } from 'patternfly-ng/filter/filter-query';
+import { FilterType } from 'patternfly-ng/filter/filter-type';
 
-import { SortConfig }     from 'patternfly-ng/sort/sort-config';
-import { SortEvent }      from 'patternfly-ng/sort/sort-event';
-import { SortField }      from 'patternfly-ng/sort/sort-field';
+import { SortConfig } from 'patternfly-ng/sort/sort-config';
+import { SortEvent } from 'patternfly-ng/sort/sort-event';
+import { SortField } from 'patternfly-ng/sort/sort-field';
 
-import { EmptyStateConfig }     from 'patternfly-ng/empty-state/empty-state-config';
-import { PaginationConfig }     from 'patternfly-ng/pagination/pagination-config';
-import { PaginationEvent }      from 'patternfly-ng/pagination/pagination-event';
+import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
+import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
+import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
 
-import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
-import { NotificationType }     from 'patternfly-ng/notification/notification-type';
+import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
+import { NotificationType } from 'patternfly-ng/notification/notification-type';
 
-import { ContentTypes }         from '../enums/content-types.enum';
-import { CloudPlatform }        from '../resources/cloud-platforms/cloud-platform';
+import { ContentTypes } from '../enums/content-types.enum';
+import { CloudPlatform } from '../resources/cloud-platforms/cloud-platform';
 import { ContentSearchService } from '../resources/content-search/content-search.service';
-import { ContentType }          from '../resources/content-types/content-type';
-import { PFBodyService }        from '../resources/pf-body/pf-body.service';
-import { Platform }             from '../resources/platforms/platform';
+import { ContentType } from '../resources/content-types/content-type';
+import { PFBodyService } from '../resources/pf-body/pf-body.service';
+import { Platform } from '../resources/platforms/platform';
 
-import {
-    ContentTypesIconClasses
-} from '../enums/content-types.enum';
+import { ContentTypesIconClasses } from '../enums/content-types.enum';
 
-import {
-    RepoFormats
-} from '../enums/repo-types.enum';
+import { RepoFormats } from '../enums/repo-types.enum';
 
-import {
-    ContributorTypes,
-    ContributorTypesIconClasses
-} from '../enums/contributor-types.enum';
+import { ContributorTypes, ContributorTypesIconClasses } from '../enums/contributor-types.enum';
 
-import { PopularEvent }     from './popular/popular.component';
+import { PopularEvent } from './popular/popular.component';
 
-import {
-    Content,
-} from '../resources/content-search/content';
+import { Content } from '../resources/content-search/content';
 
-import * as moment        from 'moment';
+import * as moment from 'moment';
 
 @Component({
     selector: 'app-search',
     templateUrl: './search.component.html',
-    styleUrls: ['./search.component.less']
+    styleUrls: ['./search.component.less'],
 })
 export class SearchComponent implements OnInit, AfterViewInit {
-
     pageTitle = 'Search';
     pageIcon = 'fa fa-search';
     toolbarConfig: ToolbarConfig;
@@ -108,138 +90,132 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     id: 'keywords',
                     title: 'Keyword',
                     placeholder: 'Keyword',
-                    type: FilterType.TEXT
+                    type: FilterType.TEXT,
                 },
                 {
                     id: 'cloud_platforms',
                     title: 'Cloud Platform',
                     placeholder: 'Cloud Platform',
                     type: FilterType.TYPEAHEAD,
-                    queries: []
+                    queries: [],
                 },
                 {
                     id: 'namespaces',
                     title: 'Contributor',
                     placeholder: 'Name',
-                    type: FilterType.TEXT
+                    type: FilterType.TEXT,
                 },
                 {
                     id: 'contributor_type',
                     title: 'Contributor Type',
                     placeholder: 'Contributur Type',
                     type: FilterType.TYPEAHEAD,
-                    queries: [{
-                        id: ContributorTypes.community,
-                        value: ContributorTypes.community,
-                        iconStyleClass: ContributorTypesIconClasses.community
-                    }, {
-                        id: ContributorTypes.vendor,
-                        value: ContributorTypes.vendor,
-                        iconStyleClass: ContributorTypesIconClasses.vendor
-                    }]
+                    queries: [
+                        {
+                            id: ContributorTypes.community,
+                            value: ContributorTypes.community,
+                            iconStyleClass: ContributorTypesIconClasses.community,
+                        },
+                        {
+                            id: ContributorTypes.vendor,
+                            value: ContributorTypes.vendor,
+                            iconStyleClass: ContributorTypesIconClasses.vendor,
+                        },
+                    ],
                 },
                 {
                     id: 'content_type',
                     title: 'Content Type',
                     placeholder: 'Content Type',
                     type: FilterType.TYPEAHEAD,
-                    queries: []
+                    queries: [],
                 },
                 {
                     id: 'platforms',
                     title: 'Platform',
                     placeholder: 'Platform',
                     type: FilterType.TYPEAHEAD,
-                    queries: []
+                    queries: [],
                 },
                 {
                     id: 'tags',
                     title: 'Tag',
                     placeholder: 'Tag',
-                    type: FilterType.TEXT
-                }
+                    type: FilterType.TEXT,
+                },
             ] as FilterField[],
             resultsCount: 0,
             totalCount: 0,
-            appliedFilters: []
+            appliedFilters: [],
         } as FilterConfig;
 
         this.sortConfig = {
             fields: [] as SortField[],
-              isAscending: true
+            isAscending: true,
         } as SortConfig;
 
         this.emptyStateConfig = {
             info: '',
             title: this.noResultsState,
-            iconStyleClass: 'pficon pficon-filter'
+            iconStyleClass: 'pficon pficon-filter',
         } as EmptyStateConfig;
 
         this.toolbarConfig = {
             filterConfig: this.filterConfig,
-            sortConfig: this.sortConfig
+            sortConfig: this.sortConfig,
         } as ToolbarConfig;
 
         this.listConfig = {
-            emptyStateConfig: this.emptyStateConfig
+            emptyStateConfig: this.emptyStateConfig,
         } as ListConfig;
 
         this.paginationConfig = {
             pageSize: 10,
             pageNumber: 1,
-            totalItems: 0
+            totalItems: 0,
         } as PaginationConfig;
 
         this.route.queryParams.subscribe(params => {
-            this.route.data.subscribe(
-                (data) => {
-                    // This function is called each time the route updates, so
-                    // the default values have to be reset
-                    this.appliedFilters = [];
-                    this.paginationConfig.pageNumber = 1;
-                    this.pageNumber = 1;
-                    this.sortParams = '&order_by=-relevance';
-                    this.setSortConfig(this.sortParams);
+            this.route.data.subscribe(data => {
+                // This function is called each time the route updates, so
+                // the default values have to be reset
+                this.appliedFilters = [];
+                this.paginationConfig.pageNumber = 1;
+                this.pageNumber = 1;
+                this.sortParams = '&order_by=-relevance';
+                this.setSortConfig(this.sortParams);
 
-                    this.preparePlatforms(data.platforms);
-                    this.prepareContentTypes(data.contentTypes);
-                    this.prepareCloudPlatforms(data.cloudPlatforms);
+                this.preparePlatforms(data.platforms);
+                this.prepareContentTypes(data.contentTypes);
+                this.prepareCloudPlatforms(data.cloudPlatforms);
 
-                    // If there is an error on the search API, the content search services
-                    // returns nothing, so we have to check if results actually exist.
-                    if (data.content.results) {
-                        if (!data.content.results.length && !Object.keys(params).length) {
-                            // No vendors exists
-                            const default_params = {vendor: false};
-                            this.setSortConfig();
-                            this.setAppliedFilters(default_params);
-                            this.searchContent();
-                        } else {
-                            this.setSortConfig(params['order_by']);
-                            this.setPageSize(params);
-                            this.setAppliedFilters(params);
-                            this.prepareContent(data.content.results, data.content.count);
-                            this.setQuery();
-                            this.pageLoading = false;
-                        }
+                // If there is an error on the search API, the content search services
+                // returns nothing, so we have to check if results actually exist.
+                if (data.content.results) {
+                    if (!data.content.results.length && !Object.keys(params).length) {
+                        // No vendors exists
+                        const default_params = { vendor: false };
+                        this.setSortConfig();
+                        this.setAppliedFilters(default_params);
+                        this.searchContent();
                     } else {
-                        this.notificationService.message(
-                            NotificationType.WARNING,
-                            'Error',
-                            'Invalid search query',
-                            false,
-                            null,
-                            null,
-                        );
-
                         this.setSortConfig(params['order_by']);
                         this.setPageSize(params);
                         this.setAppliedFilters(params);
-
+                        this.prepareContent(data.content.results, data.content.count);
+                        this.setQuery();
                         this.pageLoading = false;
                     }
+                } else {
+                    this.notificationService.message(NotificationType.WARNING, 'Error', 'Invalid search query', false, null, null);
 
-                });
+                    this.setSortConfig(params['order_by']);
+                    this.setPageSize(params);
+                    this.setAppliedFilters(params);
+
+                    this.pageLoading = false;
+                }
+            });
         });
     }
 
@@ -335,7 +311,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 ffield = this.getFilterField('tags');
                 filter = {
                     field: ffield,
-                    value: $event.item['name']
+                    value: $event.item['name'],
                 } as Filter;
                 break;
             case 'cloudPlatforms':
@@ -344,7 +320,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 filter = {
                     field: ffield,
                     query: query,
-                    value: $event.item['name']
+                    value: $event.item['name'],
                 } as Filter;
                 break;
             case 'platforms':
@@ -353,7 +329,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 filter = {
                     field: ffield,
                     query: query,
-                    value: $event.item['name']
+                    value: $event.item['name'],
                 } as Filter;
                 break;
         }
@@ -385,16 +361,16 @@ export class SearchComponent implements OnInit, AfterViewInit {
             this.paginationConfig.pageSize = pageSize;
             this.pageSize = pageSize;
         }
-       if (params['page']) {
-           let pageNumber = Number(params['page']);
+        if (params['page']) {
+            let pageNumber = Number(params['page']);
 
-           if (Number.isNaN(pageNumber)) {
-               pageNumber = 1;
-           }
+            if (Number.isNaN(pageNumber)) {
+                pageNumber = 1;
+            }
 
-           this.paginationConfig.pageNumber = pageNumber;
-           this.pageNumber = pageNumber;
-       }
+            this.paginationConfig.pageNumber = pageNumber;
+            this.pageNumber = pageNumber;
+        }
     }
 
     private setAppliedFilters(queryParams: any) {
@@ -446,7 +422,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                         const ffield: Filter = {} as Filter;
                         ffield.field = field;
                         if (field.type === FilterType.TEXT) {
-                              ffield.value = v;
+                            ffield.value = v;
                         } else if (field.type === FilterType.TYPEAHEAD) {
                             field.queries.forEach((query: FilterQuery) => {
                                 if (query.id === v) {
@@ -491,7 +467,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     private addToFilter(filter: Filter) {
         let filterExists = false;
-        this.appliedFilters.forEach( (item: Filter) => {
+        this.appliedFilters.forEach((item: Filter) => {
             if (item.field.id === filter.field.id && item.value === filter.value) {
                 filterExists = true;
             }
@@ -506,19 +482,18 @@ export class SearchComponent implements OnInit, AfterViewInit {
         if (this.pageNumber > 1) {
             paging += `&page=${this.pageNumber}`;
         }
-        const query = (this.filterParams + this.sortParams + paging).replace(/^&/, '');  // remove leading &
-        this.location.replaceState(this.getBasePath(), query);   // update browser URL
+        const query = (this.filterParams + this.sortParams + paging).replace(/^&/, ''); // remove leading &
+        this.location.replaceState(this.getBasePath(), query); // update browser URL
         return query;
     }
 
     private searchContent() {
         this.pageLoading = true;
         const query = this.setQuery();
-        this.contentSearch.query(query)
-            .subscribe(result => {
-                this.prepareContent(result.results, result.count);
-                this.pageLoading = false;
-            });
+        this.contentSearch.query(query).subscribe(result => {
+            this.prepareContent(result.results, result.count);
+            this.pageLoading = false;
+        });
     }
 
     private prepareContent(data: Content[], count: number) {
@@ -536,7 +511,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 item['namespace_name'] = item.summary_fields['namespace']['name'];
             } else {
                 // for vendors, assume name is in logo
-                item['namespace_name'] = (item.summary_fields['namespace']['avatar_url']) ? '' : item.summary_fields['namespace']['name'];
+                item['namespace_name'] = item.summary_fields['namespace']['avatar_url'] ? '' : item.summary_fields['namespace']['name'];
             }
             item['displayNamespace'] = item.summary_fields['namespace']['name'];
             if (item.summary_fields['content_type']['name'].indexOf('plugin') > -1) {
@@ -584,7 +559,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 if (platformMap.hasOwnProperty(key)) {
                     this.toolbarConfig.filterConfig.fields[idx].queries.push({
                         id: key,
-                        value: key
+                        value: key,
                     });
                 }
             }
@@ -612,7 +587,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 if (contentTypeMap.hasOwnProperty(key)) {
                     this.toolbarConfig.filterConfig.fields[idx].queries.push({
                         id: key,
-                        value: contentTypeMap[key]
+                        value: contentTypeMap[key],
                     });
                 }
             }
@@ -632,7 +607,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 if (cpMap.hasOwnProperty(key)) {
                     this.toolbarConfig.filterConfig.fields[idx].queries.push({
                         id: key,
-                        value: cpMap[key]
+                        value: cpMap[key],
                     });
                 }
             }
@@ -644,30 +619,33 @@ export class SearchComponent implements OnInit, AfterViewInit {
             {
                 id: 'relevance',
                 title: 'Best Match',
-                sortType: 'numeric'
-            }, {
+                sortType: 'numeric',
+            },
+            {
                 id: 'namespace__name,name',
                 title: 'Contributor Name',
-                sortType: 'alpha'
-            }, {
+                sortType: 'alpha',
+            },
+            {
                 id: 'repository__download_count',
                 title: 'Download Count',
-                sortType: 'numeric'
-
-            }, {
+                sortType: 'numeric',
+            },
+            {
                 id: 'repository__forks_count',
                 title: 'Forks',
-                sortType: 'numeric'
-            }
-            , {
+                sortType: 'numeric',
+            },
+            {
                 id: 'repository__stargazers_count',
                 title: 'Stars',
-                sortType: 'numeric'
-            }, {
+                sortType: 'numeric',
+            },
+            {
                 id: 'repository__watchers_count',
                 title: 'Watchers',
-                sortType: 'numeric'
-            }
+                sortType: 'numeric',
+            },
         ] as SortField[];
 
         this.sortParams = '&order_by=';

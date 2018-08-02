@@ -1,16 +1,11 @@
-import {
-    Component,
-    Input,
-    OnInit
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
     selector: 'copy-to-clipboard',
     templateUrl: './clipboard.component.html',
-    styleUrls: ['./clipboard.component.less']
+    styleUrls: ['./clipboard.component.less'],
 })
 export class ClipboardComponent implements OnInit {
-
     constructor() {}
 
     _copyText: string;
@@ -30,12 +25,12 @@ export class ClipboardComponent implements OnInit {
 
     s4(): string {
         return Math.floor((1 + Math.random()) * 0x10000)
-          .toString(16)
-          .substring(1);
+            .toString(16)
+            .substring(1);
     }
 
     calcGuid(): string {
-      return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + this.s4() + this.s4();
+        return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + this.s4() + this.s4();
     }
 
     copyToClipboard() {

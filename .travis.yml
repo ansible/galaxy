@@ -27,6 +27,8 @@ script:
 - make dev/up_detached
 - make dev/waitenv
 - make dev/test
+- make dev/jslint
+- make test/prettier
 
 # check images running
 - docker ps -a

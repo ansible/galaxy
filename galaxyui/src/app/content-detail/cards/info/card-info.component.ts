@@ -1,24 +1,19 @@
-import {
-    Component,
-    Input,
-    OnInit
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
-import { CardConfig }     from 'patternfly-ng/card/basic-card/card-config';
-import { RepoFormats }    from '../../../enums/repo-types.enum';
-import { ViewTypes }      from '../../../enums/view-types.enum';
-import { Content }        from '../../../resources/content/content';
-import { Repository }     from '../../../resources/repositories/repository';
+import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
+import { RepoFormats } from '../../../enums/repo-types.enum';
+import { ViewTypes } from '../../../enums/view-types.enum';
+import { Content } from '../../../resources/content/content';
+import { Repository } from '../../../resources/repositories/repository';
 
-import { ContentTypesPlural }   from '../../../enums/content-types.enum';
+import { ContentTypesPlural } from '../../../enums/content-types.enum';
 
 @Component({
     selector: 'card-info',
     templateUrl: './card-info.component.html',
-    styleUrls: ['./card-info.component.less']
+    styleUrls: ['./card-info.component.less'],
 })
 export class CardInfoComponent implements OnInit {
-
     constructor() {}
 
     _repoContent: Content;
@@ -64,12 +59,11 @@ export class CardInfoComponent implements OnInit {
                     `${this._repoContent.summary_fields['repository']['name']}`;
             } else {
                 this._repoContent['install_cmd'] =
-                    `ansible-galaxy install ${this._repoContent.summary_fields['namespace']['name']}.` +
-                    `${this._repoContent.name}`;
+                    `ansible-galaxy install ${this._repoContent.summary_fields['namespace']['name']}.` + `${this._repoContent.name}`;
             }
             this._repoContent['tags'] = this._repoContent.summary_fields['tags'];
             this._repoContent['hasTags'] =
-                (this.repoContent.summary_fields['tags'] && this._repoContent.summary_fields['tags'].length) ? true : false;
+                this.repoContent.summary_fields['tags'] && this._repoContent.summary_fields['tags'].length ? true : false;
             this.example_name = this._repoContent.name;
             this.example_type = this._repoContent.content_type;
             this.example_type_plural = ContentTypesPlural[this._repoContent.content_type];
@@ -88,7 +82,7 @@ export class CardInfoComponent implements OnInit {
         this.config = {
             title: 'Info',
             titleBorder: true,
-            topBorder: true
+            topBorder: true,
         } as CardConfig;
     }
 
