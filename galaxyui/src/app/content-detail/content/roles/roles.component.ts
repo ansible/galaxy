@@ -1,39 +1,32 @@
-import {
-    Component,
-    Input,
-    OnInit
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
-import { ListConfig }        from 'patternfly-ng/list/basic-list/list-config';
+import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
 
-import { Content }           from '../../../resources/content/content';
-import { ContentService }    from '../../../resources/content/content.service';
-import { Repository }        from '../../../resources/repositories/repository';
+import { Content } from '../../../resources/content/content';
+import { ContentService } from '../../../resources/content/content.service';
+import { Repository } from '../../../resources/repositories/repository';
 
-import { ContentTypes }      from '../../../enums/content-types.enum';
+import { ContentTypes } from '../../../enums/content-types.enum';
 
-import { Filter }            from 'patternfly-ng/filter/filter';
-import { FilterConfig }      from 'patternfly-ng/filter/filter-config';
-import { FilterEvent }       from 'patternfly-ng/filter/filter-event';
-import { FilterField }       from 'patternfly-ng/filter/filter-field';
-import { FilterType }        from 'patternfly-ng/filter/filter-type';
+import { Filter } from 'patternfly-ng/filter/filter';
+import { FilterConfig } from 'patternfly-ng/filter/filter-config';
+import { FilterEvent } from 'patternfly-ng/filter/filter-event';
+import { FilterField } from 'patternfly-ng/filter/filter-field';
+import { FilterType } from 'patternfly-ng/filter/filter-type';
 
-import { PaginationConfig }  from 'patternfly-ng/pagination/pagination-config';
-import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
+import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
+import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
 
-import { Observable }        from 'rxjs/Observable';
-import { forkJoin }          from 'rxjs/observable/forkJoin';
+import { Observable } from 'rxjs/Observable';
+import { forkJoin } from 'rxjs/observable/forkJoin';
 
 @Component({
     selector: 'roles-detail',
     templateUrl: './roles.component.html',
-    styleUrls: ['./roles.component.less']
+    styleUrls: ['./roles.component.less'],
 })
 export class RolesComponent implements OnInit {
-
-    constructor(
-        private contentService: ContentService
-    ) {}
+    constructor(private contentService: ContentService) {}
 
     filterConfig: FilterConfig;
     listConfig: ListConfig;
@@ -63,7 +56,7 @@ export class RolesComponent implements OnInit {
             if (this.filterConfig && this.filterConfig.fields) {
                 this.filterConfig.appliedFilters.push({
                     field: this.filterConfig.fields[0],
-                    value: this._selectedContent.name
+                    value: this._selectedContent.name,
                 } as Filter);
                 this.queryContentList(this._selectedContent.name);
             }
@@ -80,39 +73,42 @@ export class RolesComponent implements OnInit {
             multiSelect: false,
             selectItems: false,
             showCheckbox: false,
-            useExpandItems: true
+            useExpandItems: true,
         } as ListConfig;
 
         this.paginationConfig = {
             pageSize: 10,
             pageNumber: 1,
-            totalItems: 0
+            totalItems: 0,
         } as PaginationConfig;
 
         this.filterConfig = {
-            fields: [{
-                id: 'name',
-                title: 'Name',
-                placeholder: 'Filter by Name...',
-                type: FilterType.TEXT,
-            }, {
-                id: 'description',
-                title: 'Description',
-                placeholder: 'Filter by Description...',
-                type: FilterType.TEXT,
-            }] as FilterField[],
+            fields: [
+                {
+                    id: 'name',
+                    title: 'Name',
+                    placeholder: 'Filter by Name...',
+                    type: FilterType.TEXT,
+                },
+                {
+                    id: 'description',
+                    title: 'Description',
+                    placeholder: 'Filter by Description...',
+                    type: FilterType.TEXT,
+                },
+            ] as FilterField[],
             resultsCount: 0,
-            appliedFilters: []
+            appliedFilters: [],
         } as FilterConfig;
 
         if (this._selectedContent) {
             this.filterConfig.appliedFilters.push({
                 field: this.filterConfig.fields[0],
-                value: this._selectedContent.name
+                value: this._selectedContent.name,
             } as Filter);
         }
 
-        this.queryContentList((this.selectedContent) ? this.selectedContent.name : null);
+        this.queryContentList(this.selectedContent ? this.selectedContent.name : null);
     }
 
     handlePageSizeChange($event: PaginationEvent) {
@@ -150,12 +146,12 @@ export class RolesComponent implements OnInit {
 
     private queryContentList(contentName?: string) {
         this.loading = true;
-        let queryString = (this.query) ? this.query : '?';
+        let queryString = this.query ? this.query : '?';
         const params = {
-            'page_size': this.pageSize,
-            'page': this.pageNumber,
-            'content_type__name': ContentTypes.role,
-            'repository__id': this.repository.id
+            page_size: this.pageSize,
+            page: this.pageNumber,
+            content_type__name: ContentTypes.role,
+            repository__id: this.repository.id,
         };
         if (contentName) {
             params['name'] = contentName;
@@ -166,15 +162,13 @@ export class RolesComponent implements OnInit {
                 _tmp.push(`${key}=${params[key]}`);
             }
         }
-        queryString += (queryString === '?') ? _tmp.join('&') : '&' + _tmp.join('&');
-        this.contentService.pagedQuery(queryString).subscribe(
-            results => {
-                this._roles = results.results as Content[];
-                this.filterConfig.resultsCount = results.count;
-                this.paginationConfig.totalItems = results.count;
-                this.getContentDetail();
-            }
-        );
+        queryString += queryString === '?' ? _tmp.join('&') : '&' + _tmp.join('&');
+        this.contentService.pagedQuery(queryString).subscribe(results => {
+            this._roles = results.results as Content[];
+            this.filterConfig.resultsCount = results.count;
+            this.paginationConfig.totalItems = results.count;
+            this.getContentDetail();
+        });
     }
 
     private getContentDetail() {
@@ -192,8 +186,9 @@ export class RolesComponent implements OnInit {
         forkJoin(queries).subscribe((results: Content[]) => {
             this.items = JSON.parse(JSON.stringify(results));
             this.items.forEach(item => {
-                item['install_cmd'] =
-                    `mazer install ${item.summary_fields['namespace']['name']}.${item.summary_fields['repository']['name']}`;
+                item['install_cmd'] = `mazer install ${item.summary_fields['namespace']['name']}.${
+                    item.summary_fields['repository']['name']
+                }`;
                 item['hasTags'] = false;
                 if (item.summary_fields['tags'] && item.summary_fields['tags'].length) {
                     item['tags'] = item.summary_fields['tags'];

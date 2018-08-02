@@ -28,6 +28,8 @@ script:
 - make dev/waitenv
 - make dev/shellcheck
 - make dev/test
+- make dev/jslint
+- make test/prettier
 
 # check images running
 - docker ps -a

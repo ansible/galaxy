@@ -1,40 +1,35 @@
-import { NgModule }              from '@angular/core';
+import { NgModule } from '@angular/core';
 import { AuthorDetailComponent } from './authors/detail/author-detail.component';
 import { ContentDetailComponent } from './content-detail/content-detail.component';
-import { NotFoundComponent }     from './exception-pages/not-found/not-found.component';
+import { NotFoundComponent } from './exception-pages/not-found/not-found.component';
 
 import {
     ContentResolver,
     NamespaceResolver,
-    RepositoryResolver as ContentRepositoryResolver
+    RepositoryResolver as ContentRepositoryResolver,
 } from './content-detail/content-detail.resolver.service';
 
-import {
-    NamespaceDetailResolver,
-    RepositoryResolver as AuthorRepositoryResolver
-}  from './authors/authors.resolver.service';
+import { NamespaceDetailResolver, RepositoryResolver as AuthorRepositoryResolver } from './authors/authors.resolver.service';
 
-import {
-    PreloadAllModules,
-    RouterModule,
-    Routes
-}  from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const appRoutes: Routes = [
     {
         path: '',
         redirectTo: '/home',
-        pathMatch: 'full'
+        pathMatch: 'full',
     },
 
     // Lazily loaded modules
     {
         path: 'search',
-        loadChildren: './search/search.module#SearchModule'
-    }, {
+        loadChildren: './search/search.module#SearchModule',
+    },
+    {
         path: 'my-content',
         loadChildren: './my-content/my-content.module#MyContentModule',
-    }, {
+    },
+    {
         path: 'my-imports',
         loadChildren: './my-imports/my-imports.module#MyImportsModule',
     },
@@ -42,33 +37,36 @@ const appRoutes: Routes = [
     // Routes that resolve variables have to go in app-routing.module to ensure
     // that they are resolved between the static routes ('/search', '/my-content' etc)
     // and the wildcard ('**')
-     {
+    {
         path: ':namespace/:repository/:content_name',
         component: ContentDetailComponent,
         resolve: {
             content: ContentResolver,
             repository: ContentRepositoryResolver,
-            namespace: NamespaceResolver
-        }
-    }, {
+            namespace: NamespaceResolver,
+        },
+    },
+    {
         path: ':namespace/:repository',
         component: ContentDetailComponent,
         resolve: {
             content: ContentResolver,
             repository: ContentRepositoryResolver,
-            namespace: NamespaceResolver
-        }
-    }, {
+            namespace: NamespaceResolver,
+        },
+    },
+    {
         path: ':namespace',
         component: AuthorDetailComponent,
         resolve: {
             namespace: NamespaceDetailResolver,
-            repositories: AuthorRepositoryResolver
-        }
-    }, {
+            repositories: AuthorRepositoryResolver,
+        },
+    },
+    {
         path: '**',
-        component: NotFoundComponent
-    }
+        component: NotFoundComponent,
+    },
 ];
 
 @NgModule({
@@ -76,9 +74,9 @@ const appRoutes: Routes = [
         RouterModule.forRoot(appRoutes, {
             enableTracing: false,
             onSameUrlNavigation: 'reload',
-            preloadingStrategy: PreloadAllModules
-        })
+            preloadingStrategy: PreloadAllModules,
+        }),
     ],
-    exports: [ RouterModule ]
+    exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

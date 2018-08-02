@@ -1,18 +1,10 @@
-import {
-    Component,
-    Input,
-    OnInit
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
-import { Content }          from '../../resources/content/content';
-import { Namespace }        from '../../resources/namespaces/namespace';
-import { Repository }       from '../../resources/repositories/repository';
+import { Content } from '../../resources/content/content';
+import { Namespace } from '../../resources/namespaces/namespace';
+import { Repository } from '../../resources/repositories/repository';
 
-import {
-    RepoFormats,
-    RepoFormatsIconClasses,
-    RepoFormatsTooltips
-} from '../../enums/repo-types.enum';
+import { RepoFormats, RepoFormatsIconClasses, RepoFormatsTooltips } from '../../enums/repo-types.enum';
 
 class RepositoryView {
     repoType: RepoFormats;
@@ -41,14 +33,15 @@ export class RepoChangeEvent {
 @Component({
     selector: 'content-detail-repo',
     templateUrl: './repository.component.html',
-    styleUrls: ['./repository.component.less']
+    styleUrls: ['./repository.component.less'],
 })
 export class RepositoryComponent implements OnInit {
-
     constructor() {}
 
-    @Input() repository: Repository;
-    @Input() namespace: Namespace;
+    @Input()
+    repository: Repository;
+    @Input()
+    namespace: Namespace;
 
     mainContent: Content = {} as Content;
     repositoryView: RepositoryView;
