@@ -1,15 +1,14 @@
-import { Injectable }              from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
-
-import { Observable }           from 'rxjs/Observable';
-import { of }                   from 'rxjs/observable/of';
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { Namespace } from './namespace';
 
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
-import { PagedResponse }       from '../paged-response';
+import { PagedResponse } from '../paged-response';
 
 
 const httpOptions = {
@@ -24,13 +23,13 @@ export class NamespaceService {
     private url = '/api/v1/namespaces';
 
     constructor(private http: HttpClient,
-                private notificationService: NotificationService) {
+        private notificationService: NotificationService) {
     }
 
     encounteredErrors = false;
 
     query(params?: any): Observable<Namespace[]> {
-        return this.http.get<PagedResponse>(this.url + '/', {params: params})
+        return this.http.get<PagedResponse>(this.url + '/', { params: params })
             .pipe(
                 map(response => response.results),
                 tap(_ => this.log('fetched namespaces')),
@@ -40,7 +39,7 @@ export class NamespaceService {
 
     pagedQuery(params: any): Observable<PagedResponse> {
         if (params && typeof params === 'object') {
-            return this.http.get<PagedResponse>(this.url + '/', {params: params})
+            return this.http.get<PagedResponse>(this.url + '/', { params: params })
                 .pipe(
                     tap(_ => this.log('fetched paged content')),
                     catchError(this.handleError('Query', {} as PagedResponse))
@@ -56,7 +55,7 @@ export class NamespaceService {
         return this.http.get<PagedResponse>(this.url + '/')
             .pipe(
                 tap(_ => this.log('fetched paged content')),
-                 catchError(this.handleError('Query', {} as PagedResponse))
+                catchError(this.handleError('Query', {} as PagedResponse))
             );
     }
 
@@ -96,19 +95,20 @@ export class NamespaceService {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} namespace error: ${error.message}`);
-            if ('error' in error && result !== undefined) {
+            if (typeof error === 'object' && 'error' in error && typeof error['error'] === 'object' &&
+                result !== undefined) {
                 // Unpack error messages, sending each to the notification service
                 for (const fld in error['error']) {
                     if (error['error'].hasOwnProperty(fld)) {
                         if (typeof error['error'][fld] !== 'object') {
                             const msg = result[fld];
-                            this.notificationService.httpError(error['error'][fld], {data: {message: msg}});
+                            this.notificationService.httpError(error['error'][fld], { data: { message: msg } });
                         } else {
                             for (const idx in error['error'][fld]) {
                                 if (result[fld]) {
                                     if (Array.isArray(result[fld]) && idx < result[fld].length) {
                                         const msg = result[fld][idx]['name'];
-                                        this.notificationService.httpError(error['error'][fld][idx], {data: {message: msg}});
+                                        this.notificationService.httpError(error['error'][fld][idx], { data: { message: msg } });
                                     }
                                 }
                             }
@@ -117,7 +117,7 @@ export class NamespaceService {
                 }
             } else {
                 // Nothing to unpack. Raise the raw error to the notification service.
-                this.notificationService.httpError(`${operation} namespace failed:`, {data: error});
+                this.notificationService.httpError(`${operation} namespace failed:`, { data: error });
             }
             // Let the app keep running by returning an empty result.
             this.encounteredErrors = true;

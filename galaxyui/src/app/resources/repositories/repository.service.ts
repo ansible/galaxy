@@ -1,13 +1,13 @@
-import { Injectable }              from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
-import { Observable }           from 'rxjs/Observable';
-import { of }                   from 'rxjs/observable/of';
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { Repository }          from './repository';
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
-import { PagedResponse }       from '../paged-response';
+import { PagedResponse } from '../paged-response';
+import { Repository } from './repository';
 
 const httpOptions = {
     headers: new HttpHeaders({
@@ -21,11 +21,11 @@ export class RepositoryService {
     private url = '/api/v1/repositories';
 
     constructor(private http: HttpClient,
-                private notificationService: NotificationService) {
+        private notificationService: NotificationService) {
     }
 
     query(params?: any): Observable<Repository[]> {
-        return this.http.get<PagedResponse>(this.url + '/', {params: params})
+        return this.http.get<PagedResponse>(this.url + '/', { params: params })
             .pipe(
                 map(response => response.results as Repository[]),
                 tap(_ => this.log('fetched repositories')),
@@ -35,7 +35,7 @@ export class RepositoryService {
 
     pagedQuery(params?: any): Observable<PagedResponse> {
         if (params && typeof params === 'object') {
-            return this.http.get<PagedResponse>(this.url + '/', {params: params})
+            return this.http.get<PagedResponse>(this.url + '/', { params: params })
                 .pipe(
                     tap(_ => this.log('fetched repositories')),
                     catchError(this.handleError('Query', {} as PagedResponse))
@@ -89,20 +89,20 @@ export class RepositoryService {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             let data = error;
-            if (error['error']) {
+            if (typeof error === 'object' && 'error' in error) {
                 // Check if API returned a field-level validation error
                 const msg = error['error'];
                 if (typeof msg === 'object') {
                     for (const key in msg) {
                         if (msg.hasOwnProperty(key)) {
-                            data = {message: msg[key]};
+                            data = { message: msg[key] };
                             break;
                         }
                     }
                 }
             }
             this.log(`${operation} repository error: ${error.message}`);
-            this.notificationService.httpError(`${operation} repository failed:`, {data: data});
+            this.notificationService.httpError(`${operation} repository failed:`, { data: data });
 
             // Let the app keep running by returning an empty result.
             return of(result as T);
