@@ -4,6 +4,62 @@ Ansible Galaxy Changes by Release
 3.1.0 - Active development
 --------------------------
 
+3.0.5 - Released 03-Aug-2018
+----------------------------
+
+Bug Fixes
+`````````
+- Fixed broken error handling on home page, when 500 errors arise from the Namespace resource. Issue `#981 <https://github.com/ansible/galaxy/issues/981>`_.
+- Fixed stacktrace on My Content page.
+- Added Developer's Guide to Galaxy docs.
+- Added required packages, `gcc` and `python-devel`, to release build process
+- On Search and Community pages, added automatic scroll to the top of the page after navigating to next page. Issue `#750 <https://github.com/ansible/galaxy/issues/750>`_.
+- On an authors page, added ability to sort by forks, stargazers, downloads and watchers. Issue `#965 <https://github.com/ansible/galaxy/issues/965>`_.
+- Updated install and usage docs for `Mazer <https://github.com/ansible/mazer>`_. Mazer issue `#106 <https://github.com/ansible/mazer/issues/106>`_.
+- Applied style fixes to Role README display. Issue `#718 <https://github.com/ansible/galaxy/issues/718>`_.
+- Fixed copy-to-clipboard styling. Issue `#722 <https://github.com/ansible/galaxy/issues/722>`_.
+- Applied style fixes to Content Detail page. Issue `#722 <https://github.com/ansible/galaxy/issues/722>`_.
+- Improved breadcrumb styling on mobile screens. Issue `#718 <https://github.com/ansible/galaxy/issues/722>`_.
+- Improved documentation for `role_name`. Issue `#939 <https://github.com/ansible/galaxy/issues/939>`_.
+- Fixed search page parameter error. Issue `#919 <https://github.com/ansible/galaxy/issues/919>`_.
+- Fixed image sizing on Content Detail and Search pages. Issues `#934 <https://github.com/ansible/galaxy/issues/934>`_ and `#927 <https://github.com/ansible/galaxy/issues/927>`_.
+- Fixed tooltip flicker on Travis icons. Issue `#938 <https://github.com/ansible/galaxy/issues/932>`_.
+- Added pagination and filtering on My Content repositories list. Issue `#582 <https://github.com/ansible/galaxy/issues/582>`_ and `#935 <https://github.com/ansible/galaxy/issues/935>`_.
+
+Closed PRs
+``````````
+- `1002 Fix broken error handling <https://github.com/ansible/galaxy/pull/1002>`_
+- `1001 Fix stack trace on my-content page <https://github.com/ansible/galaxy/pull/1001>`_
+- `997 Add developer's guides <https://github.com/ansible/galaxy/pull/997>`_
+- `996 Install required packages when building release image <https://github.com/ansible/galaxy/pull/996>`_
+- `987 Make pages scroll to top when they are loaded <https://github.com/ansible/galaxy/pull/987>`_
+- `972 mazer_role_loader docs for galaxy.ansible.com/docs <https://github.com/ansible/galaxy/pull/972>`_
+- `970 Read me button and tag style fixes <https://github.com/ansible/galaxy/pull/970>`_
+- `969 Added option to filter by download, star, watcher and fork count on a… <https://github.com/ansible/galaxy/pull/969>`_
+- `964 Style upgrades to clipboard <https://github.com/ansible/galaxy/pull/964>`_
+- `961 Improve breadcrumbs <https://github.com/ansible/galaxy/pull/961>`_
+- `958 Fix description and minor style issues on author detail page. <https://github.com/ansible/galaxy/pull/958>`_
+- `952 Improve doc for role_name and Git-installed roles <https://github.com/ansible/galaxy/pull/952>`_
+- `940 Convert page URL parameters to integers on search page. <https://github.com/ansible/galaxy/pull/940>`_
+- `938 Fix tooltip flicker on travis icons <https://github.com/ansible/galaxy/pull/938>`_
+- `937 Prevent images on content detail from getting stretched out <https://github.com/ansible/galaxy/pull/937>`_
+- `931 Prevent search images from stretching out <https://github.com/ansible/galaxy/pull/931>`_
+- `928 Add pagination and searching repositories on My Content page <https://github.com/ansible/galaxy/pull/928>`_
+
+
+3.0.4 - Released 30-Jul-2018
+----------------------------
+
+Bug Fixes
+`````````
+- Fixed 500 errors resulting from the maximum number of database connections being reached. Issue `#977 <https://github.com/ansible/galaxy/issues/977>`_.
+
+Closed PRs
+``````````
+- `986 Disable Django persistent connections <https://github.com/ansible/galaxy/pull/986>`_
+- `984 Limit persistent connection lifetime <https://github.com/ansible/galaxy/pull/984>`_
+
+
 3.0.3 - Released 20-Jul-2018
 ----------------------------
 
