@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 
 import {
-    Routes,
-    RouterModule
+    RouterModule,
+    Routes
 } from '@angular/router';
 
 import { ContentDetailComponent } from './content-detail.component';
 import {
     ContentResolver,
-    RepositoryResolver,
-    NamespaceResolver
+    NamespaceResolver,
+    RepositoryResolver
 } from './content-detail.resolver.service';
 
 const routes: Routes = [

@@ -1,12 +1,12 @@
+import { HttpClient }           from '@angular/common/http';
 import { Injectable }           from '@angular/core';
 import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
-import { catchError, map, tap } from 'rxjs/operators';
-import { HttpClient }           from '@angular/common/http';
 import { Observable }           from 'rxjs/Observable';
 import { of }                   from 'rxjs/observable/of';
+import { catchError, map, tap } from 'rxjs/operators';
+import { RepositorySource }     from '../repositories/repository-source';
 import { ProviderNamespace }    from './provider-namespace';
 import { ProviderSource }       from './provider-source';
-import { RepositorySource }     from '../repositories/repository-source';
 
 @Injectable()
 export class ProviderSourceService {

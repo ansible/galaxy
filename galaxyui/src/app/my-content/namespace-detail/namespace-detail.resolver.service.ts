@@ -5,10 +5,10 @@ import { Injectable }        from '@angular/core';
 import { Observable }        from 'rxjs/Observable';
 
 import {
-    Router,
+    ActivatedRouteSnapshot,
     Resolve,
-    RouterStateSnapshot,
-    ActivatedRouteSnapshot
+    Router,
+    RouterStateSnapshot
 } from '@angular/router';
 
 import { Namespace }         from '../../resources/namespaces/namespace';

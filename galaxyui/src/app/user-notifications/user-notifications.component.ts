@@ -4,10 +4,10 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 
-import { Notification }         from 'patternfly-ng/notification/notification';
-import { NotificationType }     from 'patternfly-ng/notification/notification-type';
-import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
 import { NotificationEvent }    from 'patternfly-ng';
+import { Notification }         from 'patternfly-ng/notification/notification';
+import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
+import { NotificationType }     from 'patternfly-ng/notification/notification-type';
 
 @Component({
     encapsulation: ViewEncapsulation.None,

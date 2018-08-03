@@ -1,8 +1,8 @@
 import {
+    AfterViewInit,
     Component,
-    OnInit,
     Input,
-    AfterViewInit
+    OnInit
 } from '@angular/core';
 
 import {

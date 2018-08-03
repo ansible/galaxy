@@ -12,12 +12,12 @@ import {
 import { Observable }            from 'rxjs/Observable';
 import { forkJoin }              from 'rxjs/observable/forkJoin';
 
-import { ContentService }        from '../resources/content/content.service';
 import { Content }               from '../resources/content/content';
-import { RepositoryService }     from '../resources/repositories/repository.service';
-import { Repository }            from '../resources/repositories/repository';
-import { NamespaceService }      from '../resources/namespaces/namespace.service';
+import { ContentService }        from '../resources/content/content.service';
 import { Namespace }             from '../resources/namespaces/namespace';
+import { NamespaceService }      from '../resources/namespaces/namespace.service';
+import { Repository }            from '../resources/repositories/repository';
+import { RepositoryService }     from '../resources/repositories/repository.service';
 
 @Injectable()
 export class ContentResolver implements Resolve<Content[]> {
