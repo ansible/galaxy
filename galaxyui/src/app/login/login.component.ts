@@ -22,9 +22,9 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
-import 'rxjs/add/operator/switchMap';
+import { switchMap } from 'rxjs/operators';
 
 import { AuthService } from '../auth/auth.service';
 
@@ -50,11 +50,13 @@ export class LoginComponent implements OnInit {
 
         this.redirectUrl = this.authService.redirectUrl;
 
-        this.errorParam = this.route.paramMap.switchMap((params: ParamMap) => {
-            return new Observable<boolean>(observer => {
-                return observer.next(params.get('error') === 'true' ? true : false);
-            });
-        });
+        this.errorParam = this.route.paramMap.pipe(
+            switchMap((params: ParamMap) => {
+                return new Observable<boolean>(observer => {
+                    return observer.next(params.get('error') === 'true' ? true : false);
+                });
+            }),
+        );
 
         this.errorParam.subscribe(result => {
             if (result) {

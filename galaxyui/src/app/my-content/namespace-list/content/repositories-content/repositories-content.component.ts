@@ -23,9 +23,7 @@ import { RepositoryImportService } from '../../../../resources/repository-import
 
 import { AlternateNameModalComponent } from './alternate-name-modal/alternate-name-modal.component';
 
-import 'rxjs/add/observable/interval';
-import { Observable } from 'rxjs/Observable';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { forkJoin, interval, Observable } from 'rxjs';
 
 import * as moment from 'moment';
 
@@ -197,7 +195,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
     private getRepositories() {
         this.loading = true;
-        this.polling = Observable.interval(10000).subscribe(pollingResult => {
+        this.polling = interval(10000).subscribe(pollingResult => {
             this.refreshRepositories();
         });
     }
