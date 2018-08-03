@@ -10,7 +10,6 @@
     "array-type": false,
     "arrow-parens": false,
     "ban-types": false,
-    "interface-name": false,
     "jsdoc-format": false,
     "max-classes-per-file": false,
     "no-consecutive-blank-lines": false,

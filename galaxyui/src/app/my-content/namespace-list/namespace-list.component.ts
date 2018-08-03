@@ -31,7 +31,7 @@ import { SortEvent }                   from 'patternfly-ng/sort/sort-event';
 import { SortField }                   from 'patternfly-ng/sort/sort-field';
 import { ToolbarConfig }               from 'patternfly-ng/toolbar/toolbar-config';
 import { ToolbarView }                 from 'patternfly-ng/toolbar/toolbar-view';
-import { Me }                          from '../../auth/auth.service';
+import { IMe }                         from '../../auth/auth.service';
 import { AuthService }                 from '../../auth/auth.service';
 import { Namespace }                   from '../../resources/namespaces/namespace';
 import { NamespaceService }            from '../../resources/namespaces/namespace.service';
@@ -48,7 +48,7 @@ import { AddRepositoryModalComponent } from '../add-repository-modal/add-reposit
 export class NamespaceListComponent implements OnInit {
     items: Namespace[] = [];
     namespaces: Namespace[] = [];
-    me: Me;
+    me: IMe;
 
     pageTitle = 'My Content';
     pageIcon = 'fa fa-list';

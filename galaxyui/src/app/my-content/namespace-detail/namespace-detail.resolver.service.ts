@@ -16,7 +16,7 @@ import { NamespaceService }  from '../../resources/namespaces/namespace.service'
 
 import {
     AuthService,
-    Me
+    IMe
 } from '../../auth/auth.service';
 
 
@@ -45,12 +45,12 @@ export class NamespaceDetailResolver implements Resolve<Namespace> {
 }
 
 @Injectable()
-export class MeResolver implements Resolve<Me> {
+export class MeResolver implements Resolve<IMe> {
     constructor(
         private authService: AuthService,
         private router: Router) {}
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Me> {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<IMe> {
         return this.authService.me();
     }
 }
