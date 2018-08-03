@@ -1,6 +1,5 @@
 import {
     Component,
-    Input,
     OnInit
     } from '@angular/core';
 
@@ -12,10 +11,6 @@ import {
     } from '@angular/forms';
 
 import { BsModalRef }              from 'ngx-bootstrap';
-
-import { Subject }                 from 'rxjs';
-import { Observable }              from 'rxjs/Observable';
-import { forkJoin }                from 'rxjs/observable/forkJoin';
 
 import { Repository }              from '../../../../../resources/repositories/repository';
 import { RepositoryService }       from '../../../../../resources/repositories/repository.service';

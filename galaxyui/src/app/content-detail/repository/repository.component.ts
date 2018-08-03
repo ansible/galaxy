@@ -1,17 +1,10 @@
 import {
     Component,
-    EventEmitter,
     Input,
-    OnInit,
-    Output
+    OnInit
 } from '@angular/core';
 
-import {
-    Router
-} from '@angular/router';
-
 import { Content }          from '../../resources/content/content';
-import { ContentService }   from '../../resources/content/content.service';
 import { Namespace }        from '../../resources/namespaces/namespace';
 import { Repository }       from '../../resources/repositories/repository';
 
@@ -20,8 +13,6 @@ import {
     RepoFormatsIconClasses,
     RepoFormatsTooltips
 } from '../../enums/repo-types.enum';
-
-import * as moment          from 'moment';
 
 class RepositoryView {
     repoType: RepoFormats;
@@ -54,10 +45,7 @@ export class RepoChangeEvent {
 })
 export class RepositoryComponent implements OnInit {
 
-    constructor(
-        private contentService: ContentService,
-        private router: Router
-    ) {}
+    constructor() {}
 
     @Input() repository: Repository;
     @Input() namespace: Namespace;

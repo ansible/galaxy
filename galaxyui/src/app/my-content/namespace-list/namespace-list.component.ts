@@ -1,7 +1,6 @@
 import {
     Component,
     OnInit,
-    TemplateRef,
     ViewEncapsulation
 } from '@angular/core';
 
@@ -12,18 +11,14 @@ import {
 
 import { cloneDeep }    from 'lodash';
 
-import { Action }       from 'patternfly-ng/action/action';
 import { ActionConfig } from 'patternfly-ng/action/action-config';
 import { ListConfig }   from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent }    from 'patternfly-ng/list/list-event';
 
 import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
 
 import { BsModalRef, BsModalService }  from 'ngx-bootstrap';
-import { Filter }                      from 'patternfly-ng/filter/filter';
 import { FilterConfig }                from 'patternfly-ng/filter/filter-config';
-import { FilterEvent }                 from 'patternfly-ng/filter/filter-event';
 import { FilterField }                 from 'patternfly-ng/filter/filter-field';
 import { FilterType }                  from 'patternfly-ng/filter/filter-type';
 import { SortConfig }                  from 'patternfly-ng/sort/sort-config';

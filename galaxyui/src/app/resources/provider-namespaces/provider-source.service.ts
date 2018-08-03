@@ -3,9 +3,8 @@ import { Injectable }           from '@angular/core';
 import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
 import { Observable }           from 'rxjs/Observable';
 import { of }                   from 'rxjs/observable/of';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { RepositorySource }     from '../repositories/repository-source';
-import { ProviderNamespace }    from './provider-namespace';
 import { ProviderSource }       from './provider-source';
 
 @Injectable()

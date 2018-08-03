@@ -47,7 +47,7 @@ export class NamespaceDetailResolver implements Resolve<Namespace> {
 export class MeResolver implements Resolve<IMe> {
     constructor(
         private authService: AuthService,
-        private router: Router) {}
+    ) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<IMe> {
         return this.authService.me();

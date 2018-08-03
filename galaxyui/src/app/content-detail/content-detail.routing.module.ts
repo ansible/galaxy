@@ -5,7 +5,6 @@ import {
     Routes
 } from '@angular/router';
 
-import { ContentDetailComponent } from './content-detail.component';
 import {
     ContentResolver,
     NamespaceResolver,

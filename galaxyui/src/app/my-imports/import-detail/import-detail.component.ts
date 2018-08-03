@@ -7,25 +7,16 @@ import {
     Output
 } from '@angular/core';
 
-import {
-    ImportsService,
-    SaveParams
-} from '../../resources/imports/imports.service';
-
 import { ImportState }             from '../../enums/import-state.enum';
 import { Import }                  from '../../resources/imports/import';
-import { ImportLatest }            from '../../resources/imports/import-latest';
 
-import { RepositoryImport }        from '../../resources/repository-imports/repository-import';
 import { RepositoryImportService } from '../../resources/repository-imports/repository-import.service';
 
-import { Namespace }               from '../../resources/namespaces/namespace';
 import { NamespaceService }        from '../../resources/namespaces/namespace.service';
 
 import { AuthService }             from '../../auth/auth.service';
 
 import * as $       from 'jquery';
-import * as lodash  from 'lodash';
 
 @Component({
   selector: 'app-import-detail',

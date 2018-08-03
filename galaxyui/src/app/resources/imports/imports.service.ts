@@ -29,7 +29,6 @@ import { Observable }           from 'rxjs/Observable';
 import { of }                   from 'rxjs/observable/of';
 import { PagedResponse }        from '../paged-response';
 import { Import }               from './import';
-import { ImportLatest }          from './import-latest';
 
 export class SaveParams {
     github_user: string;

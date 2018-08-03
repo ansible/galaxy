@@ -1,8 +1,7 @@
 import { Injectable }              from '@angular/core';
 
 import {
-    HttpClient,
-    HttpHeaders
+    HttpClient
 } from '@angular/common/http';
 
 import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
@@ -12,12 +11,6 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { PagedResponse }        from '../paged-response';
 import { Tag }                  from './tag';
-
-const httpOptions = {
-    headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-    })
-};
 
 @Injectable()
 export class TagsService {

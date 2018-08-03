@@ -10,7 +10,6 @@ import { cloneDeep } from 'lodash';
 
 import {
     FormBuilder,
-    FormControl,
     FormGroup,
     Validators
 } from '@angular/forms';
@@ -19,7 +18,6 @@ import { FilterConfig }          from 'patternfly-ng/filter/filter-config';
 import { FilterEvent }           from 'patternfly-ng/filter/filter-event';
 import { FilterField }           from 'patternfly-ng/filter/filter-field';
 import { FilterType }            from 'patternfly-ng/filter/filter-type';
-import { FilterComponent }       from 'patternfly-ng/filter/filter.component';
 
 import { IMe }                   from '../../auth/auth.service';
 import { Namespace }             from '../../resources/namespaces/namespace';

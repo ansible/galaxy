@@ -30,14 +30,6 @@ import {
     CardConfig
 } from 'patternfly-ng/card/basic-card/card-config';
 
-import {
-    Location
-} from '@angular/common';
-
-import {
-    Router
-} from '@angular/router';
-
 import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/switchMap';
@@ -60,7 +52,6 @@ export class LoginComponent implements OnInit {
     constructor(
         private authService: AuthService,
         private route: ActivatedRoute,
-        private location: Location
     ) {}
 
     ngOnInit() {
