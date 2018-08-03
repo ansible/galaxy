@@ -23,9 +23,9 @@ import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
-import { AboutModalConfig } from 'patternfly-ng/modal/about-modal-config';
-import { AboutModalEvent } from 'patternfly-ng/modal/about-modal-event';
-import { NavigationItemConfig } from 'patternfly-ng/navigation/navigation-item-config';
+import { AboutModalConfig, AboutModalEvent } from 'patternfly-ng/modal';
+
+import { VerticalNavigationItem } from 'patternfly-ng/navigation/vertical-navigation/vertical-navigation-item';
 import { Notification } from 'patternfly-ng/notification';
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
 
@@ -59,7 +59,7 @@ export class AppComponent implements OnInit {
         });
     }
 
-    navItems: NavigationItemConfig[] = [];
+    navItems: VerticalNavigationItem[] = [];
     modalRef: BsModalRef;
     authenticated = false;
     username: string = null;
@@ -115,7 +115,7 @@ export class AppComponent implements OnInit {
                 iconStyleClass: 'fa fa-users',
                 url: '/community',
             },
-        ] as NavigationItemConfig[];
+        ] as VerticalNavigationItem[];
 
         this.apiRootService.get().subscribe(apiInfo => {
             this.aboutConfig.productInfo.push({ name: 'Server Version', value: apiInfo.server_version });
@@ -192,12 +192,12 @@ export class AppComponent implements OnInit {
         this.removeNavButtons();
     }
 
-    onItemClicked($event: NavigationItemConfig): void {
+    onItemClicked($event: VerticalNavigationItem): void {
         console.log('item clicked');
         console.log($event);
     }
 
-    onNavigation($event: NavigationItemConfig): void {
+    onNavigation($event: VerticalNavigationItem): void {
         console.log('navigation started');
         console.log($event);
     }

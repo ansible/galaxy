@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 import { ContentResponse } from '../resources/content-search/content';
 import { ContentSearchService } from '../resources/content-search/content-search.service';
 
@@ -94,26 +96,28 @@ export class PopularTagsResolver implements Resolve<Tag[]> {
 export class PopularPlatformsResolver implements Resolve<Platform[]> {
     constructor(private platformService: PlatformService) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Platform[]> {
-        return this.platformService.search({ page_size: 1000, order_by: '-roles_count,name' }).map(result => {
-            // Sum roles_count per platforms, sans release
-            const summary = {};
-            const platforms: Platform[] = [];
-            result.forEach((item: Platform) => {
-                if (summary[item.name] === undefined) {
-                    summary[item.name] = 0;
+        return this.platformService.search({ page_size: 1000, order_by: '-roles_count,name' }).pipe(
+            map(result => {
+                // Sum roles_count per platforms, sans release
+                const summary = {};
+                const platforms: Platform[] = [];
+                result.forEach((item: Platform) => {
+                    if (summary[item.name] === undefined) {
+                        summary[item.name] = 0;
+                    }
+                    summary[item.name] += item.roles_count;
+                });
+                for (const key in summary) {
+                    if (summary.hasOwnProperty(key)) {
+                        platforms.push({
+                            name: key,
+                            roles_count: summary[key],
+                        } as Platform);
+                    }
                 }
-                summary[item.name] += item.roles_count;
-            });
-            for (const key in summary) {
-                if (summary.hasOwnProperty(key)) {
-                    platforms.push({
-                        name: key,
-                        roles_count: summary[key],
-                    } as Platform);
-                }
-            }
-            return platforms;
-        });
+                return platforms;
+            }),
+        );
     }
 }
 

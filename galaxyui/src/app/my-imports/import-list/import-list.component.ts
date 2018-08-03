@@ -6,8 +6,8 @@ import { Location } from '@angular/common';
 
 import { ImportsService } from '../../resources/imports/imports.service';
 
-import 'rxjs/add/observable/interval';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
+import { interval } from 'rxjs';
 
 import { Import } from '../../resources/imports/import';
 import { ImportLatest } from '../../resources/imports/import-latest';
@@ -205,7 +205,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
             this.cancelPageLoading();
             if (this.selected.state === ImportState.running || this.selected.state === ImportState.pending) {
                 // monitor the state of a running import
-                this.polling = Observable.interval(5000).subscribe(_ => this.refreshImport());
+                this.polling = interval(5000).subscribe(_ => this.refreshImport());
             }
         });
     }
@@ -242,7 +242,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     startedImport($event): void {
         this.refreshImport();
-        this.polling = Observable.interval(5000).subscribe(_ => this.refreshImport());
+        this.polling = interval(5000).subscribe(_ => this.refreshImport());
     }
 
     toggleScroll($event): void {
