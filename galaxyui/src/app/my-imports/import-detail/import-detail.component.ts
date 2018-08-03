@@ -27,7 +27,6 @@ import { AuthService }             from '../../auth/auth.service';
 import * as $       from 'jquery';
 import * as lodash  from 'lodash';
 
-
 @Component({
   selector: 'app-import-detail',
   templateUrl: './import-detail.component.html',

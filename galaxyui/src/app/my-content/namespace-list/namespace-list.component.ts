@@ -38,7 +38,6 @@ import { NamespaceService }            from '../../resources/namespaces/namespac
 import { PagedResponse }               from '../../resources/paged-response';
 import { AddRepositoryModalComponent } from '../add-repository-modal/add-repository-modal.component';
 
-
 @Component({
     encapsulation: ViewEncapsulation.None,
     selector: 'namespace-list',

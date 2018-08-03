@@ -21,7 +21,6 @@ import { Repository }              from '../../../../../resources/repositories/r
 import { RepositoryService }       from '../../../../../resources/repositories/repository.service';
 import { RepositoryImportService } from '../../../../../resources/repository-imports/repository-import.service';
 
-
 export function forbiddenCharValidator(): ValidatorFn {
     const charRE = new RegExp('[^0-9A-Za-z-_]');
     return (control: AbstractControl): { [key: string]: any } => {
@@ -65,7 +64,6 @@ export class AlternateNameModalComponent implements OnInit {
         forbiddenFirstCharValidator(),
         forbiddenLastCharValidator()
         ]);
-
 
     constructor(
         public bsModalRef: BsModalRef,

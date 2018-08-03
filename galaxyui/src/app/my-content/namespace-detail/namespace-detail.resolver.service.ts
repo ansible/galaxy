@@ -19,7 +19,6 @@ import {
     IMe
 } from '../../auth/auth.service';
 
-
 @Injectable()
 export class NamespaceDetailResolver implements Resolve<Namespace> {
     constructor(

@@ -23,7 +23,6 @@ import {
 
 import * as moment          from 'moment';
 
-
 class RepositoryView {
     repoType: RepoFormats;
     name: string;
