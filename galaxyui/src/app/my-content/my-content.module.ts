@@ -1,57 +1,46 @@
 import { CommonModule } from '@angular/common';
-import { NgModule }     from '@angular/core';
+import { NgModule } from '@angular/core';
 
-import {
-    FormsModule,
-    ReactiveFormsModule
-} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MyContentRoutingModule } from './my-content.routing.module';
 
-import {
-    BsDropdownConfig,
-    BsDropdownModule
-} from 'ngx-bootstrap';
+import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap';
 
-import { TooltipModule }    from 'ngx-bootstrap/tooltip';
-import { ModalModule }      from 'patternfly-ng';
-import { ActionModule }     from 'patternfly-ng/action/action.module';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { ModalModule } from 'patternfly-ng';
+import { ActionModule } from 'patternfly-ng/action/action.module';
 import { EmptyStateModule } from 'patternfly-ng/empty-state/empty-state.module';
-import { FilterModule }     from 'patternfly-ng/filter/filter.module';
-import { ListModule }       from 'patternfly-ng/list/basic-list/list.module';
+import { FilterModule } from 'patternfly-ng/filter/filter.module';
+import { ListModule } from 'patternfly-ng/list/basic-list/list.module';
 import { PaginationModule } from 'patternfly-ng/pagination/pagination.module';
-import { ToolbarModule }    from 'patternfly-ng/toolbar/toolbar.module';
+import { ToolbarModule } from 'patternfly-ng/toolbar/toolbar.module';
 
-import { NamespaceDetailComponent }           from './namespace-detail/namespace-detail.component';
-import { OwnersContentComponent }             from './namespace-list/content/owners-content/owners-content.component';
-import { RepositoriesContentComponent }       from './namespace-list/content/repositories-content/repositories-content.component';
-import { NamespaceListComponent }             from './namespace-list/namespace-list.component';
+import { NamespaceDetailComponent } from './namespace-detail/namespace-detail.component';
+import { OwnersContentComponent } from './namespace-list/content/owners-content/owners-content.component';
+import { RepositoriesContentComponent } from './namespace-list/content/repositories-content/repositories-content.component';
+import { NamespaceListComponent } from './namespace-list/namespace-list.component';
 
+// prettier-ignore
 import {
     ProviderNamespacesContentComponent
 } from './namespace-list/content/provider-namespaces-content/provider-namespaces-content.component';
 
-import {
-    AddRepositoryModalComponent
-} from './add-repository-modal/add-repository-modal.component';
+import { AddRepositoryModalComponent } from './add-repository-modal/add-repository-modal.component';
 
+// prettier-ignore
 import {
     AlternateNameModalComponent
 } from './namespace-list/content/repositories-content/alternate-name-modal/alternate-name-modal.component';
 
-import { PageHeaderModule }                   from '../page-header/page-header.module';
-import { PageLoadingModule }                  from '../page-loading/page-loading.module';
-import { NamespaceActionComponent }           from './namespace-list/action/action.component';
+import { PageHeaderModule } from '../page-header/page-header.module';
+import { PageLoadingModule } from '../page-loading/page-loading.module';
+import { NamespaceActionComponent } from './namespace-list/action/action.component';
 
-import {
-    NamespaceRepositoryActionComponent
-} from './namespace-list/content/repositories-content/action/action.component';
+import { NamespaceRepositoryActionComponent } from './namespace-list/content/repositories-content/action/action.component';
 
 @NgModule({
-    entryComponents: [
-        AddRepositoryModalComponent,
-        AlternateNameModalComponent,
-    ],
+    entryComponents: [AddRepositoryModalComponent, AlternateNameModalComponent],
     declarations: [
         NamespaceListComponent,
         NamespaceDetailComponent,
@@ -61,7 +50,7 @@ import {
         AddRepositoryModalComponent,
         AlternateNameModalComponent,
         NamespaceActionComponent,
-        NamespaceRepositoryActionComponent
+        NamespaceRepositoryActionComponent,
     ],
     imports: [
         ActionModule,
@@ -78,11 +67,8 @@ import {
         PaginationModule,
         PageHeaderModule,
         PageLoadingModule,
-        MyContentRoutingModule
+        MyContentRoutingModule,
     ],
-    providers: [
-        BsDropdownConfig
-    ]
+    providers: [BsDropdownConfig],
 })
-export class MyContentModule {
-}
+export class MyContentModule {}

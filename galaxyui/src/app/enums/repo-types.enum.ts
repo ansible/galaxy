@@ -6,8 +6,8 @@ export enum RepoFormats {
 
 export enum RepoFormatsIconClasses {
     apb = 'pficon-bundle',
-    role = 'fa fa-gear'    ,
-    multi= 'pficon-repository',
+    role = 'fa fa-gear',
+    multi = 'pficon-repository',
 }
 
 export enum RepoFormatsTooltips {

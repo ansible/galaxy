@@ -1,22 +1,19 @@
-import {
-    Component,
-    OnInit
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import { EmptyStateConfig }        from 'patternfly-ng/empty-state/empty-state-config';
-import { ListConfig }              from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent }               from 'patternfly-ng/list/list-event';
+import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
+import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
+import { ListEvent } from 'patternfly-ng/list/list-event';
 
-import { cloneDeep }               from 'lodash';
-import { BsModalRef }              from 'ngx-bootstrap';
+import { cloneDeep } from 'lodash';
+import { BsModalRef } from 'ngx-bootstrap';
 
-import { Observable }              from 'rxjs/Observable';
-import { forkJoin }                from 'rxjs/observable/forkJoin';
+import { Observable } from 'rxjs/Observable';
+import { forkJoin } from 'rxjs/observable/forkJoin';
 
-import { Namespace }               from '../../resources/namespaces/namespace';
-import { ProviderSourceService }   from '../../resources/provider-namespaces/provider-source.service';
-import { Repository }              from '../../resources/repositories/repository';
-import { RepositoryService }       from '../../resources/repositories/repository.service';
+import { Namespace } from '../../resources/namespaces/namespace';
+import { ProviderSourceService } from '../../resources/provider-namespaces/provider-source.service';
+import { Repository } from '../../resources/repositories/repository';
+import { RepositoryService } from '../../resources/repositories/repository.service';
 
 class RepositorySource {
     name: string;
@@ -53,10 +50,9 @@ class ProviderNamespace {
 @Component({
     selector: 'add-repository-modal',
     templateUrl: './add-repository-modal.component.html',
-    styleUrls: ['./add-repository-modal.component.less']
+    styleUrls: ['./add-repository-modal.component.less'],
 })
 export class AddRepositoryModalComponent implements OnInit {
-
     emptyStateConfig: EmptyStateConfig = {} as EmptyStateConfig;
     namespace: Namespace;
     selectedPNS: ProviderNamespace;
@@ -71,7 +67,7 @@ export class AddRepositoryModalComponent implements OnInit {
     constructor(
         public bsModalRef: BsModalRef,
         private repositoryService: RepositoryService,
-        private providerSourceService: ProviderSourceService
+        private providerSourceService: ProviderSourceService,
     ) {}
 
     ngOnInit() {
@@ -93,7 +89,7 @@ export class AddRepositoryModalComponent implements OnInit {
             showCheckbox: true,
             showRadioButton: false,
             useExpandItems: false,
-            emptyStateConfig: this.emptyStateConfig
+            emptyStateConfig: this.emptyStateConfig,
         } as ListConfig;
 
         this.getRepoSources();
@@ -107,8 +103,9 @@ export class AddRepositoryModalComponent implements OnInit {
     filterRepos(filterValue: string) {
         if (filterValue) {
             this.filterValue = filterValue;
-            this.selectedPNS.filteredSources = this.selectedPNS.repoSources.filter(
-                repo => repo.name.toLowerCase().match(filterValue.toLowerCase()));
+            this.selectedPNS.filteredSources = this.selectedPNS.repoSources.filter(repo =>
+                repo.name.toLowerCase().match(filterValue.toLowerCase()),
+            );
         } else {
             this.filterValue = '';
             this.selectedPNS.filteredSources = this.selectedPNS.repoSources;
@@ -138,8 +135,7 @@ export class AddRepositoryModalComponent implements OnInit {
         this.repositoriesAdded = true;
         this.saveInProgress = true;
         const saveRequests: Observable<Repository>[] = [];
-        const selected: RepositorySource[] = this.selectedPNS.repoSources
-            .filter((repoSource) => repoSource.isSelected);
+        const selected: RepositorySource[] = this.selectedPNS.repoSources.filter(repoSource => repoSource.isSelected);
 
         if (!selected.length) {
             // nothing was selected
@@ -150,14 +146,14 @@ export class AddRepositoryModalComponent implements OnInit {
         }
 
         selected.forEach(repoSource => {
-                const newRepo = new Repository();
-                newRepo.name = repoSource.name;
-                newRepo.original_name = repoSource.name;
-                newRepo.description = repoSource.description ? repoSource.description : repoSource.name;
-                newRepo.provider_namespace = this.selectedPNS.id;
-                newRepo.is_enabled = true;
-                saveRequests.push(this.repositoryService.save(newRepo));
-            });
+            const newRepo = new Repository();
+            newRepo.name = repoSource.name;
+            newRepo.original_name = repoSource.name;
+            newRepo.description = repoSource.description ? repoSource.description : repoSource.name;
+            newRepo.provider_namespace = this.selectedPNS.id;
+            newRepo.is_enabled = true;
+            saveRequests.push(this.repositoryService.save(newRepo));
+        });
 
         forkJoin(saveRequests).subscribe((results: Repository[]) => {
             this.saveInProgress = false;
@@ -184,18 +180,20 @@ export class AddRepositoryModalComponent implements OnInit {
             this.setLoadingStateConfig();
             this.selectedPNS.repoSources = [];
             this.selectedPNS.filteredSources = [];
-            this.providerSourceService.getRepoSources({
-                providerName: this.selectedPNS.provider_name,
-                name: this.selectedPNS.name
-            }).subscribe(repoSources => {
-                repoSources.forEach(repoSource => {
-                    if (!repoSource.summary_fields.repository) {
-                        this.selectedPNS.repoSources.push(repoSource as RepositorySource);
-                    }
+            this.providerSourceService
+                .getRepoSources({
+                    providerName: this.selectedPNS.provider_name,
+                    name: this.selectedPNS.name,
+                })
+                .subscribe(repoSources => {
+                    repoSources.forEach(repoSource => {
+                        if (!repoSource.summary_fields.repository) {
+                            this.selectedPNS.repoSources.push(repoSource as RepositorySource);
+                        }
+                    });
+                    this.filterRepos(this.filterValue);
+                    this.setEmptyStateConfig();
                 });
-                this.filterRepos(this.filterValue);
-                this.setEmptyStateConfig();
-            });
         } else {
             this.filterRepos(this.filterValue);
             this.setEmptyStateConfig();

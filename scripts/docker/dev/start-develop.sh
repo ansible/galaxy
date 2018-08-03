@@ -7,7 +7,6 @@ cd /galaxy
 
 make waitenv
 make build/yarn
-make test/jslint
 make build/static
 
 cd /galaxy
