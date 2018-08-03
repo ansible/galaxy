@@ -19,10 +19,19 @@ import {
     BsModalRef
 } from 'ngx-bootstrap';
 
+import { FilterConfig }                from 'patternfly-ng/filter/filter-config';
+import { FilterField }                 from 'patternfly-ng/filter/filter-field';
+import { FilterType }                  from 'patternfly-ng/filter/filter-type';
+
+import { PaginationConfig }            from 'patternfly-ng/pagination/pagination-config';
+import { PaginationEvent }             from 'patternfly-ng/pagination/pagination-event';
+import { ToolbarConfig }               from 'patternfly-ng/toolbar/toolbar-config';
+
 import { Namespace }               from '../../../../resources/namespaces/namespace';
+import { PagedResponse }           from '../../../../resources/paged-response';
+import { ProviderNamespace }       from '../../../../resources/provider-namespaces/provider-namespace';
 import { Repository }              from '../../../../resources/repositories/repository';
 import { RepositoryService }       from '../../../../resources/repositories/repository.service';
-import { ProviderNamespace }       from '../../../../resources/provider-namespaces/provider-namespace';
 import { RepositoryImportService } from '../../../../resources/repository-imports/repository-import.service';
 import { RepositoryImport }        from '../../../../resources/repository-imports/repository-import';
 
@@ -65,13 +74,24 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     items: Repository[] = [];
 
     emptyStateConfig: EmptyStateConfig;
+    nonEmptyStateConfig: EmptyStateConfig;
     disabledStateConfig: EmptyStateConfig;
+    paginationConfig: PaginationConfig = {
+        pageSize: 10,
+        pageNumber: 1,
+        totalItems: 0,
+    };
+    maxItems = 0;
 
     listConfig: ListConfig;
     selectType = 'checkbox';
     loading = false;
     polling = null;
     bsModalRef: BsModalRef;
+
+    filterConfig: FilterConfig;
+    toolbarConfig: ToolbarConfig;
+    isAscendingSort = true;
 
     constructor(
         private repositoryService: RepositoryService,
@@ -90,6 +110,24 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         const provider_namespaces = this.namespace.summary_fields.provider_namespaces;
 
+        this.filterConfig = {
+            fields: [
+                {
+                    id: 'name',
+                    title: 'Name',
+                    placeholder: 'Filter by Name...',
+                    type: FilterType.TEXT
+                },
+            ] as FilterField[],
+            resultsCount: this.items.length,
+            appliedFilters: []
+        } as FilterConfig;
+
+        this.toolbarConfig = {
+            filterConfig: this.filterConfig,
+            views: []
+        } as ToolbarConfig;
+
         this.emptyStateConfig = {
             actions: {
                 primaryActions: [],
@@ -101,6 +139,17 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             helpLink: {}
         } as EmptyStateConfig;
 
+        this.nonEmptyStateConfig = {
+            actions: {
+                primaryActions: [],
+                moreActions: []
+            } as ActionConfig,
+            iconStyleClass: '',
+            title: '',
+            info: '',
+            helpLink: {}
+        } as EmptyStateConfig;
+
         this.disabledStateConfig = {
             iconStyleClass: 'pficon-warning-triangle-o',
             info: `The Namespace ${this.namespace.name} is disabled. You'll need to re-enable it before viewing and modifying its content.`,
@@ -109,7 +158,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
         this.listConfig = {
             dblClick: false,
-            emptyStateConfig: this.emptyStateConfig,
+            emptyStateConfig: this.nonEmptyStateConfig,
             multiSelect: false,
             selectItems: false,
             selectionMatchProp: 'name',
@@ -147,37 +196,27 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         }
     }
 
+    handlePageChange($event: PaginationEvent): void {
+        if ($event.pageSize || $event.pageNumber) {
+            this.loading = true;
+            this.refreshRepositories();
+        }
+    }
+
+    filterChanged($event): void {
+        this.paginationConfig.pageNumber = 1;
+        this.loading = true;
+        this.refreshRepositories();
+    }
+
     // Private
 
     private getRepositories() {
         this.loading = true;
-        const queries: Observable<Repository[]>[] = [];
-        this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
-            queries.push(this.repositoryService.query({ 'provider_namespace__id': pns.id, 'page_size': 1000}));
-        });
-
-        forkJoin(queries).subscribe((results: Repository[][]) => {
-            const repositories = flatten(results);
-            repositories.forEach(item => {
-                this.prepareRepository(item);
+        this.polling = Observable.interval(10000)
+            .subscribe(pollingResult => {
+                this.refreshRepositories();
             });
-            this.items = JSON.parse(JSON.stringify(repositories));
-            if (this.items.length) {
-                // If we have repositories, then track current import state via long polling
-                setTimeout(_ => {
-                    this.loading = false;
-                    if (this.items.length) {
-                        // Every 5 seconds, refresh the respository data
-                        this.polling = Observable.interval(10000)
-                            .subscribe(pollingResult => {
-                                this.refreshRepositories();
-                            });
-                    }
-                }, 2000);
-            } else {
-                this.loading = false;
-            }
-        });
     }
 
     private getDetailUrl(item: Repository) {
@@ -212,50 +251,65 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     }
 
     private refreshRepositories() {
-        const queries: Observable<Repository[]>[] = [];
+        const queries: Observable<PagedResponse>[] = [];
         this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
-            queries.push(this.repositoryService.query({'provider_namespace__id': pns.id, 'page_size': 1000}));
+            const query = {
+                'provider_namespace__id': pns.id,
+                'page_size': this.paginationConfig.pageSize,
+                'page': this.paginationConfig.pageNumber,
+            };
+
+            if (this.filterConfig) {
+                for (const filter of this.filterConfig.appliedFilters) {
+                    query[`or__${filter.field.id}__icontains`] = filter.value;
+                }
+            }
+
+            queries.push(this.repositoryService.pagedQuery(query));
         });
 
-        forkJoin(queries).subscribe((results: Repository[][]) => {
-            const repositories = flatten(results);
-            let match: boolean;
+        forkJoin(queries).subscribe((results: PagedResponse[]) => {
+            let repositories: Repository[] = [];
+
+            let resultCount = 0;
+
+            for (const response of results) {
+                repositories =  repositories.concat(response.results as Repository[]);
+                resultCount += response.count;
+            }
+
+            this.filterConfig.resultsCount = resultCount;
+            this.paginationConfig.totalItems = resultCount;
+
+            // maxItems is used to determine if we need to show the filter or not
+            // it should never go down to avoid hiding the filter by accident when
+            // a query returns a small number of items.
+            if (this.maxItems < this.paginationConfig.totalItems) {
+                this.maxItems = this.paginationConfig.totalItems;
+            }
+
+            // Generate a new list of repos
+            const updatedList: Repository[] = [];
             repositories.forEach(repo => {
-                match = false;
-                this.items.forEach(item => {
-                    // Update items in place, to avoid page bounce. Page bounce happens when all items are replaced.
-                    if (item.id === repo.id) {
-                        match = true;
-                        if (item.format !== repo.format) {
-                            item.format = repo.format;
-                            item['iconClass'] = this.getIconClass(item.format);
-                        }
-                        if (item.name !== repo.name) {
-                            item.name = repo.name;
-                            item['detail_url'] = this.getDetailUrl(item);
-                        }
-                        if (repo.summary_fields.latest_import) {
-                            if (!item['latest_import']) {
-                                item['latest_import'] = {};
-                            }
-                            item['latest_import'] = repo.summary_fields.latest_import;
-                            if (item['latest_import']['finished']) {
-                                item['latest_import']['as_of_dt'] = moment(item['latest_import']['finished']).fromNow();
-                            } else {
-                                item['latest_import']['as_of_dt'] = moment(item['latest_import']['modified']).fromNow();
-                            }
-                        } else {
-                            item['latest_import'] = {};
-                        }
-                    }
-                });
-                if (!match) {
-                    // repository doesn't exist, so add it
-                    this.prepareRepository(repo);
-                    this.items.push(repo);
-                }
+                this.prepareRepository(repo);
+                updatedList.push(repo);
             });
+
+            // set the old list to the new list to avoid screen flickering
+            this.items = updatedList;
+            this.loading = false;
+
+            // Show blank screen during loads.
+            this.updateEmptyState();
         });
+    }
+
+    private updateEmptyState(): void {
+        if (this.items.length === 0) {
+            this.listConfig.emptyStateConfig = this.emptyStateConfig;
+        } else {
+            this.listConfig.emptyStateConfig = this.nonEmptyStateConfig;
+        }
     }
 
     private importRepository(repository: Repository) {
@@ -264,7 +318,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         repository['latest_import']['as_of_dt'] = '';
         this.repositoryImportService.save({'repository_id': repository.id})
             .subscribe(response => {
-                console.log(`Started import for repoostiroy ${repository.id}`);
+                console.log(`Started import for repository ${repository.id}`);
             });
     }
 
@@ -275,6 +329,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                 if (item.id === repository.id) {
                     this.items.splice(idx, 1);
                     this.loading = false;
+                    this.updateEmptyState();
                 }
             });
         });

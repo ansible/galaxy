@@ -47,7 +47,8 @@ export class VendorsComponent implements OnInit {
           private namespaceService: NamespaceService
     ) {}
 
-    pageTitle = '<i class="fa fa-star"></i> Partners';
+    pageTitle = 'Partners';
+    headerIcon = 'fa fa-star';
     pageLoading = true;
     items: Namespace[] = [];
 

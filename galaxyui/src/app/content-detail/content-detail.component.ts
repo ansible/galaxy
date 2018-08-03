@@ -53,6 +53,7 @@ export class ContentDetailComponent implements OnInit {
     ) {}
 
     pageTitle = '';
+    pageIcon = '';
     content: Content[];
     repository: Repository;
     namespace: Namespace;
@@ -125,9 +126,11 @@ export class ContentDetailComponent implements OnInit {
 
                     // Append author type to breadcrumb
                     if (this.namespace.is_vendor) {
-                        this.pageTitle = `<i class="fa fa-star"></i> Vendors;/vendors;`;
+                        this.pageTitle = 'Vendors;/vendors;';
+                        this.pageIcon = 'fa fa-star';
                     } else {
-                        this.pageTitle = `<i class="fa fa-users"></i> Community Authors;/community;`;
+                        this.pageTitle = 'Community Authors;/community;';
+                        this.pageIcon = 'fa fa-users';
                     }
 
                     // Append author namespace and repository name to breadcrumb

@@ -1,5 +1,5 @@
 <div id="content-detail-page">
-    <app-page-header [headerTitle]="pageTitle"></app-page-header>
+    <app-page-header [headerTitle]="pageTitle" [headerIcon]="pageIcon"></app-page-header>
 
     <div class="container-fluid content-detail-container">
         <div class="row" *ngIf="showEmptyState">
@@ -17,33 +17,33 @@
 
         <div class="row btn-row" *ngIf="!showEmptyState">
             <div class="col-sm-12">
-                <button type="button" class="btn btn-primary" [disabled]="showingView === ViewTypes.detail"
+                <button type="button" class="btn btn-default" [ngClass]="{'btn-primary': showingView === ViewTypes.detail}"
                     tooltip="Return to main content view"
-                    (click)="toggleView(ViewTypes.detail)"><i class="fa fa-info-circle"></i> Details</button>
+                    (click)="toggleView(ViewTypes.detail)">Details</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="hasReadme" [disabled]="showingView === ViewTypes.readme"
+                    *ngIf="hasReadme" [ngClass]="{'btn-primary': showingView === ViewTypes.readme}"
                     tooltip="View the repository's README file"
-                    (click)="toggleView(ViewTypes.readme)"><i class="fa fa-eye"></i> README</button>
+                    (click)="toggleView(ViewTypes.readme)">Read Me</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="hasMetadata" [disabled]="showingView === ViewTypes.meta"
+                    *ngIf="hasMetadata" [ngClass]="{'btn-primary': showingView === ViewTypes.meta}"
                     tooltip="View the {{ metadataFilename }} file"
-                    (click)="toggleView(ViewTypes.meta)"><i class="fa fa-table"></i> Metadata</button>
+                    (click)="toggleView(ViewTypes.meta)">Metadata</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.module" [disabled]="showingView === ViewTypes.modules"
+                    *ngIf="contentCounts.module" [ngClass]="{'btn-primary': showingView === ViewTypes.modules}"
                     tooltip="View modules"
-                    (click)="toggleView(ViewTypes.modules)"><i class="fa fa-microchip"></i> {{ contentCounts.module }} Modules</button>
+                    (click)="toggleView(ViewTypes.modules)">{{ contentCounts.module }} Modules</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.moduleUtils" [disabled]="showingView === ViewTypes.moduleUtils"
+                    *ngIf="contentCounts.moduleUtils" [ngClass]="{'btn-primary': showingView === ViewTypes.moduleUtils}"
                     tooltip="View module utils"
-                    (click)="toggleView(ViewTypes.moduleUtils)"><i class="fa fa-microchip"></i>
+                    (click)="toggleView(ViewTypes.moduleUtils)">
                     {{ contentCounts.moduleUtils }} Module Utils</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.plugin" [disabled]="showingView === ViewTypes.plugins"
+                    *ngIf="contentCounts.plugin" [ngClass]="{'btn-primary': showingView === ViewTypes.plugins}"
                     tooltip="View plugins"
                     (click)="toggleView(ViewTypes.plugins)"><i class="fa fa-plug"></i>
                     {{ contentCounts.plugin }} Plugins</button>
                 <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.role" [disabled]="showingView === ViewTypes.roles"
+                    *ngIf="contentCounts.role" [ngClass]="{'btn-primary': showingView === ViewTypes.roles}"
                     tooltip="View modules"
                     (click)="toggleView(ViewTypes.roles)"><i class="fa fa-gear"></i>
                     {{ contentCounts.role }} Roles</button>

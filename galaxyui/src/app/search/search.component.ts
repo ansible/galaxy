@@ -32,11 +32,15 @@ import { PaginationConfig }     from 'patternfly-ng/pagination/pagination-config
 import { PaginationEvent }      from 'patternfly-ng/pagination/pagination-event';
 import { EmptyStateConfig }     from 'patternfly-ng/empty-state/empty-state-config';
 
-import { ContentSearchService } from '../resources/content-search/content-search.service';
-import { Platform }             from '../resources/platforms/platform';
-import { ContentType }          from '../resources/content-types/content-type';
-import { CloudPlatform }        from '../resources/cloud-platforms/cloud-platform';
+import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
+import { NotificationType }     from 'patternfly-ng/notification/notification-type';
+
 import { ContentTypes }         from '../enums/content-types.enum';
+import { CloudPlatform }        from '../resources/cloud-platforms/cloud-platform';
+import { ContentSearchService } from '../resources/content-search/content-search.service';
+import { ContentType }          from '../resources/content-types/content-type';
+import { PFBodyService }        from '../resources/pf-body/pf-body.service';
+import { Platform }             from '../resources/platforms/platform';
 
 import {
     ContentTypesIconClasses
@@ -66,7 +70,8 @@ import * as moment        from 'moment';
 })
 export class SearchComponent implements OnInit, AfterViewInit {
 
-    pageTitle = '<i class="fa fa-search"></i> Search';
+    pageTitle = 'Search';
+    pageIcon = 'fa fa-search';
     toolbarConfig: ToolbarConfig;
     filterConfig: FilterConfig;
     sortConfig: SortConfig;
@@ -93,10 +98,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
         private route: ActivatedRoute,
         private router: Router,
         private contentSearch: ContentSearchService,
-        private location: Location
+        private location: Location,
+        private notificationService: NotificationService,
+        private pfBody: PFBodyService,
     ) {}
 
     ngOnInit() {
+        this.pfBody.scrollToTop();
         this.filterConfig = {
             fields: [
                 {
@@ -199,20 +207,41 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     this.preparePlatforms(data.platforms);
                     this.prepareContentTypes(data.contentTypes);
                     this.prepareCloudPlatforms(data.cloudPlatforms);
-                    if (!data.content.results.length && !Object.keys(params).length) {
-                        // No vendors exists
-                        const default_params = {vendor: false};
-                        this.setSortConfig();
-                        this.setAppliedFilters(default_params);
-                        this.searchContent();
+
+                    // If there is an error on the search API, the content search services
+                    // returns nothing, so we have to check if results actually exist.
+                    if (data.content.results) {
+                        if (!data.content.results.length && !Object.keys(params).length) {
+                            // No vendors exists
+                            const default_params = {vendor: false};
+                            this.setSortConfig();
+                            this.setAppliedFilters(default_params);
+                            this.searchContent();
+                        } else {
+                            this.setSortConfig(params['order_by']);
+                            this.setPageSize(params);
+                            this.setAppliedFilters(params);
+                            this.prepareContent(data.content.results, data.content.count);
+                            this.setQuery();
+                            this.pageLoading = false;
+                        }
                     } else {
+                        this.notificationService.message(
+                            NotificationType.WARNING,
+                            'Error',
+                            'Invalid search query',
+                            false,
+                            null,
+                            null,
+                        );
+
                         this.setSortConfig(params['order_by']);
                         this.setPageSize(params);
                         this.setAppliedFilters(params);
-                        this.prepareContent(data.content.results, data.content.count);
-                        this.setQuery();
+
                         this.pageLoading = false;
                     }
+
                 });
         });
     }
@@ -290,6 +319,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
             this.pageNumber = $event.pageNumber;
             if (this.pageSize === this.paginationConfig.pageSize) {
                 // changed pageNumber without changing pageSize
+                this.pfBody.scrollToTop();
                 changed = true;
             }
         }
@@ -332,6 +362,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
         if (filter) {
             // Update applied filters, and refresh the search result
+            this.pfBody.scrollToTop();
             this.addToFilter(filter);
             event = new FilterEvent();
             event.appliedFilters = JSON.parse(JSON.stringify(this.appliedFilters)) as Filter[];
@@ -348,13 +379,24 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     private setPageSize(params: any) {
         if (params['page_size']) {
-            this.paginationConfig.pageSize = params['page_size'];
-            this.pageSize = params['page_size'];
-            this.pageNumber = 1;
+            let pageSize = Number(params['page_size']);
+
+            if (Number.isNaN(pageSize)) {
+                pageSize = 10;
+            }
+
+            this.paginationConfig.pageSize = pageSize;
+            this.pageSize = pageSize;
         }
        if (params['page']) {
-           this.paginationConfig.pageNumber = params['page'];
-           this.pageNumber = params['page'];
+           let pageNumber = Number(params['page']);
+
+           if (Number.isNaN(pageNumber)) {
+               pageNumber = 1;
+           }
+
+           this.paginationConfig.pageNumber = pageNumber;
+           this.pageNumber = pageNumber;
        }
     }
 

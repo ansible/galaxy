@@ -1,69 +1,83 @@
 <div class="row repository-container">
 
-    <div class="col-lg-2">
+    <div class="col-lg-8 header-left">
         <div class="namespace-img">
-            <a [routerLink]="['/', repositoryView.namespace]"
-                tooltip="View the author's profile." >
-                <img class="img-wrapper" [src]="namespace.avatar_url"></a>
-            <a [routerLink]="['/', repositoryView.namespace]"
-                tooltip="View the author's profile.">
-                <span class="fa fa-user"></span> {{ namespace.name }}</a>
-        </div>
-    </div>
-
-    <div class="col-lg-6">
-        <div class="text-overflow-pf">
-            <div class="repo-name">
-                <span class="fa" [ngClass]="repositoryView.iconClass" tooltip="{{ repositoryView.tooltip }}"></span> {{ repositoryView.name }}
+            <div class="img-wrapper">
+                <a [routerLink]="['/', repositoryView.namespace]"
+                    tooltip="View the author's profile." >
+                    <img class="namespace-avatar" [src]="repositoryView.avatarUrl"></a>
             </div>
+            <div class="namespace-name" tooltip="{{ repositoryView.namespace }}">
+                <a [routerLink]="['/', repositoryView.namespace]">
+                    {{ repositoryView.namespace }}</a>
+            </div>
+        </div>
+
+        <div class="valign-center-box">
             <div>
-                {{ repositoryView.description }}
+                <div class="description-box">
+                    <div class="repo-name text-overflow-pf">
+                        <span class="fa" [ngClass]="repositoryView.iconClass" tooltip="{{ repositoryView.tooltip }}"></span> {{ repositoryView.name }}
+                    </div>
+                    <div class="repo-description">
+                        {{ repositoryView.description }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="col-lg-4 repository-details">
 
-        <span class="columns">
-            <ul>
-                <li class="repo-count">
-                    <i class="fa fa-download fa"></i>
-                    <span class="count">{{ repositoryView.downloadCount }}</span>
-                    <span class="count-label">Downloads</span>
-                </li>
-                <li class="repo-count">
-                    <i class="fa fa-eye fa"></i>
-                    <span class="count">{{ repositoryView.watchersCount }}</span>
-                    <span class="count-label">Watchers</span>
-                </li>
-            </ul>
+        <div class="valign-center-box">
+            <div>
+                <span class="columns">
+                    <ul>
+                        <li class="repo-count">
+                            <i class="fa fa-download fa"></i>
+                            <span class="count">{{ repositoryView.downloadCount }}</span>
+                            <span class="count-label">Downloads</span>
+                        </li>
+                        <li class="repo-count">
+                            <i class="fa fa-eye fa"></i>
+                            <span class="count">{{ repositoryView.watchersCount }}</span>
+                            <span class="count-label">Watchers</span>
+                        </li>
+                    </ul>
 
-            <a [href]="repositoryView.issueTrackerUrl" *ngIf="repositoryView.issueTrackerUrl"
-                target="_blank"
-                tooltip="Visit the issue tracker. Opens in a new browser tab."
-                class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
-        </span>
+                    <a [href]="repositoryView.issueTrackerUrl" *ngIf="repositoryView.issueTrackerUrl"
+                        target="_blank"
+                        tooltip="Visit the issue tracker. Opens in a new browser tab."
+                        class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
 
-        &nbsp;
+                    <a *ngIf="!repositoryView.issueTrackerUrl"
+                        disabled
+                        tooltip="No issue tracker available."
+                        class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
+                </span>
 
-        <span class="columns">
-            <ul>
-                <li class="repo-count">
-                    <i class="fa fa-star fa"></i>
-                    <span class="count">{{ repositoryView.stargazersCount }}</span>
-                    <span class="count-label">Stars</span>
-                </li>
-                <li class="repo-count">
-                    <i class="fa fa-copy fa"></i>
-                    <span class="count">{{ repositoryView.forksCount }}</span>
-                    <span class="count-label">Forks</span>
-                </li>
-            </ul>
+                &nbsp;
 
-            <a [href]="repositoryView.scmUrl" target="_blank"
-                tooltip="Visit the repository. Opens in a new browser tab." class="btn btn-default">
-                    <i [ngClass]="repositoryView.scmIconClass"></i> {{ repositoryView.scmName }} Repo</a>
-        </span>
+                <span class="columns">
+                    <ul>
+                        <li class="repo-count">
+                            <i class="fa fa-star fa"></i>
+                            <span class="count">{{ repositoryView.stargazersCount }}</span>
+                            <span class="count-label">Stars</span>
+                        </li>
+                        <li class="repo-count">
+                            <i class="fa fa-copy fa"></i>
+                            <span class="count">{{ repositoryView.forksCount }}</span>
+                            <span class="count-label">Forks</span>
+                        </li>
+                    </ul>
 
+                    <a [href]="repositoryView.scmUrl" target="_blank"
+                        tooltip="Visit the repository. Opens in a new browser tab." class="btn btn-default">
+                            <i [ngClass]="repositoryView.scmIconClass"></i> {{ repositoryView.scmName }} Repo</a>
+                </span>
+
+            </div>
+        </div>
     </div>
 </div>

@@ -29,6 +29,7 @@ import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
 
 import { Namespace }          from '../../resources/namespaces/namespace';
+import { PFBodyService }      from '../../resources/pf-body/pf-body.service';
 
 import { RepositoryService }  from '../../resources/repositories/repository.service';
 import { Repository }         from '../../resources/repositories/repository';
@@ -56,10 +57,12 @@ export class AuthorDetailComponent implements OnInit {
     constructor(
         private router: Router,
         private route: ActivatedRoute,
-        private repositoryService: RepositoryService
+        private repositoryService: RepositoryService,
+        private pfBody: PFBodyService,
     ) {}
 
     pageTitle = '';
+    pageIcon = '';
     pageLoading = true;
 
     namespace: Namespace;
@@ -83,6 +86,7 @@ export class AuthorDetailComponent implements OnInit {
     RepoFormats: typeof RepoFormats = RepoFormats;
 
     ngOnInit() {
+        this.pfBody.scrollToTop();
 
         this.emptyStateConfig = {
             info: '',
@@ -117,10 +121,25 @@ export class AuthorDetailComponent implements OnInit {
                     sortType: 'alpha'
                 },
                 {
-                    id: 'description',
-                    title: 'Description',
-                    sortType: 'alpha'
-                }
+                    id: 'download_count',
+                    title: 'Downloads',
+                    sortType: 'numeric'
+                },
+                {
+                    id: 'stargazers_count',
+                    title: 'Stars',
+                    sortType: 'numeric'
+                },
+                {
+                    id: 'watchers_count',
+                    title: 'Watchers',
+                    sortType: 'numeric'
+                },
+                {
+                    id: 'forks_count',
+                    title: 'Forks',
+                    sortType: 'numeric'
+                },
             ],
             isAscending: true
         } as SortConfig;
@@ -160,9 +179,11 @@ export class AuthorDetailComponent implements OnInit {
             this.pageLoading = false;
             if (this.namespace && this.namespace.name) {
                 if (this.namespace.is_vendor) {
-                    this.pageTitle = `<i class="fa fa-star"></i> Partners;/partners;${this.namespace.name}`;
+                    this.pageTitle = `Partners;/partners;${this.namespace.name}`;
+                    this.pageIcon = 'fa fa-star';
                 } else {
-                    this.pageTitle = `<i class="fa fa-users"></i> Community Authors;/community;${this.namespace.name}`;
+                    this.pageTitle = `Community Authors;/community;${this.namespace.name}`;
+                    this.pageIcon = 'fa fa-users';
                 }
                 this.parepareNamespace();
                 if (this.items && this.items.length) {
@@ -218,6 +239,7 @@ export class AuthorDetailComponent implements OnInit {
         if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
             this.pageNumber = $event.pageNumber;
             this.searchRepositories();
+            this.pfBody.scrollToTop();
         }
     }
 

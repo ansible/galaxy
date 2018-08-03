@@ -1,4 +1,4 @@
-<app-page-header [headerTitle]="pageTitle"></app-page-header>
+<app-page-header [headerTitle]="pageTitle" [headerIcon]="pageIcon"></app-page-header>
 
 <div id="search-page" class="container-fluid">
     <div class="row">
@@ -21,7 +21,9 @@
                                     <a [routerLink]="['/', item.summary_fields.namespace.name]"
                                        [tooltip]="'View more content from ' + item['displayNamespace']"
                                        container="body">
-                                        <img [src]="item.avatar_url" class="avatar-image" >
+                                       <div class="avatar-wrapper">
+                                           <img [src]="item.avatar_url" class="avatar-image" >
+                                       </div>
                                         <div class="namespace-name">{{ item['namespace_name'] }}</div>
                                     </a>
                                 </div>
@@ -49,7 +51,7 @@
                             <div class="col-sm-5 col-reduced-margin">
                                 <div class="list-pf-description">
                                     <div class="travis" *ngIf="item.summary_fields.repository.travis_build_url">
-                                        <a href="{{ item.summary_fields.repository.travis_build_url }}" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
+                                        <a href="{{ item.summary_fields.repository.travis_build_url }}" container="body" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
                                             <img src="{{ item.summary_fields.repository.travis_status_url }}"
                                                 class="travis-status-img" title="Travis Build Status" />
                                         </a>

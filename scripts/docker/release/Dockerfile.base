@@ -6,7 +6,7 @@ ENV VENV_BIN /var/lib/galaxy/venv/bin
 
 # Install packages and create virtual environment
 RUN yum -y install epel-release \
-    && yum -y install git make python python-pip \
+    && yum -y install git gcc make python python-devel python-pip \
     && pip install virtualenv \
     && yum -y clean all \
     && rm -rf /var/cache/yum

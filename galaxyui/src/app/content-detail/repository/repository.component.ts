@@ -79,7 +79,14 @@ export class RepositoryComponent implements OnInit {
         this.repositoryView.iconClass = RepoFormatsIconClasses[this.repository.format];
         this.repositoryView.tooltip = RepoFormatsTooltips[this.repository.format];
         this.repositoryView.name = this.repository.name;
-        this.repositoryView.description = this.repository.description;
+
+        // description for legacy roles
+        if (!this.repository.description && this.repository.summary_fields.content_objects.length === 1) {
+            this.repositoryView.description = this.repository.summary_fields.content_objects[0].description;
+        } else {
+            this.repositoryView.description = this.repository.description;
+        }
+
         this.repositoryView.namespace = this.repository.summary_fields.namespace['name'];
 
         if (this.repository.summary_fields.namespace['is_vendor']) {

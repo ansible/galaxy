@@ -31,7 +31,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     downloadContent: string;
     shareContent: string;
     featuredBlogContent: string;
-    headerTitle = '<i class="fa fa-home"></i> Home';
+    headerTitle = 'Home';
+    headerIcon = 'fa fa-home';
     searchText = '';
     showCards = false;
     vendors: Namespace[] = [];
