@@ -93,6 +93,14 @@ class CustomUser(auth_models.AbstractBaseUser,
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.username)
 
+    # FIXME: This method implementation is optional since Django 2.0
+    def get_full_name(self):
+        return self.full_name.strip()
+
+    # FIXME: This method implementation is optional since Django 2.0
+    def get_short_name(self):
+        return self.short_name.strip()
+
     def get_subscriptions(self):
         return [{
             'id': g.id,
