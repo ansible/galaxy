@@ -4,12 +4,11 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
 import { HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
 
-import { ModalModule, NavigationModule } from 'patternfly-ng';
+import { ToastNotificationModule, VerticalNavigationModule } from 'patternfly-ng';
 
-import { BsDropdownModule, ModalModule as BsModalModule, TooltipModule } from 'ngx-bootstrap';
+import { BsDropdownModule, ModalModule, TooltipModule } from 'ngx-bootstrap';
 
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
-import { NotificationModule } from 'patternfly-ng/notification/notification.module';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -50,16 +49,14 @@ import { VendorsModule } from './vendors/vendors.module';
         }),
         TooltipModule,
         BrowserModule,
-        NavigationModule,
+        VerticalNavigationModule,
         BsDropdownModule.forRoot(),
-        BsModalModule.forRoot(),
-        NotificationModule,
+        ModalModule.forRoot(),
         HomeModule,
         LoginModule,
         MyContentModule,
-        // MyImportsModule,
-        // SearchModule,
         ModalModule,
+        ToastNotificationModule,
         ContentDetailModule,
         ExceptionPagesModule,
         VendorsModule,

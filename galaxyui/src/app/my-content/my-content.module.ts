@@ -7,8 +7,8 @@ import { MyContentRoutingModule } from './my-content.routing.module';
 
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap';
 
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
-import { ModalModule } from 'patternfly-ng';
 import { ActionModule } from 'patternfly-ng/action/action.module';
 import { EmptyStateModule } from 'patternfly-ng/empty-state/empty-state.module';
 import { FilterModule } from 'patternfly-ng/filter/filter.module';
@@ -55,7 +55,7 @@ import { NamespaceRepositoryActionComponent } from './namespace-list/content/rep
     imports: [
         ActionModule,
         BsDropdownModule.forRoot(),
-        ModalModule,
+        ModalModule.forRoot(),
         CommonModule,
         EmptyStateModule,
         FilterModule,

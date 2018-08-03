@@ -21,8 +21,7 @@ import { FilterType } from 'patternfly-ng/filter/filter-type';
 import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
 
-import { Observable } from 'rxjs/Observable';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { forkJoin, Observable } from 'rxjs';
 
 @Component({
     selector: 'plugins-detail',

@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { Observable, of } from 'rxjs';
+
+import { map } from 'rxjs/operators';
 
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 
@@ -33,19 +34,23 @@ export class AuthService implements CanActivate {
         if (this.meCache) {
             return of(this.meCache);
         }
-        return this.http.get<IMe>(this.meUrl, { headers: this.headers }).map(result => {
-            this.meCache = result;
-            return result;
-        });
+        return this.http.get<IMe>(this.meUrl, { headers: this.headers }).pipe(
+            map(result => {
+                this.meCache = result;
+                return result;
+            }),
+        );
     }
 
     logout(): Observable<any> {
         this.meCache = null;
-        return this.http.post('/api/v1/account/logout', {}, { headers: this.headers }).map(result => {
-            this.meCache = null;
-            this.redirectUrl = '/home';
-            return result;
-        });
+        return this.http.post('/api/v1/account/logout', {}, { headers: this.headers }).pipe(
+            map(result => {
+                this.meCache = null;
+                this.redirectUrl = '/home';
+                return result;
+            }),
+        );
     }
 
     checkPermissions(route: ActivatedRouteSnapshot): boolean {
@@ -73,9 +78,11 @@ export class AuthService implements CanActivate {
                 observer.complete();
             });
         }
-        return this.http.get<IMe>(this.meUrl, { headers: this.headers }).map(result => {
-            this.meCache = result;
-            return this.checkPermissions(route);
-        });
+        return this.http.get<IMe>(this.meUrl, { headers: this.headers }).pipe(
+            map(result => {
+                this.meCache = result;
+                return this.checkPermissions(route);
+            }),
+        );
     }
 }
