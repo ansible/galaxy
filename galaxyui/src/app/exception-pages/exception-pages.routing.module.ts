@@ -1,12 +1,9 @@
-import { NgModule }                 from '@angular/core';
+import { NgModule } from '@angular/core';
 
-import {
-    RouterModule,
-    Routes
-} from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { AccessDeniedComponent } from './access-denied/access-denied.component';
-import { NotFoundComponent }     from './not-found/not-found.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 const exceptionPagesRoutes: Routes = [
     {
@@ -15,16 +12,12 @@ const exceptionPagesRoutes: Routes = [
     },
     {
         path: 'not-found',
-        component: NotFoundComponent
-    }
+        component: NotFoundComponent,
+    },
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(exceptionPagesRoutes)
-    ],
-    exports: [
-        RouterModule,
-    ]
+    imports: [RouterModule.forChild(exceptionPagesRoutes)],
+    exports: [RouterModule],
 })
 export class ExceptionPagesRoutingModule {}

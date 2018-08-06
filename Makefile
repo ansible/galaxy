@@ -98,6 +98,13 @@ test/flake8:
 test/jslint:
 	cd galaxyui; ng lint
 
+# for some reason yarn won't add prettier to /usr/local/bin
+.PHONY: test/prettier
+test/prettier:
+	@echo "Checking formatting..."
+	@echo "If this fails, run make dev/prettier locally to format your code"
+	cd galaxyui; ./node_modules/.bin/prettier -l "{src/**/*.ts, src/**/*.less}"
+
 # ---------------------------------------------------------
 # Docker targets
 # ---------------------------------------------------------
@@ -143,6 +150,17 @@ dev/flake8:
 dev/jslint:
 	@echo "Linting Javascript..."
 	@$(DOCKER_COMPOSE) exec galaxy bash -c 'cd galaxyui; ng lint'
+
+# for some reason yarn won't add prettier to /usr/local/bin
+.PHONY: dev/prettier
+dev/prettier:
+	@echo "Running prettier..."
+	@$(DOCKER_COMPOSE) exec galaxy bash -c 'cd galaxyui; ./node_modules/.bin/prettier --write "{src/**/*.ts, src/**/*.less}"'
+
+.PHONY: dev/shellcheck
+dev/shellcheck:
+	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
+		find ./scripts -name *.sh | xargs shellcheck'
 
 .PHONY: dev/test
 dev/test:

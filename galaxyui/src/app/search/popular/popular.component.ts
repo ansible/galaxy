@@ -1,22 +1,14 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnInit,
-    Output
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import {
-    ActivatedRoute,
-} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
-import { ListConfig }     from 'patternfly-ng/list/basic-list/list-config';
+import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
 
-import { Tag }              from '../../resources/tags/tag';
+import { Tag } from '../../resources/tags/tag';
 
-import { Platform }         from '../../resources/platforms/platform';
+import { Platform } from '../../resources/platforms/platform';
 
-import { CloudPlatform }        from '../../resources/cloud-platforms/cloud-platform';
+import { CloudPlatform } from '../../resources/cloud-platforms/cloud-platform';
 
 class PopularData {
     tags: Tag[];
@@ -32,21 +24,21 @@ export class PopularEvent {
 @Component({
     selector: 'popular-widget',
     templateUrl: './popular.component.html',
-    styleUrls: ['./popular.component.less']
+    styleUrls: ['./popular.component.less'],
 })
 export class PopularComponent implements OnInit {
-
-    @Input() popularType: string;
-    @Input() popularTitle: string;
-    @Output() click = new EventEmitter<PopularEvent>();
+    @Input()
+    popularType: string;
+    @Input()
+    popularTitle: string;
+    @Output()
+    click = new EventEmitter<PopularEvent>();
 
     data: PopularData;
     listConfig: ListConfig;
     items: any;
 
-    constructor(
-        private route: ActivatedRoute
-    ) {}
+    constructor(private route: ActivatedRoute) {}
 
     handleClick($event) {
         // User clicked on an item

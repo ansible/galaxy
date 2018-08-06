@@ -16,37 +16,28 @@
  * along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
  */
 
-import { NgModule }                 from '@angular/core';
+import { NgModule } from '@angular/core';
 
-import {
-    RouterModule,
-    Routes
-} from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
-import { AuthService }              from '../auth/auth.service';
-import { ImportListComponent }      from './import-list/import-list.component';
-import { ImportListResolver }       from './import-list/import-list.resolver.service';
+import { AuthService } from '../auth/auth.service';
+import { ImportListComponent } from './import-list/import-list.component';
+import { ImportListResolver } from './import-list/import-list.resolver.service';
 
 const myImportRoutes: Routes = [
     {
         path: '',
         component: ImportListComponent,
         resolve: {
-            imports: ImportListResolver
+            imports: ImportListResolver,
         },
-        canActivate: [AuthService]
-    }
+        canActivate: [AuthService],
+    },
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(myImportRoutes)
-    ],
-    exports: [
-        RouterModule,
-    ],
-    providers: [
-        ImportListResolver
-    ]
+    imports: [RouterModule.forChild(myImportRoutes)],
+    exports: [RouterModule],
+    providers: [ImportListResolver],
 })
 export class MyImportsRoutingModule {}

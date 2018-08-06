@@ -1,49 +1,38 @@
-import {
-    Component,
-    OnInit
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import {
-    ActivatedRoute,
-    Router
-} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import { ActionConfig }       from 'patternfly-ng/action/action-config';
-import { EmptyStateConfig }   from 'patternfly-ng/empty-state/empty-state-config';
-import { Filter }             from 'patternfly-ng/filter/filter';
-import { FilterConfig }       from 'patternfly-ng/filter/filter-config';
-import { FilterField }        from 'patternfly-ng/filter/filter-field';
-import { FilterType }         from 'patternfly-ng/filter/filter-type';
-import { ListConfig }         from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent }          from 'patternfly-ng/list/list-event';
-import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
-import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
-import { SortConfig }         from 'patternfly-ng/sort/sort-config';
-import { SortEvent }          from 'patternfly-ng/sort/sort-event';
-import { ToolbarConfig }      from 'patternfly-ng/toolbar/toolbar-config';
+import { ActionConfig } from 'patternfly-ng/action/action-config';
+import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
+import { Filter } from 'patternfly-ng/filter/filter';
+import { FilterConfig } from 'patternfly-ng/filter/filter-config';
+import { FilterField } from 'patternfly-ng/filter/filter-field';
+import { FilterType } from 'patternfly-ng/filter/filter-type';
+import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
+import { ListEvent } from 'patternfly-ng/list/list-event';
+import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
+import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
+import { SortConfig } from 'patternfly-ng/sort/sort-config';
+import { SortEvent } from 'patternfly-ng/sort/sort-event';
+import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 
-import { Namespace }          from '../resources/namespaces/namespace';
-import { NamespaceService }   from '../resources/namespaces/namespace.service';
-import { PFBodyService }      from '../resources/pf-body/pf-body.service';
+import { Namespace } from '../resources/namespaces/namespace';
+import { NamespaceService } from '../resources/namespaces/namespace.service';
+import { PFBodyService } from '../resources/pf-body/pf-body.service';
 
-import {
-    ContentTypes,
-    ContentTypesIconClasses,
-    ContentTypesPluralChoices
-} from '../enums/content-types.enum';
+import { ContentTypes, ContentTypesIconClasses, ContentTypesPluralChoices } from '../enums/content-types.enum';
 
 @Component({
     selector: 'app-authors',
     templateUrl: './authors.component.html',
-    styleUrls: ['./authors.component.less']
+    styleUrls: ['./authors.component.less'],
 })
 export class AuthorsComponent implements OnInit {
-
     constructor(
         private router: Router,
-          private route: ActivatedRoute,
-          private namespaceService: NamespaceService,
-          private pfBody: PFBodyService,
+        private route: ActivatedRoute,
+        private namespaceService: NamespaceService,
+        private pfBody: PFBodyService,
     ) {}
 
     pageTitle = 'Community Authors';
@@ -60,7 +49,7 @@ export class AuthorsComponent implements OnInit {
     paginationConfig: PaginationConfig;
     sortBy = 'name';
     filterBy: any = {
-        'is_vendor': false
+        is_vendor: false,
     };
     pageNumber = 1;
     pageSize = 10;
@@ -70,7 +59,7 @@ export class AuthorsComponent implements OnInit {
         this.emptyStateConfig = {
             info: '',
             title: 'No contributors match your search',
-            iconStyleClass: 'pficon pficon-filter'
+            iconStyleClass: 'pficon pficon-filter',
         } as EmptyStateConfig;
 
         this.filterConfig = {
@@ -79,17 +68,17 @@ export class AuthorsComponent implements OnInit {
                     id: 'name',
                     title: 'Name',
                     placeholder: 'Filter by Name...',
-                    type: FilterType.TEXT
+                    type: FilterType.TEXT,
                 },
                 {
                     id: 'description',
                     title: 'Description',
                     placeholder: 'Filter by Description...',
-                    type: FilterType.TEXT
-                }
+                    type: FilterType.TEXT,
+                },
             ] as FilterField[],
             resultsCount: 0,
-            appliedFilters: [] as Filter[]
+            appliedFilters: [] as Filter[],
         } as FilterConfig;
 
         this.sortConfig = {
@@ -97,27 +86,27 @@ export class AuthorsComponent implements OnInit {
                 {
                     id: 'name',
                     title: 'Name',
-                    sortType: 'alpha'
+                    sortType: 'alpha',
                 },
                 {
                     id: 'description',
                     title: 'Description',
-                    sortType: 'alpha'
-                }
+                    sortType: 'alpha',
+                },
             ],
-            isAscending: true
+            isAscending: true,
         } as SortConfig;
 
         this.toolbarActionConfig = {
             primaryActions: [],
-            moreActions: []
+            moreActions: [],
         } as ActionConfig;
 
         this.toolbarConfig = {
             actionConfig: this.toolbarActionConfig,
             filterConfig: this.filterConfig,
             sortConfig: this.sortConfig,
-            views: []
+            views: [],
         } as ToolbarConfig;
 
         this.listConfig = {
@@ -127,16 +116,16 @@ export class AuthorsComponent implements OnInit {
             selectionMatchProp: 'name',
             showCheckbox: false,
             useExpandItems: false,
-            emptyStateConfig: this.emptyStateConfig
+            emptyStateConfig: this.emptyStateConfig,
         } as ListConfig;
 
         this.paginationConfig = {
             pageSize: 10,
             pageNumber: 1,
-            totalItems: 0
+            totalItems: 0,
         } as PaginationConfig;
 
-        this.route.data.subscribe((data) => {
+        this.route.data.subscribe(data => {
             this.items = data['namespaces']['results'];
             this.paginationConfig.totalItems = data['namespaces']['count'];
             this.prepareNamespaces();
@@ -158,7 +147,7 @@ export class AuthorsComponent implements OnInit {
             });
         } else {
             this.filterBy = {
-                'is_vendor': false
+                is_vendor: false,
             };
         }
         this.pageNumber = 1;
@@ -243,13 +232,12 @@ export class AuthorsComponent implements OnInit {
         this.filterBy['page_size'] = this.pageSize;
         this.filterBy['page'] = this.pageNumber;
         this.filterBy['order'] = this.sortBy;
-        this.namespaceService.pagedQuery(this.filterBy)
-            .subscribe(result => {
-                this.items = result.results as Namespace[];
-                this.prepareNamespaces();
-                this.filterConfig.resultsCount = result.count;
-                this.paginationConfig.totalItems = result.count;
-                this.pageLoading = false;
-            });
+        this.namespaceService.pagedQuery(this.filterBy).subscribe(result => {
+            this.items = result.results as Namespace[];
+            this.prepareNamespaces();
+            this.filterConfig.resultsCount = result.count;
+            this.paginationConfig.totalItems = result.count;
+            this.pageLoading = false;
+        });
     }
 }
