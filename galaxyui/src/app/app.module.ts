@@ -61,6 +61,7 @@ import { VendorsModule } from './vendors/vendors.module';
         VendorsModule,
         AuthorsModule,
         AppRoutingModule,
+        AboutModalModule,
     ],
     providers: [
         AuthService,
