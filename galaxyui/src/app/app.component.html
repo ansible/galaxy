@@ -11,32 +11,27 @@
         [updateActiveItemsOnClick]="false">
         <div>
             <ul class="nav navbar-nav navbar-right navbar-iconic">
-                <li class="dropdown" dropdown>
-                    <a class="dropdown-toggle nav-item-iconic"
-                       id="dropdownMenu1"
-                       data-toggle="dropdown"
-                       aria-haspopup="true"
-                       aria-expanded="true"
-                       dropdownToggle>
-                        <span title="Help" class="fa pficon-help"></span>
-                        <span class="caret"></span>
+                <li>
+                    <a href="" [routerLink]="" (click)="about(aboutTemplate)" class="nav-item-iconic nav-link">
+                        <span class="fa pficon-info"></span> About
                     </a>
-                    <ul *dropdownMenu class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li><a href="" [routerLink]="" (click)="about(aboutTemplate)">About</a></li>
-                        <li><a href="/docs/">Help</a></li>
-                    </ul>
+                </li>
+                <li>
+                    <a href="/docs/" class="nav-item-iconic nav-link">
+                        <span class="fa pficon-help"></span> Documentation
+                    </a>
                 </li>
                 <li class="navbar-iconic">
                     <a class="nav-item-iconic nav-link" [routerLink]="['/login']" [queryParams]="{error: false}" *ngIf="!authenticated"><span class="fa fa-sign-in"></span> &nbsp;Login</a>
                 </li>
                 <li class="dropdown" dropdown *ngIf="authenticated">
-                    <a class="dropdown-toggle nav-item-iconic"
+                    <a class="dropdown-toggle nav-item-iconic nav-link"
                        id="dropdownMenu2"
                        data-toggle="dropdown"
                        aria-haspopup="true"
                        aria-expanded="true"
                        dropdownToggle>
-                        <span class="fa pficon-user"></span> {{ username }} <span class="caret"></span>
+                        <span class="fa fa-user"></span> {{ username }} <span class="caret"></span>
                     </a>
                     <ul *dropdownMenu class="dropdown-menu" aria-labelledby="dropdownMenu2">
                         <li><a href="#">Preferences</a></li>
