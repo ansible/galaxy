@@ -5,7 +5,7 @@
 
     <popular-component></popular-component>
 
-    <div class="row content-row" [ngClass]="{'ready': showCards}">
+    <div class="row" [ngClass]="{'ready': showCards}">
         <div class="col-md-4">
             <div class="home-card" id="card-1">
                 <pfng-card
@@ -46,7 +46,6 @@
                     </ng-template>
                     <div class="card-content">
                         <div class="featured-blog">
-                            <div class="featured-icon"><i class="fa fa-pencil-square-o fa-2x"></i></div>
                             <div class="featured-text" [innerHtml]="featuredBlogContent"></div>
                         </div>
                     </div>
