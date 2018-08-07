@@ -135,7 +135,7 @@ dev/makemigrations:
 
 .PHONY: dev/log
 dev/log:
-	@$(DOCKER_COMPOSE) logs galaxy
+	@$(DOCKER_COMPOSE) logs --tail 100 galaxy
 
 .PHONY: dev/logf
 dev/logf:
