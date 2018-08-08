@@ -4,7 +4,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
 import { HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
 
-import { AboutModalModule, ToastNotificationModule, VerticalNavigationModule } from 'patternfly-ng';
+import { AboutModalModule, ToastNotificationListModule, VerticalNavigationModule } from 'patternfly-ng';
 
 import { BsDropdownModule, ModalModule, TooltipModule } from 'ngx-bootstrap';
 
@@ -55,7 +55,7 @@ import { VendorsModule } from './vendors/vendors.module';
         HomeModule,
         LoginModule,
         MyContentModule,
-        ToastNotificationModule,
+        ToastNotificationListModule,
         ContentDetailModule,
         ExceptionPagesModule,
         VendorsModule,
