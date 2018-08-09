@@ -4,8 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import * as moment from 'moment';
 
-import { Observable } from 'rxjs/Observable';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { forkJoin, Observable } from 'rxjs';
 
 import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
 

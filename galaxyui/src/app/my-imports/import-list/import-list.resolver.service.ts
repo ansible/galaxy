@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { ImportsService } from '../../resources/imports/imports.service';
 import { PagedResponse } from '../../resources/paged-response';

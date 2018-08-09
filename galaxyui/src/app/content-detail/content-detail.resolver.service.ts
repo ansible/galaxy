@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { Content } from '../resources/content/content';
 import { ContentService } from '../resources/content/content.service';
@@ -39,7 +40,7 @@ export class RepositoryResolver implements Resolve<Repository> {
             name__iexact: repository,
             provider_namespace__namespace__name__iexact: namespace,
         };
-        return this.repositoryService.query(params).map(results => results[0]);
+        return this.repositoryService.query(params).pipe(map(results => results[0]));
     }
 }
 
@@ -51,6 +52,6 @@ export class NamespaceResolver implements Resolve<Namespace> {
         const params = {
             name__iexact: namespace,
         };
-        return this.namespaceService.query(params).map(results => results[0]);
+        return this.namespaceService.query(params).pipe(map(results => results[0]));
     }
 }

@@ -7,8 +7,7 @@ import { ListEvent } from 'patternfly-ng/list/list-event';
 import { cloneDeep } from 'lodash';
 import { BsModalRef } from 'ngx-bootstrap';
 
-import { Observable } from 'rxjs/Observable';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { forkJoin, Observable } from 'rxjs';
 
 import { Namespace } from '../../resources/namespaces/namespace';
 import { ProviderSourceService } from '../../resources/provider-namespaces/provider-source.service';

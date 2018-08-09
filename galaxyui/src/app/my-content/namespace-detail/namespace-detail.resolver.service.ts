@@ -1,8 +1,6 @@
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/take';
-
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 
 import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
 
@@ -22,17 +20,17 @@ export class NamespaceDetailResolver implements Resolve<Namespace> {
             return null;
         }
 
-        return this.namespaceService
-            .get(Number(id))
-            .take(1)
-            .map(namespace => {
+        return this.namespaceService.get(Number(id)).pipe(
+            take(1),
+            map(namespace => {
                 if (namespace) {
                     return namespace;
                 } else {
                     this.router.navigate(['/my-content/namespaces/new']);
                     return null;
                 }
-            });
+            }),
+        );
     }
 }
 
