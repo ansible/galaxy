@@ -80,6 +80,7 @@ def get_team_members():
         "cutwater",
         "alikins",
         "newswangerd",
+        "awcrosby",
         "tima",
         "gregdek"
     ]
