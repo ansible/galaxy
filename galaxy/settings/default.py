@@ -306,7 +306,7 @@ LOGGING = {
     'formatters': {
         'json': {
             '()': 'jog.JogFormatter',
-            'format': ('%(asctime)s %(request_id)s %(levelname)s] '
+            'format': ('%(asctime)s %(request_id)s %(levelname)s '
                        '%(module)s: %(message)s'),
         },
         'verbose': {
