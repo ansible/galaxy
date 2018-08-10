@@ -304,6 +304,11 @@ LOGGING = {
     'disable_existing_loggers': False,
 
     'formatters': {
+        'json': {
+            '()': 'jog.JogFormatter',
+            'format': ('%(asctime)s %(request_id)s %(levelname)s] '
+                       '%(module)s: %(message)s'),
+        },
         'verbose': {
             'format': '%(asctime)s %(levelname)s %(module)s: %(message)s',
         },
@@ -315,7 +320,10 @@ LOGGING = {
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
-        }
+        },
+        'request_id': {
+            '()': 'log_request_id.filters.RequestIDFilter'
+        },
     },
 
     'handlers': {

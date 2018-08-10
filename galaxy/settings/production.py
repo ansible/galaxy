@@ -45,6 +45,8 @@ import dj_database_url
 from . import include_settings
 from .default import *  # noqa
 
+from .default import LOGGING as default_logging
+
 
 def _read_secret_key(settings_dir='/etc/galaxy'):
     """
@@ -69,9 +71,29 @@ def _read_secret_key(settings_dir='/etc/galaxy'):
         return None
 
 
+def _set_logging():
+    log = default_logging
+    log['filters']['request_id'] = {
+        '()': 'log_request_id.filters.RequestIDFilter'
+    }
+    log['handlers']['console']['formatter'] = 'json'
+    log['handlers']['console']['filters'] = ['request_id']
+    log['loggers']['django_request'] = {
+        'handlers': ['console'],
+        'level': 'INFO',
+        'propagate': True,
+    }
+    log['loggers']['galaxy.api.access'] = {
+        'handlers': ['console'],
+        'level': 'INFO',
+        'propagate': True,
+    }
+    return log
+
 # =========================================================
 # Django Core Settings
 # =========================================================
+
 
 DEBUG = False
 
@@ -168,143 +190,22 @@ CONTENT_DOWNLOAD_DIR = '/var/lib/galaxy/downloads'
 GITHUB_TASK_USERS = ['galaxytasks01', 'galaxytasks02', 'galaxytasks03',
                      'galaxytasks04', 'galaxytasks05']
 
+# =========================================================
+# Logging Configuration
+# =========================================================
+
 # https://github.com/dabapps/django-log-request-id
+
 LOG_REQUEST_ID_HEADER = "HTTP_X_REQUEST_ID"
 GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
 REQUEST_ID_RESPONSE_HEADER = "X-REQUEST-ID"
 # LOG_REQUESTS = True
 
-LOGGING = {
-    'version': 1,
-
-    'disable_existing_loggers': False,
-
-    'formatters': {
-        'verbose': {
-            'format': '%(asctime)s %(request_id)s %(levelname)s] %(module)s: %(message)s',
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s',
-        },
-        'json': {
-            '()': 'jog.JogFormatter',
-            'format': '%(asctime)s %(request_id)s %(levelname)s] %(module)s: %(message)s',
-        },
-        'django_server': {
-            '()': 'django.utils.log.ServerFormatter',
-            'format': '[%(server_time)s] %(message)s - %(request_id)s',
-        },
-
-    },
-
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        },
-        'request_id': {
-            '()': 'log_request_id.filters.RequestIDFilter'
-        },
-    },
-
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            # 'formatter': 'verbose',
-            'formatter': 'json',
-            'filters': ['request_id'],
-        },
-        'import_task': {
-            'level': 'DEBUG',
-            'class': 'galaxy.common.logutils.ImportTaskHandler',
-            'formatter': 'simple',
-            # 'formatter': 'verbose',
-        },
-    },
-
-    'loggers': {
-        'django.request': {
-            # 'handlers': ['mail_admins'],
-            'handlers': ['console'],
-            'level': 'INFO',
-            # 'level': 'DEBUG',
-            'propagate': True,
-        },
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'django.db': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'django.server': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-        'galaxy.api': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.api.permissions': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'galaxy.api.access': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            # 'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.api.throttling': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'galaxy.accounts': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.main': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.models': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.worker': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.worker.tasks.import_repository': {
-            'handlers': ['import_task'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'allauth': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    }
-}
+LOGGING = _set_logging()
 
 # =========================================================
 # System Settings
 # =========================================================
+
 
 include_settings('/etc/galaxy/settings.py', scope=globals(), optional=True)
