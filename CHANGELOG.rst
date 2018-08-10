@@ -4,6 +4,28 @@ Ansible Galaxy Changes by Release
 3.1.0 - Active development
 --------------------------
 
+3.0.7 - Released 09-Aug-2018
+----------------------------
+
+Bug Fixes
+`````````
+- Removed featured icon from home page.
+
+Closed PRs
+``````````
+- `1036 Remove featured icon from home page <https://github.com/ansible/galaxy/pull/1037>`_.
+
+3.0.6 - Released 09-Aug-2018
+----------------------------
+
+Bug Fixes
+`````````
+- Travis CI notification not triggering an import. Issue `#1033 <https://github.com/ansible/galaxy/issues/1033>`_.
+
+Closed PRs
+``````````
+- `1036 Restore GITHUB_TASK_USERS <https://github.com/ansible/galaxy/pull/1036>`_
+
 3.0.5 - Released 03-Aug-2018
 ----------------------------
 
