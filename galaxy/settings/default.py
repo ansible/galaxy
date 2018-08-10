@@ -77,6 +77,7 @@ INSTALLED_APPS = (
 # FIXME(cutwater): Deprecated from Django 1.10, use MIDDLEWARE setting
 # instead.
 MIDDLEWARE_CLASSES = (
+    'log_request_id.middleware.RequestIDMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -303,6 +304,11 @@ LOGGING = {
     'disable_existing_loggers': False,
 
     'formatters': {
+        'json': {
+            '()': 'jog.JogFormatter',
+            'format': ('%(asctime)s %(request_id)s %(levelname)s '
+                       '%(module)s: %(message)s'),
+        },
         'verbose': {
             'format': '%(asctime)s %(levelname)s %(module)s: %(message)s',
         },
@@ -314,7 +320,10 @@ LOGGING = {
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
-        }
+        },
+        'request_id': {
+            '()': 'log_request_id.filters.RequestIDFilter'
+        },
     },
 
     'handlers': {

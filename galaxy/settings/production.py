@@ -45,6 +45,8 @@ import dj_database_url
 from . import include_settings
 from .default import *  # noqa
 
+from .default import LOGGING as default_logging
+
 
 def _read_secret_key(settings_dir='/etc/galaxy'):
     """
@@ -69,9 +71,29 @@ def _read_secret_key(settings_dir='/etc/galaxy'):
         return None
 
 
+def _set_logging():
+    log = default_logging
+    log['filters']['request_id'] = {
+        '()': 'log_request_id.filters.RequestIDFilter'
+    }
+    log['handlers']['console']['formatter'] = 'json'
+    log['handlers']['console']['filters'] = ['request_id']
+    log['loggers']['django_request'] = {
+        'handlers': ['console'],
+        'level': 'INFO',
+        'propagate': True,
+    }
+    log['loggers']['galaxy.api.access'] = {
+        'handlers': ['console'],
+        'level': 'INFO',
+        'propagate': True,
+    }
+    return log
+
 # =========================================================
 # Django Core Settings
 # =========================================================
+
 
 DEBUG = False
 
@@ -169,7 +191,21 @@ GITHUB_TASK_USERS = ['galaxytasks01', 'galaxytasks02', 'galaxytasks03',
                      'galaxytasks04', 'galaxytasks05']
 
 # =========================================================
+# Logging Configuration
+# =========================================================
+
+# https://github.com/dabapps/django-log-request-id
+
+LOG_REQUEST_ID_HEADER = "HTTP_X_REQUEST_ID"
+GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
+REQUEST_ID_RESPONSE_HEADER = "X-REQUEST-ID"
+# LOG_REQUESTS = True
+
+LOGGING = _set_logging()
+
+# =========================================================
 # System Settings
 # =========================================================
+
 
 include_settings('/etc/galaxy/settings.py', scope=globals(), optional=True)
