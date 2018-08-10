@@ -8,8 +8,13 @@
         [pinnableMenus]="true"
         [showBadges]="true"
         [showIcons]="true"
-        [updateActiveItemsOnClick]="false">
+        [updateActiveItemsOnClick]="true">
         <div>
+            <div *ngIf="isLoading" class="header-spinner">
+                <div class="inner-spinner">
+                    <div class="spinner spinner-inverse spinner-sm"></div>
+                </div>
+            </div>
             <ul class="nav navbar-nav navbar-right navbar-iconic">
                 <li>
                     <a href="" [routerLink]="" (click)="about(aboutTemplate)" class="nav-item-iconic nav-link">
