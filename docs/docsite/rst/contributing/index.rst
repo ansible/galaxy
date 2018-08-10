@@ -12,3 +12,4 @@ Contributing Content
    creating_apb
    version
    importing
+   deprecate

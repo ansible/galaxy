@@ -2,6 +2,11 @@
     <app-page-header [headerTitle]="pageTitle" [headerIcon]="pageIcon"></app-page-header>
 
     <div class="container-fluid content-detail-container">
+        <div *ngIf="repository.deprecated" class="alert alert-danger">
+            <span class="pficon pficon-error-circle-o"></span>
+            This item has been deprecated. We recommend that you take a look at
+            one of <a [routerLink]="['/','search']" [queryParams]="{keywords: repository.name, deprecated: false}"> these instead</a>.
+        </div>
         <div class="row" *ngIf="showEmptyState">
             <div class="col-sm-12">
                 <pfng-empty-state

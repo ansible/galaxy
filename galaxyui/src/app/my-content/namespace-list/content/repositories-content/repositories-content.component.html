@@ -17,7 +17,8 @@
             (onActionSelect)="handleAction($event, null)">
             <ng-template #itemTemplate let-item="item" let-index="index">
                 <div class="list-pf-left">
-                    <span [ngClass]="item['iconClass']"></span>
+                    <span *ngIf="!item.summary_fields.loading" [ngClass]="item['iconClass']"></span>
+                    <div *ngIf="item.summary_fields.loading" class="spinner spin-wrapper"></div>
                 </div>
                 <div class="list-pf-content-wrapper">
                     <div class="list-pf-main-content">
@@ -47,6 +48,8 @@
                             </a>
                         </div>
                     </div>
+
+                    <span *ngIf="item.deprecated" class="label label-danger">Deprecated</span>
                 </div>
             </ng-template>
             <ng-template #actionTemplate let-item="item" let-index="index">

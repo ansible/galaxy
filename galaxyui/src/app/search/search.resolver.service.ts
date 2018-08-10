@@ -22,6 +22,26 @@ import { TagsService } from '../resources/tags/tags.service';
 
 import { ContributorTypes } from '../enums/contributor-types.enum';
 
+// This class represents the default set of filters to be used when the search
+// page is loaded without any params specified
+export class DefaultParams {
+    static params = {
+        // vendor: 'false',
+        deprecated: 'false',
+        order_by: '-relevance',
+    };
+
+    static getParamString(): string {
+        let paramString = '';
+        for (const key of Object.keys(this.params)) {
+            paramString += key + '=' + encodeURIComponent(this.params[key]) + '&';
+        }
+
+        // Remove trailing '&'
+        return paramString.substring(0, paramString.length - 1);
+    }
+}
+
 @Injectable()
 export class SearchContentResolver implements Resolve<ContentResponse> {
     constructor(private contentService: ContentSearchService) {}
@@ -46,10 +66,9 @@ export class SearchContentResolver implements Resolve<ContentResponse> {
             }
         }
         if (params === '') {
-            // When no prior query, default Contributor Type to vendor.
-            params += 'vendor=true';
+            params += DefaultParams.getParamString();
         }
-        // Add default params
+        // if order_by has not been specified yet, make sure it gets set
         if (!route.queryParams['order_by']) {
             if (params !== '') {
                 params += '&';

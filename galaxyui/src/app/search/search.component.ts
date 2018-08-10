@@ -42,6 +42,8 @@ import { PopularEvent } from './popular/popular.component';
 
 import { Content } from '../resources/content-search/content';
 
+import { DefaultParams } from './search.resolver.service';
+
 import * as moment from 'moment';
 
 @Component({
@@ -108,7 +110,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 {
                     id: 'contributor_type',
                     title: 'Contributor Type',
-                    placeholder: 'Contributur Type',
+                    placeholder: 'Contributor Type',
                     type: FilterType.TYPEAHEAD,
                     queries: [
                         {
@@ -120,6 +122,21 @@ export class SearchComponent implements OnInit, AfterViewInit {
                             id: ContributorTypes.vendor,
                             value: ContributorTypes.vendor,
                             iconStyleClass: ContributorTypesIconClasses.vendor,
+                        },
+                    ],
+                },
+                {
+                    id: 'deprecated',
+                    title: 'Deprecated',
+                    type: FilterType.TYPEAHEAD,
+                    queries: [
+                        {
+                            id: 'true',
+                            value: 'True',
+                        },
+                        {
+                            id: 'false',
+                            value: 'False',
                         },
                     ],
                 },
@@ -192,20 +209,16 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 // If there is an error on the search API, the content search services
                 // returns nothing, so we have to check if results actually exist.
                 if (data.content.results) {
-                    if (!data.content.results.length && !Object.keys(params).length) {
-                        // No vendors exists
-                        const default_params = { vendor: false };
-                        this.setSortConfig();
-                        this.setAppliedFilters(default_params);
-                        this.searchContent();
-                    } else {
-                        this.setSortConfig(params['order_by']);
-                        this.setPageSize(params);
-                        this.setAppliedFilters(params);
-                        this.prepareContent(data.content.results, data.content.count);
-                        this.setQuery();
-                        this.pageLoading = false;
+                    // If no params exist, set to the default params
+                    if (Object.keys(params).length === 0) {
+                        params = DefaultParams.params;
                     }
+                    this.setSortConfig(params['order_by']);
+                    this.setPageSize(params);
+                    this.setAppliedFilters(params);
+                    this.prepareContent(data.content.results, data.content.count);
+                    this.setQuery();
+                    this.pageLoading = false;
                 } else {
                     this.notificationService.message(NotificationType.WARNING, 'Error', 'Invalid search query', false, null, null);
 
@@ -378,10 +391,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         let filterParams = '';
 
         const params = JSON.parse(JSON.stringify(queryParams));
-        if (!Object.keys(params).length) {
-            // When no prior query, default Contributor Type to vendor
-            params['vendor'] = true;
-        }
 
         for (const key in params) {
             if (params.hasOwnProperty(key)) {
@@ -396,10 +405,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     const ffield: Filter = {} as Filter;
                     ffield.field = field;
                     field.queries.forEach((query: FilterQuery) => {
-                        if (query.id === ContributorTypes.community && !params[key]) {
+                        if (query.id === ContributorTypes.community && params[key] === 'false') {
                             ffield.query = query;
                             ffield.value = query.value;
-                        } else if (query.id === ContributorTypes.vendor && params[key]) {
+                        } else if (query.id === ContributorTypes.vendor && params[key] === 'true') {
                             ffield.query = query;
                             ffield.value = query.value;
                         }

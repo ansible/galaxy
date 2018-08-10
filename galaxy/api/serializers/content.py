@@ -72,7 +72,8 @@ class _RepositorySerializer(serializers.ModelSerializer):
             'name',
             'original_name',
             'description',
-            'clone_url'
+            'clone_url',
+            'deprecated'
         )
 
 

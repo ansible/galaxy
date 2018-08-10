@@ -132,7 +132,9 @@ class RoleListSerializer(BaseRoleSerializer):
             open_issues_count=obj.repository.open_issues_count,
             travis_status_url=obj.repository.travis_status_url,
             travis_build_url=obj.repository.travis_build_url,
-            format=obj.repository.format)
+            format=obj.repository.format,
+            deprecated=obj.repository.deprecated,
+        )
         d['tags'] = [g.name for g in obj.tags.all()]
         d['versions'] = [
             {'id': g.id, 'name': g.tag, 'release_date': g.commit_date}

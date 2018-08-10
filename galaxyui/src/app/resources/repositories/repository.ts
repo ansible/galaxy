@@ -27,4 +27,5 @@ export class Repository {
     download_count: number;
     readme: string;
     readme_html: string;
+    deprecated: boolean;
 }

@@ -56,6 +56,18 @@ export class NamespaceRepositoryActionComponent implements OnInit {
                     title: 'Delete',
                     tooltip: 'Delete Repository',
                 },
+                {
+                    id: 'deprecate',
+                    title: 'Deprecate',
+                    tooltip: 'Deprecate this Repository',
+                    visible: !this.repository.deprecated,
+                },
+                {
+                    id: 'undeprecate',
+                    title: 'Un-Deprecate',
+                    tooltip: 'Un-Deprecate this Repository',
+                    visible: this.repository.deprecated,
+                },
             ],
             moreActionsDisabled: false,
             moreActionsVisible: !importing,

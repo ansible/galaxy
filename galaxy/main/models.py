@@ -953,6 +953,10 @@ class Repository(BaseModel):
         default=0
     )
 
+    deprecated = models.BooleanField(
+        default=False,
+    )
+
     @property
     def clone_url(self):
         return "https://github.com/{user}/{repo}.git".format(

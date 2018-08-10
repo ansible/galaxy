@@ -33,10 +33,16 @@
                                             <i class="{{ item['iconClass'] }}"></i>
                                         </div>
                                         <div class="name cursor-pointer"><a [routerLink]="[item['contentLink']]" tooltip="View content details">{{ item.name }}</a></div>
-                                        <div class="type">{{ item.summary_fields.content_type.name }}</div>
+                                        <div class="type">
+                                            {{ item.summary_fields.content_type.name }}
+                                        </div>
+                                        <div class="deprecated-tag" *ngIf="item.summary_fields.repository.deprecated"  tooltip="This item has been deprecated. Use at your own risk.">
+                                            Deprecated
+                                        </div>
                                         <div class="description">
                                             {{item.description}}
                                         </div>
+
                                     </div>
                                     <div class="content-tags">
                                         <div class="icon"><i class="fa fa-tag fa-2x"></i></div>

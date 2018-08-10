@@ -110,6 +110,10 @@ class ContentSearchView(base.ListAPIView):
         is_vendor = request.GET.get('vendor', None)
         queryset = self.add_vendor_filter(queryset, is_vendor)
 
+        # Deprecated
+        is_deprecated = request.GET.get('deprecated', None)
+        queryset = self.add_deprecated_filter(queryset, is_deprecated)
+
         # Support for ansible-galaxy <= 2.6 autocomplete params
         keywords = request.GET.get('autocomplete', '').split()
         queryset = self.add_keywords_filter(queryset, keywords)
@@ -207,6 +211,15 @@ class ContentSearchView(base.ListAPIView):
         if is_vendor.lower() in ('true', 'yes', '1'):
             is_vendor_value = True
         return queryset.filter(namespace__is_vendor=is_vendor_value)
+
+    @staticmethod
+    def add_deprecated_filter(queryset, is_deprecated):
+        if is_deprecated is None:
+            return queryset
+        is_deprecated_value = False
+        if is_deprecated.lower() in ('true', 'yes', '1'):
+            is_deprecated_value = True
+        return queryset.filter(repository__deprecated=is_deprecated_value)
 
 
 class RoleSearchView(ContentSearchView):
