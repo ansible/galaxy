@@ -1,10 +1,9 @@
-
 export enum ContentTypes {
     apb = 'apb',
     module = 'module',
     plugin = 'plugin',
     role = 'role',
-    moduleUtils = 'module_utils'
+    moduleUtils = 'module_utils',
 }
 
 export enum ContentTypesPlural {
@@ -12,7 +11,7 @@ export enum ContentTypesPlural {
     module = 'modules',
     plugin = 'plugins',
     role = 'roles',
-    moduleUtils = 'module_utils'
+    moduleUtils = 'module_utils',
 }
 
 export enum ContentTypesChoices {
@@ -20,7 +19,7 @@ export enum ContentTypesChoices {
     module = 'Module',
     plugin = 'Plugin',
     role = 'Role',
-    moduleUtils = 'Module Utils'
+    moduleUtils = 'Module Utils',
 }
 
 export enum ContentTypesPluralChoices {
@@ -28,7 +27,7 @@ export enum ContentTypesPluralChoices {
     module = 'Modules',
     plugin = 'Plugins',
     role = 'Roles',
-    moduleUtils = 'Module Utils'
+    moduleUtils = 'Module Utils',
 }
 
 export enum ContentTypesIconClasses {
@@ -36,5 +35,5 @@ export enum ContentTypesIconClasses {
     module = 'fa fa-microchip',
     plugin = 'fa fa-plug',
     role = 'fa fa-gear',
-    moduleUtils = 'fa fa-microchip'
+    moduleUtils = 'fa fa-microchip',
 }

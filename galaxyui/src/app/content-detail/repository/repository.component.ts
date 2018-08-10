@@ -1,28 +1,10 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    Output,
-    OnInit
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
-import {
-    Router
-} from '@angular/router';
+import { Content } from '../../resources/content/content';
+import { Namespace } from '../../resources/namespaces/namespace';
+import { Repository } from '../../resources/repositories/repository';
 
-import { Repository }       from '../../resources/repositories/repository';
-import { Content }          from '../../resources/content/content';
-import { Namespace }        from '../../resources/namespaces/namespace';
-import { ContentService }   from '../../resources/content/content.service';
-
-import {
-    RepoFormats,
-    RepoFormatsTooltips,
-    RepoFormatsIconClasses
-} from '../../enums/repo-types.enum';
-
-import * as moment          from 'moment';
-
+import { RepoFormats, RepoFormatsIconClasses, RepoFormatsTooltips } from '../../enums/repo-types.enum';
 
 class RepositoryView {
     repoType: RepoFormats;
@@ -51,17 +33,15 @@ export class RepoChangeEvent {
 @Component({
     selector: 'content-detail-repo',
     templateUrl: './repository.component.html',
-    styleUrls: ['./repository.component.less']
+    styleUrls: ['./repository.component.less'],
 })
 export class RepositoryComponent implements OnInit {
+    constructor() {}
 
-    constructor(
-        private contentService: ContentService,
-        private router: Router
-    ) {}
-
-    @Input() repository: Repository;
-    @Input() namespace: Namespace;
+    @Input()
+    repository: Repository;
+    @Input()
+    namespace: Namespace;
 
     mainContent: Content = {} as Content;
     repositoryView: RepositoryView;

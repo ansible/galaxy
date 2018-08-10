@@ -1,35 +1,25 @@
-import {
-    Component,
-    OnInit
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import {
-    ActivatedRoute,
-    Router
-} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import * as moment          from 'moment';
+import * as moment from 'moment';
 
-import { Observable }       from 'rxjs/Observable';
-import { forkJoin }         from 'rxjs/observable/forkJoin';
+import { Observable } from 'rxjs/Observable';
+import { forkJoin } from 'rxjs/observable/forkJoin';
 
 import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
 
-import {
-    ActionConfig,
-    Action
-} from 'patternfly-ng/action';
+import { Action, ActionConfig } from 'patternfly-ng/action';
 
-import { Repository }       from '../resources/repositories/repository';
-import { Content }          from '../resources/content/content';
-import { Namespace }        from '../resources/namespaces/namespace';
-import { PagedResponse }    from '../resources/paged-response';
-import { RepoChangeEvent }  from './repository/repository.component';
-import { ViewTypes }        from '../enums/view-types.enum';
-import { RepoFormats }      from '../enums/repo-types.enum';
-import { ContentTypes }     from '../enums/content-types.enum';
+import { ContentTypes } from '../enums/content-types.enum';
+import { RepoFormats } from '../enums/repo-types.enum';
+import { ViewTypes } from '../enums/view-types.enum';
+import { Content } from '../resources/content/content';
+import { Namespace } from '../resources/namespaces/namespace';
+import { PagedResponse } from '../resources/paged-response';
+import { Repository } from '../resources/repositories/repository';
 
-import { ContentService }   from '../resources/content/content.service';
+import { ContentService } from '../resources/content/content.service';
 
 class ContentTypeCounts {
     apb: number;
@@ -42,15 +32,10 @@ class ContentTypeCounts {
 @Component({
     selector: 'app-content-detail',
     templateUrl: './content-detail.component.html',
-    styleUrls: ['./content-detail.component.less']
+    styleUrls: ['./content-detail.component.less'],
 })
 export class ContentDetailComponent implements OnInit {
-
-    constructor(
-        private router: Router,
-        private route: ActivatedRoute,
-        private contentService: ContentService
-    ) {}
+    constructor(private router: Router, private route: ActivatedRoute, private contentService: ContentService) {}
 
     pageTitle = '';
     pageIcon = '';
@@ -71,7 +56,7 @@ export class ContentDetailComponent implements OnInit {
     hasReadme = false;
     hasMetadata = false;
     metadataFilename = '';
-    showingView: string = ViewTypes.detail;  // Control what's displayed on lower half of page
+    showingView: string = ViewTypes.detail; // Control what's displayed on lower half of page
     metadata: object;
 
     contentCounts: ContentTypeCounts = {
@@ -79,29 +64,32 @@ export class ContentDetailComponent implements OnInit {
         module: 0,
         moduleUtils: 0,
         plugin: 0,
-        role: 0
+        role: 0,
     } as ContentTypeCounts;
 
     ngOnInit() {
         this.actionConfig = {
-            primaryActions: [{
-                id: 'search',
-                title: 'Search',
-                tooltip: 'View the search page'
-            }]
+            primaryActions: [
+                {
+                    id: 'search',
+                    title: 'Search',
+                    tooltip: 'View the search page',
+                },
+            ],
         } as ActionConfig;
 
         this.emptyStateConfig = {
             actions: this.actionConfig,
             iconStyleClass: 'fa fa-frown-o',
-            info: 'Well this is embarrassing. The content you requested could not be found. ' +
-            'It may not exist in the Galaxy search index. Click the Search button below, ' +
-            'to search our index.',
-            title: 'Content Not Found'
+            info:
+                'Well this is embarrassing. The content you requested could not be found. ' +
+                'It may not exist in the Galaxy search index. Click the Search button below, ' +
+                'to search our index.',
+            title: 'Content Not Found',
         } as EmptyStateConfig;
 
         this.route.params.subscribe(params => {
-            this.route.data.subscribe((data) => {
+            this.route.data.subscribe(data => {
                 this.repository = data['repository'];
                 this.namespace = data['namespace'];
                 this.content = data['content'];
@@ -115,15 +103,16 @@ export class ContentDetailComponent implements OnInit {
                 if (req_content_name && data['content'] && data['content'].length) {
                     this.selectedContent = this.findSelectedContent(req_content_name);
                 }
-                if (!this.repository || !this.content ||
-                    (this.repository.format === RepoFormats.multi &&
-                    req_content_name && !this.selectedContent)) {
+                if (
+                    !this.repository ||
+                    !this.content ||
+                    (this.repository.format === RepoFormats.multi && req_content_name && !this.selectedContent)
+                ) {
                     // Requested content from a multicontent repo not found || No content found
                     this.showEmptyState = true;
                     this.pageTitle = '<i class="fa fa-frown-o"></i> Content Not Found';
                     this.pageLoading = false;
                 } else {
-
                     // Append author type to breadcrumb
                     if (this.namespace.is_vendor) {
                         this.pageTitle = 'Vendors;/vendors;';
@@ -142,15 +131,12 @@ export class ContentDetailComponent implements OnInit {
                     }
                     this.repository.last_import = 'NA';
                     this.repository.last_commit = 'NA';
-                    if (this.repository.summary_fields['latest_import'] &&
-                        this.repository.summary_fields['latest_import']['finished']) {
-                        this.repository.last_import =
-                            moment(this.repository.summary_fields['latest_import']['finished']).fromNow();
+                    if (this.repository.summary_fields['latest_import'] && this.repository.summary_fields['latest_import']['finished']) {
+                        this.repository.last_import = moment(this.repository.summary_fields['latest_import']['finished']).fromNow();
                     }
 
                     if (this.repository.commit_created) {
-                        this.repository.last_commit =
-                            moment(this.repository.commit_created).fromNow();
+                        this.repository.last_commit = moment(this.repository.commit_created).fromNow();
                     }
                     if (this.content && this.content.length) {
                         this.repoContent = this.content[0];
@@ -202,7 +188,7 @@ export class ContentDetailComponent implements OnInit {
                     this.metadataFilename = 'container.yml';
                     this.metadata = this.repoContent.metadata['container_meta'];
                 }
-                this.hasReadme = (this.repoContent.readme_html) ? true : false;
+                this.hasReadme = this.repoContent.readme_html ? true : false;
             }
             if (this.repoContent.content_type === RepoFormats.apb) {
                 if (this.repoContent.metadata['apb_metadata']) {
@@ -210,7 +196,7 @@ export class ContentDetailComponent implements OnInit {
                     this.metadataFilename = 'apb.yml';
                     this.metadata = this.repoContent.metadata['apb_metadata'];
                 }
-                this.hasReadme = (this.repoContent.readme_html) ? true : false;
+                this.hasReadme = this.repoContent.readme_html ? true : false;
             }
             if (this.repository.format === RepoFormats.multi) {
                 if (this.repository.readme_html) {
@@ -223,7 +209,7 @@ export class ContentDetailComponent implements OnInit {
                 this.repoContent[key] = this.repoContent.summary_fields[key];
                 let hasKey = 'has' + key[0].toUpperCase() + key.substring(1);
                 hasKey = hasKey.replace(/\_(\w)/, this.toCamel);
-                this.repoContent[hasKey] = (this.repoContent[key] && this.repoContent[key].length) ? true : false;
+                this.repoContent[hasKey] = this.repoContent[key] && this.repoContent[key].length ? true : false;
             });
             if (this.repository.format === RepoFormats.multi) {
                 this.getContentTypeCounts();
@@ -242,15 +228,19 @@ export class ContentDetailComponent implements OnInit {
         for (const content_type in ContentTypes) {
             if (ContentTypes.hasOwnProperty(content_type)) {
                 if (ContentTypes[content_type] === 'plugin') {
-                    queries.push(this.contentService.pagedQuery({
-                        'repository__id': this.repository.id,
-                        'content_type__name__icontains': ContentTypes[content_type]
-                    }));
+                    queries.push(
+                        this.contentService.pagedQuery({
+                            repository__id: this.repository.id,
+                            content_type__name__icontains: ContentTypes[content_type],
+                        }),
+                    );
                 } else {
-                    queries.push(this.contentService.pagedQuery({
-                        'repository__id': this.repository.id,
-                        'content_type__name': ContentTypes[content_type]
-                    }));
+                    queries.push(
+                        this.contentService.pagedQuery({
+                            repository__id: this.repository.id,
+                            content_type__name: ContentTypes[content_type],
+                        }),
+                    );
                 }
             }
         }

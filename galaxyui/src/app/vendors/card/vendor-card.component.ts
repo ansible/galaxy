@@ -1,32 +1,16 @@
-import {
-    Component,
-    Input,
-    OnInit
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
-import {
-    ActivatedRoute,
-    Router
-} from '@angular/router';
+import { Router } from '@angular/router';
 
-import { Namespace }     from '../../resources/namespaces/namespace';
-
-import {
-    ContentTypes,
-    ContentTypesPluralChoices,
-    ContentTypesIconClasses
-} from '../../enums/content-types.enum';
+import { Namespace } from '../../resources/namespaces/namespace';
 
 @Component({
     selector: 'vendor-card',
     templateUrl: './vendor-card.component.html',
-    styleUrls: ['./vendor-card.component.less']
+    styleUrls: ['./vendor-card.component.less'],
 })
 export class VendorCardComponent implements OnInit {
-
-    constructor(
-        private router: Router
-    ) {}
+    constructor(private router: Router) {}
 
     _vendor: Namespace;
 

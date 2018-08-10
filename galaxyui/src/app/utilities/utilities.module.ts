@@ -1,21 +1,13 @@
-import { NgModule }        from '@angular/core';
-import { CommonModule }    from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 
-import { TooltipModule }       from 'ngx-bootstrap/tooltip';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
-import { ClipboardComponent }  from './clipboard/clipboard.component';
-
+import { ClipboardComponent } from './clipboard/clipboard.component';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        TooltipModule
-    ],
-    declarations: [
-        ClipboardComponent
-    ],
-    exports: [
-        ClipboardComponent
-    ]
+    imports: [CommonModule, TooltipModule],
+    declarations: [ClipboardComponent],
+    exports: [ClipboardComponent],
 })
-export class UtilitiesModule { }
+export class UtilitiesModule {}

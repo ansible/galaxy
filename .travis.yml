@@ -28,6 +28,7 @@ script:
 - make dev/waitenv
 - make dev/test
 
+
 # check images running
 - docker ps -a
 - docker images
@@ -37,6 +38,10 @@ script:
 - pushd testing/simple
 - ansible-playbook -i inventory test.yml
 - popd
+
+# Run JavaScript test
+- make dev/jslint
+- make test/prettier
 
 # Check the logs
 - docker ps -a

@@ -1,34 +1,21 @@
-import {
-    Injectable
-} from '@angular/core';
+import { Injectable } from '@angular/core';
 
-import {
-    ActivatedRouteSnapshot,
-    Resolve,
-    Router,
-    RouterStateSnapshot
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
 
-import { Observable }            from 'rxjs/Observable';
-import { ImportsService }        from '../../resources/imports/imports.service';
-import { ImportLatest }          from '../../resources/imports/import-latest';
-import { AuthService }           from '../../auth/auth.service';
-import { PagedResponse }         from '../../resources/paged-response';
+import { Observable } from 'rxjs/Observable';
+import { AuthService } from '../../auth/auth.service';
+import { ImportsService } from '../../resources/imports/imports.service';
+import { PagedResponse } from '../../resources/paged-response';
 
 @Injectable()
 export class ImportListResolver implements Resolve<PagedResponse> {
+    constructor(private importsService: ImportsService, private authService: AuthService) {}
 
-    constructor(
-        private importsService: ImportsService,
-        private router: Router,
-        private authService: AuthService
-    ) {}
-
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<PagedResponse> {
+    resolve(route: ActivatedRouteSnapshot): Observable<PagedResponse> {
         let params = '';
         for (const key in route.queryParams) {
             if (route.queryParams.hasOwnProperty(key)) {
-                const values = (typeof route.queryParams[key] === 'object') ? route.queryParams[key] : [route.queryParams[key]];
+                const values = typeof route.queryParams[key] === 'object' ? route.queryParams[key] : [route.queryParams[key]];
                 values.forEach(value => {
                     if (params !== '') {
                         params += '&';

@@ -1,33 +1,18 @@
-import {
-    Component,
-    OnInit,
-    Input
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
-import { Router }           from '@angular/router';
+import { Router } from '@angular/router';
 
-import { Action }           from 'patternfly-ng/action/action';
-import { ActionConfig }     from 'patternfly-ng/action/action-config';
+import { ActionConfig } from 'patternfly-ng/action/action-config';
 
-import { Repository }       from '../../../resources/repositories/repository';
-
-import {
-    RepoFormats,
-    RepoFormatsTooltips,
-    RepoFormatsIconClasses
-} from '../../../enums/repo-types.enum';
-
+import { Repository } from '../../../resources/repositories/repository';
 
 @Component({
     selector: 'author-detail-actions',
     templateUrl: './detail-actions.component.html',
-    styleUrls: ['./detail-actions.component.less']
+    styleUrls: ['./detail-actions.component.less'],
 })
 export class DetailActionsComponent implements OnInit {
-
-    constructor(
-        private router: Router
-    ) {}
+    constructor(private router: Router) {}
 
     _repository: Repository;
     actionConfig: ActionConfig;
@@ -43,29 +28,33 @@ export class DetailActionsComponent implements OnInit {
 
     ngOnInit() {
         this.actionConfig = {
-            primaryActions: [{
-                id: 'more',
-                title: 'View content',
-                tooltip: 'View content details'
-            }],
-            moreActions: [{
-                id: 'scmView',
-                title: 'View SCM Repository',
-                tooltip: 'Opens the SCM repository in new browser window or tab'
-            }, {
-                disabled: (this._repository.issue_tracker_url) ? true : false,
-                id: 'issueLog',
-                title: 'Visit the Issue Log',
-                tooltip: 'Opens the Issue Log in new browser window or tab'
-            }],
+            primaryActions: [
+                {
+                    id: 'more',
+                    title: 'View content',
+                    tooltip: 'View content details',
+                },
+            ],
+            moreActions: [
+                {
+                    id: 'scmView',
+                    title: 'View SCM Repository',
+                    tooltip: 'Opens the SCM repository in new browser window or tab',
+                },
+                {
+                    disabled: this._repository.issue_tracker_url ? true : false,
+                    id: 'issueLog',
+                    title: 'Visit the Issue Log',
+                    tooltip: 'Opens the Issue Log in new browser window or tab',
+                },
+            ],
         } as ActionConfig;
     }
 
     handleAction($event) {
         switch ($event.id) {
             case 'more':
-                this.router.navigate(['/', this.repository.summary_fields['namespace']['name'],
-                    this.repository.name]);
+                this.router.navigate(['/', this.repository.summary_fields['namespace']['name'], this.repository.name]);
                 break;
             case 'scmView':
                 window.open(this.repository.external_url, '_blank');

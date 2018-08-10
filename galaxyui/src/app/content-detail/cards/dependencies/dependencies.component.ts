@@ -1,21 +1,13 @@
-import {
-    Component,
-    Input,
-    OnInit
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
-import { CardConfig }     from 'patternfly-ng/card/basic-card/card-config';
-import { Content }        from '../../../resources/content/content';
-import { Repository }     from '../../../resources/repositories/repository';
-
+import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
 
 @Component({
     selector: 'card-dependencies',
     templateUrl: './dependencies.component.html',
-    styleUrls: ['./dependencies.component.less']
+    styleUrls: ['./dependencies.component.less'],
 })
 export class CardDependenciesComponent implements OnInit {
-
     constructor() {}
 
     private _dependencies: any[];
@@ -27,7 +19,7 @@ export class CardDependenciesComponent implements OnInit {
             deps.forEach(d => {
                 this._dependencies.push({
                     name: `${d.namespace}.${d.name}`,
-                    url: `/${d.namespace}/${d.name}`
+                    url: `/${d.namespace}/${d.name}`,
                 });
             });
         }
@@ -42,7 +34,7 @@ export class CardDependenciesComponent implements OnInit {
     ngOnInit() {
         this.config = {
             titleBorder: true,
-            topBorder: true
+            topBorder: true,
         } as CardConfig;
     }
 }

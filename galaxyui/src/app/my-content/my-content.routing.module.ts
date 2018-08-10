@@ -1,72 +1,57 @@
-import { NgModule }                 from '@angular/core';
+import { NgModule } from '@angular/core';
 
-import {
-    RouterModule,
-    Routes
-} from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
-import { AuthService }              from '../auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { NamespaceDetailComponent } from './namespace-detail/namespace-detail.component';
 
-import {
-    NamespaceDetailResolver,
-    MeResolver
-}  from './namespace-detail/namespace-detail.resolver.service';
+import { MeResolver, NamespaceDetailResolver } from './namespace-detail/namespace-detail.resolver.service';
 
-import { NamespaceListComponent }   from './namespace-list/namespace-list.component';
-import { NamespaceListResolver }    from './namespace-list/namespace-list-resolver.service';
+import { NamespaceListResolver } from './namespace-list/namespace-list-resolver.service';
+import { NamespaceListComponent } from './namespace-list/namespace-list.component';
 
 const myContentRoutes: Routes = [
     {
-        path: 'my-content',
-        redirectTo: 'my-content/namespaces',
+        path: '',
+        redirectTo: 'namespaces',
         pathMatch: 'full',
-        canActivate: [AuthService]
+        canActivate: [AuthService],
     },
     {
-        path: 'my-content/namespaces/new',
+        path: 'namespaces/new',
         component: NamespaceDetailComponent,
         resolve: {
             me: MeResolver,
             namespace: NamespaceDetailResolver,
         },
         data: {
-            expectedRole: 'isStaff'
+            expectedRole: 'isStaff',
         },
-        canActivate: [AuthService]
+        canActivate: [AuthService],
     },
     {
-        path: 'my-content/namespaces/:id',
+        path: 'namespaces/:id',
         component: NamespaceDetailComponent,
         resolve: {
             me: MeResolver,
             namespace: NamespaceDetailResolver,
         },
-        canActivate: [AuthService]
+        canActivate: [AuthService],
     },
     {
-        path: 'my-content/namespaces',
+        path: 'namespaces',
         component: NamespaceListComponent,
         resolve: {
             me: MeResolver,
-            namespaces: NamespaceListResolver
+            namespaces: NamespaceListResolver,
         },
-        canActivate: [AuthService]
-    }
+        canActivate: [AuthService],
+    },
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(myContentRoutes)
-    ],
-    exports: [
-        RouterModule,
-    ],
-    providers: [
-        NamespaceDetailResolver,
-        NamespaceListResolver,
-        MeResolver
-    ]
+    imports: [RouterModule.forChild(myContentRoutes)],
+    exports: [RouterModule],
+    providers: [NamespaceDetailResolver, NamespaceListResolver, MeResolver],
 })
-export class MyContentRoutingModule {
-}
+export class MyContentRoutingModule {}

@@ -1,18 +1,15 @@
-import {
-    Component,
-    OnInit,
-    Input
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
     selector: 'app-page-loading',
     templateUrl: './page-loading.component.html',
-    styleUrls: ['./page-loading.component.less']
+    styleUrls: ['./page-loading.component.less'],
 })
 export class PageLoadingComponent implements OnInit {
-    @Input() loading: boolean;
+    @Input()
+    loading: boolean;
 
-    constructor() { }
+    constructor() {}
 
     ngOnInit() {}
 }
