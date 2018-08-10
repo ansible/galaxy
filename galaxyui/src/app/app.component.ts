@@ -56,6 +56,14 @@ export class AppComponent implements OnInit {
                     this.notificationService.remove(notice);
                 });
             }
+
+            if (event instanceof NavigationStart) {
+                this.isLoading = true;
+            }
+
+            if (event instanceof NavigationEnd) {
+                this.isLoading = false;
+            }
         });
     }
 
@@ -68,6 +76,7 @@ export class AppComponent implements OnInit {
     redirectUrl: string = null;
     teamMembers: string[];
     pfBody: any;
+    isLoading = true;
 
     ngOnInit(): void {
         // Patternfly embeds everything not related to navigation in a div with
