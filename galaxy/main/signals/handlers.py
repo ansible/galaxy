@@ -71,7 +71,8 @@ def user_logged_in_handler(request, user, **kwargs):
         namespace.owners.add(user)
     defaults['description'] = social.extra_data.get('bio') or name
     defaults['followers'] = social.extra_data.get('followers')
-    defaults['display_name'] = social.extra_data.get('name')
+    defaults['display_name'] = name
+    defaults['avatar_url'] = social.extra_data.get('avatar_url')
     models.ProviderNamespace.objects.get_or_create(
         namespace=namespace, name=username, provider=provider,
         defaults=defaults)
