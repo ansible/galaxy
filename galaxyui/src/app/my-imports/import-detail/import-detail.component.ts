@@ -1,22 +1,40 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    Input
+} from '@angular/core';
 
-import { ImportState } from '../../enums/import-state.enum';
-import { Import } from '../../resources/imports/import';
+import {
+    ImportsService,
+    SaveParams
+} from '../../resources/imports/imports.service';
+
+import { Import }                  from '../../resources/imports/import';
+import { ImportLatest }            from '../../resources/imports/import-latest';
+import { ImportState }             from '../../enums/import-state.enum';
 
 import { RepositoryImportService } from '../../resources/repository-imports/repository-import.service';
+import { RepositoryImport }        from '../../resources/repository-imports/repository-import';
 
-import { NamespaceService } from '../../resources/namespaces/namespace.service';
+import { NamespaceService }        from '../../resources/namespaces/namespace.service';
+import { Namespace }               from '../../resources/namespaces/namespace';
 
-import { AuthService } from '../../auth/auth.service';
+import { AuthService }             from '../../auth/auth.service';
 
-import * as $ from 'jquery';
+import * as $       from 'jquery';
+import * as lodash  from 'lodash';
+
 
 @Component({
-    selector: 'app-import-detail',
-    templateUrl: './import-detail.component.html',
-    styleUrls: ['./import-detail.component.less'],
+  selector: 'app-import-detail',
+  templateUrl: './import-detail.component.html',
+  styleUrls: ['./import-detail.component.less']
 })
 export class ImportDetailComponent implements OnInit, AfterViewInit {
+
     private _importTask: Import;
     private _refreshing: boolean;
     private canImport: boolean;
@@ -30,20 +48,24 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
         this.canImport = false;
 
         if (data) {
-            this.authService.me().subscribe(me => {
-                if (me.staff) {
-                    this.canImport = true;
-                } else {
-                    this.namespaceService.get(data.summary_fields.namespace.id).subscribe(namespace => {
-                        for (const owner of namespace.summary_fields.owners) {
-                            if (me.username === owner.username) {
-                                this.canImport = true;
-                                break;
+            this.authService.me().subscribe(
+                (me) => {
+                    if (me.staff) {
+                        this.canImport = true;
+                    } else {
+                        this.namespaceService.get(data.summary_fields.namespace.id).subscribe(
+                            (namespace) => {
+                                for (const owner of namespace.summary_fields.owners) {
+                                    if (me.username === owner.username) {
+                                        this.canImport = true;
+                                        break;
+                                    }
+                                }
                             }
-                        }
-                    });
+                        );
+                    }
                 }
-            });
+            );
         }
 
         if (this._importTask && this.importTask.id !== data.id) {
@@ -69,15 +91,13 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
         return this._refreshing;
     }
 
-    @Output()
-    startedImport = new EventEmitter<boolean>();
-    @Output()
-    scrollToggled = new EventEmitter<boolean>();
+    @Output() startedImport = new EventEmitter<boolean>();
+    @Output() scrollToggled = new EventEmitter<boolean>();
 
     constructor(
         private repositoryImportService: RepositoryImportService,
         private authService: AuthService,
-        private namespaceService: NamespaceService,
+        private namespaceService: NamespaceService
     ) {}
 
     ngOnInit() {}
@@ -85,10 +105,13 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {}
 
     startImport(): void {
-        this.repositoryImportService.save({ repository_id: this.importTask.summary_fields.repository.id }).subscribe(response => {
-            console.log(`Started import for repository ${this.importTask.summary_fields.repository.id}`);
-            this.startedImport.emit(true);
-        });
+        this.repositoryImportService.save({'repository_id': this.importTask.summary_fields.repository.id})
+            .subscribe(response => {
+                console.log(
+                  `Started import for repository ${this.importTask.summary_fields.repository.id}`
+                );
+                this.startedImport.emit(true);
+            });
     }
 
     affix(): void {

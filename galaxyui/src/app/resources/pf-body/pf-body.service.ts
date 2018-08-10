@@ -2,32 +2,34 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Injectable()
+
 export class BodyCommand {
     propertyName: string;
     propertyValue: number;
 }
 
 export class PFBodyService {
-    private messageSource = new Subject();
-    currentMessage = this.messageSource.asObservable();
 
-    constructor() {}
+  private messageSource = new Subject();
+  currentMessage = this.messageSource.asObservable();
 
-    scrollToTop() {
-        const top = {
-            propertyName: 'scrollTop',
-            propertyValue: 0,
-        } as BodyCommand;
+  constructor() { }
 
-        this.messageSource.next(top);
-    }
+  scrollToTop() {
+    const top = {
+        propertyName: 'scrollTop',
+        propertyValue: 0,
+    } as BodyCommand;
 
-    scrollTo(xCoord: number) {
-        const location = {
-            propertyName: 'scrollTop',
-            propertyValue: xCoord,
-        };
+    this.messageSource.next(top);
+  }
 
-        this.messageSource.next(location);
-    }
+  scrollTo(xCoord: number) {
+      const location = {
+          propertyName: 'scrollTop',
+          propertyValue: xCoord,
+      };
+
+      this.messageSource.next(location);
+  }
 }

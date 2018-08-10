@@ -1,20 +1,26 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    ViewEncapsulation
+} from '@angular/core';
 
-import { NotificationEvent } from 'patternfly-ng';
-import { Notification } from 'patternfly-ng/notification/notification';
-import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
+import { Notification }         from 'patternfly-ng/notification/notification';
+import { NotificationType }     from 'patternfly-ng/notification/notification-type';
+import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
+import { NotificationEvent }    from 'patternfly-ng';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
     selector: 'user-notifications',
     templateUrl: './user-notifications.component.html',
-    styleUrls: ['./user-notifications.component.less'],
+    styleUrls: ['./user-notifications.component.less']
 })
 export class UserNotificationsComponent implements OnInit {
     showClose = true;
     notifications: Notification[];
 
-    constructor(private notificationService: NotificationService) {}
+    constructor(private notificationService: NotificationService) {
+    }
 
     ngOnInit(): void {
         this.notifications = this.notificationService.getNotifications();

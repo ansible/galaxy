@@ -1,25 +1,49 @@
-import { NgModule } from '@angular/core';
+import {
+       NgModule
 
-import { RouterModule, Routes } from '@angular/router';
+} from '@angular/core';
 
-import { NamespaceDetailResolver, NamespaceListResolver, RepositoryResolver } from './authors.resolver.service';
+import {
+    Routes,
+    RouterModule
+} from '@angular/router';
 
-import { AuthorsComponent } from './authors.component';
+import {
+    NamespaceDetailResolver,
+    NamespaceListResolver,
+    RepositoryResolver
+}  from './authors.resolver.service';
 
-const routes: Routes = [
-    {
+import { AuthorsComponent }         from './authors.component';
+import { AuthorDetailComponent }    from './detail/author-detail.component';
+
+
+const routes: Routes = [{
         path: 'community',
         component: AuthorsComponent,
         resolve: {
-            namespaces: NamespaceListResolver,
-        },
-    },
-    // ':namespace/ moved to app-routing.module
-];
+            namespaces: NamespaceListResolver
+        }
+    }, {
+        path: ':namespace',
+        component: AuthorDetailComponent,
+        resolve: {
+            namespace: NamespaceDetailResolver,
+            repositories: RepositoryResolver
+        }
+    }];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule],
-    providers: [NamespaceDetailResolver, NamespaceListResolver, RepositoryResolver],
+    imports: [
+        RouterModule.forChild(routes)
+    ],
+    exports: [
+        RouterModule
+    ],
+    providers: [
+        NamespaceDetailResolver,
+        NamespaceListResolver,
+        RepositoryResolver
+    ]
 })
-export class AuthorsRoutingModule {}
+export class AuthorsRoutingModule { }

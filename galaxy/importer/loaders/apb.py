@@ -33,18 +33,6 @@ class APBMetaParser(object):
     # Tags should contain lowercase letters and digits only
     TAG_REGEXP = re.compile('^[a-z0-9]+$')
 
-    # APB parameters should be in json-schema form
-    PARAM_KEY_MAP = {
-        'maxlength': 'maxLength',
-        'max_length': 'maxLength',
-        'min_length': 'minLength',
-        'multiple_of': 'multipleOf',
-        'exclusive_maximum': 'exclusiveMaximum',
-        'exclusive_minimum': 'exclusiveMinimum',
-        'display_type': 'displayType',
-        'display_group': 'displayGroup'
-    }
-
     def __init__(self, metadata, logger=None):
         self.metadata = metadata
         self.log = logger or base.default_logger
@@ -112,13 +100,9 @@ class APBMetaParser(object):
             raise exc.APBContentLoadError(
                 'Expecting "plans" in metadata to be a list')
 
-        expected_plan_keys = ('description',
-                              'free',
-                              'metadata',
-                              'bindable',
-                              'parameters')
+        expected_plan_keys = ('description', 'free', 'metadata', 'parameters')
         expected_plan_meta_keys = ('displayName', 'longDescription', 'cost')
-        expected_parameter_keys = ('name', 'title', 'type', 'required')
+        expected_parameter_keys = ('name', 'title', 'type')
         idx = 0
         for plan in plans:
             if not isinstance(plan, dict):
@@ -153,13 +137,6 @@ class APBMetaParser(object):
                         expected_parameter_keys,
                         'plans[{0}].parameters[{1}]'.format(idx, pidx),
                         params)
-                    for param_key in params.keys():
-                        if param_key in self.PARAM_KEY_MAP:
-                            new_key = self.PARAM_KEY_MAP[param_key]
-                            self.metadata[fieldname][idx]['parameters'][pidx][
-                                new_key] = self.metadata[fieldname][idx][
-                                    'parameters'][pidx].pop(param_key)
-
                     pidx += 1
             idx += 1
 
@@ -190,9 +167,6 @@ class APBMetaParser(object):
             return False
         return True
 
-    def parse_metadata(self):
-        return self.metadata
-
     def parse_tags(self):
         tags = []
         apb_tags = self.metadata.get('tags', [])
@@ -214,11 +188,11 @@ class APBLoader(base.BaseLoader):
 
     def load(self):
         self.log.info('Loading metadata file: {0}'.format(self.metadata_file))
-        meta_parser = APBMetaParser(self._load_metadata(), logger=self.log)
+        metadata = self._load_metadata()
+        meta_parser = APBMetaParser(metadata, logger=self.log)
         name = meta_parser.parse_name()
         description = meta_parser.parse_description()
         meta_parser.check_data()
-        metadata = meta_parser.parse_metadata()
         data = {'tags': meta_parser.parse_tags()}
         readme = self._get_readme()
 

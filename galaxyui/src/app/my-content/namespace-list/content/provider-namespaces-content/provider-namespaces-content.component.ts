@@ -1,18 +1,20 @@
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 
-import { Namespace } from '../../../../resources/namespaces/namespace';
+import { Namespace }                                   from '../../../../resources/namespaces/namespace';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
     selector: 'provider-namespaces-content',
     templateUrl: './provider-namespaces-content.component.html',
-    styleUrls: ['./provider-namespaces-content.component.less'],
+    styleUrls: ['./provider-namespaces-content.component.less']
 })
 export class ProviderNamespacesContentComponent implements OnInit {
-    @Input()
-    namespace: Namespace;
+    @Input() namespace: Namespace;
 
-    constructor() {}
+    constructor() {
+    }
 
-    ngOnInit() {}
+    ngOnInit() {
+    }
+
 }

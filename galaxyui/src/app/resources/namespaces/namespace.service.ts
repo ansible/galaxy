@@ -10,52 +10,60 @@ import { Namespace } from './namespace';
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
 import { PagedResponse } from '../paged-response';
 
+
 const httpOptions = {
     headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-    }),
+        'Content-Type': 'application/json'
+    })
 };
+
 
 @Injectable()
 export class NamespaceService {
     private url = '/api/v1/namespaces';
 
-    constructor(private http: HttpClient, private notificationService: NotificationService) {}
+    constructor(private http: HttpClient,
+        private notificationService: NotificationService) {
+    }
 
     encounteredErrors = false;
 
     query(params?: any): Observable<Namespace[]> {
-        return this.http.get<PagedResponse>(this.url + '/', { params: params }).pipe(
-            map(response => response.results),
-            tap(_ => this.log('fetched namespaces')),
-            catchError(this.handleError('Query', [])),
-        );
+        return this.http.get<PagedResponse>(this.url + '/', { params: params })
+            .pipe(
+                map(response => response.results),
+                tap(_ => this.log('fetched namespaces')),
+                catchError(this.handleError('Query', []))
+            );
     }
 
     pagedQuery(params: any): Observable<PagedResponse> {
         if (params && typeof params === 'object') {
-            return this.http.get<PagedResponse>(this.url + '/', { params: params }).pipe(
-                tap(_ => this.log('fetched paged content')),
-                catchError(this.handleError('Query', {} as PagedResponse)),
-            );
+            return this.http.get<PagedResponse>(this.url + '/', { params: params })
+                .pipe(
+                    tap(_ => this.log('fetched paged content')),
+                    catchError(this.handleError('Query', {} as PagedResponse))
+                );
         }
         if (params && typeof params === 'string') {
-            return this.http.get<PagedResponse>(this.url + '/' + params).pipe(
-                tap(_ => this.log('fetched paged content')),
-                catchError(this.handleError('Query', {} as PagedResponse)),
-            );
+            return this.http.get<PagedResponse>(this.url + '/' + params)
+                .pipe(
+                    tap(_ => this.log('fetched paged content')),
+                    catchError(this.handleError('Query', {} as PagedResponse))
+                );
         }
-        return this.http.get<PagedResponse>(this.url + '/').pipe(
-            tap(_ => this.log('fetched paged content')),
-            catchError(this.handleError('Query', {} as PagedResponse)),
-        );
+        return this.http.get<PagedResponse>(this.url + '/')
+            .pipe(
+                tap(_ => this.log('fetched paged content')),
+                catchError(this.handleError('Query', {} as PagedResponse))
+            );
     }
 
     get(id: number): Observable<Namespace> {
         const url = `${this.url}/${id}/`;
         return this.http.get<Namespace>(url).pipe(
             tap(_ => this.log(`fetched namespace id=${id}`)),
-            catchError(this.handleError<Namespace>(`Get id=${id}`)),
+            catchError(this.handleError<Namespace>(`Get id=${id}`))
         );
     }
 
@@ -68,17 +76,17 @@ export class NamespaceService {
         }
         return httpResult.pipe(
             tap((newNamespace: Namespace) => this.log(`Saved namespace w/ id=${newNamespace.id}`)),
-            catchError(this.handleError<Namespace>('Save', namespace)),
+            catchError(this.handleError<Namespace>('Save', namespace))
         );
     }
 
-    delete(namespace: Namespace | number): Observable<any> {
+    delete (namespace: Namespace | number): Observable<any> {
         const id = typeof namespace === 'number' ? namespace : namespace.id;
         const url = `${this.url}/${id}`;
 
         return this.http.delete<any>(url, httpOptions).pipe(
             tap(_ => this.log(`deleted namespace id=${id}`)),
-            catchError(this.handleError<any>('Delete')),
+            catchError(this.handleError<any>('Delete'))
         );
     }
 
@@ -87,7 +95,8 @@ export class NamespaceService {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} namespace error: ${error.message}`);
-            if (typeof error === 'object' && 'error' in error && typeof error['error'] === 'object' && result !== undefined) {
+            if (typeof error === 'object' && 'error' in error && typeof error['error'] === 'object' &&
+                result !== undefined) {
                 // Unpack error messages, sending each to the notification service
                 for (const fld in error['error']) {
                     if (error['error'].hasOwnProperty(fld)) {

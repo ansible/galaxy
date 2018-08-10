@@ -1,29 +1,21 @@
 {
-  "extends": [
-    "tslint:recommended"
-  ],
   "rulesDirectory": [
     "node_modules/codelyzer"
   ],
   "rules": {
-    "align": false,
-    "array-type": false,
-    "arrow-parens": false,
-    "ban-types": false,
-    "jsdoc-format": false,
-    "max-classes-per-file": false,
-    "object-literal-key-quotes": false,
-    "object-literal-shorthand": false,
-    "trailing-comma": false,
+    "arrow-return-shorthand": true,
+    "callable-types": true,
     "class-name": true,
-    "no-unused-variable": true,
     "comment-format": [
       true,
       "check-space"
     ],
+    "curly": true,
     "deprecation": {
       "severity": "warn"
     },
+    "eofline": true,
+    "forin": true,
     "import-blacklist": [
       true,
       "rxjs/Rx"
@@ -34,6 +26,8 @@
       "spaces",
       4
     ],
+    "interface-over-type-literal": true,
+    "label-position": true,
     "max-line-length": [
       true,
       140
@@ -50,6 +44,8 @@
         ]
       }
     ],
+    "no-arg": true,
+    "no-bitwise": true,
     "no-console": [
       true,
       "debug",
@@ -58,15 +54,27 @@
       "timeEnd",
       "trace"
     ],
+    "no-construct": true,
+    "no-debugger": true,
+    "no-duplicate-super": true,
     "no-empty": false,
+    "no-empty-interface": true,
+    "no-eval": true,
     "no-inferrable-types": [
       true,
       "ignore-params"
     ],
+    "no-misused-new": true,
     "no-non-null-assertion": true,
+    "no-shadowed-variable": true,
     "no-string-literal": false,
+    "no-string-throw": true,
     "no-switch-case-fall-through": true,
+    "no-trailing-whitespace": true,
+    "no-unnecessary-initializer": true,
+    "no-unused-expression": true,
     "no-use-before-declare": true,
+    "no-var-keyword": true,
     "object-literal-sort-keys": false,
     "one-line": [
       true,
@@ -75,10 +83,12 @@
       "check-else",
       "check-whitespace"
     ],
+    "prefer-const": true,
     "quotemark": [
       true,
       "single"
     ],
+    "radix": true,
     "semicolon": [
       true,
       "always"
@@ -97,6 +107,7 @@
         "variable-declaration": "nospace"
       }
     ],
+    "unified-signatures": true,
     "variable-name": false,
     "whitespace": [
       true,

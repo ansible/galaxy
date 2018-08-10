@@ -430,26 +430,6 @@ To run lint checks against JavaScript/TypeScript sources, execute:
 
     $ make dev/jslint
 
-Formatting your code
-^^^^^^^^^^^^^^^^^^^^
-
-We use prettier to enforce code formatting for all of our TypeScript and less files.
-To automatically format your Angular code run:
-
-.. code-block:: console
-
-    $ make dev/prettier
-
-Unformatted code will cause the travis build to fail when you push your changes to
-GitHub.
-
-It's recommended that you set up prettier on your editor if you're making lots of
-changes to anything in ``galaxyui/``. Prettier is supported by most major editors
-and you can find more `information about that here <https://prettier.io/docs/en/editors.html>`_.
-
-Our prettier configuration can be found at ``galaxyui/.prettierrc.yaml``. Please
-use it when setting up your editor.
-
 Testing your code
 ^^^^^^^^^^^^^^^^^
 

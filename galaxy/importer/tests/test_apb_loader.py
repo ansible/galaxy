@@ -327,16 +327,6 @@ class TestAPBMetaParser(unittest.TestCase):
         msg = 'Missing "version" field in metadata.'
         assert msg in excinfo.value.message
 
-    def test_param_keys(self):
-        parser = apb_loader.APBMetaParser(self.data, self.log)
-        parser.check_data()
-        metadata = parser.parse_metadata()
-        assert 'displayGroup' in metadata['plans'][0]['parameters'][0]
-        assert 'displayType' in metadata['plans'][0]['parameters'][1]
-        assert 'displayGroup' in metadata['plans'][0]['parameters'][1]
-        assert 'minLength' in metadata['plans'][0]['parameters'][1]
-        assert 'maxLength' in metadata['plans'][0]['parameters'][1]
-
     def test_version_format(self):
         self.data['version'] = 'foo'
         parser = apb_loader.APBMetaParser(self.data, self.log)

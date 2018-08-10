@@ -1,19 +1,35 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    TemplateRef,
+    ViewEncapsulation
+} from '@angular/core';
 
-import { Router } from '@angular/router';
+import {
+    ActivatedRoute,
+    Router
+} from '@angular/router';
 
-import { EmptyStateConfig } from 'patternfly-ng/empty-state';
+import {
+    EmptyStateConfig
+} from 'patternfly-ng/empty-state';
 
-import { Action, ActionConfig } from 'patternfly-ng/action';
+import {
+    ActionConfig,
+    Action
+} from 'patternfly-ng/action';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
     selector: 'app-access-denied',
     templateUrl: './access-denied.component.html',
-    styleUrls: ['./access-denied.component.less'],
+    styleUrls: ['./access-denied.component.less']
 })
 export class AccessDeniedComponent implements OnInit {
-    constructor(private router: Router) {}
+
+    constructor(
+        private router: Router
+    ) {}
 
     pageTitle = 'Access Denied';
     pageIcon = 'fa fa-exclamation-triangle';
@@ -22,22 +38,19 @@ export class AccessDeniedComponent implements OnInit {
 
     ngOnInit(): void {
         this.actionConfig = {
-            primaryActions: [
-                {
-                    id: 'home',
-                    title: 'Home',
-                    tooltip: 'View the home page',
-                },
-            ],
+            primaryActions: [{
+                id: 'home',
+                title: 'Home',
+                tooltip: 'View the home page'
+            }]
         } as ActionConfig;
 
         this.emptyStateConfig = {
             actions: this.actionConfig,
             iconStyleClass: 'fa fa-frown-o',
-            info:
-                'You do not have access to the requested page. Choose one of the navigation options on the left, ' +
+            info: 'You do not have access to the requested page. Choose one of the navigation options on the left, ' +
                 'or click the Home button below, to visit the home page',
-            title: 'Access Denied',
+            title: 'Access Denied'
         } as EmptyStateConfig;
     }
 

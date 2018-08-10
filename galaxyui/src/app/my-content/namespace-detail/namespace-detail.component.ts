@@ -1,24 +1,34 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnInit
+} from '@angular/core';
 
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { cloneDeep } from 'lodash';
 
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    Validators
+} from '@angular/forms';
 
-import { FilterConfig } from 'patternfly-ng/filter/filter-config';
-import { FilterEvent } from 'patternfly-ng/filter/filter-event';
-import { FilterField } from 'patternfly-ng/filter/filter-field';
-import { FilterType } from 'patternfly-ng/filter/filter-type';
+import { FilterConfig }          from 'patternfly-ng/filter/filter-config';
+import { FilterEvent }           from 'patternfly-ng/filter/filter-event';
+import { FilterField }           from 'patternfly-ng/filter/filter-field';
+import { FilterType }            from 'patternfly-ng/filter/filter-type';
+import { FilterComponent }       from 'patternfly-ng/filter/filter.component';
 
-import { IMe } from '../../auth/auth.service';
-import { Namespace } from '../../resources/namespaces/namespace';
-import { NamespaceService } from '../../resources/namespaces/namespace.service';
-import { ProviderNamespace } from '../../resources/provider-namespaces/provider-namespace';
-import { ProviderSource } from '../../resources/provider-namespaces/provider-source';
+import { Me }                    from '../../auth/auth.service';
+import { Namespace }             from '../../resources/namespaces/namespace';
+import { NamespaceService }      from '../../resources/namespaces/namespace.service';
+import { UserService }           from '../../resources/users/user.service';
+import { User }                  from '../../resources/users/user';
+import { ProviderNamespace }     from '../../resources/provider-namespaces/provider-namespace';
+import { ProviderSource }        from '../../resources/provider-namespaces/provider-source';
 import { ProviderSourceService } from '../../resources/provider-namespaces/provider-source.service';
-import { User } from '../../resources/users/user';
-import { UserService } from '../../resources/users/user.service';
 
 class Owner {
     username: string;
@@ -45,9 +55,10 @@ class Source {
 @Component({
     selector: 'app-namespace-detail',
     templateUrl: './namespace-detail.component.html',
-    styleUrls: ['./namespace-detail.component.less'],
+    styleUrls: ['./namespace-detail.component.less']
 })
 export class NamespaceDetailComponent implements OnInit {
+
     @Input()
     set namespace(data: Namespace) {
         this._namespace = data;
@@ -58,11 +69,12 @@ export class NamespaceDetailComponent implements OnInit {
     }
 
     _namespace: Namespace;
-    me: IMe;
+    me: Me;
 
     pageTitle = 'My Content;/my-content;Add Namespace';
     pageIcon = 'fa fa-list';
     pageLoading = true;
+
 
     namespaceForm: FormGroup;
     namespaceFilterConfig: FilterConfig;
@@ -82,64 +94,64 @@ export class NamespaceDetailComponent implements OnInit {
         private formBuilder: FormBuilder,
         private namespaceService: NamespaceService,
         private userService: UserService,
-        private providerSourceService: ProviderSourceService,
+        private providerSourceService: ProviderSourceService
     ) {}
 
     ngOnInit() {
-        this.route.data.subscribe(data => {
-            this.me = data['me'];
-            this.namespace = new Namespace();
-            this.pageLoading = false;
-            if (data['namespace']) {
-                this.namespace = data['namespace'];
-                if (this.namespace && this.namespace['summary_fields']) {
-                    this.selectedUsers = this.namespace.summary_fields['owners'] as Owner[];
-                    this.selectedNamespaces = this.namespace.summary_fields['provider_namespaces'] as Source[];
-                    this.pageTitle = 'My Content;/my-content;Edit Namespace';
-                } else {
-                    // Requested namespace not found
-                    this.router.navigate(['/not-found']);
+        this.route.data
+            .subscribe(data => {
+                this.me = data['me'];
+                this.namespace = new Namespace();
+                this.pageLoading = false;
+                if (data['namespace']) {
+                    this.namespace = data['namespace'];
+                    if (this.namespace && this.namespace['summary_fields']) {
+                        this.selectedUsers = this.namespace.summary_fields['owners'] as Owner[];
+                        this.selectedNamespaces = this.namespace.summary_fields['provider_namespaces'] as Source[];
+                        this.pageTitle = 'My Content;/my-content;Edit Namespace';
+                    } else {
+                        // Requested namespace not found
+                        this.router.navigate(['/not-found']);
+                    }
                 }
-            }
-            this.createForm();
-            this.getUsers();
-            this.getProviderSources();
-        });
+                this.createForm();
+                this.getUsers();
+                this.getProviderSources();
+            });
 
         this.namespaceFilterConfig = {
-            fields: [
-                {
-                    id: 'name',
-                    title: 'Name',
-                    placeholder: 'Filter by Name',
-                    type: FilterType.TEXT,
-                },
-            ] as FilterField[],
+            fields: [{
+                id: 'name',
+                title: 'Name',
+                placeholder: 'Filter by Name',
+                type: FilterType.TEXT
+            }] as FilterField[],
             resultsCount: 0,
-            appliedFilters: [],
+            appliedFilters: []
         } as FilterConfig;
 
         this.userFilterConfig = {
-            fields: [
-                {
-                    id: 'name',
-                    title: 'Name',
-                    placeholder: 'Filter by Name',
-                    type: FilterType.TEXT,
-                },
-            ] as FilterField[],
+            fields: [{
+                id: 'name',
+                title: 'Name',
+                placeholder: 'Filter by Name',
+                type: FilterType.TEXT
+            }] as FilterField[],
             resultsCount: 0,
-            appliedFilters: [],
+            appliedFilters: []
         } as FilterConfig;
     }
 
     saveNamespace($event) {
         const namespace: Namespace = this.prepareSaveNamespace();
-        this.namespaceService.save(namespace).subscribe(result => {
-            if (!this.namespaceService.encounteredErrors) {
-                this.router.navigate(['/my-content']);
-            }
-        });
+        this.namespaceService.save(namespace)
+            .subscribe(
+                result => {
+                    if (!this.namespaceService.encounteredErrors) {
+                        this.router.navigate(['/my-content']);
+                    }
+                }
+            );
     }
 
     toggleUser(id: number): void {
@@ -247,6 +259,7 @@ export class NamespaceDetailComponent implements OnInit {
         }
     }
 
+
     // private
 
     private createForm() {
@@ -258,7 +271,7 @@ export class NamespaceDetailComponent implements OnInit {
             avatar_url: [this.namespace.avatar_url],
             email: [this.namespace.email],
             html_url: [this.namespace.html_url],
-            namespaceType: this.namespace.is_vendor ? ['vendor'] : ['community'],
+            namespaceType: (this.namespace.is_vendor) ? ['vendor'] : ['community']
         });
         if (!this.me.staff) {
             this.namespaceForm.controls['namespaceType'].disable();
@@ -268,20 +281,26 @@ export class NamespaceDetailComponent implements OnInit {
 
     private getUsers(params?: any): void {
         this.usersLoading = true;
-        this.userService.query(params).subscribe(users => {
-            this.users = this.prepUsersForList(users);
-            this.userFilterConfig.resultsCount = this.users.length;
-            this.usersLoading = false;
-        });
+        this.userService.query(params)
+            .subscribe(
+                users => {
+                    this.users = this.prepUsersForList(users);
+                    this.userFilterConfig.resultsCount = this.users.length;
+                    this.usersLoading = false;
+                }
+            );
     }
 
     private getProviderSources(): void {
         this.namespacesLoading = true;
-        this.providerSourceService.query().subscribe(providerSources => {
-            this.providerSources = this.prepProviderSourcesForList(providerSources);
-            this.providerSourcesFiltered = this.providerSources;
-            this.namespacesLoading = false;
-        });
+        this.providerSourceService.query()
+            .subscribe(
+                providerSources => {
+                    this.providerSources = this.prepProviderSourcesForList(providerSources);
+                    this.providerSourcesFiltered = this.providerSources;
+                    this.namespacesLoading = false;
+                }
+            );
     }
 
     private prepUsersForList(users: User[]): User[] {
@@ -331,7 +350,7 @@ export class NamespaceDetailComponent implements OnInit {
         ns.email = formModel.email as string;
         ns.html_url = formModel.html_url as string;
         ns.active = true;
-        ns.is_vendor = formModel.namespaceType === 'vendor' ? true : false;
+        ns.is_vendor = (formModel.namespaceType === 'vendor') ? true : false;
 
         const owners: User[] = [];
         const pns: ProviderNamespace[] = [];

@@ -3,5 +3,5 @@ export class ApiRoot {
     current_version: string;
     server_version: string;
     version_name: string;
-    team_members: string[];
+    team_members: string [];
 }

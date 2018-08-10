@@ -1,15 +1,23 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnInit,
+    AfterViewInit
+} from '@angular/core';
 
-import { Router } from '@angular/router';
+import {
+    Router
+} from '@angular/router';
 
 import { Namespace } from '../../resources/namespaces/namespace';
 
 @Component({
     selector: 'carousel-component',
     templateUrl: './carousel.component.html',
-    styleUrls: ['./carousel.component.less'],
+    styleUrls: ['./carousel.component.less']
 })
 export class CarouselComponent implements OnInit {
+
     @Input()
     set vendors(data: Namespace[]) {
         this._vendors = JSON.parse(JSON.stringify(data));
@@ -31,9 +39,11 @@ export class CarouselComponent implements OnInit {
 
     _vendors: Namespace[] = [];
 
-    constructor(private router: Router) {}
+    constructor(
+        private router: Router
+    ) { }
 
-    ngOnInit() {}
+    ngOnInit() { }
 
     handleLeftClick() {
         document.getElementById('slider-inner').scrollLeft += 260;
@@ -45,8 +55,8 @@ export class CarouselComponent implements OnInit {
 
     handleVendorClick(vendor: Namespace) {
         const params = {
-            vendor: 'true',
-            namespaces: vendor.name,
+            'vendor': 'true',
+            'namespaces': vendor.name
         };
         this.router.navigate(['/', 'search'], { queryParams: params });
     }

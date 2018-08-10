@@ -1,24 +1,37 @@
-import { NgModule } from '@angular/core';
+import {
+       NgModule
 
-import { RouterModule, Routes } from '@angular/router';
+} from '@angular/core';
 
-import { VendorListResolver } from './vendors.resolver.service';
+import {
+    Routes,
+    RouterModule
+} from '@angular/router';
 
-import { VendorsComponent } from './vendors.component';
+import {
+    VendorListResolver
+}  from './vendors.resolver.service';
 
-const routes: Routes = [
-    {
-        path: 'partners',
-        component: VendorsComponent,
-        resolve: {
-            vendors: VendorListResolver,
-        },
-    },
-];
+import { VendorsComponent }         from './vendors.component';
+
+
+const routes: Routes = [{
+    path: 'partners',
+    component: VendorsComponent,
+    resolve: {
+        vendors: VendorListResolver
+    }
+}];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule],
-    providers: [VendorListResolver],
+    imports: [
+        RouterModule.forChild(routes)
+    ],
+    exports: [
+        RouterModule
+    ],
+    providers: [
+        VendorListResolver
+    ]
 })
-export class VendorsRoutingModule {}
+export class VendorsRoutingModule { }

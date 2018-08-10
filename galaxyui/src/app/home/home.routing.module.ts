@@ -1,10 +1,20 @@
-import { NgModule } from '@angular/core';
+import {
+    NgModule
+} from '@angular/core';
 
-import { RouterModule, Routes } from '@angular/router';
+import {
+    RouterModule,
+    Routes
+} from '@angular/router';
 
-import { HomeComponent } from './home.component';
+import {
+    HomeComponent
+} from './home.component';
 
-import { ContentBlockResolver, VendorListResolver } from './home.resolver.service';
+import {
+    VendorListResolver,
+    ContentBlockResolver
+} from './home.resolver.service';
 
 const homeRoutes: Routes = [
     {
@@ -12,14 +22,21 @@ const homeRoutes: Routes = [
         component: HomeComponent,
         resolve: {
             vendors: VendorListResolver,
-            contentBlocks: ContentBlockResolver,
-        },
-    },
+            contentBlocks: ContentBlockResolver
+        }
+    }
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(homeRoutes)],
-    exports: [RouterModule],
-    providers: [VendorListResolver, ContentBlockResolver],
+    imports: [
+        RouterModule.forChild(homeRoutes)
+    ],
+    exports: [
+        RouterModule,
+    ],
+    providers: [
+        VendorListResolver,
+        ContentBlockResolver
+    ]
 })
-export class HomeRoutingModule {}
+export class HomeRoutingModule { }

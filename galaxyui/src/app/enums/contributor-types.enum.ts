@@ -1,9 +1,9 @@
 export enum ContributorTypes {
     vendor = 'partner',
-    community = 'community',
+    community = 'community'
 }
 
 export enum ContributorTypesIconClasses {
     vendor = 'fa fa-star',
-    community = 'fa fa-users',
+    community = 'fa fa-users'
 }

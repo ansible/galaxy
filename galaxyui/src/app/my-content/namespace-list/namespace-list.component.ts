@@ -1,41 +1,54 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    TemplateRef,
+    ViewEncapsulation
+} from '@angular/core';
 
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+    ActivatedRoute,
+    Router
+} from '@angular/router';
 
-import { cloneDeep } from 'lodash';
+import { cloneDeep }    from 'lodash';
 
+import { Action }       from 'patternfly-ng/action/action';
 import { ActionConfig } from 'patternfly-ng/action/action-config';
-import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
+import { ListEvent }    from 'patternfly-ng/list/list-event';
+import { ListConfig }   from 'patternfly-ng/list/basic-list/list-config';
 
-import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
-import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
+import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
+import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
 
-import { BsModalRef, BsModalService } from 'ngx-bootstrap';
-import { FilterConfig } from 'patternfly-ng/filter/filter-config';
-import { FilterField } from 'patternfly-ng/filter/filter-field';
-import { FilterType } from 'patternfly-ng/filter/filter-type';
-import { SortConfig } from 'patternfly-ng/sort/sort-config';
-import { SortEvent } from 'patternfly-ng/sort/sort-event';
-import { SortField } from 'patternfly-ng/sort/sort-field';
-import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
-import { ToolbarView } from 'patternfly-ng/toolbar/toolbar-view';
-import { IMe } from '../../auth/auth.service';
-import { AuthService } from '../../auth/auth.service';
-import { Namespace } from '../../resources/namespaces/namespace';
-import { NamespaceService } from '../../resources/namespaces/namespace.service';
-import { PagedResponse } from '../../resources/paged-response';
+import { AuthService }                 from '../../auth/auth.service';
+import { Namespace }                   from '../../resources/namespaces/namespace';
+import { NamespaceService }            from '../../resources/namespaces/namespace.service';
+import { BsModalService, BsModalRef }  from 'ngx-bootstrap';
 import { AddRepositoryModalComponent } from '../add-repository-modal/add-repository-modal.component';
+import { Me }                          from '../../auth/auth.service';
+import { FilterConfig }                from 'patternfly-ng/filter/filter-config';
+import { ToolbarConfig }               from 'patternfly-ng/toolbar/toolbar-config';
+import { FilterType }                  from 'patternfly-ng/filter/filter-type';
+import { SortConfig }                  from 'patternfly-ng/sort/sort-config';
+import { FilterField }                 from 'patternfly-ng/filter/filter-field';
+import { SortField }                   from 'patternfly-ng/sort/sort-field';
+import { ToolbarView }                 from 'patternfly-ng/toolbar/toolbar-view';
+import { SortEvent }                   from 'patternfly-ng/sort/sort-event';
+import { Filter }                      from 'patternfly-ng/filter/filter';
+import { FilterEvent }                 from 'patternfly-ng/filter/filter-event';
+import { PagedResponse }               from '../../resources/paged-response';
+
 
 @Component({
     encapsulation: ViewEncapsulation.None,
     selector: 'namespace-list',
     templateUrl: './namespace-list.component.html',
-    styleUrls: ['./namespace-list.component.less'],
+    styleUrls: ['./namespace-list.component.less']
 })
 export class NamespaceListComponent implements OnInit {
     items: Namespace[] = [];
     namespaces: Namespace[] = [];
-    me: IMe;
+    me: Me;
 
     pageTitle = 'My Content';
     pageIcon = 'fa fa-list';
@@ -67,7 +80,7 @@ export class NamespaceListComponent implements OnInit {
         private router: Router,
         private modalService: BsModalService,
         private namespaceService: NamespaceService,
-        private authService: AuthService,
+        private authService: AuthService
     ) {
         this.modalService.onHidden.subscribe(_ => {
             if (this.bsModalRef && this.bsModalRef.content.repositoriesAdded) {
@@ -88,17 +101,17 @@ export class NamespaceListComponent implements OnInit {
                     id: 'name',
                     title: 'Name',
                     placeholder: 'Filter by Name...',
-                    type: FilterType.TEXT,
+                    type: FilterType.TEXT
                 },
                 {
                     id: 'description',
                     title: 'Description',
                     placeholder: 'Filter by Description...',
-                    type: FilterType.TEXT,
-                },
+                    type: FilterType.TEXT
+                }
             ] as FilterField[],
             resultsCount: this.items.length,
-            appliedFilters: [],
+            appliedFilters: []
         } as FilterConfig;
 
         this.sortConfig = {
@@ -106,27 +119,27 @@ export class NamespaceListComponent implements OnInit {
                 {
                     id: 'name',
                     title: 'Name',
-                    sortType: 'alpha',
+                    sortType: 'alpha'
                 },
                 {
                     id: 'description',
                     title: 'Description',
-                    sortType: 'alpha',
-                },
+                    sortType: 'alpha'
+                }
             ],
-            isAscending: this.isAscendingSort,
+            isAscending: this.isAscendingSort
         } as SortConfig;
 
         this.toolbarActionConfig = {
             primaryActions: [],
-            moreActions: [],
+            moreActions: []
         } as ActionConfig;
 
         this.toolbarConfig = {
             actionConfig: this.toolbarActionConfig,
             filterConfig: this.filterConfig,
             sortConfig: this.sortConfig,
-            views: [],
+            views: []
         } as ToolbarConfig;
 
         this.listConfig = {
@@ -135,23 +148,24 @@ export class NamespaceListComponent implements OnInit {
             selectItems: false,
             selectionMatchProp: 'name',
             showCheckbox: false,
-            useExpandItems: true,
+            useExpandItems: true
         } as ListConfig;
 
         this.paginationConfig = {
             pageSize: 10,
             pageNumber: 1,
-            totalItems: 0,
+            totalItems: 0
         } as PaginationConfig;
 
-        this.route.data.subscribe(data => {
-            const results = data['namespaces'] as PagedResponse;
-            this.me = data['me'];
-            this.items = this.prepForList(results.results as Namespace[]);
-            this.filterConfig.resultsCount = results.count;
-            this.paginationConfig.totalItems = results.count;
-            this.pageLoading = false;
-        });
+        this.route.data
+            .subscribe(data => {
+                const results = data['namespaces'] as PagedResponse;
+                this.me = data['me'];
+                this.items = this.prepForList(results.results as Namespace[]);
+                this.filterConfig.resultsCount = results.count;
+                this.paginationConfig.totalItems = results.count;
+                this.pageLoading = false;
+            });
     }
 
     handleListAction($event: any): void {
@@ -206,7 +220,7 @@ export class NamespaceListComponent implements OnInit {
     // View
 
     viewSelected(currentView: ToolbarView): void {
-        this.sortConfig.visible = currentView.id === 'tableView' ? false : true;
+        this.sortConfig.visible = (currentView.id === 'tableView' ? false : true);
     }
 
     handlePageSizeChange($event: PaginationEvent) {
@@ -236,20 +250,15 @@ export class NamespaceListComponent implements OnInit {
 
     private addContent(namespace: Namespace) {
         const initialState = {
-            namespace: namespace,
+            namespace: namespace
         };
-        this.bsModalRef = this.modalService.show(AddRepositoryModalComponent, {
-            initialState: initialState,
-            keyboard: true,
-            animated: true,
-        });
+        this.bsModalRef = this.modalService.show(AddRepositoryModalComponent, {initialState: initialState, keyboard: true, animated: true});
     }
 
     private enableDisableNamespace(namespace: Namespace) {
         namespace.active = !namespace.active;
-        this.namespaceService.save(namespace).subscribe(_ => {
-            this.searchNamespaces();
-        });
+        this.namespaceService.save(namespace)
+            .subscribe(_ => { this.searchNamespaces(); });
     }
 
     private searchNamespaces() {

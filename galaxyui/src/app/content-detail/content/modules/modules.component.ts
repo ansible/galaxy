@@ -1,34 +1,45 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnInit
+} from '@angular/core';
 
-import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
+import { EmptyStateConfig }  from 'patternfly-ng/empty-state/empty-state-config';
 
-import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
+import { ListEvent }         from 'patternfly-ng/list/list-event';
+import { ListConfig }        from 'patternfly-ng/list/basic-list/list-config';
 
-import { Content } from '../../../resources/content/content';
-import { ContentService } from '../../../resources/content/content.service';
-import { Repository } from '../../../resources/repositories/repository';
+import { Content }           from '../../../resources/content/content';
+import { ContentService }    from '../../../resources/content/content.service';
+import { Repository }        from '../../../resources/repositories/repository';
+import { PagedResponse }     from '../../../resources/paged-response';
 
-import { ContentTypes } from '../../../enums/content-types.enum';
+import { ContentTypes }      from '../../../enums/content-types.enum';
 
-import { Filter } from 'patternfly-ng/filter/filter';
-import { FilterConfig } from 'patternfly-ng/filter/filter-config';
-import { FilterEvent } from 'patternfly-ng/filter/filter-event';
-import { FilterField } from 'patternfly-ng/filter/filter-field';
-import { FilterType } from 'patternfly-ng/filter/filter-type';
+import { FilterConfig }      from 'patternfly-ng/filter/filter-config';
+import { FilterField }       from 'patternfly-ng/filter/filter-field';
+import { FilterEvent }       from 'patternfly-ng/filter/filter-event';
+import { FilterQuery }       from 'patternfly-ng/filter/filter-query';
+import { FilterType }        from 'patternfly-ng/filter/filter-type';
+import { Filter }            from 'patternfly-ng/filter/filter';
 
-import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
-import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
+import { PaginationConfig }  from 'patternfly-ng/pagination/pagination-config';
+import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
 
-import { Observable } from 'rxjs/Observable';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { Observable }        from 'rxjs/Observable';
+import { forkJoin }          from 'rxjs/observable/forkJoin';
+
 
 @Component({
     selector: 'modules-detail',
     templateUrl: './modules.component.html',
-    styleUrls: ['./modules.component.less'],
+    styleUrls: ['./modules.component.less']
 })
 export class ModulesComponent implements OnInit {
-    constructor(private contentService: ContentService) {}
+
+    constructor(
+        private contentService: ContentService
+    ) {}
 
     emptyStateConfig: EmptyStateConfig;
     filterConfig: FilterConfig;
@@ -59,7 +70,7 @@ export class ModulesComponent implements OnInit {
             if (this.filterConfig && this.filterConfig.fields) {
                 this.filterConfig.appliedFilters.push({
                     field: this.filterConfig.fields[0],
-                    value: this._selectedContent.name,
+                    value: this._selectedContent.name
                 } as Filter);
                 this.queryContentList(this._selectedContent.name);
             }
@@ -74,7 +85,7 @@ export class ModulesComponent implements OnInit {
         this.emptyStateConfig = {
             iconStyleClass: 'pficon-warning-triangle-o',
             info: 'This module does not contain any documentation or metadata.',
-            title: 'No Metadata Found',
+            title: 'No Metadata Found'
         } as EmptyStateConfig;
 
         this.listConfig = {
@@ -82,42 +93,40 @@ export class ModulesComponent implements OnInit {
             multiSelect: false,
             selectItems: false,
             showCheckbox: false,
-            useExpandItems: true,
+            useExpandItems: true
         } as ListConfig;
 
         this.paginationConfig = {
             pageSize: 10,
             pageNumber: 1,
-            totalItems: 0,
+            totalItems: 0
         } as PaginationConfig;
 
         this.filterConfig = {
-            fields: [
-                {
-                    id: 'name',
-                    title: 'Name',
-                    placeholder: 'Filter by Name...',
-                    type: FilterType.TEXT,
-                },
-                {
-                    id: 'description',
-                    title: 'Description',
-                    placeholder: 'Filter by Description...',
-                    type: FilterType.TEXT,
-                },
-            ] as FilterField[],
+            fields: [{
+                id: 'name',
+                title: 'Name',
+                placeholder: 'Filter by Name...',
+                type: FilterType.TEXT,
+            }, {
+                id: 'description',
+                title: 'Description',
+                placeholder: 'Filter by Description...',
+                type: FilterType.TEXT,
+            }] as FilterField[],
             resultsCount: 0,
-            appliedFilters: [],
+            appliedFilters: []
         } as FilterConfig;
+
 
         if (this._selectedContent) {
             this.filterConfig.appliedFilters.push({
                 field: this.filterConfig.fields[0],
-                value: this._selectedContent.name,
+                value: this._selectedContent.name
             } as Filter);
         }
 
-        this.queryContentList(this.selectedContent ? this.selectedContent.name : null);
+        this.queryContentList((this.selectedContent) ? this.selectedContent.name : null);
     }
 
     handlePageSizeChange($event: PaginationEvent) {
@@ -148,16 +157,17 @@ export class ModulesComponent implements OnInit {
         this.queryContentList();
     }
 
+
     // private
 
     private queryContentList(contentName?: string) {
         this.loading = true;
-        let queryString = this.query ? this.query : '?';
+        let queryString = (this.query) ? this.query : '?';
         const params = {
-            page_size: this.pageSize,
-            page: this.pageNumber,
-            content_type__name: ContentTypes.module,
-            repository__id: this.repository.id,
+            'page_size': this.pageSize,
+            'page': this.pageNumber,
+            'content_type__name': ContentTypes.module,
+            'repository__id': this.repository.id
         };
         if (contentName) {
             params['name'] = contentName;
@@ -168,13 +178,15 @@ export class ModulesComponent implements OnInit {
                 _tmp.push(`${key}=${params[key]}`);
             }
         }
-        queryString += queryString === '?' ? _tmp.join('&') : '&' + _tmp.join('&');
-        this.contentService.pagedQuery(queryString).subscribe(results => {
-            this._modules = results.results as Content[];
-            this.filterConfig.resultsCount = results.count;
-            this.paginationConfig.totalItems = results.count;
-            this.getContentDetail();
-        });
+        queryString += (queryString === '?') ? _tmp.join('&') : '&' + _tmp.join('&');
+        this.contentService.pagedQuery(queryString).subscribe(
+            results => {
+                this._modules = results.results as Content[];
+                this.filterConfig.resultsCount = results.count;
+                this.paginationConfig.totalItems = results.count;
+                this.getContentDetail();
+            }
+        );
     }
 
     private getContentDetail() {

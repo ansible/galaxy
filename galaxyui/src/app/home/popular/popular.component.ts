@@ -1,8 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    Input,
+    AfterViewInit
+} from '@angular/core';
 
-import { Router } from '@angular/router';
+import {
+    Router
+} from '@angular/router';
 
-import { ContentTypes } from '../../enums/content-types.enum';
+import {
+    ContentTypes
+} from '../../enums/content-types.enum';
+
 
 class Category {
     name: string;
@@ -10,57 +20,60 @@ class Category {
 }
 
 @Component({
-    selector: 'popular-component',
+    selector:    'popular-component',
     templateUrl: './popular.component.html',
-    styleUrls: ['./popular.component.less'],
+    styleUrls:   ['./popular.component.less']
 })
 export class PopularComponent implements OnInit {
+
     categories: Category[] = [];
 
-    constructor(private router: Router) {}
+    constructor(
+        private router: Router
+    ) {}
 
     ngOnInit() {
         this.categories = [
             {
                 name: 'System',
-                iconClass: 'fa fa-desktop',
+                iconClass: 'fa fa-desktop'
             },
             {
                 name: 'Development',
-                iconClass: 'fa fa-code',
+                iconClass: 'fa fa-code'
             },
             {
                 name: 'Networking',
-                iconClass: 'fa fa-sitemap',
+                iconClass: 'fa fa-sitemap'
             },
             {
                 name: 'Cloud',
-                iconClass: 'fa fa-cloud-upload',
+                iconClass: 'fa fa-cloud-upload'
             },
             {
                 name: 'Database',
-                iconClass: 'fa fa-database',
+                iconClass: 'fa fa-database'
             },
             {
                 name: 'Monitoring',
-                iconClass: 'fa fa-bar-chart',
+                iconClass: 'fa fa-bar-chart'
             },
             {
                 name: 'Packaging',
-                iconClass: 'fa fa-cube',
+                iconClass: 'fa fa-cube'
             },
             {
                 name: 'Playbook Bundles',
-                iconClass: 'pficon-bundle',
+                iconClass: 'pficon-bundle'
             },
             {
                 name: 'Security',
-                iconClass: 'fa fa-lock',
+                iconClass: 'fa fa-lock'
             },
             {
                 name: 'Web',
-                iconClass: 'fa fa-globe',
-            },
+                iconClass: 'fa fa-globe'
+            }
         ] as Category[];
     }
 
@@ -71,6 +84,7 @@ export class PopularComponent implements OnInit {
         } else {
             params['tags'] = category.name.toLowerCase();
         }
-        this.router.navigate(['/', 'search'], { queryParams: params });
+        this.router.navigate(['/', 'search'], {queryParams: params});
     }
+
 }
