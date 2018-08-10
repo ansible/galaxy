@@ -273,8 +273,6 @@ SITE_ENV = 'PROD'
 
 SITE_NAME = 'localhost'
 
-TRAVIS_CONFIG_URL = 'https://api.travis-ci.org/config'
-
 # TODO(cutwater): Consider removing wait_for from settings
 WAIT_FOR = []
 
