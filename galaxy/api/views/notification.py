@@ -1,7 +1,9 @@
 import base64
 import json
 import logging
+
 from hashlib import sha256
+from urlparse import urlparse
 
 import requests
 from OpenSSL import crypto
@@ -250,13 +252,12 @@ class NotificationList(base_views.ListCreateAPIView):
         signature = request.META['HTTP_SIGNATURE']
         return base64.b64decode(signature)
 
-    def _get_travis_public_key(self, http_request):
+    def _get_travis_public_key(self, travis_host):
         """
         Returns the PEM encoded public key from the Travis CI /config endpoint
         """
-        server = http_request.META.get('SERVER_NAME')
         response = requests.get(
-            'https://{0}/config'.format(server), timeout=10.0)
+            'https://api.{0}/config'.format(travis_host), timeout=10.0)
         response.raise_for_status()
         travis_config = response.json()['config']
         return travis_config['notifications']['webhook']['public_key']
@@ -273,22 +274,31 @@ class NotificationList(base_views.ListCreateAPIView):
         except User.DoesNotExist:
             raise ValidationError('Galaxy task user not found')
 
+    def _get_travis_host(self, payload):
+        payload_json = json.loads(payload)
+        travis_host = None
+        if payload_json.get('build_url'):
+            parsed = urlparse(payload_json['build_url'])
+            travis_host = parsed.netloc
+        return travis_host
+
     def _verify_request(self, request):
         signature = self._get_signature(request)
         payload = request.POST['payload']
+        travis_host = self._get_travis_host(payload)
         github_user, github_repo = self._get_repo_info(request)
         notification_error = 'Travis notification for {0}/{1}'.format(
             github_user, github_repo)
         try:
-            public_key = self._get_travis_public_key(request)
+            public_key = self._get_travis_public_key(travis_host)
         except requests.Timeout:
-            msg = '{0}: Timeout retrieving Travis CI public key'.format(
-                notification_error)
+            msg = '{0}: Timeout retrieving public key for {1}'.format(
+                notification_error, travis_host)
             logger.error(msg)
             raise APIException(msg)
         except requests.RequestException as e:
-            msg = '{0}: Failed to retrieve Travis public key {1}'.format(
-                notification_error, e.message)
+            msg = '{0}: Failed to retrieve public key for {1}: {2}'.format(
+                notification_error, travis_host, e.message)
             logger.error(msg)
             raise APIException(msg)
         try:
