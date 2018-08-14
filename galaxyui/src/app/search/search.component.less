@@ -14,12 +14,12 @@
     margin-top: 20px;
     color: @black;
 
-    .list-row{
+    .list-row {
         width: 100%;
     }
 
     .search-list-left {
-        @media(min-width: @large-phone){
+        @media (min-width: @large-phone) {
             display: -webkit-box;
             display: -moz-box;
             display: -ms-flexbox;
@@ -29,11 +29,11 @@
     }
 
     .namespace-container {
-        @media(min-width: 1050px){
+        @media (min-width: 1050px) {
             border-right: 1px solid #ccc;
             margin-right: 15px;
         }
-        @media(max-width: @large-phone){
+        @media (max-width: @large-phone) {
             width: 100%;
         }
 
@@ -52,7 +52,7 @@
         .avatar-image {
             display: block;
             width: 64px;
-            @media(min-width: @large-phone){
+            @media (min-width: @large-phone) {
                 margin: auto;
             }
         }
@@ -65,14 +65,16 @@
             overflow: hidden;
             text-overflow: ellipsis;
             min-height: 15px;
-            @media(min-width: @large-phone){
+            @media (min-width: @large-phone) {
                 margin: auto;
             }
         }
     }
 
     .content-name {
-        .icon, .name, .type {
+        .icon,
+        .name,
+        .type {
             display: inline-block;
             vertical-align: middle;
         }
@@ -114,7 +116,8 @@
         flex-wrap: no-wrap;
         align-items: flex-start;
 
-        .icon, .tags {
+        .icon,
+        .tags {
             display: inline-block;
             vertical-align: middle;
         }
@@ -139,13 +142,12 @@
         }
     }
 
-    .col-reduced-margin{
+    .col-reduced-margin {
         margin-left: 10px;
     }
 
     .repository-details {
-
-        @media(min-width: @small-laptop){
+        @media (min-width: @small-laptop) {
             display: -webkit-box;
             display: -moz-box;
             display: -ms-flexbox;
@@ -157,11 +159,12 @@
             -moz-justify-content: flex-end;
             -ms-justify-content: flex-end;
             -justify-content: flex-end;
-
         }
 
         .count-digits {
             font-weight: 600;
+            margin-left: 1px;
+            margin-right: 3px;
         }
 
         .columns {
@@ -190,7 +193,7 @@
         display: block;
 
         .relevance {
-            @media(min-width: @small-laptop){
+            @media (min-width: @small-laptop) {
                 text-align: right;
             }
 
@@ -201,11 +204,12 @@
         }
 
         .import {
-            @media(min-width: @small-laptop){
+            @media (min-width: @small-laptop) {
                 text-align: right;
             }
 
-            .import-text, .import-date {
+            .import-text,
+            .import-date {
                 display: inline-block;
             }
             .import-text {
@@ -214,9 +218,8 @@
         }
     }
 
-
     .travis {
-        @media(min-width: @small-laptop){
+        @media (min-width: @small-laptop) {
             text-align: right;
         }
         margin-bottom: 10px;
