@@ -236,7 +236,7 @@ class RoleSearchView(ContentSearchView):
 class UserSearchView(base.ListAPIView):
 
     model = auth_models.CustomUser
-    serializer_class = serializers.UserListSerializer
+    serializer_class = serializers.UserSerializer
     filter_backends = [filters.OrderByFilter]
 
     def list(self, request, *args, **kwargs):

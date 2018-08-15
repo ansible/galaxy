@@ -10,21 +10,28 @@ import { BsDropdownModule, ModalModule, TooltipModule } from 'ngx-bootstrap';
 
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AuthService } from './auth/auth.service';
+
+// Custom Modules
+import { AppRoutingModule } from './app-routing.module';
 import { AuthorsModule } from './authors/authors.module';
 import { ContentDetailModule } from './content-detail/content-detail.module';
 import { ExceptionPagesModule } from './exception-pages/exception-pages.module';
 import { HomeModule } from './home/home.module';
 import { LoginModule } from './login/login.module';
 import { MyContentModule } from './my-content/my-content.module';
+import { PreferencesModule } from './preferences/preferences.module';
+import { VendorsModule } from './vendors/vendors.module';
+
+// Custom Services
+import { AuthService } from './auth/auth.service';
 import { ApiRootService } from './resources/api-root/api-root.service';
 import { CloudPlatformService } from './resources/cloud-platforms/cloud-platform.service';
 import { ContentBlocksService } from './resources/content-blocks/content-blocks.service';
 import { ContentSearchService } from './resources/content-search/content-search.service';
 import { ContentTypeService } from './resources/content-types/content-type.service';
 import { ContentService } from './resources/content/content.service';
+import { EmailService } from './resources/emails/email.service';
 import { ImportsService } from './resources/imports/imports.service';
 import { NamespaceService } from './resources/namespaces/namespace.service';
 import { PFBodyService } from './resources/pf-body/pf-body.service';
@@ -38,7 +45,6 @@ import { UserService } from './resources/users/user.service';
 // import { MyImportsModule }            from './my-imports/my-imports.module';
 // import { SearchModule }               from './search/search.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
-import { VendorsModule } from './vendors/vendors.module';
 
 @NgModule({
     declarations: [AppComponent, UserNotificationsComponent],
@@ -55,6 +61,7 @@ import { VendorsModule } from './vendors/vendors.module';
         ModalModule.forRoot(),
         HomeModule,
         LoginModule,
+        PreferencesModule,
         MyContentModule,
         ToastNotificationListModule,
         ContentDetailModule,
@@ -83,6 +90,7 @@ import { VendorsModule } from './vendors/vendors.module';
         ApiRootService,
         PFBodyService,
         SurveyService,
+        EmailService,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     bootstrap: [AppComponent],

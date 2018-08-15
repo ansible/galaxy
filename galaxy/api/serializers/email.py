@@ -47,7 +47,8 @@ class EmailSerializer(BaseSerializer):
             'id',
             'email',
             'verified',
-            'primary'
+            'primary',
+            'user'
         )
         validators = [
             UniqueTogetherValidator(

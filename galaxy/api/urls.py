@@ -23,9 +23,9 @@ email_urls = [
     url(r'^$', views.EmailList.as_view(), name='email_list'),
     url(r'^(?P<pk>[0-9]+)/$',
         views.EmailDetail.as_view(), name='email_detail'),
-    url(r'^(?P<email_id>[0-9]+)/verification/$',
+    url(r'^verification/$',
         views.EmailVerification.as_view(), name='email_verification'),
-    url(r'^(?P<email_id>[0-9]+)/verification/(?P<key>[0-9a-z]+)/$',
+    url(r'^verification/(?P<key>[0-9a-z]+)/$',
         views.EmailVerificationDetail.as_view(), name='email_verification'),
 ]
 

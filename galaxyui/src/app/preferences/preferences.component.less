@@ -1,0 +1,47 @@
+@import '../../variables';
+
+#emailCard {
+    font-size: 14px;
+    .verified {
+        color: @green;
+    }
+
+    .unverified {
+        color: @red;
+    }
+
+    .no-bold {
+        font-weight: normal;
+    }
+
+    .action {
+        width: 200px;
+        display: flex;
+        justify-content: flex-end;
+
+        .action-button {
+            margin-left: 10px;
+        }
+    }
+
+    .email-options {
+        display: flex;
+        margin-top: 10px;
+        justify-content: flex-end;
+    }
+}
+
+#notificationCard {
+    font-size: 14px;
+    .notification-settings {
+        margin-left: 20px;
+    }
+}
+
+#apiTokenCard {
+    font-size: 14px;
+    .middle-align {
+        display: flex;
+        align-items: center;
+    }
+}

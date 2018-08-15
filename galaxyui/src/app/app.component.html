@@ -33,7 +33,7 @@
                         <span class="fa fa-user"></span> {{ username }} <span class="caret"></span>
                     </a>
                     <ul *dropdownMenu class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                        <li><a href="#">Preferences</a></li>
+                        <li><a routerLink="/preferences">Preferences</a></li>
                         <li><a [routerLink]="" (click)="logout()">Logout</a></li>
                     </ul>
                 </li>

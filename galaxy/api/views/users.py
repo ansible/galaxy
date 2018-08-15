@@ -29,7 +29,7 @@ User = get_user_model()
 
 class UserDetail(base_views.RetrieveUpdateAPIView):
     model = User
-    serializer_class = serializers.UserDetailSerializer
+    serializer_class = serializers.UserSerializer
 
     def get_object(self, qs=None):
         obj = super(UserDetail, self).get_object()
@@ -40,7 +40,7 @@ class UserDetail(base_views.RetrieveUpdateAPIView):
 
 class UserList(base_views.ListAPIView):
     model = User
-    serializer_class = serializers.UserListSerializer
+    serializer_class = serializers.UserSerializer
 
     def get_queryset(self):
         qs = super(UserList, self).get_queryset()

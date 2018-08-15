@@ -1,46 +1,31 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { PagedResponse } from '../paged-response';
 import { User } from './user';
 
+import { GenericQuerySave } from '../base/generic-query-save';
+
 @Injectable()
-export class UserService {
-    private url = '/api/v1/users/';
+export class UserService extends GenericQuerySave<User> {
+    constructor(http: HttpClient, notificationService: NotificationService) {
+        super(http, notificationService, '/api/v1/users', 'user');
+    }
 
-    constructor(private http: HttpClient, private notificationService: NotificationService) {}
-
-    query(params?: any): Observable<User[]> {
-        let userUrl = this.url;
-        let userParams = null;
-        if (params) {
-            if (typeof params === 'string') {
-                userUrl += `?${params}`;
-            } else {
-                userParams = params;
-            }
-        }
-        return this.http.get<PagedResponse>(userUrl, { params: userParams }).pipe(
-            map(response => response.results as User[]),
-            tap(_ => this.log('fetched users')),
+    getToken(userId: number): Observable<any> {
+        return this.http.get(`${this.url}/${userId}/token/`).pipe(
+            map(response => response['token']),
+            tap(_ => this.log('fetched token')),
             catchError(this.handleError('Query', [])),
         );
     }
 
-    private handleError<T>(operation = '', result?: T) {
-        return (error: any): Observable<T> => {
-            console.error(`${operation} failed, error:`, error);
-            this.log(`${operation} user error: ${error.message}`);
-            this.notificationService.httpError(`${operation} user failed:`, { data: error });
-
-            // Let the app keep running by returning an empty result.
-            return of(result as T);
-        };
-    }
-
-    private log(message: string) {
-        console.log('UserService: ' + message);
+    resetToken(userId: number): Observable<any> {
+        return this.http.put(`${this.url}/${userId}/token/`, '').pipe(
+            map(response => response['token']),
+            tap(_ => this.log('reset token')),
+            catchError(this.handleError('Query', [])),
+        );
     }
 }
