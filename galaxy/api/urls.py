@@ -222,6 +222,16 @@ content_type_urls = [
         name='content_type_detail'),
 ]
 
+community_survey_urls = [
+    url(r'^$',
+        views.CommunitySurveyList.as_view(),
+        name='community_survey_list'),
+
+    url(r'^(?P<pk>[0-9]+)/$',
+        views.CommunitySurveyDetail.as_view(),
+        name='community_survey_detail'),
+]
+
 v1_urls = [
     url(r'^$', views.ApiV1RootView.as_view(), name='api_v1_root_view'),
     url(r'^account/', include(account_urls)),
@@ -246,6 +256,7 @@ v1_urls = [
     url(r'^search/', include(search_urls)),
     url(r'^content_blocks/', include(content_block_urls)),
     url(r'^content_types/', include(content_type_urls)),
+    url(r'^community_surveys/', include(community_survey_urls)),
 ]
 
 urlpatterns = [

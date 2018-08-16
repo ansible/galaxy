@@ -168,6 +168,7 @@ class ApiV1RootView(base_views.APIView):
         data['search'] = reverse('api:search_view')
         data['tags'] = reverse('api:tag_list')
         data['users'] = reverse('api:user_list')
+        data['surveys'] = reverse('api:community_survey_list')
         return Response(data)
 
 
