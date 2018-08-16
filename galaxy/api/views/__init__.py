@@ -27,4 +27,5 @@ from .repository_source import *    # noqa
 from .provider_namespace import *   # noqa
 from .roles import *                # noqa
 from .search import *               # noqa
+from .token import *                # noqa
 from .views import *                # noqa

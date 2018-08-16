@@ -242,6 +242,8 @@ class UserListSerializer(BaseSerializer):
                 'api:user_starred_list', args=(obj.pk,)),
             repositories=reverse(
                 'api:user_repositories_list', args=(obj.pk,)),
+            token=reverse(
+                'api:user_token_view', args=(obj.pk,)),
         ))
         return res
 
@@ -329,6 +331,8 @@ class UserDetailSerializer(BaseSerializer):
                 'api:user_subscription_list', args=(obj.pk,)),
             starred=reverse(
                 'api:user_starred_list', args=(obj.pk,)),
+            token=reverse(
+                'api:user_token_view', args=(obj.pk,)),
         ))
         return res
 
