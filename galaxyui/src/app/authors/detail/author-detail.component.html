@@ -81,8 +81,13 @@
                             <div class="list-pf-title">
                                 <a [routerLink]="['/', item.summary_fields['namespace']['name'], item.name]"
                                    class="repo-name" tooltip="View content details">{{ item.name }}</a>
+
+                                <span *ngIf="item.deprecated" class="label label-danger deprecation-notice" tooltip="This item has been deprecated. Use at your own risk.">Deprecated</span>
+
                             </div>
-                            <div class="list-pf-description">{{ item.description }}</div>
+                            <div class="list-pf-description">
+                                {{ item.description }}
+                            </div>
                         </div>
                         <div class="list-pf-additional-content">
                             <div class="content-count">

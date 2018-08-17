@@ -199,12 +199,23 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance, data=data)
         serializer.is_valid(raise_exception=True)
 
+        # Limit the attributes that get updated in the database to these
+        to_update = (
+            'original_name',
+            'description',
+            'is_enabled',
+            'deprecated',
+        )
+
+        updated = []
+
         try:
             # FIXME(cutwater): This code should be refactored.
-            repository = models.Repository.objects.get(pk=instance.pk)
-            for k in data:
-                setattr(repository, k, data[k])
-            repository.save()
+            for k in to_update:
+                if k in data and getattr(instance, k) != data[k]:
+                    setattr(instance, k, data[k])
+                    updated.append(k)
+            instance.save()
         except Exception as exc:
             raise APIException('Error updating repository: {0}'
                                .format(exc.message))
@@ -220,12 +231,16 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
         if not request.user.repositories.filter(pk=instance.pk):
             request.user.repositories.add(instance)
 
-        import_task = tasks.create_import_task(repository, request.user)
-
         serializer = self.get_serializer(instance=instance)
         data = serializer.data
-        data['summary_fields']['latest_import'] = \
-            serializers.ImportTaskSerializer(import_task).data
+
+        # Don't create an import task if we're just updating the deprication
+        # status
+        if updated != ['deprecated']:
+            import_task = tasks.create_import_task(instance, request.user)
+
+            data['summary_fields']['latest_import'] = \
+                serializers.ImportTaskSerializer(import_task).data
         return Response(data)
 
     def destroy(self, request, *args, **kwargs):

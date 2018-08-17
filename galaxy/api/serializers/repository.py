@@ -59,6 +59,7 @@ class RepositorySerializer(serializers.BaseSerializer):
             'readme',
             'readme_html',
             'download_url',
+            'deprecated',
         )
 
     def get_related(self, instance):

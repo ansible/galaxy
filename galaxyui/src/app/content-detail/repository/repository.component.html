@@ -17,7 +17,11 @@
             <div>
                 <div class="description-box">
                     <div class="repo-name text-overflow-pf">
-                        <span class="fa" [ngClass]="repositoryView.iconClass" tooltip="{{ repositoryView.tooltip }}"></span> {{ repositoryView.name }}
+                        <span class="fa" [ngClass]="repositoryView.iconClass" tooltip="{{ repositoryView.tooltip }}"></span>
+                        {{ repositoryView.name }}
+                        <div *ngIf="repository.deprecated" tooltip="This item has been deprecated. Use at your own risk." class="label label-danger deprecation-notice">
+                            Deprecated
+                        </div>
                     </div>
                     <div class="repo-description">
                         {{ repositoryView.description }}

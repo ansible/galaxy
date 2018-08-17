@@ -174,6 +174,12 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                 case 'changeName':
                     this.changeRepositoryName(item);
                     break;
+                case 'deprecate':
+                    this.deprecate(true, item);
+                    break;
+                case 'undeprecate':
+                    this.deprecate(false, item);
+                    break;
             }
         }
     }
@@ -192,6 +198,26 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     }
 
     // Private
+
+    private deprecate(isDeprecated: boolean, repo: Repository): void {
+        repo.summary_fields.loading = true;
+
+        // Force angular change detection to fire by creating a new object with a
+        // new reference.
+        repo = JSON.parse(JSON.stringify(repo));
+        repo.deprecated = isDeprecated;
+
+        this.repositoryService.save(repo).subscribe(response => {
+            const itemIndex = this.items.findIndex(el => el.id === repo.id);
+            if (typeof response !== 'undefined') {
+                repo.summary_fields.loading = false;
+                repo.deprecated = response.deprecated;
+                this.items[itemIndex] = repo;
+            } else {
+                this.items[itemIndex].summary_fields.loading = false;
+            }
+        });
+    }
 
     private getRepositories() {
         this.loading = true;
