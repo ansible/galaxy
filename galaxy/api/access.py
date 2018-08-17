@@ -19,6 +19,7 @@
 
 import logging
 
+from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 
@@ -252,7 +253,7 @@ class SubscriptionAccess(BaseAccess):
     def can_change(self, obj, data):
         return False
 
-    def can_delete(self, data):
+    def can_delete(self, obj):
         return self.user.is_authenticated()
 
 
@@ -263,7 +264,7 @@ class StargazerAccess(BaseAccess):
     def can_change(self, obj, data):
         return False
 
-    def can_delete(self, data):
+    def can_delete(self, obj):
         return self.user.is_authenticated()
 
 
@@ -277,7 +278,7 @@ class NamespaceAccess(BaseAccess):
     def can_change(self, obj, data):
         return self.user.is_authenticated()
 
-    def can_delete(self, data):
+    def can_delete(self, obj):
         return self.user.is_authenticated() and self.user.is_staff
 
 
@@ -291,7 +292,7 @@ class ProviderNamespaceAccess(BaseAccess):
     def can_change(self, obj, data):
         return self.user.is_authenticated()
 
-    def can_delete(self, data):
+    def can_delete(self, obj):
         return self.user.is_authenticated()
 
 
@@ -305,7 +306,7 @@ class RepositoryAccess(BaseAccess):
     def can_change(self, obj, data):
         return self.user.is_authenticated()
 
-    def can_delete(self, data):
+    def can_delete(self, obj):
         return self.user.is_authenticated()
 
 
@@ -358,7 +359,42 @@ class CommunitySurveyAccess(BaseAccess):
         return False
 
 
+class EmailAddressAccess(BaseAccess):
+    model = EmailAddress
+
+    def can_read(self, obj):
+        if self.user.is_authenticated():
+            if self.user.is_staff:
+                return True
+            if self.user == obj.user:
+                return True
+        return False
+
+    def can_add(self, data):
+        if self.user.is_authenticated():
+            if self.user.id == data.get('user'):
+                return True
+        return False
+
+    def can_change(self, obj, data):
+        if self.user.is_authenticated():
+            if self.user == obj.user:
+                return True
+        return False
+
+    def can_delete(self, obj):
+        if self.user.is_authenticated():
+            if self.user.is_staff:
+                return True
+            if self.user == obj.user:
+                return True
+        return False
+
+
 register_access(User, UserAccess)
+register_access(EmailAddress, EmailAddressAccess)
+register_access(Token, UserTokenAccess)
+
 register_access(models.Content, RoleAccess)
 register_access(models.RepositoryVersion, RepositoryVersionAccess)
 register_access(models.ImportTask, ImportTaskAccess)
@@ -374,5 +410,4 @@ register_access(models.Repository, RepositoryAccess)
 register_access(models.ContentBlock, ContentBlockAccess)
 register_access(models.ContentType, ContentTypeAccess)
 register_access(models.CloudPlatform, CloudPlatformsAccess)
-register_access(Token, UserTokenAccess)
 register_access(models.CommunitySurvey, CommunitySurveyAccess)

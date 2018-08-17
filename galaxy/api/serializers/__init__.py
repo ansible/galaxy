@@ -18,6 +18,7 @@
 from .content import *             # noqa
 from .content_block import *       # noqa
 from .content_type import *        # noqa
+from .email import *               # noqa
 from .namespace import *           # noqa
 from .notification import *        # noqa
 from .provider import *            # noqa

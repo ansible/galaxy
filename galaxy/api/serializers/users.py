@@ -2,9 +2,9 @@ import logging
 
 from collections import OrderedDict
 
+from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-
 from rest_framework import serializers
 
 from .serializers import BaseSerializer
@@ -31,6 +31,7 @@ __all__ = [
 class ActiveUserSerializer(BaseSerializer):
     authenticated = serializers.SerializerMethodField()
     staff = serializers.ReadOnlyField(source='is_staff')
+    primary_email = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -44,6 +45,12 @@ class ActiveUserSerializer(BaseSerializer):
 
     def get_authenticated(self, obj):
         return obj.is_authenticated()
+
+    def get_primary_email(self, obj):
+        emails = EmailAddress.objects.filter(user=obj, primary=True)
+        if emails:
+            return emails[0].email
+        return None
 
 
 class UserListSerializer(BaseSerializer):
@@ -64,6 +71,8 @@ class UserListSerializer(BaseSerializer):
                 'api:user_starred_list', args=(obj.pk,)),
             repositories=reverse(
                 'api:user_repositories_list', args=(obj.pk,)),
+            email=reverse(
+                'api:user_email_list', args=(obj.pk,)),
         ))
         return res
 
