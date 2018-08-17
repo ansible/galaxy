@@ -21,7 +21,6 @@ import logging
 from collections import OrderedDict
 from allauth.socialaccount.models import SocialToken
 from django.conf import settings
-from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count, Max
@@ -44,7 +43,6 @@ from rest_framework.response import Response
 
 from galaxy import constants
 from galaxy.accounts.models import CustomUser as User
-from galaxy.api.access import check_user_access
 from galaxy.api.permissions import ModelAccessPermission
 from galaxy.api import serializers
 from galaxy.api import tasks
@@ -88,14 +86,6 @@ __all__ = [
     'TagDetail',
     'TagList',
     'TopContributorsList',
-    'UserDetail',
-    'UserList',
-    'UserMeList',
-    'UserNotificationSecretList',
-    'UserRepositoriesList',
-    'UserRolesList',
-    'UserStarredList',
-    'UserSubscriptionList',
 ]
 
 
@@ -156,7 +146,7 @@ class ApiV1RootView(base_views.APIView):
         data['content_types'] = reverse('api:content_type_list')
         data['imports'] = reverse('api:import_task_list')
         data['latest_imports'] = reverse('api:import_task_latest_list')
-        data['me'] = reverse('api:user_me_list')
+        data['me'] = reverse('api:active_user_view')
         data['namespaces'] = reverse('api:namespace_list')
         data['notifications'] = reverse('api:notification_list')
         data['platforms'] = reverse('api:platform_list')
@@ -488,45 +478,6 @@ class ImportTaskLatestList(base_views.ListAPIView):
         return Response(serializer.data)
 
 
-class UserRepositoriesList(base_views.SubListAPIView):
-    model = models.Repository
-    serializer_class = serializers.RepositorySerializer
-    parent_model = User
-    relationship = 'repositories'
-
-
-class UserRolesList(base_views.SubListAPIView):
-    model = models.Content
-    serializer_class = serializers.RoleDetailSerializer
-    parent_model = User
-    relationship = 'roles'
-
-    def get_queryset(self):
-        qs = super(UserRolesList, self).get_queryset()
-        return filter_role_queryset(qs)
-
-
-class UserSubscriptionList(base_views.SubListAPIView):
-    model = models.Subscription
-    serializer_class = serializers.SubscriptionSerializer
-    parent_model = User
-    relationship = 'subscriptions'
-
-
-class UserStarredList(base_views.SubListAPIView):
-    model = models.Stargazer
-    serializer_class = serializers.StargazerSerializer
-    parent_model = User
-    relationship = 'starred'
-
-
-class UserNotificationSecretList(base_views.SubListAPIView):
-    model = models.NotificationSecret
-    serializer_class = serializers.NotificationSecretSerializer
-    parent_model = User
-    relationship = 'notification_secrets'
-
-
 class StargazerList(base_views.ListCreateAPIView):
     model = models.Stargazer
     serializer_class = serializers.StargazerSerializer
@@ -851,51 +802,6 @@ class SubscriptionDetail(base_views.RetrieveUpdateDestroyAPIView):
         return Response(dict(detail=result), status=status.HTTP_202_ACCEPTED)
 
 
-class UserDetail(base_views.RetrieveAPIView):
-    model = User
-    serializer_class = serializers.UserDetailSerializer
-
-    def update_filter(self, request, *args, **kwargs):
-        # make sure non-read-only fields that can only be edited by admins,
-        # are only edited by admins
-        obj = User.objects.get(pk=kwargs['pk'])
-        can_change = check_user_access(
-            request.user, User, 'change', obj, request.data
-        )
-        can_admin = check_user_access(
-            request.user, User, 'admin', obj, request.data
-        )
-        if can_change and not can_admin:
-            admin_only_edit_fields = (
-                'full_name', 'username', 'is_active', 'is_superuser'
-            )
-            changed = {}
-            for field in admin_only_edit_fields:
-                left = getattr(obj, field, None)
-                right = request.data.get(field, None)
-                if left is not None and right is not None and left != right:
-                    changed[field] = (left, right)
-            if changed:
-                raise PermissionDenied(
-                    'Cannot change %s' % ', '.join(changed.keys())
-                )
-
-    def get_object(self, qs=None):
-        obj = super(UserDetail, self).get_object()
-        if not obj.is_active:
-            raise Http404()
-        return obj
-
-
-class UserList(base_views.ListAPIView):
-    model = User
-    serializer_class = serializers.UserListSerializer
-
-    def get_queryset(self):
-        qs = super(UserList, self).get_queryset()
-        return filter_user_queryset(qs)
-
-
 class TopContributorsList(base_views.ListAPIView):
     model = models.Content
     serializer_class = serializers.TopContributorsSerializer
@@ -912,19 +818,6 @@ class TopContributorsList(base_views.ListAPIView):
 
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
-
-
-class UserMeList(base_views.RetrieveAPIView):
-    model = User
-    serializer_class = serializers.MeSerializer
-    view_name = 'Me'
-
-    def get_object(self):
-        try:
-            obj = self.model.objects.get(pk=self.request.user.pk)
-        except ObjectDoesNotExist:
-            obj = AnonymousUser()
-        return obj
 
 
 class RemoveRole(base_views.APIView):

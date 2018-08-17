@@ -67,15 +67,35 @@ class CustomUser(auth_models.AbstractBaseUser,
         db_index=True,
         help_text=_('Designates whether this user should be treated as '
                     'active. Unselect this instead of deleting accounts.'))
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-
-    # TODO(cutwater): Seem to be not used anymore.
-    # Consider removal of karma field.
-    karma = models.IntegerField(default=0, db_index=True)
+    date_joined = models.DateTimeField(
+        _('date joined'),
+        default=timezone.now)
     avatar_url = models.CharField(
-        _('avatar URL'), max_length=256, blank=True)
-    cache_refreshed = models.BooleanField(
-        _('cache refreshed'), default=False)
+        _('avatar URL'),
+        max_length=256,
+        blank=True)
+
+    # User email notification settings
+    notify_survey = models.BooleanField(
+        default=False,
+        help_text='Notify me when a user adds a survey for my content.')
+    notify_import_fail = models.BooleanField(
+        default=False,
+        help_text='Notify me when an import fails.')
+    notify_import_success = models.BooleanField(
+        default=False,
+        help_text='Notify me when an import succeeds.')
+    notify_content_release = models.BooleanField(
+        default=False,
+        help_text=("Notify me when a new release is available for "
+                   "content I'm following."))
+    notify_author_release = models.BooleanField(
+        default=False,
+        help_text=("Notify me when an author I'm following "
+                   "creates new content."))
+    notify_galaxy_announce = models.BooleanField(
+        default=False,
+        help_text='Notify me when there is a Galaxy announcement')
 
     objects = auth_models.UserManager()
 

@@ -26,5 +26,6 @@ from .repository_source import *   # noqa
 from .repository import *          # noqa
 from .provider_namespace import *  # noqa
 from .roles import *               # noqa
+from .users import *               # noqa
 from .serializers import *         # noqa
 from .token import *               # noqa
