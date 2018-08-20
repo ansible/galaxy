@@ -72,3 +72,33 @@ class YamlLinter(BaseLinter):
         for line in proc.stdout:
             yield line.strip()
         proc.wait()
+
+
+class AnsibleLinter(BaseLinter):
+
+    cmd = 'ansible-lint'
+
+    def _check_files(self, paths):
+        rules_path = '/galaxy-lint-rules/rules'
+        cmd = [self.cmd, '-p', '-r', rules_path, '.']
+        logger.debug('CMD: ' + ' '.join(cmd))
+
+        # different logic needed for multi role repos since
+        # ansible-lint issue role path cannot contain '/'
+        cwd = (
+            self.root
+            if paths == ['.'] else
+            '/'.join((self.root, paths[0]))
+        )
+        proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE)
+
+        for line in proc.stdout:
+            line_list = line.split(' ')
+            rel_path = ['.'] + line_list[0].split('/')[3:]
+            line_list[0] = '/'.join(rel_path)
+            line = ' '.join(line_list)
+            yield line.strip()
+
+        # returncode 1 is app exception, 0 is no linter err, 2 is linter err
+        if proc.wait() not in (0, 2):
+            yield 'Exception running ansible-lint, could not complete linting'
