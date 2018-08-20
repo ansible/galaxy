@@ -335,27 +335,20 @@ LOGGING = {
     },
 
     'loggers': {
+        # Django configuration
         'django': {
             'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
-        'galaxy.api': {
+        # Third party libraries configuration
+        'allauth': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
         },
-        'galaxy.accounts': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.main': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.worker': {
+        # Galaxy configuration
+        'galaxy': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
@@ -364,11 +357,6 @@ LOGGING = {
             'handlers': ['import_task'],
             'level': 'DEBUG',
             'propagate': False,
-        },
-        'allauth': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
         },
     }
 }
