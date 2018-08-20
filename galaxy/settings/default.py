@@ -248,9 +248,6 @@ ACCOUNT_USERNAME_BLACKLIST = (
 ACCOUNT_PASSWORD_MIN_LENGTH = 8
 
 SOCIALACCOUNT_PROVIDERS = {
-    'twitter': {
-        'SCOPE': ['r_emailaddress']
-    },
     'github': {
         'SCOPE': ['user:email', 'public_repo', 'read:org']
     },
