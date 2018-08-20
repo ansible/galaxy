@@ -45,8 +45,6 @@ import dj_database_url
 from . import include_settings
 from .default import *  # noqa
 
-from .default import LOGGING as default_logging
-
 
 def _read_secret_key(settings_dir='/etc/galaxy'):
     """
@@ -72,22 +70,7 @@ def _read_secret_key(settings_dir='/etc/galaxy'):
 
 
 def _set_logging():
-    log = default_logging
-    log['filters']['request_id'] = {
-        '()': 'log_request_id.filters.RequestIDFilter'
-    }
-    log['handlers']['console']['formatter'] = 'json'
-    log['handlers']['console']['filters'] = ['request_id']
-    log['loggers']['django_request'] = {
-        'handlers': ['console'],
-        'level': 'INFO',
-        'propagate': True,
-    }
-    log['loggers']['galaxy.api.access'] = {
-        'handlers': ['console'],
-        'level': 'INFO',
-        'propagate': True,
-    }
+
     return log
 
 # =========================================================
@@ -201,7 +184,17 @@ GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
 REQUEST_ID_RESPONSE_HEADER = "X-REQUEST-ID"
 # LOG_REQUESTS = True
 
-LOGGING = _set_logging()
+LOGGING['handlers']['console'] = {
+    'level': 'INFO',
+    'class': 'logging.StreamHandler',
+    'formatter': 'json',
+    'filters': ['request_id']
+}
+LOGGING['loggers']['galaxy.api.access'] = {
+    'handlers': ['console'],
+    'level': 'INFO',
+    'propagate': True,
+}
 
 # =========================================================
 # System Settings
