@@ -225,7 +225,6 @@ class UserListSerializer(BaseSerializer):
             'created',
             'modified',
             'username',
-            'email',
             'staff',
             'full_name',
             'date_joined',
@@ -244,8 +243,6 @@ class UserListSerializer(BaseSerializer):
                 'api:user_starred_list', args=(obj.pk,)),
             repositories=reverse(
                 'api:user_repositories_list', args=(obj.pk,)),
-            secrets=reverse(
-                'api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
@@ -295,7 +292,6 @@ class UserDetailSerializer(BaseSerializer):
             'modified',
             'username',
             'password',
-            'email',
             'karma',
             'staff',
             'full_name',
@@ -341,8 +337,6 @@ class UserDetailSerializer(BaseSerializer):
                 'api:user_subscription_list', args=(obj.pk,)),
             starred=reverse(
                 'api:user_starred_list', args=(obj.pk,)),
-            secrets=reverse(
-                'api:user_notification_secret_list', args=(obj.pk,)),
         ))
         return res
 
