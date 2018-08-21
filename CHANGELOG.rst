@@ -4,6 +4,49 @@ Ansible Galaxy Changes by Release
 3.1.0 - Active development
 --------------------------
 
+3.0.8 - Released 22-Aug-2018
+----------------------------
+
+Bug Fixes
+`````````
+- Made the help link more obvious, and added a link to the Galaxy project issue queue. Issue `1006 <https://github.com/ansible/galaxy/issues/1006>`_.
+- Upgraded to latest version of patternfly-ng. Issue `1010 <https://github.com/ansible/galaxy/issues/1010>`_.
+- Fixed issues related to patternfly-ng upgrade.
+- Limited display of container logs in Travis CI builds.
+- Added support for travis-ci.com server. Issue `1033 <https://github.com/ansible/galaxy/issues/1033>`_.
+- Improved Galaxy server side logging.
+- Set the avatar URL attribute during Provider Namespace creation.
+- Added AnsibleFest 2018 image to the home page.
+- Reformatted APB parameter metadata.
+- Implemented prettier to enforce Typescript and Less code formatting.
+- Improved TypeScript linting.
+
+Closed PRs
+``````````
+- `1084 Prevent queries on sensitive fields #1084 <https://github.com/ansible/galaxy/pull/1084>`_
+- `1070 Fix spacing issues introduced by patternfly update <https://github.com/ansible/galaxy/pull/1070>`_
+- `1069 Added help link which links to the github issues <https://github.com/ansible/galaxy/pull/1069>`_
+- `1066 Add spinner to indicate when page is loading. <https://github.com/ansible/galaxy/pull/1066>`_
+- `1065 Fix about modal. <https://github.com/ansible/galaxy/pull/1065>`_
+- `1064 Fix patternfly error messages. <https://github.com/ansible/galaxy/pull/1064>`_
+- `1060 Fix make dev/log (#1041) <https://github.com/ansible/galaxy/pull/1060>`_
+- `1058 Support multiple Travis CI servers <https://github.com/ansible/galaxy/pull/1058>`_
+- `1057 Release/3.0.8 request id logging <https://github.com/ansible/galaxy/pull/1057>`_
+- `1053 Make documentation link more visible. <https://github.com/ansible/galaxy/pull/1053>`_
+- `1051 Set ProviderNamespace.avatar_url (#1035) <https://github.com/ansible/galaxy/pull/1051>`_
+- `1050 Updated galaxy team <https://github.com/ansible/galaxy/pull/1050>`_
+- `1044 Upgrade to latest patternfly-ng <https://github.com/ansible/galaxy/pull/1044>`_
+- `1027 Reformat some APB parameter metadata on save <https://github.com/ansible/galaxy/pull/1027>`_
+- `1023 Enforce TypeScript and Less code formatting with prettier.  <https://github.com/ansible/galaxy/pull/1023>`_
+- `1021 Disable lazy loading on my content <https://github.com/ansible/galaxy/pull/1021>`_
+- `1020 Remove TS unused variables  <https://github.com/ansible/galaxy/pull/1020>`_
+- `1019 Fix license in galaxyui package.json <https://github.com/ansible/galaxy/pull/1019>`_
+- `1018 Enable no-consecutive-blank-lines rule <https://github.com/ansible/galaxy/pull/1018>`_
+- `1017 Enable tslint interface-name rule <https://github.com/ansible/galaxy/pull/1017>`_
+- `1016 Enable prefer-for-of in tslint <https://github.com/ansible/galaxy/pull/1016>`_
+- `1015 Backport/866 tslint recommend <https://github.com/ansible/galaxy/pull/1015>`_
+- `1014 Backport/739 lazy loading <https://github.com/ansible/galaxy/pull/1014>`_
+
 3.0.7 - Released 09-Aug-2018
 ----------------------------
 
