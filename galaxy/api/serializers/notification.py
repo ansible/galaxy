@@ -44,12 +44,7 @@ class NotificationSecretSerializer(BaseSerializer):
 
     def get_secret(self, obj):
         # show only last 4 digits of secret
-        last = ''
-        try:
-            last = obj.secret[-4:]
-        except Exception:
-            pass
-        return '******' + last
+        return '******'
 
 
 class NotificationSerializer(BaseSerializer):
