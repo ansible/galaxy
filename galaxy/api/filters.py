@@ -65,6 +65,8 @@ class FieldLookupBackend(BaseFilterBackend):
                          'regex', 'iregex', 'gt', 'gte', 'lt', 'lte', 'in',
                          'isnull')
 
+    SENSITIVE_NAMES = ('secret', 'password')
+
     def get_field_from_lookup(self, model, lookup):
         field = None
         parts = lookup.split('__')
@@ -174,7 +176,10 @@ class FieldLookupBackend(BaseFilterBackend):
             for key, values in request.GET.lists():
                 if key in self.RESERVED_NAMES:
                     continue
-
+                if key in self.SENSITIVE_NAMES:
+                    raise ValidationError(
+                        "Your are not authorized to query on %s" % key
+                    )
                 # Custom __int filter suffix (internal use only).
                 q_int = False
                 if key.endswith('__int'):
