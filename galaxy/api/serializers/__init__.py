@@ -27,3 +27,4 @@ from .repository import *          # noqa
 from .provider_namespace import *  # noqa
 from .roles import *               # noqa
 from .serializers import *         # noqa
+from .token import *               # noqa

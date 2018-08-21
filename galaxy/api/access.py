@@ -20,20 +20,14 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from galaxy.main.models import (Content, ImportTask,
-                                ImportTaskMessage, RepositoryVersion,
-                                Namespace, NotificationSecret, Notification,
-                                ProviderNamespace,
-                                Repository,
-                                Subscription, Stargazer,
-                                ContentBlock, ContentType,
-                                CloudPlatform)
+from rest_framework.authtoken.models import Token
 
-logger = logging.getLogger('galaxy.api.access')
+from galaxy.main import models
 
 __all__ = ['check_user_access']
 
 User = get_user_model()
+logger = logging.getLogger('galaxy.api.access')
 
 access_registry = {
     # <model_class>: [<access_class>, ...],
@@ -164,7 +158,7 @@ class UserAccess(BaseAccess):
 
 
 class RoleAccess(BaseAccess):
-    model = Content
+    model = models.Content
 
     def can_attach(self, obj, sub_obj, relationship, data,
                    skip_sub_obj_read_check=False):
@@ -175,7 +169,7 @@ class RoleAccess(BaseAccess):
 
 
 class RepositoryVersionAccess(BaseAccess):
-    model = RepositoryVersion
+    model = models.RepositoryVersion
 
     def get_queryset(self):
         return self.model.objects.filter(
@@ -183,7 +177,7 @@ class RepositoryVersionAccess(BaseAccess):
 
 
 class NotificationSecretAccess(BaseAccess):
-    model = NotificationSecret
+    model = models.NotificationSecret
 
     def can_read(self, obj):
         if (self.user.is_authenticated() and obj.active
@@ -207,7 +201,7 @@ class NotificationSecretAccess(BaseAccess):
 
 
 class ImportTaskAccess(BaseAccess):
-    model = ImportTask
+    model = models.ImportTask
 
     def can_add(self, data):
         return self.user.is_authenticated()
@@ -221,7 +215,7 @@ class ImportTaskAccess(BaseAccess):
 
 
 class ImportTaskMessageAccess(BaseAccess):
-    model = ImportTaskMessage
+    model = models.ImportTaskMessage
 
     def can_add(self, data):
         return False
@@ -330,18 +324,40 @@ class CloudPlatformsAccess(BaseAccess):
         return True
 
 
+class UserTokenAccess(BaseAccess):
+    model = Token
+
+    def can_read(self, obj):
+        if not self.user.is_authenticated():
+            return False
+        if self.user.is_staff or self.user.pk == obj.user.pk:
+            return True
+        return False
+
+    def can_add(self):
+        return False
+
+    def can_change(self, obj, data):
+        return self.can_read(obj)
+
+    def can_delete(self, obj):
+        return False
+
+
 register_access(User, UserAccess)
-register_access(Content, RoleAccess)
-register_access(RepositoryVersion, RepositoryVersionAccess)
-register_access(ImportTask, ImportTaskAccess)
-register_access(ImportTaskMessage, ImportTaskMessageAccess)
-register_access(NotificationSecret, NotificationSecretAccess)
-register_access(Notification, NotificationAccess)
-register_access(Subscription, SubscriptionAccess)
-register_access(Stargazer, StargazerAccess)
-register_access(Namespace, NamespaceAccess)
-register_access(ProviderNamespace, ProviderNamespaceAccess)
-register_access(Repository, RepositoryAccess)
-register_access(ContentBlock, ContentBlockAccess)
-register_access(ContentType, ContentTypeAccess)
-register_access(CloudPlatform, CloudPlatformsAccess)
+register_access(models.Content, RoleAccess)
+register_access(models.RepositoryVersion, RepositoryVersionAccess)
+register_access(models.ImportTask, ImportTaskAccess)
+register_access(models.ImportTaskMessage, ImportTaskMessageAccess)
+register_access(models.NotificationSecret, NotificationSecretAccess)
+register_access(models.Notification, NotificationAccess)
+register_access(models.Subscription, SubscriptionAccess)
+register_access(models.Stargazer, StargazerAccess)
+register_access(models.Namespace, NamespaceAccess)
+register_access(models.ProviderNamespace,
+                ProviderNamespaceAccess)
+register_access(models.Repository, RepositoryAccess)
+register_access(models.ContentBlock, ContentBlockAccess)
+register_access(models.ContentType, ContentTypeAccess)
+register_access(models.CloudPlatform, CloudPlatformsAccess)
+register_access(Token, UserTokenAccess)

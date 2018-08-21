@@ -65,7 +65,7 @@ class FieldLookupBackend(BaseFilterBackend):
                          'regex', 'iregex', 'gt', 'gte', 'lt', 'lte', 'in',
                          'isnull')
 
-    SENSITIVE_NAMES = ('secret', 'password', 'notification_secrets')
+    SENSITIVE_NAMES = ('secret', 'password', 'notification_secrets', 'token')
 
     def get_field_from_lookup(self, model, lookup):
         field = None

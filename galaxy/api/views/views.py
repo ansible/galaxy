@@ -19,14 +19,8 @@ from __future__ import print_function
 
 import logging
 from collections import OrderedDict
-
-import requests
-
-from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.models import SocialToken
 from django.conf import settings
-
-
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -44,7 +38,6 @@ from rest_framework import status
 from rest_framework.authentication import (
     TokenAuthentication, SessionAuthentication
 )
-from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -94,7 +87,6 @@ __all__ = [
     'SubscriptionList',
     'TagDetail',
     'TagList',
-    'TokenView',
     'TopContributorsList',
     'UserDetail',
     'UserList',
@@ -930,7 +922,7 @@ class UserMeList(base_views.RetrieveAPIView):
     def get_object(self):
         try:
             obj = self.model.objects.get(pk=self.request.user.pk)
-        except Exception:
+        except ObjectDoesNotExist:
             obj = AnonymousUser()
         return obj
 
@@ -1101,59 +1093,3 @@ class RefreshUserRepos(base_views.APIView):
         qs = request.user.repositories.all()
         serializer = serializers.RepositorySerializer(qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class TokenView(base_views.APIView):
-    """
-    Allows ansible-galaxy CLI to retrieve an auth token
-    """
-    def post(self, request, *args, **kwargs):
-
-        gh_user = None
-        user = None
-        token = None
-        github_token = request.data.get('github_token', None)
-
-        if github_token is None:
-            raise ValidationError({'detail': "Invalid request."})
-
-        try:
-            git_status = requests.get(settings.GITHUB_SERVER)
-            git_status.raise_for_status()
-        except Exception:
-            raise ValidationError({
-                'detail': "Error accessing GitHub API. Please try again later."
-            })
-
-        try:
-            header = dict(Authorization='token ' + github_token)
-            gh_user = requests.get(
-                settings.GITHUB_SERVER + '/user', headers=header
-            )
-            gh_user.raise_for_status()
-            gh_user = gh_user.json()
-            if hasattr(gh_user, 'message'):
-                raise ValidationError({'detail': gh_user['message']})
-        except Exception:
-            raise ValidationError({
-                'detail': "Error accessing GitHub with provided token."
-            })
-
-        if SocialAccount.objects.filter(
-                provider='github', uid=gh_user['id']).count() > 0:
-            user = SocialAccount.objects.get(
-                provider='github', uid=gh_user['id']).user
-        else:
-            msg = (
-                "Galaxy user not found. You must first log into Galaxy using "
-                "your GitHub account."
-            )
-            raise ValidationError({'detail': msg})
-
-        if Token.objects.filter(user=user).count() > 0:
-            token = Token.objects.filter(user=user)[0]
-        else:
-            token = Token.objects.create(user=user)
-            token.save()
-        result = dict(token=token.key, username=user.username)
-        return Response(result, status=status.HTTP_200_OK)

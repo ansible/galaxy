@@ -32,6 +32,9 @@ user_urls = [
     url(r'^(?P<pk>[0-9]+)/secrets/$',
         views.UserNotificationSecretList.as_view(),
         name='user_notification_secret_list'),
+    url(r'^(?P<pk>[0-9]+)/token/$',
+        views.UserTokenView.as_view(),
+        name='user_token_view')
 ]
 
 role_urls = [
