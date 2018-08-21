@@ -213,7 +213,6 @@ class MeSerializer(BaseSerializer):
 
 class UserListSerializer(BaseSerializer):
     staff = serializers.ReadOnlyField(source='is_staff')
-    email = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -264,12 +263,6 @@ class UserListSerializer(BaseSerializer):
             ]) for g in obj.starred.select_related('repository').all()]
         return d
 
-    def get_email(self, obj):
-        if self.context['request'].user.is_staff:
-            return obj.email
-        else:
-            return ''
-
 
 class UserDetailSerializer(BaseSerializer):
     password = serializers.CharField(
@@ -279,7 +272,6 @@ class UserDetailSerializer(BaseSerializer):
         help_text='Write-only field used to change the password.'
     )
     staff = serializers.ReadOnlyField(source='is_staff')
-    email = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -357,12 +349,6 @@ class UserDetailSerializer(BaseSerializer):
                 ('github_repo', g.repository.github_repo)
             ]) for g in obj.starred.select_related('repository').all()]
         return d
-
-    def get_email(self, obj):
-        if self.context['request'].user.is_staff:
-            return obj.email
-        else:
-            return ''
 
 
 class SubscriptionSerializer(BaseSerializer):
