@@ -1,31 +1,30 @@
-import { NgModule }     from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 
-import { EmptyStateModule }            from 'patternfly-ng/empty-state/empty-state.module';
-import { CardModule }                  from 'patternfly-ng/card/basic-card/card.module';
-import { ListModule }                  from 'patternfly-ng/list/basic-list/list.module';
-import { PaginationModule }            from 'patternfly-ng/pagination/pagination.module';
-import { FilterModule }                from 'patternfly-ng/filter/filter.module';
+import { CardModule } from 'patternfly-ng/card/basic-card/card.module';
+import { EmptyStateModule } from 'patternfly-ng/empty-state/empty-state.module';
+import { FilterModule } from 'patternfly-ng/filter/filter.module';
+import { ListModule } from 'patternfly-ng/list/basic-list/list.module';
+import { PaginationModule } from 'patternfly-ng/pagination/pagination.module';
 
-import { TooltipModule }               from 'ngx-bootstrap/tooltip';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
-import { UtilitiesModule }             from '../utilities/utilities.module';
+import { UtilitiesModule } from '../utilities/utilities.module';
 
-import { ContentDetailRoutingModule }  from './content-detail.routing.module';
-import { ContentDetailComponent }      from './content-detail.component';
-import { RepositoryComponent }         from './repository/repository.component';
-import { ModuleUtilsComponent }        from './content/module-utils/module-utils.component';
-import { RolesComponent }              from './content/roles/roles.component';
-import { ModulesComponent }            from './content/modules/modules.component';
-import { PluginsComponent }            from './content/plugins/plugins.component';
-import { CardInfoComponent }           from './cards/info/card-info.component';
-import { CardPlatformsComponent }      from './cards/platforms/platforms.component';
-import { CardVersionsComponent }       from './cards/versions/versions.component';
+import { PageHeaderModule } from '../page-header/page-header.module';
+import { PageLoadingModule } from '../page-loading/page-loading.module';
 import { CardCloudPlatformsComponent } from './cards/cloud-platforms/cloud-platforms.component';
-import { CardDependenciesComponent }   from './cards/dependencies/dependencies.component';
-import { PageHeaderModule }            from '../page-header/page-header.module';
-import { PageLoadingModule }           from '../page-loading/page-loading.module';
-
+import { CardDependenciesComponent } from './cards/dependencies/dependencies.component';
+import { CardInfoComponent } from './cards/info/card-info.component';
+import { CardPlatformsComponent } from './cards/platforms/platforms.component';
+import { CardVersionsComponent } from './cards/versions/versions.component';
+import { ContentDetailComponent } from './content-detail.component';
+import { ContentDetailRoutingModule } from './content-detail.routing.module';
+import { ModuleUtilsComponent } from './content/module-utils/module-utils.component';
+import { ModulesComponent } from './content/modules/modules.component';
+import { PluginsComponent } from './content/plugins/plugins.component';
+import { RolesComponent } from './content/roles/roles.component';
+import { RepositoryComponent } from './repository/repository.component';
 
 @NgModule({
     imports: [
@@ -39,10 +38,10 @@ import { PageLoadingModule }           from '../page-loading/page-loading.module
         PageLoadingModule,
         PageHeaderModule,
         ListModule,
-        UtilitiesModule
+        UtilitiesModule,
     ],
     declarations: [
-          ContentDetailComponent,
+        ContentDetailComponent,
         RepositoryComponent,
         CardInfoComponent,
         CardPlatformsComponent,
@@ -52,7 +51,7 @@ import { PageLoadingModule }           from '../page-loading/page-loading.module
         ModulesComponent,
         RolesComponent,
         ModuleUtilsComponent,
-        PluginsComponent
-    ]
+        PluginsComponent,
+    ],
 })
-export class ContentDetailModule { }
+export class ContentDetailModule {}

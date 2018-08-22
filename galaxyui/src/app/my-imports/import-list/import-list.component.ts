@@ -1,62 +1,45 @@
-import {
-    Component,
-    OnInit,
-    OnDestroy,
-    ViewChild,
-    AfterViewInit,
-} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
-import {
-    ActivatedRoute,
-    Router
-} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
-import {
-    Location
-} from '@angular/common';
+import { Location } from '@angular/common';
 
-import {
-    ImportsService,
-    SaveParams
-} from '../../resources/imports/imports.service';
+import { ImportsService } from '../../resources/imports/imports.service';
 
-import { Observable }    from 'rxjs/Observable';
-import 'rxjs/add/observable/interval';
+import { Observable } from 'rxjs';
+import { interval } from 'rxjs';
 
-import { Import }        from '../../resources/imports/import';
-import { ImportLatest }  from '../../resources/imports/import-latest';
+import { Import } from '../../resources/imports/import';
+import { ImportLatest } from '../../resources/imports/import-latest';
 
-import { ImportState }   from '../../enums/import-state.enum';
+import { ImportState } from '../../enums/import-state.enum';
 import { PagedResponse } from '../../resources/paged-response';
 
-import { PageHeaderComponent } from '../../page-header/page-header.component';
-
-import { ListConfig }    from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent }     from 'patternfly-ng/list/list-event';
+import { Filter } from 'patternfly-ng/filter/filter';
+import { FilterConfig } from 'patternfly-ng/filter/filter-config';
+import { FilterEvent } from 'patternfly-ng/filter/filter-event';
+import { FilterField } from 'patternfly-ng/filter/filter-field';
+import { FilterQuery } from 'patternfly-ng/filter/filter-query';
+import { FilterType } from 'patternfly-ng/filter/filter-type';
+import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
 import { ListComponent } from 'patternfly-ng/list/basic-list/list.component';
-import { FilterConfig }  from 'patternfly-ng/filter/filter-config';
-import { FilterField }   from 'patternfly-ng/filter/filter-field';
-import { FilterEvent }   from 'patternfly-ng/filter/filter-event';
-import { FilterQuery }   from 'patternfly-ng/filter/filter-query';
-import { FilterType }    from 'patternfly-ng/filter/filter-type';
-import { Filter }        from 'patternfly-ng/filter/filter';
 
-import { PaginationConfig }  from 'patternfly-ng/pagination/pagination-config';
-import { PaginationEvent }   from 'patternfly-ng/pagination/pagination-event';
+import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
+import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
 
-import { AuthService }   from '../../auth/auth.service';
+import { AuthService } from '../../auth/auth.service';
 
-import * as moment       from 'moment';
-import * as $            from 'jquery';
+import * as $ from 'jquery';
+import * as moment from 'moment';
 
 @Component({
     selector: 'import-list',
     templateUrl: './import-list.component.html',
-    styleUrls: ['./import-list.component.less']
+    styleUrls: ['./import-list.component.less'],
 })
 export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
-
-    @ViewChild(ListComponent) pfList: ListComponent;
+    @ViewChild(ListComponent)
+    pfList: ListComponent;
 
     listConfig: ListConfig;
     filterConfig: FilterConfig;
@@ -82,68 +65,66 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private route: ActivatedRoute,
-        private router: Router,
         private importsService: ImportsService,
         private location: Location,
-        private authService: AuthService
+        private authService: AuthService,
     ) {}
 
     ngOnInit() {
-
         this.listConfig = {
             dblClick: false,
             multiSelect: false,
             selectItems: true,
             showCheckbox: false,
-            useExpandItems: false
+            useExpandItems: false,
         } as ListConfig;
 
         this.filterConfig = {
-            fields: [{
-                id: 'repository_name',
-                title: 'Repository Name',
-                placeholder: 'Filter by Repository Name...',
-                type: FilterType.TEXT,
-            }, {
-                id: 'namespace',
-                title: 'Namespace',
-                placeholder: 'Filter by Namespace...',
-                type: FilterType.TEXT,
-            }] as FilterField[],
+            fields: [
+                {
+                    id: 'repository_name',
+                    title: 'Repository Name',
+                    placeholder: 'Filter by Repository Name...',
+                    type: FilterType.TEXT,
+                },
+                {
+                    id: 'namespace',
+                    title: 'Namespace',
+                    placeholder: 'Filter by Namespace...',
+                    type: FilterType.TEXT,
+                },
+            ] as FilterField[],
             resultsCount: 0,
-            appliedFilters: []
+            appliedFilters: [],
         } as FilterConfig;
 
         this.paginationConfig = {
             pageSize: 10,
             pageNumber: 1,
-            totalItems: 0
+            totalItems: 0,
         } as PaginationConfig;
 
         this.route.queryParams.subscribe(params => {
-            const event: FilterEvent = new FilterEvent();
             this.setPageSize(params);
             this.setAppliedFilters(params);
             this.setQuery();
 
-            this.route.data.subscribe(
-                (data) => {
-                    const imports: PagedResponse = data['imports'] as PagedResponse;
-                    this.items = imports.results;
-                    this.filterConfig.resultsCount = this.items.length;
-                    this.paginationConfig.totalItems = imports.count;
-                    this.prepareImports(this.items);
-                    if (this.items.length) {
-                        if (params['selected']) {
-                            this.getImport(Number(params['selected']), true);
-                        } else {
-                            this.getImport(this.items[0].id, true);
-                        }
+            this.route.data.subscribe(data => {
+                const imports: PagedResponse = data['imports'] as PagedResponse;
+                this.items = imports.results;
+                this.filterConfig.resultsCount = this.items.length;
+                this.paginationConfig.totalItems = imports.count;
+                this.prepareImports(this.items);
+                if (this.items.length) {
+                    if (params['selected']) {
+                        this.getImport(Number(params['selected']), true);
                     } else {
-                        this.cancelPageLoading();
+                        this.getImport(this.items[0].id, true);
                     }
+                } else {
+                    this.cancelPageLoading();
                 }
-            );
+            });
             this.cancelPageLoading();
         });
     }
@@ -213,23 +194,20 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.polling) {
             this.polling.unsubscribe();
         }
-        this.importsService.get(id).subscribe(
-            result => {
-                this.prepareImport(result);
-                this.selected = result;
-                this.selectedId = result.id;
-                this.setQuery();
-                if (this.pfList) {
-                    this.selectItem(this.selected.id, deselectId);
-                }
-                this.cancelPageLoading();
-                if (this.selected.state === ImportState.running ||
-                    this.selected.state === ImportState.pending) {
-                        // monitor the state of a running import
-                        this.polling = Observable.interval(5000)
-                            .subscribe(_ => this.refreshImport());
-                }
-            });
+        this.importsService.get(id).subscribe(result => {
+            this.prepareImport(result);
+            this.selected = result;
+            this.selectedId = result.id;
+            this.setQuery();
+            if (this.pfList) {
+                this.selectItem(this.selected.id, deselectId);
+            }
+            this.cancelPageLoading();
+            if (this.selected.state === ImportState.running || this.selected.state === ImportState.pending) {
+                // monitor the state of a running import
+                this.polling = interval(5000).subscribe(_ => this.refreshImport());
+            }
+        });
     }
 
     applyFilters($event: FilterEvent): void {
@@ -264,8 +242,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     startedImport($event): void {
         this.refreshImport();
-        this.polling = Observable.interval(5000)
-            .subscribe(_ => this.refreshImport());
+        this.polling = interval(5000).subscribe(_ => this.refreshImport());
     }
 
     toggleScroll($event): void {
@@ -278,7 +255,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
     // private
 
     private scrollDetails() {
-        $('#import-details-container').animate({scrollTop: $('#import-details-container')[0].scrollHeight}, 1000);
+        $('#import-details-container').animate({ scrollTop: $('#import-details-container')[0].scrollHeight }, 1000);
     }
 
     private setPageSize(params: any) {
@@ -287,10 +264,10 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
             this.pageSize = params['page_size'];
             this.pageNumber = 1;
         }
-           if (params['page']) {
-               this.paginationConfig.pageNumber = params['page'];
-               this.pageNumber = params['page'];
-           }
+        if (params['page']) {
+            this.paginationConfig.pageNumber = params['page'];
+            this.pageNumber = params['page'];
+        }
     }
 
     private prepareImport(data: Import): void {
@@ -306,8 +283,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
         } else if (data.state === ImportState.running) {
             data.last_run = 'Running...';
         } else if (data.state === ImportState.failed || data.state === ImportState.success) {
-            const state = data.state.charAt(0).toUpperCase() +
-                data.state.slice(1).toLowerCase();
+            const state = data.state.charAt(0).toUpperCase() + data.state.slice(1).toLowerCase();
             data.last_run = state + ' ' + moment(data.finished).fromNow();
         }
     }
@@ -346,7 +322,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (!field) {
                     continue;
                 }
-                const values = (typeof params[key] === 'object') ? params[key] : [params[key]];
+                const values = typeof params[key] === 'object' ? params[key] : [params[key]];
                 values.forEach(value => {
                     if (filterParams !== '') {
                         filterParams += '&';
@@ -362,7 +338,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                     const ffield: Filter = {} as Filter;
                     ffield.field = field;
                     if (field.type === FilterType.TEXT) {
-                          ffield.value = value;
+                        ffield.value = value;
                     } else if (field.type === FilterType.TYPEAHEAD) {
                         field.queries.forEach((query: FilterQuery) => {
                             if (query.id === value) {
@@ -391,8 +367,8 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
             paging += '&page=' + this.pageNumber;
         }
 
-        const query = (this.filterParams + paging).replace(/^&/, '');  // remove leading &
-        const selected = (this.selectedId) ? `&selected=${this.selectedId}` : '';
+        const query = (this.filterParams + paging).replace(/^&/, ''); // remove leading &
+        const selected = this.selectedId ? `&selected=${this.selectedId}` : '';
 
         // Refresh params on location URL
         const location = (this.locationParams + selected + paging).replace(/^&/, ''); // remove leading &
@@ -426,42 +402,39 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
             const selectedId = this.selected.id;
             this.refreshing = true;
             const params: any = {
-                'repository__id': this.selected.summary_fields.repository.id,
-                'order_by': '-id'
+                repository__id: this.selected.summary_fields.repository.id,
+                order_by: '-id',
             };
-            this.importsService.query(params).subscribe(
-                result => {
-                    if (result.length) {
-                        const import_result: Import = result[0];
-                        this.prepareImport(import_result);
-                        this.items.forEach((item: ImportLatest) => {
-                            if (item.repository_id === import_result.summary_fields.repository.id) {
-                                item.finished = moment(import_result.modified).fromNow();
-                                item.state = import_result.state.charAt(0).toUpperCase() +
-                                    import_result.state.slice(1).toLowerCase();
-                            }
-                        });
-                        if (this.selected.id === selectedId) {
-                            // If the selected item has not changed,
-                            //   copy result property values -> this.selected
-                            const keys = Object.keys(import_result);
-                            for (let i = 0; i < keys.length; i++ ) {
-                                this.selected[keys[i]] = import_result[keys[i]];
-                            }
-                            if (this.selected.state === ImportState.failed ||
-                                this.selected.state === ImportState.success) {
-                                // The import finished
-                                if (this.polling) {
-                                    this.polling.unsubscribe();
-                                }
+            this.importsService.query(params).subscribe(result => {
+                if (result.length) {
+                    const import_result: Import = result[0];
+                    this.prepareImport(import_result);
+                    this.items.forEach((item: ImportLatest) => {
+                        if (item.repository_id === import_result.summary_fields.repository.id) {
+                            item.finished = moment(import_result.modified).fromNow();
+                            item.state = import_result.state.charAt(0).toUpperCase() + import_result.state.slice(1).toLowerCase();
+                        }
+                    });
+                    if (this.selected.id === selectedId) {
+                        // If the selected item has not changed,
+                        //   copy result property values -> this.selected
+                        const keys = Object.keys(import_result);
+                        for (const key of keys) {
+                            this.selected[key] = import_result[key];
+                        }
+                        if (this.selected.state === ImportState.failed || this.selected.state === ImportState.success) {
+                            // The import finished
+                            if (this.polling) {
+                                this.polling.unsubscribe();
                             }
                         }
                     }
-                    this.refreshing = false;
-                    if (this.scroll) {
-                        this.scrollDetails();
-                    }
-                });
+                }
+                this.refreshing = false;
+                if (this.scroll) {
+                    this.scrollDetails();
+                }
+            });
         }
     }
 

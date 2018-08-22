@@ -16,69 +16,49 @@
  * along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
  */
 
-import {
-    Component,
-    OnInit
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import {
-    ActivatedRoute,
-    ParamMap
-} from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
-import {
-    CardConfig
-} from 'patternfly-ng/card/basic-card/card-config';
+import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
 
-import {
-    Location
-} from '@angular/common';
+import { Observable } from 'rxjs';
 
-import {
-    Router
-} from '@angular/router';
-
-import { Observable } from 'rxjs/Observable';
-
-import 'rxjs/add/operator/switchMap';
+import { switchMap } from 'rxjs/operators';
 
 import { AuthService } from '../auth/auth.service';
 
 @Component({
-    selector:    'login',
+    selector: 'login',
     templateUrl: './login.component.html',
-    styleUrls:   ['./login.component.less']
+    styleUrls: ['./login.component.less'],
 })
 export class LoginComponent implements OnInit {
-
     config: CardConfig;
     msgText = 'Log into Galaxy by clicking on one of the above SCMs';
     connectingMsg = '';
     errorParam: Observable<boolean>;
     redirectUrl: string = null;
 
-    constructor(
-        private authService: AuthService,
-        private route: ActivatedRoute,
-        private location: Location
-    ) {}
+    constructor(private authService: AuthService, private route: ActivatedRoute) {}
 
     ngOnInit() {
         this.config = {
             noPadding: true,
-            topBorder: false
+            topBorder: false,
         } as CardConfig;
 
         this.redirectUrl = this.authService.redirectUrl;
 
-        this.errorParam = this.route.paramMap
-            .switchMap((params: ParamMap) => {
+        this.errorParam = this.route.paramMap.pipe(
+            switchMap((params: ParamMap) => {
                 return new Observable<boolean>(observer => {
-                    return observer.next((params.get('error') === 'true') ? true : false);
+                    return observer.next(params.get('error') === 'true' ? true : false);
                 });
-            });
+            }),
+        );
 
-        this.errorParam.subscribe((result) => {
+        this.errorParam.subscribe(result => {
             if (result) {
                 this.msgText = 'To view the selected page, you must first log into Galaxy by clicking on one of the above SCMs';
             } else {

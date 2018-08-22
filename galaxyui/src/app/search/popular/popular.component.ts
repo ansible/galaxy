@@ -1,27 +1,14 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    ViewChild,
-    OnInit,
-    Output
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import {
-    ActivatedRoute,
-} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
-import { ListConfig }     from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent }      from 'patternfly-ng/list/list-event';
+import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
 
-import { Tag }              from '../../resources/tags/tag';
-import { TagsService }      from '../../resources/tags/tags.service';
+import { Tag } from '../../resources/tags/tag';
 
-import { PlatformService }  from '../../resources/platforms/platform.service';
-import { Platform }         from '../../resources/platforms/platform';
+import { Platform } from '../../resources/platforms/platform';
 
-import { CloudPlatformService } from '../../resources/cloud-platforms/cloud-platform.service';
-import { CloudPlatform }        from '../../resources/cloud-platforms/cloud-platform';
+import { CloudPlatform } from '../../resources/cloud-platforms/cloud-platform';
 
 class PopularData {
     tags: Tag[];
@@ -37,24 +24,21 @@ export class PopularEvent {
 @Component({
     selector: 'popular-widget',
     templateUrl: './popular.component.html',
-    styleUrls: ['./popular.component.less']
+    styleUrls: ['./popular.component.less'],
 })
 export class PopularComponent implements OnInit {
-
-    @Input() popularType: string;
-    @Input() popularTitle: string;
-    @Output() click = new EventEmitter<PopularEvent>();
+    @Input()
+    popularType: string;
+    @Input()
+    popularTitle: string;
+    @Output()
+    click = new EventEmitter<PopularEvent>();
 
     data: PopularData;
     listConfig: ListConfig;
     items: any;
 
-    constructor(
-        private tagsService: TagsService,
-        private platformService: PlatformService,
-        private cloudPlatformService: CloudPlatformService,
-        private route: ActivatedRoute
-    ) {}
+    constructor(private route: ActivatedRoute) {}
 
     handleClick($event) {
         // User clicked on an item

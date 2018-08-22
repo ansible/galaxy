@@ -1,59 +1,41 @@
-import {
-    Component,
-    OnInit,
-    OnDestroy,
-    TemplateRef,
-    ViewEncapsulation,
-    Input,
-} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 
-import { flatten }           from 'lodash';
-import { Action }            from 'patternfly-ng/action/action';
-import { ActionConfig }      from 'patternfly-ng/action/action-config';
-import { EmptyStateConfig }  from 'patternfly-ng/empty-state/empty-state-config';
-import { ListEvent }         from 'patternfly-ng/list/list-event';
-import { ListConfig }        from 'patternfly-ng/list/basic-list/list-config';
+import { ActionConfig } from 'patternfly-ng/action/action-config';
+import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
+import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
 
-import {
-    BsModalService,
-    BsModalRef
-} from 'ngx-bootstrap';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 
-import { FilterConfig }                from 'patternfly-ng/filter/filter-config';
-import { FilterField }                 from 'patternfly-ng/filter/filter-field';
-import { FilterType }                  from 'patternfly-ng/filter/filter-type';
+import { FilterConfig } from 'patternfly-ng/filter/filter-config';
+import { FilterField } from 'patternfly-ng/filter/filter-field';
+import { FilterType } from 'patternfly-ng/filter/filter-type';
 
-import { PaginationConfig }            from 'patternfly-ng/pagination/pagination-config';
-import { PaginationEvent }             from 'patternfly-ng/pagination/pagination-event';
-import { ToolbarConfig }               from 'patternfly-ng/toolbar/toolbar-config';
+import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
+import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
+import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 
-import { Namespace }               from '../../../../resources/namespaces/namespace';
-import { PagedResponse }           from '../../../../resources/paged-response';
-import { ProviderNamespace }       from '../../../../resources/provider-namespaces/provider-namespace';
-import { Repository }              from '../../../../resources/repositories/repository';
-import { RepositoryService }       from '../../../../resources/repositories/repository.service';
+import { Namespace } from '../../../../resources/namespaces/namespace';
+import { PagedResponse } from '../../../../resources/paged-response';
+import { ProviderNamespace } from '../../../../resources/provider-namespaces/provider-namespace';
+import { Repository } from '../../../../resources/repositories/repository';
+import { RepositoryService } from '../../../../resources/repositories/repository.service';
 import { RepositoryImportService } from '../../../../resources/repository-imports/repository-import.service';
-import { RepositoryImport }        from '../../../../resources/repository-imports/repository-import';
 
-import {
-    AlternateNameModalComponent
-} from './alternate-name-modal/alternate-name-modal.component';
+import { AlternateNameModalComponent } from './alternate-name-modal/alternate-name-modal.component';
 
-import { Observable }              from 'rxjs/Observable';
-import { forkJoin }                from 'rxjs/observable/forkJoin';
-import 'rxjs/add/observable/interval';
+import { forkJoin, interval, Observable } from 'rxjs';
 
-import * as moment                 from 'moment';
-
+import * as moment from 'moment';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
     selector: 'repositories-content',
     templateUrl: './repositories-content.component.html',
-    styleUrls: ['./repositories-content.component.less']
+    styleUrls: ['./repositories-content.component.less'],
 })
 export class RepositoriesContentComponent implements OnInit, OnDestroy {
-    @Input() namespace: Namespace;
+    @Input()
+    namespace: Namespace;
 
     @Input()
     set contentAdded(state: number) {
@@ -96,7 +78,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     constructor(
         private repositoryService: RepositoryService,
         private repositoryImportService: RepositoryImportService,
-        private modalService: BsModalService
+        private modalService: BsModalService,
     ) {
         this.modalService.onHidden.subscribe(_ => {
             if (this.bsModalRef && this.bsModalRef.content.startedImport) {
@@ -116,44 +98,44 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                     id: 'name',
                     title: 'Name',
                     placeholder: 'Filter by Name...',
-                    type: FilterType.TEXT
+                    type: FilterType.TEXT,
                 },
             ] as FilterField[],
             resultsCount: this.items.length,
-            appliedFilters: []
+            appliedFilters: [],
         } as FilterConfig;
 
         this.toolbarConfig = {
             filterConfig: this.filterConfig,
-            views: []
+            views: [],
         } as ToolbarConfig;
 
         this.emptyStateConfig = {
             actions: {
                 primaryActions: [],
-                moreActions: []
+                moreActions: [],
             } as ActionConfig,
             iconStyleClass: 'pficon-warning-triangle-o',
             title: 'No Repositories',
-            info: 'Add repositories by clicking the \'Add Content\' button above.',
-            helpLink: {}
+            info: 'Add repositories by clicking the "Add Content" button above.',
+            helpLink: {},
         } as EmptyStateConfig;
 
         this.nonEmptyStateConfig = {
             actions: {
                 primaryActions: [],
-                moreActions: []
+                moreActions: [],
             } as ActionConfig,
             iconStyleClass: '',
             title: '',
             info: '',
-            helpLink: {}
+            helpLink: {},
         } as EmptyStateConfig;
 
         this.disabledStateConfig = {
             iconStyleClass: 'pficon-warning-triangle-o',
             info: `The Namespace ${this.namespace.name} is disabled. You'll need to re-enable it before viewing and modifying its content.`,
-            title: 'Namespace Disabled'
+            title: 'Namespace Disabled',
         } as EmptyStateConfig;
 
         this.listConfig = {
@@ -163,7 +145,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             selectItems: false,
             selectionMatchProp: 'name',
             showCheckbox: false,
-            useExpandItems: false
+            useExpandItems: false,
         } as ListConfig;
 
         if (this.namespace.active && provider_namespaces.length) {
@@ -213,10 +195,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
     private getRepositories() {
         this.loading = true;
-        this.polling = Observable.interval(10000)
-            .subscribe(pollingResult => {
-                this.refreshRepositories();
-            });
+        this.polling = interval(10000).subscribe(pollingResult => {
+            this.refreshRepositories();
+        });
     }
 
     private getDetailUrl(item: Repository) {
@@ -254,9 +235,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         const queries: Observable<PagedResponse>[] = [];
         this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
             const query = {
-                'provider_namespace__id': pns.id,
-                'page_size': this.paginationConfig.pageSize,
-                'page': this.paginationConfig.pageNumber,
+                provider_namespace__id: pns.id,
+                page_size: this.paginationConfig.pageSize,
+                page: this.paginationConfig.pageNumber,
             };
 
             if (this.filterConfig) {
@@ -274,7 +255,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             let resultCount = 0;
 
             for (const response of results) {
-                repositories =  repositories.concat(response.results as Repository[]);
+                repositories = repositories.concat(response.results as Repository[]);
                 resultCount += response.count;
             }
 
@@ -316,15 +297,14 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         // Start an import
         repository['latest_import']['state'] = 'PENDING';
         repository['latest_import']['as_of_dt'] = '';
-        this.repositoryImportService.save({'repository_id': repository.id})
-            .subscribe(response => {
-                console.log(`Started import for repository ${repository.id}`);
-            });
+        this.repositoryImportService.save({ repository_id: repository.id }).subscribe(response => {
+            console.log(`Started import for repository ${repository.id}`);
+        });
     }
 
     private deleteRepository(repository: Repository) {
         this.loading = true;
-        this.repositoryService.destroy(repository).subscribe( _ => {
+        this.repositoryService.destroy(repository).subscribe(_ => {
             this.items.forEach((item: Repository, idx: number) => {
                 if (item.id === repository.id) {
                     this.items.splice(idx, 1);
@@ -337,9 +317,12 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
     private changeRepositoryName(repository: Repository) {
         const initialState = {
-            repository: repository
+            repository: repository,
         };
-        this.bsModalRef = this.modalService.show(AlternateNameModalComponent,
-            { initialState: initialState, keyboard: true, animated: true });
+        this.bsModalRef = this.modalService.show(AlternateNameModalComponent, {
+            initialState: initialState,
+            keyboard: true,
+            animated: true,
+        });
     }
 }

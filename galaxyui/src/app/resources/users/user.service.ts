@@ -1,21 +1,16 @@
-import { Injectable }           from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
+import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
-import { Observable }           from 'rxjs/Observable';
-import { HttpClient }           from '@angular/common/http';
-import { PagedResponse }        from '../paged-response';
-import { User }                 from './user';
-import { of }                   from 'rxjs/observable/of';
-
+import { PagedResponse } from '../paged-response';
+import { User } from './user';
 
 @Injectable()
 export class UserService {
-
     private url = '/api/v1/users/';
 
-    constructor(private http: HttpClient,
-                private notificationService: NotificationService) {
-    }
+    constructor(private http: HttpClient, private notificationService: NotificationService) {}
 
     query(params?: any): Observable<User[]> {
         let userUrl = this.url;
@@ -27,19 +22,18 @@ export class UserService {
                 userParams = params;
             }
         }
-        return this.http.get<PagedResponse>(userUrl, {'params':  userParams})
-            .pipe(
-                map(response => response.results as User[]),
-                tap(_ => this.log('fetched users')),
-                catchError(this.handleError('Query', []))
-            );
+        return this.http.get<PagedResponse>(userUrl, { params: userParams }).pipe(
+            map(response => response.results as User[]),
+            tap(_ => this.log('fetched users')),
+            catchError(this.handleError('Query', [])),
+        );
     }
 
     private handleError<T>(operation = '', result?: T) {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} user error: ${error.message}`);
-            this.notificationService.httpError(`${operation} user failed:`, {data: error});
+            this.notificationService.httpError(`${operation} user failed:`, { data: error });
 
             // Let the app keep running by returning an empty result.
             return of(result as T);

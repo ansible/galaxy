@@ -1,8 +1,4 @@
-import {
-    Component,
-    OnInit,
-    Input
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 class Title {
     name: string;
@@ -10,18 +6,16 @@ class Title {
 }
 
 @Component({
-  selector: 'app-page-header',
-  templateUrl: './page-header.component.html',
-  styleUrls: ['./page-header.component.less']
+    selector: 'app-page-header',
+    templateUrl: './page-header.component.html',
+    styleUrls: ['./page-header.component.less'],
 })
 export class PageHeaderComponent implements OnInit {
-
     _headerTitle: Title[];
     _headerIcon: string;
 
     @Input()
     set headerTitle(headerTitle: string) {
-
         // Set headerTitle to a string. For sub pages, where you want a breadcrumb trail,
         // pass a list of page names and paths separated by ';'. For example:
         // 'page_name;/path;page_name;/path/foo;page_name'.
@@ -50,5 +44,4 @@ export class PageHeaderComponent implements OnInit {
     constructor() {}
 
     ngOnInit() {}
-
 }

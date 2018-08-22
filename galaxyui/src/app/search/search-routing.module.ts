@@ -1,25 +1,22 @@
 import { NgModule } from '@angular/core';
 
-import {
-    Routes,
-    RouterModule
-} from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { SearchComponent } from './search.component';
 
 import {
+    PopularCloudPlatformsResolver,
+    PopularPlatformsResolver,
+    PopularTagsResolver,
     SearchCloudPlatformResolver,
     SearchContentResolver,
     SearchContentTypeResolver,
     SearchPlatformResolver,
-    PopularTagsResolver,
-    PopularPlatformsResolver,
-    PopularCloudPlatformsResolver
-}  from './search.resolver.service';
+} from './search.resolver.service';
 
 const routes: Routes = [
     {
-        path: 'search',
+        path: '',
         component: SearchComponent,
         runGuardsAndResolvers: 'always',
         resolve: {
@@ -29,26 +26,22 @@ const routes: Routes = [
             platforms: SearchPlatformResolver,
             popularTags: PopularTagsResolver,
             popularCloudPlatforms: PopularCloudPlatformsResolver,
-            popularPlatforms: PopularPlatformsResolver
+            popularPlatforms: PopularPlatformsResolver,
         },
-    }
+    },
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(routes)
-    ],
-    exports: [
-          RouterModule
-      ],
-      providers: [
-          SearchCloudPlatformResolver,
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule],
+    providers: [
+        SearchCloudPlatformResolver,
         SearchContentResolver,
         SearchContentTypeResolver,
         SearchPlatformResolver,
         PopularTagsResolver,
         PopularPlatformsResolver,
-        PopularCloudPlatformsResolver
-      ]
+        PopularCloudPlatformsResolver,
+    ],
 })
-export class SearchRoutingModule { }
+export class SearchRoutingModule {}

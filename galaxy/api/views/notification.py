@@ -1,6 +1,9 @@
 import base64
 import json
+import logging
+
 from hashlib import sha256
+from urlparse import urlparse
 
 import requests
 from OpenSSL import crypto
@@ -9,9 +12,12 @@ from django.db import IntegrityError
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import status
-from rest_framework.authentication import TokenAuthentication, \
-    SessionAuthentication
-from rest_framework.exceptions import ValidationError
+from rest_framework.authentication import (
+    TokenAuthentication, SessionAuthentication
+)
+from rest_framework.exceptions import (
+    ValidationError, APIException, PermissionDenied
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -31,6 +37,8 @@ __all__ = [
     'NotificationList',
     'NotificationDetail',
 ]
+
+logger = logging.getLogger(__name__)
 
 
 class NotificationSecretList(base_views.ListCreateAPIView):
@@ -220,11 +228,12 @@ class NotificationList(base_views.ListCreateAPIView):
         signature = request.META['HTTP_SIGNATURE']
         return base64.b64decode(signature)
 
-    def _get_travis_public_key(self):
+    def _get_travis_public_key(self, travis_host):
         """
         Returns the PEM encoded public key from the Travis CI /config endpoint
         """
-        response = requests.get(settings.TRAVIS_CONFIG_URL, timeout=10.0)
+        response = requests.get(
+            'https://api.{0}/config'.format(travis_host), timeout=10.0)
         response.raise_for_status()
         travis_config = response.json()['config']
         return travis_config['notifications']['webhook']['public_key']
@@ -241,25 +250,40 @@ class NotificationList(base_views.ListCreateAPIView):
         except User.DoesNotExist:
             raise ValidationError('Galaxy task user not found')
 
+    def _get_travis_host(self, payload):
+        payload_json = json.loads(payload)
+        travis_host = None
+        if payload_json.get('build_url'):
+            parsed = urlparse(payload_json['build_url'])
+            travis_host = parsed.netloc
+        return travis_host
+
     def _verify_request(self, request):
         signature = self._get_signature(request)
         payload = request.POST['payload']
+        travis_host = self._get_travis_host(payload)
+        github_user, github_repo = self._get_repo_info(request)
+        notification_error = 'Travis notification for {0}/{1}'.format(
+            github_user, github_repo)
         try:
-            public_key = self._get_travis_public_key()
+            public_key = self._get_travis_public_key(travis_host)
         except requests.Timeout:
-            # TODO(cutwater): Probably it shouldn't be "Bad request"
-            raise ValidationError(
-                "Timeout attempting to retrieve Travis CI public key")
+            msg = '{0}: Timeout retrieving public key for {1}'.format(
+                notification_error, travis_host)
+            logger.error(msg)
+            raise APIException(msg)
         except requests.RequestException as e:
-            raise ValidationError(
-                "Failed to retrieve Travis CI public key. {}"
-                .format(e.message)
-            )
+            msg = '{0}: Failed to retrieve public key for {1}: {2}'.format(
+                notification_error, travis_host, e.message)
+            logger.error(msg)
+            raise APIException(msg)
         try:
             self._verify_signature(signature, public_key, payload)
         except crypto.Error:
-            # FIXME(cutwater): Raise permission denied
-            raise ValidationError("Authorization failed")
+            msg = '{0}: Signature verification failed.'.format(
+                notification_error)
+            logger.error(msg)
+            raise PermissionDenied(msg)
 
 
 class NotificationDetail(base_views.RetrieveAPIView):

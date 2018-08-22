@@ -1,29 +1,19 @@
-import {
-    Component,
-    OnInit,
-    AfterViewInit
-} from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 
-import {
-    ActivatedRoute,
-    Router
-} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import {
-    CardConfig
-} from 'patternfly-ng/card/basic-card/card-config';
+import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
 
-import { Namespace }              from '../resources/namespaces/namespace';
+import { Namespace } from '../resources/namespaces/namespace';
 
 import * as $ from 'jquery';
 
 @Component({
-    selector:    'home',
+    selector: 'home',
     templateUrl: './home.component.html',
-    styleUrls:   ['./home.component.less']
+    styleUrls: ['./home.component.less'],
 })
 export class HomeComponent implements OnInit, AfterViewInit {
-
     downloadConfig: CardConfig;
     shareConfig: CardConfig;
     featureConfig: CardConfig;
@@ -37,13 +27,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
     showCards = false;
     vendors: Namespace[] = [];
 
-    constructor(
-        private route: ActivatedRoute,
-        private router: Router
-    ) {}
+    constructor(private route: ActivatedRoute, private router: Router) {}
 
     ngOnInit() {
-        this.route.data.subscribe((data) => {
+        this.route.data.subscribe(data => {
             this.vendors = data['vendors']['results'];
             data['contentBlocks'].forEach(item => {
                 switch (item.name) {
@@ -61,15 +48,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
         });
 
         this.downloadConfig = {
-            titleBorder: true
+            titleBorder: true,
         } as CardConfig;
 
         this.shareConfig = {
-            titleBorder: true
+            titleBorder: true,
         } as CardConfig;
 
         this.featureConfig = {
-            titleBorder: true
+            titleBorder: true,
         } as CardConfig;
     }
 
@@ -83,7 +70,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
 
     searchContent(): void {
-        this.router.navigate(['/search'], {queryParams: {keywords: this.searchText}});
+        this.router.navigate(['/search'], { queryParams: { keywords: this.searchText } });
     }
 
     // private
@@ -91,7 +78,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private setCardHeight(): void {
         // Set the cards to a consistent height
         setTimeout(_ => {
-            const windowHeight = window.innerHeight;
             const windowWidth = window.innerWidth;
             $('#card-1 .pfng-card').css('height', 'auto');
             $('#card-2 .pfng-card').css('height', 'auto');

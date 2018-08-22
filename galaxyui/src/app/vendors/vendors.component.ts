@@ -1,51 +1,32 @@
-import {
-    Component,
-    OnInit
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import {
-    ActivatedRoute,
-    Router
-} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import { Action }             from 'patternfly-ng/action/action';
-import { ActionConfig }       from 'patternfly-ng/action/action-config';
-import { ListEvent }          from 'patternfly-ng/list/list-event';
-import { FilterConfig }       from 'patternfly-ng/filter/filter-config';
-import { ToolbarConfig }      from 'patternfly-ng/toolbar/toolbar-config';
-import { FilterType }         from 'patternfly-ng/filter/filter-type';
-import { SortConfig }         from 'patternfly-ng/sort/sort-config';
-import { FilterField }        from 'patternfly-ng/filter/filter-field';
-import { SortField }          from 'patternfly-ng/sort/sort-field';
-import { ToolbarView }        from 'patternfly-ng/toolbar/toolbar-view';
-import { SortEvent }          from 'patternfly-ng/sort/sort-event';
-import { Filter }             from 'patternfly-ng/filter/filter';
-import { FilterEvent }        from 'patternfly-ng/filter/filter-event';
-import { EmptyStateConfig }   from 'patternfly-ng/empty-state/empty-state-config';
-import { PaginationConfig }   from 'patternfly-ng/pagination/pagination-config';
-import { PaginationEvent }    from 'patternfly-ng/pagination/pagination-event';
+import { ActionConfig } from 'patternfly-ng/action/action-config';
+import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
+import { Filter } from 'patternfly-ng/filter/filter';
+import { FilterConfig } from 'patternfly-ng/filter/filter-config';
+import { FilterField } from 'patternfly-ng/filter/filter-field';
+import { FilterType } from 'patternfly-ng/filter/filter-type';
+import { ListEvent } from 'patternfly-ng/list/list-event';
+import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
+import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
+import { SortConfig } from 'patternfly-ng/sort/sort-config';
+import { SortEvent } from 'patternfly-ng/sort/sort-event';
+import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 
-import { NamespaceService }   from '../resources/namespaces/namespace.service';
-import { Namespace }          from '../resources/namespaces/namespace';
+import { Namespace } from '../resources/namespaces/namespace';
+import { NamespaceService } from '../resources/namespaces/namespace.service';
 
-import {
-    ContentTypes,
-    ContentTypesPluralChoices,
-    ContentTypesIconClasses
-} from '../enums/content-types.enum';
+import { ContentTypes, ContentTypesIconClasses, ContentTypesPluralChoices } from '../enums/content-types.enum';
 
 @Component({
     selector: 'app-vendors',
     templateUrl: './vendors.component.html',
-    styleUrls: ['./vendors.component.less']
+    styleUrls: ['./vendors.component.less'],
 })
 export class VendorsComponent implements OnInit {
-
-    constructor(
-        private router: Router,
-          private route: ActivatedRoute,
-          private namespaceService: NamespaceService
-    ) {}
+    constructor(private router: Router, private route: ActivatedRoute, private namespaceService: NamespaceService) {}
 
     pageTitle = 'Partners';
     headerIcon = 'fa fa-star';
@@ -60,7 +41,7 @@ export class VendorsComponent implements OnInit {
     paginationConfig: PaginationConfig;
     sortBy = 'name';
     filterBy: any = {
-        'is_vendor': 'true'
+        is_vendor: 'true',
     };
     pageNumber = 1;
     pageSize = 10;
@@ -69,7 +50,7 @@ export class VendorsComponent implements OnInit {
         this.emptyStateConfig = {
             info: '',
             title: 'No partners match your search',
-            iconStyleClass: 'pficon pficon-filter'
+            iconStyleClass: 'pficon pficon-filter',
         } as EmptyStateConfig;
 
         this.filterConfig = {
@@ -78,17 +59,17 @@ export class VendorsComponent implements OnInit {
                     id: 'name',
                     title: 'Name',
                     placeholder: 'Filter by Name...',
-                    type: FilterType.TEXT
+                    type: FilterType.TEXT,
                 },
                 {
                     id: 'description',
                     title: 'Description',
                     placeholder: 'Filter by Description...',
-                    type: FilterType.TEXT
-                }
+                    type: FilterType.TEXT,
+                },
             ] as FilterField[],
             resultsCount: 0,
-            appliedFilters: [] as Filter[]
+            appliedFilters: [] as Filter[],
         } as FilterConfig;
 
         this.sortConfig = {
@@ -96,36 +77,36 @@ export class VendorsComponent implements OnInit {
                 {
                     id: 'name',
                     title: 'Name',
-                    sortType: 'alpha'
+                    sortType: 'alpha',
                 },
                 {
                     id: 'description',
                     title: 'Description',
-                    sortType: 'alpha'
-                }
+                    sortType: 'alpha',
+                },
             ],
-            isAscending: true
+            isAscending: true,
         } as SortConfig;
 
         this.toolbarActionConfig = {
             primaryActions: [],
-            moreActions: []
+            moreActions: [],
         } as ActionConfig;
 
         this.toolbarConfig = {
             actionConfig: this.toolbarActionConfig,
             filterConfig: this.filterConfig,
             sortConfig: this.sortConfig,
-            views: []
+            views: [],
         } as ToolbarConfig;
 
         this.paginationConfig = {
             pageSize: 10,
             pageNumber: 1,
-            totalItems: 0
+            totalItems: 0,
         } as PaginationConfig;
 
-        this.route.data.subscribe((data) => {
+        this.route.data.subscribe(data => {
             this.items = data['vendors']['results'];
             this.paginationConfig.totalItems = data['vendors']['count'];
             this.prepareNamespaces();
@@ -147,7 +128,7 @@ export class VendorsComponent implements OnInit {
             });
         } else {
             this.filterBy = {
-                'is_vendor': 'true'
+                is_vendor: 'true',
             };
         }
         this.pageNumber = 1;
@@ -227,13 +208,12 @@ export class VendorsComponent implements OnInit {
         this.filterBy['page_size'] = this.pageSize;
         this.filterBy['page'] = this.pageNumber;
         this.filterBy['order'] = this.sortBy;
-        this.namespaceService.pagedQuery(this.filterBy)
-            .subscribe(result => {
-                this.items = result.results as Namespace[];
-                this.prepareNamespaces();
-                this.filterConfig.resultsCount = result.count;
-                this.paginationConfig.totalItems = result.count;
-                this.pageLoading = false;
-            });
+        this.namespaceService.pagedQuery(this.filterBy).subscribe(result => {
+            this.items = result.results as Namespace[];
+            this.prepareNamespaces();
+            this.filterConfig.resultsCount = result.count;
+            this.paginationConfig.totalItems = result.count;
+            this.pageLoading = false;
+        });
     }
 }

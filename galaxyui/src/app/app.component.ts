@@ -16,49 +16,33 @@
  * along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
  */
 
-import {
-    Component,
-    OnInit,
-    TemplateRef
-} from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 
-import {
-    Router,
-    NavigationStart,
-    NavigationEnd
-} from '@angular/router';
+import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 
-import { DOCUMENT }             from '@angular/common';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
-import { BsModalService }       from 'ngx-bootstrap/modal';
-import { BsModalRef }           from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { AboutModalConfig, AboutModalEvent } from 'patternfly-ng/modal';
 
-import { NavigationItemConfig } from 'patternfly-ng/navigation/navigation-item-config';
-import { AboutModalConfig }     from 'patternfly-ng/modal/about-modal-config';
-import { AboutModalEvent }      from 'patternfly-ng/modal/about-modal-event';
-import { NotificationService }  from 'patternfly-ng/notification/notification-service/notification.service';
-import { Notification }         from 'patternfly-ng/notification';
+import { VerticalNavigationItem } from 'patternfly-ng/navigation/vertical-navigation/vertical-navigation-item';
+import { Notification } from 'patternfly-ng/notification';
+import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
 
-import { AuthService }          from './auth/auth.service';
-import { ApiRootService }       from './resources/api-root/api-root.service';
-import { ApiRoot }              from './resources/api-root/api-root';
+import { AuthService } from './auth/auth.service';
+import { ApiRootService } from './resources/api-root/api-root.service';
 
-
-import {
-    BodyCommand,
-    PFBodyService
-} from './resources/pf-body/pf-body.service';
+import { BodyCommand, PFBodyService } from './resources/pf-body/pf-body.service';
 
 @Component({
     selector: 'galaxy-nav',
-    styleUrls:   ['./app.component.less'],
-    templateUrl: './app.component.html'
+    styleUrls: ['./app.component.less'],
+    templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
-
     constructor(
-        private router:       Router,
-        private authService:  AuthService,
+        private router: Router,
+        private authService: AuthService,
         private apiRootService: ApiRootService,
         private modalService: BsModalService,
         private notificationService: NotificationService,
@@ -67,23 +51,32 @@ export class AppComponent implements OnInit {
         this.router.events.subscribe(event => {
             if (event instanceof NavigationEnd || event instanceof NavigationStart) {
                 // When user navigates away from a page, remove any lingering notifications
-                const notices: Notification[] = notificationService.getNotifications();
+                const notices: Notification[] = this.notificationService.getNotifications();
                 notices.forEach((notice: Notification) => {
-                    notificationService.remove(notice);
+                    this.notificationService.remove(notice);
                 });
+            }
+
+            if (event instanceof NavigationStart) {
+                this.isLoading = true;
+            }
+
+            if (event instanceof NavigationEnd) {
+                this.isLoading = false;
             }
         });
     }
 
-    navItems:      NavigationItemConfig[] = [];
-    modalRef:      BsModalRef;
+    navItems: VerticalNavigationItem[] = [];
+    modalRef: BsModalRef;
     authenticated = false;
-    username:      string = null;
+    username: string = null;
     showAbout = false;
-    aboutConfig:   AboutModalConfig;
-    redirectUrl:   string = null;
-    teamMembers:   string[];
+    aboutConfig: AboutModalConfig;
+    redirectUrl: string = null;
+    teamMembers: string[];
     pfBody: any;
+    isLoading = true;
 
     ngOnInit(): void {
         // Patternfly embeds everything not related to navigation in a div with
@@ -97,11 +90,9 @@ export class AppComponent implements OnInit {
 
         this.pfBody = document.getElementById('pfContentBody');
 
-        this.pfBodyService.currentMessage.subscribe(
-            (message: BodyCommand) => {
-                this.pfBody[message.propertyName] = message.propertyValue;
-            }
-        );
+        this.pfBodyService.currentMessage.subscribe((message: BodyCommand) => {
+            this.pfBody[message.propertyName] = message.propertyValue;
+        });
 
         // TODO add unsecured API endpoint for retrieving Galaxy version
         this.aboutConfig = {
@@ -110,20 +101,18 @@ export class AppComponent implements OnInit {
             logoImageAlt: 'Ansible Galaxy',
             logoImageSrc: '/assets/galaxy-logo-03.svg',
             title: 'Galaxy',
-            productInfo: [
-                { name: 'Server', value: window.location.host }
-            ]
+            productInfo: [{ name: 'Server', value: window.location.host }],
         } as AboutModalConfig;
         this.navItems = [
             {
                 title: 'Home',
                 iconStyleClass: 'fa fa-home',
-                url: '/home'
+                url: '/home',
             },
             {
                 title: 'Search',
                 iconStyleClass: 'fa fa-search',
-                url: '/search'
+                url: '/search',
             },
             /*{
                 title: 'Partners',
@@ -133,41 +122,36 @@ export class AppComponent implements OnInit {
             {
                 title: 'Community',
                 iconStyleClass: 'fa fa-users',
-                url: '/community'
+                url: '/community',
             },
-        ] as NavigationItemConfig[];
+        ] as VerticalNavigationItem[];
 
-        this.apiRootService.get().subscribe(
-            (apiInfo) => {
-                this.aboutConfig.productInfo.push({name: 'Server Version', value: apiInfo.server_version });
-                this.aboutConfig.productInfo.push({name: 'Version Name', value: apiInfo.version_name});
-                this.aboutConfig.productInfo.push({name: 'Api Version', value: apiInfo.current_version });
+        this.apiRootService.get().subscribe(apiInfo => {
+            this.aboutConfig.productInfo.push({ name: 'Server Version', value: apiInfo.server_version });
+            this.aboutConfig.productInfo.push({ name: 'Version Name', value: apiInfo.version_name });
+            this.aboutConfig.productInfo.push({ name: 'Api Version', value: apiInfo.current_version });
 
-                this.teamMembers = apiInfo.team_members;
+            this.teamMembers = apiInfo.team_members;
+        });
+
+        this.authService.me().subscribe(me => {
+            this.authenticated = me.authenticated;
+            this.username = me.username;
+            if (this.authenticated) {
+                this.aboutConfig.productInfo.push({
+                    name: 'User Name',
+                    value: me.username,
+                });
+                this.aboutConfig.productInfo.push({
+                    name: 'User Role',
+                    value: me.staff ? 'Staff' : 'User',
+                });
+
+                this.addNavButtons();
+            } else {
+                this.removeNavButtons();
             }
-        );
-
-        this.authService.me().subscribe(
-            (me) => {
-                this.authenticated = me.authenticated;
-                this.username = me.username;
-                if (this.authenticated) {
-
-                    this.aboutConfig.productInfo.push({
-                        name: 'User Name',
-                        value: me.username
-                    });
-                    this.aboutConfig.productInfo.push({
-                        name: 'User Role',
-                        value: (me.staff) ? 'Staff' : 'User'
-                    });
-
-                    this.addNavButtons();
-                } else {
-                    this.removeNavButtons();
-                }
-            }
-        );
+        });
         this.redirectUrl = this.authService.redirectUrl;
     }
 
@@ -194,35 +178,35 @@ export class AppComponent implements OnInit {
             {
                 title: 'My Content',
                 iconStyleClass: 'fa fa-list',
-                url: '/my-content'
+                url: '/my-content',
             },
             {
                 title: 'My Imports',
                 iconStyleClass: 'fa fa-upload',
-                url: '/my-imports'
-            }
+                url: '/my-imports',
+            },
         );
     }
 
     logout(): void {
         this.authenticated = false;
         this.authService.logout().subscribe(
-            (response) => {
+            response => {
                 this.router.navigate(['/home']);
             },
-            (error) => {
+            error => {
                 console.log(error);
-            }
+            },
         );
         this.removeNavButtons();
     }
 
-    onItemClicked($event: NavigationItemConfig): void {
+    onItemClicked($event: VerticalNavigationItem): void {
         console.log('item clicked');
         console.log($event);
     }
 
-    onNavigation($event: NavigationItemConfig): void {
+    onNavigation($event: VerticalNavigationItem): void {
         console.log('navigation started');
         console.log($event);
     }
