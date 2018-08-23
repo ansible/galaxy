@@ -37,6 +37,7 @@ galaxy.min.css
 .DS_Store
 ansible-deployment/
 yarn-error.log
+galaxy/importer/galaxy-lint-rules/
 
 # NOTE(cutwater): Temporary adding developer environment related files
 # to .gitignore, however these files should not be included in project

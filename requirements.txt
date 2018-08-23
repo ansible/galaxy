@@ -19,6 +19,7 @@ semver
 # Linting
 yamllint
 flake8
+ansible-lint
 
 # Django
 django>=1.11,<2.0
