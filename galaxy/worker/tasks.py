@@ -74,7 +74,7 @@ def _import_repository(import_task, logger):
         + "/" + repository.original_name)
     logger.info(u'Starting import: task_id={}, repository={}'
                 .format(import_task.id, repo_full_name))
-
+    logger.info(' ')
     token = _get_social_token(import_task)
     gh_api = github.Github(token)
     gh_repo = gh_api.get_repo(repo_full_name)
@@ -133,7 +133,14 @@ def _import_repository(import_task, logger):
     _update_repo_info(repository, gh_repo, repo_info.commit)
     repository.save()
 
-    import_task.finish_success(u'Import completed')
+    warnings = import_task.messages.filter(
+        message_type=models.ImportTaskMessage.TYPE_WARNING).count()
+    errors = import_task.messages.filter(
+        message_type=models.ImportTaskMessage.TYPE_ERROR).count()
+
+    import_task.finish_success(
+        'Import completed with {0} warnings and {1} '
+        'errors'.format(warnings, errors))
 
 
 def _update_namespace(repository):
