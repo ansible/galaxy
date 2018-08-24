@@ -32,3 +32,32 @@ services:
       - RABBITMQ_DEFAULT_USER=galaxy
       - RABBITMQ_DEFAULT_PASS=galaxy
       - RABBITMQ_DEFAULT_VHOST=galaxy
+
+  influxdb:
+    image: influxdb:latest
+    ports:
+      - '8086:8086'
+    environment:
+      - INFLUXDB_REPORTING_DISABLED=true
+      - INFLUXDB_DB=galaxy
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin
+      - INFLUXDB_WRITE_USER=galaxy
+      - INFLUXDB_WRITE_USER_PASSWORD=galaxy
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    links:
+      - influxdb
+      - prometheus
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - '9090:9090'
+    volumes:
+      - './prometheus.yml:/etc/prometheus/prometheus.yml'
+    links:
+      - galaxy:galaxy.svc

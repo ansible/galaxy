@@ -1,0 +1,47 @@
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Check python-influxdb is installed
+      command: python -c 'import influxdb'
+      register: influxdb_installed
+      ignore_errors: yes
+
+    - fail:
+        msg: "The InfluxDB client seems to be not installed. Run 'pip install influxdb' to install it."
+      when: influxdb_installed.rc != 0
+
+    - name: InfluxDB init
+      command: python influxdb_init.py
+
+    - name: Add Prometheus datasource
+      grafana_datasource:
+        name: prometheus
+        grafana_url: http://localhost:3000
+        ds_type: prometheus
+        url: http://prometheus:9090
+        time_interval: ">10s"
+
+    - name: Add InfluxDB datasource
+      grafana_datasource:
+        name: influxdb
+        grafana_url: http://localhost:3000
+        ds_type: influxdb
+        url: http://influxdb:8086
+        database: galaxy
+        user: galaxy
+        password: galaxy
+        time_interval: ">10s"
+
+    - name: Import Prometheus dashboard
+      grafana_dashboard:
+        grafana_url: http://localhost:3000
+        state: present
+        message: Imported by Ansible
+        path: search-metrics-dashboard-prometheus.json
+
+    - name: Import InfluxDB dashboard
+      grafana_dashboard:
+        grafana_url: http://localhost:3000
+        state: present
+        message: Imported by Ansible
+        path: search-metrics-dashboard-influxdb.json

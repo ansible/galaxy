@@ -22,7 +22,7 @@ celery:
 
 .PHONY: ng_server
 ng_server:
-	cd /galaxy/galaxyui; ng serve --host '0.0.0.0' --port '8000' --poll '5000' --watch --live-reload --progress=false ----proxy-config proxy.conf.js
+	cd /galaxy/galaxyui; ng serve --disable-host-check --host '0.0.0.0' --port '8000' --poll '5000' --watch --live-reload --progress=false ----proxy-config proxy.conf.js
 
 .PHONY: waitenv
 waitenv:
@@ -247,6 +247,10 @@ import_test_data:
 refresh-role-counts:
 	@echo Refresh role counts
 	$(DOCKER_COMPOSE) $(VENV_BIN)/python ./manage.py refresh_role_counts
+
+.PHONY: dev/setup-metrics
+dev/setup-metrics:
+	cd scripts/metrics-setup-playbook; ansible-playbook setup.yml
 
 %:
 	@:
