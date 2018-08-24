@@ -37,6 +37,7 @@ The following environment variables are supported:
 * GALAXY_RABBITMQ_USER
 * GALAXY_RABBITMQ_PASSWORD
 * GALAXY_ADMIN_PATH
+* GALAXY_METRICS_ENABLED
 """
 
 import os
@@ -202,6 +203,12 @@ REQUEST_ID_RESPONSE_HEADER = "X-REQUEST-ID"
 # LOG_REQUESTS = True
 
 LOGGING = _set_logging()
+
+# =========================================================
+# Metrics Settings
+# =========================================================
+
+METRICS_ENABLED = True
 
 # =========================================================
 # System Settings
