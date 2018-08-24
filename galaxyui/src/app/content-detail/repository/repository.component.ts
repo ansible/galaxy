@@ -49,9 +49,14 @@ export class RepositoryComponent implements OnInit {
     mainContent: Content = {} as Content;
     repositoryView: RepositoryView;
     RepoFormats: typeof RepoFormats = RepoFormats;
+    isFollower = false;
 
     ngOnInit() {
         this.setRepositoryView();
+    }
+
+    followUser() {
+        this.isFollower = !this.isFollower;
     }
 
     // private
