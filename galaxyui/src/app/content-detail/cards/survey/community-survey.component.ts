@@ -192,7 +192,7 @@ export class CardCommunitySurveyComponent implements OnInit {
 
         this.surveyService.save(this.mySurvey).subscribe(dbSurvey => {
             this.mySurvey.id = dbSurvey.id;
-            this.setCommunityScore(dbSurvey.summary_fields.community_score);
+            this.setCommunityScore(dbSurvey.summary_fields.repository.community_score);
 
             // Submit the cached survey data.
             if (this.waitingForId) {

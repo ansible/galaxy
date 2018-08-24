@@ -49,5 +49,8 @@ class CommunitySurveySerializer(serializers.BaseSerializer):
 
     def get_summary_fields(self, instance):
         return {
-            'community_score': instance.repository.community_score
+            'repository':{
+                'name': instance.repository.name,
+                'community_score': instance.repository.community_score
+            }
         }
