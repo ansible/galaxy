@@ -14,6 +14,8 @@ import { UtilitiesModule } from '../utilities/utilities.module';
 import { PageHeaderModule } from '../page-header/page-header.module';
 import { PageLoadingModule } from '../page-loading/page-loading.module';
 import { CardCloudPlatformsComponent } from './cards/cloud-platforms/cloud-platforms.component';
+import { CardCommunitySurveyComponent } from './cards/survey/community-survey.component';
+
 import { CardDependenciesComponent } from './cards/dependencies/dependencies.component';
 import { CardInfoComponent } from './cards/info/card-info.component';
 import { CardPlatformsComponent } from './cards/platforms/platforms.component';
@@ -48,6 +50,7 @@ import { RepositoryComponent } from './repository/repository.component';
         CardVersionsComponent,
         CardCloudPlatformsComponent,
         CardDependenciesComponent,
+        CardCommunitySurveyComponent,
         ModulesComponent,
         RolesComponent,
         ModuleUtilsComponent,

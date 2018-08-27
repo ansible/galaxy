@@ -28,6 +28,7 @@ from django.contrib.postgres import fields as psql_fields
 from django.contrib.postgres import search as psql_search
 from django.contrib.postgres import indexes as psql_indexes
 from django.utils import timezone
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from galaxy import constants
 from galaxy.main import fields
@@ -957,6 +958,10 @@ class Repository(BaseModel):
         default=False,
     )
 
+    community_score = models.FloatField(
+        null=True
+    )
+
     @property
     def clone_url(self):
         return "https://github.com/{user}/{repo}.git".format(
@@ -1106,3 +1111,45 @@ class Readme(BaseModel):
 
         self.delete()
         return True
+
+
+class CommunitySurvey(BaseModel):
+    class Meta:
+        unique_together = ('user', 'repository')
+
+    repository = models.ForeignKey(
+        Repository,
+        null=False,
+        on_delete=models.CASCADE,
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=False,
+    )
+
+    # Survey scores
+    docs = models.IntegerField(
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
+    ease_of_use = models.IntegerField(
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
+    does_what_it_says = models.IntegerField(
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
+    works_as_is = models.IntegerField(
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
+    used_in_production = models.IntegerField(
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )

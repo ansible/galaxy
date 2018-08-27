@@ -32,6 +32,7 @@ import { PlatformService } from './resources/platforms/platform.service';
 import { ProviderSourceService } from './resources/provider-namespaces/provider-source.service';
 import { RepositoryService } from './resources/repositories/repository.service';
 import { RepositoryImportService } from './resources/repository-imports/repository-import.service';
+import { SurveyService } from './resources/survey/survey.service';
 import { TagsService } from './resources/tags/tags.service';
 import { UserService } from './resources/users/user.service';
 // import { MyImportsModule }            from './my-imports/my-imports.module';
@@ -81,6 +82,7 @@ import { VendorsModule } from './vendors/vendors.module';
         ContentService,
         ApiRootService,
         PFBodyService,
+        SurveyService,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     bootstrap: [AppComponent],

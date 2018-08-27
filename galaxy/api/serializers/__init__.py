@@ -28,3 +28,4 @@ from .provider_namespace import *  # noqa
 from .roles import *               # noqa
 from .serializers import *         # noqa
 from .token import *               # noqa
+from .survey import *              # noqa

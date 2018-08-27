@@ -56,36 +56,45 @@
         </div>
 
         <div *ngIf="!showEmptyState && showingView === ViewTypes.detail">
-            <div class="row detail">
-                <div class="col-sm-12">
-                    <card-info
-                        [repository]="repository"
-                        [repoContent]="repoContent"
-                        [repoType]="repoType"
-                        [metadata]="metadata">
-                    </card-info>
+            <div class="row">
+                <div class="col-lg-8 detail">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <card-info
+                                [repository]="repository"
+                                [repoContent]="repoContent"
+                                [repoType]="repoType"
+                                [metadata]="metadata">
+                            </card-info>
+                        </div>
+                    </div>
+                    <div class="row detail" *ngIf="repoType !== RepoFormats.multi">
+                        <div class="col-sm-6"
+                            *ngIf="repoContent && repoContent['hasPlatforms']">
+                            <card-platforms [platforms]="repoContent['platforms']"></card-platforms>
+                        </div>
+                        <div class="col-sm-6"
+                            *ngIf="repoContent && repoContent['hasVersions']">
+                            <card-versions [versions]="repoContent['versions']"></card-versions>
+                        </div>
+                    </div>
+                    <div class="row detail" *ngIf="repoType !== RepoFormats.multi">
+                        <div class="col-sm-6"
+                            *ngIf="repoContent && repoContent['hasCloudPlatforms']">
+                            <card-cloud-platforms
+                                [cloudPlatforms]="repoContent['cloud_platforms']">
+                            </card-cloud-platforms>
+                        </div>
+                        <div class="col-sm-6"
+                            *ngIf="repoContent && repoContent['hasDependencies']">
+                            <card-dependencies
+                                [dependencies]="repoContent['dependencies']">
+                            </card-dependencies>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="row detail" *ngIf="repoType !== RepoFormats.multi">
-                <div class="col-sm-3"
-                    *ngIf="repoContent && repoContent['hasPlatforms']">
-                    <card-platforms [platforms]="repoContent['platforms']"></card-platforms>
-                </div>
-                <div class="col-sm-3"
-                    *ngIf="repoContent && repoContent['hasVersions']">
-                    <card-versions [versions]="repoContent['versions']"></card-versions>
-                </div>
-                <div class="col-sm-3"
-                    *ngIf="repoContent && repoContent['hasCloudPlatforms']">
-                    <card-cloud-platforms
-                        [cloudPlatforms]="repoContent['cloud_platforms']">
-                    </card-cloud-platforms>
-                </div>
-                <div class="col-sm-3"
-                    *ngIf="repoContent && repoContent['hasDependencies']">
-                    <card-dependencies
-                        [dependencies]="repoContent['dependencies']">
-                    </card-dependencies>
+                <div class="col-lg-4 detail">
+                    <card-community-survey [communityScore]="repository.community_score" [contentId]="repository.id"></card-community-survey>
                 </div>
             </div>
         </div>

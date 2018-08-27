@@ -1,0 +1,174 @@
+/* cloud-platforms.component.less */
+
+@import '../../../../variables';
+
+.card-community-survey {
+    color: @black;
+    .card-heading {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        .icon-container,
+        .title-text {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .icon-container {
+            margin-right: 6px;
+        }
+        .title-text {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .title-text {
+            font-size: 16px;
+            font-weight: 700;
+        }
+    }
+
+    .card-body {
+        font-weight: normal;
+        font-size: 14px;
+
+        .loading {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .score-wrapper {
+            display: flex;
+            width: 100%;
+            margin-bottom: 10px;
+            .score-name {
+                width: 135px;
+                font-weight: 700;
+            }
+            .detail-score-name {
+                width: 175px;
+            }
+            .score-bar {
+                position: relative;
+                background-color: #f2f2f2;
+                flex-grow: 2;
+                padding: 0px;
+                border: 0px;
+
+                .score-hover:hover {
+                    opacity: 1;
+                }
+
+                .internal-bar {
+                    display: inline-block;
+                    height: 100%;
+                    background-color: @green;
+                }
+            }
+            .score-number {
+                margin-left: 10px;
+                width: 45px;
+                text-align: right;
+                .numerator {
+                    font-weight: 700;
+                }
+            }
+        }
+
+        .details {
+            text-align: right;
+        }
+
+        .details-expanded {
+            .title {
+                font-weight: 700;
+            }
+        }
+
+        .survey {
+            position: relative;
+
+            .transparent {
+                background-color: white;
+                opacity: 0.75;
+            }
+
+            .non-transparent {
+                z-index: 2;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                .login-message {
+                    z-index: 2;
+                    font-weight: bold;
+                    padding: 10px;
+                }
+            }
+
+            .survey-wall {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+            }
+
+            .title {
+                font-weight: 700;
+                margin-bottom: 5px;
+            }
+            .input {
+                display: flex;
+                margin-bottom: 5px;
+                .input-title {
+                    width: 175px;
+                }
+
+                .input-form {
+                    display: flex;
+                    width: 145px;
+                    .input-button {
+                        margin-left: 5px;
+                        height: 24px;
+                        width: 24px;
+                        border-radius: 12px;
+                        background-color: #ebebeb;
+                        color: #9c9c9c;
+                        text-align: center;
+                        vertical-align: middle;
+                        font-weight: bold;
+                    }
+
+                    .input-low:hover {
+                        background-color: @red;
+                        color: white;
+                        cursor: pointer;
+                    }
+                    .input-med:hover {
+                        background-color: @warning;
+                        color: white;
+                        cursor: pointer;
+                    }
+                    .input-high:hover {
+                        background-color: @green;
+                        color: white;
+                        cursor: pointer;
+                    }
+
+                    .input-clicked-low {
+                        color: white;
+                        background-color: @red;
+                    }
+                    .input-clicked-med {
+                        color: white;
+                        background-color: @warning;
+                    }
+                    .input-clicked-high {
+                        color: white;
+                        background-color: @green;
+                    }
+                }
+            }
+        }
+    }
+}

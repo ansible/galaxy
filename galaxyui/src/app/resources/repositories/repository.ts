@@ -28,4 +28,5 @@ export class Repository {
     readme: string;
     readme_html: string;
     deprecated: boolean;
+    community_score: number;
 }
