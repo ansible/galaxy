@@ -11,7 +11,7 @@
     }
     div.no-imports {
         color: #e1e1e1;
-        text-align:center;
+        text-align: center;
         margin-top: 100px;
         font-size: 24px;
     }
@@ -79,7 +79,9 @@
                 width: 20px;
                 text-align: center;
             }
-            a, a:active, a:visited {
+            a,
+            a:active,
+            a:visited {
                 color: @black;
             }
             a:hover {
@@ -100,9 +102,16 @@
         line-height: 18px;
 
         .message {
-            .error, .failed { color: @red }
-            .warning { color: @warning }
-            .success { color: @green }
+            .error,
+            .failed {
+                color: @red;
+            }
+            .warning {
+                color: @warning;
+            }
+            .success {
+                color: @green;
+            }
         }
     }
     #log-follow-button {
@@ -110,7 +119,9 @@
         top: 0;
         float: right;
         font-size: 18px;
-        a, a:visited, a:active {
+        a,
+        a:visited,
+        a:active {
             color: @white;
         }
         a:hover {
@@ -127,14 +138,14 @@
         right: 60px;
     }
 
-    @media(max-width: 768px) {
+    @media (max-width: 768px) {
         #log-follow-button {
             display: none;
         }
     }
 }
 
-@media(max-width: 768px) {
+@media (max-width: 768px) {
     #import-details-container {
         margin-top: 20px;
     }

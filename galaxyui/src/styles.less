@@ -2,8 +2,6 @@
 
 @import 'variables';
 
-
-
 a:hover,
 a:focus {
     text-decoration: none;
@@ -72,7 +70,7 @@ a.failed {
 }
 
 #my-content-repository-modal {
-    input[type=checkbox] {
+    input[type='checkbox'] {
         font-size: 14px;
     }
     .blank-slate-pf {
@@ -83,7 +81,7 @@ a.failed {
         border-bottom: none;
     }
     @media (min-width: 992px) {
-        .list-pf-content-wrapper>*+* {
+        .list-pf-content-wrapper > * + * {
             margin-left: 0;
         }
     }
@@ -120,7 +118,6 @@ a.failed {
     }
 }
 
-
 /* Search page */
 #search-page {
     .filter-pf.filter-fields .form-group {
@@ -130,12 +127,12 @@ a.failed {
         border-bottom: 1px solid @white;
         box-shadow: none;
     }
-    @media only screen and (max-width : 1255px) {
+    @media only screen and (max-width: 1255px) {
         .filter-pf.filter-fields .form-group {
             width: 100%;
         }
     }
-    @media only screen and (min-width : 1255px) {
+    @media only screen and (min-width: 1255px) {
         .filter-pf.filter-fields .form-group {
             width: 350px;
         }
@@ -152,7 +149,7 @@ a.failed {
     .list-pf-item:hover {
         background-color: @white;
     }
-    @media only screen and (max-width : 992px) {
+    @media only screen and (max-width: 992px) {
         .list-pf-description {
             padding-top: 15px;
         }
@@ -200,7 +197,7 @@ a.failed {
     code {
         color: @black;
         background-color: #f7f7f7;
-        font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
         font-size: 13.6px;
     }
 }
@@ -217,7 +214,8 @@ a.failed {
     .list-pf-main-content {
         flex-basis: 50%;
     }
-    .list-pf-chevron .fa, .list-pf-select .fa {
+    .list-pf-chevron .fa,
+    .list-pf-select .fa {
         font-size: 14px;
     }
     .list-pf-expansion .list-pf {
@@ -243,7 +241,6 @@ a.failed {
 
 /* Search */
 #search-page {
-
     // Override the default PF config which is display: flex. This allows list
     // items to be flush with the right hand side of the list.
     .list-pf-content-flex {

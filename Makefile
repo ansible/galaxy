@@ -103,7 +103,7 @@ test/jslint:
 test/prettier:
 	@echo "Checking formatting..."
 	@echo "If this fails, run make dev/prettier locally to format your code"
-	cd galaxyui; ./node_modules/.bin/prettier -l "{src/**/*.ts, src/**/*.less}"
+	cd galaxyui; ./node_modules/.bin/prettier -l "src/**/*.less" "src/**/*.ts"
 
 # ---------------------------------------------------------
 # Docker targets
@@ -155,7 +155,7 @@ dev/jslint:
 .PHONY: dev/prettier
 dev/prettier:
 	@echo "Running prettier..."
-	@$(DOCKER_COMPOSE) exec galaxy bash -c 'cd galaxyui; ./node_modules/.bin/prettier --write "{src/**/*.ts, src/**/*.less}"'
+	@$(DOCKER_COMPOSE) exec galaxy bash -c 'cd galaxyui; ./node_modules/.bin/prettier --write "src/**/*.less" "src/**/*.ts"'
 
 .PHONY: dev/shellcheck
 dev/shellcheck:
