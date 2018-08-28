@@ -19,10 +19,17 @@ from django.conf.urls import include, url
 
 from galaxy.api import views
 
+email_urls = [
+    url(r'^$', views.EmailList.as_view(), name='email_list'),
+    url(r'^(?P<pk>[0-9]+)/$',
+        views.EmailDetail.as_view(), name='email_detail'),
+]
 
 user_urls = [
     url(r'^$', views.UserList.as_view(), name='user_list'),
     url(r'^(?P<pk>[0-9]+)/$', views.UserDetail.as_view(), name='user_detail'),
+    url(r'^(?P<pk>[0-9]+)/emails/$', views.UserEmailList.as_view(),
+        name='user_email_list'),
     url(r'^(?P<pk>[0-9]+)/repos/$', views.UserRepositoriesList.as_view(),
         name='user_repositories_list'),
     url(r'^(?P<pk>[0-9]+)/subscriptions/$',
@@ -236,6 +243,7 @@ v1_urls = [
     url(r'^$', views.ApiV1RootView.as_view(), name='api_v1_root_view'),
     url(r'^account/', include(account_urls)),
     url(r'^me/$', views.ActiveUserView.as_view(), name='active_user_view'),
+    url(r'^emails/', include(email_urls)),
     url(r'^users/', include(user_urls)),
     url(r'^roles/', include(role_urls)),
     url(r'^content/', include(content_urls)),
