@@ -56,4 +56,8 @@ class ImportTaskHandler(logging.Handler):
             message_type=constants.ImportTaskMessageType.from_logging_level(
                 record.levelno).value,
             message_text=msg,
+            content_id=5,  # TEMP placeholders while working issue
+            is_linter_rule_violation=True,
+            linter_type='ansible lint TEST',
+            linter_rule_id='EEEEE101'
         )

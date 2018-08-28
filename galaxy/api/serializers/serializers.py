@@ -386,7 +386,11 @@ class ImportTaskSerializer(BaseSerializer):
         summary['task_messages'] = [OrderedDict([
             ('id', g.id),
             ('message_type', g.message_type),
-            ('message_text', g.message_text)
+            ('message_text', g.message_text),
+            ('content_id', g.content_id),
+            ('is_linter_rule_violation', g.is_linter_rule_violation),
+            ('linter_type', g.linter_type),
+            ('linter_rule_id', g.linter_rule_id)
         ]) for g in obj.messages.filter(
             message_type__in=supported_types).order_by('id')]
         summary['role'] = {

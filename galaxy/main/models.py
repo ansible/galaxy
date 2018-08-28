@@ -691,6 +691,23 @@ class ImportTaskMessage(PrimordialModel):
     message_text = models.CharField(
         max_length=256,
     )
+    content = models.ForeignKey(
+        'Content',
+        related_name='messages',
+        null=True,
+    )
+    # TODO null helpful for dev, change to BooleanField?
+    is_linter_rule_violation = models.NullBooleanField(
+        default=False,
+    )
+    linter_type = models.CharField(
+        max_length=25,
+        null=True,
+    )
+    linter_rule_id = models.CharField(
+        max_length=25,
+        null=True,
+    )
 
     def __str__(self):
         return "{}-{}-{}".format(
