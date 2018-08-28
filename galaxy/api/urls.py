@@ -235,7 +235,7 @@ community_survey_urls = [
 v1_urls = [
     url(r'^$', views.ApiV1RootView.as_view(), name='api_v1_root_view'),
     url(r'^account/', include(account_urls)),
-    url(r'^me/$', views.UserMeList.as_view(), name='user_me_list'),
+    url(r'^me/$', views.ActiveUserView.as_view(), name='active_user_view'),
     url(r'^users/', include(user_urls)),
     url(r'^roles/', include(role_urls)),
     url(r'^content/', include(content_urls)),

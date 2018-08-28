@@ -28,5 +28,6 @@ from .provider_namespace import *   # noqa
 from .roles import *                # noqa
 from .search import *               # noqa
 from .token import *                # noqa
+from .users import *                # noqa
 from .views import *                # noqa
 from .survey import *               # noqa
