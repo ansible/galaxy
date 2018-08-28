@@ -141,3 +141,13 @@ class RepositoryFormat(enum.Enum):
             (cls.APB.value, 'Ansible Playbook Bundle'),
             (cls.MULTI.value, 'Multi-content'),
         ]
+
+
+class EventType(enum.Enum):
+    SEARCH = 'search'
+
+    @classmethod
+    def choices(cls):
+        return [
+            (cls.SEARCH.value, 'Search'),
+        ]
