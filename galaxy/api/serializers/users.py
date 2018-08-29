@@ -35,7 +35,7 @@ class ActiveUserSerializer(BaseSerializer):
 
     class Meta:
         model = User
-        fields = USER_FIELDS + ('authenticated',)
+        fields = USER_FIELDS + ('authenticated', 'primary_email')
 
     def get_summary_fields(self, obj):
         if not obj or not obj.is_authenticated():
