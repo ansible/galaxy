@@ -83,7 +83,10 @@ class BaseLoader(object):
         for linter_cls in linters:
             for message in linter_cls(self.root).check_files(self.rel_path):
                 message = '[%s] %s' % (linter_cls.cmd, message)
-                self.log.error(message)
+                extra = {'is_linter_rule_violation': True,
+                         'linter_type': linter_cls.cmd,
+                         'linter_rule_id': 'EE888'}
+                self.log.warning(message, extra=extra)
                 ok = False
 
         if ok:

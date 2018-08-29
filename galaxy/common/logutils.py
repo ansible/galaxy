@@ -26,6 +26,14 @@ class ImportTaskAdapter(logging.LoggerAdapter):
     def __init__(self, logger, task_id):
         super(ImportTaskAdapter, self).__init__(logger, {'task_id': task_id})
 
+    def process(self, msg, kwargs):
+        if self.extra:
+            if 'extra' not in kwargs:
+                kwargs.update({'extra': {}})
+            for key, value in self.extra.items():
+                kwargs['extra'][key] = value
+        return msg, kwargs
+
 
 class ContentTypeAdapter(logging.LoggerAdapter):
     def __init__(self, logger, content_type, content_name=None):
@@ -35,6 +43,12 @@ class ContentTypeAdapter(logging.LoggerAdapter):
         })
 
     def process(self, msg, kwargs):
+        if self.extra:
+            if 'extra' not in kwargs:
+                kwargs.update({'extra': {}})
+            for key, value in self.extra.items():
+                kwargs['extra'][key] = value
+
         if self.extra['content_name']:
             prefix = '{}: {}'.format(
                 self.extra['content_type'].name,
@@ -51,13 +65,31 @@ class ImportTaskHandler(logging.Handler):
         # type: (logging.LogRecord) -> None
         from galaxy.main import models
         msg = self.format(record)
+
+        linter_keys = {'is_linter_rule_violation',
+                       'linter_type',
+                       'linter_rule_id',
+                       'content_name'}
+        if linter_keys.issubset(vars(record).keys()):
+            is_linter_rule_violation = record.is_linter_rule_violation
+            linter_type = record.linter_type
+            linter_rule_id = record.linter_rule_id
+            content_name = record.content_name
+            print('vars(record)', vars(record))
+        else:
+            is_linter_rule_violation = False
+            linter_type = ''
+            linter_rule_id = ''
+            content_name = ''
+
         models.ImportTaskMessage.objects.using('logging').create(
             task_id=record.task_id,
             message_type=constants.ImportTaskMessageType.from_logging_level(
                 record.levelno).value,
             message_text=msg,
-            content_id=5,  # TEMP placeholders while working issue
-            is_linter_rule_violation=True,
-            linter_type='ansible lint TEST',
-            linter_rule_id='EEEEE101'
+            # content_id=5,  # TEMP think will set after creation, need name?
+            is_linter_rule_violation=is_linter_rule_violation,
+            linter_type=linter_type,
+            linter_rule_id=linter_rule_id,
+            content_name=content_name
         )

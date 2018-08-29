@@ -708,6 +708,10 @@ class ImportTaskMessage(PrimordialModel):
         max_length=25,
         null=True,
     )
+    content_name = models.CharField(
+        max_length=60,
+        null=True,
+    )
 
     def __str__(self):
         return "{}-{}-{}".format(
