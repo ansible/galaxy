@@ -75,7 +75,6 @@ class ImportTaskHandler(logging.Handler):
             linter_type = record.linter_type
             linter_rule_id = record.linter_rule_id
             content_name = record.content_name
-            print('vars(record)', vars(record))
         else:
             is_linter_rule_violation = False
             linter_type = ''

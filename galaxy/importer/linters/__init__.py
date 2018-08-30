@@ -59,6 +59,9 @@ class Flake8Linter(BaseLinter):
             yield line.strip()
         proc.wait()
 
+    def parse_message(self, message):
+        return {}  # TEMP
+
 
 class YamlLinter(BaseLinter):
 
@@ -72,6 +75,9 @@ class YamlLinter(BaseLinter):
         for line in proc.stdout:
             yield line.strip()
         proc.wait()
+
+    def parse_message(self, message):
+        return {}  # TEMP
 
 
 class AnsibleLinter(BaseLinter):
@@ -102,3 +108,6 @@ class AnsibleLinter(BaseLinter):
         # returncode 1 is app exception, 0 is no linter err, 2 is linter err
         if proc.wait() not in (0, 2):
             yield 'Exception running ansible-lint, could not complete linting'
+
+    def parse_message(self, message):
+        return {}  # TEMP

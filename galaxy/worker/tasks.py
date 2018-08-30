@@ -132,8 +132,34 @@ def _import_repository(import_task, logger):
     _update_namespace(gh_repo)
     _update_repo_info(repository, gh_repo, repo_info.commit)
     repository.save()
+    _update_task_msg_content_id(import_task)
 
     import_task.finish_success(u'Import completed')
+
+
+def _update_task_msg_content_id(import_task):
+    repo_id = import_task.repository.id
+    contents = models.Content.objects.filter(repository_id=repo_id)
+    name_mapping = {c.name: c.id for c in contents}
+
+    # single role repo content_name is None in ImportTaskMessage
+    # TODO(awcrosby): see if this is expected
+    if len(contents) == 1:
+        name_mapping[None] = name_mapping[name_mapping.keys()[0]]
+
+    import_messages = models.ImportTaskMessage.objects.filter(
+        task_id=import_task.id,
+        is_linter_rule_violation=True
+    )
+
+    for message in import_messages:
+        print('message.content_name', message.content_name)
+        if message.content_name in name_mapping:
+            message.content_id = name_mapping[message.content_name]
+        else:
+            LOG.error('Importer could not associate rule to content')
+            message.is_linter_rule_violation = False
+        message.save()
 
 
 def _update_namespace(repository):

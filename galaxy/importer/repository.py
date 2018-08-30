@@ -79,7 +79,7 @@ class RepositoryLoader(object):
         readme = self._get_readme(finder.repository_format)
 
         if not all(v[1] for v in result):
-            self.log.error('Lint failed')
+            self.log.warning('Linter found issues')
             # raise exc.ContentLoadError('Lint failed')
 
         name = None

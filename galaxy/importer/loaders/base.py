@@ -82,6 +82,7 @@ class BaseLoader(object):
         ok = True
         for linter_cls in linters:
             for message in linter_cls(self.root).check_files(self.rel_path):
+                d = linter_cls(self.root).parse_message(message)
                 message = '[%s] %s' % (linter_cls.cmd, message)
                 extra = {'is_linter_rule_violation': True,
                          'linter_type': linter_cls.cmd,
