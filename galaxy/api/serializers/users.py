@@ -3,8 +3,11 @@ import logging
 from collections import OrderedDict
 
 from allauth.account.models import EmailAddress
+
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.core.urlresolvers import reverse
+
 from rest_framework import serializers
 
 from .serializers import BaseSerializer
@@ -47,9 +50,10 @@ class ActiveUserSerializer(BaseSerializer):
         return obj.is_authenticated()
 
     def get_primary_email(self, obj):
-        emails = EmailAddress.objects.filter(user=obj, primary=True)
-        if emails:
-            return emails[0].email
+        if obj and not isinstance(obj, AnonymousUser):
+            emails = EmailAddress.objects.filter(user=obj, primary=True)
+            if emails:
+                return emails[0].email
         return None
 
 
