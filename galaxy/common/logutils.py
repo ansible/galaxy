@@ -49,14 +49,14 @@ class ContentTypeAdapter(logging.LoggerAdapter):
             for key, value in self.extra.items():
                 kwargs['extra'][key] = value
 
-        if self.extra['content_name']:
-            prefix = '{}: {}'.format(
-                self.extra['content_type'].name,
-                self.extra['content_name'])
-        else:
-            prefix = self.extra['content_type']
-
-        msg = '[{}] {}'.format(prefix, msg)
+        # if self.extra['content_name']:
+        #     prefix = '{}: {}'.format(
+        #         self.extra['content_type'].name,
+        #         self.extra['content_name'])
+        # else:
+        #     prefix = self.extra['content_type']
+        #
+        # msg = '[{}] {}'.format(prefix, msg)
         return msg, kwargs
 
 
@@ -64,31 +64,26 @@ class ImportTaskHandler(logging.Handler):
     def emit(self, record):
         # type: (logging.LogRecord) -> None
         from galaxy.main import models
-        msg = self.format(record)
 
-        linter_keys = {'is_linter_rule_violation',
-                       'linter_type',
-                       'linter_rule_id',
-                       'content_name'}
-        if linter_keys.issubset(vars(record).keys()):
-            is_linter_rule_violation = record.is_linter_rule_violation
-            linter_type = record.linter_type
-            linter_rule_id = record.linter_rule_id
-            content_name = record.content_name
-        else:
-            is_linter_rule_violation = False
-            linter_type = ''
-            linter_rule_id = ''
-            content_name = ''
+        lint = {
+            'is_linter_rule_violation': False,
+            'linter_type': None,
+            'linter_rule_id': None,
+            'content_name': '',
+        }
+        if set(lint.keys()).issubset(vars(record).keys()):
+            lint['is_linter_rule_violation'] = record.is_linter_rule_violation
+            lint['linter_type'] = record.linter_type
+            lint['linter_rule_id'] = record.linter_rule_id
+            lint['content_name'] = record.content_name
 
         models.ImportTaskMessage.objects.using('logging').create(
             task_id=record.task_id,
             message_type=constants.ImportTaskMessageType.from_logging_level(
                 record.levelno).value,
-            message_text=msg,
-            # content_id=5,  # TEMP think will set after creation, need name?
-            is_linter_rule_violation=is_linter_rule_violation,
-            linter_type=linter_type,
-            linter_rule_id=linter_rule_id,
-            content_name=content_name
+            message_text=record.msg,
+            is_linter_rule_violation=lint['is_linter_rule_violation'],
+            linter_type=lint['linter_type'],
+            linter_rule_id=lint['linter_rule_id'],
+            content_name=lint['content_name']
         )

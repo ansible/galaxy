@@ -78,10 +78,6 @@ class RepositoryLoader(object):
         result = list(self._load_contents(contents))
         readme = self._get_readme(finder.repository_format)
 
-        if not all(v[1] for v in result):
-            self.log.warning('Linter found issues')
-            # raise exc.ContentLoadError('Lint failed')
-
         name = None
         if (finder.repository_format in (constants.RepositoryFormat.ROLE,
                                          constants.RepositoryFormat.APB)
@@ -113,7 +109,10 @@ class RepositoryLoader(object):
             loader = loader_cls(content_type, rel_path, self.path,
                                 logger=self.log, **extra)
             content = loader.load()
+            self.log.info('===== LINTING {}: {} ====='.format(
+                          content_type.name, content.name))
             lint_result = loader.lint()
+            self.log.info(' ')
             yield content, lint_result
 
     def _get_readme(self, repository_format):

@@ -73,26 +73,32 @@ class BaseLoader(object):
     def lint(self):
         if not self.linters:
             return
-        self.log.info('Linting...')
 
         linters = self.linters
         if not isinstance(linters, (list, tuple)):
             linters = [linters]
 
-        ok = True
+        all_linters_ok = True
         for linter_cls in linters:
-            for message in linter_cls(self.root).check_files(self.rel_path):
-                d = linter_cls(self.root).parse_message(message)
-                message = '[%s] %s' % (linter_cls.cmd, message)
-                extra = {'is_linter_rule_violation': True,
-                         'linter_type': linter_cls.cmd,
-                         'linter_rule_id': 'EE888'}
-                self.log.warning(message, extra=extra)
-                ok = False
+            linter_ok = True
+            linter_obj = linter_cls(self.root)
+            for message in linter_obj.check_files(self.rel_path):
+                if linter_ok:
+                    self.log.info('{} Warnings:'.format(linter_obj.name))
+                    linter_ok = False
+                error_id = linter_obj.get_error_id(message)
+                if error_id:
+                    extra = {'is_linter_rule_violation': True,
+                             'linter_type': linter_cls.cmd,
+                             'linter_rule_id': error_id}
+                    self.log.warning(message, extra=extra)
+                else:
+                    self.log.warning(message)
+                all_linters_ok = False
+            if linter_ok:
+                self.log.info('{} OK.'.format(linter_obj.name))
 
-        if ok:
-            self.log.info('Linting OK.')
-        return ok
+        return all_linters_ok
 
     # FIXME(cutwater): Due to current object model current object limitation
     # this leads to copying README file over multiple roles.
