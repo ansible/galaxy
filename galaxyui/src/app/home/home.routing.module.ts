@@ -8,6 +8,14 @@ import { ContentBlockResolver, VendorListResolver } from './home.resolver.servic
 
 const homeRoutes: Routes = [
     {
+        path: '',
+        component: HomeComponent,
+        resolve: {
+            vendors: VendorListResolver,
+            contentBlocks: ContentBlockResolver,
+        },
+    },
+    {
         path: 'home',
         component: HomeComponent,
         resolve: {
