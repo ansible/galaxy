@@ -41,7 +41,7 @@ __all__ = [
     'Content', 'ImportTask', 'ImportTaskMessage', 'RepositoryVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
     'Subscription', 'Stargazer', 'Namespace', 'Provider', 'ProviderNamespace',
-    'ContentBlock', 'ContentType'
+    'ContentBlock', 'ContentType', 'ContentRule'
 ]
 
 # TODO(cutwater): Split models.py into multiple modules
@@ -389,6 +389,22 @@ class Content(CommonModelNameNotUnique):
         null=True,
         verbose_name="Last Import"
     )
+    quality_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
+    )
+    content_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
+    )
+    metadata_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
+    )
+    compatibility_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
+    )
 
     search_vector = psql_search.SearchVectorField()
 
@@ -684,6 +700,11 @@ class ImportTaskMessage(PrimordialModel):
         'ImportTask',
         related_name='messages',
     )
+    content = models.ForeignKey(
+        'Content',
+        related_name='messages',
+        null=True,
+    )
     message_type = models.CharField(
         max_length=10,
         choices=constants.ImportTaskMessageType.choices(),
@@ -691,12 +712,6 @@ class ImportTaskMessage(PrimordialModel):
     message_text = models.CharField(
         max_length=256,
     )
-    content = models.ForeignKey(
-        'Content',
-        related_name='messages',
-        null=True,
-    )
-    # TODO null helpful for dev, change to BooleanField?
     is_linter_rule_violation = models.NullBooleanField(
         default=False,
     )
@@ -974,13 +989,15 @@ class Repository(BaseModel):
     download_count = models.IntegerField(
         default=0
     )
-
     deprecated = models.BooleanField(
         default=False,
     )
-
     community_score = models.FloatField(
         null=True
+    )
+    quality_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
     )
 
     @property
@@ -1174,3 +1191,35 @@ class CommunitySurvey(BaseModel):
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(5)]
     )
+
+
+class ContentRule(BaseModel):
+    class Meta:
+        unique_together = ('rule_id', 'linter_id')
+
+    rule_id = models.CharField(
+        max_length=25,
+    )
+    linter_id = models.CharField(
+        max_length=25,
+        # TODO(awcrosby) look at adding to constants
+        choices=[('flake8', 'flake8'),
+                 ('yamllint', 'yamllint'),
+                 ('ansible-lint', 'ansible-lint')],
+    )
+    severity = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+    short_desc = models.CharField(
+        max_length=256,
+        default='',
+    )
+    long_desc = models.CharField(
+        max_length=2048,
+        default='',
+    )
+
+    def __str__(self):
+        return '{} {} sev={}: {}'.format(
+            self.linter_id, self.rule_id, self.severity, self.short_desc)

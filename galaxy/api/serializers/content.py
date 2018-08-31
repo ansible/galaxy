@@ -96,7 +96,11 @@ class ContentSerializer(BaseModelSerializer):
             'content_type',
             'imported',
             'download_count',
-            'role_type'
+            'role_type',
+            'quality_score',
+            'content_score',
+            'metadata_score',
+            'compatibility_score',
         )
 
     def get_platforms(self, instance):

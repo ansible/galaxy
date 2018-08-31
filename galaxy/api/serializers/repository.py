@@ -60,7 +60,8 @@ class RepositorySerializer(serializers.BaseSerializer):
             'readme_html',
             'download_url',
             'deprecated',
-            'community_score'
+            'community_score',
+            'quality_score',
         )
 
     def get_related(self, instance):
@@ -130,6 +131,7 @@ class RepositorySerializer(serializers.BaseSerializer):
                 'name': c.name,
                 'content_type': c.content_type.name,
                 'description': c.description,
+                'quality_score': c.quality_score,
             }
             for c in instance.content_objects.all()
         ]
