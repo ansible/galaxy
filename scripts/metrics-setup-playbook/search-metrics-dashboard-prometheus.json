@@ -62,7 +62,7 @@
                 ],
                 "targets": [
                     {
-                        "expr": "topk(10, search_criteria{ctype=\"keyword\"})",
+                        "expr": "topk(10, galaxy_search_criteria{ctype=\"keyword\"})",
                         "format": "table",
                         "instant": true,
                         "intervalFactor": 1,
@@ -116,7 +116,7 @@
                 ],
                 "targets": [
                     {
-                        "expr": "topk(10, search_criteria{ctype=\"tag\"})",
+                        "expr": "topk(10, galaxy_search_criteria{ctype=\"tag\"})",
                         "format": "table",
                         "instant": true,
                         "intervalFactor": 1,
@@ -170,7 +170,7 @@
                 ],
                 "targets": [
                     {
-                        "expr": "topk(10, search_criteria{ctype=\"platform\"})",
+                        "expr": "topk(10, galaxy_search_criteria{ctype=\"platform\"})",
                         "format": "table",
                         "instant": true,
                         "intervalFactor": 1,
@@ -224,7 +224,7 @@
                 ],
                 "targets": [
                     {
-                        "expr": "topk(10, search_criteria{ctype=\"cloud_platform\"})",
+                        "expr": "topk(10, galaxy_search_criteria{ctype=\"cloud_platform\"})",
                         "format": "table",
                         "instant": true,
                         "intervalFactor": 1,
@@ -278,13 +278,13 @@
                 ],
                 "targets": [
                     {
-                        "expr": "search",
+                        "expr": "galaxy_search",
                         "format": "table",
                         "intervalFactor": 1,
                         "refId": "A"
                     }
                 ],
-                "title": "Raw search data - 'search' metric",
+                "title": "Raw search data - 'galaxy_search' metric",
                 "transform": "table",
                 "type": "table"
             },
@@ -331,13 +331,13 @@
                 ],
                 "targets": [
                     {
-                        "expr": "search_criteria",
+                        "expr": "galaxy_search_criteria",
                         "format": "table",
                         "intervalFactor": 1,
                         "refId": "A"
                     }
                 ],
-                "title": "Raw search data - 'search_criteria' metric",
+                "title": "Raw search data - 'galaxy_search_criteria' metric",
                 "transform": "table",
                 "type": "table"
             }

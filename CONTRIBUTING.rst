@@ -338,7 +338,7 @@ Log into Grafana at `http://localhost:3000`_ using the admin user with
 password ``admin``. Navigate to ``Galaxy Search Metrics - InfluxDB`` and
 ``Galaxy Search Metrics - Prometheus`` dashboards.
 
-Search metrics are exposed at `http://localhost:8000/api/metrics`_. From
+Search metrics are exposed at `http://localhost:8000/metrics`_. From
 there, the metrics are being scraped by Prometheus
 (`http://localhost:9090/`_). Prometheus serves as a short-term storage.
 For a long-term metrics storage, the metrics are being sent from
