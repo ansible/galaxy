@@ -81,6 +81,7 @@ INSTALLED_APPS = (
 # FIXME(cutwater): Deprecated from Django 1.10, use MIDDLEWARE setting
 # instead.
 MIDDLEWARE_CLASSES = (
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'log_request_id.middleware.RequestIDMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -89,6 +90,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 )
 
 ROOT_URLCONF = 'galaxy.urls'
