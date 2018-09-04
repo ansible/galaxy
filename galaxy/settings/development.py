@@ -82,6 +82,15 @@ SITE_NAME = 'localhost'
 WAIT_FOR = [
     {'host': 'postgres', 'port': 5432},
     {'host': 'rabbitmq', 'port': 5672},
+    {'host': 'influxdb', 'port': 8086},
+    {'host': 'grafana', 'port': 3000},
+    {'host': 'prometheus', 'port': 9090},
 ]
 
 STATIC_ROOT = ''
+
+# =========================================================
+# Metrics Settings
+# =========================================================
+
+METRICS_ENABLED = True

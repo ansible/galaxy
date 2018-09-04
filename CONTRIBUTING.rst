@@ -168,8 +168,8 @@ So without further ado, run the following:
     ## Start the build process
     $ make dev/up
 
-Any missing images (i.e., postgresql, memcachd, rabbitmq) will be pulled.
-Getting all the images downloaded may take a few minutes.
+Any missing images (i.e. postgresql, rabbitmq, prometheus, influxdb, grafana)
+will be pulled. Getting all the images downloaded may take a few minutes.
 Once all the images are available, the ontainers will launch.
 
 Aftr the above commands completes, you can take a look at the containers by
@@ -179,12 +179,13 @@ running ``docker ps`` in your second terminal session:
 
     $ docker ps
 
-    CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS                                NAMES
-    fc06225cdfd5        galaxy-dev:latest     "/bin/sh -c /galax..."   6 hours ago         Up 5 hours          0.0.0.0:8000->8000/tcp               galaxy_galaxy_1
-    dc007355a69a        elasticsearch:2.4.1   "/docker-entrypoin..."   6 hours ago         Up 6 hours          9200/tcp, 9300/tcp                   galaxy_elastic_1
-    fa48c619cc3d        postgres:9.5.4        "/docker-entrypoin..."   6 hours ago         Up 6 hours          5432/tcp                             galaxy_postgres_1
-    b7f374cf7d56        rabbitmq:latest       "docker-entrypoint..."   6 hours ago         Up 6 hours          4369/tcp, 5671-5672/tcp, 25672/tcp   galaxy_rabbitmq_1
-    9b8245eea91b        memcached:latest      "docker-entrypoint..."   6 hours ago         Up 6 hours          11211/tcp                            galaxy_memcache_1
+    CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS              PORTS                                NAMES
+    b76488f94890        galaxy-dev:latest              "/entrypoint.sh /g..."   2 minutes ago       Up 2 minutes        0.0.0.0:8000->8000/tcp               galaxy_galaxy_1
+    dfe97d19197e        centos/postgresql-95-centos7   "container-entrypo..."   22 hours ago        Up 2 minutes        0.0.0.0:2345->5432/tcp               galaxy_postgres_1
+    fd3dd5f663f2        rabbitmq:latest                "docker-entrypoint..."   22 hours ago        Up 2 minutes        4369/tcp, 5671-5672/tcp, 25672/tcp   galaxy_rabbitmq_1
+    9561d0cea1ec        prom/prometheus:latest         "/bin/prometheus -..."   2 minutes ago       Up 2 minutes        0.0.0.0:9090->9090/tcp               galaxy_prometheus_1
+    21e8b688f2ab        influxdb:latest                "/entrypoint.sh in..."   22 hours ago        Up 2 minutes        0.0.0.0:8086->8086/tcp               galaxy_influxdb_1
+    92186c792b4d        grafana/grafana:latest         "/run.sh"                2 minutes ago       Up 2 minutes        0.0.0.0:3000->3000/tcp               galaxy_grafana_1
 
 Running detached
 ^^^^^^^^^^^^^^^^
@@ -322,6 +323,26 @@ OK, go for it! Your Galaxy web site is available at: `http://localhost:8000`_.
 
 Post build setup
 ----------------
+
+Metrics
+^^^^^^^
+
+From the root of the project tree, run ``make dev/setup-metrics`` to initialize
+InfluxDB and import data sources and dashboards for Prometheus and InfluxDB into Grafana.
+
+.. code-block:: console
+
+    $ make dev/setup-metrics
+
+Log into Grafana at `http://localhost:3000`_ using the admin user with
+password ``admin``. Navigate to ``Galaxy Search Metrics - InfluxDB`` and
+``Galaxy Search Metrics - Prometheus`` dashboards.
+
+Search metrics are exposed at `http://localhost:8000/api/metrics`_. From
+there, the metrics are being scraped by Prometheus
+(`http://localhost:9090/`_). Prometheus serves as a short-term storage.
+For a long-term metrics storage, the metrics are being sent from
+Prometheus to InfluxDB.
 
 Create an admin user
 ^^^^^^^^^^^^^^^^^^^^

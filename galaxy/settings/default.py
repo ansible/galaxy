@@ -19,6 +19,7 @@
 import os
 
 import djcelery
+import prometheus_client
 
 
 djcelery.setup_loader()
@@ -43,6 +44,8 @@ SITE_ID = 1
 # Application definition
 # ---------------------------------------------------------
 
+PROMETHEUS_EXPORT_MIGRATIONS = False
+
 # TODO(cutwater): Review 3rd party apps usage
 INSTALLED_APPS = (
     # Django apps
@@ -65,6 +68,7 @@ INSTALLED_APPS = (
 
     # 3rd part apps
     'bootstrapform',
+    'django_prometheus',
     'djcelery',
     'rest_framework',
     'rest_framework.authtoken',
@@ -289,6 +293,26 @@ If set to `None`, system temporary directory is used.
 """
 
 # =========================================================
+# Metrics Settings
+# =========================================================
+
+METRICS_ENABLED = False
+
+PROM_CNTR_SEARCH = prometheus_client.Counter(
+    'search',
+    '',
+    ['keywords', 'platforms', 'cloud_platforms', 'tags'],
+    registry=prometheus_client.REGISTRY
+)
+
+PROM_CNTR_SEARCH_CRITERIA = prometheus_client.Counter(
+    'search_criteria',
+    '',
+    ['ctype', 'cvalue'],
+    registry=prometheus_client.REGISTRY
+)
+
+# =========================================================
 # Logging
 # =========================================================
 
@@ -364,6 +388,11 @@ LOGGING = {
             'propagate': True,
         },
         'galaxy.accounts': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'galaxy.common.metrics': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,

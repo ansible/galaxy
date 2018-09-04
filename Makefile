@@ -22,7 +22,7 @@ celery:
 
 .PHONY: ng_server
 ng_server:
-	cd /galaxy/galaxyui; ng serve --host '0.0.0.0' --port '8000' --poll '5000' --watch --live-reload --progress=false ----proxy-config proxy.conf.js
+	cd /galaxy/galaxyui; ng serve --disable-host-check --host '0.0.0.0' --port '8000' --poll '5000' --watch --live-reload --progress=false ----proxy-config proxy.conf.js
 
 .PHONY: waitenv
 waitenv:
@@ -260,6 +260,10 @@ dev/lint-rule-update:
 	@$(DOCKER_COMPOSE) exec galaxy git config --global user.email "dev@galaxy_1"
 	@$(DOCKER_COMPOSE) exec galaxy git config --global user.name "dev galaxy_1"
 	@$(DOCKER_COMPOSE) exec galaxy bash -c "cd /galaxy-lint-rules && git pull --ff-only  https://github.com/ansible/galaxy-lint-rules.git master"
+
+.PHONY: dev/setup-metrics
+dev/setup-metrics:
+	cd scripts/metrics-setup-playbook; ansible-playbook setup.yml
 
 %:
 	@:

@@ -270,4 +270,5 @@ v1_urls = [
 urlpatterns = [
     url(r'^$', views.ApiRootView.as_view(), name='api_root_view'),
     url(r'^v1/', include(v1_urls)),
+    url(r'', include('django_prometheus.urls')),
 ]
