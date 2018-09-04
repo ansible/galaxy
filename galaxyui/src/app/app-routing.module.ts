@@ -14,12 +14,6 @@ import { NamespaceDetailResolver, RepositoryResolver as AuthorRepositoryResolver
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const appRoutes: Routes = [
-    {
-        path: '',
-        redirectTo: '/home',
-        pathMatch: 'full',
-    },
-
     // Lazily loaded modules
     {
         path: 'search',
