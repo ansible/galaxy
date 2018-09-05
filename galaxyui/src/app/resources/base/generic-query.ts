@@ -12,7 +12,6 @@ export class GenericQuery<ServiceType> {
     constructor(protected http: HttpClient, protected notificationService: NotificationService, protected url, protected serviceName) {}
 
     query(params?: any): Observable<ServiceType[]> {
-<<<<<<< HEAD
         let objectUrl = this.url;
         let objectParams = null;
         if (params) {
@@ -23,9 +22,6 @@ export class GenericQuery<ServiceType> {
             }
         }
         return this.http.get<PagedResponse>(objectUrl + '/', { params: objectParams }).pipe(
-=======
-        return this.http.get<PagedResponse>(this.url + '/', { params: params }).pipe(
->>>>>>> Add generic services to clean up duplicate service code.
             map(response => response.results),
             tap(_ => this.log(`fetched ${this.serviceName}`)),
             catchError(this.handleError('Query', [] as ServiceType[])),
