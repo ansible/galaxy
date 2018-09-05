@@ -12,7 +12,16 @@ export class GenericQuery<ServiceType> {
     constructor(protected http: HttpClient, protected notificationService: NotificationService, protected url, protected serviceName) {}
 
     query(params?: any): Observable<ServiceType[]> {
-        return this.http.get<PagedResponse>(this.url + '/', { params: params }).pipe(
+        let objectUrl = this.url;
+        let objectParams = null;
+        if (params) {
+            if (typeof params === 'string') {
+                objectUrl += `?${params}`;
+            } else {
+                objectParams = params;
+            }
+        }
+        return this.http.get<PagedResponse>(objectUrl + '/', { params: objectParams }).pipe(
             map(response => response.results),
             tap(_ => this.log(`fetched ${this.serviceName}`)),
             catchError(this.handleError('Query', [] as ServiceType[])),
