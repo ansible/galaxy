@@ -90,7 +90,11 @@ export class CardCommunitySurveyComponent implements OnInit {
             this.myUserId = me.id;
 
             // The user id has to be set before surveys are loaded from the API
+<<<<<<< HEAD
             this.surveyService.query({ repository: this.contentId, page_size: 1000 }).subscribe(surveys => {
+=======
+            this.surveyService.query({ repository: this.contentId, pageSize: 1000 }).subscribe(surveys => {
+>>>>>>> Convert SurveyService to use GenericQuerySave
                 this.communitySurveys = surveys;
                 this.numberOfSurveys = this.communitySurveys.length;
                 this.loadMySurvey();
