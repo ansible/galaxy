@@ -48,15 +48,6 @@ class ContentTypeAdapter(logging.LoggerAdapter):
                 kwargs.update({'extra': {}})
             for key, value in self.extra.items():
                 kwargs['extra'][key] = value
-
-        # if self.extra['content_name']:
-        #     prefix = '{}: {}'.format(
-        #         self.extra['content_type'].name,
-        #         self.extra['content_name'])
-        # else:
-        #     prefix = self.extra['content_type']
-        #
-        # msg = '[{}] {}'.format(prefix, msg)
         return msg, kwargs
 
 
@@ -69,12 +60,14 @@ class ImportTaskHandler(logging.Handler):
             'is_linter_rule_violation': False,
             'linter_type': None,
             'linter_rule_id': None,
+            'rule_desc': None,
             'content_name': '',
         }
         if set(lint.keys()).issubset(vars(record).keys()):
             lint['is_linter_rule_violation'] = record.is_linter_rule_violation
             lint['linter_type'] = record.linter_type
             lint['linter_rule_id'] = record.linter_rule_id
+            lint['rule_desc'] = record.rule_desc
             lint['content_name'] = record.content_name
 
         models.ImportTaskMessage.objects.using('logging').create(
@@ -85,5 +78,6 @@ class ImportTaskHandler(logging.Handler):
             is_linter_rule_violation=lint['is_linter_rule_violation'],
             linter_type=lint['linter_type'],
             linter_rule_id=lint['linter_rule_id'],
-            content_name=lint['content_name']
+            rule_desc=lint['rule_desc'],
+            content_name=lint['content_name'],
         )

@@ -86,11 +86,14 @@ class BaseLoader(object):
                 if linter_ok:
                     self.log.info('{} Warnings:'.format(linter_obj.name))
                     linter_ok = False
-                error_id = linter_obj.get_error_id(message)
+                error_id, rule_desc = linter_obj.parse_id_and_desc(message)
                 if error_id:
-                    extra = {'is_linter_rule_violation': True,
-                             'linter_type': linter_cls.cmd,
-                             'linter_rule_id': error_id}
+                    extra = {
+                        'is_linter_rule_violation': True,
+                        'linter_type': linter_cls.cmd,
+                        'linter_rule_id': error_id,
+                        'rule_desc': rule_desc
+                    }
                     self.log.warning(message, extra=extra)
                 else:
                     self.log.warning(message)

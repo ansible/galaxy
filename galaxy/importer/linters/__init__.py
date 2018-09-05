@@ -72,6 +72,24 @@ class Flake8Linter(BaseLinter):
             logger.error('No error_id found in {} message'.format(self.cmd))
         return error_id
 
+    def parse_id_and_desc(self, message):
+        try:
+            msg_parts = message.split(' ')
+            rule_desc = ' '.join(msg_parts[2:])
+
+            error_id = msg_parts[1]
+            if error_id[0] not in ['E', 'W']:
+                error_id = None
+
+        except IndexError:
+            error_id = None
+
+        if not error_id:
+            logger.error('No error_id found in {} message'.format(self.cmd))
+            return (None, None)
+
+        return (error_id, rule_desc)
+
 
 class YamlLinter(BaseLinter):
 
@@ -99,6 +117,24 @@ class YamlLinter(BaseLinter):
         if not error_id:
             logger.error('No error_id found in {} message'.format(self.cmd))
         return error_id
+
+    def parse_id_and_desc(self, message):
+        try:
+            msg_parts = message.split(' ')
+            rule_desc = ' '.join(msg_parts[2:])
+
+            error_id = msg_parts[1][1:-1]
+            if error_id not in ['error', 'warning']:
+                error_id = None
+
+        except IndexError:
+            error_id = None
+
+        if not error_id:
+            logger.error('No error_id found in {} message'.format(self.cmd))
+            return (None, None)
+
+        return (error_id, rule_desc)
 
 
 class AnsibleLinter(BaseLinter):
@@ -143,3 +179,21 @@ class AnsibleLinter(BaseLinter):
         if not error_id:
             logger.error('No error_id found in {} message'.format(self.cmd))
         return error_id
+
+    def parse_id_and_desc(self, message):
+        try:
+            msg_parts = message.split(' ')
+            rule_desc = ' '.join(msg_parts[2:])
+
+            error_id = msg_parts[1][1:-1]
+            if error_id[0] not in ['E']:
+                error_id = None
+
+        except IndexError:
+            error_id = None
+
+        if not error_id:
+            logger.error('No error_id found in {} message'.format(self.cmd))
+            return (None, None)
+
+        return (error_id, rule_desc)

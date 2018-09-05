@@ -226,6 +226,7 @@ def _update_task_msg_content_id(import_task):
             msg.is_linter_rule_violation = False
             msg.save()
             continue
+        msg.rule_severity = rule_to_sev[rule_code]
         msg.save()
 
 

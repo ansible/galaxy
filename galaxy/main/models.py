@@ -727,6 +727,14 @@ class ImportTaskMessage(PrimordialModel):
         max_length=60,
         null=True,
     )
+    rule_desc = models.CharField(
+        max_length=256,
+        null=True,
+    )
+    rule_severity = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
+        null=True,
+    )
 
     def __str__(self):
         return "{}-{}-{}".format(
