@@ -7,12 +7,15 @@
             {{ content.content_score }}
         </div>
 
-        <div>Warings: {{codeTasks.length}}</div>
+        <div>Warings: {{rulesViolated.length}}</div>
 
         <ul>
-            <li *ngFor="let task of codeTasks">
-                <span class="{{task.severityIcon}}" tooltip="{{task.severityText}}"></span>
-                {{ task.linter_rule_id }}: {{ task.linter_rule_text }}
+            <li *ngFor="let rule of rulesViolated">
+                <span class="{{codeTasks[rule].severityIcon}}" tooltip="{{codeTasks[rule].severityText}}"></span>
+                <div class="violation-count">{{ codeTasks[rule].violations_count }}</div>
+                {{ codeTasks[rule].linter_rule_id }}:
+                {{ codeTasks[rule].rule_desc }}
+
             </li>
         </ul>
 

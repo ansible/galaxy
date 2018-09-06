@@ -37,7 +37,7 @@ export class CardCommunitySurveyComponent implements OnInit {
     communityScore: number;
 
     @Input()
-    qualityScore = 3.6;
+    qualityScore: number;
 
     @Input()
     showCommunityDetails = false;
@@ -58,6 +58,12 @@ export class CardCommunitySurveyComponent implements OnInit {
             this.communityScore = 0;
         } else {
             this.setCommunityScore(this.communityScore);
+        }
+
+        if (this.qualityScore === null) {
+            this.qualityScore = 0;
+        } else {
+            this.setQualityScore(this.qualityScore);
         }
 
         // surveyKeys are used to match the question's text to the corresponding
@@ -174,6 +180,10 @@ export class CardCommunitySurveyComponent implements OnInit {
 
     private setCommunityScore(score: number) {
         this.communityScore = Math.round(score * 10) / 10;
+    }
+
+    private setQualityScore(score: number) {
+        this.qualityScore = Math.round(score * 10) / 10;
     }
 
     submitRating(questionKey: string, rating: number) {

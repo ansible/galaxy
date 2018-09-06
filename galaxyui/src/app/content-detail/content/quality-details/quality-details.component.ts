@@ -11,18 +11,31 @@ export class QualityDetailsComponent implements OnInit {
     @Input()
     content: any;
 
-    codeTasks: any;
+    codeTasks: {};
+
+    rulesViolated: any;
 
     ngOnInit() {
         this.codeTasks = [];
 
+        console.log(this.content);
+
         for (const el of this.content.summary_fields.task_messages) {
-            if (el.is_linter_rule_violation && el.severity > 0) {
-                el.severityIcon = this.getWarningClass(el.severity);
-                el.severityText = this.getWarningText(el.severity);
-                this.codeTasks.push(el);
+            if (el.is_linter_rule_violation && el.rule_severity > 0) {
+                el.severityIcon = this.getWarningClass(el.rule_severity);
+                el.severityText = this.getWarningText(el.rule_severity);
+                if (this.codeTasks[el.linter_rule_id]) {
+                    this.codeTasks[el.linter_rule_id].violations_count += 1;
+                } else {
+                    el.violations_count = 1;
+                    this.codeTasks[el.linter_rule_id] = el;
+                }
             }
         }
+
+        this.rulesViolated = Object.keys(this.codeTasks);
+
+        console.log(this.codeTasks);
     }
 
     getWarningClass(severity: number): string {
