@@ -1,0 +1,36 @@
+@import '../../../../variables';
+
+.score-wrapper {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+    .score-name {
+        width: 135px;
+        font-weight: 700;
+    }
+    .score-bar {
+        position: relative;
+        background-color: #f2f2f2;
+        flex-grow: 2;
+        padding: 0px;
+        border: 0px;
+
+        .score-hover:hover {
+            opacity: 1;
+        }
+
+        .internal-bar {
+            display: inline-block;
+            height: 100%;
+            background-color: @green;
+        }
+    }
+    .score-number {
+        margin-left: 10px;
+        width: 45px;
+        text-align: right;
+        .numerator {
+            font-weight: 700;
+        }
+    }
+}

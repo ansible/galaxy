@@ -1,0 +1,45 @@
+<div class="details-expanded">
+    <div>
+        <div class="title">
+            Content Score:
+        </div>
+        <div class="score">
+            {{ content.content_score }}
+        </div>
+
+        <div>Warings: {{codeTasks.length}}</div>
+
+        <ul>
+            <li *ngFor="let task of codeTasks">
+                <span class="{{task.severityIcon}}" tooltip="{{task.severityText}}"></span>
+                {{ task.linter_rule_id }}: {{ task.linter_rule_text }}
+            </li>
+        </ul>
+
+    </div>
+    <br>
+
+    <div>
+        <div class="title">
+            Metadata Score:
+        </div>
+        <div class="score">
+            {{ content.metadata_score }}
+        </div>
+
+        <div>Warings: 0</div>
+
+    </div>
+    <br>
+
+    <div>
+        <div class="title">
+            Compatibility Score:
+        </div>
+        <div class="score">
+            {{ content.compatibility_score }}
+        </div>
+
+        <div>Warings: 0</div>
+    </div>
+</div>

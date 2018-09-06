@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
 
@@ -6,6 +6,8 @@ import { Survey } from '../../../resources/survey/survey';
 import { SurveyService } from '../../../resources/survey/survey.service';
 
 import { AuthService } from '../../../auth/auth.service';
+
+import { CommunityDetails, DetailMessage } from './types';
 
 @Component({
     selector: 'card-community-survey',
@@ -18,14 +20,12 @@ export class CardCommunitySurveyComponent implements OnInit {
     config: CardConfig;
     communitySurveys: Survey[];
     mySurvey: Survey;
-    qualityScore: number;
     myUserId: number;
     surveyKeys: string[];
     surveyConfig: any;
     categoryAverages = {};
     numberOfSurveys: number;
 
-    showDetails = false;
     hideSurvey = false;
     loading = true;
     waitingForId = false;
@@ -35,6 +35,18 @@ export class CardCommunitySurveyComponent implements OnInit {
 
     @Input()
     communityScore: number;
+
+    @Input()
+    qualityScore = 3.6;
+
+    @Input()
+    showCommunityDetails = false;
+
+    @Input()
+    showQualityDetails = false;
+
+    @Output()
+    emitDetails = new EventEmitter<DetailMessage>();
 
     ngOnInit() {
         this.config = {
@@ -215,6 +227,7 @@ export class CardCommunitySurveyComponent implements OnInit {
         });
 
         this.calculateCategoryScores();
+        this.updateCommunityDetails();
     }
 
     // Calculates the width of the green rating bar.
@@ -271,10 +284,40 @@ export class CardCommunitySurveyComponent implements OnInit {
         this.hideSurvey = hasEntered;
     }
 
-    toggleDetails() {
-        if (this.categoryAverages !== {}) {
-            this.calculateCategoryScores();
+    updateCommunityDetails() {
+        const data = [] as CommunityDetails[];
+
+        for (const key of this.surveyKeys) {
+            data.push({
+                question: this.surveyConfig[key].question,
+                value: this.categoryAverages[key].value,
+                count: this.categoryAverages[key].count,
+            } as CommunityDetails);
         }
-        this.showDetails = !this.showDetails;
+
+        const event = {
+            visible: this.showCommunityDetails,
+            type: 'community',
+            payload: data,
+        } as DetailMessage;
+
+        this.emitDetails.emit(event);
+    }
+
+    toggleDetails(key: string) {
+        this[key] = !this[key];
+
+        if (key === 'showCommunityDetails') {
+            if (this.categoryAverages !== {}) {
+                this.calculateCategoryScores();
+            }
+            this.updateCommunityDetails();
+        } else if (key === 'showQualityDetails') {
+            this.emitDetails.emit({
+                visible: this[key],
+                type: 'quality',
+                payload: '',
+            } as DetailMessage);
+        }
     }
 }

@@ -1,4 +1,4 @@
-<div class="card-community-survey">
+<div class="card-community-survey" id="card-community-survey">
     <pfng-card
         [config]="config"
         [headerTemplate]="headerTemplate">
@@ -7,7 +7,7 @@
                 <div class="icon-container">
                     <span class="fa fa-check-circle fa-2x"></span>
                 </div>
-                <div class="title-text">Survey</div>
+                <div class="title-text">Content Score</div>
             </div>
         </ng-template>
         <div class="card-body">
@@ -17,23 +17,14 @@
             </div>
 
             <div *ngIf="!loading">
-                <!-- <div class="score-wrapper">
-                    <div class="score-name">Quality Score</div>
-                    <div class="score-bar">
-                        <div class="internal-bar" [style.width]="getWidthPercentage(qualityScore)"></div>
-                    </div>
-                    <div class="score-number"><span class="numerator">{{qualityScore}}</span> / 5</div>
-                </div> -->
-                <div class="score-wrapper">
-                    <div class="score-name">Community Score</div>
-                    <div class="score-bar">
-                        <div class="internal-bar" [style.width]="getWidthPercentage(communityScore)"></div>
-                    </div>
-                    <div class="score-number"><span class="numerator">{{communityScore}}</span> / 5</div>
-                </div>
+                <app-score-bar [score]="qualityScore" text="Quality Score"></app-score-bar>
                 <div class="details">
-                    Based on {{ numberOfSurveys }} survey<span *ngIf="numberOfSurveys !== 1">s</span>
-                    (<a href="" [routerLink]="" (click)="toggleDetails()"><span *ngIf="!showDetails">Show</span><span *ngIf="showDetails">Hide</span> Details</a>).
+                    <a href="" [routerLink]="" (click)="toggleDetails('showQualityDetails')"><span *ngIf="!showQualityDetails">Show</span><span *ngIf="showQualityDetails">Hide</span> Details</a>.
+                </div>
+                <app-score-bar [score]="communityScore" text="Community Score"></app-score-bar>
+                <div class="details">
+                    Based on {{ numberOfSurveys }} survey<span *ngIf="numberOfSurveys !== 1">s</span>.
+                    <a href="" [routerLink]="" (click)="toggleDetails('showCommunityDetails')"><span *ngIf="!showCommunityDetails">Show</span><span *ngIf="showCommunityDetails">Hide</span> Details</a>.
                 </div>
                 <div class="survey" (mouseenter)="showWall(true)" (mouseleave)="showWall(false)">
                     <div *ngIf="hideSurvey" class="survey-wall transparent"></div>
@@ -55,26 +46,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <hr>
-
-                <div *ngIf="showDetails" class="details-expanded">
-                    <div>
-                        <span style="font-weight: bold">Community Score: {{communityScore}}</span> / 5
-                    </div>
-
-                    <div *ngFor="let key of surveyKeys">
-                        <div  class="score-wrapper">
-                            <div class="detail-score-name">{{ surveyConfig[key].question }}</div>
-                            <div class="score-bar" tooltip="{{categoryAverages[key].count}} answer{{ categoryAverages[key].count !== 1 ? 's':'' }}">
-                                <div class="internal-bar" [style.width]="getWidthPercentage(categoryAverages[key].value)"></div>
-                            </div>
-                            <div class="score-number"><span class="numerator">{{categoryAverages[key].value}}</span> / 5</div>
-                        </div>
-                        <!-- <div class="details">{{categoryAverages[key].count}} answer<span *ngIf="categoryAverages[key].count !== 1">s</span></div> -->
-                    </div>
-
                 </div>
             </div>
         </div>

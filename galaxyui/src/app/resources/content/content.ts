@@ -20,4 +20,8 @@ export class Content {
     last_import: string;
     download_count: number;
     content_objects: any;
+    quality_score: number;
+    content_score: number;
+    metadata_score: number;
+    compatibility_score: number;
 }
