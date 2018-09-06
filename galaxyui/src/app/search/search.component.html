@@ -3,27 +3,20 @@
 <div id="search-page" class="container-fluid">
     <div class="row">
         <div class="col-lg-9">
-            <pfng-toolbar
-                [config]="getToolbarConfig()"
-                (onFilterChange)="filterChanged($event)"
-                (onSortChange)="sortChanged($event)">
+            <pfng-toolbar [config]="getToolbarConfig()" (onFilterChange)="filterChanged($event)" (onSortChange)="sortChanged($event)">
             </pfng-toolbar>
             <div id="search-list">
-                <pfng-list
-                    [config]="listConfig"
-                    [items]="contentItems"
-                    [itemTemplate]="itemTemplate">
+                <pfng-list [config]="listConfig" [items]="contentItems" [itemTemplate]="itemTemplate">
                     <ng-template #itemTemplate let-item="item" let-index="index">
 
                         <div class="list-pf-content-wrapper row list-row">
                             <div class="col-sm-7 search-list-left">
                                 <div class="namespace-container">
-                                    <a [routerLink]="['/', item.summary_fields.namespace.name]"
-                                       [tooltip]="'View more content from ' + item['displayNamespace']"
-                                       container="body">
-                                       <div class="avatar-wrapper">
-                                           <img [src]="item.avatar_url" class="avatar-image" >
-                                       </div>
+                                    <a [routerLink]="['/', item.summary_fields.namespace.name]" [tooltip]="'View more content from ' + item['displayNamespace']"
+                                        container="body">
+                                        <div class="avatar-wrapper">
+                                            <img [src]="item.avatar_url" class="avatar-image">
+                                        </div>
                                         <div class="namespace-name">{{ item['namespace_name'] }}</div>
                                     </a>
                                 </div>
@@ -32,20 +25,23 @@
                                         <div class="icon">
                                             <i class="{{ item['iconClass'] }}"></i>
                                         </div>
-                                        <div class="name cursor-pointer"><a [routerLink]="[item['contentLink']]" tooltip="View content details">{{ item.name }}</a></div>
+                                        <div class="name cursor-pointer">
+                                            <a [routerLink]="[item['contentLink']]" tooltip="View content details" (click)="contentClick(item, index)">{{ item.name }}</a>
+                                        </div>
                                         <div class="type">
                                             {{ item.summary_fields.content_type.name }}
                                         </div>
-                                        <div class="deprecated-tag" *ngIf="item.summary_fields.repository.deprecated"  tooltip="This item has been deprecated. Use at your own risk.">
+                                        <div class="deprecated-tag" *ngIf="item.summary_fields.repository.deprecated" tooltip="This item has been deprecated. Use at your own risk.">
                                             Deprecated
                                         </div>
                                         <div class="description">
                                             {{item.description}}
                                         </div>
-
                                     </div>
                                     <div class="content-tags">
-                                        <div class="icon"><i class="fa fa-tag fa-2x"></i></div>
+                                        <div class="icon">
+                                            <i class="fa fa-tag fa-2x"></i>
+                                        </div>
                                         <div class="tags">
                                             <div class="tag" *ngFor="let tag of item.summary_fields.tags">
                                                 {{ tag }}
@@ -58,8 +54,7 @@
                                 <div class="list-pf-description">
                                     <div class="travis" *ngIf="item.summary_fields.repository.travis_build_url">
                                         <a href="{{ item.summary_fields.repository.travis_build_url }}" container="body" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
-                                            <img src="{{ item.summary_fields.repository.travis_status_url }}"
-                                                class="travis-status-img" title="Travis Build Status" />
+                                            <img src="{{ item.summary_fields.repository.travis_status_url }}" class="travis-status-img" title="Travis Build Status" />
                                         </a>
                                     </div>
                                     <div class="repository-details">
@@ -111,28 +106,16 @@
                 </pfng-list>
             </div>
             <div class="pagination" *ngIf="contentItems && contentItems.length && paginationConfig.totalItems > paginationConfig.pageSize">
-                <pfng-pagination
-                    [config]='paginationConfig'
-                    (onPageSizeChange)="handlePageChange($event)"
-                    (onPageNumberChange)="handlePageChange($event)">
-                   </pfng-pagination>
-               </div>
+                <pfng-pagination [config]='paginationConfig' (onPageSizeChange)="handlePageChange($event)" (onPageNumberChange)="handlePageChange($event)">
+                </pfng-pagination>
+            </div>
         </div>
         <div class="col-lg-3">
-            <popular-widget
-                [popularTitle]="'Popular Tags'"
-                [popularType]="'tags'"
-                (click)="handleWidgetClick($event)">
+            <popular-widget [popularTitle]="'Popular Tags'" [popularType]="'tags'" (click)="handleWidgetClick($event)">
             </popular-widget>
-            <popular-widget
-                [popularTitle]="'Popular Platforms'"
-                [popularType]="'platforms'"
-                (click)="handleWidgetClick($event)">
+            <popular-widget [popularTitle]="'Popular Platforms'" [popularType]="'platforms'" (click)="handleWidgetClick($event)">
             </popular-widget>
-            <popular-widget
-                [popularTitle]="'Popular Clouds'"
-                [popularType]="'cloudPlatforms'"
-                (click)="handleWidgetClick($event)">
+            <popular-widget [popularTitle]="'Popular Clouds'" [popularType]="'cloudPlatforms'" (click)="handleWidgetClick($event)">
             </popular-widget>
         </div>
     </div>

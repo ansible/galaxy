@@ -391,6 +391,22 @@ class EmailAddressAccess(BaseAccess):
         return False
 
 
+class SessionEventAccess(BaseAccess):
+    model = models.SessionEvent
+
+    def can_read(self, obj):
+        return True
+
+    def can_add(self, data):
+        return True
+
+    def can_change(self, obj, data):
+        return True
+
+    def can_delete(self, obj):
+        return False
+
+
 register_access(User, UserAccess)
 register_access(EmailAddress, EmailAddressAccess)
 register_access(Token, UserTokenAccess)
@@ -411,3 +427,4 @@ register_access(models.ContentBlock, ContentBlockAccess)
 register_access(models.ContentType, ContentTypeAccess)
 register_access(models.CloudPlatform, CloudPlatformsAccess)
 register_access(models.CommunitySurvey, CommunitySurveyAccess)
+register_access(models.SessionEvent, SessionEventAccess)

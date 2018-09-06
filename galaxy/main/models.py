@@ -17,8 +17,8 @@
 
 import logging
 import operator
-
 import six
+import uuid
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -41,7 +41,7 @@ __all__ = [
     'Content', 'ImportTask', 'ImportTaskMessage', 'RepositoryVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
     'Subscription', 'Stargazer', 'Namespace', 'Provider', 'ProviderNamespace',
-    'ContentBlock', 'ContentType'
+    'ContentBlock', 'ContentType', 'SessionEvent'
 ]
 
 # TODO(cutwater): Split models.py into multiple modules
@@ -1152,4 +1152,39 @@ class CommunitySurvey(BaseModel):
     used_in_production = models.IntegerField(
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
+
+@six.python_2_unicode_compatible
+class SessionIdentifier(BaseModel):
+
+    session_id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    def __str__(self):
+        return str(self.session_id)
+
+
+class SessionEvent(BaseModel):
+    class Meta:
+        unique_together = ('session_id', 'created', 'event_type')
+        ordering = ('-id',)
+
+    session_id = models.ForeignKey(
+        SessionIdentifier,
+        blank=False,
+        on_delete=None,
+        related_name='events'
+    )
+
+    event_type = models.CharField(
+        max_length=30,
+        choices=constants.EventType.choices(),
+        blank=False)
+
+    event_data = psql_fields.JSONField(
+        default={}
     )

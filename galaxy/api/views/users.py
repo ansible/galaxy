@@ -1,6 +1,7 @@
 import logging
 
 from rest_framework import exceptions
+from rest_framework.response import Response
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import AnonymousUser
@@ -58,6 +59,14 @@ class ActiveUserView(base_views.RetrieveAPIView):
         except ObjectDoesNotExist:
             obj = AnonymousUser()
         return obj
+
+    def retrieve(self, request, *args, **kwargs):
+        if not request.session.get('session_id'):
+            request.session['session_id'] = str(
+                models.SessionIdentifier.objects.create())
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
 class UserRepositoriesList(base_views.SubListAPIView):

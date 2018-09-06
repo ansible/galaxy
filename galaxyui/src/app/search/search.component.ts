@@ -32,9 +32,15 @@ import { ContentType } from '../resources/content-types/content-type';
 import { PFBodyService } from '../resources/pf-body/pf-body.service';
 import { Platform } from '../resources/platforms/platform';
 
+import { Event } from '../resources/events/event';
+import { EventsService } from '../resources/events/events.service';
+
 import { ContentTypesIconClasses } from '../enums/content-types.enum';
 
 import { RepoFormats } from '../enums/repo-types.enum';
+
+import { EventTypes } from '../enums/event-types.enums';
+import { SearchEventTypes } from '../enums/event-types.enums';
 
 import { ContributorTypes, ContributorTypesIconClasses } from '../enums/contributor-types.enum';
 
@@ -60,7 +66,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     contentItems: Content[];
     listConfig: ListConfig;
     paginationConfig: PaginationConfig;
-
+    eventId: number;
     emptyStateConfig: EmptyStateConfig;
     defaultEmptyStateTitle: string;
     noResultsState = 'No matching results found';
@@ -73,6 +79,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     sortAscending = false;
     pageSize = 10;
     pageNumber = 1;
+    resultCount = 0;
 
     appliedFilters: Filter[] = [];
 
@@ -82,6 +89,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         private location: Location,
         private notificationService: NotificationService,
         private pfBody: PFBodyService,
+        private eventService: EventsService,
     ) {}
 
     ngOnInit() {
@@ -206,6 +214,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 this.prepareContentTypes(data.contentTypes);
                 this.prepareCloudPlatforms(data.cloudPlatforms);
 
+                if (params['event_id']) {
+                    this.eventId = params['event_id'];
+                }
+
                 // If there is an error on the search API, the content search services
                 // returns nothing, so we have to check if results actually exist.
                 if (data.content.results) {
@@ -219,13 +231,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     this.prepareContent(data.content.results, data.content.count);
                     this.setQuery();
                     this.pageLoading = false;
+                    this.resultCount = data.content.count;
                 } else {
                     this.notificationService.message(NotificationType.WARNING, 'Error', 'Invalid search query', false, null, null);
-
                     this.setSortConfig(params['order_by']);
                     this.setPageSize(params);
                     this.setAppliedFilters(params);
-
                     this.pageLoading = false;
                 }
             });
@@ -248,6 +259,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         let params = '';
         this.pageNumber = 1;
         this.paginationConfig.pageNumber = 1;
+        this.eventId = null; // Start new search event
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach(filter => {
                 if (filterby[filter.field.id] === undefined) {
@@ -300,8 +312,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
         if ($event.pageSize && this.pageSize !== $event.pageSize) {
             this.pageSize = $event.pageSize;
             this.pageNumber = 1;
+            this.updateEvent(SearchEventTypes.changed_page_size);
             changed = true;
         } else if ($event.pageNumber && this.pageNumber !== $event.pageNumber) {
+            if ($event.pageNumber > this.pageNumber) {
+                this.updateEvent(SearchEventTypes.next_page_click);
+            } else if ($event.pageNumber < this.pageNumber) {
+                this.updateEvent(SearchEventTypes.prev_page_click);
+            }
             this.pageNumber = $event.pageNumber;
             if (this.pageSize === this.paginationConfig.pageSize) {
                 // changed pageNumber without changing pageSize
@@ -359,6 +377,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
             event.value = $event.item['name'];
             this.filterChanged(event);
         }
+    }
+
+    contentClick(item: Content, index: number) {
+        const itemNumber = (this.pageNumber - 1) * this.pageSize + index + 1;
+        this.updateEvent(SearchEventTypes.result_clicked, item, itemNumber);
     }
 
     // private
@@ -492,8 +515,95 @@ export class SearchComponent implements OnInit, AfterViewInit {
             paging += `&page=${this.pageNumber}`;
         }
         const query = (this.filterParams + this.sortParams + paging).replace(/^&/, ''); // remove leading &
-        this.location.replaceState(this.getBasePath(), query); // update browser URL
+
+        let pageParams = query;
+        if (this.eventId) {
+            pageParams = (pageParams + `&event_id=${this.eventId}`).replace(/^&/, '');
+        }
+        this.location.replaceState(this.getBasePath(), pageParams); // update browser URL
         return query;
+    }
+
+    private filterParamsToObj(): any {
+        const params = this.filterParams.split('&');
+        const paramObj = {};
+        for (const param in params) {
+            if (params[param]) {
+                const vals = params[param].split('=');
+                if (vals.length) {
+                    paramObj[vals[0]] = vals[1];
+                }
+            }
+        }
+        return paramObj;
+    }
+
+    private updateEvent(event, item?: Content, itemNumber?: number) {
+        const newEvent = new Event();
+        newEvent.event_type = EventTypes.search;
+        newEvent.event_data = {};
+        newEvent.event_data = {
+            search_results: 0,
+            next_page_clicks: 0,
+            prev_page_clicks: 0,
+            results_clicked: [],
+            repositories_clicked: [],
+            content_items_clicked: [],
+            last_page_size: this.pageSize,
+        };
+        if (this.eventId) {
+            // Updating an existing event
+            newEvent.id = this.eventId;
+        } else {
+            // New event
+            newEvent.event_data['search_params'] = this.filterParamsToObj();
+            newEvent.event_data['search_results'] = this.resultCount;
+        }
+        switch (event) {
+            case SearchEventTypes.next_page_click:
+                newEvent.event_data['next_page_clicks'] = 1;
+                break;
+            case SearchEventTypes.prev_page_click:
+                newEvent.event_data['prev_page_clicks'] = 1;
+                break;
+            case SearchEventTypes.result_clicked:
+                newEvent.event_data['results_clicked'].push(itemNumber);
+                newEvent.event_data['repositories_clicked'].push(item.summary_fields['repository']['id']);
+                newEvent.event_data['content_items_clicked'].push(item.id);
+                break;
+            case SearchEventTypes.changed_page_size:
+                newEvent.event_data['last_page_size'] = this.pageSize;
+                break;
+        }
+        this.saveEvent(newEvent);
+    }
+
+    private saveEvent(newEvent: Event) {
+        this.eventService.save(newEvent).subscribe(
+            (e: Event) => {
+                this.eventId = e.id;
+                this.setQuery();
+            },
+            (exc: any) => {
+                if (this.eventId) {
+                    // An update failed, probably because the event_id doesn't
+                    // for the session_id. Try a POST request.
+                    this.eventId = null;
+                    newEvent.id = null;
+                    newEvent.event_data['search_params'] = this.filterParamsToObj();
+                    newEvent.event_data['search_results'] = this.resultCount;
+                    this.eventService.save(newEvent).subscribe(
+                        (e: Event) => {
+                            this.eventId = e.id;
+                            this.setQuery();
+                        },
+                        (innerExc: any) => {
+                            console.log(innerExc);
+                        },
+                    );
+                }
+            },
+        );
     }
 
     private searchContent() {
@@ -502,6 +612,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.contentSearch.query(query).subscribe(result => {
             this.prepareContent(result.results, result.count);
             this.pageLoading = false;
+            this.resultCount = result.count;
+            this.updateEvent(SearchEventTypes.search);
         });
     }
 

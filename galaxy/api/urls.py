@@ -239,6 +239,16 @@ community_survey_urls = [
         name='community_survey_detail'),
 ]
 
+event_tracking_urls = [
+    url(r'^$',
+        views.EventList.as_view(),
+        name='event_list'),
+
+    url(r'^(?P<pk>[0-9]+)/$',
+        views.EventDetail.as_view(),
+        name='event_detail'),
+]
+
 v1_urls = [
     url(r'^$', views.ApiV1RootView.as_view(), name='api_v1_root_view'),
     url(r'^account/', include(account_urls)),
@@ -265,6 +275,7 @@ v1_urls = [
     url(r'^content_blocks/', include(content_block_urls)),
     url(r'^content_types/', include(content_type_urls)),
     url(r'^community_surveys/', include(community_survey_urls)),
+    url(r'^events/', include(event_tracking_urls)),
 ]
 
 urlpatterns = [

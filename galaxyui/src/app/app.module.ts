@@ -25,6 +25,7 @@ import { ContentBlocksService } from './resources/content-blocks/content-blocks.
 import { ContentSearchService } from './resources/content-search/content-search.service';
 import { ContentTypeService } from './resources/content-types/content-type.service';
 import { ContentService } from './resources/content/content.service';
+import { EventsService } from './resources/events/events.service';
 import { ImportsService } from './resources/imports/imports.service';
 import { NamespaceService } from './resources/namespaces/namespace.service';
 import { PFBodyService } from './resources/pf-body/pf-body.service';
@@ -35,8 +36,6 @@ import { RepositoryImportService } from './resources/repository-imports/reposito
 import { SurveyService } from './resources/survey/survey.service';
 import { TagsService } from './resources/tags/tags.service';
 import { UserService } from './resources/users/user.service';
-// import { MyImportsModule }            from './my-imports/my-imports.module';
-// import { SearchModule }               from './search/search.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
 import { VendorsModule } from './vendors/vendors.module';
 
@@ -70,6 +69,7 @@ import { VendorsModule } from './vendors/vendors.module';
         ContentBlocksService,
         ContentSearchService,
         ContentTypeService,
+        EventsService,
         ImportsService,
         NamespaceService,
         NotificationService,
