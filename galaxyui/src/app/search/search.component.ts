@@ -537,6 +537,24 @@ export class SearchComponent implements OnInit, AfterViewInit {
             if (item['repository_format'] === RepoFormats.multi) {
                 item['contentLink'] += `/${name}`;
             }
+
+            const community = item.summary_fields['repository'].community_score;
+            const quality = item.summary_fields['repository'].quality_score;
+            let score = 0;
+
+            // If both the community and quality score exist average the two
+            // If only one of them exists, set the score to the one that exists.
+            if (community !== null && quality !== null) {
+                score = (community + quality) / 2;
+            } else {
+                score = community || quality;
+            }
+
+            if (score !== null) {
+                score = Math.round(score * 10) / 10;
+            }
+
+            item.summary_fields['score'] = score;
         });
         this.contentItems = data;
         this.filterConfig.resultsCount = count;

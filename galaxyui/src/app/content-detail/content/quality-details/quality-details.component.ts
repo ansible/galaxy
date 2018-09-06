@@ -10,18 +10,26 @@ export class QualityDetailsComponent implements OnInit {
 
     @Input()
     content: any;
-
     codeTasks: {};
-
     rulesViolated: any;
+    totalViolations = 0;
 
     ngOnInit() {
         this.codeTasks = [];
 
         console.log(this.content);
 
+        if (this.content.metadata_score === null) {
+            this.content.metadata_score = 'NA';
+        }
+
+        if (this.content.compatibility_score === null) {
+            this.content.compatibility_score = 'NA';
+        }
+
         for (const el of this.content.summary_fields.task_messages) {
             if (el.is_linter_rule_violation && el.rule_severity > 0) {
+                this.totalViolations += 1;
                 el.severityIcon = this.getWarningClass(el.rule_severity);
                 el.severityText = this.getWarningText(el.rule_severity);
                 if (this.codeTasks[el.linter_rule_id]) {

@@ -63,35 +63,33 @@
                                         </a>
                                     </div>
                                     <div class="repository-details">
-                                        <span class="columns">
-                                            <ul class="count-left">
-                                                <li class="repo-count">
-                                                    <i class="fa fa-download fa count-digits"></i>
-                                                    <span class="count-digits">{{ item.download_count }}</span>
-                                                    <span>Downloads</span>
-                                                </li>
-                                                <li class="repo-count">
-                                                    <i class="fa fa-eye fa count-digits"></i>
-                                                    <span class="count-digits">{{ item.summary_fields.repository.watchers_count }}</span>
-                                                    <span>Watchers</span>
-                                                </li>
-                                            </ul>
-                                        </span>
 
-                                        <span class="columns">
-                                            <ul class="count-right">
-                                                <li class="repo-count">
-                                                    <i class="fa fa-star fa count-digits"></i>
-                                                    <span class="count-digits">{{ item.summary_fields.repository.stargazers_count }}</span>
-                                                    <span>Stars</span>
-                                                </li>
-                                                <li class="repo-count">
-                                                    <i class="fa fa-copy fa count-digits"></i>
-                                                    <span class="count-digits">{{ item.summary_fields.repository.forks_count }}</span>
-                                                    <span>Forks</span>
-                                                </li>
-                                            </ul>
-                                        </span>
+                                        <div *ngIf="item.summary_fields.score !== null" class="repo-count">
+                                            <i class="fa fa-check-circle"></i>
+                                            <span class="count-digits">{{ item.summary_fields.score }} <span class="denominator">/ 5</span></span>
+                                            <span>Score</span>
+                                        </div>
+
+                                        <div class="repo-count">
+                                            <i class="fa fa-download"></i>
+                                            <span class="count-digits">{{ item.download_count }}</span>
+                                            <span>Downloads</span>
+                                        </div>
+                                        <div class="repo-count">
+                                            <i class="fa fa-eye"></i>
+                                            <span class="count-digits">{{ item.summary_fields.repository.watchers_count }}</span>
+                                            <span>Watchers</span>
+                                        </div>
+                                        <div class="repo-count">
+                                            <i class="fa fa-star"></i>
+                                            <span class="count-digits">{{ item.summary_fields.repository.stargazers_count }}</span>
+                                            <span>Stars</span>
+                                        </div>
+                                        <div class="repo-count">
+                                            <i class="fa fa-copy"></i>
+                                            <span class="count-digits">{{ item.summary_fields.repository.forks_count }}</span>
+                                            <span>Forks</span>
+                                        </div>
                                     </div>
                                     <div class="extra-detail">
                                         <div class="import">
