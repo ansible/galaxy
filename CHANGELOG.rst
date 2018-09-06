@@ -4,6 +4,17 @@ Ansible Galaxy Changes by Release
 3.1.0 - Active development
 --------------------------
 
+3.0.9 - Released 05-Sep-2018
+----------------------------
+
+Bug Fixes
+`````````
+- Root path redirecting to Login page, rather than Home. Issue `1120 <https://github.com/ansible/galaxy/issues/1120>`_.
+
+Closed PRS
+``````````
+- `1126 Insure /home is the default route <https://github.com/ansible/galaxy/pull/1126>`_.
+
 3.0.8 - Released 22-Aug-2018
 ----------------------------
 
