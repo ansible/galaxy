@@ -199,7 +199,9 @@ def _update_quality_score(import_task):
 def _update_task_msg_content_id(import_task):
     repo_id = import_task.repository.id
     contents = models.Content.objects.filter(repository_id=repo_id)
-    name_to_id = {c.name: c.id for c in contents}
+
+    # TODO(awcrosby) confirm original_name (vs name) is best here
+    name_to_id = {c.original_name: c.id for c in contents}
 
     # single role repo content_name is None in ImportTaskMessage
     if len(contents) == 1:
