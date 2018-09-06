@@ -19,11 +19,12 @@
 
 import logging
 
-from allauth.account.models import EmailAddress
+from allauth.account.models import EmailAddress, EmailConfirmation
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 
 from galaxy.main import models
+from django.core import exceptions
 
 __all__ = ['check_user_access']
 
@@ -391,6 +392,34 @@ class EmailAddressAccess(BaseAccess):
         return False
 
 
+class EmailConfirmationAccess(BaseAccess):
+    # Emails are verified via GET request. This means that emails can be
+    # verified without requiring authentication if a confirmation key exists.
+    def can_read(self, obj):
+        return True
+
+    def can_add(self, data):
+        if self.user.is_authenticated():
+            if data.get('email_address') is None:
+                return False
+
+            try:
+                email = EmailAddress.objects.get(pk=data.get('email_address'))
+            except exceptions.ObjectDoesNotExist:
+                return False
+
+            return email.user == self.user
+
+        return False
+
+    def can_change(self, obj, data):
+        return False
+
+    def can_delete(self, data):
+        return False
+
+
+register_access(EmailConfirmation, EmailConfirmationAccess)
 register_access(User, UserAccess)
 register_access(EmailAddress, EmailAddressAccess)
 register_access(Token, UserTokenAccess)

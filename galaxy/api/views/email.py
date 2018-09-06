@@ -1,17 +1,23 @@
 
 import logging
 
-from allauth.account.models import EmailAddress
+from allauth.account.models import EmailAddress, EmailConfirmation
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
 
 from galaxy.api.views import base_views
 from galaxy.api import serializers
 
+from rest_framework.response import Response
+from rest_framework import status
+
 __all__ = [
     'UserEmailList',
     'EmailList',
-    'EmailDetail'
+    'EmailDetail',
+    'EmailVerification',
+    'EmailVerificationDetail'
 ]
 
 logger = logging.getLogger(__name__)
@@ -55,3 +61,53 @@ class EmailDetail(base_views.RetrieveUpdateDestroyAPIView):
                 # Non-admin access own email addresses only
                 raise PermissionDenied()
         return obj
+
+
+class EmailVerification(base_views.ListCreateAPIView):
+    serializer_class = serializers.EmailVerificationSerializer
+    model = EmailConfirmation
+
+    # We don't want to divulge any information about the confirmation keys in
+    # the database since they are secret.
+    def get(self, request, *args, **kwargs):
+        return Response("")
+
+    def get_queryset(self):
+        return self.model.objects.none()
+
+    # Creates key
+    def post(self, request, *args, **kwargs):
+        email = get_object_or_404(
+            EmailAddress,
+            pk=request.data['email_address']
+        )
+
+        if (email.verified):
+            return Response({
+                'email_address': email.pk,
+                'verified': True
+            })
+
+        verification = email.send_confirmation(request=request)
+        serializer = self.get_serializer(instance=verification)
+        return Response(serializer.data)
+
+
+class EmailVerificationDetail(base_views.RetrieveAPIView):
+    serializer_class = serializers.EmailVerificationSerializer
+    model = EmailConfirmation
+    lookup_field = 'key'
+
+    def get(self, request, *args, **kwargs):
+        key = self.get_object()
+
+        if int(key.email_address.pk) != int(kwargs['email_id']):
+            return Response(
+                {'detail': 'Not found.'},
+                status.HTTP_404_NOT_FOUND
+            )
+
+        key.email_address.verified = True
+        key.email_address.save()
+
+        return Response(self.get_serializer(instance=key).data)

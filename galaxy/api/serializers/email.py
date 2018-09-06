@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from allauth.account.models import EmailAddress
+from allauth.account.models import EmailAddress, EmailConfirmation
 from django.core.urlresolvers import reverse
 from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 from rest_framework import serializers
@@ -8,6 +8,7 @@ from .serializers import BaseSerializer
 
 __all__ = [
     'EmailSerializer',
+    'EmailVerificationSerializer'
 ]
 
 
@@ -74,3 +75,17 @@ class EmailSerializer(BaseSerializer):
             ('username', obj.user.username)
         ])
         return d
+
+
+class EmailVerificationSerializer(BaseSerializer):
+    verified = serializers.SerializerMethodField()
+
+    class Meta:
+        model = EmailConfirmation
+        fields = (
+            'email_address',
+            'verified'
+        )
+
+    def get_verified(self, instance):
+        return instance.email_address.verified
