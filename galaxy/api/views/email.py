@@ -102,8 +102,6 @@ class EmailVerificationDetail(base_views.RetrieveAPIView):
         key = self.get_object()
 
         if int(key.email_address.pk) != int(kwargs['email_id']):
-            print (key.email_address.pk)
-            print (kwargs['email_id'])
             return Response(
                 {'detail': 'Not found.'},
                 status.HTTP_404_NOT_FOUND

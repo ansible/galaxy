@@ -24,6 +24,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 
 from galaxy.main import models
+from django.core import exceptions
 
 __all__ = ['check_user_access']
 
@@ -400,8 +401,12 @@ class EmailConfirmationAccess(BaseAccess):
     def can_add(self, data):
         if self.user.is_authenticated():
             if data.get('email_address') is None:
-                return True
-            email = EmailAddress.objects.get(pk=data.get('email_address'))
+                return False
+
+            try:
+                email = EmailAddress.objects.get(pk=data.get('email_address'))
+            except exceptions.ObjectDoesNotExist:
+                return False
 
             return email.user == self.user
 
