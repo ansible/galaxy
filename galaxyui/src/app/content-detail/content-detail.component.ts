@@ -4,8 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import * as moment from 'moment';
 
-import { forkJoin, Observable } from 'rxjs';
-
 import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
 
 import { Action, ActionConfig } from 'patternfly-ng/action';
@@ -213,6 +211,19 @@ export class ContentDetailComponent implements OnInit {
             });
             if (this.repository.format === RepoFormats.multi) {
                 this.getContentTypeCounts();
+                if (this.selectedContent) {
+                    // For multi-content repo, set the detail view to the selected content item
+                    if (this.selectedContent.content_type === ContentTypes.module) {
+                        this.showingView = ViewTypes.modules;
+                    } else if (this.selectedContent.content_type === ContentTypes.moduleUtils) {
+                        this.showingView = ViewTypes.moduleUtils;
+                    } else if (PluginTypes[this.selectedContent.content_type]) {
+                        this.showingView = ViewTypes.plugins;
+                    } else if (this.selectedContent.content_type === ContentTypes.role) {
+                        this.showingView = ViewTypes.roles;
+                    }
+                }
+                this.pageLoading = false;
             } else {
                 this.pageLoading = false;
             }
@@ -223,8 +234,12 @@ export class ContentDetailComponent implements OnInit {
         return p1.toUpperCase();
     }
 
-    private getContentTypeCounts() {
-        this.contentService.pagedQuery({ repository__id: this.repository.id }).subscribe((result: PagedResponse) => {
+    private getContentTypeCounts(page?: number) {
+        const params = { repository__id: this.repository.id };
+        if (page) {
+            params['page'] = page;
+        }
+        this.contentService.pagedQuery(params).subscribe((result: PagedResponse) => {
             result.results.forEach(item => {
                 const ct = item['content_type'];
                 if (PluginTypes[ct]) {
@@ -234,18 +249,9 @@ export class ContentDetailComponent implements OnInit {
                     this.contentCounts[ctKey]++;
                 }
             });
-            this.pageLoading = false;
-            if (this.selectedContent) {
-                // For multi-content repo, set the detail view to the selected content item
-                if (this.selectedContent.content_type === ContentTypes.module) {
-                    this.showingView = ViewTypes.modules;
-                } else if (this.selectedContent.content_type === ContentTypes.moduleUtils) {
-                    this.showingView = ViewTypes.moduleUtils;
-                } else if (PluginTypes[this.selectedContent.content_type]) {
-                    this.showingView = ViewTypes.plugins;
-                } else if (this.selectedContent.content_type === ContentTypes.role) {
-                    this.showingView = ViewTypes.roles;
-                }
+            if (result.next) {
+                const matches = result.next.match(/page=(\d+)/);
+                this.getContentTypeCounts(parseInt(matches[1], 10));
             }
         });
     }
