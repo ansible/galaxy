@@ -51,9 +51,6 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
             this.scrollToggled.emit(this.scroll);
         }
         this._importTask = data;
-        setTimeout(_ => {
-            this.affix();
-        }, 1000);
     }
 
     get importTask(): Import {
@@ -88,19 +85,6 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
         this.repositoryImportService.save({ repository_id: this.importTask.summary_fields.repository.id }).subscribe(response => {
             console.log(`Started import for repository ${this.importTask.summary_fields.repository.id}`);
             this.startedImport.emit(true);
-        });
-    }
-
-    affix(): void {
-        const $cache = $('#log-follow-button');
-        const $idcontainer = $('#import-details-container');
-        $($idcontainer).scroll(_ => {
-            const y = $($idcontainer).scrollTop();
-            if (y > 165) {
-                $cache.addClass('fixed');
-            } else {
-                $cache.removeClass('fixed');
-            }
         });
     }
 
