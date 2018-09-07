@@ -24,7 +24,7 @@ services:
 
   worker:
     image: galaxy:latest
-    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv --wait-for web:8000 && /entrypoint.sh run worker']
+    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv --wait-for galaxy:8000 && /entrypoint.sh run worker']
     environment:
       - GALAXY_SECRET_KEY=secret
       - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
