@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, InjectionToken, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
 import { ActivatedRoute } from '@angular/router';
 
@@ -6,7 +6,6 @@ import { Location } from '@angular/common';
 
 import { ImportsService } from '../../resources/imports/imports.service';
 
-import { Observable } from 'rxjs';
 import { interval } from 'rxjs';
 
 import { Import } from '../../resources/imports/import';
@@ -62,6 +61,8 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
     pageSize = 10;
     pageNumber = 1;
     appliedFilters: Filter[] = [];
+
+    document: InjectionToken<Document>;
 
     constructor(
         private route: ActivatedRoute,
@@ -255,7 +256,13 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
     // private
 
     private scrollDetails() {
-        $('#import-details-container').animate({ scrollTop: $('#import-details-container')[0].scrollHeight }, 1000);
+        const pgElement = document.getElementById('app-container');
+        const detailHeight = document.getElementById('import-details-container').scrollHeight;
+        const pgHeight = pgElement.scrollHeight;
+        const wHeight = window.innerHeight - 110;
+        if (detailHeight > wHeight) {
+            pgElement.scrollTop = pgHeight;
+        }
     }
 
     private setPageSize(params: any) {
@@ -432,7 +439,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
                 this.refreshing = false;
                 if (this.scroll) {
-                    this.scrollDetails();
+                    setTimeout(this.scrollDetails, 500);
                 }
             });
         }

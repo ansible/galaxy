@@ -9,8 +9,8 @@ export enum ContentTypes {
 export enum ContentTypesPlural {
     apb = 'abps',
     module = 'modules',
-    plugin = 'plugins',
     role = 'roles',
+    plugin = 'plugins',
     moduleUtils = 'module_utils',
 }
 

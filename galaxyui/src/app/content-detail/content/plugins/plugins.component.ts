@@ -8,8 +8,6 @@ import { Content } from '../../../resources/content/content';
 import { ContentService } from '../../../resources/content/content.service';
 import { Repository } from '../../../resources/repositories/repository';
 
-import { ContentTypes } from '../../../enums/content-types.enum';
-
 import { PluginNames, PluginTypes } from '../../../enums/plugin-types.enum';
 
 import { Filter } from 'patternfly-ng/filter/filter';
@@ -39,6 +37,7 @@ export class PluginsComponent implements OnInit {
     pageNumber = 1;
     query: string;
     items: Content[] = [];
+    pluginsInList = '';
     loading: Boolean = true;
     _plugins: Content[];
     _repository: Repository;
@@ -58,7 +57,7 @@ export class PluginsComponent implements OnInit {
 
     @Input()
     set selectedContent(data: Content) {
-        if (data && data.content_type.indexOf('plugin') > -1) {
+        if (data && PluginTypes[data.content_type]) {
             this._selectedContent = data;
             if (this.filterConfig && this.filterConfig.fields) {
                 this.filterConfig.appliedFilters.push({
@@ -121,14 +120,17 @@ export class PluginsComponent implements OnInit {
             appliedFilters: [],
         } as FilterConfig;
 
-        for (const key in PluginTypes) {
-            if (PluginTypes.hasOwnProperty(key)) {
+        for (const key in PluginNames) {
+            if (PluginNames.hasOwnProperty(key)) {
                 this.filterConfig.fields[2].queries.push({
                     id: key,
-                    value: PluginTypes[key],
+                    value: PluginNames[key],
                 });
+                this.pluginsInList += key + ',';
             }
         }
+
+        this.pluginsInList = this.pluginsInList.slice(0, -1);
 
         if (this._selectedContent) {
             this.filterConfig.appliedFilters.push({
@@ -166,7 +168,7 @@ export class PluginsComponent implements OnInit {
                 if (filter.field.id === 'name' || filter.field.id === 'description') {
                     params.push(`or__${filter.field.id}__icontains=${filter.value.toLowerCase()}`);
                 } else if (filter.field.id === 'plugin_type') {
-                    params.push(`content_type__name=${filter.value.toLowerCase().replace(' ', '_')}`);
+                    params.push(`content_type__name=${filter.query.id}`);
                 }
             });
             query = '?' + params.join('&');
@@ -186,7 +188,7 @@ export class PluginsComponent implements OnInit {
             repository__id: this.repository.id,
         };
         if (queryString.indexOf('content_type__name') < 0) {
-            params['content_type__name__icontains'] = ContentTypes.plugin;
+            params['content_type__name__in'] = this.pluginsInList;
         }
         if (contentName) {
             params['name'] = contentName;

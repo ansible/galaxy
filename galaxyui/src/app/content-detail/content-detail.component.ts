@@ -4,13 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import * as moment from 'moment';
 
-import { forkJoin, Observable } from 'rxjs';
-
 import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
 
 import { Action, ActionConfig } from 'patternfly-ng/action';
 
 import { ContentTypes } from '../enums/content-types.enum';
+import { PluginTypes } from '../enums/plugin-types.enum';
 import { RepoFormats } from '../enums/repo-types.enum';
 import { ViewTypes } from '../enums/view-types.enum';
 import { Content } from '../resources/content/content';
@@ -212,6 +211,19 @@ export class ContentDetailComponent implements OnInit {
             });
             if (this.repository.format === RepoFormats.multi) {
                 this.getContentTypeCounts();
+                if (this.selectedContent) {
+                    // For multi-content repo, set the detail view to the selected content item
+                    if (this.selectedContent.content_type === ContentTypes.module) {
+                        this.showingView = ViewTypes.modules;
+                    } else if (this.selectedContent.content_type === ContentTypes.moduleUtils) {
+                        this.showingView = ViewTypes.moduleUtils;
+                    } else if (PluginTypes[this.selectedContent.content_type]) {
+                        this.showingView = ViewTypes.plugins;
+                    } else if (this.selectedContent.content_type === ContentTypes.role) {
+                        this.showingView = ViewTypes.roles;
+                    }
+                }
+                this.pageLoading = false;
             } else {
                 this.pageLoading = false;
             }
@@ -222,51 +234,24 @@ export class ContentDetailComponent implements OnInit {
         return p1.toUpperCase();
     }
 
-    private getContentTypeCounts() {
-        const queries: Observable<PagedResponse>[] = [];
-        for (const content_type in ContentTypes) {
-            if (ContentTypes.hasOwnProperty(content_type)) {
-                if (ContentTypes[content_type] === 'plugin') {
-                    queries.push(
-                        this.contentService.pagedQuery({
-                            repository__id: this.repository.id,
-                            content_type__name__icontains: ContentTypes[content_type],
-                        }),
-                    );
-                } else {
-                    queries.push(
-                        this.contentService.pagedQuery({
-                            repository__id: this.repository.id,
-                            content_type__name: ContentTypes[content_type],
-                        }),
-                    );
-                }
-            }
+    private getContentTypeCounts(page?: number) {
+        const params = { repository__id: this.repository.id };
+        if (page) {
+            params['page'] = page;
         }
-        forkJoin(queries).subscribe((results: PagedResponse[]) => {
-            results.forEach((result: PagedResponse) => {
-                if (result['results'] && result['results'].length) {
-                    const ct = result['results'][0]['content_type'];
-                    if (ct.indexOf('plugin') > -1) {
-                        this.contentCounts.plugin = result.count;
-                    } else {
-                        const ctKey = ct.replace(/\_(\w)/, this.toCamel);
-                        this.contentCounts[ctKey] = result.count;
-                    }
+        this.contentService.pagedQuery(params).subscribe((result: PagedResponse) => {
+            result.results.forEach(item => {
+                const ct = item['content_type'];
+                if (PluginTypes[ct]) {
+                    this.contentCounts.plugin++;
+                } else {
+                    const ctKey = ct.replace(/\_(\w)/, this.toCamel);
+                    this.contentCounts[ctKey]++;
                 }
             });
-            this.pageLoading = false;
-            if (this.selectedContent) {
-                // For multi-content repo, set the detail view to the selected content item
-                if (this.selectedContent.content_type === ContentTypes.module) {
-                    this.showingView = ViewTypes.modules;
-                } else if (this.selectedContent.content_type === ContentTypes.moduleUtils) {
-                    this.showingView = ViewTypes.moduleUtils;
-                } else if (this.selectedContent.content_type.indexOf('plugin') > -1) {
-                    this.showingView = ViewTypes.plugins;
-                } else if (this.selectedContent.content_type === ContentTypes.role) {
-                    this.showingView = ViewTypes.roles;
-                }
+            if (result.next) {
+                const matches = result.next.match(/page=(\d+)/);
+                this.getContentTypeCounts(parseInt(matches[1], 10));
             }
         });
     }
