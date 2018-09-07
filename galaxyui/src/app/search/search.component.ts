@@ -45,6 +45,7 @@ import { Content } from '../resources/content-search/content';
 import { DefaultParams } from './search.resolver.service';
 
 import * as moment from 'moment';
+import { PluginTypes } from '../enums/plugin-types.enum';
 
 @Component({
     selector: 'app-search',
@@ -523,7 +524,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 item['namespace_name'] = item.summary_fields['namespace']['avatar_url'] ? '' : item.summary_fields['namespace']['name'];
             }
             item['displayNamespace'] = item.summary_fields['namespace']['name'];
-            if (item.summary_fields['content_type']['name'].indexOf('plugin') > -1) {
+            if (PluginTypes[item.summary_fields['content_type']['name']]) {
                 item['iconClass'] = ContentTypesIconClasses.plugin;
             } else {
                 item['iconClass'] = ContentTypesIconClasses[item.summary_fields['content_type']['name']];
@@ -584,11 +585,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 if (ct.name === ContentTypes.apb) {
                     contentTypeMap[ct.name] = 'APB';
                 } else {
-                    // Limit to 'role' until we're ready to support more
-                    // content types.
-                    if (ct.name === ContentTypes.role) {
-                        contentTypeMap[ct.name] = ct.description;
-                    }
+                    contentTypeMap[ct.name] = ct.description;
                 }
             });
             this.toolbarConfig.filterConfig.fields[idx].queries = [];

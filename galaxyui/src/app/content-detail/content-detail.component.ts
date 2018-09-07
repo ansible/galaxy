@@ -11,6 +11,7 @@ import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
 import { Action, ActionConfig } from 'patternfly-ng/action';
 
 import { ContentTypes } from '../enums/content-types.enum';
+import { PluginTypes } from '../enums/plugin-types.enum';
 import { RepoFormats } from '../enums/repo-types.enum';
 import { ViewTypes } from '../enums/view-types.enum';
 import { Content } from '../resources/content/content';
@@ -223,36 +224,14 @@ export class ContentDetailComponent implements OnInit {
     }
 
     private getContentTypeCounts() {
-        const queries: Observable<PagedResponse>[] = [];
-        for (const content_type in ContentTypes) {
-            if (ContentTypes.hasOwnProperty(content_type)) {
-                if (ContentTypes[content_type] === 'plugin') {
-                    queries.push(
-                        this.contentService.pagedQuery({
-                            repository__id: this.repository.id,
-                            content_type__name__icontains: ContentTypes[content_type],
-                        }),
-                    );
+        this.contentService.pagedQuery({ repository__id: this.repository.id }).subscribe((result: PagedResponse) => {
+            result.results.forEach(item => {
+                const ct = item['content_type'];
+                if (PluginTypes[ct]) {
+                    this.contentCounts.plugin++;
                 } else {
-                    queries.push(
-                        this.contentService.pagedQuery({
-                            repository__id: this.repository.id,
-                            content_type__name: ContentTypes[content_type],
-                        }),
-                    );
-                }
-            }
-        }
-        forkJoin(queries).subscribe((results: PagedResponse[]) => {
-            results.forEach((result: PagedResponse) => {
-                if (result['results'] && result['results'].length) {
-                    const ct = result['results'][0]['content_type'];
-                    if (ct.indexOf('plugin') > -1) {
-                        this.contentCounts.plugin = result.count;
-                    } else {
-                        const ctKey = ct.replace(/\_(\w)/, this.toCamel);
-                        this.contentCounts[ctKey] = result.count;
-                    }
+                    const ctKey = ct.replace(/\_(\w)/, this.toCamel);
+                    this.contentCounts[ctKey]++;
                 }
             });
             this.pageLoading = false;
@@ -262,7 +241,7 @@ export class ContentDetailComponent implements OnInit {
                     this.showingView = ViewTypes.modules;
                 } else if (this.selectedContent.content_type === ContentTypes.moduleUtils) {
                     this.showingView = ViewTypes.moduleUtils;
-                } else if (this.selectedContent.content_type.indexOf('plugin') > -1) {
+                } else if (PluginTypes[this.selectedContent.content_type]) {
                     this.showingView = ViewTypes.plugins;
                 } else if (this.selectedContent.content_type === ContentTypes.role) {
                     this.showingView = ViewTypes.roles;
