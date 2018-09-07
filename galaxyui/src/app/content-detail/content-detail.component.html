@@ -4,53 +4,38 @@
     <div class="container-fluid content-detail-container">
         <div *ngIf="repository.deprecated" class="alert alert-danger">
             <span class="pficon pficon-error-circle-o"></span>
-            This item has been deprecated. We recommend that you take a look at
-            one of <a [routerLink]="['/','search']" [queryParams]="{keywords: repository.name, deprecated: false}"> these instead</a>.
+            This item has been deprecated. We recommend that you take a look at one of <a [routerLink]="['/','search']" [queryParams]="{keywords: repository.name, deprecated: false}">
+                these instead</a>.
         </div>
         <div class="row" *ngIf="showEmptyState">
             <div class="col-sm-12">
-                <pfng-empty-state
-                    [config]="emptyStateConfig"
-                    (onActionSelect)="handleActionClicked($event)">
+                <pfng-empty-state [config]="emptyStateConfig" (onActionSelect)="handleActionClicked($event)">
                 </pfng-empty-state>
             </div>
         </div>
 
-        <content-detail-repo
-            [repository]="repository"
-            [namespace]="namespace" *ngIf="!showEmptyState"></content-detail-repo>
+        <content-detail-repo [repository]="repository" [namespace]="namespace" *ngIf="!showEmptyState"></content-detail-repo>
 
         <div class="row btn-row" *ngIf="!showEmptyState">
             <div class="col-sm-12">
-                <button type="button" class="btn btn-default" [ngClass]="{'btn-primary': showingView === ViewTypes.detail}"
-                    tooltip="Return to main content view"
+                <button type="button" class="btn btn-default" [ngClass]="{'btn-primary': showingView === ViewTypes.detail}" tooltip="Return to main content view"
                     (click)="toggleView(ViewTypes.detail)">Details</button>
-                <button type="button" class="btn btn-default"
-                    *ngIf="hasReadme" [ngClass]="{'btn-primary': showingView === ViewTypes.readme}"
-                    tooltip="View the repository's README file"
-                    (click)="toggleView(ViewTypes.readme)">Read Me</button>
-                <button type="button" class="btn btn-default"
-                    *ngIf="hasMetadata" [ngClass]="{'btn-primary': showingView === ViewTypes.meta}"
-                    tooltip="View the {{ metadataFilename }} file"
-                    (click)="toggleView(ViewTypes.meta)">Metadata</button>
-                <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.module" [ngClass]="{'btn-primary': showingView === ViewTypes.modules}"
-                    tooltip="View modules"
-                    (click)="toggleView(ViewTypes.modules)">{{ contentCounts.module }} Modules</button>
-                <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.moduleUtils" [ngClass]="{'btn-primary': showingView === ViewTypes.moduleUtils}"
-                    tooltip="View module utils"
-                    (click)="toggleView(ViewTypes.moduleUtils)">
+                <button type="button" class="btn btn-default" *ngIf="hasReadme" [ngClass]="{'btn-primary': showingView === ViewTypes.readme}"
+                    tooltip="View the repository's README file" (click)="toggleView(ViewTypes.readme)">Read Me</button>
+                <button type="button" class="btn btn-default" *ngIf="hasMetadata" [ngClass]="{'btn-primary': showingView === ViewTypes.meta}"
+                    tooltip="View the {{ metadataFilename }} file" (click)="toggleView(ViewTypes.meta)">Metadata</button>
+                <button type="button" class="btn btn-default" *ngIf="contentCounts.module" [ngClass]="{'btn-primary': showingView === ViewTypes.modules}"
+                    tooltip="View modules" (click)="toggleView(ViewTypes.modules)">{{ contentCounts.module }}
+                    Modules
+                </button>
+                <button type="button" class="btn btn-default" *ngIf="contentCounts.moduleUtils" [ngClass]="{'btn-primary': showingView === ViewTypes.moduleUtils}"
+                    tooltip="View module utils" (click)="toggleView(ViewTypes.moduleUtils)">
                     {{ contentCounts.moduleUtils }} Module Utils</button>
-                <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.plugin" [ngClass]="{'btn-primary': showingView === ViewTypes.plugins}"
-                    tooltip="View plugins"
-                    (click)="toggleView(ViewTypes.plugins)"><i class="fa fa-plug"></i>
+                <button type="button" class="btn btn-default" *ngIf="contentCounts.plugin" [ngClass]="{'btn-primary': showingView === ViewTypes.plugins}"
+                    tooltip="View plugins" (click)="toggleView(ViewTypes.plugins)"><i class="fa fa-plug"></i>
                     {{ contentCounts.plugin }} Plugins</button>
-                <button type="button" class="btn btn-default"
-                    *ngIf="contentCounts.role" [ngClass]="{'btn-primary': showingView === ViewTypes.roles}"
-                    tooltip="View modules"
-                    (click)="toggleView(ViewTypes.roles)"><i class="fa fa-gear"></i>
+                <button type="button" class="btn btn-default" *ngIf="contentCounts.role" [ngClass]="{'btn-primary': showingView === ViewTypes.roles}"
+                    tooltip="View modules" (click)="toggleView(ViewTypes.roles)"><i class="fa fa-gear"></i>
                     {{ contentCounts.role }} Roles</button>
             </div>
         </div>
@@ -60,35 +45,25 @@
                 <div class="col-lg-8 detail">
                     <div class="row">
                         <div class="col-sm-12">
-                            <card-info
-                                [repository]="repository"
-                                [repoContent]="repoContent"
-                                [repoType]="repoType"
-                                [metadata]="metadata">
+                            <card-info [repository]="repository" [repoContent]="repoContent" [repoType]="repoType" [metadata]="metadata">
                             </card-info>
                         </div>
                     </div>
-                    <div class="row detail" *ngIf="repoType !== RepoFormats.multi">
-                        <div class="col-sm-6"
-                            *ngIf="repoContent && repoContent['hasPlatforms']">
+                    <div class="row detail">
+                        <div class="col-sm-6" *ngIf="repoContent && repoContent['hasPlatforms']">
                             <card-platforms [platforms]="repoContent['platforms']"></card-platforms>
                         </div>
-                        <div class="col-sm-6"
-                            *ngIf="repoContent && repoContent['hasVersions']">
-                            <card-versions [versions]="repoContent['versions']"></card-versions>
+                        <div class="col-sm-6" *ngIf="repositoryVersions">
+                            <card-versions [versions]="repositoryVersions"></card-versions>
                         </div>
                     </div>
                     <div class="row detail" *ngIf="repoType !== RepoFormats.multi">
-                        <div class="col-sm-6"
-                            *ngIf="repoContent && repoContent['hasCloudPlatforms']">
-                            <card-cloud-platforms
-                                [cloudPlatforms]="repoContent['cloud_platforms']">
+                        <div class="col-sm-6" *ngIf="repoContent && repoContent['hasCloudPlatforms']">
+                            <card-cloud-platforms [cloudPlatforms]="repoContent['cloud_platforms']">
                             </card-cloud-platforms>
                         </div>
-                        <div class="col-sm-6"
-                            *ngIf="repoContent && repoContent['hasDependencies']">
-                            <card-dependencies
-                                [dependencies]="repoContent['dependencies']">
+                        <div class="col-sm-6" *ngIf="repoContent && repoContent['hasDependencies']">
+                            <card-dependencies [dependencies]="repoContent['dependencies']">
                             </card-dependencies>
                         </div>
                     </div>
