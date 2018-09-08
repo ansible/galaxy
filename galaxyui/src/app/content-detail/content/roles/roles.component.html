@@ -1,15 +1,9 @@
 <div class="roles-detail">
     <div class="modules-filter">
-        <pfng-filter
-            [config]="filterConfig"
-            (onChange)="applyFilters($event)">
+        <pfng-filter [config]="filterConfig" (onChange)="applyFilters($event)">
         </pfng-filter>
     </div>
-    <pfng-list
-        [expandTemplate]="listExpandTemplate"
-        [config]="listConfig"
-        [items]="items"
-        [itemTemplate]="itemTemplate">
+    <pfng-list [expandTemplate]="listExpandTemplate" [config]="listConfig" [items]="items" [itemTemplate]="itemTemplate">
         <ng-template #itemTemplate let-item="item">
             <div class="list-pf-left">
                 <span class="fa fa-gear list-pf-icon list-pf-icon-small"></span>
@@ -22,12 +16,13 @@
                 <div class="list-pf-additional-content"></div>
             </div>
         </ng-template>
-        <ng-template #listExpandTemplate let-item="item" let-index="index" >
+        <ng-template #listExpandTemplate let-item="item" let-index="index">
             <div class="meta">
                 <div class="pfng-card card-pf card-pf-accented">
                     <div class="card-pf-heading">
                         <div class="card-heading">
-                            <div class="icon-container"><span class="fa fa-info-circle fa-2x"></span></div><div class="title-text">Info</div>
+                            <div class="icon-container"><span class="fa fa-info-circle fa-2x"></span></div>
+                            <div class="title-text">Info</div>
                         </div>
                     </div>
                     <div class="card-pf-body card-info-body">
@@ -58,7 +53,8 @@
                 <div class="pfng-card card-pf card-pf-accented">
                     <div class="card-pf-heading">
                         <div class="card-heading">
-                            <div class="icon-container"><span class="fa fa-eye fa-2x"></span></div> <div class="title-text">README</div>
+                            <div class="icon-container"><span class="fa fa-eye fa-2x"></span></div>
+                            <div class="title-text">README</div>
                         </div>
                     </div>
                     <div class="card-pf-body card-info-body">
@@ -67,26 +63,20 @@
                 </div>
             </div>
             <div class="row meta card-meta">
-                <div class="col-sm-3" *ngIf="item['platforms'].length">
+                <div class="col-sm-4" *ngIf="item['platforms'].length">
                     <card-platforms [platforms]="item['platforms']"></card-platforms>
                 </div>
-                <div class="col-sm-3" *ngIf="item['versions'].length">
-                    <card-versions [versions]="item['versions']"></card-versions>
-                </div>
-                <div class="col-sm-3" *ngIf="item['cloud_platforms'].length">
+                <div class="col-sm-4" *ngIf="item['cloud_platforms'].length">
                     <card-cloud-platforms [cloudPlatforms]="item['cloud_platforms']"></card-cloud-platforms>
                 </div>
-                <div class="col-sm-3" *ngIf="item['dependencies'].length">
+                <div class="col-sm-4" *ngIf="item['dependencies'].length">
                     <card-dependencies [dependencies]="item['dependencies']"></card-dependencies>
                 </div>
             </div>
         </ng-template>
     </pfng-list>
     <div class="pagination" *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
-        <pfng-pagination
-            [config]='paginationConfig'
-            (onPageSizeChange)="handlePageSizeChange($event)"
-            (onPageNumberChange)="handlePageNumberChange($event)">
+        <pfng-pagination [config]='paginationConfig' (onPageSizeChange)="handlePageSizeChange($event)" (onPageNumberChange)="handlePageNumberChange($event)">
         </pfng-pagination>
     </div>
 </div>

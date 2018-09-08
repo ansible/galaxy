@@ -193,7 +193,7 @@ export class RolesComponent implements OnInit {
                     item['tags'] = item.summary_fields['tags'];
                     item['hasTags'] = true;
                 }
-                ['dependencies', 'platforms', 'cloud_platforms', 'versions'].forEach(key => {
+                ['dependencies', 'platforms', 'cloud_platforms'].forEach(key => {
                     item[key] = [];
                     if (item.summary_fields[key]) {
                         item[key] = item.summary_fields[key];

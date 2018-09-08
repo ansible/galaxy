@@ -16,8 +16,10 @@ import { Content } from '../resources/content/content';
 import { Namespace } from '../resources/namespaces/namespace';
 import { PagedResponse } from '../resources/paged-response';
 import { Repository } from '../resources/repositories/repository';
+import { Version } from '../resources/repositories/version';
 
 import { ContentService } from '../resources/content/content.service';
+import { RepositoryService } from '../resources/repositories/repository.service';
 
 class ContentTypeCounts {
     apb: number;
@@ -33,12 +35,18 @@ class ContentTypeCounts {
     styleUrls: ['./content-detail.component.less'],
 })
 export class ContentDetailComponent implements OnInit {
-    constructor(private router: Router, private route: ActivatedRoute, private contentService: ContentService) {}
+    constructor(
+        private router: Router,
+        private route: ActivatedRoute,
+        private contentService: ContentService,
+        private repoService: RepositoryService,
+    ) {}
 
     pageTitle = '';
     pageIcon = '';
     content: Content[];
     repository: Repository;
+    repositoryVersions: Version[] = [];
     namespace: Namespace;
     showEmptyState = false;
     actionConfig: ActionConfig;
@@ -94,6 +102,9 @@ export class ContentDetailComponent implements OnInit {
 
                 if (this.repository) {
                     this.repoType = RepoFormats[this.repository.format];
+                    if (this.repoType !== RepoFormats.apb) {
+                        this.getRepoVersions();
+                    }
                 }
 
                 const req_content_name = params['content_name'];
@@ -203,7 +214,7 @@ export class ContentDetailComponent implements OnInit {
                 }
             }
             // Make it easier to access related data
-            ['platforms', 'versions', 'cloud_platforms', 'dependencies'].forEach(key => {
+            ['platforms', 'cloud_platforms', 'dependencies'].forEach(key => {
                 this.repoContent[key] = this.repoContent.summary_fields[key];
                 let hasKey = 'has' + key[0].toUpperCase() + key.substring(1);
                 hasKey = hasKey.replace(/\_(\w)/, this.toCamel);
@@ -223,10 +234,8 @@ export class ContentDetailComponent implements OnInit {
                         this.showingView = ViewTypes.roles;
                     }
                 }
-                this.pageLoading = false;
-            } else {
-                this.pageLoading = false;
             }
+            this.pageLoading = false;
         });
     }
 
@@ -252,6 +261,20 @@ export class ContentDetailComponent implements OnInit {
             if (result.next) {
                 const matches = result.next.match(/page=(\d+)/);
                 this.getContentTypeCounts(parseInt(matches[1], 10));
+            }
+        });
+    }
+
+    private getRepoVersions(page?: number) {
+        const params = {};
+        if (page) {
+            params['page'] = page;
+        }
+        this.repoService.getVersions(this.repository.id, params).subscribe(result => {
+            this.repositoryVersions = this.repositoryVersions.concat(result.results);
+            if (result.next) {
+                const matches = result.next.match(/page=(\d+)/);
+                this.getRepoVersions(parseInt(matches[1], 10));
             }
         });
     }

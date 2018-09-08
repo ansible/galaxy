@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
 import { PagedResponse } from '../paged-response';
 import { Repository } from './repository';
+import { Version } from './version';
 
 const httpOptions = {
     headers: new HttpHeaders({
@@ -51,6 +52,13 @@ export class RepositoryService {
         return this.http.get<Repository>(`${this.url}/${id.toString()}/`).pipe(
             tap(_ => this.log('Fetched repository')),
             catchError(this.handleError('Get', {} as Repository)),
+        );
+    }
+
+    getVersions(id: number, params?: any): Observable<PagedResponse> {
+        return this.http.get<PagedResponse>(`${this.url}/${id.toString()}/versions/`, { params: params }).pipe(
+            tap(_ => this.log('Fetched repository versions')),
+            catchError(this.handleError('Get', {} as PagedResponse)),
         );
     }
 
