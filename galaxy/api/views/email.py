@@ -10,7 +10,6 @@ from galaxy.api.views import base_views
 from galaxy.api import serializers
 
 from rest_framework.response import Response
-from rest_framework import status
 
 __all__ = [
     'UserEmailList',
@@ -100,12 +99,6 @@ class EmailVerificationDetail(base_views.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         key = self.get_object()
-
-        if int(key.email_address.pk) != int(kwargs['email_id']):
-            return Response(
-                {'detail': 'Not found.'},
-                status.HTTP_404_NOT_FOUND
-            )
 
         key.email_address.verified = True
         key.email_address.save()

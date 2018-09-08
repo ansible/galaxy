@@ -26,8 +26,7 @@ USER_FIELDS = (
 
 __all__ = [
     'ActiveUserSerializer',
-    'UserListSerializer',
-    'UserDetailSerializer'
+    'UserSerializer',
 ]
 
 
@@ -57,7 +56,7 @@ class ActiveUserSerializer(BaseSerializer):
         return None
 
 
-class UserListSerializer(BaseSerializer):
+class UserSerializer(BaseSerializer):
     staff = serializers.ReadOnlyField(source='is_staff')
 
     class Meta:
@@ -67,7 +66,7 @@ class UserListSerializer(BaseSerializer):
     def get_related(self, obj):
         if not obj or not obj.is_authenticated():
             return {}
-        res = super(UserListSerializer, self).get_related(obj)
+        res = super(UserSerializer, self).get_related(obj)
         res.update(dict(
             subscriptions=reverse(
                 'api:user_subscription_list', args=(obj.pk,)),
@@ -83,7 +82,7 @@ class UserListSerializer(BaseSerializer):
     def get_summary_fields(self, obj):
         if not obj or not obj.is_authenticated():
             return {}
-        d = super(UserListSerializer, self).get_summary_fields(obj)
+        d = super(UserSerializer, self).get_summary_fields(obj)
         d['subscriptions'] = [
             OrderedDict([
                 ('id', g.id),
@@ -97,19 +96,3 @@ class UserListSerializer(BaseSerializer):
                 ('github_repo', g.repository.github_repo)
             ]) for g in obj.starred.select_related('repository').all()]
         return d
-
-
-class UserDetailSerializer(UserListSerializer):
-    id = serializers.IntegerField(read_only=True)
-    created = serializers.DateTimeField(read_only=True)
-    modified = serializers.DateTimeField(read_only=True)
-    date_joined = serializers.DateTimeField(read_only=True)
-    avatar_url = serializers.URLField(read_only=True)
-    username = serializers.CharField(read_only=True)
-    full_name = serializers.CharField(read_only=True)
-    notify_survey = serializers.BooleanField(default=False)
-    notify_import_fail = serializers.BooleanField(default=False)
-    notify_import_success = serializers.BooleanField(default=False)
-    notify_content_release = serializers.BooleanField(default=False)
-    notify_author_release = serializers.BooleanField(default=False)
-    notify_galaxy_announce = serializers.BooleanField(default=False)

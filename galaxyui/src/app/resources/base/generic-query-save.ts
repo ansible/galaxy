@@ -9,13 +9,12 @@ import { BaseType } from './base-type';
 
 import { GenericQuery } from './generic-query';
 
-const httpOptions = {
-    headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-    }),
-};
 export class GenericQuerySave<ServiceType extends BaseType> extends GenericQuery<ServiceType> {
-    protected ObjectType: any;
+    httpOptions = {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+        }),
+    };
 
     constructor(http: HttpClient, notificationService: NotificationService, url, serviceName) {
         super(http, notificationService, url, serviceName);
@@ -24,9 +23,9 @@ export class GenericQuerySave<ServiceType extends BaseType> extends GenericQuery
     save(object: ServiceType): Observable<ServiceType> {
         let httpResult: Observable<Object>;
         if (object.id) {
-            httpResult = this.http.put<ServiceType>(`${this.url}/${object.id}/`, object, httpOptions);
+            httpResult = this.http.put<ServiceType>(`${this.url}/${object.id}/`, object, this.httpOptions);
         } else {
-            httpResult = this.http.post<ServiceType>(`${this.url}/`, object, httpOptions);
+            httpResult = this.http.post<ServiceType>(`${this.url}/`, object, this.httpOptions);
         }
 
         return httpResult.pipe(

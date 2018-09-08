@@ -279,7 +279,7 @@ class RoleDependenciesList(base_views.SubListAPIView):
 
 class RoleUsersList(base_views.SubListAPIView):
     model = User
-    serializer_class = serializers.UserDetailSerializer
+    serializer_class = serializers.UserSerializer
     parent_model = models.Content
     relationship = 'created_by'
 

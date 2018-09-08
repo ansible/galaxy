@@ -353,6 +353,6 @@ class NamespaceContentList(base_views.SubListAPIView):
 class NamespaceOwnersList(base_views.SubListAPIView):
     view_name = "Namespace Owners"
     model = User
-    serializer_class = serializers.UserListSerializer
+    serializer_class = serializers.UserSerializer
     parent_model = models.Namespace
     relationship = "owners"
