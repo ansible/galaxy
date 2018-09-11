@@ -78,7 +78,7 @@
                         ],
                         "orderByTime": "ASC",
                         "policy": "default",
-                        "query": "SELECT TOP(value, cvalue, 10)  FROM search_criteria WHERE ctype = 'keyword'",
+                        "query": "SELECT TOP(value, cvalue, 10)  FROM galaxy_search_criteria WHERE ctype = 'keyword'",
                         "rawQuery": true,
                         "refId": "A",
                         "resultFormat": "table",
@@ -162,7 +162,7 @@
                         ],
                         "orderByTime": "ASC",
                         "policy": "default",
-                        "query": "SELECT TOP(value, cvalue, 10)  FROM search_criteria WHERE ctype = 'tag'",
+                        "query": "SELECT TOP(value, cvalue, 10)  FROM galaxy_search_criteria WHERE ctype = 'tag'",
                         "rawQuery": true,
                         "refId": "A",
                         "resultFormat": "table",
@@ -246,7 +246,7 @@
                         ],
                         "orderByTime": "ASC",
                         "policy": "default",
-                        "query": "SELECT TOP(value, cvalue, 10)  FROM search_criteria WHERE ctype = 'platform'",
+                        "query": "SELECT TOP(value, cvalue, 10)  FROM galaxy_search_criteria WHERE ctype = 'platform'",
                         "rawQuery": true,
                         "refId": "A",
                         "resultFormat": "table",
@@ -330,7 +330,7 @@
                         ],
                         "orderByTime": "ASC",
                         "policy": "default",
-                        "query": "SELECT TOP(value, cvalue,10)  FROM search_criteria WHERE ctype = 'cloud_platform'",
+                        "query": "SELECT TOP(value, cvalue,10)  FROM galaxy_search_criteria WHERE ctype = 'cloud_platform'",
                         "rawQuery": true,
                         "refId": "A",
                         "resultFormat": "table",
@@ -414,7 +414,7 @@
                         ],
                         "orderByTime": "ASC",
                         "policy": "default",
-                        "query": "SELECT * FROM search",
+                        "query": "SELECT * FROM galaxy_search",
                         "rawQuery": true,
                         "refId": "A",
                         "resultFormat": "table",
@@ -435,7 +435,7 @@
                         "tags": []
                     }
                 ],
-                "title": "Raw search data - 'search' measurement",
+                "title": "Raw search data - 'galaxy_search' measurement",
                 "transform": "table",
                 "type": "table"
             },
@@ -498,7 +498,7 @@
                         ],
                         "orderByTime": "ASC",
                         "policy": "default",
-                        "query": "SELECT * FROM search_criteria",
+                        "query": "SELECT * FROM galaxy_search_criteria",
                         "rawQuery": true,
                         "refId": "A",
                         "resultFormat": "table",
@@ -519,7 +519,7 @@
                         "tags": []
                     }
                 ],
-                "title": "Raw search data - 'search_criteria' measurement",
+                "title": "Raw search data - 'galaxy_search_criteria' measurement",
                 "transform": "table",
                 "type": "table"
             }

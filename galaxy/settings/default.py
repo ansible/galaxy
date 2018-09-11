@@ -301,14 +301,14 @@ If set to `None`, system temporary directory is used.
 METRICS_ENABLED = False
 
 PROM_CNTR_SEARCH = prometheus_client.Counter(
-    'search',
+    'galaxy_search',
     '',
     ['keywords', 'platforms', 'cloud_platforms', 'tags'],
     registry=prometheus_client.REGISTRY
 )
 
 PROM_CNTR_SEARCH_CRITERIA = prometheus_client.Counter(
-    'search_criteria',
+    'galaxy_search_criteria',
     '',
     ['ctype', 'cvalue'],
     registry=prometheus_client.REGISTRY
