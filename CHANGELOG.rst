@@ -4,6 +4,21 @@ Ansible Galaxy Changes by Release
 3.1.0 - Active development
 --------------------------
 
+3.0.10 - Released 12-Sep-2018
+-----------------------------
+
+Changes
+```````
+- Deploy search metrics collection to production. Issue `1105 <https://github.com/ansible/galaxy/issues/1105>`_.
+
+Closed PRs
+``````````
+- `1135 Add search metrics support <https://github.com/ansible/galaxy/pull/1135>`_.
+- `1136 Enable Django Prometheus middleware <https://github.com/ansible/galaxy/pull/1136>`_.
+- `1137 Tune Gunicorn for production image <https://github.com/ansible/galaxy/pull/1137>`_.
+- `1139 Change metrics URL to /metrics <https://github.com/ansible/galaxy/pull/1139>`_.
+- `1141 Add prefixes to Galaxy search metrics <https://github.com/ansible/galaxy/pull/1141>`_
+
 3.0.9 - Released 05-Sep-2018
 ----------------------------
 
@@ -11,7 +26,7 @@ Bug Fixes
 `````````
 - Root path redirecting to Login page, rather than Home. Issue `1120 <https://github.com/ansible/galaxy/issues/1120>`_.
 
-Closed PRS
+Closed PRs
 ``````````
 - `1126 Insure /home is the default route <https://github.com/ansible/galaxy/pull/1126>`_.
 
