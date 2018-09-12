@@ -54,3 +54,7 @@ Sphinx
 django-log-request-id
 # format log output as json
 jog
+
+# Web analytics/metrics
+prometheus_client
+django-prometheus

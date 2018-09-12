@@ -19,6 +19,7 @@
 import os
 
 import djcelery
+import prometheus_client
 
 
 djcelery.setup_loader()
@@ -43,6 +44,8 @@ SITE_ID = 1
 # Application definition
 # ---------------------------------------------------------
 
+PROMETHEUS_EXPORT_MIGRATIONS = False
+
 # TODO(cutwater): Review 3rd party apps usage
 INSTALLED_APPS = (
     # Django apps
@@ -65,6 +68,7 @@ INSTALLED_APPS = (
 
     # 3rd part apps
     'bootstrapform',
+    'django_prometheus',
     'djcelery',
     'rest_framework',
     'rest_framework.authtoken',
@@ -77,6 +81,7 @@ INSTALLED_APPS = (
 # FIXME(cutwater): Deprecated from Django 1.10, use MIDDLEWARE setting
 # instead.
 MIDDLEWARE_CLASSES = (
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'log_request_id.middleware.RequestIDMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -85,6 +90,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 )
 
 ROOT_URLCONF = 'galaxy.urls'
@@ -289,6 +295,26 @@ If set to `None`, system temporary directory is used.
 """
 
 # =========================================================
+# Metrics Settings
+# =========================================================
+
+METRICS_ENABLED = False
+
+PROM_CNTR_SEARCH = prometheus_client.Counter(
+    'galaxy_search',
+    '',
+    ['keywords', 'platforms', 'cloud_platforms', 'tags'],
+    registry=prometheus_client.REGISTRY
+)
+
+PROM_CNTR_SEARCH_CRITERIA = prometheus_client.Counter(
+    'galaxy_search_criteria',
+    '',
+    ['ctype', 'cvalue'],
+    registry=prometheus_client.REGISTRY
+)
+
+# =========================================================
 # Logging
 # =========================================================
 
@@ -364,6 +390,11 @@ LOGGING = {
             'propagate': True,
         },
         'galaxy.accounts': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'galaxy.common.metrics': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,

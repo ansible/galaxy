@@ -1,0 +1,11 @@
+scrape_configs:
+  - job_name: 'galaxy'
+    scrape_interval: '60s'
+    honor_labels: true
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'galaxy.svc:8000'
+
+remote_write:
+  - url: "http://influxdb:8086/api/v1/prom/write?u=galaxy&p=galaxy&db=galaxy"
