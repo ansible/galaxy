@@ -173,7 +173,7 @@ the complete directory tree created on the local file system by Mazer:
 Setting the Content path
 ------------------------
 
-Mazer installs content to ``~/.ansible/content``. To override the deault path, set *content_path* in Mazer's configuration file,
+Mazer installs content to ``~/.ansible/content``. To override the default path, set *content_path* in Mazer's configuration file,
 ``~/.ansible/mazer.yml``. The following shows an example configuration file that sets the value of *content_path*:
 
 .. code-block:: yaml
