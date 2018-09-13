@@ -316,7 +316,7 @@ running and accepting connections:
     [03:10:04] Starting 'default'...
     [03:10:04] Finished 'default' after 108 μs
 
-OK, go for it! Your Galaxy web site is available at: `http://localhost:8000`_.
+OK, go for it! Your Galaxy web site is available at: `http://localhost:8000 <http://localhost:8000>`_.
 
 .. note:: You won't be able to authenticate until you perform the post build
           steps for creating an `admin` user and configuring GitHub authentication.
@@ -334,13 +334,13 @@ InfluxDB and import data sources and dashboards for Prometheus and InfluxDB into
 
     $ make dev/setup-metrics
 
-Log into Grafana at `http://localhost:3000`_ using the admin user with
+Log into Grafana at `http://localhost:3000 <http://localhost:3000>`_ using the admin user with
 password ``admin``. Navigate to ``Galaxy Search Metrics - InfluxDB`` and
 ``Galaxy Search Metrics - Prometheus`` dashboards.
 
-Search metrics are exposed at `http://localhost:8000/metrics`_. From
+Search metrics are exposed at `http://localhost:8000/metrics <http://localhost:8000/metrics>`_. From
 there, the metrics are being scraped by Prometheus
-(`http://localhost:9090/`_). Prometheus serves as a short-term storage.
+(`http://localhost:9090/ <http://localhost:9090/>`_). Prometheus serves as a short-term storage.
 For a long-term metrics storage, the metrics are being sent from
 Prometheus to InfluxDB.
 
@@ -361,7 +361,7 @@ the creation process. You'll be prompted for the vital details as depicted below
     Password (again):
     Superuser created successfully.
 
-The Django admin site can be accessed at `http://localhost:8000/admin`_.
+The Django admin site can be accessed at `http://localhost:8000/admin <http://localhost:8000/admin>`_.
 
 Connect to GitHub
 -----------------
