@@ -50,7 +50,7 @@ pytest-cov==2.5.1
 pytest-env
 
 # Docs
-Sphinx
+Sphinx<1.8.0
 
 # logging related
 # add request-id to django logs
