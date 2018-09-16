@@ -67,7 +67,6 @@ class RoleMetaParser(object):
                     "Expecting 'galaxy_info' in metadata to be a dictionary "
                     "or key:value mapping")
         else:
-            self.log.warning("Missing 'galaxy_info' field in metadata.")
             galaxy_info = {}
         return galaxy_info
 
@@ -78,7 +77,6 @@ class RoleMetaParser(object):
                 raise exc.ContentLoadError(
                     "Expecting 'dependencies' in metadata to be a list")
         else:
-            self.log.warning("Missing 'dependencies' field in metadata.")
             dependencies = []
         return dependencies
 
@@ -86,7 +84,8 @@ class RoleMetaParser(object):
         if not re.match(constants.TAG_REGEXP, tag):
             self.log.warning(
                 "'{}' is not a valid tag. Tags must container lowercase "
-                "letters and digits only. Skipping.".format(tag))
+                "letters and digits only. Skipping.".format(tag),
+                {'section': 'Metdata Parser'})
             return False
         return True
 
@@ -103,7 +102,7 @@ class RoleMetaParser(object):
                                      .format(key))
             if key in self.metadata and value in self.metadata[key]:
                 self.log.warning("Value of {0} has not been set in metadata."
-                                 .format(key))
+                                 .format(key), {'section': 'Metdata Parser'})
 
     def parse_tags(self):
         tags = []
@@ -112,17 +111,20 @@ class RoleMetaParser(object):
         if isinstance(galaxy_tags, list):
             tags += galaxy_tags
         else:
-            self.log.warning('Expected "galaxy_tags" in metadata to be a list')
+            self.log.warning('Expected "galaxy_tags" in metadata to be a list',
+                             {'section': 'Metdata Parser'})
 
         if 'categories' in self.metadata:
             self.log.warning(
                 'Found "categories" in metadata. Update the metadata '
-                'to use "galaxy_tags" rather than categories.')
+                'to use "galaxy_tags" rather than categories.',
+                {'section': 'Metdata Parser'})
             if isinstance(self.metadata['categories'], list):
                 tags += self.metadata['categories']
             else:
                 self.log.warning(
-                    'Expected "categories" in meta data to be a list')
+                    'Expected "categories" in meta data to be a list',
+                    {'section': 'Metdata Parser'})
 
         tags = list(filter(self._validate_tag, tags))
 
@@ -143,7 +145,7 @@ class RoleMetaParser(object):
             except KeyError:
                 self.log.warning(
                     'No name specified for platform [{0}], skipping'
-                    .format(idx))
+                    .format(idx), {'section': 'Metdata Parser'})
                 continue
 
             versions = platform.get('versions', ['all'])
@@ -157,8 +159,6 @@ class RoleMetaParser(object):
             cloud_platforms = [cloud_platforms]
         return cloud_platforms
 
-    # TODO: Extend dependencies support with format used
-    # in .galaxy-metadata.yml
     def parse_dependencies(self):
         if not self.dependencies:
             return []
@@ -183,11 +183,13 @@ class RoleMetaParser(object):
         for video in meta_videos:
             if not isinstance(video, dict):
                 self.log.warning(
-                    'Expected item in video_links to be dictionary')
+                    'Expected item in video_links to be dictionary',
+                    {'section': 'Metdata Parser'})
                 continue
             if set(video) != {'url', 'title'}:
                 self.log.warning("Expected item in video_links to contain "
-                                 "only keys 'url' and 'title'")
+                                 "only keys 'url' and 'title'",
+                                 {'section': 'Metdata Parser'})
                 continue
             for name, expr in six.iteritems(self.VIDEO_REGEXP):
                 match = expr.match(video['url'])
@@ -200,7 +202,8 @@ class RoleMetaParser(object):
                 self.log.warning(
                     "URL format '{0}' is not recognized. "
                     "Expected it be a shared link from Vimeo, YouTube, "
-                    "or Google Drive.".format(video['url']))
+                    "or Google Drive.".format(video['url']),
+                    {'section': 'Metdata Parser'})
                 continue
         return videos
 
@@ -232,10 +235,17 @@ class RoleLoader(base.BaseLoader):
 
         self.meta_file = metadata_path
 
+        # if not self.name:
+        #     self.meta_parser = self._get_meta_parser()
+        #     name = self._get_name(self.meta_parser.metadata)
+        #     if hasattr(self.log, 'extra'):
+        #         self.log.extra['content_name'] = name
+
     def load(self):
-        meta = self._load_metadata()
-        meta_parser = RoleMetaParser(meta, logger=self.log)
+        meta_parser = self._get_meta_parser()
         galaxy_info = meta_parser.metadata
+        original_name = self.name
+        self.name = self._get_name(galaxy_info)
 
         meta_parser.validate_strings()
 
@@ -257,13 +267,9 @@ class RoleLoader(base.BaseLoader):
         data['video_links'] = meta_parser.parse_videos()
         readme = self._get_readme()
 
-        name = self.name
-        if galaxy_info.get('role_name'):
-            name = sanitize_content_name(galaxy_info['role_name'])
-
         return models.Content(
-            name=name,
-            original_name=self.name,
+            name=self.name,
+            original_name=original_name,
             path=self.rel_path,
             content_type=self.content_type,
             description=description,
@@ -279,6 +285,16 @@ class RoleLoader(base.BaseLoader):
             return os.path.basename(self.path)
         else:
             return None
+
+    def _get_meta_parser(self):
+        meta = self._load_metadata()
+        return RoleMetaParser(meta, logger=self.log)
+
+    def _get_name(self, galaxy_info):
+        name = self.name
+        if galaxy_info.get('role_name'):
+            name = sanitize_content_name(galaxy_info['role_name'])
+        return name
 
     def _load_string_attrs(self, metadata):
         attrs = {}

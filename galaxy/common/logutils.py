@@ -21,6 +21,8 @@ import logging
 
 from galaxy import constants
 
+logger = logging.getLogger(__name__)
+
 
 class ImportTaskAdapter(logging.LoggerAdapter):
     def __init__(self, logger, task_id):
@@ -35,14 +37,6 @@ class ContentTypeAdapter(logging.LoggerAdapter):
         })
 
     def process(self, msg, kwargs):
-        if self.extra['content_name']:
-            prefix = '{}: {}'.format(
-                self.extra['content_type'].name,
-                self.extra['content_name'])
-        else:
-            prefix = self.extra['content_type']
-
-        msg = '[{}] {}'.format(prefix, msg)
         return msg, kwargs
 
 
@@ -50,10 +44,9 @@ class ImportTaskHandler(logging.Handler):
     def emit(self, record):
         # type: (logging.LogRecord) -> None
         from galaxy.main import models
-        msg = self.format(record)
         models.ImportTaskMessage.objects.using('logging').create(
             task_id=record.task_id,
             message_type=constants.ImportTaskMessageType.from_logging_level(
                 record.levelno).value,
-            message_text=msg,
+            message_text=record.msg,
         )

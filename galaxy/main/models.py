@@ -684,6 +684,12 @@ class ImportTaskMessage(PrimordialModel):
         'ImportTask',
         related_name='messages',
     )
+    # content = models.ForeignKey(
+    #     'Content',
+    #     related_name='messages',
+    #     null=True,
+    #     on_delete=models.SET_NULL
+    # )
     message_type = models.CharField(
         max_length=10,
         choices=constants.ImportTaskMessageType.choices(),
@@ -691,6 +697,11 @@ class ImportTaskMessage(PrimordialModel):
     message_text = models.CharField(
         max_length=256,
     )
+    # error_id = models.CharField(
+    #     max_length=30,
+    #     null=True
+    # )
+
 
     def __str__(self):
         return "{}-{}-{}".format(

@@ -45,7 +45,7 @@ class BaseLinter(object):
 
 
 class Flake8Linter(BaseLinter):
-
+    name = 'Flake8'
     cmd = 'flake8'
 
     def _check_files(self, paths):
@@ -61,7 +61,7 @@ class Flake8Linter(BaseLinter):
 
 
 class YamlLinter(BaseLinter):
-
+    name = 'YAMLlint'
     cmd = 'yamllint'
     config = os.path.join(LINTERS_DIR, 'yamllint.yaml')
 
@@ -75,7 +75,7 @@ class YamlLinter(BaseLinter):
 
 
 class AnsibleLinter(BaseLinter):
-
+    name = 'Ansible Lint'
     cmd = 'ansible-lint'
 
     def _check_files(self, paths):
