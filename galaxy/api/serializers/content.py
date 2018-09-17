@@ -183,13 +183,6 @@ class ContentDetailSerializer(ContentSerializer):
     def get_summary_fields(self, instance):
         result = super(
             ContentDetailSerializer, self).get_summary_fields(instance)
-
-        # Support ansible-galaxy <= 2.6 by excluding unsupported messges
-        supported_types = ('INFO', 'WARNING', 'ERROR', 'SUCCESS', 'FAILED')
-        latest_task = models.ImportTask.objects.filter(
-            repository_id=instance.repository.id
-        ).latest('id')
-
         result.update({
             'platforms': self.get_platforms(instance),
             'cloud_platforms': [
@@ -203,24 +196,6 @@ class ContentDetailSerializer(ContentSerializer):
                 {'id': v.id, 'version': str(v.version), 'tag': v.tag,
                  'commit_date': v.commit_date, 'commit_sha': v.commit_sha}
                 for v in instance.repository.all_versions()
-            ],
-            'task_messages': [
-                OrderedDict([
-                    ('id', m.id),
-                    ('message_type', m.message_type),
-                    ('message_text', m.message_text),
-                    ('content_id', m.content_id),
-                    ('is_linter_rule_violation', m.is_linter_rule_violation),
-                    ('linter_type', m.linter_type),
-                    ('linter_rule_id', m.linter_rule_id),
-                    ('rule_desc', m.rule_desc),
-                    ('rule_severity', m.rule_severity),
-                ]) for m in models.ImportTaskMessage.objects.filter(
-                    task_id=latest_task.id,
-                    content_id=instance.id,
-                    message_type__in=supported_types,
-                    is_linter_rule_violation=True,
-                )
             ],
         })
         return result

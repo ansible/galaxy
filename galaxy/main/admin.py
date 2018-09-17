@@ -40,7 +40,7 @@ class ContentBlockAdmin(admin.ModelAdmin):
 
 
 class ContentRuleAdmin(admin.ModelAdmin):
-    exclude = ('short_desc', 'long_desc')
+    pass
 
 
 admin.site.register(models.Platform, PlatformAdmin)

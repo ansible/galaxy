@@ -60,18 +60,6 @@ class Flake8Linter(BaseLinter):
             yield line.strip()
         proc.wait()
 
-    def get_error_id(self, message):
-        try:
-            error_id = message.split(' ')[1]
-            if error_id[0] not in ['E', 'W']:
-                error_id = None
-        except IndexError:
-            error_id = None
-
-        if not error_id:
-            logger.error('No error_id found in {} message'.format(self.cmd))
-        return error_id
-
     def parse_id_and_desc(self, message):
         try:
             msg_parts = message.split(' ')
@@ -104,19 +92,6 @@ class YamlLinter(BaseLinter):
         for line in proc.stdout:
             yield line.strip()
         proc.wait()
-
-    def get_error_id(self, message):
-        try:
-            error_id = message.split(' ')[1]
-            error_id = error_id[1:-1]
-            if error_id not in ['error', 'warning']:
-                error_id = None
-        except IndexError:
-            error_id = None
-
-        if not error_id:
-            logger.error('No error_id found in {} message'.format(self.cmd))
-        return error_id
 
     def parse_id_and_desc(self, message):
         try:
@@ -166,19 +141,6 @@ class AnsibleLinter(BaseLinter):
         # returncode 1 is app exception, 0 is no linter err, 2 is linter err
         if proc.wait() not in (0, 2):
             yield 'Exception running ansible-lint, could not complete linting'
-
-    def get_error_id(self, message):
-        try:
-            error_id = message.split(' ')[1]
-            error_id = error_id[1:-1]
-            if error_id[0] not in ['E']:
-                error_id = None
-        except IndexError:
-            error_id = None
-
-        if not error_id:
-            logger.error('No error_id found in {} message'.format(self.cmd))
-        return error_id
 
     def parse_id_and_desc(self, message):
         try:

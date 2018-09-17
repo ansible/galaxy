@@ -136,6 +136,7 @@ def _import_repository(import_task, logger):
     repository.save()
 
     _update_task_msg_content_id(import_task)
+    _update_task_msg_severity(import_task)
     _update_quality_score(import_task)
 
     warnings = import_task.messages.filter(
@@ -147,60 +148,9 @@ def _import_repository(import_task, logger):
         'errors'.format(warnings, errors))
 
 
-def _update_quality_score(import_task):
-    BASE_SCORE = 50
-    SEV_TO_WEIGHT = {
-        0: 0,
-        1: 0.75,
-        2: 1.25,
-        3: 2.5,
-        4: 5,
-        5: 10,
-    }
-
-    rule_to_sev = {'{}_{}'.format(r.linter_id, r.rule_id).lower(): r.severity
-                   for r in models.ContentRule.objects.all()}
-
-    repository = import_task.repository
-    contents = models.Content.objects.filter(repository_id=repository.id)
-    repo_points = 0.0
-    for content in contents:
-        messages = models.ImportTaskMessage.objects.filter(
-            task_id=import_task.id,
-            content_id=content.id,
-            is_linter_rule_violation=True,
-        )
-
-        rule_vios = ['{}_{}'.format(m.linter_type, m.linter_rule_id).lower()
-                     for m in messages]
-        sevs = [rule_to_sev[rule_vio] for rule_vio in rule_vios
-                if rule_vio in rule_to_sev]
-        weights = [SEV_TO_WEIGHT[s] for s in sevs
-                   if isinstance(SEV_TO_WEIGHT[s], Number)]
-        score = max(0.0, (BASE_SCORE - sum(weights)) / 10)
-
-        content.content_score = score
-        content.quality_score = score
-        content.save()
-        repo_points += score
-
-        missing_rules = [r for r in rule_vios if r not in rule_to_sev]
-        for rule in missing_rules:
-            LOG.error(u'Ignoring rule {} not in database'.format(rule))
-
-        print(u'rule_vios, sevs, weights, score: {}, {}, {}, {}'.format(
-            rule_vios, sevs, weights, content.quality_score))  # TEMP
-
-    repository.quality_score = repo_points / contents.count()
-    repository.save()
-    print(u'repo quality score: {}'.format(repository.quality_score))  # TEMP
-
-
 def _update_task_msg_content_id(import_task):
     repo_id = import_task.repository.id
     contents = models.Content.objects.filter(repository_id=repo_id)
-
-    # TODO(awcrosby) confirm original_name (vs name) is best here
     name_to_id = {c.original_name: c.id for c in contents}
 
     # single role repo content_name is None in ImportTaskMessage
@@ -211,8 +161,6 @@ def _update_task_msg_content_id(import_task):
         task_id=import_task.id,
         is_linter_rule_violation=True
     )
-    rule_to_sev = {'{}_{}'.format(r.linter_id, r.rule_id).lower(): r.severity
-                   for r in models.ContentRule.objects.all()}
 
     for msg in import_messages:
         if msg.content_name not in name_to_id:
@@ -221,15 +169,78 @@ def _update_task_msg_content_id(import_task):
             msg.save()
             continue
         msg.content_id = name_to_id[msg.content_name]
+        msg.save()
+
+
+def _update_task_msg_severity(import_task):
+    rule_to_severity = {'{}_{}'.format(r.linter_id, r.rule_id).lower():
+                        r.severity
+                        for r in models.ContentRule.objects.all()}
+
+    import_messages = models.ImportTaskMessage.objects.filter(
+        task_id=import_task.id,
+        is_linter_rule_violation=True
+    )
+
+    for msg in import_messages:
         rule_code = '{}_{}'.format(msg.linter_type,
                                    msg.linter_rule_id).lower()
-        if rule_code not in rule_to_sev:
+        if rule_code not in rule_to_severity:
             LOG.warning(u'Rule not found in database: {}'.format(rule_code))
             msg.is_linter_rule_violation = False
             msg.save()
             continue
-        msg.rule_severity = rule_to_sev[rule_code]
+        msg.rule_severity = rule_to_severity[rule_code]
         msg.save()
+
+
+def _update_quality_score(import_task):
+    BASE_SCORE = 50
+    SEVERITY_TO_WEIGHT = {
+        0: 0,
+        1: 0.75,
+        2: 1.25,
+        3: 2.5,
+        4: 5,
+        5: 10,
+    }
+
+    rule_to_severity = {'{}_{}'.format(r.linter_id, r.rule_id).lower():
+                        r.severity
+                        for r in models.ContentRule.objects.all()}
+    repository = import_task.repository
+    contents = models.Content.objects.filter(repository_id=repository.id)
+    repo_points = 0.0
+
+    for content in contents:
+        messages = models.ImportTaskMessage.objects.filter(
+            task_id=import_task.id,
+            content_id=content.id,
+            is_linter_rule_violation=True,
+        )
+
+        rule_vios = ['{}_{}'.format(m.linter_type, m.linter_rule_id).lower()
+                     for m in messages]
+        severitys = [rule_to_severity[rule_vio] for rule_vio in rule_vios
+                     if rule_vio in rule_to_severity]
+        weights = [SEVERITY_TO_WEIGHT[s] for s in severitys
+                   if isinstance(SEVERITY_TO_WEIGHT[s], Number)]
+        score = max(0.0, (BASE_SCORE - sum(weights)) / 10)
+
+        content.content_score = score
+        content.quality_score = score
+        content.save()
+        repo_points += score
+
+        score_calc_log = ('score calc for content {} - '
+                          'rule_vios, severitys, weights, score: '
+                          '{}, {}, {}, {}')
+        LOG.debug(score_calc_log.format(content.original_name,
+                  rule_vios, severitys, weights, content.quality_score))
+
+    repository.quality_score = repo_points / contents.count()
+    repository.save()
+    LOG.debug(u'repo quality score: {}'.format(repository.quality_score))
 
 
 def _update_namespace(repository):

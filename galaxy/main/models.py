@@ -1210,24 +1210,13 @@ class ContentRule(BaseModel):
     )
     linter_id = models.CharField(
         max_length=25,
-        # TODO(awcrosby) look at adding to constants
-        choices=[('flake8', 'flake8'),
-                 ('yamllint', 'yamllint'),
-                 ('ansible-lint', 'ansible-lint')],
+        choices=constants.LinterType.choices(),
     )
     severity = models.IntegerField(
         default=0,
         validators=[MinValueValidator(0), MaxValueValidator(5)]
     )
-    short_desc = models.CharField(
-        max_length=256,
-        default='',
-    )
-    long_desc = models.CharField(
-        max_length=2048,
-        default='',
-    )
 
     def __str__(self):
-        return '{} {} sev={}: {}'.format(
-            self.linter_id, self.rule_id, self.severity, self.short_desc)
+        return '{} {} severity={}'.format(
+            self.linter_id, self.rule_id, self.severity)

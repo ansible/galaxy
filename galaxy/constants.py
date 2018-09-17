@@ -129,6 +129,20 @@ class ImportTaskState(Enum):
     SUCCESS = 'SUCCESS'
 
 
+class LinterType(Enum):
+    FLAKE8 = 'flake8'
+    YAMLLINT = 'yamllint'
+    ANSIBLELINT = 'ansible-lint'
+
+    @classmethod
+    def choices(cls):
+        return [
+            (cls.FLAKE8.value, 'flake8'),
+            (cls.YAMLLINT.value, 'yamllint'),
+            (cls.ANSIBLELINT.value, 'ansible-lint')
+        ]
+
+
 class RepositoryFormat(enum.Enum):
     ROLE = 'role'
     APB = 'apb'
