@@ -147,10 +147,11 @@ export class AppComponent implements OnInit {
                     value: me.staff ? 'Staff' : 'User',
                 });
 
-                this.addNavButtons();
+                this.addContentButtons();
             } else {
-                this.removeNavButtons();
+                this.removeContentButtons();
             }
+            this.optionallyAddMobileButtons();
         });
         this.redirectUrl = this.authService.redirectUrl;
     }
@@ -163,29 +164,22 @@ export class AppComponent implements OnInit {
         this.modalRef.hide();
     }
 
-    removeNavButtons(): void {
-        for (let i = 0; i < this.navItems.length; i++) {
-            const title = this.navItems[i].title;
-            if (title === 'My Content' || title === 'My Imports') {
-                this.navItems.splice(i, 1);
-                i--;
-            }
-        }
+    removeContentButtons(): void {
+        this.removeNavItem('My Content');
+        this.removeNavItem('My Imports');
     }
 
-    addNavButtons(): void {
-        this.navItems.push(
-            {
-                title: 'My Content',
-                iconStyleClass: 'fa fa-list',
-                url: '/my-content',
-            },
-            {
-                title: 'My Imports',
-                iconStyleClass: 'fa fa-upload',
-                url: '/my-imports',
-            },
-        );
+    addContentButtons(): void {
+        this.addNavItem({
+            title: 'My Content',
+            iconStyleClass: 'fa fa-list',
+            url: '/my-content',
+        } as VerticalNavigationItem);
+        this.addNavItem({
+            title: 'My Imports',
+            iconStyleClass: 'fa fa-upload',
+            url: '/my-imports',
+        } as VerticalNavigationItem);
     }
 
     logout(): void {
@@ -198,16 +192,84 @@ export class AppComponent implements OnInit {
                 console.log(error);
             },
         );
-        this.removeNavButtons();
+        this.removeContentButtons();
+    }
+
+    onResize($event) {
+        if ($event.target.innerWidth < 768) {
+            this.addMobileButtons();
+        } else {
+            this.removeMobileButtons();
+        }
     }
 
     onItemClicked($event: VerticalNavigationItem): void {
-        console.log('item clicked');
-        console.log($event);
+        if ($event.title === 'Logout') {
+            this.logout();
+        }
+        this.removeMobileButtons();
+        this.optionallyAddMobileButtons();
     }
 
-    onNavigation($event: VerticalNavigationItem): void {
-        console.log('navigation started');
-        console.log($event);
+    // private
+    private addMobileButtons(): void {
+        this.addNavItem({
+            title: 'Documentation',
+            iconStyleClass: 'fa pficon-catalog',
+            url: '/docs/',
+        } as VerticalNavigationItem);
+        if (!this.authenticated) {
+            this.addNavItem({
+                title: 'Login',
+                iconStyleClass: 'fa fa-sign-in',
+                url: '/login',
+            } as VerticalNavigationItem);
+        } else {
+            this.addNavItem({
+                title: 'Logout',
+                iconStyleClass: 'fa fa-sign-out',
+                url: '',
+            } as VerticalNavigationItem);
+        }
+    }
+
+    private removeMobileButtons(): void {
+        ['Login', 'Logout', 'Documentation'].forEach(item => {
+            console.log('remove ' + item);
+            this.removeNavItem(item);
+        });
+    }
+
+    private removeNavItem(title: string) {
+        let i: number = null;
+        i = this.findNavItem(title);
+        if (i !== null) {
+            this.navItems.splice(i, 1);
+        }
+    }
+
+    private addNavItem(item: VerticalNavigationItem) {
+        let i: number = null;
+        i = this.findNavItem(item.title);
+        if (i === null) {
+            this.navItems.push(item);
+        }
+    }
+    private findNavItem(title: string): number {
+        let i: number = null;
+        this.navItems.forEach((item: VerticalNavigationItem, index: number) => {
+            if (item['title'] === title) {
+                i = index;
+            }
+        });
+        return i;
+    }
+
+    private optionallyAddMobileButtons(): void {
+        const layoutElement = document.getElementById('verticalNavLayout');
+        const layoutWidth = parseInt(window.getComputedStyle(layoutElement).width, 10);
+        if (layoutWidth <= 768) {
+            this.addMobileButtons();
+        }
     }
 }
