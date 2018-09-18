@@ -68,13 +68,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     pageLoading = true;
     showRelevance = true;
-    showFilter = false;
+    showFilter = true;
 
-    filterParams = '';
-    sortParams = '&order_by=-relevance';
+    queryParams = {};
     sortAscending = false;
     pageSize = 10;
     pageNumber = 1;
+    keywords = '';
 
     appliedFilters: Filter[] = [];
 
@@ -87,7 +87,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     ) {}
 
     ngOnInit() {
-        this.pfBody.scrollToTop();
+        // this.pfBody.scrollToTop();
         this.filterConfig = {
             fields: [
                 {
@@ -201,8 +201,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 this.appliedFilters = [];
                 this.paginationConfig.pageNumber = 1;
                 this.pageNumber = 1;
-                this.sortParams = '&order_by=-relevance';
-                this.setSortConfig(this.sortParams);
 
                 this.preparePlatforms(data.platforms);
                 this.prepareContentTypes(data.contentTypes);
@@ -215,18 +213,20 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     if (Object.keys(params).length === 0) {
                         params = DefaultParams.params;
                     }
-                    this.setSortConfig(params['order_by']);
-                    this.setPageSize(params);
-                    this.setAppliedFilters(params);
+                    this.queryParams = JSON.parse(JSON.stringify(params));
+
+                    this.setSortConfig(this.queryParams);
+                    this.setPageSize(this.queryParams);
+                    this.setAppliedFilters(this.queryParams);
                     this.prepareContent(data.content.results, data.content.count);
-                    this.setQuery();
+                    this.setUrlParams(this.queryParams);
                     this.pageLoading = false;
                 } else {
                     this.notificationService.message(NotificationType.WARNING, 'Error', 'Invalid search query', false, null, null);
 
-                    this.setSortConfig(params['order_by']);
-                    this.setPageSize(params);
-                    this.setAppliedFilters(params);
+                    this.setSortConfig(this.queryParams);
+                    this.setPageSize(this.queryParams);
+                    this.setAppliedFilters(this.queryParams);
 
                     this.pageLoading = false;
                 }
@@ -241,17 +241,18 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
 
     sortChanged($event: SortEvent): void {
-        this.sortParams = '&order_by=';
+        let sortParams = '';
         if (!$event.isAscending) {
-            this.sortParams += '-';
+            sortParams += '-';
         }
-        this.sortParams += $event.field.id;
+        sortParams += $event.field.id;
+        this.queryParams['order_by'] = sortParams;
         this.searchContent();
     }
 
     filterChanged($event: FilterEvent): void {
         const filterby = {};
-        let params = '';
+        const params = {};
         this.pageNumber = 1;
         this.paginationConfig.pageNumber = 1;
         if ($event.appliedFilters.length) {
@@ -267,31 +268,28 @@ export class SearchComponent implements OnInit, AfterViewInit {
             });
             for (const key in filterby) {
                 if (filterby.hasOwnProperty(key)) {
-                    if (params !== '') {
-                        params += '&';
-                    }
                     if (key === 'contributor_type') {
                         if (filterby[key].length === 1) {
                             switch (filterby[key][0]) {
                                 case ContributorTypes.community:
-                                    params += 'vendor=false';
+                                    params['vendor'] = false;
                                     break;
                                 case ContributorTypes.vendor:
-                                    params += 'vendor=true';
+                                    params['vendor'] = true;
                                     break;
                             }
                         }
                     } else {
-                        params += key + '=' + encodeURIComponent(filterby[key].join(' '));
+                        params[key] = encodeURIComponent(filterby[key].join(' '));
                     }
                 }
             }
             this.appliedFilters = JSON.parse(JSON.stringify($event.appliedFilters));
-            this.filterParams = params;
+            this.queryParams = params;
         } else {
             this.appliedFilters = [];
             this.contentItems = [];
-            this.filterParams = '';
+            this.queryParams = {};
         }
         this.searchContent();
     }
@@ -311,11 +309,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
             this.pageNumber = $event.pageNumber;
             if (this.pageSize === this.paginationConfig.pageSize) {
                 // changed pageNumber without changing pageSize
-                this.pfBody.scrollToTop();
+                // this.pfBody.scrollToTop();
                 changed = true;
             }
         }
         if (changed && !this.pageLoading) {
+            this.queryParams['page_size'] = this.pageSize;
+            this.queryParams['page'] = this.pageNumber;
             this.searchContent();
         }
     }
@@ -354,7 +354,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
         if (filter) {
             // Update applied filters, and refresh the search result
-            this.pfBody.scrollToTop();
+            // this.pfBody.scrollToTop();
             this.addToFilter(filter);
             event = new FilterEvent();
             event.appliedFilters = JSON.parse(JSON.stringify(this.appliedFilters)) as Filter[];
@@ -394,19 +394,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     private setAppliedFilters(queryParams: any) {
         // Convert query params to filters
-        let filterParams = '';
-
         const params = JSON.parse(JSON.stringify(queryParams));
 
         for (const key in params) {
             if (params.hasOwnProperty(key)) {
                 if (key === 'vendor') {
                     const field = this.getFilterField('contributor_type');
-
-                    if (filterParams !== '') {
-                        filterParams += '&';
-                    }
-                    filterParams += `vendor=${params[key]}`;
 
                     const ffield: Filter = {} as Filter;
                     ffield.field = field;
@@ -426,11 +419,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     if (!field) {
                         continue;
                     }
-
-                    if (filterParams !== '') {
-                        filterParams += '&';
-                    }
-                    filterParams += `${key}=${encodeURIComponent(params[key])}`;
 
                     const values: string[] = params[key].split(' ');
                     values.forEach(v => {
@@ -452,7 +440,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 }
             }
         }
-        this.filterParams = filterParams;
     }
 
     private getBasePath(): string {
@@ -492,20 +479,22 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
     }
 
-    private setQuery(): string {
-        let paging = '&page_size=' + this.pageSize.toString();
-        if (this.pageNumber > 1) {
-            paging += `&page=${this.pageNumber}`;
+    private setUrlParams(params: any) {
+        // FIXME
+        let paramString = '';
+        for (const key of Object.keys(params)) {
+            paramString += key + '=' + encodeURIComponent(params[key]) + '&';
         }
-        const query = (this.filterParams + this.sortParams + paging).replace(/^&/, ''); // remove leading &
-        this.location.replaceState(this.getBasePath(), query); // update browser URL
-        return query;
+
+        // Remove trailing '&'
+        paramString = paramString.substring(0, paramString.length - 1);
+        this.location.replaceState(this.getBasePath(), paramString); // update browser URL
     }
 
     private searchContent() {
         this.pageLoading = true;
-        const query = this.setQuery();
-        this.contentSearch.query(query).subscribe(result => {
+        this.setUrlParams(this.queryParams);
+        this.contentSearch.query(this.queryParams).subscribe(result => {
             this.prepareContent(result.results, result.count);
             this.pageLoading = false;
         });
@@ -625,7 +614,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
     }
 
-    private setSortConfig(orderBy?: string) {
+    private setSortConfig(params: any) {
         const fields: SortField[] = [
             {
                 id: 'relevance',
@@ -659,31 +648,20 @@ export class SearchComponent implements OnInit, AfterViewInit {
             },
         ] as SortField[];
 
-        this.sortParams = '&order_by=';
-        if (this.sortConfig.isAscending) {
-            this.sortParams += '-';
-        }
-
-        if (!orderBy) {
-            // Use default order
-            this.sortConfig.isAscending = false;
-            this.sortConfig.fields = fields;
-            this.sortParams += fields[0].id;
-        } else {
+        if (params['order_by']) {
             const result: SortField[] = [] as SortField[];
 
             // Set ascending
             this.sortConfig.isAscending = true;
-            if (orderBy.startsWith('-')) {
+            if (params['order_by'].startsWith('-')) {
                 this.sortConfig.isAscending = false;
             }
 
             // Put the requested orderby field at the top of the list
-            const order = orderBy.replace(/^[+-]/, '');
+            const order = params['order_by'].replace(/^[+-]/, '');
             fields.forEach(f => {
                 if (f.id === order) {
                     result.push(f);
-                    this.sortParams += f.id;
                 }
             });
             fields.forEach(f => {

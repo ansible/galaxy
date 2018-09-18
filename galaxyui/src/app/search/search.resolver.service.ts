@@ -46,34 +46,28 @@ export class DefaultParams {
 export class SearchContentResolver implements Resolve<ContentResponse> {
     constructor(private contentService: ContentSearchService) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ContentResponse> {
-        let params = '';
+        let params = {};
         for (const key in route.queryParams) {
             if (route.queryParams.hasOwnProperty(key)) {
-                if (params !== '') {
-                    params += '&';
-                }
                 if (key === 'contributor_type') {
                     switch (route.queryParams[key]) {
                         case ContributorTypes.community:
-                            params += 'vendor=false';
+                            params['vendor'] = false;
                             break;
                         case ContributorTypes.vendor:
-                            params += 'vendor=true';
+                            params['vendor'] = true;
                     }
                 } else {
-                    params += `${key}=${encodeURIComponent(route.queryParams[key])}`;
+                    params[key] = encodeURIComponent(route.queryParams[key]);
                 }
             }
         }
-        if (params === '') {
-            params += DefaultParams.getParamString();
+        if (Object.keys(params).length === 0) {
+            params = DefaultParams.params;
         }
         // if order_by has not been specified yet, make sure it gets set
         if (!route.queryParams['order_by']) {
-            if (params !== '') {
-                params += '&';
-            }
-            params += 'order_by=-relevance';
+            params['order_by'] = '-relevance';
         }
         return this.contentService.query(params);
     }
