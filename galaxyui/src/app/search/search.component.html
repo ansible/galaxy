@@ -3,11 +3,29 @@
 <div id="search-page" class="container-fluid">
     <div class="row">
         <div class="col-lg-9">
-            <pfng-toolbar
-                [config]="getToolbarConfig()"
-                (onFilterChange)="filterChanged($event)"
-                (onSortChange)="sortChanged($event)">
-            </pfng-toolbar>
+            <div class="search-bar">
+                <div class="search-field">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search for...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button"><span class="fa fa-search"></span></button>
+                        </span>
+                    </div>
+                </div>
+                <div class="filter-toggle-wrapper">
+                    <div (click)="toggleFilter()" class="filter-toggle">
+                        <span class="fa fa-angle-{{showFilter ? 'up':'down'}}"></span>
+                        Filters
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="showFilter" class="filter">
+                <pfng-toolbar
+                    [config]="getToolbarConfig()"
+                    (onFilterChange)="filterChanged($event)"
+                    (onSortChange)="sortChanged($event)">
+                </pfng-toolbar>
+            </div>
             <div id="search-list">
                 <pfng-list
                     [config]="listConfig"

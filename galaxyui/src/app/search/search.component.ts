@@ -68,6 +68,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     pageLoading = true;
     showRelevance = true;
+    showFilter = false;
 
     filterParams = '';
     sortParams = '&order_by=-relevance';
@@ -234,6 +235,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {}
+
+    toggleFilter() {
+        this.showFilter = !this.showFilter;
+    }
 
     sortChanged($event: SortEvent): void {
         this.sortParams = '&order_by=';
