@@ -69,7 +69,6 @@ export class SearchContentResolver implements Resolve<ContentResponse> {
         if (!route.queryParams['order_by']) {
             params['order_by'] = '-relevance';
         }
-        console.log(params);
         return this.contentService.query(params);
     }
 }

@@ -218,6 +218,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     this.keywords = this.queryParams['keywords'];
 
                     this.setSortConfig(this.queryParams);
+                    console.log(this.sortConfig);
                     this.setPageSize(this.queryParams);
                     this.setAppliedFilters(this.queryParams);
                     this.prepareContent(data.content.results, data.content.count);
@@ -445,7 +446,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 // in the defaults
                 if (DefaultParams.params[key] === undefined) {
                     this.showFilter = true;
-                    console.log(key);
                 }
             }
         }
@@ -489,7 +489,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
 
     private setUrlParams(params: any) {
-        // FIXME
         let paramString = '';
         for (const key of Object.keys(params)) {
             paramString += key + '=' + params[key] + '&';
@@ -657,28 +656,30 @@ export class SearchComponent implements OnInit, AfterViewInit {
             },
         ] as SortField[];
 
-        if (params['order_by']) {
-            const result: SortField[] = [] as SortField[];
-
-            // Set ascending
-            this.sortConfig.isAscending = true;
-            if (params['order_by'].startsWith('-')) {
-                this.sortConfig.isAscending = false;
-            }
-
-            // Put the requested orderby field at the top of the list
-            const order = params['order_by'].replace(/^[+-]/, '');
-            fields.forEach(f => {
-                if (f.id === order) {
-                    result.push(f);
-                }
-            });
-            fields.forEach(f => {
-                if (f.id !== order) {
-                    result.push(f);
-                }
-            });
-            this.sortConfig.fields = result;
+        if (params['order_by'] === undefined) {
+            params['order_by'] = '-relevance';
         }
+
+        const result: SortField[] = [] as SortField[];
+
+        // Set ascending
+        this.sortConfig.isAscending = true;
+        if (params['order_by'].startsWith('-')) {
+            this.sortConfig.isAscending = false;
+        }
+
+        // Put the requested orderby field at the top of the list
+        const order = params['order_by'].replace(/^[+-]/, '');
+        fields.forEach(f => {
+            if (f.id === order) {
+                result.push(f);
+            }
+        });
+        fields.forEach(f => {
+            if (f.id !== order) {
+                result.push(f);
+            }
+        });
+        this.sortConfig.fields = result;
     }
 }
