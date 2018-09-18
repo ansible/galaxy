@@ -31,7 +31,9 @@ from galaxy.common import sanitize_content_name
 
 class APBMetaParser(object):
     # Tags should contain lowercase letters and digits only
-    TAG_REGEXP = re.compile('^[a-z0-9]+$')
+    # Underscores and hyphens are valid as well for spacing
+    # and identifiers
+    TAG_REGEXP = re.compile('^[a-z0-9_-]+$')
 
     # APB parameters should be in json-schema form
     PARAM_KEY_MAP = {

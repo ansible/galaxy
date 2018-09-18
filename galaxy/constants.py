@@ -24,7 +24,7 @@ import re
 
 MAX_TAGS_COUNT = 20
 PROVIDER_GITHUB = 'GitHub'
-TAG_REGEXP = re.compile('^[a-z0-9]+$')
+TAG_REGEXP = re.compile('^[a-z0-9_-]+$')
 
 
 class Enum(enum.Enum):
