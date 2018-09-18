@@ -6,9 +6,9 @@
             <div class="search-bar">
                 <div class="search-field">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for...">
+                        <input type="text" [(ngModel)]="queryParams.keywords" (keyup.enter)="searchContent()" class="form-control" placeholder="Search for...">
                         <span class="input-group-btn">
-                            <button class="btn btn-default" type="button"><span class="fa fa-search"></span></button>
+                            <button class="btn btn-default" type="button" (click)="searchContent()"><span class="fa fa-search"></span></button>
                         </span>
                     </div>
                 </div>

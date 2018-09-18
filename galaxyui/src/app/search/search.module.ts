@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 
+import { FormsModule } from '@angular/forms';
+
 import { BsDropdownModule } from 'ngx-bootstrap';
 
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
@@ -34,6 +36,7 @@ import { PageLoadingModule } from '../page-loading/page-loading.module';
         PageLoadingModule,
         PaginationModule,
         BsDropdownModule.forRoot(),
+        FormsModule,
     ],
     declarations: [SearchComponent, PopularComponent],
 })

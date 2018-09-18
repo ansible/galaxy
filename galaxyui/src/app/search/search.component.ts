@@ -68,7 +68,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     pageLoading = true;
     showRelevance = true;
-    showFilter = true;
+    showFilter = false;
 
     queryParams = {};
     sortAscending = false;
@@ -90,12 +90,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         // this.pfBody.scrollToTop();
         this.filterConfig = {
             fields: [
-                {
-                    id: 'keywords',
-                    title: 'Keyword',
-                    placeholder: 'Keyword',
-                    type: FilterType.TEXT,
-                },
                 {
                     id: 'cloud_platforms',
                     title: 'Cloud Platform',
@@ -213,7 +207,15 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     if (Object.keys(params).length === 0) {
                         params = DefaultParams.params;
                     }
+
+                    // queryParams represents the complete query that will be made to the database
+                    // and as such it essentially represents the state of the search page. When
+                    // the page loads it is initialized from the URL params and used to set the
+                    // state of each UI component. When those UI elements are set by the user,
+                    // it needs to be updated to reflect the user's actions.
                     this.queryParams = JSON.parse(JSON.stringify(params));
+
+                    this.keywords = this.queryParams['keywords'];
 
                     this.setSortConfig(this.queryParams);
                     this.setPageSize(this.queryParams);
@@ -438,6 +440,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
                         this.appliedFilters.push(ffield);
                     });
                 }
+
+                // Show filters if the param is configured in filters and it's not
+                // in the defaults
+                if (DefaultParams.params[key] === undefined) {
+                    this.showFilter = true;
+                    console.log(key);
+                }
             }
         }
     }
@@ -483,7 +492,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         // FIXME
         let paramString = '';
         for (const key of Object.keys(params)) {
-            paramString += key + '=' + encodeURIComponent(params[key]) + '&';
+            paramString += key + '=' + params[key] + '&';
         }
 
         // Remove trailing '&'

@@ -58,7 +58,7 @@ export class SearchContentResolver implements Resolve<ContentResponse> {
                             params['vendor'] = true;
                     }
                 } else {
-                    params[key] = encodeURIComponent(route.queryParams[key]);
+                    params[key] = route.queryParams[key];
                 }
             }
         }
@@ -69,6 +69,7 @@ export class SearchContentResolver implements Resolve<ContentResponse> {
         if (!route.queryParams['order_by']) {
             params['order_by'] = '-relevance';
         }
+        console.log(params);
         return this.contentService.query(params);
     }
 }

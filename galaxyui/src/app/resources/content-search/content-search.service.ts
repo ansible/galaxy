@@ -12,7 +12,7 @@ import { ContentResponse } from './content';
 export class ContentSearchService {
     constructor(private http: HttpClient, private notificationService: NotificationService) {}
 
-    private url = '/api/v1/search/content';
+    private url = '/api/v1/search/content/';
 
     query(params?: any): Observable<ContentResponse> {
         return this.http.get<ContentResponse>(this.url, { params: params }).pipe(
