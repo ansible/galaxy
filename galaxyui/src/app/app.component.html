@@ -1,6 +1,8 @@
-<div id="verticalNavLayout" class="layout-pf layout-pf-fixed faux-layout" style="background-color: white;">
+<div id="verticalNavLayout" class="layout-pf layout-pf-fixed faux-layout" style="background-color: white;"
+    (window:resize)="onResize($event)">
     <pfng-vertical-navigation [brandAlt]="'Galaxy'" [brandSrc]="'/assets/galaxy-logo-02.svg'" [contentContainer]="contentContainer"
-        [items]="navItems" [persistentSecondary]="false" [pinnableMenus]="true" [showBadges]="true" [showIcons]="true" [updateActiveItemsOnClick]="true">
+        [items]="navItems" [persistentSecondary]="false" [pinnableMenus]="true" [showBadges]="true" [showIcons]="true"
+        [updateActiveItemsOnClick]="true" (onItemClickEvent)="onItemClicked($event)">
         <div>
             <div *ngIf="isLoading" class="header-spinner">
                 <div class="inner-spinner">
@@ -28,8 +30,8 @@
                             class="fa fa-sign-in"></span> &nbsp;Login</a>
                 </li>
                 <li class="dropdown" dropdown *ngIf="authenticated">
-                    <a class="dropdown-toggle nav-item-iconic nav-link" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
-                        dropdownToggle>
+                    <a class="dropdown-toggle nav-item-iconic nav-link" id="dropdownMenu2" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="true" dropdownToggle>
                         <span class="fa fa-user"></span> {{ username }} <span class="caret"></span>
                     </a>
                     <ul *dropdownMenu class="dropdown-menu" aria-labelledby="dropdownMenu2">
