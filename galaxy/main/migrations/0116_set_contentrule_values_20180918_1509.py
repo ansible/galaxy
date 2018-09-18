@@ -50,11 +50,7 @@ def set_initial_rule_severity(apps, schema_editor):
             severity=severity,
         )
         c.save()
-        # rule, created = ContentRule.objects.get_or_create(
-        #     linter_id=linter,
-        #     rule_id=rule,
-        #     severity=severity,
-        # )
+
 
 class Migration(migrations.Migration):
 
