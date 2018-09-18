@@ -41,7 +41,7 @@ __all__ = [
     'Content', 'ImportTask', 'ImportTaskMessage', 'RepositoryVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
     'Subscription', 'Stargazer', 'Namespace', 'Provider', 'ProviderNamespace',
-    'ContentBlock', 'ContentType'
+    'ContentBlock', 'ContentType', 'ContentRule'
 ]
 
 # TODO(cutwater): Split models.py into multiple modules
@@ -389,6 +389,22 @@ class Content(CommonModelNameNotUnique):
         null=True,
         verbose_name="Last Import"
     )
+    quality_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
+    )
+    content_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
+    )
+    metadata_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
+    )
+    compatibility_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
+    )
 
     search_vector = psql_search.SearchVectorField()
 
@@ -684,12 +700,40 @@ class ImportTaskMessage(PrimordialModel):
         'ImportTask',
         related_name='messages',
     )
+    content = models.ForeignKey(
+        'Content',
+        related_name='messages',
+        null=True,
+    )
     message_type = models.CharField(
         max_length=10,
         choices=constants.ImportTaskMessageType.choices(),
     )
     message_text = models.CharField(
         max_length=256,
+    )
+    is_linter_rule_violation = models.NullBooleanField(
+        default=False,
+    )
+    linter_type = models.CharField(
+        max_length=25,
+        null=True,
+    )
+    linter_rule_id = models.CharField(
+        max_length=25,
+        null=True,
+    )
+    content_name = models.CharField(
+        max_length=60,
+        null=True,
+    )
+    rule_desc = models.CharField(
+        max_length=256,
+        null=True,
+    )
+    rule_severity = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
+        null=True,
     )
 
     def __str__(self):
@@ -953,13 +997,15 @@ class Repository(BaseModel):
     download_count = models.IntegerField(
         default=0
     )
-
     deprecated = models.BooleanField(
         default=False,
     )
-
     community_score = models.FloatField(
         null=True
+    )
+    quality_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
     )
 
     @property
@@ -1153,3 +1199,24 @@ class CommunitySurvey(BaseModel):
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(5)]
     )
+
+
+class ContentRule(BaseModel):
+    class Meta:
+        unique_together = ('rule_id', 'linter_id')
+
+    rule_id = models.CharField(
+        max_length=25,
+    )
+    linter_id = models.CharField(
+        max_length=25,
+        choices=constants.LinterType.choices(),
+    )
+    severity = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
+    def __str__(self):
+        return '{} {} severity={}'.format(
+            self.linter_id, self.rule_id, self.severity)

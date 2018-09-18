@@ -45,6 +45,7 @@ class ContentImporter(object):
         content.clean()
         content.save()
 
+        self.log.info(' ')
         return content
 
     def make_content(self):
@@ -111,9 +112,5 @@ class ContentImporter(object):
         content.save()
 
     def _log_create_content(self, content_id, is_created):
-        action = 'Created new' if is_created else 'Found'
-        self.log.info(
-            '{action} Content instance: id={id}, content_type="{content_type}"'
-            ', name="{name}"'.format(
-                action=action, id=content_id,
-                content_type=self.data.content_type, name=self.data.name))
+        self.log.info('===== IMPORTING {}: {} ====='.format(
+                      self.data.content_type.name, self.data.name))

@@ -46,6 +46,7 @@ class BaseLinter(object):
 
 class Flake8Linter(BaseLinter):
 
+    name = 'flake8'
     cmd = 'flake8'
 
     def _check_files(self, paths):
@@ -59,9 +60,28 @@ class Flake8Linter(BaseLinter):
             yield line.strip()
         proc.wait()
 
+    def parse_id_and_desc(self, message):
+        try:
+            msg_parts = message.split(' ')
+            rule_desc = ' '.join(msg_parts[2:])
+
+            error_id = msg_parts[1]
+            if error_id[0] not in ['E', 'W']:
+                error_id = None
+
+        except IndexError:
+            error_id = None
+
+        if not error_id:
+            logger.error('No error_id found in {} message'.format(self.cmd))
+            return (None, None)
+
+        return (error_id, rule_desc)
+
 
 class YamlLinter(BaseLinter):
 
+    name = 'yamllint'
     cmd = 'yamllint'
     config = os.path.join(LINTERS_DIR, 'yamllint.yaml')
 
@@ -73,9 +93,28 @@ class YamlLinter(BaseLinter):
             yield line.strip()
         proc.wait()
 
+    def parse_id_and_desc(self, message):
+        try:
+            msg_parts = message.split(' ')
+            rule_desc = ' '.join(msg_parts[2:])
+
+            error_id = msg_parts[1][1:-1]
+            if error_id not in ['error', 'warning']:
+                error_id = None
+
+        except IndexError:
+            error_id = None
+
+        if not error_id:
+            logger.error('No error_id found in {} message'.format(self.cmd))
+            return (None, None)
+
+        return (error_id, rule_desc)
+
 
 class AnsibleLinter(BaseLinter):
 
+    name = 'ansible-lint'
     cmd = 'ansible-lint'
 
     def _check_files(self, paths):
@@ -102,3 +141,21 @@ class AnsibleLinter(BaseLinter):
         # returncode 1 is app exception, 0 is no linter err, 2 is linter err
         if proc.wait() not in (0, 2):
             yield 'Exception running ansible-lint, could not complete linting'
+
+    def parse_id_and_desc(self, message):
+        try:
+            msg_parts = message.split(' ')
+            rule_desc = ' '.join(msg_parts[2:])
+
+            error_id = msg_parts[1][1:-1]
+            if error_id[0] not in ['E']:
+                error_id = None
+
+        except IndexError:
+            error_id = None
+
+        if not error_id:
+            logger.error('No error_id found in {} message'.format(self.cmd))
+            return (None, None)
+
+        return (error_id, rule_desc)
