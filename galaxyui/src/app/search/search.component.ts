@@ -88,7 +88,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     ) {}
 
     ngOnInit() {
-        // this.pfBody.scrollToTop();
+        this.pfBody.scrollToTop();
         this.filterConfig = {
             fields: [
                 {
@@ -319,7 +319,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
             this.pageNumber = $event.pageNumber;
             if (this.pageSize === this.paginationConfig.pageSize) {
                 // changed pageNumber without changing pageSize
-                // this.pfBody.scrollToTop();
+                this.pfBody.scrollToTop();
                 changed = true;
             }
         }
