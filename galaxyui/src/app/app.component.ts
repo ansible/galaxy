@@ -88,7 +88,7 @@ export class AppComponent implements OnInit {
         // app.component, so requests to scroll the div have to be routed through
         // this service.
 
-        this.pfBody = document.getElementById('pfContentBody');
+        this.pfBody = document.getElementById('app-container');
 
         this.pfBodyService.currentMessage.subscribe((message: BodyCommand) => {
             this.pfBody[message.propertyName] = message.propertyValue;
