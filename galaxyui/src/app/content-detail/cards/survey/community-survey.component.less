@@ -4,6 +4,8 @@
 
 .card-community-survey {
     color: @black;
+    height: 100%;
+
     .card-heading {
         padding-top: 10px;
         padding-bottom: 10px;
@@ -37,52 +39,9 @@
             align-items: center;
         }
 
-        .score-wrapper {
-            display: flex;
-            width: 100%;
-            margin-bottom: 10px;
-            .score-name {
-                width: 135px;
-                font-weight: 700;
-            }
-            .detail-score-name {
-                width: 175px;
-            }
-            .score-bar {
-                position: relative;
-                background-color: #f2f2f2;
-                flex-grow: 2;
-                padding: 0px;
-                border: 0px;
-
-                .score-hover:hover {
-                    opacity: 1;
-                }
-
-                .internal-bar {
-                    display: inline-block;
-                    height: 100%;
-                    background-color: @green;
-                }
-            }
-            .score-number {
-                margin-left: 10px;
-                width: 45px;
-                text-align: right;
-                .numerator {
-                    font-weight: 700;
-                }
-            }
-        }
-
         .details {
             text-align: right;
-        }
-
-        .details-expanded {
-            .title {
-                font-weight: 700;
-            }
+            margin-bottom: 5px;
         }
 
         .survey {

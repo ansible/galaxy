@@ -41,35 +41,135 @@
         </div>
 
         <div *ngIf="!showEmptyState && showingView === ViewTypes.detail">
-            <div class="row">
-                <div class="col-lg-8 detail">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <card-info [repository]="repository" [repoContent]="repoContent" [repoType]="repoType" [metadata]="metadata">
-                            </card-info>
-                        </div>
-                    </div>
-                    <div class="row detail">
-                        <div class="col-sm-6" *ngIf="repoContent && repoContent['hasPlatforms']">
-                            <card-platforms [platforms]="repoContent['platforms']"></card-platforms>
-                        </div>
-                        <div class="col-sm-6" *ngIf="repositoryVersions">
-                            <card-versions [versions]="repositoryVersions"></card-versions>
-                        </div>
-                    </div>
-                    <div class="row detail" *ngIf="repoType !== RepoFormats.multi">
-                        <div class="col-sm-6" *ngIf="repoContent && repoContent['hasCloudPlatforms']">
-                            <card-cloud-platforms [cloudPlatforms]="repoContent['cloud_platforms']">
-                            </card-cloud-platforms>
-                        </div>
-                        <div class="col-sm-6" *ngIf="repoContent && repoContent['hasDependencies']">
-                            <card-dependencies [dependencies]="repoContent['dependencies']">
-                            </card-dependencies>
-                        </div>
-                    </div>
+            <div class="row detail display-flex">
+                <div class="col-lg-8 ">
+                    <card-info
+                        [repository]="repository"
+                        [repoContent]="repoContent"
+                        [repoType]="repoType"
+                        [metadata]="metadata">
+                    </card-info>
                 </div>
-                <div class="col-lg-4 detail">
-                    <card-community-survey [communityScore]="repository.community_score" [contentId]="repository.id"></card-community-survey>
+
+                <div class="col-lg-4">
+                    <card-community-survey
+                        [communityScore]="repository.community_score"
+                        [qualityScore]="repository.quality_score"
+                        [contentId]="repository.id"
+                        [showCommunityDetails]="showComunityDetails"
+                        [showQualityDetails]="showQualityDetails"
+                        (emitDetails)="scoreDetailHandler($event)">
+                    </card-community-survey>
+                </div>
+            </div>
+
+            <div *ngIf="showComunityDetails" class="row detail score-detail">
+                <div class="col-sm-12">
+                    <pfng-card
+                        [config]="config"
+                        [headerTemplate]="headerTemplate">
+                        <ng-template #headerTemplate>
+                            <div class="card-heading">
+                                <div>
+                                    <div class="icon-container">
+                                        <span class="fa fa-check-circle fa-2x"></span>
+                                    </div>
+                                    <div class="title-text">Community Score Details</div>
+                                </div>
+                                <div>
+                                    <span (click)="toggleSurveyDetails('showComunityDetails')" class="pficon-close fa-lg close-details"></span>
+                                </div>
+                            </div>
+                        </ng-template>
+
+                        <div class="card-body">
+                            <div *ngFor="let bar of communityScoreDetails">
+                                <app-score-bar
+                                    extraInfo="{{bar.count}} answer{{ bar.count !== 1 ? 's':'' }}"
+                                    [score]="bar.value"
+                                    [dividend]="5"
+                                    [text]="bar.question"
+                                    [customTextStyle]="{'width': '175px'}"
+                                    >
+                                </app-score-bar>
+                            </div>
+                        </div>
+                    </pfng-card>
+                </div>
+            </div>
+
+            <div *ngIf="showQualityDetails" class="row detail score-detail">
+                <div class="col-sm-12">
+                    <pfng-card
+                        [config]="config"
+                        [headerTemplate]="headerTemplate">
+                        <ng-template #headerTemplate>
+                            <div class="card-heading">
+                                <div>
+                                    <div class="icon-container">
+                                        <span class="fa fa-check-circle fa-2x"></span>
+                                    </div>
+                                    <div class="title-text">Quality Score Details</div>
+                                </div>
+                                <div>
+                                    <span (click)="toggleSurveyDetails('showQualityDetails')" class="pficon-close fa-lg close-details"></span>
+                                </div>
+                            </div>
+                        </ng-template>
+
+                        <div class="card-body">
+                            <pfng-list *ngIf="content.length > 1"
+                                [config]="qualityListConfig"
+                                [expandTemplate]="listExpandTemplate"
+                                [items]="content"
+                                [itemTemplate]="itemTemplate">
+                                <ng-template #itemTemplate let-item="item">
+                                    <!-- <div class="list-pf-left">
+                                        <span class="fa fa-check"></span>
+                                    </div> -->
+                                    <div class="list-pf-content-wrapper">
+                                        <div class="list-pf-main-content">
+                                            <div class="list-pf-title">{{item.name}}</div>
+                                            <div class="list-pf-description text-overflow-pf">
+                                                Quality Score: {{ item.quality_score }}
+                                            </div>
+                                        </div>
+                                        <!-- <div class="list-pf-additional-content">
+                                            test
+                                        </div> -->
+                                    </div>
+                                </ng-template>
+                                <ng-template #listExpandTemplate let-item="item" let-index="index">
+                                    <app-quality-details [content]="item"></app-quality-details>
+                                </ng-template>
+                            </pfng-list>
+
+                            <app-quality-details *ngIf="content.length === 1" [content]="content[0]"></app-quality-details>
+                        </div>
+                    </pfng-card>
+                </div>
+            </div>
+
+            <div class="row detail">
+                <div class="col-sm-3"
+                    *ngIf="repoContent && repoContent['hasPlatforms']">
+                    <card-platforms [platforms]="repoContent['platforms']"></card-platforms>
+                </div>
+                <div class="col-sm-3"
+                    *ngIf="repoContent && repoContent['hasVersions']">
+                    <card-versions [versions]="repoContent['versions']"></card-versions>
+                </div>
+                <div class="col-sm-3"
+                    *ngIf="repoContent && repoContent['hasCloudPlatforms']">
+                    <card-cloud-platforms
+                        [cloudPlatforms]="repoContent['cloud_platforms']">
+                    </card-cloud-platforms>
+                </div>
+                <div class="col-sm-3"
+                    *ngIf="repoContent && repoContent['hasDependencies']">
+                    <card-dependencies
+                        [dependencies]="repoContent['dependencies']">
+                    </card-dependencies>
                 </div>
             </div>
         </div>

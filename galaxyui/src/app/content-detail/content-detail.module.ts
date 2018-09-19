@@ -25,8 +25,11 @@ import { ContentDetailRoutingModule } from './content-detail.routing.module';
 import { ModuleUtilsComponent } from './content/module-utils/module-utils.component';
 import { ModulesComponent } from './content/modules/modules.component';
 import { PluginsComponent } from './content/plugins/plugins.component';
+import { QualityDetailsComponent } from './content/quality-details/quality-details.component';
 import { RolesComponent } from './content/roles/roles.component';
 import { RepositoryComponent } from './repository/repository.component';
+
+import { ScoreBarComponent } from './shared/score-bar/score-bar.component';
 
 @NgModule({
     imports: [
@@ -55,6 +58,8 @@ import { RepositoryComponent } from './repository/repository.component';
         RolesComponent,
         ModuleUtilsComponent,
         PluginsComponent,
+        ScoreBarComponent,
+        QualityDetailsComponent,
     ],
 })
 export class ContentDetailModule {}

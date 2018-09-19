@@ -134,6 +134,7 @@ class RoleListSerializer(BaseRoleSerializer):
             travis_build_url=obj.repository.travis_build_url,
             format=obj.repository.format,
             deprecated=obj.repository.deprecated,
+            community_score=obj.repository.community_score,
             quality_score=obj.repository.quality_score,
         )
         d['tags'] = [g.name for g in obj.tags.all()]
