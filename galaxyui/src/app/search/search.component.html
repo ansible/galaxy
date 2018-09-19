@@ -18,6 +18,9 @@
                         Filters
                     </div>
                 </div>
+                <div class="count">
+                    ({{ contentCount }} results)
+                </div>
             </div>
             <div *ngIf="showFilter" class="filter">
                 <pfng-toolbar
@@ -140,17 +143,17 @@
             <popular-widget
                 [popularTitle]="'Popular Tags'"
                 [popularType]="'tags'"
-                (click)="handleWidgetClick($event)">
+                (emitItem)="handleWidgetClick($event)">
             </popular-widget>
             <popular-widget
                 [popularTitle]="'Popular Platforms'"
                 [popularType]="'platforms'"
-                (click)="handleWidgetClick($event)">
+                (emitItem)="handleWidgetClick($event)">
             </popular-widget>
             <popular-widget
                 [popularTitle]="'Popular Clouds'"
-                [popularType]="'cloudPlatforms'"
-                (click)="handleWidgetClick($event)">
+                [popularType]="'cloud_platforms'"
+                (emitItem)="handleWidgetClick($event)">
             </popular-widget>
         </div>
     </div>

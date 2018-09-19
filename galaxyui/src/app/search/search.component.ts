@@ -75,6 +75,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     pageSize = 10;
     pageNumber = 1;
     keywords = '';
+    contentCount: number;
 
     appliedFilters: Filter[] = [];
 
@@ -192,7 +193,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
             this.route.data.subscribe(data => {
                 // This function is called each time the route updates, so
                 // the default values have to be reset
-                this.appliedFilters = [];
                 this.paginationConfig.pageNumber = 1;
                 this.pageNumber = 1;
 
@@ -215,10 +215,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     // it needs to be updated to reflect the user's actions.
                     this.queryParams = JSON.parse(JSON.stringify(params));
 
-                    this.keywords = this.queryParams['keywords'];
-
                     this.setSortConfig(this.queryParams);
-                    console.log(this.sortConfig);
                     this.setPageSize(this.queryParams);
                     this.setAppliedFilters(this.queryParams);
                     this.prepareContent(data.content.results, data.content.count);
@@ -254,6 +251,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
 
     filterChanged($event: FilterEvent): void {
+        // Remove filters from queryParams
+        for (const filter of this.filterConfig.fields) {
+            if (this.queryParams[filter.id] !== undefined) {
+                delete this.queryParams[filter.id];
+            }
+        }
+
         const filterby = {};
         const params = {};
         this.pageNumber = 1;
@@ -288,11 +292,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 }
             }
             this.appliedFilters = JSON.parse(JSON.stringify($event.appliedFilters));
-            this.queryParams = params;
+
+            // Apply new filters to queryParams
+            for (const key of Object.keys(params)) {
+                this.queryParams[key] = params[key];
+            }
         } else {
             this.appliedFilters = [];
             this.contentItems = [];
-            this.queryParams = {};
         }
         this.searchContent();
     }
@@ -324,49 +331,20 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
 
     handleWidgetClick($event: PopularEvent) {
-        let filter: Filter;
-        let ffield: FilterField;
-        let query: FilterQuery;
-        let event: FilterEvent;
-        switch ($event.itemType) {
-            case 'tags':
-                ffield = this.getFilterField('tags');
-                filter = {
-                    field: ffield,
-                    value: $event.item['name'],
-                } as Filter;
-                break;
-            case 'cloudPlatforms':
-                ffield = this.getFilterField('cloud_platforms');
-                query = this.getFilterFieldQuery(ffield, $event.item['name']);
-                filter = {
-                    field: ffield,
-                    query: query,
-                    value: $event.item['name'],
-                } as Filter;
-                break;
-            case 'platforms':
-                ffield = this.getFilterField('platforms');
-                query = this.getFilterFieldQuery(ffield, $event.item['name']);
-                filter = {
-                    field: ffield,
-                    query: query,
-                    value: $event.item['name'],
-                } as Filter;
-                break;
-        }
-        if (filter) {
-            // Update applied filters, and refresh the search result
-            // this.pfBody.scrollToTop();
-            this.addToFilter(filter);
-            event = new FilterEvent();
-            event.appliedFilters = JSON.parse(JSON.stringify(this.appliedFilters)) as Filter[];
-            event.field = JSON.parse(JSON.stringify(ffield)) as FilterField;
-            if (query) {
-                event.query = JSON.parse(JSON.stringify(query)) as FilterQuery;
+        let update = false;
+        if (this.queryParams[$event.itemType] === undefined) {
+            this.queryParams[$event.itemType] = $event.item['name'];
+            update = true;
+        } else {
+            if (!this.queryParams[$event.itemType].includes($event.item['name'])) {
+                update = true;
+                this.queryParams[$event.itemType] += ' ' + $event.item['name'];
             }
-            event.value = $event.item['name'];
-            this.filterChanged(event);
+        }
+
+        if (update) {
+            this.setAppliedFilters(this.queryParams);
+            this.searchContent();
         }
     }
 
@@ -397,6 +375,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     private setAppliedFilters(queryParams: any) {
         // Convert query params to filters
+        this.appliedFilters = [];
+
         const params = JSON.parse(JSON.stringify(queryParams));
 
         for (const key in params) {
@@ -509,6 +489,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
 
     private prepareContent(data: Content[], count: number) {
+        this.contentCount = count;
         const datePattern = /^\d{4}.*$/;
         data.forEach(item => {
             if (item.imported === null) {
