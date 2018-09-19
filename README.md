@@ -8,8 +8,7 @@ For help using the public Galaxy web site to find and install Ansible content, o
 
 ## Installing
 
-NOTE: Installation guide is out of date. Since old installer was out of date with latest architecture changes
-it has been removed from development branch. New installer is coming.
+**NOTE:** Our installation guide is out of date. The old installer does not work with the latest architectural changes introduced in v3.0, and has since been removed from the devel branch.
 
 ## Roadmap
 
