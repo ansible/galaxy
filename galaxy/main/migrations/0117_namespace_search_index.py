@@ -45,7 +45,7 @@ SET search_vector = '';
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0114_content_type'),
+        ('main', '0116_set_contentrule_values_20180918_1509'),
     ]
 
     operations = [
