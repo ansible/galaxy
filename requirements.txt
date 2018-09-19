@@ -47,7 +47,7 @@ pytest
 pytest-django
 
 # Docs
-Sphinx
+Sphinx==1.7.9
 
 # logging related
 # add request-id to django logs
