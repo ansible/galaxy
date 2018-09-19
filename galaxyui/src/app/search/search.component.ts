@@ -70,7 +70,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     showRelevance = true;
     showFilter = false;
 
-    queryParams = {};
+    queryParams = { keywords: '' };
     sortAscending = false;
     pageSize = 10;
     pageNumber = 1;
@@ -214,6 +214,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     // state of each UI component. When those UI elements are set by the user,
                     // it needs to be updated to reflect the user's actions.
                     this.queryParams = JSON.parse(JSON.stringify(params));
+                    if (this.queryParams['keywords'] === undefined) {
+                        this.queryParams['keywords'] = '';
+                    }
 
                     this.setSortConfig(this.queryParams);
                     this.setPageSize(this.queryParams);
@@ -348,6 +351,15 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
     }
 
+    searchContent() {
+        this.pageLoading = true;
+        this.setUrlParams(this.queryParams);
+        this.contentSearch.query(this.queryParams).subscribe(result => {
+            this.prepareContent(result.results, result.count);
+            this.pageLoading = false;
+        });
+    }
+
     // private
 
     private setPageSize(params: any) {
@@ -477,15 +489,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         // Remove trailing '&'
         paramString = paramString.substring(0, paramString.length - 1);
         this.location.replaceState(this.getBasePath(), paramString); // update browser URL
-    }
-
-    private searchContent() {
-        this.pageLoading = true;
-        this.setUrlParams(this.queryParams);
-        this.contentSearch.query(this.queryParams).subscribe(result => {
-            this.prepareContent(result.results, result.count);
-            this.pageLoading = false;
-        });
     }
 
     private prepareContent(data: Content[], count: number) {
