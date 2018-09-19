@@ -206,9 +206,15 @@ export class AppComponent implements OnInit {
     onItemClicked($event: VerticalNavigationItem): void {
         if ($event.title === 'Logout') {
             this.logout();
+            this.removeMobileButtons();
+            this.optionallyAddMobileButtons();
         }
-        this.removeMobileButtons();
-        this.optionallyAddMobileButtons();
+        if ($event.title === 'Documentation') {
+            window.location.pathname = '/docs/';
+        }
+        if ($event.title === 'Help') {
+            window.location.href = 'https://github.com/ansible/galaxy/issues';
+        }
     }
 
     // private
@@ -216,7 +222,13 @@ export class AppComponent implements OnInit {
         this.addNavItem({
             title: 'Documentation',
             iconStyleClass: 'fa pficon-catalog',
-            url: '/docs/',
+            url: '',
+            mobileItem: true,
+        } as VerticalNavigationItem);
+        this.addNavItem({
+            title: 'Help',
+            iconStyleClass: 'fa pficon-help',
+            url: '',
         } as VerticalNavigationItem);
         if (!this.authenticated) {
             this.addNavItem({
@@ -234,9 +246,8 @@ export class AppComponent implements OnInit {
     }
 
     private removeMobileButtons(): void {
-        ['Login', 'Logout', 'Documentation'].forEach(item => {
-            console.log('remove ' + item);
-            this.removeNavItem(item);
+        ['Documentation', 'Login', 'Logout', 'Help'].forEach(title => {
+            this.removeNavItem(title);
         });
     }
 
