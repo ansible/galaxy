@@ -4,6 +4,19 @@ Ansible Galaxy Changes by Release
 3.1.0 - Active development
 --------------------------
 
+3.0.11 - Released 20-Sep-2018
+-----------------------------
+
+Changes
+```````
+- Search results return irrelevant content. Issue `1024 <https://github.com/ansible/galaxy/issues/1024>`_.
+- Remove unnecessary query for partner content during search page load.
+
+Closed PRs
+``````````
+- `1146 Fix ranking getting set to 0 <https://github.com/ansible/galaxy/pull/1146>`_.
+- `1149 Refactor default parameters on search page <<https://github.com/ansible/galaxy/pull/1146>`_.
+
 3.0.10 - Released 12-Sep-2018
 -----------------------------
 
