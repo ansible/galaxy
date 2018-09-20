@@ -14,12 +14,8 @@ export class ContentSearchService {
 
     private url = '/api/v1/search/content/';
 
-    query(query?: string): Observable<ContentResponse> {
-        let requestUrl = this.url;
-        if (query) {
-            requestUrl += `?${query}`;
-        }
-        return this.http.get<ContentResponse>(requestUrl).pipe(
+    query(params?: any): Observable<ContentResponse> {
+        return this.http.get<ContentResponse>(this.url, { params: params }).pipe(
             tap(_ => this.log('fetched content')),
             catchError(this.handleError('Query', {} as ContentResponse)),
         );

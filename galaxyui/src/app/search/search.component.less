@@ -8,6 +8,35 @@
     .pagination {
         width: 100%;
     }
+
+    .search-bar {
+        display: flex;
+        align-items: center;
+
+        .search-field {
+            flex-grow: 2;
+            min-width: 200px;
+            max-width: 700px;
+        }
+
+        .count {
+            display: inline-block;
+        }
+
+        .filter-toggle-wrapper {
+            flex-grow: 1;
+            margin-left: 15px;
+        }
+
+        .filter-toggle {
+            font-size: 14px;
+            width: 60px;
+        }
+
+        .filter-toggle:hover {
+            cursor: pointer;
+        }
+    }
 }
 
 #search-list {

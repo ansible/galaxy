@@ -3,11 +3,32 @@
 <div id="search-page" class="container-fluid">
     <div class="row">
         <div class="col-lg-9">
-            <pfng-toolbar
-                [config]="getToolbarConfig()"
-                (onFilterChange)="filterChanged($event)"
-                (onSortChange)="sortChanged($event)">
-            </pfng-toolbar>
+            <div class="search-bar">
+                <div class="search-field">
+                    <div class="input-group">
+                        <input type="text" [(ngModel)]="queryParams.keywords" (keyup.enter)="searchContent()" class="form-control" placeholder="Search for...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" (click)="searchContent()"><span class="fa fa-search"></span></button>
+                        </span>
+                    </div>
+                </div>
+                <div class="filter-toggle-wrapper">
+                    <div (click)="toggleFilter()" class="filter-toggle">
+                        <span class="fa fa-angle-{{showFilter ? 'up':'down'}}"></span>
+                        Filters
+                    </div>
+                </div>
+                <div class="count">
+                    ({{ contentCount }} results)
+                </div>
+            </div>
+            <div *ngIf="showFilter" class="filter">
+                <pfng-toolbar
+                    [config]="getToolbarConfig()"
+                    (onFilterChange)="filterChanged($event)"
+                    (onSortChange)="sortChanged($event)">
+                </pfng-toolbar>
+            </div>
             <div id="search-list">
                 <pfng-list
                     [config]="listConfig"
@@ -120,17 +141,17 @@
             <popular-widget
                 [popularTitle]="'Popular Tags'"
                 [popularType]="'tags'"
-                (click)="handleWidgetClick($event)">
+                (emitItem)="handleWidgetClick($event)">
             </popular-widget>
             <popular-widget
                 [popularTitle]="'Popular Platforms'"
                 [popularType]="'platforms'"
-                (click)="handleWidgetClick($event)">
+                (emitItem)="handleWidgetClick($event)">
             </popular-widget>
             <popular-widget
                 [popularTitle]="'Popular Clouds'"
-                [popularType]="'cloudPlatforms'"
-                (click)="handleWidgetClick($event)">
+                [popularType]="'cloud_platforms'"
+                (emitItem)="handleWidgetClick($event)">
             </popular-widget>
         </div>
     </div>

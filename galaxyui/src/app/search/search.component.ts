@@ -68,12 +68,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     pageLoading = true;
     showRelevance = true;
+    showFilter = false;
 
-    filterParams = '';
-    sortParams = '&order_by=-relevance';
+    queryParams = { keywords: '' };
     sortAscending = false;
     pageSize = 10;
     pageNumber = 1;
+    keywords = '';
+    contentCount: number;
 
     appliedFilters: Filter[] = [];
 
@@ -89,12 +91,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.pfBody.scrollToTop();
         this.filterConfig = {
             fields: [
-                {
-                    id: 'keywords',
-                    title: 'Keyword',
-                    placeholder: 'Keyword',
-                    type: FilterType.TEXT,
-                },
                 {
                     id: 'cloud_platforms',
                     title: 'Cloud Platform',
@@ -197,11 +193,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
             this.route.data.subscribe(data => {
                 // This function is called each time the route updates, so
                 // the default values have to be reset
-                this.appliedFilters = [];
                 this.paginationConfig.pageNumber = 1;
                 this.pageNumber = 1;
-                this.sortParams = '&order_by=-relevance';
-                this.setSortConfig(this.sortParams);
 
                 this.preparePlatforms(data.platforms);
                 this.prepareContentTypes(data.contentTypes);
@@ -214,18 +207,29 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     if (Object.keys(params).length === 0) {
                         params = DefaultParams.params;
                     }
-                    this.setSortConfig(params['order_by']);
-                    this.setPageSize(params);
-                    this.setAppliedFilters(params);
+
+                    // queryParams represents the complete query that will be made to the database
+                    // and as such it essentially represents the state of the search page. When
+                    // the page loads it is initialized from the URL params and used to set the
+                    // state of each UI component. When those UI elements are set by the user,
+                    // it needs to be updated to reflect the user's actions.
+                    this.queryParams = JSON.parse(JSON.stringify(params));
+                    if (this.queryParams['keywords'] === undefined) {
+                        this.queryParams['keywords'] = '';
+                    }
+
+                    this.setSortConfig(this.queryParams);
+                    this.setPageSize(this.queryParams);
+                    this.setAppliedFilters(this.queryParams);
                     this.prepareContent(data.content.results, data.content.count);
-                    this.setQuery();
+                    this.setUrlParams(this.queryParams);
                     this.pageLoading = false;
                 } else {
                     this.notificationService.message(NotificationType.WARNING, 'Error', 'Invalid search query', false, null, null);
 
-                    this.setSortConfig(params['order_by']);
-                    this.setPageSize(params);
-                    this.setAppliedFilters(params);
+                    this.setSortConfig(this.queryParams);
+                    this.setPageSize(this.queryParams);
+                    this.setAppliedFilters(this.queryParams);
 
                     this.pageLoading = false;
                 }
@@ -235,18 +239,30 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {}
 
+    toggleFilter() {
+        this.showFilter = !this.showFilter;
+    }
+
     sortChanged($event: SortEvent): void {
-        this.sortParams = '&order_by=';
+        let sortParams = '';
         if (!$event.isAscending) {
-            this.sortParams += '-';
+            sortParams += '-';
         }
-        this.sortParams += $event.field.id;
+        sortParams += $event.field.id;
+        this.queryParams['order_by'] = sortParams;
         this.searchContent();
     }
 
     filterChanged($event: FilterEvent): void {
+        // Remove filters from queryParams
+        for (const filter of this.filterConfig.fields) {
+            if (this.queryParams[filter.id] !== undefined) {
+                delete this.queryParams[filter.id];
+            }
+        }
+
         const filterby = {};
-        let params = '';
+        const params = {};
         this.pageNumber = 1;
         this.paginationConfig.pageNumber = 1;
         if ($event.appliedFilters.length) {
@@ -262,31 +278,31 @@ export class SearchComponent implements OnInit, AfterViewInit {
             });
             for (const key in filterby) {
                 if (filterby.hasOwnProperty(key)) {
-                    if (params !== '') {
-                        params += '&';
-                    }
                     if (key === 'contributor_type') {
                         if (filterby[key].length === 1) {
                             switch (filterby[key][0]) {
                                 case ContributorTypes.community:
-                                    params += 'vendor=false';
+                                    params['vendor'] = false;
                                     break;
                                 case ContributorTypes.vendor:
-                                    params += 'vendor=true';
+                                    params['vendor'] = true;
                                     break;
                             }
                         }
                     } else {
-                        params += key + '=' + encodeURIComponent(filterby[key].join(' '));
+                        params[key] = encodeURIComponent(filterby[key].join(' '));
                     }
                 }
             }
             this.appliedFilters = JSON.parse(JSON.stringify($event.appliedFilters));
-            this.filterParams = params;
+
+            // Apply new filters to queryParams
+            for (const key of Object.keys(params)) {
+                this.queryParams[key] = params[key];
+            }
         } else {
             this.appliedFilters = [];
             this.contentItems = [];
-            this.filterParams = '';
         }
         this.searchContent();
     }
@@ -311,55 +327,37 @@ export class SearchComponent implements OnInit, AfterViewInit {
             }
         }
         if (changed && !this.pageLoading) {
+            this.queryParams['page_size'] = this.pageSize;
+            this.queryParams['page'] = this.pageNumber;
             this.searchContent();
         }
     }
 
     handleWidgetClick($event: PopularEvent) {
-        let filter: Filter;
-        let ffield: FilterField;
-        let query: FilterQuery;
-        let event: FilterEvent;
-        switch ($event.itemType) {
-            case 'tags':
-                ffield = this.getFilterField('tags');
-                filter = {
-                    field: ffield,
-                    value: $event.item['name'],
-                } as Filter;
-                break;
-            case 'cloudPlatforms':
-                ffield = this.getFilterField('cloud_platforms');
-                query = this.getFilterFieldQuery(ffield, $event.item['name']);
-                filter = {
-                    field: ffield,
-                    query: query,
-                    value: $event.item['name'],
-                } as Filter;
-                break;
-            case 'platforms':
-                ffield = this.getFilterField('platforms');
-                query = this.getFilterFieldQuery(ffield, $event.item['name']);
-                filter = {
-                    field: ffield,
-                    query: query,
-                    value: $event.item['name'],
-                } as Filter;
-                break;
-        }
-        if (filter) {
-            // Update applied filters, and refresh the search result
-            this.pfBody.scrollToTop();
-            this.addToFilter(filter);
-            event = new FilterEvent();
-            event.appliedFilters = JSON.parse(JSON.stringify(this.appliedFilters)) as Filter[];
-            event.field = JSON.parse(JSON.stringify(ffield)) as FilterField;
-            if (query) {
-                event.query = JSON.parse(JSON.stringify(query)) as FilterQuery;
+        let update = false;
+        if (this.queryParams[$event.itemType] === undefined) {
+            this.queryParams[$event.itemType] = $event.item['name'];
+            update = true;
+        } else {
+            if (!this.queryParams[$event.itemType].includes($event.item['name'])) {
+                update = true;
+                this.queryParams[$event.itemType] += ' ' + $event.item['name'];
             }
-            event.value = $event.item['name'];
-            this.filterChanged(event);
         }
+
+        if (update) {
+            this.setAppliedFilters(this.queryParams);
+            this.searchContent();
+        }
+    }
+
+    searchContent() {
+        this.pageLoading = true;
+        this.setUrlParams(this.queryParams);
+        this.contentSearch.query(this.queryParams).subscribe(result => {
+            this.prepareContent(result.results, result.count);
+            this.pageLoading = false;
+        });
     }
 
     // private
@@ -389,7 +387,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     private setAppliedFilters(queryParams: any) {
         // Convert query params to filters
-        let filterParams = '';
+        this.appliedFilters = [];
 
         const params = JSON.parse(JSON.stringify(queryParams));
 
@@ -397,11 +395,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
             if (params.hasOwnProperty(key)) {
                 if (key === 'vendor') {
                     const field = this.getFilterField('contributor_type');
-
-                    if (filterParams !== '') {
-                        filterParams += '&';
-                    }
-                    filterParams += `vendor=${params[key]}`;
 
                     const ffield: Filter = {} as Filter;
                     ffield.field = field;
@@ -422,11 +415,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
                         continue;
                     }
 
-                    if (filterParams !== '') {
-                        filterParams += '&';
-                    }
-                    filterParams += `${key}=${encodeURIComponent(params[key])}`;
-
                     const values: string[] = params[key].split(' ');
                     values.forEach(v => {
                         const ffield: Filter = {} as Filter;
@@ -445,9 +433,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
                         this.appliedFilters.push(ffield);
                     });
                 }
+
+                // Show filters if the param is configured in filters and it's not
+                // in the defaults
+                if (DefaultParams.params[key] === undefined) {
+                    this.showFilter = true;
+                }
             }
         }
-        this.filterParams = filterParams;
     }
 
     private getBasePath(): string {
@@ -487,26 +480,19 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
     }
 
-    private setQuery(): string {
-        let paging = '&page_size=' + this.pageSize.toString();
-        if (this.pageNumber > 1) {
-            paging += `&page=${this.pageNumber}`;
+    private setUrlParams(params: any) {
+        let paramString = '';
+        for (const key of Object.keys(params)) {
+            paramString += key + '=' + params[key] + '&';
         }
-        const query = (this.filterParams + this.sortParams + paging).replace(/^&/, ''); // remove leading &
-        this.location.replaceState(this.getBasePath(), query); // update browser URL
-        return query;
-    }
 
-    private searchContent() {
-        this.pageLoading = true;
-        const query = this.setQuery();
-        this.contentSearch.query(query).subscribe(result => {
-            this.prepareContent(result.results, result.count);
-            this.pageLoading = false;
-        });
+        // Remove trailing '&'
+        paramString = paramString.substring(0, paramString.length - 1);
+        this.location.replaceState(this.getBasePath(), paramString); // update browser URL
     }
 
     private prepareContent(data: Content[], count: number) {
+        this.contentCount = count;
         const datePattern = /^\d{4}.*$/;
         data.forEach(item => {
             if (item.imported === null) {
@@ -638,7 +624,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
     }
 
-    private setSortConfig(orderBy?: string) {
+    private setSortConfig(params: any) {
         const fields: SortField[] = [
             {
                 id: 'relevance',
@@ -672,39 +658,30 @@ export class SearchComponent implements OnInit, AfterViewInit {
             },
         ] as SortField[];
 
-        this.sortParams = '&order_by=';
-        if (this.sortConfig.isAscending) {
-            this.sortParams += '-';
+        if (params['order_by'] === undefined) {
+            params['order_by'] = '-relevance';
         }
 
-        if (!orderBy) {
-            // Use default order
+        const result: SortField[] = [] as SortField[];
+
+        // Set ascending
+        this.sortConfig.isAscending = true;
+        if (params['order_by'].startsWith('-')) {
             this.sortConfig.isAscending = false;
-            this.sortConfig.fields = fields;
-            this.sortParams += fields[0].id;
-        } else {
-            const result: SortField[] = [] as SortField[];
-
-            // Set ascending
-            this.sortConfig.isAscending = true;
-            if (orderBy.startsWith('-')) {
-                this.sortConfig.isAscending = false;
-            }
-
-            // Put the requested orderby field at the top of the list
-            const order = orderBy.replace(/^[+-]/, '');
-            fields.forEach(f => {
-                if (f.id === order) {
-                    result.push(f);
-                    this.sortParams += f.id;
-                }
-            });
-            fields.forEach(f => {
-                if (f.id !== order) {
-                    result.push(f);
-                }
-            });
-            this.sortConfig.fields = result;
         }
+
+        // Put the requested orderby field at the top of the list
+        const order = params['order_by'].replace(/^[+-]/, '');
+        fields.forEach(f => {
+            if (f.id === order) {
+                result.push(f);
+            }
+        });
+        fields.forEach(f => {
+            if (f.id !== order) {
+                result.push(f);
+            }
+        });
+        this.sortConfig.fields = result;
     }
 }

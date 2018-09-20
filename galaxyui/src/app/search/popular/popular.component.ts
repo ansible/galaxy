@@ -32,7 +32,7 @@ export class PopularComponent implements OnInit {
     @Input()
     popularTitle: string;
     @Output()
-    click = new EventEmitter<PopularEvent>();
+    emitItem = new EventEmitter<PopularEvent>();
 
     data: PopularData;
     listConfig: ListConfig;
@@ -40,12 +40,12 @@ export class PopularComponent implements OnInit {
 
     constructor(private route: ActivatedRoute) {}
 
-    handleClick($event) {
+    handleClick(item) {
         // User clicked on an item
         const e = new PopularEvent();
         e.itemType = this.popularType;
-        e.item = $event.item;
-        this.click.emit(e);
+        e.item = item;
+        this.emitItem.emit(e);
     }
 
     ngOnInit() {
@@ -57,7 +57,7 @@ export class PopularComponent implements OnInit {
                 case 'tags':
                     this.items = result.popularTags.slice(0, 11);
                     break;
-                case 'cloudPlatforms':
+                case 'cloud_platforms':
                     this.items = result.popularCloudPlatforms.slice(0, 11);
                     break;
             }
