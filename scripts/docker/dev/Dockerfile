@@ -48,7 +48,7 @@ ENV PYTHONIOENCODING utf8
 
 COPY scripts/docker/dev/entrypoint.sh /entrypoint.sh
 
-RUN git clone https://github.com/ansible/galaxy-lint-rules.git /galaxy-lint-rules
+RUN git clone https://github.com/ansible/galaxy-lint-rules.git /usr/local/galaxy-lint-rules
 
 WORKDIR /galaxy
 ENTRYPOINT ["/entrypoint.sh"]

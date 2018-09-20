@@ -259,7 +259,7 @@ dev/lint-rule-update:
 	@echo "Update galaxy-lint-rules repo"
 	@$(DOCKER_COMPOSE) exec galaxy git config --global user.email "dev@galaxy_1"
 	@$(DOCKER_COMPOSE) exec galaxy git config --global user.name "dev galaxy_1"
-	@$(DOCKER_COMPOSE) exec galaxy bash -c "cd /galaxy-lint-rules && git pull --ff-only  https://github.com/ansible/galaxy-lint-rules.git master"
+	@$(DOCKER_COMPOSE) exec galaxy bash -c "cd /usr/local/galaxy-lint-rules && git pull --ff-only  https://github.com/ansible/galaxy-lint-rules.git master"
 
 .PHONY: dev/setup-metrics
 dev/setup-metrics:

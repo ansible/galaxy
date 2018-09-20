@@ -118,7 +118,7 @@ class AnsibleLinter(BaseLinter):
     cmd = 'ansible-lint'
 
     def _check_files(self, paths):
-        rules_path = '/galaxy-lint-rules/rules'
+        rules_path = '/usr/local/galaxy-lint-rules/rules'
         cmd = [self.cmd, '-p', '-r', rules_path, '.']
         logger.debug('CMD: ' + ' '.join(cmd))
 

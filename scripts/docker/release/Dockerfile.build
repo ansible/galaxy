@@ -13,7 +13,6 @@ RUN yum -y install wget \
 
 RUN mkdir -p /galaxy
 COPY . /galaxy
-RUN git clone https://github.com/ansible/galaxy-lint-rules.git /galaxy-lint-rules
 WORKDIR /galaxy
 
 RUN /galaxy/scripts/docker/release/build.sh

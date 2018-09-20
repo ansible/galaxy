@@ -32,6 +32,8 @@ COPY --from=galaxy-build:latest /galaxy/dist/*.whl /tmp
 COPY --from=galaxy-build:latest /galaxy/build/static/ /var/lib/galaxy/public/static/
 RUN ${VENV_BIN}/pip install "/tmp/galaxy-$(< /var/lib/galaxy/VERSION)-py2-none-any.whl"
 
+RUN git clone https://github.com/ansible/galaxy-lint-rules.git /usr/local/galaxy-lint-rules
+
 WORKDIR /var/lib/galaxy
 
 ENV DJANGO_SETTINGS_MODULE galaxy.settings.production
