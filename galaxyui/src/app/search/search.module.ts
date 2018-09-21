@@ -20,6 +20,7 @@ import { SearchComponent } from './search.component';
 
 import { PageHeaderModule } from '../page-header/page-header.module';
 import { PageLoadingModule } from '../page-loading/page-loading.module';
+import { UtilitiesModule } from '../utilities/utilities.module';
 
 @NgModule({
     imports: [
@@ -37,6 +38,7 @@ import { PageLoadingModule } from '../page-loading/page-loading.module';
         PaginationModule,
         BsDropdownModule.forRoot(),
         FormsModule,
+        UtilitiesModule,
     ],
     declarations: [SearchComponent, PopularComponent],
 })

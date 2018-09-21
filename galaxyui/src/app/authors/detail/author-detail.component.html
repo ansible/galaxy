@@ -91,6 +91,10 @@
                         </div>
                         <div class="list-pf-additional-content">
                             <div class="content-count">
+                                <app-score [score]="item.quality_score"></app-score>
+                            </div>
+
+                            <div class="content-count">
                                 <i class="fa fa-download"></i>
                                 <span class="count">{{ item.download_count }}</span>
                                 <span class="count-label">Downloads</span>
