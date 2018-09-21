@@ -77,16 +77,19 @@ class RepositoryLoader(object):
         finder, contents = self._find_contents()
         result = list(self._load_contents(contents))
         readme = self._get_readme(finder.repository_format)
+        description = None
 
         if not all(v[1] for v in result):
             self.log.error('Lint failed')
             # raise exc.ContentLoadError('Lint failed')
 
         name = None
-        if (finder.repository_format in (constants.RepositoryFormat.ROLE,
-                                         constants.RepositoryFormat.APB)
-                and result[0][0].name):
-            name = result[0][0].name
+        if finder.repository_format in (constants.RepositoryFormat.ROLE,
+                                        constants.RepositoryFormat.APB):
+            if result[0][0].name:
+                name = result[0][0].name
+            if result[0][0].description:
+                description = result[0][0].description
 
         return models.Repository(
             branch=branch,
@@ -94,7 +97,8 @@ class RepositoryLoader(object):
             format=finder.repository_format,
             contents=[v[0] for v in result],
             readme=readme,
-            name=name
+            name=name,
+            description=description
         )
 
     def _find_contents(self):
