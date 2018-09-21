@@ -132,7 +132,8 @@ def _import_repository(import_task, logger):
     _update_readme(repository, repo_info.readme, gh_api, gh_repo)
     _update_repository_versions(repository, gh_repo, logger)
     _update_namespace(gh_repo)
-    _update_repo_info(repository, gh_repo, repo_info.commit)
+    _update_repo_info(repository, gh_repo, repo_info.commit,
+                      repo_info.description)
     repository.save()
 
     _update_task_msg_content_id(import_task)
@@ -236,7 +237,8 @@ def _update_quality_score(import_task):
                           'rule_vios, severitys, weights, score: '
                           '{}, {}, {}, {}')
         LOG.debug(score_calc_log.format(content.original_name,
-                  rule_vios, severitys, weights, content.quality_score))
+                                        rule_vios, severitys, weights,
+                                        content.quality_score))
 
     repository.quality_score = repo_points / contents.count()
     repository.save()
@@ -285,7 +287,11 @@ def _update_readme(repository, readme, github_api, github_repo):
     repository.save()
 
 
-def _update_repo_info(repository, gh_repo, commit_info):
+def _update_repo_info(repository, gh_repo, commit_info, repo_description):
+    if repo_description:
+        repository.description = repo_description
+    else:
+        repository.description = gh_repo.description
     repository.stargazers_count = gh_repo.stargazers_count
     repository.watchers_count = gh_repo.subscribers_count
     repository.forks_count = gh_repo.forks_count
