@@ -11,8 +11,7 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 import { UtilitiesModule } from '../utilities/utilities.module';
 
-import { PageHeaderModule } from '../page-header/page-header.module';
-import { PageLoadingModule } from '../page-loading/page-loading.module';
+import { SharedModule } from '../shared/shared.module';
 import { CardCloudPlatformsComponent } from './cards/cloud-platforms/cloud-platforms.component';
 import { CardCommunitySurveyComponent } from './cards/survey/community-survey.component';
 
@@ -40,8 +39,8 @@ import { ScoreBarComponent } from './shared/score-bar/score-bar.component';
         ContentDetailRoutingModule,
         EmptyStateModule,
         CardModule,
-        PageLoadingModule,
-        PageHeaderModule,
+
+        SharedModule,
         ListModule,
         UtilitiesModule,
     ],

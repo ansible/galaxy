@@ -3,7 +3,7 @@
         <li><span *ngIf="_headerIcon" class="{{ _headerIcon }}"></span></li>
         <li *ngIf="_headerTitle.length > 1" class="show-on-mobile"><span class="fa fa-angle-double-right"></span></li>
         <li *ngFor="let title of _headerTitle; index as i; let last=last" [ngClass]="{'hide-on-mobile': !last}">
-            <a [routerLink]="[title.path]" *ngIf="title.path" [innerHTML]="title.name"></a>
+            <a appLogEvent [routerLink]="[title.path]" *ngIf="title.path" [innerHTML]="title.name"></a>
             <span *ngIf="i < _headerTitle.length - 1" class="separator"><span class="fa fa-angle-right"></span></span>
             <span *ngIf="!title.path" [innerHTML]="title.name"></span>
         </li>

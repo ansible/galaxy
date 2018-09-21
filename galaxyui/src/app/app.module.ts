@@ -33,6 +33,7 @@ import { ContentTypeService } from './resources/content-types/content-type.servi
 import { ContentService } from './resources/content/content.service';
 import { EmailService } from './resources/emails/email.service';
 import { ImportsService } from './resources/imports/imports.service';
+import { EventLoggerService } from './resources/logger/event-logger.service';
 import { NamespaceService } from './resources/namespaces/namespace.service';
 import { PFBodyService } from './resources/pf-body/pf-body.service';
 import { PlatformService } from './resources/platforms/platform.service';
@@ -91,6 +92,7 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
         PFBodyService,
         SurveyService,
         EmailService,
+        EventLoggerService,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     bootstrap: [AppComponent],

@@ -33,8 +33,7 @@ import {
     AlternateNameModalComponent
 } from './namespace-list/content/repositories-content/alternate-name-modal/alternate-name-modal.component';
 
-import { PageHeaderModule } from '../page-header/page-header.module';
-import { PageLoadingModule } from '../page-loading/page-loading.module';
+import { SharedModule } from '../shared/shared.module';
 import { NamespaceActionComponent } from './namespace-list/action/action.component';
 
 import { NamespaceRepositoryActionComponent } from './namespace-list/content/repositories-content/action/action.component';
@@ -65,8 +64,8 @@ import { NamespaceRepositoryActionComponent } from './namespace-list/content/rep
         TooltipModule,
         ListModule,
         PaginationModule,
-        PageHeaderModule,
-        PageLoadingModule,
+        SharedModule,
+
         MyContentRoutingModule,
     ],
     providers: [BsDropdownConfig],
