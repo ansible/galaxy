@@ -360,6 +360,18 @@ export class SearchComponent implements OnInit, AfterViewInit {
         });
     }
 
+    getScoreColor(score: number) {
+        if (score > 3.5) {
+            return 'fa-check-circle score-green';
+        }
+
+        if (score >= 1) {
+            return 'fa-exclamation-circle score-yellow';
+        }
+
+        return 'fa-times-circle score-red';
+    }
+
     // private
 
     private setPageSize(params: any) {

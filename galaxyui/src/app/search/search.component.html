@@ -85,11 +85,7 @@
                                     </div>
                                     <div class="repository-details">
 
-                                        <div *ngIf="item.summary_fields.score !== null" class="repo-count">
-                                            <i class="fa fa-check-circle"></i>
-                                            <span class="count-digits">{{ item.summary_fields.score }} <span class="denominator">/ 5</span></span>
-                                            <span>Score</span>
-                                        </div>
+                                        <app-score class="repo-count" [score]="item.summary_fields.score"></app-score>
 
                                         <div class="repo-count">
                                             <i class="fa fa-download"></i>

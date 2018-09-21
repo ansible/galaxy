@@ -8,6 +8,7 @@ import { FilterModule } from 'patternfly-ng/filter/filter.module';
 import { ListModule } from 'patternfly-ng/list/basic-list/list.module';
 import { PaginationModule } from 'patternfly-ng/pagination/pagination.module';
 import { ToolbarModule } from 'patternfly-ng/toolbar/toolbar.module';
+import { UtilitiesModule } from '../utilities/utilities.module';
 
 import { PageHeaderModule } from '../page-header/page-header.module';
 import { PageLoadingModule } from '../page-loading/page-loading.module';
@@ -29,6 +30,7 @@ import { DetailActionsComponent } from './detail/detail-actions/detail-actions.c
         PageHeaderModule,
         PageLoadingModule,
         ActionModule,
+        UtilitiesModule,
     ],
     declarations: [DetailActionsComponent, AuthorsComponent, AuthorDetailComponent],
 })
