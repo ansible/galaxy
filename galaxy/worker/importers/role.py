@@ -25,6 +25,12 @@ from . import base
 
 
 class RoleImporter(base.ContentImporter):
+    linter_data = {
+        'is_linter_rule_violation': True,
+        'linter_type': 'importer',
+        'linter_rule_id': None,
+        'rule_desc': None
+    }
 
     def update_content(self, content):
         super(RoleImporter, self).update_content(content)
@@ -64,12 +70,17 @@ class RoleImporter(base.ContentImporter):
 
     def _add_tags(self, role, tags):
         if not tags:
-            self.log.warning('No galaxy tags found in metadata')
+            msg = 'No galaxy tags found in metadata'
+            self.linter_data['linter_rule_id'] = 'no_galaxy_tags'
+            self.linter_data['rule_desc'] = msg
+            self.log.warning(msg, extra=self.linter_data)
         elif len(tags) > constants.MAX_TAGS_COUNT:
-            self.log.warning(
-                'Found more than {0} galaxy tags in metadata. '
-                'Only first {0} will be used'
-                .format(constants.MAX_TAGS_COUNT))
+            msg = ('Found more than {0} galaxy tags in metadata. '
+                   'Only first {0} will be used'
+                   .format(constants.MAX_TAGS_COUNT))
+            self.linter_data['linter_rule_id'] = 'exceeded_max_tags'
+            self.linter_data['rule_desc'] = msg
+            self.log.warning(msg, extra=self.linter_data)
             tags = role.tags[:constants.MAX_TAGS_COUNT]
         self.log.info('Adding role metadata tags')
         for tag in tags:
@@ -89,7 +100,10 @@ class RoleImporter(base.ContentImporter):
                                   constants.RoleType.ANSIBLE):
             return
         if not platforms:
-            self.log.warning('No platforms found in metadata')
+            msg = 'No platforms found in metadata'
+            self.linter_data['linter_rule_id'] = 'no_platforms'
+            self.linter_data['rule_desc'] = msg
+            self.log.warning(msg, extra=self.linter_data)
             return
         self.log.info('Adding role platforms')
         new_platforms = []
@@ -101,8 +115,10 @@ class RoleImporter(base.ContentImporter):
                     name__iexact=name
                 )
                 if not platform_objs:
-                    self.log.warning(
-                        u'Invalid platform: "{}-all", skipping.'.format(name))
+                    msg = u'Invalid platform: "{}-all", skipping.'.format(name)
+                    self.linter_data['linter_rule_id'] = 'invalid_platform_all'
+                    self.linter_data['rule_desc'] = msg
+                    self.log.warning(msg, extra=self.linter_data)
                     continue
                 for p in platform_objs:
                     role.platforms.add(p)
@@ -115,9 +131,11 @@ class RoleImporter(base.ContentImporter):
                         name__iexact=name, release__iexact=str(version)
                     )
                 except models.Platform.DoesNotExist:
-                    self.log.warning(
-                        u'Invalid platform: "{0}-{1}", skipping.'
-                        .format(name, version))
+                    msg = (u'Invalid platform: "{0}-{1}", skipping.'
+                           .format(name, version))
+                    self.linter_data['linter_rule_id'] = 'invalid_platform'
+                    self.linter_data['rule_desc'] = msg
+                    self.log.warning(msg, extra=self.linter_data)
                 else:
                     role.platforms.add(p)
                     new_platforms.append((p.name, p.release))
@@ -141,8 +159,10 @@ class RoleImporter(base.ContentImporter):
             try:
                 platform = models.CloudPlatform.objects.get(name__iexact=name)
             except models.CloudPlatform.DoesNotExist:
-                self.log.warning(
-                    u'Invalid cloud platform: "{0}", skipping'.format(name))
+                msg = u'Invalid cloud platform: "{0}", skipping'.format(name)
+                self.linter_data['linter_rule_id'] = 'invalid_cloud_platform'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
                 continue
             role.cloud_platforms.add(platform)
 
@@ -162,14 +182,18 @@ class RoleImporter(base.ContentImporter):
                     role.dependencies.add(dep_role)
                     new_deps.append(dep)
                 except Exception as e:
-                    self.log.error(
-                        u"Error loading dependencies {}".format(e))
+                    msg = u'Error loading dependencies {}'.format(e)
+                    self.linter_data['linter_rule_id'] = 'dependency_load'
+                    self.linter_data['rule_desc'] = msg
+                    self.log.error(msg, extra=self.linter_data)
                     raise Exception(
-                        u"Role dependency not found: {}.{}".format(
+                        u'Role dependency not found: {}.{}'.format(
                             dep.namespace, dep.name))
             except Exception as e:
-                self.log.warning(
-                    u'Error parsing dependency {}'.format(e))
+                msg = u'Error parsing dependency {}'.format(e)
+                self.linter_data['linter_rule_id'] = 'dependency_parse'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
 
         for dep in role.dependencies.all():
             if (dep.namespace.name, dep.name) not in new_deps:
