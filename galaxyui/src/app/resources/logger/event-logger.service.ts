@@ -1,18 +1,32 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import { Observable } from 'rxjs';
+
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Event } from './event';
-
-import * as shajs from 'sha.js';
+import { InfluxSession } from './influx-session';
 
 @Injectable()
 export class EventLoggerService {
-    constructor(private router: Router) {
-        this.session_id = shajs('sha256')
-            .update(String(Math.random()))
-            .digest('hex');
+    constructor(private http: HttpClient, private router: Router) {
+        const session = document.cookie.match(new RegExp('(^| )influx_session=([^;]+)'));
+        if (session) {
+            this.sessionId = session[2];
+        } else {
+            let httpResult: Observable<InfluxSession>;
+            httpResult = this.http.post<InfluxSession>('/api/v1/events/influx_session/', {}, this.httpOptions);
+            httpResult.subscribe(response => (this.sessionId = response.session_id));
+        }
     }
-    session_id: string;
+    httpOptions = {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+        }),
+    };
+
+    sessionId: string;
 
     logLink(name: string, href: string): void {
         const jsEvent = this.getBaseEvent('link_click');
@@ -68,7 +82,7 @@ export class EventLoggerService {
         return {
             measurment: name,
             tags: {
-                session_id: this.session_id,
+                sessionId: this.sessionId,
                 current_page: this.router.url,
             },
             fields: {
