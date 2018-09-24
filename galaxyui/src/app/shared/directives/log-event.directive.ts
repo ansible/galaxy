@@ -5,10 +5,10 @@ import { EventLoggerService } from '../../resources/logger/event-logger.service'
 @Directive({
     selector: '[appLogEvent]',
 })
-export class LogEventDirective {
+export class LogButtonLinkDirective {
     constructor(private el: ElementRef, private eventLoggerService: EventLoggerService) {}
 
-    @Input('appLogEvent')
+    @Input()
     appLogEvent: string;
 
     @HostListener('click')
