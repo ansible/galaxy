@@ -113,8 +113,9 @@ class RepositoryLoader(object):
             loader = loader_cls(content_type, rel_path, self.path,
                                 logger=self.log, **extra)
             content = loader.load()
-            self.log.info('===== LINTING {}: {} ====='.format(
-                          content_type.name, content.name))
+            name = ': {}'.format(content.name) if content.name else ''
+            self.log.info('===== LINTING {}{} ====='.format(
+                          content_type.name, name))
             lint_result = loader.lint()
             self.log.info(' ')
             yield content, lint_result

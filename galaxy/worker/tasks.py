@@ -137,7 +137,6 @@ def _import_repository(import_task, logger):
     repository.save()
 
     _update_task_msg_content_id(import_task)
-    _update_task_msg_severity(import_task)
     _update_quality_score(import_task)
 
     warnings = import_task.messages.filter(
@@ -158,40 +157,18 @@ def _update_task_msg_content_id(import_task):
     if len(contents) == 1:
         name_to_id[None] = name_to_id[name_to_id.keys()[0]]
 
-    import_messages = models.ImportTaskMessage.objects.filter(
+    import_task_messages = models.ImportTaskMessage.objects.filter(
         task_id=import_task.id,
         is_linter_rule_violation=True
     )
 
-    for msg in import_messages:
+    for msg in import_task_messages:
         if msg.content_name not in name_to_id:
             LOG.error(u'Importer could not associate content id to rule msg')
             msg.is_linter_rule_violation = False
             msg.save()
             continue
         msg.content_id = name_to_id[msg.content_name]
-        msg.save()
-
-
-def _update_task_msg_severity(import_task):
-    rule_to_severity = {'{}_{}'.format(r.linter_id, r.rule_id).lower():
-                        r.severity
-                        for r in models.ContentRule.objects.all()}
-
-    import_messages = models.ImportTaskMessage.objects.filter(
-        task_id=import_task.id,
-        is_linter_rule_violation=True
-    )
-
-    for msg in import_messages:
-        rule_code = '{}_{}'.format(msg.linter_type,
-                                   msg.linter_rule_id).lower()
-        if rule_code not in rule_to_severity:
-            LOG.warning(u'Rule not found in database: {}'.format(rule_code))
-            msg.is_linter_rule_violation = False
-            msg.save()
-            continue
-        msg.rule_severity = rule_to_severity[rule_code]
         msg.save()
 
 
@@ -205,14 +182,71 @@ def _update_quality_score(import_task):
         4: 5,
         5: 10,
     }
+    RULE_TO_SEVERITY = {
+        'ansible-lint_e101': 3,
+        'ansible-lint_e102': 4,
+        'ansible-lint_e103': 5,
+        'ansible-lint_e104': 5,
+        'ansible-lint_e105GAL': 0,
+        'ansible-lint_e106GAL': 0,
+        'ansible-lint_e201': 0,
+        'ansible-lint_e202': 5,
+        'ansible-lint_e203GAL': 2,
+        'ansible-lint_e204GAL': 1,
+        'ansible-lint_e205GAL': 1,
+        'ansible-lint_e206GAL': 3,
+        'ansible-lint_e207GAL': 3,
+        'ansible-lint_e208GAL': 2,
+        'ansible-lint_e301': 4,
+        'ansible-lint_e302': 5,
+        'ansible-lint_e303': 4,
+        'ansible-lint_e304': 5,
+        'ansible-lint_e305': 4,
+        'ansible-lint_e306GAL': 0,
+        'ansible-lint_e401': 3,
+        'ansible-lint_e402': 3,
+        'ansible-lint_e403': 1,
+        'ansible-lint_e404GAL': 4,
+        'ansible-lint_e405GAL': 3,
+        'ansible-lint_e406GAL': 0,
+        'ansible-lint_e501': 5,
+        'ansible-lint_e502': 3,
+        'ansible-lint_e503': 3,
+        'ansible-lint_e504GAL': 3,
+        'ansible-lint_e601GAL': 4,
+        'ansible-lint_e602GAL': 4,
+        'yamllint_error': 4,
+        'yamllint_warning': 1,
+        'importer_no_galaxy_tags': 3,  # worker/importers/role.py
+        'importer_exceeded_max_tags': 3,
+        'importer_no_platforms': 3,
+        'importer_invalid_platform_all': 3,
+        'importer_invalid_platform': 3,
+        'importer_invalid_cloud_platform': 3,
+        'importer_dependency_load': 5,
+        'importer_dependency_parse': 3,
+    }
 
-    rule_to_severity = {'{}_{}'.format(r.linter_id, r.rule_id).lower():
-                        r.severity
-                        for r in models.ContentRule.objects.all()}
+    # set violation severity for all import task messages
+    import_task_messages = models.ImportTaskMessage.objects.filter(
+        task_id=import_task.id,
+        is_linter_rule_violation=True
+    )
+    for msg in import_task_messages:
+        rule_code = '{}_{}'.format(msg.linter_type,
+                                   msg.linter_rule_id).lower()
+        if rule_code not in RULE_TO_SEVERITY:
+            LOG.warning(u'Rule severity not found: {}'.format(rule_code))
+            msg.is_linter_rule_violation = False
+            msg.save()
+            continue
+        msg.rule_severity = RULE_TO_SEVERITY[rule_code]
+        msg.save()
+
+    # calculate quality score for each content in collection
     repository = import_task.repository
     contents = models.Content.objects.filter(repository_id=repository.id)
     repo_points = 0.0
-
     for content in contents:
         messages = models.ImportTaskMessage.objects.filter(
             task_id=import_task.id,
@@ -222,8 +256,7 @@ def _update_quality_score(import_task):
 
         rule_vios = ['{}_{}'.format(m.linter_type, m.linter_rule_id).lower()
                      for m in messages]
-        severitys = [rule_to_severity[rule_vio] for rule_vio in rule_vios
-                     if rule_vio in rule_to_severity]
+        severitys = [m.rule_severity for m in messages]
         weights = [SEVERITY_TO_WEIGHT[s] for s in severitys
                    if isinstance(SEVERITY_TO_WEIGHT[s], Number)]
         score = max(0.0, (BASE_SCORE - sum(weights)) / 10)

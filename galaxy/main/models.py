@@ -42,7 +42,7 @@ __all__ = [
     'Content', 'ImportTask', 'ImportTaskMessage', 'RepositoryVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
     'Subscription', 'Stargazer', 'Namespace', 'Provider', 'ProviderNamespace',
-    'ContentBlock', 'ContentType', 'ContentRule', 'InfluxSessionIdentifier'
+    'ContentBlock', 'ContentType', 'InfluxSessionIdentifier'
 ]
 
 # TODO(cutwater): Split models.py into multiple modules
@@ -1200,27 +1200,6 @@ class CommunitySurvey(BaseModel):
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(5)]
     )
-
-
-class ContentRule(BaseModel):
-    class Meta:
-        unique_together = ('rule_id', 'linter_id')
-
-    rule_id = models.CharField(
-        max_length=25,
-    )
-    linter_id = models.CharField(
-        max_length=25,
-        choices=constants.LinterType.choices(),
-    )
-    severity = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(5)]
-    )
-
-    def __str__(self):
-        return '{} {} severity={}'.format(
-            self.linter_id, self.rule_id, self.severity)
 
 
 @six.python_2_unicode_compatible
