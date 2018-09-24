@@ -130,7 +130,8 @@ def _import_repository(import_task, logger):
     _update_readme(repository, repo_info.readme, gh_api, gh_repo)
     _update_repository_versions(repository, gh_repo, logger)
     _update_namespace(gh_repo)
-    _update_repo_info(repository, gh_repo, repo_info.commit)
+    _update_repo_info(repository, gh_repo, repo_info.commit,
+                      repo_info.description)
     repository.save()
 
     import_task.finish_success(u'Import completed')
@@ -178,7 +179,11 @@ def _update_readme(repository, readme, github_api, github_repo):
     repository.save()
 
 
-def _update_repo_info(repository, gh_repo, commit_info):
+def _update_repo_info(repository, gh_repo, commit_info, repo_description):
+    if repo_description:
+        repository.description = repo_description
+    else:
+        repository.description = gh_repo.description
     repository.stargazers_count = gh_repo.stargazers_count
     repository.watchers_count = gh_repo.subscribers_count
     repository.forks_count = gh_repo.forks_count
