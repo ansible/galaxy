@@ -221,7 +221,8 @@ class RoleLoader(base.BaseLoader):
     ANSIBLE_CONTAINER_META_FILE = 'container.yml'
 
     content_types = constants.ContentType.ROLE
-    linters = (linters.Flake8Linter, linters.YamlLinter, linters.AnsibleLinter)
+    # temporarily removing linters.Flake8Linter
+    linters = (linters.YamlLinter, linters.AnsibleLinter)
 
     def __init__(self, content_type, path, root, metadata_path, logger=None):
         """
