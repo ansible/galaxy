@@ -19,6 +19,7 @@ import logging
 import operator
 
 import six
+import uuid
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -41,7 +42,7 @@ __all__ = [
     'Content', 'ImportTask', 'ImportTaskMessage', 'RepositoryVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
     'Subscription', 'Stargazer', 'Namespace', 'Provider', 'ProviderNamespace',
-    'ContentBlock', 'ContentType', 'ContentRule'
+    'ContentBlock', 'ContentType', 'ContentRule', 'InfluxSessionIdentifier'
 ]
 
 # TODO(cutwater): Split models.py into multiple modules
@@ -1220,3 +1221,16 @@ class ContentRule(BaseModel):
     def __str__(self):
         return '{} {} severity={}'.format(
             self.linter_id, self.rule_id, self.severity)
+
+
+@six.python_2_unicode_compatible
+class InfluxSessionIdentifier(BaseModel):
+
+    session_id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    def __str__(self):
+        return str(self.session_id)
