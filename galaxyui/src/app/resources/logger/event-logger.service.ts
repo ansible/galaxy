@@ -85,7 +85,9 @@ export class EventLoggerService {
             measurement: name,
             tags: {
                 session_id: this.sessionId,
-                current_page: this.router.url,
+
+                // Remove query params
+                current_page: this.router.url.split('?')[0],
             },
             fields: {
                 count: 1,

@@ -62,7 +62,7 @@ export class AppComponent implements OnInit {
             if (event instanceof NavigationStart) {
                 this.isLoading = true;
                 this.timeAtLoad = window.performance.now();
-                this.startPage = this.router.url;
+                this.startPage = this.router.url.split('?')[0];
             }
 
             if (event instanceof NavigationEnd) {
