@@ -22,7 +22,6 @@ import logging
 import celery
 import github
 import pytz
-from numbers import Number
 
 from django.conf import settings
 from django.db import transaction
@@ -217,17 +216,28 @@ def _update_quality_score(import_task):
         'ansible-lint_e602GAL': 4,
         'yamllint_error': 4,
         'yamllint_warning': 1,
-        'importer_no_galaxy_tags': 3,  # worker/importers/role.py
+        'importer_invalid_tag': 3,  # RoleMetaParser importer/loaders/role.py
+        'importer_missing_galaxy_info': 3,
+        'importer_missing_dependencies': 3,
+        'importer_missing_key': 3,
+        'importer_galaxy_tags_not_list': 3,
+        'importer_categories': 3,
+        'importer_categories_not_list': 3,
+        'importer_no_platform_name': 3,
+        'importer_video_link_not_dict': 3,
+        'importer_video_link_key': 3,
+        'importer_video_url_format': 3,
+        'importer_no_galaxy_tags': 3,  # RoleImporter worker/importers/role.py
         'importer_exceeded_max_tags': 3,
         'importer_no_platforms': 3,
         'importer_invalid_platform_all': 3,
         'importer_invalid_platform': 3,
         'importer_invalid_cloud_platform': 3,
-        'importer_dependency_load': 5,
+        'importer_dependency_load': 3,
         'importer_dependency_parse': 3,
     }
 
-    # set violation severity for all import task messages
+    # for all ImportTaskMessage set score_type and rule_severity
     import_task_messages = models.ImportTaskMessage.objects.filter(
         task_id=import_task.id,
         is_linter_rule_violation=True
@@ -235,6 +245,10 @@ def _update_quality_score(import_task):
     for msg in import_task_messages:
         rule_code = '{}_{}'.format(msg.linter_type,
                                    msg.linter_rule_id).lower()
+        if msg.linter_type == 'importer':
+            msg.score_type = 'metadata'
+        elif msg.linter_type in ['ansible-lint', 'yamllint']:
+            msg.score_type = 'content'
         if rule_code not in RULE_TO_SEVERITY:
             LOG.warning(u'Rule severity not found: {}'.format(rule_code))
             msg.is_linter_rule_violation = False
@@ -248,30 +262,37 @@ def _update_quality_score(import_task):
     contents = models.Content.objects.filter(repository_id=repository.id)
     repo_points = 0.0
     for content in contents:
-        messages = models.ImportTaskMessage.objects.filter(
+        content_m = models.ImportTaskMessage.objects.filter(
             task_id=import_task.id,
             content_id=content.id,
+            linter_type__in=['ansible-lint', 'yamllint'],
+            is_linter_rule_violation=True,
+        )
+        meta_m = models.ImportTaskMessage.objects.filter(
+            task_id=import_task.id,
+            content_id=content.id,
+            linter_type='importer',
             is_linter_rule_violation=True,
         )
 
-        rule_vios = ['{}_{}'.format(m.linter_type, m.linter_rule_id).lower()
-                     for m in messages]
-        severitys = [m.rule_severity for m in messages]
-        weights = [SEVERITY_TO_WEIGHT[s] for s in severitys
-                   if isinstance(SEVERITY_TO_WEIGHT[s], Number)]
-        score = max(0.0, (BASE_SCORE - sum(weights)) / 10)
+        content_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in content_m]
+        meta_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in meta_m]
 
-        content.content_score = score
-        content.quality_score = score
+        content.content_score = max(0.0, (BASE_SCORE - sum(content_w)) / 10)
+        content.metadata_score = max(0.0, (BASE_SCORE - sum(meta_w)) / 10)
+        content.compatibility_score = 5.0
+        content.quality_score = sum([content.content_score,
+                                     content.metadata_score,
+                                     content.compatibility_score]) / 3.0
         content.save()
-        repo_points += score
+        repo_points += content.quality_score
 
-        score_calc_log = ('score calc for content {} - '
-                          'rule_vios, severitys, weights, score: '
-                          '{}, {}, {}, {}')
-        LOG.debug(score_calc_log.format(content.original_name,
-                                        rule_vios, severitys, weights,
-                                        content.quality_score))
+        LOG.debug('content - ids, weights, score: {}, {}, {}'.format(
+            str([m.linter_rule_id for m in content_m]),
+            str(content_w), content.content_score))
+        LOG.debug('meta - ids, weights, score: {}, {}, {}'.format(
+            str([m.linter_rule_id for m in meta_m]),
+            str(meta_w), content.metadata_score))
 
     repository.quality_score = repo_points / contents.count()
     repository.save()

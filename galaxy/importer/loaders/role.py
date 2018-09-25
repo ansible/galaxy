@@ -38,8 +38,6 @@ ROLE_META_FILES = [
 
 
 class RoleMetaParser(object):
-    # TODO Role tags should contain lowercase letters and digits only
-
     VIDEO_REGEXP = {
         'google': re.compile(
             r'https://drive.google.com.*file/d/([0-9A-Za-z-_]+)/.*'),
@@ -52,6 +50,12 @@ class RoleMetaParser(object):
         'google': 'https://drive.google.com/file/d/{0}/preview',
         'vimeo': 'https://player.vimeo.com/video/{0}',
         'youtube': 'https://www.youtube.com/embed/{0}',
+    }
+    linter_data = {
+        'is_linter_rule_violation': True,
+        'linter_type': 'importer',
+        'linter_rule_id': None,
+        'rule_desc': None
     }
 
     def __init__(self, metadata, logger=None):
@@ -67,7 +71,6 @@ class RoleMetaParser(object):
                     "Expecting 'galaxy_info' in metadata to be a dictionary "
                     "or key:value mapping")
         else:
-            self.log.warning("Missing 'galaxy_info' field in metadata.")
             galaxy_info = {}
         return galaxy_info
 
@@ -78,15 +81,16 @@ class RoleMetaParser(object):
                 raise exc.ContentLoadError(
                     "Expecting 'dependencies' in metadata to be a list")
         else:
-            self.log.warning("Missing 'dependencies' field in metadata.")
             dependencies = []
         return dependencies
 
     def _validate_tag(self, tag):
         if not re.match(constants.TAG_REGEXP, tag):
-            self.log.warning(
-                "'{}' is not a valid tag. Tags must container lowercase "
-                "letters and digits only. Skipping.".format(tag))
+            msg = ("'{}' is not a valid tag. Tags must container lowercase "
+                   "letters and digits only. Skipping.".format(tag))
+            self.linter_data['linter_rule_id'] = 'invalid_tag'
+            self.linter_data['rule_desc'] = msg
+            self.log.warning(msg, extra=self.linter_data)
             return False
         return True
 
@@ -102,8 +106,10 @@ class RoleMetaParser(object):
                 exc.ContentLoadError("Missing required key {0} in metadata"
                                      .format(key))
             if key in self.metadata and value in self.metadata[key]:
-                self.log.warning("Value of {0} has not been set in metadata."
-                                 .format(key))
+                msg = "Value of {0} has not been set in metadata.".format(key)
+                self.linter_data['linter_rule_id'] = 'missing_key'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
 
     def parse_tags(self):
         tags = []
@@ -112,17 +118,25 @@ class RoleMetaParser(object):
         if isinstance(galaxy_tags, list):
             tags += galaxy_tags
         else:
-            self.log.warning('Expected "galaxy_tags" in metadata to be a list')
+            msg = 'Expected "galaxy_tags" in metadata to be a list'
+            self.linter_data['linter_rule_id'] = 'galaxy_tags_not_list'
+            self.linter_data['rule_desc'] = msg
+            self.log.warning(msg, extra=self.linter_data)
 
         if 'categories' in self.metadata:
-            self.log.warning(
-                'Found "categories" in metadata. Update the metadata '
-                'to use "galaxy_tags" rather than categories.')
+            msg = ('Found "categories" in metadata. Update the metadata '
+                   'to use "galaxy_tags" rather than categories.')
+            self.linter_data['linter_rule_id'] = 'categories'
+            self.linter_data['rule_desc'] = msg
+            self.log.warning(msg, extra=self.linter_data)
+
             if isinstance(self.metadata['categories'], list):
                 tags += self.metadata['categories']
             else:
-                self.log.warning(
-                    'Expected "categories" in meta data to be a list')
+                msg = 'Expected "categories" in meta data to be a list'
+                self.linter_data['linter_rule_id'] = 'categories_not_list'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
 
         tags = list(filter(self._validate_tag, tags))
 
@@ -141,9 +155,11 @@ class RoleMetaParser(object):
             try:
                 name = platform['name']
             except KeyError:
-                self.log.warning(
-                    'No name specified for platform [{0}], skipping'
-                    .format(idx))
+                msg = ('No name specified for platform [{0}], skipping'
+                       .format(idx))
+                self.linter_data['linter_rule_id'] = 'no_platform_name'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
                 continue
 
             versions = platform.get('versions', ['all'])
@@ -182,12 +198,17 @@ class RoleMetaParser(object):
         meta_videos = self.metadata.get('video_links', [])
         for video in meta_videos:
             if not isinstance(video, dict):
-                self.log.warning(
-                    'Expected item in video_links to be dictionary')
+                msg = 'Expected item in video_links to be dictionary'
+                self.linter_data['linter_rule_id'] = 'video_link_not_dict'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
                 continue
             if set(video) != {'url', 'title'}:
-                self.log.warning("Expected item in video_links to contain "
-                                 "only keys 'url' and 'title'")
+                msg = ("Expected item in video_links to contain "
+                       "only keys 'url' and 'title'")
+                self.linter_data['linter_rule_id'] = 'video_link_key'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
                 continue
             for name, expr in six.iteritems(self.VIDEO_REGEXP):
                 match = expr.match(video['url'])
@@ -197,10 +218,12 @@ class RoleMetaParser(object):
                     videos.append(models.VideoLink(embed_url, video['title']))
                     break
             else:
-                self.log.warning(
-                    "URL format '{0}' is not recognized. "
-                    "Expected it be a shared link from Vimeo, YouTube, "
-                    "or Google Drive.".format(video['url']))
+                msg = ("URL format '{0}' is not recognized. "
+                       "Expected it be a shared link from Vimeo, YouTube, "
+                       "or Google Drive.".format(video['url']))
+                self.linter_data['linter_rule_id'] = 'video_url_format'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
                 continue
         return videos
 
@@ -234,9 +257,10 @@ class RoleLoader(base.BaseLoader):
         self.meta_file = metadata_path
 
     def load(self):
-        meta = self._load_metadata()
-        meta_parser = RoleMetaParser(meta, logger=self.log)
+        meta_parser = self._get_meta_parser()
         galaxy_info = meta_parser.metadata
+        original_name = self.name
+        self.name = self._get_name(galaxy_info)
 
         meta_parser.validate_strings()
 
@@ -258,13 +282,9 @@ class RoleLoader(base.BaseLoader):
         data['video_links'] = meta_parser.parse_videos()
         readme = self._get_readme()
 
-        name = self.name
-        if galaxy_info.get('role_name'):
-            name = sanitize_content_name(galaxy_info['role_name'])
-
         return models.Content(
-            name=name,
-            original_name=self.name,
+            name=self.name,
+            original_name=original_name,
             path=self.rel_path,
             content_type=self.content_type,
             description=description,
@@ -280,6 +300,16 @@ class RoleLoader(base.BaseLoader):
             return os.path.basename(self.path)
         else:
             return None
+
+    def _get_meta_parser(self):
+        meta = self._load_metadata()
+        return RoleMetaParser(meta, logger=self.log)
+
+    def _get_name(self, galaxy_info):
+        name = self.name
+        if galaxy_info.get('role_name'):
+            name = sanitize_content_name(galaxy_info['role_name'])
+        return name
 
     def _load_string_attrs(self, metadata):
         attrs = {}

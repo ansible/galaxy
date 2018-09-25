@@ -53,7 +53,13 @@ class TestRoleMetaParser(unittest.TestCase):
         assert tags == ['database']
         self.log.warning.assert_called_once_with(
             "'s q l' is not a valid tag. "
-            "Tags must container lowercase letters and digits only. Skipping.")
+            "Tags must container lowercase letters and digits only. Skipping.",
+            extra={
+                'is_linter_rule_violation': True,
+                'rule_desc': "'s q l' is not a valid tag. Tags must "
+                "container lowercase letters and digits only. Skipping.",
+                'linter_type': 'importer',
+                'linter_rule_id': 'invalid_tag'})
 
     def test_parse_categories(self):
         parser = role_loader.RoleMetaParser({
@@ -67,7 +73,14 @@ class TestRoleMetaParser(unittest.TestCase):
         assert tags == ['database', 'sql']
         self.log.warning.assert_called_once_with(
             'Found "categories" in metadata. Update the metadata '
-            'to use "galaxy_tags" rather than categories.')
+            'to use "galaxy_tags" rather than categories.',
+            extra={
+                'is_linter_rule_violation': True,
+                'rule_desc': 'Found "categories" in metadata. '
+                'Update the metadata to use "galaxy_tags" '
+                'rather than categories.',
+                'linter_type': 'importer',
+                'linter_rule_id': 'categories'})
 
     def test_parse_platforms(self):
         parser = role_loader.RoleMetaParser({

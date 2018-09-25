@@ -390,7 +390,8 @@ class ImportTaskSerializer(BaseSerializer):
             ('content_id', g.content_id),
             ('is_linter_rule_violation', g.is_linter_rule_violation),
             ('linter_type', g.linter_type),
-            ('linter_rule_id', g.linter_rule_id)
+            ('linter_rule_id', g.linter_rule_id),
+            ('score_type', g.score_type),
         ]) for g in obj.messages.filter(
             message_type__in=supported_types).order_by('id')]
         summary['role'] = {

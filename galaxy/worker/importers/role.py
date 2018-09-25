@@ -185,7 +185,7 @@ class RoleImporter(base.ContentImporter):
                     msg = u'Error loading dependencies {}'.format(e)
                     self.linter_data['linter_rule_id'] = 'dependency_load'
                     self.linter_data['rule_desc'] = msg
-                    self.log.error(msg, extra=self.linter_data)
+                    self.log.warning(msg, extra=self.linter_data)
                     raise Exception(
                         u'Role dependency not found: {}.{}'.format(
                             dep.namespace, dep.name))

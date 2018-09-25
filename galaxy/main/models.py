@@ -721,11 +721,11 @@ class ImportTaskMessage(PrimordialModel):
         null=True,
     )
     linter_rule_id = models.CharField(
-        max_length=25,
+        max_length=50,
         null=True,
     )
     content_name = models.CharField(
-        max_length=60,
+        max_length=256,
         null=True,
     )
     rule_desc = models.CharField(
@@ -734,6 +734,10 @@ class ImportTaskMessage(PrimordialModel):
     )
     rule_severity = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(5)],
+        null=True,
+    )
+    score_type = models.CharField(
+        max_length=25,
         null=True,
     )
 

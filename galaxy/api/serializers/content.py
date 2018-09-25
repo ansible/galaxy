@@ -155,6 +155,7 @@ class ContentSerializer(BaseModelSerializer):
                     ('linter_rule_id', m.linter_rule_id),
                     ('rule_desc', m.rule_desc),
                     ('rule_severity', m.rule_severity),
+                    ('score_type', m.score_type),
                 ]) for m in models.ImportTaskMessage.objects.filter(
                     task_id=latest_task.id,
                     content_id=instance.id,
