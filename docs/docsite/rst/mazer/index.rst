@@ -31,4 +31,5 @@ on GitHub at `ansible/mazer <https://github.com/ansible/mazer>`_.
    install
    configure
    examples
+   collection
    reference/index.rst
