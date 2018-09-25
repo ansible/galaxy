@@ -16,11 +16,17 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from . import serializers
+from rest_framework import serializers as drf_serializers
+from django.conf import settings
+
+import influxdb
 
 from galaxy.main import models
 
 __all__ = (
     'InfluxSessionSerializer',
+    'InfluxTypes',
+    'PageLoadSerializer'
 )
 
 
@@ -36,3 +42,46 @@ class InfluxSessionSerializer(serializers.BaseSerializer):
 
     def get_summary_fields(self, instance):
         return {}
+
+
+class BaseEvent(drf_serializers.Serializer):
+    measurement = drf_serializers.CharField()
+
+    def save(self):
+        client = influxdb.InfluxDBClient(
+            host=settings.INFLUX_DB_HOST,
+            port=settings.INFLUX_DB_PORT,
+            username=settings.INFLUX_DB_USERNAME,
+            password=settings.INFLUX_DB_PASSWORD
+        )
+
+        client.switch_database(settings.INFLUX_DB_DATABASE_NAME)
+        client.write_points([self.data])
+
+
+class BaseTags(drf_serializers.Serializer):
+    session_id = drf_serializers.UUIDField()
+    current_page = drf_serializers.CharField()
+
+
+class BaseFields(drf_serializers.Serializer):
+    count = drf_serializers.IntegerField()
+
+
+# Page Load
+class PageLoadTags(BaseTags):
+    originating_page = drf_serializers.CharField()
+
+
+class PageLoadFields(BaseFields):
+    load_time = drf_serializers.IntegerField()
+
+
+class PageLoadSerializer(BaseEvent):
+    tags = PageLoadTags()
+    fields = PageLoadFields()
+
+
+InfluxTypes = {
+    'page_load': PageLoadSerializer
+}

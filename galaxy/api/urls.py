@@ -22,6 +22,8 @@ from galaxy.api import views
 event_tracking_urls = [
     url(r'^influx_session/$',
         views.InfluxSession.as_view(), name='influx_session'),
+    url(r'^$',
+        views.InfluxMetrics.as_view(), name='influx_submit'),
 ]
 
 email_urls = [

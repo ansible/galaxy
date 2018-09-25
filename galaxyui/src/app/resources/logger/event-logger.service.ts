@@ -75,14 +75,16 @@ export class EventLoggerService {
     }
 
     private postData(data: any) {
-        console.log(data);
+        let httpResult: Observable<Event>;
+        httpResult = this.http.post<Event>('/api/v1/events/', data, this.httpOptions);
+        httpResult.subscribe(response => console.log(response));
     }
 
     private getBaseEvent(name: string): Event {
         return {
-            measurment: name,
+            measurement: name,
             tags: {
-                sessionId: this.sessionId,
+                session_id: this.sessionId,
                 current_page: this.router.url,
             },
             fields: {

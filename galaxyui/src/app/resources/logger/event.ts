@@ -1,5 +1,5 @@
 export class Event {
-    measurment: string;
+    measurement: string;
     tags: object;
     fields: object;
 }

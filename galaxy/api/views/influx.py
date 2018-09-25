@@ -24,12 +24,26 @@ from galaxy.api import serializers
 from . import base_views
 
 from rest_framework.response import Response
+from rest_framework import views
 
 logger = logging.getLogger(__name__)
 
 __all__ = [
     'InfluxSession',
+    'InfluxMetrics'
 ]
+
+
+def set_cookie(response, session):
+    expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+
+    response.set_cookie(
+        'influx_session',
+        session,
+        expires=expiration
+    )
+
+    return response
 
 
 class InfluxSession(base_views.ListCreateAPIView):
@@ -48,13 +62,33 @@ class InfluxSession(base_views.ListCreateAPIView):
         serializer = self.get_serializer(instance=influx_session)
         headers = self.get_success_headers(serializer.data)
 
-        response = Response(serializer.data, headers=headers)
-
-        expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-
-        response.set_cookie(
-            'influx_session',
-            influx_session.session_id,
-            expires=expiration
+        response = set_cookie(
+            Response(serializer.data, headers=headers),
+            influx_session.session_id
         )
+
         return response
+
+
+class InfluxMetrics(views.APIView):
+    def get(self, request):
+        return Response('HOWDY')
+
+    def post(self, request):
+        serializer = self.load_serializer(request)
+        if serializer:
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+            return Response(serializer.data)
+
+        return Response('NO GO')
+
+    # Can't name this get_serializer() for some reason
+    def load_serializer(self, request):
+        if request.data['measurement'] in serializers.InfluxTypes:
+            serializer_type = serializers.InfluxTypes[
+                request.data['measurement']
+            ]
+            return serializer_type(data=request.data)
+        else:
+            return None

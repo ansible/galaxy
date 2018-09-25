@@ -61,3 +61,4 @@ jog
 # Web analytics/metrics
 prometheus_client
 django-prometheus
+influxdb

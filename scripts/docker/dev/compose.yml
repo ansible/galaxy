@@ -15,6 +15,7 @@ services:
     links:
       - postgres
       - rabbitmq
+      - influxdb
 
   postgres:
     image: centos/postgresql-95-centos7
