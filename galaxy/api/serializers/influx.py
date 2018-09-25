@@ -26,7 +26,6 @@ from galaxy.main import models
 __all__ = (
     'InfluxSessionSerializer',
     'InfluxTypes',
-    'PageLoadSerializer'
 )
 
 
@@ -77,11 +76,36 @@ class PageLoadFields(BaseFields):
     load_time = drf_serializers.IntegerField()
 
 
-class PageLoadSerializer(BaseEvent):
+class PageLoadEventSerializer(BaseEvent):
     tags = PageLoadTags()
     fields = PageLoadFields()
 
 
+# Search
+class SearchQueryTags(BaseTags):
+    keywords = drf_serializers.CharField(required=False, allow_blank=True)
+    cloud_platforms = drf_serializers.CharField(
+        required=False, allow_blank=True
+    )
+    namespaces = drf_serializers.CharField(required=False, allow_blank=True)
+    vendor = drf_serializers.BooleanField(required=False)
+    deprecated = drf_serializers.BooleanField(required=False)
+    content_type = drf_serializers.CharField(required=False, allow_blank=True)
+    platforms = drf_serializers.CharField(required=False, allow_blank=True)
+    tags = drf_serializers.CharField(required=False, allow_blank=True)
+    order_by = drf_serializers.CharField(required=False, allow_blank=True)
+
+
+class SearchQueryFields(BaseFields):
+    number_of_results = drf_serializers.IntegerField()
+
+
+class SearchQueryEventSerializer(BaseEvent):
+    tags = SearchQueryTags()
+    fields = SearchQueryFields()
+
+
 InfluxTypes = {
-    'page_load': PageLoadSerializer
+    'page_load': PageLoadEventSerializer,
+    'search_query': SearchQueryEventSerializer
 }

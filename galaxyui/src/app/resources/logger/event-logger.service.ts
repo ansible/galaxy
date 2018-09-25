@@ -51,7 +51,7 @@ export class EventLoggerService {
         this.postData(jsEvent);
     }
 
-    logSearch(searchParams, numberOfResults) {
+    logSearchQuery(searchParams, numberOfResults) {
         const jsEvent = this.getBaseEvent('search_query');
         jsEvent.fields['number_of_results'] = numberOfResults;
 
