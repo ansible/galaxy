@@ -105,7 +105,24 @@ class SearchQueryEventSerializer(BaseEvent):
     fields = SearchQueryFields()
 
 
+class SearchLinkTags(SearchQueryTags):
+    content_clicked = drf_serializers.CharField()
+
+
+class SearchLinkFields(BaseFields):
+    position_in_results = drf_serializers.IntegerField()
+    download_rank = drf_serializers.FloatField()
+    search_rank = drf_serializers.FloatField()
+    relevance = drf_serializers.FloatField()
+
+
+class SearchLinkEventSerializer(BaseEvent):
+    tags = SearchLinkTags()
+    fields = SearchLinkFields()
+
+
 InfluxTypes = {
     'page_load': PageLoadEventSerializer,
-    'search_query': SearchQueryEventSerializer
+    'search_query': SearchQueryEventSerializer,
+    'search_click': SearchLinkEventSerializer
 }

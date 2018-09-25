@@ -62,10 +62,13 @@ export class EventLoggerService {
         this.postData(jsEvent);
     }
 
-    logSearchClick(searchParams, contentClicked, rank) {
+    logSearchClick(searchParams, contentClicked, position, downloadRank, searchRank, relevance) {
         const jsEvent = this.getBaseEvent('search_click');
         jsEvent.tags['content_clicked'] = contentClicked;
-        jsEvent.fields['rank'] = rank;
+        jsEvent.fields['position_in_results'] = position;
+        jsEvent.fields['download_rank'] = downloadRank;
+        jsEvent.fields['search_rank'] = searchRank;
+        jsEvent.fields['relevance'] = relevance;
 
         for (const key of Object.keys(searchParams)) {
             jsEvent.tags[key] = searchParams[key];
