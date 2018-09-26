@@ -3,14 +3,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Event } from './event';
 import { InfluxSession } from './influx-session';
 
 @Injectable()
 export class EventLoggerService {
-    constructor(private http: HttpClient, private router: Router) {
+    constructor(private http: HttpClient, private router: Router, private activatedRoute: ActivatedRoute) {
         const session = document.cookie.match(new RegExp('(^| )influx_session=([^;]+)'));
         if (session) {
             this.sessionId = session[2];
@@ -29,71 +29,112 @@ export class EventLoggerService {
     sessionId: string;
 
     logLink(name: string, href: string): void {
-        const jsEvent = this.getBaseEvent('link_click');
-        jsEvent.tags['href'] = href;
-        jsEvent.tags['name'] = name;
+        const measurement = this.getBaseMeasurement('link_click');
+        measurement.fields['href'] = href;
+        measurement.tags['name'] = name;
 
-        this.postData(jsEvent);
+        this.postData(measurement);
     }
 
     logButton(name: string) {
-        const jsEvent = this.getBaseEvent('button_click');
-        jsEvent.tags['name'] = name;
+        const measurement = this.getBaseMeasurement('button_click');
+        measurement.tags['name'] = name;
 
-        this.postData(jsEvent);
+        this.postData(measurement);
     }
 
-    logPageLoad(loadTime, originatingPage) {
-        const jsEvent = this.getBaseEvent('page_load');
-        jsEvent.tags['originating_page'] = originatingPage;
-        jsEvent.fields['load_time'] = loadTime;
+    logPageLoad(loadTime: number, startPage: string, startUrl: string) {
+        const measurement = this.getBaseMeasurement('page_load');
+        measurement.tags['from_component'] = startPage;
+        measurement.fields['load_time'] = loadTime;
+        measurement.fields['from_page'] = startUrl;
 
-        this.postData(jsEvent);
+        this.postData(measurement);
     }
 
-    logSearchQuery(searchParams, numberOfResults) {
-        const jsEvent = this.getBaseEvent('search_query');
-        jsEvent.fields['number_of_results'] = numberOfResults;
+    logSearchQuery(searchParams: Object, numberOfResults: number) {
+        const measurement = this.getBaseMeasurement('search_query');
+        measurement.fields['number_of_results'] = numberOfResults;
 
         for (const key of Object.keys(searchParams)) {
-            jsEvent.tags[key] = searchParams[key];
+            if (key === 'keywords' || key === 'namespaces') {
+                measurement.fields[key] = searchParams[key];
+            } else {
+                measurement.tags[key] = searchParams[key];
+            }
         }
 
-        this.postData(jsEvent);
+        this.postData(measurement);
     }
 
-    logSearchClick(searchParams, contentClicked, position, downloadRank, searchRank, relevance) {
-        const jsEvent = this.getBaseEvent('search_click');
-        jsEvent.tags['content_clicked'] = contentClicked;
-        jsEvent.fields['position_in_results'] = position;
-        jsEvent.fields['download_rank'] = downloadRank;
-        jsEvent.fields['search_rank'] = searchRank;
-        jsEvent.fields['relevance'] = relevance;
+    logSearchClick(
+        searchParams: Object,
+        contentClicked: string,
+        position: number,
+        downloadRank: number,
+        searchRank: number,
+        relevance: number,
+    ) {
+        const measurement = this.getBaseMeasurement('search_click');
+        measurement.fields['content_clicked'] = contentClicked;
+        measurement.fields['position_in_results'] = position;
+        measurement.fields['download_rank'] = downloadRank;
+        measurement.fields['search_rank'] = searchRank;
+        measurement.fields['relevance'] = relevance;
 
         for (const key of Object.keys(searchParams)) {
-            jsEvent.tags[key] = searchParams[key];
+            if (key === 'keywords' || key === 'namespaces') {
+                measurement.fields[key] = searchParams[key];
+            } else {
+                measurement.tags[key] = searchParams[key];
+            }
         }
+        this.postData(measurement);
+    }
 
-        this.postData(jsEvent);
+    getComponentName() {
+        // As far as I can tell, there isn't a way to get the name of a component
+        // from a lazy loaded component, so we have to do our best to reconstruct
+        // it from the components URL.
+        console.log(this.activatedRoute.children);
+        let component: any;
+        if (this.activatedRoute.children.length === 1) {
+            component = this.activatedRoute.children[0].component;
+        } else {
+            return '';
+        }
+        if (component && component['name']) {
+            return component['name'];
+        } else {
+            let url = this.router.url.split('?')[0];
+            url = url.substr(1, url.length);
+            url = url.split('/')[0];
+            const urlBits = url.split('-');
+            url = '';
+            for (const bit of urlBits) {
+                url += bit.substr(0, 1).toUpperCase() + bit.substr(1, bit.length);
+            }
+
+            return url + 'Component';
+        }
     }
 
     private postData(data: any) {
+        // console.log(data);
         let httpResult: Observable<Event>;
         httpResult = this.http.post<Event>('/api/v1/events/', data, this.httpOptions);
         httpResult.subscribe(response => console.log(response));
     }
 
-    private getBaseEvent(name: string): Event {
+    private getBaseMeasurement(name: string): Event {
         return {
             measurement: name,
             tags: {
-                session_id: this.sessionId,
-
-                // Remove query params
-                current_page: this.router.url.split('?')[0],
+                current_component: this.getComponentName(),
             },
             fields: {
-                count: 1,
+                session_id: this.sessionId,
+                current_page: this.router.url.split('?')[0],
             },
         };
     }

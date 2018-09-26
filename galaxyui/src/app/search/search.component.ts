@@ -376,7 +376,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     contentClick(item: Content, index: number) {
         const itemNumber = (this.pageNumber - 1) * this.pageSize + index + 1;
-        console.log(item);
         this.eventLogger.logSearchClick(
             this.queryParams,
             item.namespace_name + '.' + item.name,

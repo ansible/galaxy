@@ -43,7 +43,22 @@ class InfluxSessionSerializer(serializers.BaseSerializer):
         return {}
 
 
-class BaseEvent(drf_serializers.Serializer):
+####################################################
+# Influx "Schema"
+####################################################
+# Influx doesn't have set schema's like most relational databases have, so it's
+# up to the programmer to enforce some level of strcture to the data at the
+# application level. Galaxy is currently using Django Rest Framework
+# to verify that the shape of the data is correct before we insert it into
+# influx. This means that the following serializers are roughly equivalent to
+# models, and should be changed as little as possible to ensure data
+# consistency.
+
+
+# Influx data is organized into 'measurements' which are roughly equivalent to
+# database tables. Each measurement contains at least one field and zero to
+# many tags. Fields and tags are similar to columns with a few caveats.
+class BaseMeasurement(drf_serializers.Serializer):
     measurement = drf_serializers.CharField()
 
     def save(self):
@@ -55,39 +70,63 @@ class BaseEvent(drf_serializers.Serializer):
         )
 
         client.switch_database(settings.INFLUX_DB_DATABASE_NAME)
-        client.write_points([self.data])
+
+        try:
+            client.write_points([self.data])
+        except influxdb.client.InfluxDBClientError:
+            client.create_database(settings.INFLUX_DB_DATABASE_NAME)
+            client.switch_database(settings.INFLUX_DB_DATABASE_NAME)
+            client.write_points([self.data])
 
 
+# Tags are indexed and only support string types. They should be used grouping
+# data that will be queried frequently, but should not be used for variables
+# that can have a large number of values (search keywords, repository names,
+# sessions etc). Data can be grouped by tags, but the number of distinct tags
+# cannot be easily counted.
 class BaseTags(drf_serializers.Serializer):
+    current_component = drf_serializers.CharField(allow_blank=True)
+
+
+# Fields are not indexed, but can be numeric or string types. Database
+# functions such as DISTINCT, COUNT, SUM, AVERAGE etc can be used on fields.
+class BaseFields(drf_serializers.Serializer):
     session_id = drf_serializers.UUIDField()
     current_page = drf_serializers.CharField()
 
 
-class BaseFields(drf_serializers.Serializer):
-    count = drf_serializers.IntegerField()
-
+# The influx library expects data to be shaped like so:
+#
+# {
+#     "measurement": "measurment_name",
+#     "tags": {
+#         "tag1": "value",
+#     },
+#     "fields": {
+#         "field1": 1
+#     }
+# }
 
 # Page Load
 class PageLoadTags(BaseTags):
-    originating_page = drf_serializers.CharField()
+    from_component = drf_serializers.CharField(allow_blank=True)
 
 
 class PageLoadFields(BaseFields):
     load_time = drf_serializers.IntegerField()
+    from_page = drf_serializers.CharField()
 
 
-class PageLoadEventSerializer(BaseEvent):
+class PageLoadMeasurementSerializer(BaseMeasurement):
     tags = PageLoadTags()
     fields = PageLoadFields()
 
 
 # Search
 class SearchQueryTags(BaseTags):
-    keywords = drf_serializers.CharField(required=False, allow_blank=True)
     cloud_platforms = drf_serializers.CharField(
         required=False, allow_blank=True
     )
-    namespaces = drf_serializers.CharField(required=False, allow_blank=True)
     vendor = drf_serializers.BooleanField(required=False)
     deprecated = drf_serializers.BooleanField(required=False)
     content_type = drf_serializers.CharField(required=False, allow_blank=True)
@@ -97,32 +136,52 @@ class SearchQueryTags(BaseTags):
 
 
 class SearchQueryFields(BaseFields):
+    keywords = drf_serializers.CharField(required=False, allow_blank=True)
+    namespaces = drf_serializers.CharField(required=False, allow_blank=True)
     number_of_results = drf_serializers.IntegerField()
 
 
-class SearchQueryEventSerializer(BaseEvent):
+class SearchQueryMeasurementSerializer(BaseMeasurement):
     tags = SearchQueryTags()
     fields = SearchQueryFields()
 
 
-class SearchLinkTags(SearchQueryTags):
-    content_clicked = drf_serializers.CharField()
-
-
 class SearchLinkFields(BaseFields):
+    content_clicked = drf_serializers.CharField()
     position_in_results = drf_serializers.IntegerField()
     download_rank = drf_serializers.FloatField()
     search_rank = drf_serializers.FloatField()
     relevance = drf_serializers.FloatField()
 
 
-class SearchLinkEventSerializer(BaseEvent):
-    tags = SearchLinkTags()
+class SearchLinkMeasurementSerializer(BaseMeasurement):
+    tags = SearchQueryTags()
     fields = SearchLinkFields()
 
 
+# UI Interactions
+class ClickFields(BaseFields):
+    name = drf_serializers.CharField()
+
+
+class LinkClickFields(BaseFields):
+    href = drf_serializers.CharField()
+
+
+class ButtonClickMeasurementSerializer(BaseMeasurement):
+    tags = BaseTags()
+    fields = ClickFields()
+
+
+class LinkClickMeasurementSerializer(BaseMeasurement):
+    tags = BaseTags()
+    fields = LinkClickFields()
+
+
 InfluxTypes = {
-    'page_load': PageLoadEventSerializer,
-    'search_query': SearchQueryEventSerializer,
-    'search_click': SearchLinkEventSerializer
+    'page_load': PageLoadMeasurementSerializer,
+    'search_query': SearchQueryMeasurementSerializer,
+    'search_click': SearchLinkMeasurementSerializer,
+    'button_click': ButtonClickMeasurementSerializer,
+    'link_click': LinkClickMeasurementSerializer
 }

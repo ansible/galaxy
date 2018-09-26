@@ -62,12 +62,13 @@ export class AppComponent implements OnInit {
             if (event instanceof NavigationStart) {
                 this.isLoading = true;
                 this.timeAtLoad = window.performance.now();
-                this.startPage = this.router.url.split('?')[0];
+                this.startComponent = this.eventLogger.getComponentName();
+                this.startUrl = this.router.url.split('?')[0];
             }
 
             if (event instanceof NavigationEnd) {
                 this.isLoading = false;
-                this.eventLogger.logPageLoad(window.performance.now() - this.timeAtLoad, this.startPage);
+                this.eventLogger.logPageLoad(window.performance.now() - this.timeAtLoad, this.startComponent, this.startUrl);
             }
         });
     }
@@ -83,7 +84,8 @@ export class AppComponent implements OnInit {
     pfBody: any;
     isLoading = true;
     timeAtLoad: number;
-    startPage: string;
+    startComponent: string;
+    startUrl: string;
 
     ngOnInit(): void {
         // Patternfly embeds everything not related to navigation in a div with

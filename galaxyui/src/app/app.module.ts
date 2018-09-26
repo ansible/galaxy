@@ -45,6 +45,7 @@ import { TagsService } from './resources/tags/tags.service';
 import { UserService } from './resources/users/user.service';
 // import { MyImportsModule }            from './my-imports/my-imports.module';
 // import { SearchModule }               from './search/search.module';
+import { SharedModule } from './shared/shared.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
 
 @NgModule({
@@ -71,6 +72,7 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
         AuthorsModule,
         AppRoutingModule,
         AboutModalModule,
+        SharedModule,
     ],
     providers: [
         AuthService,
