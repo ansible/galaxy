@@ -113,7 +113,7 @@ class PageLoadTags(BaseTags):
 
 
 class PageLoadFields(BaseFields):
-    load_time = drf_serializers.IntegerField()
+    load_time = drf_serializers.FloatField()
     from_page = drf_serializers.CharField()
 
 
@@ -152,6 +152,7 @@ class SearchLinkFields(BaseFields):
     download_rank = drf_serializers.FloatField()
     search_rank = drf_serializers.FloatField()
     relevance = drf_serializers.FloatField()
+    keywords = drf_serializers.CharField(required=False, allow_blank=True)
 
 
 class SearchLinkMeasurementSerializer(BaseMeasurement):
