@@ -12,7 +12,7 @@ Changes
 
 Closed PRs
 ``````````
-- `1167 Update repo description based on format _`1167 <https://github.com/ansible/galaxy/pull/1167>`_.
+- `1167 Update repo description based on format <https://github.com/ansible/galaxy/pull/1167>`_.
 
 3.0.11 - Released 20-Sep-2018
 -----------------------------
@@ -25,7 +25,7 @@ Changes
 Closed PRs
 ``````````
 - `1146 Fix ranking getting set to 0 <https://github.com/ansible/galaxy/pull/1146>`_.
-- `1149 Refactor default parameters on search page <<https://github.com/ansible/galaxy/pull/1146>`_.
+- `1149 Refactor default parameters on search page <https://github.com/ansible/galaxy/pull/1146>`_.
 
 3.0.10 - Released 12-Sep-2018
 -----------------------------
