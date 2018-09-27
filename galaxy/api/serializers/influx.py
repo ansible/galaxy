@@ -69,13 +69,13 @@ class BaseMeasurement(drf_serializers.Serializer):
             password=settings.INFLUX_DB_PASSWORD
         )
 
-        client.switch_database(settings.INFLUX_DB_DATABASE_NAME)
+        client.switch_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
 
         try:
             client.write_points([self.data])
         except influxdb.client.InfluxDBClientError:
-            client.create_database(settings.INFLUX_DB_DATABASE_NAME)
-            client.switch_database(settings.INFLUX_DB_DATABASE_NAME)
+            client.create_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
+            client.switch_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
             client.write_points([self.data])
 
 

@@ -434,4 +434,4 @@ INFLUX_DB_HOST = 'influxdb'
 INFLUX_DB_PORT = 8086
 INFLUX_DB_USERNAME = 'admin'
 INFLUX_DB_PASSWORD = 'admin'
-INFLUX_DB_DATABASE_NAME = 'galaxy_metrics'
+INFLUX_DB_UI_EVENTS_DB_NAME = 'galaxy_metrics'

@@ -42,7 +42,7 @@ The following environment variables are supported:
 * GALAXY_INFLUX_DB_PORT
 * GALAXY_INFLUX_DB_USERNAME
 * GALAXY_INFLUX_DB_PASSWORD
-* GALAXY_INFLUX_DB_DATABASE_NAME
+* GALAXY_INFLUX_DB_UI_EVENTS_DB_NAME
 """
 
 import os
@@ -223,8 +223,8 @@ INFLUX_DB_HOST = os.environ.get('GALAXY_INFLUX_DB_HOST', 'influxdb')
 INFLUX_DB_PORT = os.environ.get('GALAXY_INFLUX_DB_PORT', '8086')
 INFLUX_DB_USERNAME = os.environ.get('GALAXY_INFLUX_DB_USERNAME', 'admin')
 INFLUX_DB_PASSWORD = os.environ.get('GALAXY_INFLUX_DB_PASSWORD', '')
-INFLUX_DB_DATABASE_NAME = os.environ.get(
-    'GALAXY_INFLUX_DB_DATABASE_NAME', 'galaxy_ui_events'
+INFLUX_DB_UI_EVENTS_DB_NAME = os.environ.get(
+    'GALAXY_INFLUX_DB_UI_EVENTS_DB_NAME', 'galaxy_ui_events'
 )
 
 
