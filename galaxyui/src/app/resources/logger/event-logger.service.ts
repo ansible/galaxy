@@ -31,14 +31,14 @@ export class EventLoggerService {
     logLink(name: string, href: string): void {
         const measurement = this.getBaseMeasurement('link_click');
         measurement.fields['href'] = href;
-        measurement.tags['name'] = name;
+        measurement.fields['name'] = name;
 
         this.postData(measurement);
     }
 
     logButton(name: string) {
         const measurement = this.getBaseMeasurement('button_click');
-        measurement.tags['name'] = name;
+        measurement.fields['name'] = name;
 
         this.postData(measurement);
     }

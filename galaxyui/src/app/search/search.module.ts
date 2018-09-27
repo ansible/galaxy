@@ -33,7 +33,6 @@ import { UtilitiesModule } from '../utilities/utilities.module';
         CommonModule,
         SearchRoutingModule,
         SharedModule,
-
         PaginationModule,
         BsDropdownModule.forRoot(),
         FormsModule,

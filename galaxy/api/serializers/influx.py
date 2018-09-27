@@ -165,8 +165,8 @@ class ClickFields(BaseFields):
     name = drf_serializers.CharField()
 
 
-class LinkClickFields(BaseFields):
-    href = drf_serializers.CharField()
+class LinkClickFields(ClickFields):
+    href = drf_serializers.CharField(allow_blank=True)
 
 
 class ButtonClickMeasurementSerializer(BaseMeasurement):

@@ -69,9 +69,13 @@ class InfluxSession(base_views.ListCreateAPIView):
 
         return response
 
+    def get(self, request, *args, **kwargs):
+        return ''
+
 
 class InfluxMetrics(views.APIView):
     def get(self, request):
+        # TODO: Return real response
         return Response('HOWDY')
 
     def post(self, request):
@@ -81,6 +85,7 @@ class InfluxMetrics(views.APIView):
                 serializer.save()
             return Response(serializer.data)
 
+        # TODO: Return real response
         return Response('NO GO')
 
     # Can't name this get_serializer() for some reason
