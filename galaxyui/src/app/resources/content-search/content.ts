@@ -30,6 +30,7 @@ export class Content {
     commit_message: string;
     commit: string;
     stargazers_count: number;
+    namespace_name: string;
 }
 
 export class ContentResponse {

@@ -380,7 +380,7 @@ LOGGING = {
         },
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
         'django.db': {
@@ -425,3 +425,13 @@ LOGGING = {
         },
     }
 }
+
+
+# =========================================================
+# InfluxDB Settings
+# =========================================================
+INFLUX_DB_HOST = 'influxdb'
+INFLUX_DB_PORT = 8086
+INFLUX_DB_USERNAME = 'admin'
+INFLUX_DB_PASSWORD = 'admin'
+INFLUX_DB_UI_EVENTS_DB_NAME = 'galaxy_metrics'

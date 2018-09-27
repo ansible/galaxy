@@ -10,8 +10,7 @@ import { PaginationModule } from 'patternfly-ng/pagination/pagination.module';
 import { ToolbarModule } from 'patternfly-ng/toolbar/toolbar.module';
 import { UtilitiesModule } from '../utilities/utilities.module';
 
-import { PageHeaderModule } from '../page-header/page-header.module';
-import { PageLoadingModule } from '../page-loading/page-loading.module';
+import { SharedModule } from '../shared/shared.module';
 import { AuthorsComponent } from './authors.component';
 import { AuthorsRoutingModule } from './authors.routing.module';
 import { AuthorDetailComponent } from './detail/author-detail.component';
@@ -27,8 +26,8 @@ import { DetailActionsComponent } from './detail/detail-actions/detail-actions.c
         ToolbarModule,
         TooltipModule,
         AuthorsRoutingModule,
-        PageHeaderModule,
-        PageLoadingModule,
+        SharedModule,
+
         ActionModule,
         UtilitiesModule,
     ],

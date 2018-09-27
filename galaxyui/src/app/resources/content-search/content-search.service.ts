@@ -8,15 +8,29 @@ import { Observable, of } from 'rxjs';
 
 import { ContentResponse } from './content';
 
+import { EventLoggerService } from '../logger/event-logger.service';
+
 @Injectable()
 export class ContentSearchService {
-    constructor(private http: HttpClient, private notificationService: NotificationService) {}
+    constructor(private http: HttpClient, private notificationService: NotificationService, private eventLogger: EventLoggerService) {}
 
     private url = '/api/v1/search/content/';
 
     query(params?: any): Observable<ContentResponse> {
         return this.http.get<ContentResponse>(this.url, { params: params }).pipe(
-            tap(_ => this.log('fetched content')),
+            tap(result => {
+                this.log('fetched content');
+                if (
+                    params['keywords'] ||
+                    params['cloudPlatforms'] ||
+                    params['tags'] ||
+                    params['namespace'] ||
+                    params['platforms'] ||
+                    params['content_type']
+                ) {
+                    this.eventLogger.logSearchQuery(params, result.count);
+                }
+            }),
             catchError(this.handleError('Query', {} as ContentResponse)),
         );
     }

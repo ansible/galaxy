@@ -11,22 +11,22 @@
             </div>
             <ul class="nav navbar-nav navbar-right navbar-iconic">
                 <li>
-                    <a href="" [routerLink]="" (click)="about(aboutTemplate)" class="nav-item-iconic nav-link">
+                    <a appLogEvent="About" href="" [routerLink]="" (click)="about(aboutTemplate)" class="nav-item-iconic nav-link">
                         <span class="fa pficon-info"></span> About
                     </a>
                 </li>
                 <li>
-                    <a href="https://github.com/ansible/galaxy/issues" target="_blank" class="nav-item-iconic nav-link">
+                    <a appLogEvent="Help" href="https://github.com/ansible/galaxy/issues" target="_blank" class="nav-item-iconic nav-link">
                         <span class="fa pficon-help"></span> Help
                     </a>
                 </li>
                 <li>
-                    <a href="/docs/" class="nav-item-iconic nav-link">
+                    <a appLogEvent="Documentation" href="/docs/" target="_blank" class="nav-item-iconic nav-link">
                         <span class="fa pficon-catalog"></span> Documentation
                     </a>
                 </li>
                 <li class="navbar-iconic">
-                    <a class="nav-item-iconic nav-link" [routerLink]="['/login']" [queryParams]="{error: false}" *ngIf="!authenticated"><span
+                    <a appLogEvent="Login" class="nav-item-iconic nav-link" [routerLink]="['/login']" [queryParams]="{error: false}" *ngIf="!authenticated"><span
                             class="fa fa-sign-in"></span> &nbsp;Login</a>
                 </li>
                 <li class="dropdown" dropdown *ngIf="authenticated">
@@ -35,7 +35,7 @@
                         <span class="fa fa-user"></span> {{ username }} <span class="caret"></span>
                     </a>
                     <ul *dropdownMenu class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                        <li><a routerLink="/preferences">Preferences</a></li>
+                        <li><a appLogEvent routerLink="/preferences">Preferences</a></li>
                         <li><a [routerLink]="" (click)="logout()">Logout</a></li>
                     </ul>
                 </li>
@@ -55,12 +55,12 @@
         <br />
         <div>
             <span style="font-weight: bold"><span class="fa fa-lg fa-github"></span> Galaxy Source:</span>
-            <a href="https://github.com/ansible/galaxy" target="blank">github.com/ansible/galaxy</a>
+            <a appLogEvent href="https://github.com/ansible/galaxy" target="blank">github.com/ansible/galaxy</a>
         </div>
         <div>
             <span style="font-weight: bold"><span class="fa fa-lg fa-github"></span> Galaxy Team:</span>
             <span *ngFor="let profile of teamMembers; let last=last">
-                <a href="https://github.com/{{profile}}" target="blank">{{ profile }}</a>{{last ? '' : ', '}}
+                <a appLogEvent href="https://github.com/{{profile}}" target="blank">{{ profile }}</a>{{last ? '' : ', '}}
             </span>
         </div>
 

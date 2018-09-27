@@ -31,6 +31,7 @@ import { NotificationService } from 'patternfly-ng/notification/notification-ser
 
 import { AuthService } from './auth/auth.service';
 import { ApiRootService } from './resources/api-root/api-root.service';
+import { EventLoggerService } from './resources/logger/event-logger.service';
 
 import { BodyCommand, PFBodyService } from './resources/pf-body/pf-body.service';
 
@@ -47,6 +48,7 @@ export class AppComponent implements OnInit {
         private modalService: BsModalService,
         private notificationService: NotificationService,
         private pfBodyService: PFBodyService,
+        private eventLogger: EventLoggerService,
     ) {
         this.router.events.subscribe(event => {
             if (event instanceof NavigationEnd || event instanceof NavigationStart) {
@@ -59,10 +61,14 @@ export class AppComponent implements OnInit {
 
             if (event instanceof NavigationStart) {
                 this.isLoading = true;
+                this.timeAtLoad = window.performance.now();
+                this.startComponent = this.eventLogger.getComponentName();
+                this.startUrl = this.router.url.split('?')[0];
             }
 
             if (event instanceof NavigationEnd) {
                 this.isLoading = false;
+                this.eventLogger.logPageLoad(window.performance.now() - this.timeAtLoad, this.startComponent, this.startUrl);
             }
         });
     }
@@ -77,6 +83,9 @@ export class AppComponent implements OnInit {
     teamMembers: string[];
     pfBody: any;
     isLoading = true;
+    timeAtLoad: number;
+    startComponent: string;
+    startUrl: string;
 
     ngOnInit(): void {
         // Patternfly embeds everything not related to navigation in a div with

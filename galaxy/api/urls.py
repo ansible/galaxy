@@ -19,6 +19,13 @@ from django.conf.urls import include, url
 
 from galaxy.api import views
 
+event_tracking_urls = [
+    url(r'^influx_session/$',
+        views.InfluxSession.as_view(), name='influx_session'),
+    url(r'^$',
+        views.InfluxMetrics.as_view(), name='influx_submit'),
+]
+
 email_urls = [
     url(r'^$', views.EmailList.as_view(), name='email_list'),
     url(r'^(?P<pk>[0-9]+)/$',
@@ -271,7 +278,12 @@ v1_urls = [
     url(r'^community_surveys/', include(community_survey_urls)),
 ]
 
+internal_urls = [
+    url(r'^events/', include(event_tracking_urls)),
+]
+
 urlpatterns = [
     url(r'^$', views.ApiRootView.as_view(), name='api_root_view'),
     url(r'^v1/', include(v1_urls)),
+    url(r'^internal/', include(internal_urls)),
 ]

@@ -31,3 +31,4 @@ from .users import *               # noqa
 from .serializers import *         # noqa
 from .token import *               # noqa
 from .survey import *              # noqa
+from .influx import *              # noqa

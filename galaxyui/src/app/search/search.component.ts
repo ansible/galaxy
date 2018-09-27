@@ -29,6 +29,7 @@ import { ContentTypes } from '../enums/content-types.enum';
 import { CloudPlatform } from '../resources/cloud-platforms/cloud-platform';
 import { ContentSearchService } from '../resources/content-search/content-search.service';
 import { ContentType } from '../resources/content-types/content-type';
+import { EventLoggerService } from '../resources/logger/event-logger.service';
 import { PFBodyService } from '../resources/pf-body/pf-body.service';
 import { Platform } from '../resources/platforms/platform';
 
@@ -85,6 +86,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         private location: Location,
         private notificationService: NotificationService,
         private pfBody: PFBodyService,
+        private eventLogger: EventLoggerService,
     ) {}
 
     ngOnInit() {
@@ -370,6 +372,18 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
 
         return 'fa-times-circle score-red';
+    }
+
+    contentClick(item: Content, index: number) {
+        const itemNumber = (this.pageNumber - 1) * this.pageSize + index + 1;
+        this.eventLogger.logSearchClick(
+            this.queryParams,
+            item.namespace_name + '.' + item.name,
+            itemNumber,
+            item.download_rank,
+            item.search_rank,
+            item.relevance,
+        );
     }
 
     // private

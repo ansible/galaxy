@@ -38,6 +38,11 @@ The following environment variables are supported:
 * GALAXY_RABBITMQ_PASSWORD
 * GALAXY_ADMIN_PATH
 * GALAXY_METRICS_ENABLED
+* GALAXY_INFLUX_DB_HOST
+* GALAXY_INFLUX_DB_PORT
+* GALAXY_INFLUX_DB_USERNAME
+* GALAXY_INFLUX_DB_PASSWORD
+* GALAXY_INFLUX_DB_UI_EVENTS_DB_NAME
 """
 
 import os
@@ -209,6 +214,19 @@ LOGGING = _set_logging()
 # =========================================================
 
 METRICS_ENABLED = True
+
+
+# =========================================================
+# InfluxDB Settings
+# =========================================================
+INFLUX_DB_HOST = os.environ.get('GALAXY_INFLUX_DB_HOST', 'influxdb')
+INFLUX_DB_PORT = os.environ.get('GALAXY_INFLUX_DB_PORT', '8086')
+INFLUX_DB_USERNAME = os.environ.get('GALAXY_INFLUX_DB_USERNAME', 'admin')
+INFLUX_DB_PASSWORD = os.environ.get('GALAXY_INFLUX_DB_PASSWORD', '')
+INFLUX_DB_UI_EVENTS_DB_NAME = os.environ.get(
+    'GALAXY_INFLUX_DB_UI_EVENTS_DB_NAME', 'galaxy_ui_events'
+)
+
 
 # =========================================================
 # System Settings
