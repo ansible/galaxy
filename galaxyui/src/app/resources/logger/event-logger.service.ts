@@ -16,7 +16,7 @@ export class EventLoggerService {
             this.sessionId = session[2];
         } else {
             let httpResult: Observable<InfluxSession>;
-            httpResult = this.http.post<InfluxSession>('/api/v1/events/influx_session/', {}, this.httpOptions);
+            httpResult = this.http.post<InfluxSession>('/api/internal/events/influx_session/', {}, this.httpOptions);
             httpResult.subscribe(response => (this.sessionId = response.session_id));
         }
     }
@@ -96,7 +96,6 @@ export class EventLoggerService {
         // As far as I can tell, there isn't a way to get the name of a component
         // from a lazy loaded component, so we have to do our best to reconstruct
         // it from the components URL.
-        console.log(this.activatedRoute.children);
         let component: any;
         if (this.activatedRoute.children.length === 1) {
             component = this.activatedRoute.children[0].component;
@@ -120,10 +119,9 @@ export class EventLoggerService {
     }
 
     private postData(data: any) {
-        // console.log(data);
         let httpResult: Observable<Event>;
-        httpResult = this.http.post<Event>('/api/v1/events/', data, this.httpOptions);
-        httpResult.subscribe(response => console.log(response));
+        httpResult = this.http.post<Event>('/api/internal/events/', data, this.httpOptions);
+        httpResult.subscribe();
     }
 
     private getBaseMeasurement(name: string): Event {

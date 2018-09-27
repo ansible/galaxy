@@ -276,10 +276,14 @@ v1_urls = [
     url(r'^content_blocks/', include(content_block_urls)),
     url(r'^content_types/', include(content_type_urls)),
     url(r'^community_surveys/', include(community_survey_urls)),
+]
+
+internal_urls = [
     url(r'^events/', include(event_tracking_urls)),
 ]
 
 urlpatterns = [
     url(r'^$', views.ApiRootView.as_view(), name='api_root_view'),
     url(r'^v1/', include(v1_urls)),
+    url(r'^internal/', include(internal_urls)),
 ]
