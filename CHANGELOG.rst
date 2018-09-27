@@ -4,6 +4,16 @@ Ansible Galaxy Changes by Release
 3.1.0 - Active development
 --------------------------
 
+3.0.12 - Released 24-Sep-2018
+-----------------------------
+Changes
+```````
+- Repository description not updating. Issue `1165 <https://github.com/ansible/galaxy/issues/1165>`_.
+
+Closed PRs
+``````````
+- `1167 Update repo description based on format _`1167 <https://github.com/ansible/galaxy/pull/1167>`_.
+
 3.0.11 - Released 20-Sep-2018
 -----------------------------
 
