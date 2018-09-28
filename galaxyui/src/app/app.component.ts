@@ -229,6 +229,7 @@ export class AppComponent implements OnInit {
     // Updates the event logger so that it knows which component is currently
     // being loaded by the router outlet
     routerActivate($event) {
+        console.log($event);
         this.eventLogger.setComponent($event.route.component.name);
     }
 
