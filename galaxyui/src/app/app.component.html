@@ -43,7 +43,7 @@
         </div>
     </pfng-vertical-navigation>
     <div #contentContainer id="app-container" class="app-container container-fluid container-pf-nav-pf-vertical">
-        <router-outlet></router-outlet>
+        <router-outlet (activate)='routerActivate($event)'></router-outlet>
         <user-notifications></user-notifications>
     </div>
 </div>
