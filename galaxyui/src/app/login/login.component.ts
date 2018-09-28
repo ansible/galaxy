@@ -34,6 +34,9 @@ import { AuthService } from '../auth/auth.service';
     styleUrls: ['./login.component.less'],
 })
 export class LoginComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'LoginComponent';
+
     config: CardConfig;
     msgText = 'Log into Galaxy by clicking on one of the above SCMs';
     connectingMsg = '';

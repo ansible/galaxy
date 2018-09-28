@@ -25,6 +25,9 @@ import { forkJoin, Observable } from 'rxjs';
     styleUrls: ['./roles.component.less'],
 })
 export class RolesComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'RolesComponent';
+
     constructor(private contentService: ContentService) {}
 
     filterConfig: FilterConfig;

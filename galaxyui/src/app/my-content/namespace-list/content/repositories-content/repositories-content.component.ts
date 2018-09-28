@@ -34,6 +34,9 @@ import * as moment from 'moment';
     styleUrls: ['./repositories-content.component.less'],
 })
 export class RepositoriesContentComponent implements OnInit, OnDestroy {
+    // Used to track which component is being loaded
+    componentName = 'RepositoriesContentComponent';
+
     @Input()
     namespace: Namespace;
 

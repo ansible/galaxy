@@ -13,6 +13,9 @@ import { Action, ActionConfig } from 'patternfly-ng/action';
     styleUrls: ['./not-found.component.less'],
 })
 export class NotFoundComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'NotFoundComponent';
+
     constructor(private router: Router) {}
 
     pageTitle = 'Page Not Found';

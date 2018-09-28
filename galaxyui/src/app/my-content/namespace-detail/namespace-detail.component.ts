@@ -48,6 +48,9 @@ class Source {
     styleUrls: ['./namespace-detail.component.less'],
 })
 export class NamespaceDetailComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'NamespaceDetailComponent';
+
     @Input()
     set namespace(data: Namespace) {
         this._namespace = data;

@@ -10,6 +10,9 @@ import { Namespace } from '../../resources/namespaces/namespace';
     styleUrls: ['./carousel.component.less'],
 })
 export class CarouselComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'CarouselComponent';
+
     @Input()
     set vendors(data: Namespace[]) {
         this._vendors = JSON.parse(JSON.stringify(data));

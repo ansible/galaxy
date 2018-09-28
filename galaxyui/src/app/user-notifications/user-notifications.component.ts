@@ -11,6 +11,9 @@ import { NotificationService } from 'patternfly-ng/notification/notification-ser
     styleUrls: ['./user-notifications.component.less'],
 })
 export class UserNotificationsComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'UserNotificationsComponent';
+
     showClose = true;
     notifications: Notification[];
 

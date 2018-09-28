@@ -54,6 +54,9 @@ import { PluginTypes } from '../enums/plugin-types.enum';
     styleUrls: ['./search.component.less'],
 })
 export class SearchComponent implements OnInit, AfterViewInit {
+    // Used to track which component is being loaded
+    componentName = 'SearchComponent';
+
     pageTitle = 'Search';
     pageIcon = 'fa fa-search';
     toolbarConfig: ToolbarConfig;

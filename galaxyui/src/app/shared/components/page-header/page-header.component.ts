@@ -11,6 +11,9 @@ class Title {
     styleUrls: ['./page-header.component.less'],
 })
 export class PageHeaderComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'PageHeaderComponent';
+
     _headerTitle: Title[];
     _headerIcon: string;
 

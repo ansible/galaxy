@@ -21,6 +21,9 @@ import { UserService } from '../resources/users/user.service';
     styleUrls: ['./preferences.component.less'],
 })
 export class PreferencesComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'PreferencesComponent';
+
     constructor(
         private notificationService: NotificationService,
         private authService: AuthService,

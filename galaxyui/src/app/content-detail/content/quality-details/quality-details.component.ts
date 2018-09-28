@@ -6,6 +6,9 @@ import { Component, Input, OnInit } from '@angular/core';
     styleUrls: ['./quality-details.component.less'],
 })
 export class QualityDetailsComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'QualityDetailsComponent';
+
     constructor() {}
 
     @Input()

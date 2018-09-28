@@ -41,6 +41,9 @@ class ContentTypeCounts {
     styleUrls: ['./content-detail.component.less'],
 })
 export class ContentDetailComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'ContentDetailComponent';
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,

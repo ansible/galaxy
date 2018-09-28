@@ -8,6 +8,9 @@ import { Namespace } from '../../../../resources/namespaces/namespace';
     styleUrls: ['./owners-content.component.less'],
 })
 export class OwnersContentComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'OwnersContentComponent';
+
     @Input()
     namespace: Namespace;
 

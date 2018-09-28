@@ -12,6 +12,9 @@ import { Repository } from '../../../resources/repositories/repository';
     styleUrls: ['./detail-actions.component.less'],
 })
 export class DetailActionsComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'DetailActionsComponent';
+
     constructor(private router: Router) {}
 
     _repository: Repository;

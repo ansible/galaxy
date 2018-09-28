@@ -9,6 +9,9 @@ import { Namespace } from '../../../../resources/namespaces/namespace';
     styleUrls: ['./provider-namespaces-content.component.less'],
 })
 export class ProviderNamespacesContentComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'ProviderNamespacesContentComponent';
+
     @Input()
     namespace: Namespace;
 

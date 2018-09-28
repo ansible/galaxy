@@ -6,6 +6,9 @@ import { Component, Input, OnInit } from '@angular/core';
     styleUrls: ['./page-loading.component.less'],
 })
 export class PageLoadingComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'PageLoadingComponent';
+
     @Input()
     loading: boolean;
 

@@ -27,6 +27,9 @@ import { forkJoin, Observable } from 'rxjs';
     styleUrls: ['./modules.component.less'],
 })
 export class ModulesComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'ModulesComponent';
+
     constructor(private contentService: ContentService) {}
 
     emptyStateConfig: EmptyStateConfig;

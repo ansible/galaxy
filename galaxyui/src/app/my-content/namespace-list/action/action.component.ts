@@ -13,6 +13,9 @@ import { Namespace } from '../../../resources/namespaces/namespace';
     styleUrls: ['./action.component.less'],
 })
 export class NamespaceActionComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'NamespaceActionComponent';
+
     @ViewChild('addContentButtonTemplate')
     public buttonTemplate: TemplateRef<any>;
 

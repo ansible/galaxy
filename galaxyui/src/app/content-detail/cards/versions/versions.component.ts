@@ -10,6 +10,9 @@ import * as moment from 'moment';
     styleUrls: ['./versions.component.less'],
 })
 export class CardVersionsComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'CardVersionsComponent';
+
     constructor() {}
 
     _versions: any[];

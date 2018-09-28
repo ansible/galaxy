@@ -14,6 +14,9 @@ import { ContentTypesPlural } from '../../../enums/content-types.enum';
     styleUrls: ['./card-info.component.less'],
 })
 export class CardInfoComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'CardInfoComponent';
+
     constructor() {}
 
     _repoContent: Content;

@@ -35,6 +35,9 @@ import { RepoFormats, RepoFormatsIconClasses, RepoFormatsTooltips } from '../../
     styleUrls: ['./author-detail.component.less'],
 })
 export class AuthorDetailComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'AuthorDetailComponent';
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,

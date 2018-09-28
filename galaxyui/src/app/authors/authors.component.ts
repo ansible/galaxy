@@ -28,6 +28,9 @@ import { ContentTypes, ContentTypesIconClasses, ContentTypesPluralChoices } from
     styleUrls: ['./authors.component.less'],
 })
 export class AuthorsComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'AuthorsComponent';
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,

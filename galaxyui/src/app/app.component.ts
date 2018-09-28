@@ -41,6 +41,9 @@ import { BodyCommand, PFBodyService } from './resources/pf-body/pf-body.service'
     templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'AppComponent';
+
     constructor(
         private router: Router,
         private authService: AuthService,
@@ -229,8 +232,7 @@ export class AppComponent implements OnInit {
     // Updates the event logger so that it knows which component is currently
     // being loaded by the router outlet
     routerActivate($event) {
-        console.log($event);
-        this.eventLogger.setComponent($event.route.component.name);
+        this.eventLogger.setComponent($event.componentName);
     }
 
     // private

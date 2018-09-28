@@ -8,6 +8,9 @@ import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
     styleUrls: ['./dependencies.component.less'],
 })
 export class CardDependenciesComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'CardDependenciesComponent';
+
     constructor() {}
 
     private _dependencies: any[];
