@@ -26,6 +26,8 @@ export class EventLoggerService {
         }),
     };
 
+    currentComponent = '';
+
     sessionId: string;
 
     logLink(name: string, href: string): void {
@@ -93,29 +95,13 @@ export class EventLoggerService {
     }
 
     getComponentName() {
-        // As far as I can tell, there isn't a way to get the name of a component
-        // from a lazy loaded component, so we have to do our best to reconstruct
-        // it from the components URL.
-        let component: any;
-        if (this.activatedRoute.children.length === 1) {
-            component = this.activatedRoute.children[0].component;
-        } else {
-            return '';
-        }
-        if (component && component['name']) {
-            return component['name'];
-        } else {
-            let url = this.router.url.split('?')[0];
-            url = url.substr(1, url.length);
-            url = url.split('/')[0];
-            const urlBits = url.split('-');
-            url = '';
-            for (const bit of urlBits) {
-                url += bit.substr(0, 1).toUpperCase() + bit.substr(1, bit.length);
-            }
+        return this.currentComponent;
+    }
 
-            return url + 'Component';
-        }
+    // This gets called by app.component wich listens to router activations from the
+    // router outlet and sends the component name here.
+    setComponent(name: string) {
+        this.currentComponent = name;
     }
 
     private postData(data: any) {
