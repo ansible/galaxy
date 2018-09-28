@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0117_namespace_search_index'),
+        ('main', '0118_influxsessionidentifier'),
     ]
 
     operations = [
