@@ -52,6 +52,9 @@ class ProviderNamespace {
     styleUrls: ['./add-repository-modal.component.less'],
 })
 export class AddRepositoryModalComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'AddRepositoryModalComponent';
+
     emptyStateConfig: EmptyStateConfig = {} as EmptyStateConfig;
     namespace: Namespace;
     selectedPNS: ProviderNamespace;

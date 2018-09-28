@@ -17,6 +17,9 @@ import * as $ from 'jquery';
     styleUrls: ['./import-detail.component.less'],
 })
 export class ImportDetailComponent implements OnInit, AfterViewInit {
+    // Used to track which component is being loaded
+    componentName = 'ImportDetailComponent';
+
     private _importTask: Import;
     private _refreshing: boolean;
     private canImport: boolean;

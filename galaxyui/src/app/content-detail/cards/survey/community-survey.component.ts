@@ -15,6 +15,9 @@ import { CommunityDetails, DetailMessage } from './types';
     styleUrls: ['./community-survey.component.less'],
 })
 export class CardCommunitySurveyComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'CardCommunitySurveyComponent';
+
     constructor(private surveyService: SurveyService, private authService: AuthService) {}
 
     config: CardConfig;

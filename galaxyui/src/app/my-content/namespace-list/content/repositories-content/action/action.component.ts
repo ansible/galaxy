@@ -12,6 +12,9 @@ import { Repository } from '../../../../../resources/repositories/repository';
     styleUrls: ['./action.component.less'],
 })
 export class NamespaceRepositoryActionComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'NamespaceRepositoryActionComponent';
+
     @ViewChild('importButtonTemplate')
     public buttonTemplate: TemplateRef<any>;
 

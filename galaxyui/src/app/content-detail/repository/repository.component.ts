@@ -36,6 +36,9 @@ export class RepoChangeEvent {
     styleUrls: ['./repository.component.less'],
 })
 export class RepositoryComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'RepositoryComponent';
+
     constructor() {}
 
     @Input()

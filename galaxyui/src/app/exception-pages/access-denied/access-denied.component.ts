@@ -13,6 +13,9 @@ import { Action, ActionConfig } from 'patternfly-ng/action';
     styleUrls: ['./access-denied.component.less'],
 })
 export class AccessDeniedComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'AccessDeniedComponent';
+
     constructor(private router: Router) {}
 
     pageTitle = 'Access Denied';

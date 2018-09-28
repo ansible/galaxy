@@ -26,6 +26,9 @@ import { ContentTypes, ContentTypesIconClasses, ContentTypesPluralChoices } from
     styleUrls: ['./vendors.component.less'],
 })
 export class VendorsComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'VendorsComponent';
+
     constructor(private router: Router, private route: ActivatedRoute, private namespaceService: NamespaceService) {}
 
     pageTitle = 'Partners';

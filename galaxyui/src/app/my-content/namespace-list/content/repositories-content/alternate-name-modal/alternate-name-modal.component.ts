@@ -38,6 +38,9 @@ export function forbiddenLastCharValidator(): ValidatorFn {
     styleUrls: ['./alternate-name-modal.component.less'],
 })
 export class AlternateNameModalComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'AlternateNameModalComponent';
+
     saveInProgress = false;
     repository: Repository;
     startedImport = false;

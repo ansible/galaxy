@@ -14,6 +14,9 @@ import * as $ from 'jquery';
     styleUrls: ['./home.component.less'],
 })
 export class HomeComponent implements OnInit, AfterViewInit {
+    // Used to track which component is being loaded
+    componentName = 'HomeComponent';
+
     downloadConfig: CardConfig;
     shareConfig: CardConfig;
     featureConfig: CardConfig;

@@ -8,6 +8,9 @@ import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
     styleUrls: ['./cloud-platforms.component.less'],
 })
 export class CardCloudPlatformsComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'CardCloudPlatformsComponent';
+
     constructor() {}
 
     @Input()

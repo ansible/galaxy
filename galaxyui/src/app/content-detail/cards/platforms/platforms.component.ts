@@ -9,6 +9,9 @@ import { Platform } from '../../../resources/platforms/platform';
     styleUrls: ['./platforms.component.less'],
 })
 export class CardPlatformsComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'CardPlatformsComponent';
+
     constructor() {}
 
     @Input()

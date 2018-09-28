@@ -6,6 +6,9 @@ import { Component, Input, OnInit } from '@angular/core';
     styleUrls: ['./score-bar.component.less'],
 })
 export class ScoreBarComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'ScoreBarComponent';
+
     constructor() {}
 
     @Input()

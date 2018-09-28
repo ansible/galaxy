@@ -11,6 +11,9 @@ import { Email } from '../../resources/emails/email';
     styleUrls: ['./email-action.component.less'],
 })
 export class EmailActionComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'EmailActionComponent';
+
     constructor() {}
 
     actionConfig: ActionConfig;

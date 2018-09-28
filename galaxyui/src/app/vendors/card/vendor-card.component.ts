@@ -10,6 +10,9 @@ import { Namespace } from '../../resources/namespaces/namespace';
     styleUrls: ['./vendor-card.component.less'],
 })
 export class VendorCardComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'VendorCardComponent';
+
     constructor(private router: Router) {}
 
     _vendor: Namespace;

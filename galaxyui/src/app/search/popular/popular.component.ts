@@ -27,6 +27,9 @@ export class PopularEvent {
     styleUrls: ['./popular.component.less'],
 })
 export class PopularComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'PopularComponent';
+
     @Input()
     popularType: string;
     @Input()

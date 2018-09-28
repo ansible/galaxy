@@ -37,6 +37,9 @@ import * as moment from 'moment';
     styleUrls: ['./import-list.component.less'],
 })
 export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
+    // Used to track which component is being loaded
+    componentName = 'ImportListComponent';
+
     @ViewChild(ListComponent)
     pfList: ListComponent;
 

@@ -6,6 +6,9 @@ import { Component, Input, OnInit } from '@angular/core';
     styleUrls: ['./clipboard.component.less'],
 })
 export class ClipboardComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'ClipboardComponent';
+
     constructor() {}
 
     _copyText: string;

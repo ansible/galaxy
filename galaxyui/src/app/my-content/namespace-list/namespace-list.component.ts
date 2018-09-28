@@ -33,6 +33,9 @@ import { AddRepositoryModalComponent } from '../add-repository-modal/add-reposit
     styleUrls: ['./namespace-list.component.less'],
 })
 export class NamespaceListComponent implements OnInit {
+    // Used to track which component is being loaded
+    componentName = 'NamespaceListComponent';
+
     items: Namespace[] = [];
     namespaces: Namespace[] = [];
     me: IMe;
