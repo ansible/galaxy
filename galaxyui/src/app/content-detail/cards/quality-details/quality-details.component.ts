@@ -1,5 +1,24 @@
 import { Component, Input, OnInit } from '@angular/core';
 
+class WarningType {
+    violationsCount: number;
+    message: string;
+    severityIcon: string;
+    severityText: string;
+}
+
+class Warning {
+    count: number;
+    rulesViolated: string[];
+    ruleDetails: {};
+
+    constructor() {
+        this.count = 0;
+        this.rulesViolated = [];
+        this.ruleDetails = {};
+    }
+}
+
 @Component({
     selector: 'app-quality-details',
     templateUrl: './quality-details.component.html',
@@ -13,14 +32,19 @@ export class QualityDetailsComponent implements OnInit {
 
     @Input()
     content: any;
-    codeTasks: {};
-    rulesViolated: any;
-    totalViolations = 0;
+
+    contentWarn: Warning;
+    metaWarn: Warning;
+    compatibilityWarn: Warning;
 
     ngOnInit() {
-        this.codeTasks = [];
+        this.contentWarn = new Warning();
+        this.metaWarn = new Warning();
+        this.compatibilityWarn = new Warning();
 
-        console.log(this.content);
+        if (this.content.content_score === null) {
+            this.content.content_score = 'NA';
+        }
 
         if (this.content.metadata_score === null) {
             this.content.metadata_score = 'NA';
@@ -32,21 +56,17 @@ export class QualityDetailsComponent implements OnInit {
 
         for (const el of this.content.summary_fields.task_messages) {
             if (el.is_linter_rule_violation && el.rule_severity > 0) {
-                this.totalViolations += 1;
-                el.severityIcon = this.getWarningClass(el.rule_severity);
-                el.severityText = this.getWarningText(el.rule_severity);
-                if (this.codeTasks[el.linter_rule_id]) {
-                    this.codeTasks[el.linter_rule_id].violations_count += 1;
-                } else {
-                    el.violations_count = 1;
-                    this.codeTasks[el.linter_rule_id] = el;
+                if (el.score_type === 'content') {
+                    this.addWarning(this.contentWarn, el);
+                }
+                if (el.score_type === 'metadata') {
+                    this.addWarning(this.metaWarn, el);
+                }
+                if (el.score_type === 'compatibility') {
+                    this.addWarning(this.compatibilityWarn, el);
                 }
             }
         }
-
-        this.rulesViolated = Object.keys(this.codeTasks);
-
-        console.log(this.codeTasks);
     }
 
     getWarningClass(severity: number): string {
@@ -71,6 +91,21 @@ export class QualityDetailsComponent implements OnInit {
             return text + 'High';
         } else if (severity === 5) {
             return text + 'Very High';
+        }
+    }
+
+    private addWarning(warning, task) {
+        warning.count += 1;
+        if (warning.ruleDetails[task.linter_rule_id]) {
+            warning.ruleDetails[task.linter_rule_id].violationsCount += 1;
+        } else {
+            warning.rulesViolated.push(task.linter_rule_id);
+            warning.ruleDetails[task.linter_rule_id] = {
+                violationsCount: 1,
+                message: task.rule_desc,
+                severityText: this.getWarningText(task.rule_severity),
+                severityIcon: this.getWarningClass(task.rule_severity),
+            } as WarningType;
         }
     }
 }

@@ -7,14 +7,14 @@
             {{ content.content_score }}
         </div>
 
-        <div>Warings: {{totalViolations}}</div>
-
+        <div>Warings: {{ contentWarn.count }}</div>
         <ul>
-            <li *ngFor="let rule of rulesViolated">
-                <span class="{{codeTasks[rule].severityIcon}}" tooltip="{{codeTasks[rule].severityText}}"></span>
-                <div class="violation-count">{{ codeTasks[rule].violations_count }}</div>
-                {{ codeTasks[rule].linter_rule_id }}:
-                {{ codeTasks[rule].rule_desc }}
+            <li *ngFor="let rule of contentWarn.rulesViolated">
+                <span class="{{contentWarn.ruleDetails[rule].severityIcon}}"
+                    tooltip="{{contentWarn.ruleDetails[rule].severityText}}"></span>
+                <div class="violation-count">{{ contentWarn.ruleDetails[rule].violationsCount }}</div>
+                {{ rule }}:
+                {{ contentWarn.ruleDetails[rule].message }}
 
             </li>
         </ul>
@@ -30,7 +30,17 @@
             {{ content.metadata_score }}
         </div>
 
-        <div>Warings: 0</div>
+        <div>Warings: {{ metaWarn.count }}</div>
+        <ul>
+            <li *ngFor="let rule of metaWarn.rulesViolated">
+                <span class="{{metaWarn.ruleDetails[rule].severityIcon}}"
+                    tooltip="{{metaWarn.ruleDetails[rule].severityText}}"></span>
+                <div class="violation-count">{{ metaWarn.ruleDetails[rule].violationsCount }}</div>
+                {{ rule }}:
+                {{ metaWarn.ruleDetails[rule].message }}
+
+            </li>
+        </ul>
 
     </div>
     <br>
@@ -43,6 +53,16 @@
             {{ content.compatibility_score }}
         </div>
 
-        <div>Warings: 0</div>
+        <div>Warings: {{ compatibilityWarn.count }}</div>
+        <ul>
+            <li *ngFor="let rule of compatibilityWarn.rulesViolated">
+                <span class="{{compatibilityWarn.ruleDetails[rule].severityIcon}}"
+                    tooltip="{{compatibilityWarn.ruleDetails[rule].severityText}}"></span>
+                <div class="violation-count">{{ compatibilityWarn.ruleDetails[rule].violationsCount }}</div>
+                {{ rule }}:
+                {{ compatibilityWarn.ruleDetails[rule].message }}
+
+            </li>
+        </ul>
     </div>
 </div>
