@@ -21,6 +21,7 @@ import re
 
 import six
 import yaml
+import json
 
 from ansible.playbook.role import requirement as ansible_req
 
@@ -110,6 +111,25 @@ class RoleMetaParser(object):
                 self.linter_data['linter_rule_id'] = 'missing_key'
                 self.linter_data['rule_desc'] = msg
                 self.log.warning(msg, extra=self.linter_data)
+
+    def validate_license(self):
+        role_license = ''
+        if 'license' in self.metadata:
+            role_license = self.metadata['license']
+
+        cwd = os.path.dirname(os.path.abspath(__file__))
+        license_path = os.path.join(cwd, '..', 'linters', 'spdx_licenses.json')
+        license_data = json.load(open(license_path, 'r'))
+        for lic in license_data['licenses']:
+            if lic['licenseId'] == role_license:
+                if not lic['isDeprecatedLicenseId']:
+                    return
+        msg = ("Expecting 'license' to be a valid SPDX license ID, "
+               "instead found '%s'. "
+               "For more info, visit https://spdx.org" % role_license)
+        self.linter_data['linter_rule_id'] = 'invalid_license'
+        self.linter_data['rule_desc'] = msg
+        self.log.warning(msg, extra=self.linter_data)
 
     def parse_tags(self):
         tags = []
@@ -280,6 +300,7 @@ class RoleLoader(base.BaseLoader):
         data['cloud_platforms'] = meta_parser.parse_cloud_platforms()
         data['dependencies'] = meta_parser.parse_dependencies()
         data['video_links'] = meta_parser.parse_videos()
+        meta_parser.validate_license()
         readme = self._get_readme()
 
         return models.Content(

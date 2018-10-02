@@ -227,6 +227,7 @@ def _update_quality_score(import_task):
         'importer_video_link_not_dict': 3,
         'importer_video_link_key': 3,
         'importer_video_url_format': 3,
+        'importer_invalid_license': 3,
         'importer_no_galaxy_tags': 3,  # RoleImporter worker/importers/role.py
         'importer_exceeded_max_tags': 3,
         'importer_no_platforms': 3,
@@ -235,6 +236,7 @@ def _update_quality_score(import_task):
         'importer_invalid_cloud_platform': 3,
         'importer_dependency_load': 3,
         'importer_dependency_parse': 3,
+        'importer_no_top_level_readme': 3,  # RepositoryLoader repository.py
     }
 
     # for all ImportTaskMessage set score_type and rule_severity
