@@ -42,17 +42,9 @@ export class QualityDetailsComponent implements OnInit {
         this.metaWarn = new Warning();
         this.compatibilityWarn = new Warning();
 
-        if (this.content.content_score === null) {
-            this.content.content_score = 'NA';
-        }
-
-        if (this.content.metadata_score === null) {
-            this.content.metadata_score = 'NA';
-        }
-
-        if (this.content.compatibility_score === null) {
-            this.content.compatibility_score = 'NA';
-        }
+        this.content.content_score = this.convertScore(this.content.content_score);
+        this.content.metadata_score = this.convertScore(this.content.metadata_score);
+        this.content.compatibility_score = this.convertScore(this.content.compatibility_score);
 
         for (const el of this.content.summary_fields.task_messages) {
             if (el.is_linter_rule_violation && el.rule_severity > 0) {
@@ -92,6 +84,14 @@ export class QualityDetailsComponent implements OnInit {
         } else if (severity === 5) {
             return text + 'Very High';
         }
+    }
+
+    private convertScore(score: number) {
+        if (score === null) {
+            return 'NA';
+        }
+
+        return Math.round(score * 10) / 10;
     }
 
     private addWarning(warning, task) {
