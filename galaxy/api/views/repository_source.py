@@ -60,7 +60,7 @@ class RepositorySourceList(ListAPIView):
 
         try:
             provider_namespace = ProviderNamespace.objects.get(
-                provider=provider, name__iexact=request_namespace
+                provider=provider, name=request_namespace
             )
         except ObjectDoesNotExist:
             provider_namespace = None
@@ -141,7 +141,7 @@ class RepositorySourceDetail(ListAPIView):
 
         try:
             provider_namespace = ProviderNamespace.objects.get(
-                provider=provider, name__iexact=request_namespace
+                provider=provider, name=request_namespace
             )
         except ObjectDoesNotExist:
             provider_namespace = None

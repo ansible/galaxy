@@ -44,7 +44,7 @@ def user_logged_in_handler(request, user, **kwargs):
     sanitized_username = username.lower().replace('-', '_')
 
     try:
-        namespace = models.ProviderNamespace.objects.get(name__iexact=username)
+        namespace = models.ProviderNamespace.objects.get(name=username)
         return
     except models.ProviderNamespace.DoesNotExist:
         namespace = None
