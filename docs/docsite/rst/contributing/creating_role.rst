@@ -44,7 +44,7 @@ The *test-role-1* directory will contain the following:
     vars/
         main.yml
 
-For a full explanation of all subdirectories and files listed above, and how they're used by Ansible, view the 
+For a full explanation of all subdirectories and files listed above, and how they're used by Ansible, view the
 `Roles topic at the Ansible docs site <https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html?highlight=roles>`_
 
 Role Metadata
@@ -118,12 +118,12 @@ The following provides guidance on setting some of the metadata values that may 
 
 role_name
     Optional. Use to override the name of the role.
-    
+
     In the past, Galaxy would apply a regex expression to the GitHub repository name and
     automatically remove 'ansible-' and 'ansible-role-'. For example, if your repository name was 'ansible-role-apache', the role name
     would translate to 'apache'. Galaxy no longer does this automatically. Instead, use the *role_name* setting to tell Galaxy what
     the role name should be.
-    
+
     If no value is provided, then the role name will match the repository name, with a couple of exceptions, including:
     converting the name to all lowercase, and replacing any '-' or '.' characters with '_'.
 
@@ -140,13 +140,13 @@ role_name
 platforms
     Required. Provide a list of valid platforms, and for each platform, a list of valid versions. The obvious question of course is, where does one
     find the list of valid platforms? You can find the `list of platforms here </api/v1/platforms/>`_. The list
-    is paginated. Click on the ``next_link`` value to get to view the next page. It's not the pretiest interface, but for now, it works.
-    
+    is paginated. Click on the ``next_link`` value to get to view the next page. It's not the prettiest interface, but for now, it works.
+
     You can also search by name. For example, to search for all Ubuntu versions by adding ``?name__icontains=ubuntu`` to the query. The full
     URL will be `https://galaxy.ansible.com/api/v1/platforms/?name__icontains=ubuntu <https://galaxy.ansible.com/api/v1/platforms/?name__icontains=ubuntu>`.
 
 galaxy_tags
-    Optional. Provide a list of tags. A tag is a single world that helps categorize your role. You can invent tags, or guess at tags other might be
+    Optional. Provide a list of tags. A tag is a single word that helps categorize your role. You can invent tags, or guess at tags other might be
     using to describe similar roles, but why do that, when you can see what others are using by `browsing existing tags here <https://galaxy-qa.ansible.com/api/v1/tags/>`_.
 
     As with *platforms*, you can search by name here as well. For example, to see if the 'database' tag exists, add ``?name_icontains=database``
@@ -155,7 +155,7 @@ galaxy_tags
 dependencies
     Optional. In a nutshell, dependencies are installed when the role is installed, and dependencies are executed before the role is executed. During role
     install and execution, dependencies are recursive, meaning dependencies can have dependencies. If a role appears more than once in the
-    dependency chaing, it will only be executed one time, provided that parameters defined on the dependency are not different. 
+    dependency chaining, it will only be executed one time, provided that parameters defined on the dependency are not different.
 
     If the above sounds confusing, and you need more information, and an example or two, `view the Role Dependencies topic at the Ansible docs site <https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html#role-dependencies>`_.
 
@@ -169,7 +169,7 @@ apply a regular expression, and remove 'ansible-' and 'role-' from the repositor
 Starting in v3.0, Galaxy no longer perform this calculation. Instead, the default role name is the unaltered repository name, with a
 couple minor exceptions, including: converting the name to all lowercase, and replacing any '-' or '.' characters with '_'.
 
-To override the default name, set the ``role_name`` attribute in the role ``meta/main.yml`` file. The following snipet from a 
+To override the default name, set the ``role_name`` attribute in the role ``meta/main.yml`` file. The following snippet from a
 ``meta/main.yml`` file provides an example of setting the *role_name* attribute:
 
 .. code-block:: yaml
