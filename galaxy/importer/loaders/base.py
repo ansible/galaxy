@@ -84,13 +84,13 @@ class BaseLoader(object):
             linter_obj = linter_cls(self.root)
             for message in linter_obj.check_files(self.rel_path):
                 if linter_ok:
-                    self.log.info('{} Warnings:'.format(linter_obj.name))
+                    self.log.info('{} Warnings:'.format(linter_obj.id))
                     linter_ok = False
                 error_id, rule_desc = linter_obj.parse_id_and_desc(message)
                 if error_id:
                     extra = {
                         'is_linter_rule_violation': True,
-                        'linter_type': linter_cls.cmd,
+                        'linter_type': linter_cls.id,
                         'linter_rule_id': error_id,
                         'rule_desc': rule_desc
                     }
@@ -99,7 +99,7 @@ class BaseLoader(object):
                     self.log.warning(message)
                 all_linters_ok = False
             if linter_ok:
-                self.log.info('{} OK.'.format(linter_obj.name))
+                self.log.info('{} OK.'.format(linter_obj.id))
 
         return all_linters_ok
 

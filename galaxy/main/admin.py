@@ -39,13 +39,8 @@ class ContentBlockAdmin(admin.ModelAdmin):
     pass
 
 
-class ContentRuleAdmin(admin.ModelAdmin):
-    pass
-
-
 admin.site.register(models.Platform, PlatformAdmin)
 admin.site.register(models.CloudPlatform, CloudPlatformAdmin)
 admin.site.register(models.Content, RoleAdmin)
 admin.site.register(models.RepositoryVersion, RepositoryVersionAdmin)
 admin.site.register(models.ContentBlock, ContentBlockAdmin)
-admin.site.register(models.ContentRule, ContentRuleAdmin)
