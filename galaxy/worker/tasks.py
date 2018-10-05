@@ -228,6 +228,7 @@ def _update_quality_score(import_task):
         'importer_video_link_key': 3,
         'importer_video_url_format': 3,
         'importer_invalid_license': 3,
+        'importer_not_all_versions_tested': 5,
         'importer_no_galaxy_tags': 3,  # RoleImporter worker/importers/role.py
         'importer_exceeded_max_tags': 3,
         'importer_no_platforms': 3,
@@ -238,6 +239,7 @@ def _update_quality_score(import_task):
         'importer_dependency_parse': 3,
         'importer_no_top_level_readme': 3,  # RepositoryLoader repository.py
     }
+    RULE_TO_SEVERITY = {k.lower(): v for k, v in RULE_TO_SEVERITY.items()}
 
     # for all ImportTaskMessage set score_type and rule_severity
     import_task_messages = models.ImportTaskMessage.objects.filter(
@@ -249,6 +251,8 @@ def _update_quality_score(import_task):
                                    msg.linter_rule_id).lower()
         if msg.linter_type == 'importer':
             msg.score_type = 'metadata'
+            if msg.linter_rule_id == 'not_all_versions_tested':
+                msg.score_type = 'compatibility'
         elif msg.linter_type in ['ansible-lint', 'yamllint']:
             msg.score_type = 'content'
         if rule_code not in RULE_TO_SEVERITY:
@@ -267,22 +271,31 @@ def _update_quality_score(import_task):
         content_m = models.ImportTaskMessage.objects.filter(
             task_id=import_task.id,
             content_id=content.id,
-            linter_type__in=['ansible-lint', 'yamllint'],
+            score_type='content',
             is_linter_rule_violation=True,
         )
         meta_m = models.ImportTaskMessage.objects.filter(
             task_id=import_task.id,
             content_id=content.id,
-            linter_type='importer',
+            score_type='metadata',
+            is_linter_rule_violation=True,
+        )
+        compatibility_m = models.ImportTaskMessage.objects.filter(
+            task_id=import_task.id,
+            content_id=content.id,
+            score_type='compatibility',
             is_linter_rule_violation=True,
         )
 
         content_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in content_m]
         meta_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in meta_m]
+        compatibility_w = [SEVERITY_TO_WEIGHT[m.rule_severity]
+                           for m in compatibility_m]
 
         content.content_score = max(0.0, (BASE_SCORE - sum(content_w)) / 10)
         content.metadata_score = max(0.0, (BASE_SCORE - sum(meta_w)) / 10)
-        content.compatibility_score = 5.0
+        content.compatibility_score = max(0.0, (BASE_SCORE -
+                                                sum(compatibility_w)) / 10)
         content.quality_score = sum([content.content_score,
                                      content.metadata_score,
                                      content.compatibility_score]) / 3.0
@@ -295,6 +308,9 @@ def _update_quality_score(import_task):
         LOG.debug('meta - ids, weights, score: {}, {}, {}'.format(
             str([m.linter_rule_id for m in meta_m]),
             str(meta_w), content.metadata_score))
+        LOG.debug('compatibility - ids, weights, score: {}, {}, {}'.format(
+            str([m.linter_rule_id for m in compatibility_m]),
+            str(compatibility_w), content.compatibility_score))
 
     repository.quality_score = repo_points / contents.count()
     repository.save()

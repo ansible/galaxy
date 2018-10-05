@@ -22,6 +22,7 @@ import re
 import six
 import yaml
 import json
+import configparser
 
 from ansible.playbook.role import requirement as ansible_req
 
@@ -63,6 +64,7 @@ class RoleMetaParser(object):
         self.log = logger or base.default_logger
         self.metadata = self._get_galaxy_info(metadata)
         self.dependencies = self._get_dependencies(metadata)
+        self.tox_data = None
 
     def _get_galaxy_info(self, metadata):
         if 'galaxy_info' in metadata:
@@ -94,6 +96,9 @@ class RoleMetaParser(object):
             self.log.warning(msg, extra=self.linter_data)
             return False
         return True
+
+    def set_tox(self, tox_data):
+        self.tox_data = tox_data
 
     def validate_strings(self):
         string_defaults = [
@@ -247,6 +252,72 @@ class RoleMetaParser(object):
                 continue
         return videos
 
+    def check_tox(self):
+        tox_tests_found = self._check_tox()
+        if not tox_tests_found:
+            msg = ("Molecule tests via tox not found for each stated "
+                   "supported ansible version, set 'min_ansible_version'"
+                   "in 'meta/main.yml' and see: "
+                   "https://molecule.readthedocs.io/en/latest/ci.html#tox")
+            self.linter_data['linter_rule_id'] = 'not_all_versions_tested'
+            self.linter_data['rule_desc'] = msg
+            self.log.warning(msg, extra=self.linter_data)
+            return
+        pass
+
+    def _check_tox(self):
+        SUPPORTED_MINOR_VERSIONS = ['2.5', '2.6', '2.7']
+
+        min_ansible_version = ''
+        if 'min_ansible_version' in self.metadata:
+            min_ansible_version = str(self.metadata['min_ansible_version'])
+        if not (min_ansible_version and self.tox_data):
+            return False
+
+        # Note: this supports a subset of the version specifiers
+        # see: https://www.python.org/dev/peps/pep-0440/#version-specifiers
+        try:
+            deps_ansible = [d for d in self.tox_data['deps'].split('\n') if
+                            d.startswith('ansible')]
+            versions = [d.split(' ')[1][9:] for d in deps_ansible if
+                        re.match('ansible(==|>=|~=)\d', d.split(' ')[1])]
+            versions = [v.split(',')[0] for v in versions]
+            tested_versions = ['.'.join(v.split('.')[:2]) for v in versions]
+        except Exception:
+            self.log.error('Could not parse ansible versions in tox data')
+            return False
+
+        # TODO(awcrosby): edit to support major version changes
+        try:
+            min_minor = '.'.join(min_ansible_version.split('.')[1])
+            max_minor = '.'.join(SUPPORTED_MINOR_VERSIONS[-1].split('.')[1])
+            range_of_minor = range(int(min_minor), int(max_minor) + 1)
+            supported_versions = ['2.{}'.format(minor)
+                                  for minor in range_of_minor]
+        except Exception:
+            self.log.error("Could not parse 'min_ansible_version'='{}' "
+                           "to get supported versions".format(
+                               min_ansible_version))
+            return False
+
+        if not (tested_versions and supported_versions):
+            return False
+
+        self.log.info("Versions supported based on "
+                      "'min_ansible_version'='{}': {}".format(
+                          min_ansible_version, ', '.join(supported_versions)))
+        self.log.info('Stated ansible minor versions tested via '
+                      'molecule in tox.ini: {}'.format(
+                          ', '.join(tested_versions)))
+
+        untested = set(supported_versions) - set(tested_versions)
+        if untested:
+            self.log.info('Not all supported versions tested: '
+                          '{}'.format(', '.join(untested)))
+            return False
+
+        return True
+
 
 class RoleLoader(base.BaseLoader):
     # (attribute name, default value)
@@ -262,6 +333,7 @@ class RoleLoader(base.BaseLoader):
     ]
     CONTAINER_META_FILE = 'meta/container.yml'
     ANSIBLE_CONTAINER_META_FILE = 'container.yml'
+    TOX_FILE = 'tox.ini'
 
     content_types = constants.ContentType.ROLE
     # temporarily removing linters.Flake8Linter
@@ -282,6 +354,9 @@ class RoleLoader(base.BaseLoader):
         original_name = self.name
         self.name = self._get_name(galaxy_info)
 
+        tox_data = self._load_tox()
+        meta_parser.set_tox(tox_data)
+
         meta_parser.validate_strings()
 
         # TODO: Refactoring required
@@ -301,6 +376,7 @@ class RoleLoader(base.BaseLoader):
         data['dependencies'] = meta_parser.parse_dependencies()
         data['video_links'] = meta_parser.parse_videos()
         meta_parser.validate_license()
+        meta_parser.check_tox()
         readme = self._get_readme()
 
         return models.Content(
@@ -369,6 +445,20 @@ class RoleLoader(base.BaseLoader):
                 "Invalid 'meta.yml' file format, dict expected.")
 
         return metadata
+
+    def _load_tox(self):
+        tox_file = os.path.join(self.path, self.TOX_FILE)
+
+        if not os.path.exists(tox_file):
+            return None
+
+        with open(tox_file) as fp:
+            config = configparser.ConfigParser()
+            config.read_file(fp)
+            if 'testenv' in config:
+                tox_data = dict(config['testenv'])
+                return tox_data
+        return None
 
     def _load_container_yml(self):
         container_yml = None
