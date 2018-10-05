@@ -1,7 +1,5 @@
 FROM galaxy-base:latest
 
-RUN useradd -r -m -g root galaxy
-
 # Install tini
 ENV TINI_VERSION v0.16.1
 RUN yum -y install wget \
@@ -12,25 +10,33 @@ RUN yum -y install wget \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
+# Create galaxy user
+ENV HOME /var/lib/galaxy
+RUN mkdir -p /var/lib/galaxy \
+    && useradd --system --gid root \
+        --home-dir "${HOME}" galaxy
+
 # Create directories structure
 RUN mkdir -p /etc/galaxy \
              /var/log/galaxy \
              /var/lib/galaxy/public \
-             /var/lib/galaxy/downloads \
-    && chown galaxy:root /etc/galaxy \
-                         /var/log/galaxy \
-                         /var/lib/galaxy/public \
-                         /var/lib/galaxy/downloads \
-    && chmod g+w /etc/galaxy \
-                 /var/log/galaxy \
-                 /var/lib/galaxy/public \
-                 /var/lib/galaxy/downloads
+             /var/lib/galaxy/downloads
 
 COPY scripts/docker/release/entrypoint.sh /entrypoint.sh
 COPY --from=galaxy-build:latest /galaxy/dist/VERSION /var/lib/galaxy
 COPY --from=galaxy-build:latest /galaxy/dist/*.whl /tmp
 COPY --from=galaxy-build:latest /galaxy/build/static/ /var/lib/galaxy/public/static/
 RUN ${VENV_BIN}/pip install "/tmp/galaxy-$(< /var/lib/galaxy/VERSION)-py2-none-any.whl"
+
+# Fix directory permissions
+RUN chown -R galaxy:root \
+        /etc/galaxy \
+        /var/log/galaxy \
+        /var/lib/galaxy \
+    && chmod -R u=rwX,g=rwX\
+        /etc/galaxy \
+        /var/log/galaxy \
+        /var/lib/galaxy
 
 WORKDIR /var/lib/galaxy
 
