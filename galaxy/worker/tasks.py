@@ -181,44 +181,44 @@ def _update_quality_score(import_task):
         4: 5,
         5: 10,
     }
-    RULE_TO_SEVERITY = {
+    CONTENT_SEVERITY = {
         'ansible-lint_e101': 3,
         'ansible-lint_e102': 4,
         'ansible-lint_e103': 5,
         'ansible-lint_e104': 5,
-        'ansible-lint_e105GAL': 0,
-        'ansible-lint_e106GAL': 0,
+        'ansible-lint_e105gal': 0,
+        'ansible-lint_e106gal': 0,
         'ansible-lint_e201': 0,
         'ansible-lint_e202': 5,
-        'ansible-lint_e203GAL': 2,
-        'ansible-lint_e204GAL': 1,
-        'ansible-lint_e205GAL': 1,
-        'ansible-lint_e206GAL': 3,
-        'ansible-lint_e207GAL': 3,
-        'ansible-lint_e208GAL': 2,
+        'ansible-lint_e203gal': 2,
+        'ansible-lint_e204gal': 1,
+        'ansible-lint_e205gal': 1,
+        'ansible-lint_e206gal': 3,
+        'ansible-lint_e207gal': 3,
+        'ansible-lint_e208gal': 2,
         'ansible-lint_e301': 4,
         'ansible-lint_e302': 5,
         'ansible-lint_e303': 4,
         'ansible-lint_e304': 5,
         'ansible-lint_e305': 4,
-        'ansible-lint_e306GAL': 0,
+        'ansible-lint_e306gal': 0,
         'ansible-lint_e401': 3,
         'ansible-lint_e402': 3,
         'ansible-lint_e403': 1,
-        'ansible-lint_e404GAL': 4,
-        'ansible-lint_e405GAL': 3,
-        'ansible-lint_e406GAL': 0,
+        'ansible-lint_e404gal': 4,
+        'ansible-lint_e405gal': 3,
+        'ansible-lint_e406gal': 0,
         'ansible-lint_e501': 5,
         'ansible-lint_e502': 3,
         'ansible-lint_e503': 3,
-        'ansible-lint_e504GAL': 3,
-        'ansible-lint_e601GAL': 4,
-        'ansible-lint_e602GAL': 4,
+        'ansible-lint_e504gal': 3,
+        'ansible-lint_e601gal': 4,
+        'ansible-lint_e602gal': 4,
         'yamllint_error': 4,
         'yamllint_warning': 1,
+    }
+    METADATA_SEVERITY = {
         'importer_invalid_tag': 3,  # RoleMetaParser importer/loaders/role.py
-        'importer_missing_galaxy_info': 3,
-        'importer_missing_dependencies': 3,
         'importer_missing_key': 3,
         'importer_galaxy_tags_not_list': 3,
         'importer_categories': 3,
@@ -228,7 +228,6 @@ def _update_quality_score(import_task):
         'importer_video_link_key': 3,
         'importer_video_url_format': 3,
         'importer_invalid_license': 3,
-        'importer_not_all_versions_tested': 5,
         'importer_no_galaxy_tags': 3,  # RoleImporter worker/importers/role.py
         'importer_exceeded_max_tags': 3,
         'importer_no_platforms': 3,
@@ -236,10 +235,11 @@ def _update_quality_score(import_task):
         'importer_invalid_platform': 3,
         'importer_invalid_cloud_platform': 3,
         'importer_dependency_load': 3,
-        'importer_dependency_parse': 3,
         'importer_no_top_level_readme': 3,  # RepositoryLoader repository.py
     }
-    RULE_TO_SEVERITY = {k.lower(): v for k, v in RULE_TO_SEVERITY.items()}
+    COMPATIBILITY_SEVERITY = {
+        'importer_not_all_versions_tested': 5,   # RoleMetaParser
+    }
 
     # for all ImportTaskMessage set score_type and rule_severity
     import_task_messages = models.ImportTaskMessage.objects.filter(
@@ -249,18 +249,18 @@ def _update_quality_score(import_task):
     for msg in import_task_messages:
         rule_code = '{}_{}'.format(msg.linter_type,
                                    msg.linter_rule_id).lower()
-        if msg.linter_type == 'importer':
-            msg.score_type = 'metadata'
-            if msg.linter_rule_id == 'not_all_versions_tested':
-                msg.score_type = 'compatibility'
-        elif msg.linter_type in ['ansible-lint', 'yamllint']:
+        if rule_code in CONTENT_SEVERITY:
             msg.score_type = 'content'
-        if rule_code not in RULE_TO_SEVERITY:
-            LOG.warning(u'Rule severity not found: {}'.format(rule_code))
+            msg.rule_severity = CONTENT_SEVERITY[rule_code]
+        elif rule_code in METADATA_SEVERITY:
+            msg.score_type = 'metadata'
+            msg.rule_severity = METADATA_SEVERITY[rule_code]
+        elif rule_code in COMPATIBILITY_SEVERITY:
+            msg.score_type = 'compatibility'
+            msg.rule_severity = COMPATIBILITY_SEVERITY[rule_code]
+        else:
+            LOG.error(u'Severity not found for rule: {}'.format(rule_code))
             msg.is_linter_rule_violation = False
-            msg.save()
-            continue
-        msg.rule_severity = RULE_TO_SEVERITY[rule_code]
         msg.save()
 
     # calculate quality score for each content in collection
