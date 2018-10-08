@@ -28,6 +28,8 @@ export class CardCommunitySurveyComponent implements OnInit {
     surveyConfig: any;
     categoryAverages = {};
     numberOfSurveys: number;
+    qualityBarText: string;
+    communityBarText: string;
 
     hideSurvey = false;
     loading = true;
@@ -59,12 +61,14 @@ export class CardCommunitySurveyComponent implements OnInit {
 
         if (this.communityScore === null) {
             this.communityScore = 0;
+            this.communityBarText = 'No Surveys';
         } else {
             this.setCommunityScore(this.communityScore);
         }
 
         if (this.qualityScore === null) {
             this.qualityScore = 0;
+            this.qualityBarText = 'No Score Available';
         } else {
             this.setQualityScore(this.qualityScore);
         }
@@ -217,6 +221,7 @@ export class CardCommunitySurveyComponent implements OnInit {
 
         this.surveyService.save(this.mySurvey).subscribe(dbSurvey => {
             this.mySurvey.id = dbSurvey.id;
+            this.communityBarText = null;
             this.setCommunityScore(dbSurvey.summary_fields.repository.community_score);
 
             // Submit the cached survey data.

@@ -18,13 +18,14 @@ import { CardCommunitySurveyComponent } from './cards/survey/community-survey.co
 import { CardDependenciesComponent } from './cards/dependencies/dependencies.component';
 import { CardInfoComponent } from './cards/info/card-info.component';
 import { CardPlatformsComponent } from './cards/platforms/platforms.component';
+import { QualityDetailsComponent } from './cards/quality-details/quality-details.component';
 import { CardVersionsComponent } from './cards/versions/versions.component';
+
 import { ContentDetailComponent } from './content-detail.component';
 import { ContentDetailRoutingModule } from './content-detail.routing.module';
 import { ModuleUtilsComponent } from './content/module-utils/module-utils.component';
 import { ModulesComponent } from './content/modules/modules.component';
 import { PluginsComponent } from './content/plugins/plugins.component';
-import { QualityDetailsComponent } from './content/quality-details/quality-details.component';
 import { RolesComponent } from './content/roles/roles.component';
 import { RepositoryComponent } from './repository/repository.component';
 

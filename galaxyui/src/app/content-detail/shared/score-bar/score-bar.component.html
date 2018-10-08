@@ -2,6 +2,9 @@
     <div class="score-name" [ngStyle]="customTextStyle">{{text}}</div>
     <div class="score-bar" tooltip="{{ extraInfo ? extraInfo:''}}">
         <div class="internal-bar" [style.width]="getWidthPercentage(score)"></div>
+        <div *ngIf="barText" class="bar-message">
+            {{ barText }}
+        </div>
     </div>
-    <div class="score-number"><span class="numerator">{{score}}</span> / 5</div>
+    <div class="score-number"><span class="numerator">{{score}}</span> / {{dividend}}</div>
 </div>

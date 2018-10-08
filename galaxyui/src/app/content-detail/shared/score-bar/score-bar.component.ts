@@ -26,6 +26,9 @@ export class ScoreBarComponent implements OnInit {
     @Input()
     customTextStyle: string;
 
+    @Input()
+    barText: string;
+
     ngOnInit() {}
 
     // Calculates the width of the green rating bar.
