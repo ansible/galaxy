@@ -7,7 +7,7 @@
             {{ content.content_score }}
         </div>
 
-        <div>Warings: {{ contentWarn.count }}</div>
+        <div>Warnings: {{ contentWarn.count }}</div>
         <ul>
             <li *ngFor="let rule of contentWarn.rulesViolated">
                 <span class="{{contentWarn.ruleDetails[rule].severityIcon}}"
@@ -30,7 +30,7 @@
             {{ content.metadata_score }}
         </div>
 
-        <div>Warings: {{ metaWarn.count }}</div>
+        <div>Warnings: {{ metaWarn.count }}</div>
         <ul>
             <li *ngFor="let rule of metaWarn.rulesViolated">
                 <span class="{{metaWarn.ruleDetails[rule].severityIcon}}"
@@ -53,7 +53,7 @@
             {{ content.compatibility_score }}
         </div>
 
-        <div>Warings: {{ compatibilityWarn.count }}</div>
+        <div>Warnings: {{ compatibilityWarn.count }}</div>
         <ul>
             <li *ngFor="let rule of compatibilityWarn.rulesViolated">
                 <span class="{{compatibilityWarn.ruleDetails[rule].severityIcon}}"
