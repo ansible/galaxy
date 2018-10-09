@@ -43,6 +43,7 @@ class InfluxSessionSerializer(serializers.BaseSerializer):
         return {}
 
 
+influx_insert_buffer = []
 ####################################################
 # Influx "Schema"
 ####################################################
@@ -58,25 +59,38 @@ class InfluxSessionSerializer(serializers.BaseSerializer):
 # Influx data is organized into 'measurements' which are roughly equivalent to
 # database tables. Each measurement contains at least one field and zero to
 # many tags. Fields and tags are similar to columns with a few caveats.
+
+
 class BaseMeasurement(drf_serializers.Serializer):
     measurement = drf_serializers.CharField()
 
     def save(self):
-        client = influxdb.InfluxDBClient(
-            host=settings.INFLUX_DB_HOST,
-            port=settings.INFLUX_DB_PORT,
-            username=settings.INFLUX_DB_USERNAME,
-            password=settings.INFLUX_DB_PASSWORD
-        )
+        global influx_insert_buffer
+        if len(influx_insert_buffer) < settings.INFLUX_INSERT_BUFFER_COUNT:
+            print 'buffering writes'
+            print influx_insert_buffer
+            influx_insert_buffer.append(self.data)
+        else:
+            print 'writing buffer'
+            print influx_insert_buffer
+            client = influxdb.InfluxDBClient(
+                host=settings.INFLUX_DB_HOST,
+                port=settings.INFLUX_DB_PORT,
+                username=settings.INFLUX_DB_USERNAME,
+                password=settings.INFLUX_DB_PASSWORD
+            )
 
-        client.switch_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
-
-        try:
-            client.write_points([self.data])
-        except influxdb.client.InfluxDBClientError:
-            client.create_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
             client.switch_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
-            client.write_points([self.data])
+
+            try:
+                client.write_points(influx_insert_buffer)
+            except influxdb.client.InfluxDBClientError:
+                client.create_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
+                client.switch_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
+                client.write_points(influx_insert_buffer)
+
+            influx_insert_buffer = []
+            client.close()
 
 
 # Tags are indexed and only support string types. They should be used grouping
