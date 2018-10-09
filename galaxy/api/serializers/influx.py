@@ -118,75 +118,89 @@ class BaseFields(drf_serializers.Serializer):
 # }
 
 # Page Load
-class PageLoadTags(BaseTags):
-    from_component = drf_serializers.CharField(allow_blank=True)
-
-
-class PageLoadFields(BaseFields):
-    load_time = drf_serializers.FloatField()
-    from_page = drf_serializers.CharField()
-
-
 class PageLoadMeasurementSerializer(BaseMeasurement):
-    tags = PageLoadTags()
-    fields = PageLoadFields()
+    class Tags(BaseTags):
+        from_component = drf_serializers.CharField(allow_blank=True)
+
+    class Fields(BaseFields):
+        load_time = drf_serializers.FloatField()
+        from_page = drf_serializers.CharField()
+
+    tags = Tags()
+    fields = Fields()
 
 
 # Search
-class SearchQueryTags(BaseTags):
-    cloud_platforms = drf_serializers.CharField(
-        required=False, allow_blank=True
-    )
-    vendor = drf_serializers.BooleanField(required=False)
-    deprecated = drf_serializers.BooleanField(required=False)
-    content_type = drf_serializers.CharField(required=False, allow_blank=True)
-    platforms = drf_serializers.CharField(required=False, allow_blank=True)
-    tags = drf_serializers.CharField(required=False, allow_blank=True)
-    order_by = drf_serializers.CharField(required=False, allow_blank=True)
-
-
-class SearchQueryFields(BaseFields):
-    keywords = drf_serializers.CharField(required=False, allow_blank=True)
-    namespaces = drf_serializers.CharField(required=False, allow_blank=True)
-    number_of_results = drf_serializers.IntegerField()
-
-
 class SearchQueryMeasurementSerializer(BaseMeasurement):
-    tags = SearchQueryTags()
-    fields = SearchQueryFields()
+    class Tags(BaseTags):
+        cloud_platforms = drf_serializers.CharField(
+            required=False, allow_blank=True
+        )
+        vendor = drf_serializers.BooleanField(required=False)
+        deprecated = drf_serializers.BooleanField(required=False)
+        content_type = drf_serializers.CharField(
+            required=False,
+            allow_blank=True
+        )
+        platforms = drf_serializers.CharField(required=False, allow_blank=True)
+        tags = drf_serializers.CharField(required=False, allow_blank=True)
+        order_by = drf_serializers.CharField(required=False, allow_blank=True)
 
+    class Fields(BaseFields):
+        keywords = drf_serializers.CharField(required=False, allow_blank=True)
+        namespaces = drf_serializers.CharField(
+            required=False,
+            allow_blank=True
+        )
+        number_of_results = drf_serializers.IntegerField()
 
-class SearchLinkFields(BaseFields):
-    content_clicked = drf_serializers.CharField()
-    position_in_results = drf_serializers.IntegerField()
-    download_rank = drf_serializers.FloatField()
-    search_rank = drf_serializers.FloatField()
-    relevance = drf_serializers.FloatField()
-    keywords = drf_serializers.CharField(required=False, allow_blank=True)
+    tags = Tags()
+    fields = Fields()
 
 
 class SearchLinkMeasurementSerializer(BaseMeasurement):
-    tags = SearchQueryTags()
-    fields = SearchLinkFields()
+    class Tags(BaseTags):
+        cloud_platforms = drf_serializers.CharField(
+            required=False, allow_blank=True
+        )
+        vendor = drf_serializers.BooleanField(required=False)
+        deprecated = drf_serializers.BooleanField(required=False)
+        content_type = drf_serializers.CharField(
+            required=False,
+            allow_blank=True
+        )
+        platforms = drf_serializers.CharField(required=False, allow_blank=True)
+        tags = drf_serializers.CharField(required=False, allow_blank=True)
+        order_by = drf_serializers.CharField(required=False, allow_blank=True)
+
+    class Fields(BaseFields):
+        content_clicked = drf_serializers.CharField()
+        position_in_results = drf_serializers.IntegerField()
+        download_rank = drf_serializers.FloatField()
+        search_rank = drf_serializers.FloatField()
+        relevance = drf_serializers.FloatField()
+        keywords = drf_serializers.CharField(required=False, allow_blank=True)
+
+    tags = Tags()
+    fields = Fields()
 
 
 # UI Interactions
-class ClickFields(BaseFields):
-    name = drf_serializers.CharField()
-
-
-class LinkClickFields(ClickFields):
-    href = drf_serializers.CharField(allow_blank=True)
-
-
 class ButtonClickMeasurementSerializer(BaseMeasurement):
+    class Fields(BaseFields):
+        name = drf_serializers.CharField()
+
     tags = BaseTags()
-    fields = ClickFields()
+    fields = Fields()
 
 
 class LinkClickMeasurementSerializer(BaseMeasurement):
+    class Fields(BaseFields):
+        name = drf_serializers.CharField()
+        href = drf_serializers.CharField(allow_blank=True)
+
     tags = BaseTags()
-    fields = LinkClickFields()
+    fields = Fields()
 
 
 InfluxTypes = {
