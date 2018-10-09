@@ -25,6 +25,7 @@ from . import base_views
 
 from rest_framework.response import Response
 from rest_framework import views
+from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
@@ -70,13 +71,18 @@ class InfluxSession(base_views.ListCreateAPIView):
         return response
 
     def get(self, request, *args, **kwargs):
-        return ''
+        return Response(
+            'Method not supported',
+            status.HTTP_405_METHOD_NOT_ALLOWED
+        )
 
 
 class InfluxMetrics(views.APIView):
     def get(self, request):
-        # TODO: Return real response
-        return Response('HOWDY')
+        return Response(
+            'Method not supported',
+            status.HTTP_405_METHOD_NOT_ALLOWED
+        )
 
     def post(self, request):
         serializer = self.load_serializer(request)
@@ -85,11 +91,15 @@ class InfluxMetrics(views.APIView):
                 serializer.save()
             return Response(serializer.data)
 
-        # TODO: Return real response
-        return Response('NO GO')
+        return Response(
+            'Measurement not supported.',
+            status.HTTP_400_BAD_REQUEST
+        )
 
     # Can't name this get_serializer() for some reason
     def load_serializer(self, request):
+        if 'measurement' not in request.data:
+            return None
         if request.data['measurement'] in serializers.InfluxTypes:
             serializer_type = serializers.InfluxTypes[
                 request.data['measurement']
