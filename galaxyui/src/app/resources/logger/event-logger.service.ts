@@ -107,7 +107,7 @@ export class EventLoggerService {
     private postData(data: any) {
         let httpResult: Observable<Event>;
         httpResult = this.http.post<Event>('/api/internal/events/', data, this.httpOptions);
-        httpResult.subscribe();
+        httpResult.subscribe(results => console.log(results));
     }
 
     private getBaseMeasurement(name: string): Event {

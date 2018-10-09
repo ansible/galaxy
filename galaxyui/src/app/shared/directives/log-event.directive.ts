@@ -9,16 +9,29 @@ export class LogButtonLinkDirective {
     constructor(private el: ElementRef, private eventLoggerService: EventLoggerService) {}
 
     @Input()
-    appLogEvent: string;
+    appLogEvent: any;
 
     @HostListener('click')
     onClick() {
-        const name = this.appLogEvent || this.el.nativeElement.text || this.el.nativeElement.innerText;
+        let elementType: string;
+        let name: string;
 
-        if (this.el.nativeElement.nodeName === 'A') {
-            // TODO Add logic to use href when link not on our site
-            this.eventLoggerService.logLink(name, this.el.nativeElement.pathname);
-        } else if (this.el.nativeElement.nodeName === 'BUTTON') {
+        if (typeof this.appLogEvent === 'string') {
+            name = this.appLogEvent || this.el.nativeElement.text || this.el.nativeElement.innerText;
+            if (this.el.nativeElement.nodeName === 'A') {
+                elementType = 'link';
+            } else if (this.el.nativeElement.nodeName === 'BUTTON') {
+                elementType = 'button';
+            }
+        } else {
+            name = this.appLogEvent.name;
+            elementType = this.appLogEvent.type;
+        }
+
+        if (elementType === 'link') {
+            const link = this.appLogEvent.href || this.el.nativeElement.pathname;
+            this.eventLoggerService.logLink(name, link);
+        } else if (elementType === 'button') {
             this.eventLoggerService.logButton(name);
         }
     }
