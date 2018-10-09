@@ -67,12 +67,8 @@ class BaseMeasurement(drf_serializers.Serializer):
     def save(self):
         global influx_insert_buffer
         if len(influx_insert_buffer) < settings.INFLUX_INSERT_BUFFER_COUNT:
-            print 'buffering writes'
-            print influx_insert_buffer
             influx_insert_buffer.append(self.data)
         else:
-            print 'writing buffer'
-            print influx_insert_buffer
             client = influxdb.InfluxDBClient(
                 host=settings.INFLUX_DB_HOST,
                 port=settings.INFLUX_DB_PORT,

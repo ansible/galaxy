@@ -35,7 +35,7 @@ __all__ = [
 ]
 
 
-def set_cookie(response, session):
+def set_session(response, session):
     expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
 
     response.set_cookie(
@@ -63,7 +63,7 @@ class InfluxSession(base_views.ListCreateAPIView):
         serializer = self.get_serializer(instance=influx_session)
         headers = self.get_success_headers(serializer.data)
 
-        response = set_cookie(
+        response = set_session(
             Response(serializer.data, headers=headers),
             influx_session.session_id
         )
@@ -89,12 +89,16 @@ class InfluxMetrics(views.APIView):
         if serializer:
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-            return Response(serializer.data)
-
-        return Response(
-            'Measurement not supported.',
-            status.HTTP_400_BAD_REQUEST
-        )
+            response = set_session(
+                Response(serializer.data),
+                serializer.data['fields']['session_id']
+            )
+        else:
+            response = Response(
+                'Measurement not supported.',
+                status.HTTP_400_BAD_REQUEST
+            )
+        return response
 
     # Can't name this get_serializer() for some reason
     def load_serializer(self, request):
