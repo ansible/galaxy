@@ -3,12 +3,12 @@
     <div class="col-lg-8 header-left">
         <div class="namespace-img">
             <div class="img-wrapper">
-                <a [routerLink]="['/', repositoryView.namespace]"
+                <a appLogEvent="Author Profile" [routerLink]="['/', repositoryView.namespace]"
                     tooltip="View the author's profile." >
                     <img class="namespace-avatar" [src]="repositoryView.avatarUrl"></a>
             </div>
             <div class="namespace-name" tooltip="{{ repositoryView.namespace }}">
-                <a [routerLink]="['/', repositoryView.namespace]">
+                <a appLogEvent="Author Profile" [routerLink]="['/', repositoryView.namespace]">
                     {{ repositoryView.namespace }}</a>
             </div>
         </div>
@@ -49,7 +49,7 @@
                         </li>
                     </ul>
 
-                    <a [href]="repositoryView.issueTrackerUrl" *ngIf="repositoryView.issueTrackerUrl"
+                    <a appLogEvent="Issues" [href]="repositoryView.issueTrackerUrl" *ngIf="repositoryView.issueTrackerUrl"
                         target="_blank"
                         tooltip="Visit the issue tracker. Opens in a new browser tab."
                         class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
@@ -76,7 +76,7 @@
                         </li>
                     </ul>
 
-                    <a [href]="repositoryView.scmUrl" target="_blank"
+                    <a appLogEvent="github" [href]="repositoryView.scmUrl" target="_blank"
                         tooltip="Visit the repository. Opens in a new browser tab." class="btn btn-default">
                             <i [ngClass]="repositoryView.scmIconClass"></i> {{ repositoryView.scmName }} Repo</a>
                 </span>
