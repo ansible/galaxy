@@ -53,7 +53,15 @@
                                         <div class="icon">
                                             <i class="{{ item['iconClass'] }}"></i>
                                         </div>
-                                        <div class="name cursor-pointer"><a [routerLink]="[item['contentLink']]" (click)="contentClick(item, index)" tooltip="View content details">{{ item.name }}</a></div>
+                                        <div class="name cursor-pointer">
+                                            <a
+                                                [routerLink]="[item['contentLink']]"
+                                                (contextmenu)="contentClick(item, index)"
+                                                (click)="contentClick(item, index)"
+                                                (appMiddleclick)="contentClick(item, index)"
+                                                tooltip="View content details"
+                                            >{{ item.name }}</a>
+                                        </div>
                                         <div class="type">
                                             {{ item.summary_fields.content_type.name }}
                                         </div>
