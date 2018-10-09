@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <div class="filter-toggle-wrapper">
-                    <div (click)="toggleFilter()" class="filter-toggle">
+                    <div [appLogEvent]='{type: "button", name: "Filter"}' (click)="toggleFilter()" class="filter-toggle">
                         <span class="fa fa-angle-{{showFilter ? 'up':'down'}}"></span>
                         Filters
                     </div>
