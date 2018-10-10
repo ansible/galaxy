@@ -294,11 +294,11 @@ def _update_quality_score(import_task):
 
         content.content_score = max(0.0, (BASE_SCORE - sum(content_w)) / 10)
         content.metadata_score = max(0.0, (BASE_SCORE - sum(meta_w)) / 10)
-        content.compatibility_score = max(0.0, (BASE_SCORE -
-                                                sum(compatibility_w)) / 10)
+        # content.compatibility_score = max(0.0, (BASE_SCORE -
+        #                                         sum(compatibility_w)) / 10)
+        content.compatibility_score = None
         content.quality_score = sum([content.content_score,
-                                     content.metadata_score,
-                                     content.compatibility_score]) / 3.0
+                                     content.metadata_score]) / 2.0
         content.save()
         repo_points += content.quality_score
 

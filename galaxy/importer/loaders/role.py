@@ -376,7 +376,7 @@ class RoleLoader(base.BaseLoader):
         data['dependencies'] = meta_parser.parse_dependencies()
         data['video_links'] = meta_parser.parse_videos()
         meta_parser.validate_license()
-        meta_parser.check_tox()
+        # meta_parser.check_tox()
         readme = self._get_readme()
 
         return models.Content(
