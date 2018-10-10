@@ -386,6 +386,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
             item.download_rank,
             item.search_rank,
             item.relevance,
+            item.id,
         );
     }
 

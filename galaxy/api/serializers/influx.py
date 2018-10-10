@@ -175,6 +175,7 @@ class SearchLinkMeasurementSerializer(BaseMeasurement):
 
     class Fields(BaseFields):
         content_clicked = drf_serializers.CharField()
+        content_clicked_id = drf_serializers.IntegerField()
         position_in_results = drf_serializers.IntegerField()
         download_rank = drf_serializers.FloatField()
         search_rank = drf_serializers.FloatField()

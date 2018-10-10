@@ -76,6 +76,7 @@ export class EventLoggerService {
         downloadRank: number,
         searchRank: number,
         relevance: number,
+        contentID: number,
     ) {
         const measurement = this.getBaseMeasurement('search_click');
         measurement.fields['content_clicked'] = contentClicked;
@@ -83,6 +84,7 @@ export class EventLoggerService {
         measurement.fields['download_rank'] = downloadRank;
         measurement.fields['search_rank'] = searchRank;
         measurement.fields['relevance'] = relevance;
+        measurement.fields['content_clicked_id'] = contentID;
 
         for (const key of Object.keys(searchParams)) {
             if (key === 'keywords' || key === 'namespaces') {
