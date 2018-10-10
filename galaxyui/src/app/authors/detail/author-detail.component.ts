@@ -66,6 +66,7 @@ export class AuthorDetailComponent implements OnInit {
     pageNumber = 1;
     filterBy: any = {};
     sortBy = 'name';
+    isFollower = false;
 
     RepoFormats: typeof RepoFormats = RepoFormats;
 
@@ -224,6 +225,10 @@ export class AuthorDetailComponent implements OnInit {
             this.searchRepositories();
             this.pfBody.scrollToTop();
         }
+    }
+
+    followUser() {
+        this.isFollower = !this.isFollower;
     }
 
     // private

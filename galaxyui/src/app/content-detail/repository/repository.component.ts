@@ -55,7 +55,7 @@ export class RepositoryComponent implements OnInit {
         this.setRepositoryView();
     }
 
-    followUser() {
+    followCollection() {
         this.isFollower = !this.isFollower;
     }
 

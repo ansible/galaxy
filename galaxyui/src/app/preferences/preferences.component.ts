@@ -76,7 +76,7 @@ export class PreferencesComponent implements OnInit {
                 },
                 {
                     key: 'notify_content_release',
-                    description: 'there is a new release of a content bundle you follow',
+                    description: 'there is a new release of a collection you follow',
                 },
                 {
                     key: 'notify_author_release',
