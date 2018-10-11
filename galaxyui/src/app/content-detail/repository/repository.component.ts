@@ -1,8 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 
+import { Router } from '@angular/router';
+
 import { Content } from '../../resources/content/content';
 import { Namespace } from '../../resources/namespaces/namespace';
 import { Repository } from '../../resources/repositories/repository';
+
+import { AuthService } from '../../auth/auth.service';
+import { User } from '../../resources/users/user';
+import { UserService } from '../../resources/users/user.service';
 
 import { RepoFormats, RepoFormatsIconClasses, RepoFormatsTooltips } from '../../enums/repo-types.enum';
 
@@ -39,7 +45,7 @@ export class RepositoryComponent implements OnInit {
     // Used to track which component is being loaded
     componentName = 'RepositoryComponent';
 
-    constructor() {}
+    constructor(private authService: AuthService, private userService: UserService, private router: Router) {}
 
     @Input()
     repository: Repository;
@@ -51,15 +57,46 @@ export class RepositoryComponent implements OnInit {
     RepoFormats: typeof RepoFormats = RepoFormats;
     isFollower = false;
 
+    me: User;
+
     ngOnInit() {
+        this.authService.me().subscribe(me => {
+            if (me.authenticated) {
+                this.userService.get(me.id).subscribe(result => {
+                    this.me = result;
+                    this.setFollower();
+                });
+            } else {
+                this.me = null;
+            }
+        });
         this.setRepositoryView();
     }
 
     followCollection() {
-        this.isFollower = !this.isFollower;
+        if (this.isFollower) {
+            const index = this.me.repositories_followed.indexOf(this.repository.id);
+            this.me.repositories_followed.splice(index, 1);
+        } else {
+            this.me.repositories_followed.push(this.repository.id);
+        }
+        this.userService.save(this.me).subscribe(result => {
+            if (result !== null) {
+                this.me = result;
+                this.setFollower();
+            }
+        });
     }
 
     // private
+    private setFollower() {
+        if (this.me.repositories_followed.find(x => x === this.repository.id) !== undefined) {
+            this.isFollower = true;
+        } else {
+            this.isFollower = false;
+        }
+    }
+
     private setRepositoryView() {
         // Determine repoType: role, apb, multiconent
         this.repositoryView = {} as RepositoryView;

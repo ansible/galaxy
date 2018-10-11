@@ -22,8 +22,11 @@ import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 import { Namespace } from '../../resources/namespaces/namespace';
 import { PFBodyService } from '../../resources/pf-body/pf-body.service';
 
+import { AuthService } from '../../auth/auth.service';
 import { Repository } from '../../resources/repositories/repository';
 import { RepositoryService } from '../../resources/repositories/repository.service';
+import { User } from '../../resources/users/user';
+import { UserService } from '../../resources/users/user.service';
 
 import { ContentTypes, ContentTypesIconClasses, ContentTypesPluralChoices } from '../../enums/content-types.enum';
 
@@ -43,6 +46,8 @@ export class AuthorDetailComponent implements OnInit {
         private route: ActivatedRoute,
         private repositoryService: RepositoryService,
         private pfBody: PFBodyService,
+        private authService: AuthService,
+        private userService: UserService,
     ) {}
 
     pageTitle = '';
@@ -67,6 +72,8 @@ export class AuthorDetailComponent implements OnInit {
     filterBy: any = {};
     sortBy = 'name';
     isFollower = false;
+
+    me: User;
 
     RepoFormats: typeof RepoFormats = RepoFormats;
 
@@ -163,6 +170,16 @@ export class AuthorDetailComponent implements OnInit {
             this.paginationConfig.totalItems = data['repositories']['count'];
             this.pageLoading = false;
             if (this.namespace && this.namespace.name) {
+                this.authService.me().subscribe(me => {
+                    if (me.authenticated) {
+                        this.userService.get(me.id).subscribe(result => {
+                            this.me = result;
+                            this.setFollower();
+                        });
+                    } else {
+                        this.me = null;
+                    }
+                });
                 if (this.namespace.is_vendor) {
                     this.pageTitle = `Partners;/partners;${this.namespace.name}`;
                     this.pageIcon = 'fa fa-star';
@@ -228,10 +245,29 @@ export class AuthorDetailComponent implements OnInit {
     }
 
     followUser() {
-        this.isFollower = !this.isFollower;
+        if (this.isFollower) {
+            const index = this.me.users_followed.indexOf(this.namespace.id);
+            this.me.users_followed.splice(index, 1);
+        } else {
+            this.me.users_followed.push(this.namespace.id);
+        }
+        this.userService.save(this.me).subscribe(result => {
+            if (result !== null) {
+                this.me = result;
+                this.setFollower();
+            }
+        });
     }
 
     // private
+
+    private setFollower() {
+        if (this.me.users_followed.find(x => x === this.namespace.id) !== undefined) {
+            this.isFollower = true;
+        } else {
+            this.isFollower = false;
+        }
+    }
 
     private searchRepositories() {
         this.pageLoading = true;
