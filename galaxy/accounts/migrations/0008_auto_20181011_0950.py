@@ -16,7 +16,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='customuser',
             name='repositories_followed',
-            field=models.ManyToManyField(blank=True, related_name='following_users', to='main.Repository'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='following_users',
+                to='main.Repository'
+            ),
         ),
         migrations.AddField(
             model_name='customuser',
