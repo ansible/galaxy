@@ -13,7 +13,6 @@ PyYAML
 ansible
 pyOpenSSL
 psycopg2-binary
-gevent>=0.13
 semver
 
 # Linting
