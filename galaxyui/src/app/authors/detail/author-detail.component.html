@@ -49,17 +49,37 @@
 
             <div class="namespace namespace-header-right" *ngIf="namespace.html_url">
                 <div class="control-buttons">
-                    <div class="header-button btn btn-default" (click)="followUser()">
-                        <span class="fa fa-user-{{ isFollower ? 'times':'plus'}}"></span> {{ isFollower ? 'Unfollow User':'Follow User'}}
+                    <div class="header-button">
+                        <div
+                            *ngIf="me"
+                            tooltip="Get notified when this author posts new content."
+                            class="btn btn-default"
+                            (click)="followUser()"
+                        >
+                            <span class="fa fa-user-{{ isFollower ? 'times':'plus'}}"></span> {{ isFollower ? 'Unfollow Author':'Follow Author'}}
+                        </div>
+                        <a
+                            *ngIf="!me"
+                            tooltip="Get notified when this author posts new content."
+                            class="btn btn-default"
+                            [routerLink]='["/", "login"]'
+                            [queryParams]='{next: router.url}'
+                        >
+                            <span class="fa fa-user-plus"></span> Login to Follow
+                        </a>
                     </div>
 
-                    <a
+                    <div class="header-button">
+                        <a
+                            appLogEvent='github'
+                            target="_blank"
+                            href="{{ namespace.html_url }}"
+                            class="btn btn-default primary-action"
+                        >
+                            <span class="fa fa-github"></span> View on GitHub
+                        </a>
+                    </div>
 
-                        appLogEvent='github'
-                        target="_blank"
-                        href="{{ namespace.html_url }}"
-                        class="header-button btn btn-default primary-action"
-                    ><span class="fa fa-github"></span> View on GitHub</a>
                 </div>
             </div>
         </div>

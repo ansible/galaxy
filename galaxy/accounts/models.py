@@ -105,11 +105,10 @@ class CustomUser(auth_models.AbstractBaseUser,
     repositories_followed = models.ManyToManyField(
         'main.Repository',
         editable=True,
-        related_name='following_users',
         blank=True
     )
 
-    users_followed = models.ManyToManyField(
+    namespaces_followed = models.ManyToManyField(
         'main.Namespace',
         editable=True,
         blank=True

@@ -21,7 +21,7 @@ USER_FIELDS = (
     'username', 'staff', 'full_name', 'date_joined', 'avatar_url',
     'notify_survey', 'notify_import_fail', 'notify_import_success',
     'notify_content_release', 'notify_author_release',
-    'notify_galaxy_announce', 'users_followed', 'repositories_followed'
+    'notify_galaxy_announce', 'namespaces_followed', 'repositories_followed'
 )
 
 __all__ = [

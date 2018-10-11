@@ -246,10 +246,10 @@ export class AuthorDetailComponent implements OnInit {
 
     followUser() {
         if (this.isFollower) {
-            const index = this.me.users_followed.indexOf(this.namespace.id);
-            this.me.users_followed.splice(index, 1);
+            const index = this.me.namespaces_followed.indexOf(this.namespace.id);
+            this.me.namespaces_followed.splice(index, 1);
         } else {
-            this.me.users_followed.push(this.namespace.id);
+            this.me.namespaces_followed.push(this.namespace.id);
         }
         this.userService.save(this.me).subscribe(result => {
             if (result !== null) {
@@ -262,7 +262,7 @@ export class AuthorDetailComponent implements OnInit {
     // private
 
     private setFollower() {
-        if (this.me.users_followed.find(x => x === this.namespace.id) !== undefined) {
+        if (this.me.namespaces_followed.find(x => x === this.namespace.id) !== undefined) {
             this.isFollower = true;
         } else {
             this.isFollower = false;

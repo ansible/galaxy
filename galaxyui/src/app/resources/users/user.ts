@@ -19,6 +19,6 @@ export class User {
     notify_content_release: boolean;
     notify_author_release: boolean;
     notify_galaxy_announce: boolean;
-    users_followed: any;
+    namespaces_followed: any;
     repositories_followed: any;
 }
