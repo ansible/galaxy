@@ -25,6 +25,7 @@ import pytz
 
 from django.conf import settings
 from django.db import transaction
+from django.utils import timezone
 from allauth.socialaccount import models as auth_models
 
 from galaxy import constants
@@ -313,6 +314,7 @@ def _update_quality_score(import_task):
             str(compatibility_w), content.compatibility_score))
 
     repository.quality_score = repo_points / contents.count()
+    repository.quality_score_date = timezone.now()
     repository.save()
     LOG.debug(u'repo quality score: {}'.format(repository.quality_score))
 
