@@ -7,18 +7,22 @@
                         <i class="fa fa-star fa-2x"></i>
                     </span>
                     <span class="header-text">Featured Partners</span>
-                    <a [routerLink]="['/','search']">View All Partners</a>
+                    <a appLogEvent [routerLink]="['/','search']">View All Partners</a>
                 </div>
             </ng-template>
             <div class="partner-carousel">
                 <div class="carousel-left-control">
-                    <a [href]="" (click)="handleLeftClick()">
+                    <a [appLogEvent]='{type: "button", name: "Vendors: left"}' [href]="" (click)="handleLeftClick()">
                         <i class="fa fa-caret-left fa-2x"></i>
                     </a>
                 </div>
                 <div class="carousel-slider">
                     <div class="carousel-slider-inner" id="slider-inner">
-                        <div *ngFor="let vendor of vendors" (click)="handleVendorClick(vendor)" class="vendor">
+                        <div
+                            [appLogEvent]='{type: "link", name: "Partner: " + vendor.name, href: "/search"}'
+                            *ngFor="let vendor of vendors"
+                            (click)="handleVendorClick(vendor)"
+                            class="vendor">
                             <table class="img-wrapper">
                                 <tr>
                                     <td>
@@ -31,7 +35,7 @@
                     </div>
                 </div>
                 <div class="carousel-right-control">
-                    <a [href]="" (click)="handleRightClick()">
+                    <a [appLogEvent]='{type: "button", name: "Vendors: right"}' [href]="" (click)="handleRightClick()">
                         <i class="fa fa-caret-right fa-2x"></i>
                     </a>
                 </div>

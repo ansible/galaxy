@@ -8,7 +8,11 @@
         [itemTemplate]="itemTemplate">
         <ng-template #itemTemplate let-item="item" let-index="index">
             <div class="list-wrapper">
-                <div (click)="handleClick(item)" class="item-name">{{item.name}}</div>
+                <div
+                    [appLogEvent]='{type: "button", name: "popular " + popularType + ": " + item.name}' 
+                    (click)="handleClick(item)"
+                    class="item-name"
+                >{{item.name}}</div>
                 <div class="item-count">{{ item.roles_count | number }}</div>
             </div>
         </ng-template>

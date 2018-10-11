@@ -25,6 +25,7 @@ from . import base_views
 
 from rest_framework.response import Response
 from rest_framework import views
+from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ __all__ = [
 ]
 
 
-def set_cookie(response, session):
+def set_session(response, session):
     expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
 
     response.set_cookie(
@@ -62,7 +63,7 @@ class InfluxSession(base_views.ListCreateAPIView):
         serializer = self.get_serializer(instance=influx_session)
         headers = self.get_success_headers(serializer.data)
 
-        response = set_cookie(
+        response = set_session(
             Response(serializer.data, headers=headers),
             influx_session.session_id
         )
@@ -70,26 +71,39 @@ class InfluxSession(base_views.ListCreateAPIView):
         return response
 
     def get(self, request, *args, **kwargs):
-        return ''
+        return Response(
+            'Method not supported',
+            status.HTTP_405_METHOD_NOT_ALLOWED
+        )
 
 
 class InfluxMetrics(views.APIView):
     def get(self, request):
-        # TODO: Return real response
-        return Response('HOWDY')
+        return Response(
+            'Method not supported',
+            status.HTTP_405_METHOD_NOT_ALLOWED
+        )
 
     def post(self, request):
         serializer = self.load_serializer(request)
         if serializer:
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-            return Response(serializer.data)
-
-        # TODO: Return real response
-        return Response('NO GO')
+            response = set_session(
+                Response(serializer.data),
+                serializer.data['fields']['session_id']
+            )
+        else:
+            response = Response(
+                'Measurement not supported.',
+                status.HTTP_400_BAD_REQUEST
+            )
+        return response
 
     # Can't name this get_serializer() for some reason
     def load_serializer(self, request):
+        if 'measurement' not in request.data:
+            return None
         if request.data['measurement'] in serializers.InfluxTypes:
             serializer_type = serializers.InfluxTypes[
                 request.data['measurement']

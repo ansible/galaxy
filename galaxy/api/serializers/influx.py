@@ -43,6 +43,7 @@ class InfluxSessionSerializer(serializers.BaseSerializer):
         return {}
 
 
+influx_insert_buffer = []
 ####################################################
 # Influx "Schema"
 ####################################################
@@ -58,25 +59,34 @@ class InfluxSessionSerializer(serializers.BaseSerializer):
 # Influx data is organized into 'measurements' which are roughly equivalent to
 # database tables. Each measurement contains at least one field and zero to
 # many tags. Fields and tags are similar to columns with a few caveats.
+
+
 class BaseMeasurement(drf_serializers.Serializer):
     measurement = drf_serializers.CharField()
 
     def save(self):
-        client = influxdb.InfluxDBClient(
-            host=settings.INFLUX_DB_HOST,
-            port=settings.INFLUX_DB_PORT,
-            username=settings.INFLUX_DB_USERNAME,
-            password=settings.INFLUX_DB_PASSWORD
-        )
+        global influx_insert_buffer
+        if len(influx_insert_buffer) < settings.INFLUX_INSERT_BUFFER_COUNT:
+            influx_insert_buffer.append(self.data)
+        else:
+            client = influxdb.InfluxDBClient(
+                host=settings.INFLUX_DB_HOST,
+                port=settings.INFLUX_DB_PORT,
+                username=settings.INFLUX_DB_USERNAME,
+                password=settings.INFLUX_DB_PASSWORD
+            )
 
-        client.switch_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
-
-        try:
-            client.write_points([self.data])
-        except influxdb.client.InfluxDBClientError:
-            client.create_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
             client.switch_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
-            client.write_points([self.data])
+
+            try:
+                client.write_points(influx_insert_buffer)
+            except influxdb.client.InfluxDBClientError:
+                client.create_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
+                client.switch_database(settings.INFLUX_DB_UI_EVENTS_DB_NAME)
+                client.write_points(influx_insert_buffer)
+
+            influx_insert_buffer = []
+            client.close()
 
 
 # Tags are indexed and only support string types. They should be used grouping
@@ -108,75 +118,90 @@ class BaseFields(drf_serializers.Serializer):
 # }
 
 # Page Load
-class PageLoadTags(BaseTags):
-    from_component = drf_serializers.CharField(allow_blank=True)
-
-
-class PageLoadFields(BaseFields):
-    load_time = drf_serializers.FloatField()
-    from_page = drf_serializers.CharField()
-
-
 class PageLoadMeasurementSerializer(BaseMeasurement):
-    tags = PageLoadTags()
-    fields = PageLoadFields()
+    class Tags(BaseTags):
+        from_component = drf_serializers.CharField(allow_blank=True)
+
+    class Fields(BaseFields):
+        load_time = drf_serializers.FloatField()
+        from_page = drf_serializers.CharField()
+
+    tags = Tags()
+    fields = Fields()
 
 
 # Search
-class SearchQueryTags(BaseTags):
-    cloud_platforms = drf_serializers.CharField(
-        required=False, allow_blank=True
-    )
-    vendor = drf_serializers.BooleanField(required=False)
-    deprecated = drf_serializers.BooleanField(required=False)
-    content_type = drf_serializers.CharField(required=False, allow_blank=True)
-    platforms = drf_serializers.CharField(required=False, allow_blank=True)
-    tags = drf_serializers.CharField(required=False, allow_blank=True)
-    order_by = drf_serializers.CharField(required=False, allow_blank=True)
-
-
-class SearchQueryFields(BaseFields):
-    keywords = drf_serializers.CharField(required=False, allow_blank=True)
-    namespaces = drf_serializers.CharField(required=False, allow_blank=True)
-    number_of_results = drf_serializers.IntegerField()
-
-
 class SearchQueryMeasurementSerializer(BaseMeasurement):
-    tags = SearchQueryTags()
-    fields = SearchQueryFields()
+    class Tags(BaseTags):
+        cloud_platforms = drf_serializers.CharField(
+            required=False, allow_blank=True
+        )
+        vendor = drf_serializers.BooleanField(required=False)
+        deprecated = drf_serializers.BooleanField(required=False)
+        content_type = drf_serializers.CharField(
+            required=False,
+            allow_blank=True
+        )
+        platforms = drf_serializers.CharField(required=False, allow_blank=True)
+        tags = drf_serializers.CharField(required=False, allow_blank=True)
+        order_by = drf_serializers.CharField(required=False, allow_blank=True)
 
+    class Fields(BaseFields):
+        keywords = drf_serializers.CharField(required=False, allow_blank=True)
+        namespaces = drf_serializers.CharField(
+            required=False,
+            allow_blank=True
+        )
+        number_of_results = drf_serializers.IntegerField()
 
-class SearchLinkFields(BaseFields):
-    content_clicked = drf_serializers.CharField()
-    position_in_results = drf_serializers.IntegerField()
-    download_rank = drf_serializers.FloatField()
-    search_rank = drf_serializers.FloatField()
-    relevance = drf_serializers.FloatField()
-    keywords = drf_serializers.CharField(required=False, allow_blank=True)
+    tags = Tags()
+    fields = Fields()
 
 
 class SearchLinkMeasurementSerializer(BaseMeasurement):
-    tags = SearchQueryTags()
-    fields = SearchLinkFields()
+    class Tags(BaseTags):
+        cloud_platforms = drf_serializers.CharField(
+            required=False, allow_blank=True
+        )
+        vendor = drf_serializers.BooleanField(required=False)
+        deprecated = drf_serializers.BooleanField(required=False)
+        content_type = drf_serializers.CharField(
+            required=False,
+            allow_blank=True
+        )
+        platforms = drf_serializers.CharField(required=False, allow_blank=True)
+        tags = drf_serializers.CharField(required=False, allow_blank=True)
+        order_by = drf_serializers.CharField(required=False, allow_blank=True)
+
+    class Fields(BaseFields):
+        content_clicked = drf_serializers.CharField()
+        content_clicked_id = drf_serializers.IntegerField()
+        position_in_results = drf_serializers.IntegerField()
+        download_rank = drf_serializers.FloatField()
+        search_rank = drf_serializers.FloatField()
+        relevance = drf_serializers.FloatField()
+        keywords = drf_serializers.CharField(required=False, allow_blank=True)
+
+    tags = Tags()
+    fields = Fields()
 
 
 # UI Interactions
-class ClickFields(BaseFields):
-    name = drf_serializers.CharField()
-
-
-class LinkClickFields(ClickFields):
-    href = drf_serializers.CharField(allow_blank=True)
-
-
 class ButtonClickMeasurementSerializer(BaseMeasurement):
+    class Fields(BaseFields):
+        name = drf_serializers.CharField()
+
     tags = BaseTags()
-    fields = ClickFields()
+    fields = Fields()
 
 
 class LinkClickMeasurementSerializer(BaseMeasurement):
+    class Fields(BaseFields):
+        name = drf_serializers.CharField()
+        href = drf_serializers.CharField(allow_blank=True)
+
     tags = BaseTags()
-    fields = LinkClickFields()
+    fields = Fields()
 
 
 InfluxTypes = {

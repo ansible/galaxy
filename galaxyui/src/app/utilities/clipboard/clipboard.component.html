@@ -1,5 +1,14 @@
 <div class="copy-to-clipboard">
     <div class="code">$</div>
-    <div class="code" [id]="guid">{{ copyText | lowercase }}</div>
-    <button [appLogEvent]="'copy_to_clipboard'" (click)="copyToClipboard()" class="btn btn-default" tooltip="Copy to clipboard"><i class="fa fa-copy"></i></button>
+    <div
+        [appLogEvent]='{type: "button", name: "copy_to_clipboard_text_box"}'
+        class="code"
+        [id]="guid"
+    >{{ copyText | lowercase }}</div>
+    <button
+        [appLogEvent]="'copy_to_clipboard'"
+        (click)="copyToClipboard()"
+        class="btn btn-default"
+        tooltip="Copy to clipboard"
+    ><i class="fa fa-copy"></i></button>
 </div>

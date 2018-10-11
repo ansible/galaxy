@@ -18,23 +18,23 @@
 
         <div class="row btn-row" *ngIf="!showEmptyState">
             <div class="col-sm-12">
-                <button type="button" class="btn btn-default" [ngClass]="{'btn-primary': showingView === ViewTypes.detail}" tooltip="Return to main content view"
+                <button appLogEvent type="button" class="btn btn-default" [ngClass]="{'btn-primary': showingView === ViewTypes.detail}" tooltip="Return to main content view"
                     (click)="toggleView(ViewTypes.detail)">Details</button>
-                <button type="button" class="btn btn-default" *ngIf="hasReadme" [ngClass]="{'btn-primary': showingView === ViewTypes.readme}"
+                <button appLogEvent type="button" class="btn btn-default" *ngIf="hasReadme" [ngClass]="{'btn-primary': showingView === ViewTypes.readme}"
                     tooltip="View the repository's README file" (click)="toggleView(ViewTypes.readme)">Read Me</button>
-                <button type="button" class="btn btn-default" *ngIf="hasMetadata" [ngClass]="{'btn-primary': showingView === ViewTypes.meta}"
+                <button appLogEvent type="button" class="btn btn-default" *ngIf="hasMetadata" [ngClass]="{'btn-primary': showingView === ViewTypes.meta}"
                     tooltip="View the {{ metadataFilename }} file" (click)="toggleView(ViewTypes.meta)">Metadata</button>
-                <button type="button" class="btn btn-default" *ngIf="contentCounts.module" [ngClass]="{'btn-primary': showingView === ViewTypes.modules}"
+                <button appLogEvent="Modules" type="button" class="btn btn-default" *ngIf="contentCounts.module" [ngClass]="{'btn-primary': showingView === ViewTypes.modules}"
                     tooltip="View modules" (click)="toggleView(ViewTypes.modules)">{{ contentCounts.module }}
                     Modules
                 </button>
-                <button type="button" class="btn btn-default" *ngIf="contentCounts.moduleUtils" [ngClass]="{'btn-primary': showingView === ViewTypes.moduleUtils}"
+                <button appLogEvent type="button" class="btn btn-default" *ngIf="contentCounts.moduleUtils" [ngClass]="{'btn-primary': showingView === ViewTypes.moduleUtils}"
                     tooltip="View module utils" (click)="toggleView(ViewTypes.moduleUtils)">
                     {{ contentCounts.moduleUtils }} Module Utils</button>
-                <button type="button" class="btn btn-default" *ngIf="contentCounts.plugin" [ngClass]="{'btn-primary': showingView === ViewTypes.plugins}"
+                <button appLogEvent="Plugins" type="button" class="btn btn-default" *ngIf="contentCounts.plugin" [ngClass]="{'btn-primary': showingView === ViewTypes.plugins}"
                     tooltip="View plugins" (click)="toggleView(ViewTypes.plugins)"><i class="fa fa-plug"></i>
                     {{ contentCounts.plugin }} Plugins</button>
-                <button type="button" class="btn btn-default" *ngIf="contentCounts.role" [ngClass]="{'btn-primary': showingView === ViewTypes.roles}"
+                <button appLogEvent="Roles" type="button" class="btn btn-default" *ngIf="contentCounts.role" [ngClass]="{'btn-primary': showingView === ViewTypes.roles}"
                     tooltip="View modules" (click)="toggleView(ViewTypes.roles)"><i class="fa fa-gear"></i>
                     {{ contentCounts.role }} Roles</button>
             </div>

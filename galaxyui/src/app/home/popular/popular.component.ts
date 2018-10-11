@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 
 import { ContentTypes } from '../../enums/content-types.enum';
 
+import { EventLoggerService } from '../../resources/logger/event-logger.service';
+
 class Category {
     name: string;
     iconClass: string;
@@ -20,7 +22,7 @@ export class PopularComponent implements OnInit {
 
     categories: Category[] = [];
 
-    constructor(private router: Router) {}
+    constructor(private router: Router, private logger: EventLoggerService) {}
 
     ngOnInit() {
         this.categories = [
@@ -69,6 +71,7 @@ export class PopularComponent implements OnInit {
 
     handleCategoryClick(category: Category) {
         const params = {};
+        this.logger.logLink('Most Popular: ' + category.name, '/search');
         if (category.name === 'Playbook Bundles') {
             params['content_type'] = ContentTypes.apb;
         } else {
