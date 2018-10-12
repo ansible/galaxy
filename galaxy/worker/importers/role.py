@@ -176,22 +176,14 @@ class RoleImporter(base.ContentImporter):
         new_deps = []
         for dep in dependencies:
             try:
-                try:
-                    dep_role = models.Content.objects.get(
-                        namespace__name=dep.namespace, name=dep.name)
-                    role.dependencies.add(dep_role)
-                    new_deps.append(dep)
-                except Exception as e:
-                    msg = u'Error loading dependencies {}'.format(e)
-                    self.linter_data['linter_rule_id'] = 'dependency_load'
-                    self.linter_data['rule_desc'] = msg
-                    self.log.warning(msg, extra=self.linter_data)
-                    raise Exception(
-                        u'Role dependency not found: {}.{}'.format(
-                            dep.namespace, dep.name))
-            except Exception as e:
-                msg = u'Error parsing dependency {}'.format(e)
-                self.linter_data['linter_rule_id'] = 'dependency_parse'
+                dep_role = models.Content.objects.get(
+                    namespace__name=dep.namespace, name=dep.name)
+                role.dependencies.add(dep_role)
+                new_deps.append(dep)
+            except Exception:
+                msg = u"Error loading dependency: '{}'".format(
+                    '.'.join([d for d in dep]))
+                self.linter_data['linter_rule_id'] = 'dependency_load'
                 self.linter_data['rule_desc'] = msg
                 self.log.warning(msg, extra=self.linter_data)
 

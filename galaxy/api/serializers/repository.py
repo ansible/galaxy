@@ -62,6 +62,7 @@ class RepositorySerializer(serializers.BaseSerializer):
             'deprecated',
             'community_score',
             'quality_score',
+            'quality_score_date',
         )
 
     def get_related(self, instance):

@@ -25,6 +25,7 @@ import pytz
 
 from django.conf import settings
 from django.db import transaction
+from django.utils import timezone
 from allauth.socialaccount import models as auth_models
 
 from galaxy import constants
@@ -181,44 +182,44 @@ def _update_quality_score(import_task):
         4: 5,
         5: 10,
     }
-    RULE_TO_SEVERITY = {
+    CONTENT_SEVERITY = {
         'ansible-lint_e101': 3,
         'ansible-lint_e102': 4,
         'ansible-lint_e103': 5,
         'ansible-lint_e104': 5,
-        'ansible-lint_e105GAL': 0,
-        'ansible-lint_e106GAL': 0,
+        'ansible-lint_e105gal': 0,
+        'ansible-lint_e106gal': 0,
         'ansible-lint_e201': 0,
         'ansible-lint_e202': 5,
-        'ansible-lint_e203GAL': 2,
-        'ansible-lint_e204GAL': 1,
-        'ansible-lint_e205GAL': 1,
-        'ansible-lint_e206GAL': 3,
-        'ansible-lint_e207GAL': 3,
-        'ansible-lint_e208GAL': 2,
+        'ansible-lint_e203gal': 2,
+        'ansible-lint_e204gal': 1,
+        'ansible-lint_e205gal': 1,
+        'ansible-lint_e206gal': 3,
+        'ansible-lint_e207gal': 3,
+        'ansible-lint_e208gal': 2,
         'ansible-lint_e301': 4,
         'ansible-lint_e302': 5,
         'ansible-lint_e303': 4,
         'ansible-lint_e304': 5,
         'ansible-lint_e305': 4,
-        'ansible-lint_e306GAL': 0,
+        'ansible-lint_e306gal': 0,
         'ansible-lint_e401': 3,
         'ansible-lint_e402': 3,
         'ansible-lint_e403': 1,
-        'ansible-lint_e404GAL': 4,
-        'ansible-lint_e405GAL': 3,
-        'ansible-lint_e406GAL': 0,
+        'ansible-lint_e404gal': 4,
+        'ansible-lint_e405gal': 3,
+        'ansible-lint_e406gal': 0,
         'ansible-lint_e501': 5,
         'ansible-lint_e502': 3,
         'ansible-lint_e503': 3,
-        'ansible-lint_e504GAL': 3,
-        'ansible-lint_e601GAL': 4,
-        'ansible-lint_e602GAL': 4,
+        'ansible-lint_e504gal': 3,
+        'ansible-lint_e601gal': 4,
+        'ansible-lint_e602gal': 4,
         'yamllint_error': 4,
         'yamllint_warning': 1,
+    }
+    METADATA_SEVERITY = {
         'importer_invalid_tag': 3,  # RoleMetaParser importer/loaders/role.py
-        'importer_missing_galaxy_info': 3,
-        'importer_missing_dependencies': 3,
         'importer_missing_key': 3,
         'importer_galaxy_tags_not_list': 3,
         'importer_categories': 3,
@@ -227,6 +228,7 @@ def _update_quality_score(import_task):
         'importer_video_link_not_dict': 3,
         'importer_video_link_key': 3,
         'importer_video_url_format': 3,
+        'importer_invalid_license': 3,
         'importer_no_galaxy_tags': 3,  # RoleImporter worker/importers/role.py
         'importer_exceeded_max_tags': 3,
         'importer_no_platforms': 3,
@@ -234,7 +236,10 @@ def _update_quality_score(import_task):
         'importer_invalid_platform': 3,
         'importer_invalid_cloud_platform': 3,
         'importer_dependency_load': 3,
-        'importer_dependency_parse': 3,
+        'importer_no_top_level_readme': 3,  # RepositoryLoader repository.py
+    }
+    COMPATIBILITY_SEVERITY = {
+        'importer_not_all_versions_tested': 5,   # RoleMetaParser
     }
 
     # for all ImportTaskMessage set score_type and rule_severity
@@ -245,16 +250,18 @@ def _update_quality_score(import_task):
     for msg in import_task_messages:
         rule_code = '{}_{}'.format(msg.linter_type,
                                    msg.linter_rule_id).lower()
-        if msg.linter_type == 'importer':
-            msg.score_type = 'metadata'
-        elif msg.linter_type in ['ansible-lint', 'yamllint']:
+        if rule_code in CONTENT_SEVERITY:
             msg.score_type = 'content'
-        if rule_code not in RULE_TO_SEVERITY:
-            LOG.warning(u'Rule severity not found: {}'.format(rule_code))
+            msg.rule_severity = CONTENT_SEVERITY[rule_code]
+        elif rule_code in METADATA_SEVERITY:
+            msg.score_type = 'metadata'
+            msg.rule_severity = METADATA_SEVERITY[rule_code]
+        elif rule_code in COMPATIBILITY_SEVERITY:
+            msg.score_type = 'compatibility'
+            msg.rule_severity = COMPATIBILITY_SEVERITY[rule_code]
+        else:
+            LOG.error(u'Severity not found for rule: {}'.format(rule_code))
             msg.is_linter_rule_violation = False
-            msg.save()
-            continue
-        msg.rule_severity = RULE_TO_SEVERITY[rule_code]
         msg.save()
 
     # calculate quality score for each content in collection
@@ -265,25 +272,34 @@ def _update_quality_score(import_task):
         content_m = models.ImportTaskMessage.objects.filter(
             task_id=import_task.id,
             content_id=content.id,
-            linter_type__in=['ansible-lint', 'yamllint'],
+            score_type='content',
             is_linter_rule_violation=True,
         )
         meta_m = models.ImportTaskMessage.objects.filter(
             task_id=import_task.id,
             content_id=content.id,
-            linter_type='importer',
+            score_type='metadata',
+            is_linter_rule_violation=True,
+        )
+        compatibility_m = models.ImportTaskMessage.objects.filter(
+            task_id=import_task.id,
+            content_id=content.id,
+            score_type='compatibility',
             is_linter_rule_violation=True,
         )
 
         content_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in content_m]
         meta_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in meta_m]
+        compatibility_w = [SEVERITY_TO_WEIGHT[m.rule_severity]
+                           for m in compatibility_m]
 
         content.content_score = max(0.0, (BASE_SCORE - sum(content_w)) / 10)
         content.metadata_score = max(0.0, (BASE_SCORE - sum(meta_w)) / 10)
-        content.compatibility_score = 5.0
+        # content.compatibility_score = max(0.0, (BASE_SCORE -
+        #                                         sum(compatibility_w)) / 10)
+        content.compatibility_score = None
         content.quality_score = sum([content.content_score,
-                                     content.metadata_score,
-                                     content.compatibility_score]) / 3.0
+                                     content.metadata_score]) / 2.0
         content.save()
         repo_points += content.quality_score
 
@@ -293,8 +309,12 @@ def _update_quality_score(import_task):
         LOG.debug('meta - ids, weights, score: {}, {}, {}'.format(
             str([m.linter_rule_id for m in meta_m]),
             str(meta_w), content.metadata_score))
+        LOG.debug('compatibility - ids, weights, score: {}, {}, {}'.format(
+            str([m.linter_rule_id for m in compatibility_m]),
+            str(compatibility_w), content.compatibility_score))
 
     repository.quality_score = repo_points / contents.count()
+    repository.quality_score_date = timezone.now()
     repository.save()
     LOG.debug(u'repo quality score: {}'.format(repository.quality_score))
 

@@ -1012,6 +1012,10 @@ class Repository(BaseModel):
         null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
     )
+    quality_score_date = models.DateTimeField(
+        null=True,
+        verbose_name="DateTime last scored",
+    )
 
     @property
     def clone_url(self):
