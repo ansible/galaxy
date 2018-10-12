@@ -51,7 +51,13 @@ export class LoginComponent implements OnInit {
             topBorder: false,
         } as CardConfig;
 
-        this.redirectUrl = this.authService.redirectUrl;
+        this.route.queryParams.subscribe(params => {
+            if (params.next) {
+                this.redirectUrl = params.next;
+            } else {
+                this.redirectUrl = this.authService.redirectUrl;
+            }
+        });
 
         this.errorParam = this.route.paramMap.pipe(
             switchMap((params: ParamMap) => {

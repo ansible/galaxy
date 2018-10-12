@@ -38,9 +38,15 @@
                 </div>
                 <div class="survey" (mouseenter)="showWall(true)" (mouseleave)="showWall(false)">
                     <div *ngIf="hideSurvey" class="survey-wall transparent"></div>
-                    <div *ngIf="hideSurvey" class="survey-wall non-transparent">
+                    <div
+                        *ngIf="hideSurvey"
+                        class="survey-wall non-transparent"
+                    >
                         <div class="login-message">
-                            Please login to submit a rating.
+                            <a
+                                [routerLink]="['/', 'login']"
+                                [queryParams]="{next: router.url}"
+                            >Please login to submit a rating.</a>
                         </div>
                     </div>
                     <div class="title">Tell us about this collection</div>

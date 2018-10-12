@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
+import { Router } from '@angular/router';
+
 import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
 
 import { Survey } from '../../../resources/survey/survey';
@@ -18,7 +20,7 @@ export class CardCommunitySurveyComponent implements OnInit {
     // Used to track which component is being loaded
     componentName = 'CardCommunitySurveyComponent';
 
-    constructor(private surveyService: SurveyService, private authService: AuthService) {}
+    constructor(private surveyService: SurveyService, private authService: AuthService, private router: Router) {}
 
     config: CardConfig;
     communitySurveys: Survey[];

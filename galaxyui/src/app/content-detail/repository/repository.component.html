@@ -31,25 +31,55 @@
         </div>
     </div>
 
-    <div class="col-lg-4 repository-details">
+    <div class="col-lg-4 repository-details valign-center-box">
 
-        <div class="valign-center-box">
-            <div>
-                <span class="columns">
-                    <ul>
-                        <li class="repo-count">
-                            <i class="fa fa-download fa"></i>
-                            <span class="count">{{ repositoryView.downloadCount }}</span>
-                            <span class="count-label">Downloads</span>
-                        </li>
-                        <li class="repo-count">
-                            <i class="fa fa-eye fa"></i>
-                            <span class="count">{{ repositoryView.watchersCount }}</span>
-                            <span class="count-label">Watchers</span>
-                        </li>
-                    </ul>
+        <div class="inner">
+            <div class="scores">
+                <div class="repo-count">
+                    <i class="fa fa-download fa"></i>
+                    <span class="count">{{ repositoryView.downloadCount }}</span>
+                    <span class="count-label">Downloads</span>
+                </div>
+                <div class="repo-count">
+                    <i class="fa fa-eye fa"></i>
+                    <span class="count">{{ repositoryView.watchersCount }}</span>
+                    <span class="count-label">Watchers</span>
+                </div>
+                <div class="repo-count">
+                    <i class="fa fa-star fa"></i>
+                    <span class="count">{{ repositoryView.stargazersCount }}</span>
+                    <span class="count-label">Stars</span>
+                </div>
+                <div class="repo-count">
+                    <i class="fa fa-copy fa"></i>
+                    <span class="count">{{ repositoryView.forksCount }}</span>
+                    <span class="count-label">Forks</span>
+                </div>
+            </div>
 
-                    <a appLogEvent="Issues" [href]="repositoryView.issueTrackerUrl" *ngIf="repositoryView.issueTrackerUrl"
+            <div class="control-buttons">
+                <div class="header-button">
+                    <div
+                        *ngIf="me"
+                        tooltip="Get notified when this collection gets updated."
+                        class="btn btn-default"
+                        (click)="followCollection()"
+                    >
+                        <span class="fa fa-user-{{ isFollower ? 'times':'plus'}}"></span> {{ isFollower ? 'Unfollow Collection':'Follow Collection'}}
+                    </div>
+                    <a
+                        *ngIf="!me"
+                        tooltip="Get notified when this collection gets updated."
+                        class="btn btn-default"
+                        [routerLink]='["/", "login"]'
+                        [queryParams]='{next: router.url}'
+                    >
+                        <span class="fa fa-user-plus"></span> Login to Follow
+                    </a>
+                </div>
+
+                <div class="header-button">
+                    <a [href]="repositoryView.issueTrackerUrl" *ngIf="repositoryView.issueTrackerUrl"
                         target="_blank"
                         tooltip="Visit the issue tracker. Opens in a new browser tab."
                         class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
@@ -58,29 +88,13 @@
                         disabled
                         tooltip="No issue tracker available."
                         class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
-                </span>
+                </div>
 
-                &nbsp;
-
-                <span class="columns">
-                    <ul>
-                        <li class="repo-count">
-                            <i class="fa fa-star fa"></i>
-                            <span class="count">{{ repositoryView.stargazersCount }}</span>
-                            <span class="count-label">Stars</span>
-                        </li>
-                        <li class="repo-count">
-                            <i class="fa fa-copy fa"></i>
-                            <span class="count">{{ repositoryView.forksCount }}</span>
-                            <span class="count-label">Forks</span>
-                        </li>
-                    </ul>
-
-                    <a appLogEvent="github" [href]="repositoryView.scmUrl" target="_blank"
+                <div class="header-button">
+                    <a [href]="repositoryView.scmUrl" target="_blank"
                         tooltip="Visit the repository. Opens in a new browser tab." class="btn btn-default">
                             <i [ngClass]="repositoryView.scmIconClass"></i> {{ repositoryView.scmName }} Repo</a>
-                </span>
-
+                </div>
             </div>
         </div>
     </div>

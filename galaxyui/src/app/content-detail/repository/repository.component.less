@@ -19,15 +19,31 @@
         height: @box-height;
         min-width: 270px;
 
+        .sccores .control-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .scores {
+            .repo-count {
+                display: inline-block;
+                margin-left: 10px;
+                font-size: 14px;
+            }
+        }
+
+        .control-buttons {
+            .header-button {
+                display: inline-block;
+                margin-left: 10px;
+                margin-bottom: 5px;
+            }
+        }
+
         .columns {
             display: inline-block;
             vertical-align: top;
-        }
-
-        ul {
-            list-style-type: none;
-            font-size: 14px;
-            padding: 0;
         }
     }
 

@@ -102,6 +102,18 @@ class CustomUser(auth_models.AbstractBaseUser,
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 
+    repositories_followed = models.ManyToManyField(
+        'main.Repository',
+        editable=True,
+        blank=True
+    )
+
+    namespaces_followed = models.ManyToManyField(
+        'main.Namespace',
+        editable=True,
+        blank=True
+    )
+
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
