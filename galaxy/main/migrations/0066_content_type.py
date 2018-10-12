@@ -63,7 +63,8 @@ class Migration(migrations.Migration):
             name='content_type',
             field=models.ForeignKey(
                 to='main.ContentType',
-                null=True
+                null=True,
+                on_delete=models.CASCADE,
             ),
         ),
         migrations.RunSQL(sql=(UPGRADE_INSERT_CONTENT_TYPES,

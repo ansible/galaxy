@@ -43,7 +43,11 @@ class Migration(migrations.Migration):
             model_name='stargazer',
             name='role',
             field=models.ForeignKey(
-                to='main.Role', null=True, default=None),
+                to='main.Role',
+                null=True,
+                default=None,
+                on_delete=models.CASCADE,
+            ),
         ),
         migrations.AlterField(
             model_name='stargazer',
@@ -60,7 +64,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='stargazer',
             name='role',
-            field=models.ForeignKey(to='main.Role'),
+            field=models.ForeignKey(to='main.Role', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='stargazer',

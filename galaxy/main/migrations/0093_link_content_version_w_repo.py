@@ -28,7 +28,8 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 to='main.Repository',
                 related_name='versions',
-                null=True
+                null=True,
+                on_delete=models.CASCADE,
             ),
         ),
         migrations.RunSQL(
@@ -40,6 +41,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 to='main.Repository',
                 related_name='versions',
+                on_delete=models.CASCADE,
             ),
         ),
         migrations.RemoveField(

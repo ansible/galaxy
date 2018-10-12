@@ -200,6 +200,7 @@ class Migration(migrations.Migration):
                         related_name='roles',
                         editable=False,
                         to=settings.AUTH_USER_MODEL,
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (
@@ -260,7 +261,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'role',
-                    models.ForeignKey(related_name='imports', to='main.Role'),
+                    models.ForeignKey(
+                        related_name='imports',
+                        to='main.Role',
+                        on_delete=models.CASCADE,
+                    ),
                 ),
             ],
             options={'get_latest_by': 'released'},
@@ -309,12 +314,18 @@ class Migration(migrations.Migration):
                 (
                     'owner',
                     models.ForeignKey(
-                        related_name='ratings', to=settings.AUTH_USER_MODEL
+                        related_name='ratings',
+                        to=settings.AUTH_USER_MODEL,
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (
                     'role',
-                    models.ForeignKey(related_name='ratings', to='main.Role'),
+                    models.ForeignKey(
+                        related_name='ratings',
+                        to='main.Role',
+                        on_delete=models.CASCADE,
+                    ),
                 ),
                 (
                     'up_votes',
@@ -359,7 +370,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'role',
-                    models.ForeignKey(related_name='versions', to='main.Role'),
+                    models.ForeignKey(
+                        related_name='versions',
+                        to='main.Role',
+                        on_delete=models.CASCADE,
+                    ),
                 ),
             ],
             options={'ordering': ('-loose_version',)},
@@ -381,7 +396,9 @@ class Migration(migrations.Migration):
                 (
                     'alias_of',
                     models.ForeignKey(
-                        related_name='aliases', to=settings.AUTH_USER_MODEL
+                        related_name='aliases',
+                        to=settings.AUTH_USER_MODEL,
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],

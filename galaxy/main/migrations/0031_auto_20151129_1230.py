@@ -14,7 +14,9 @@ class Migration(migrations.Migration):
             model_name='repository',
             name='owner',
             field=models.ForeignKey(
-                related_name='repositories', to=settings.AUTH_USER_MODEL
+                related_name='repositories',
+                to=settings.AUTH_USER_MODEL,
+                on_delete=models.CASCADE,
             ),
         ),
         migrations.AlterUniqueTogether(

@@ -14,7 +14,11 @@ class Migration(migrations.Migration):
             model_name='video',
             name='role',
             field=models.ForeignKey(
-                related_name='videos', to='main.Role', help_text=b'', null=True
+                related_name='videos',
+                to='main.Role',
+                help_text=b'',
+                null=True,
+                on_delete=models.CASCADE,
             ),
         ),
         migrations.AlterField(

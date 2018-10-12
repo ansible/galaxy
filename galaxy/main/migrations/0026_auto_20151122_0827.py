@@ -55,6 +55,7 @@ class Migration(migrations.Migration):
                         related_name='repositories',
                         editable=False,
                         to=settings.AUTH_USER_MODEL,
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],

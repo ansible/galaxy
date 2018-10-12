@@ -26,7 +26,9 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 related_name='import_tasks',
                 null=True, default=None,
-                to='main.Repository'),
+                to='main.Repository',
+                on_delete=models.CASCADE,
+            ),
             preserve_default=False,
         ),
         # NOTE(cutwater): Due to ambiguity in the next migrations
@@ -37,7 +39,9 @@ class Migration(migrations.Migration):
             name='repository',
             field=models.ForeignKey(
                 related_name='import_tasks',
-                to='main.Repository'),
+                to='main.Repository',
+                on_delete=models.CASCADE,
+            ),
             preserve_default=False,
         ),
         migrations.RemoveField(

@@ -51,7 +51,9 @@ class Migration(migrations.Migration):
                 (
                     'owner',
                     models.ForeignKey(
-                        related_name='starred', to=settings.AUTH_USER_MODEL
+                        related_name='starred',
+                        to=settings.AUTH_USER_MODEL,
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
@@ -96,6 +98,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         related_name='subscriptions',
                         to=settings.AUTH_USER_MODEL,
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
