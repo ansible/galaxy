@@ -56,6 +56,7 @@ def make_clone_dir(basedir=None):
             # Note(cutwater): Suppress exception if directory
             # has been deleted already.
             if e.errno != errno.ENOENT:
+                # noinspection PyCompatibility
                 raise
 
 
