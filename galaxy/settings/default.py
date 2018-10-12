@@ -83,7 +83,6 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'log_request_id.middleware.RequestIDMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

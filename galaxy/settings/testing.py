@@ -30,13 +30,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# Application definition
-# ---------------------------------------------------------
-
-INSTALLED_APPS += (  # noqa: F405
-    'debug_toolbar',
-)
-
 # Database
 # ---------------------------------------------------------
 
