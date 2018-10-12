@@ -17,7 +17,7 @@
 
 import logging
 
-from django.core import urlresolvers as urls
+from django import urls
 from rest_framework import serializers
 from collections import OrderedDict
 

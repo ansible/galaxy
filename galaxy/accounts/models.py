@@ -109,7 +109,7 @@ class CustomUser(auth_models.AbstractBaseUser,
     def __str__(self):
         return self.username
 
-    # FIXME: replace with django.core.urlresolvers.reverse(..)
+    # FIXME: replace with django.urls.reverse(..)
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.username)
 

@@ -16,7 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from rest_framework import serializers as drf_serializers
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from galaxy.main.models import Content
 from .serializers import BaseSerializer, BASE_FIELDS

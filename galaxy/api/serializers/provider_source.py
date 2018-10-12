@@ -16,7 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from collections import OrderedDict
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from rest_framework.serializers import BaseSerializer
 
 

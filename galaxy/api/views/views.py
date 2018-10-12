@@ -22,7 +22,7 @@ from collections import OrderedDict
 from allauth.socialaccount.models import SocialToken
 from django.conf import settings
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Count, Max
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404

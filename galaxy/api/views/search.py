@@ -22,7 +22,7 @@ import six
 
 from django.db.models import F, Func, Value, Count, ExpressionWrapper, Q
 from django.db.models import fields as db_fields
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.postgres import search as psql_search
 
 from rest_framework.response import Response
