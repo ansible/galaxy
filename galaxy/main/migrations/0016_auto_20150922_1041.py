@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 max_length=256,
                 null=True,
-                verbose_name=b'Search terms',
+                verbose_name='Search terms',
                 blank=True,
             ),
         )

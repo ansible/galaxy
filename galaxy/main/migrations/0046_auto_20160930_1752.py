@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 max_length=10,
                 null=True,
-                verbose_name=b'Min Ansible Container Version',
+                verbose_name='Min Ansible Container Version',
                 blank=True,
             ),
         ),
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 max_length=10,
                 null=True,
-                verbose_name=b'Min Ansible Version',
+                verbose_name='Min Ansible Version',
                 blank=True,
             ),
         ),
@@ -33,13 +33,13 @@ class Migration(migrations.Migration):
             model_name='role',
             name='role_type',
             field=models.CharField(
-                default=b'ANS',
+                default='ANS',
                 max_length=3,
                 editable=False,
                 choices=[
-                    (b'ANS', b'Ansible'),
-                    (b'CON', b'Container Enabled'),
-                    (b'APP', b'Container App'),
+                    ('ANS', 'Ansible'),
+                    ('CON', 'Container Enabled'),
+                    ('APP', 'Container App'),
                 ],
             ),
         ),

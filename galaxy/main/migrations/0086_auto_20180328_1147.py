@@ -23,14 +23,14 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='repository',
             name='travis_build_url',
-            field=models.CharField(blank=True, default=b'', max_length=256,
-                                   verbose_name=b'Travis Build URL'),
+            field=models.CharField(blank=True, default='', max_length=256,
+                                   verbose_name='Travis Build URL'),
         ),
         migrations.AddField(
             model_name='repository',
             name='travis_status_url',
-            field=models.CharField(blank=True, default=b'', max_length=256,
-                                   verbose_name=b'Travis Build Status'),
+            field=models.CharField(blank=True, default='', max_length=256,
+                                   verbose_name='Travis Build Status'),
         ),
         migrations.RunSQL(
             sql=(

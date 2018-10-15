@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default=b'', max_length=255, blank=True
+                        default='', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         unique=True,
                         max_length=256,
-                        verbose_name=b'GitHub namespace',
+                        verbose_name='GitHub namespace',
                         db_index=True,
                     ),
                 ),
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         max_length=256,
                         null=True,
-                        verbose_name=b'GitHub name',
+                        verbose_name='GitHub name',
                         blank=True,
                     ),
                 ),
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         max_length=256,
                         null=True,
-                        verbose_name=b'GitHub Avatar URL',
+                        verbose_name='GitHub Avatar URL',
                         blank=True,
                     ),
                 ),
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         max_length=256,
                         null=True,
-                        verbose_name=b'Location',
+                        verbose_name='Location',
                         blank=True,
                     ),
                 ),
@@ -73,7 +73,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         max_length=256,
                         null=True,
-                        verbose_name=b'Location',
+                        verbose_name='Location',
                         blank=True,
                     ),
                 ),
@@ -82,7 +82,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         max_length=256,
                         null=True,
-                        verbose_name=b'Location',
+                        verbose_name='Location',
                         blank=True,
                     ),
                 ),
@@ -91,13 +91,13 @@ class Migration(migrations.Migration):
                     models.CharField(
                         max_length=256,
                         null=True,
-                        verbose_name=b'URL',
+                        verbose_name='URL',
                         blank=True,
                     ),
                 ),
                 (
                     'followers',
-                    models.IntegerField(null=True, verbose_name=b'Followers'),
+                    models.IntegerField(null=True, verbose_name='Followers'),
                 ),
             ],
             options={'ordering': ('namespace',)},

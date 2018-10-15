@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(unique=True, max_length=512,
                                           db_index=True)),
                 ('description', galaxy.main.fields.TruncatingCharField(
-                    default=b'', max_length=255, blank=True)),
+                    default='', max_length=255, blank=True)),
             ],
             options={
                 'abstract': False,

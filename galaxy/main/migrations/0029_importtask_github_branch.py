@@ -13,9 +13,9 @@ class Migration(migrations.Migration):
             model_name='importtask',
             name='github_branch',
             field=models.CharField(
-                default=b'',
+                default='',
                 max_length=256,
-                verbose_name=b'Github Branch',
+                verbose_name='Github Branch',
                 blank=True,
             ),
         )
