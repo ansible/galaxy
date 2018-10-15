@@ -37,14 +37,10 @@ def prepare_env():
 
 
 def manage():
-    # Prepare the galaxy environment.
     prepare_env()
-    # Now run the command (or display the version).
+
     from django.core.management import execute_from_command_line
-    if len(sys.argv) >= 2 and sys.argv[1] in ('version', '--version'):
-        sys.stdout.write('galaxy-%s\n' % __version__)
-    else:
-        execute_from_command_line(sys.argv)
+    execute_from_command_line(sys.argv)
 
 
 def _fix_mimetypes():
