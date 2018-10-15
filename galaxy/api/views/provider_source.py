@@ -55,11 +55,11 @@ class ProviderSourceList(ListAPIView):
                 for source in sources:
                     source['provider'] = {
                         'id': provider.pk,
-                        'name': provider.name.lower(),
+                        'name': provider.name,
                     }
                     try:
                         provider_namespace = ProviderNamespace.objects.get(
-                            provider=provider, name__iexact=source['name']
+                            provider=provider, name=source['name']
                         )
                         source['provider_namespace'] = {
                             'id': provider_namespace.id,
