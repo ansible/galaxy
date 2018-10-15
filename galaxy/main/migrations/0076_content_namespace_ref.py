@@ -29,7 +29,9 @@ class Migration(migrations.Migration):
             name='namespace',
             field=models.ForeignKey(
                 to='main.Namespace',
-                null=True),
+                null=True,
+                on_delete=models.CASCADE,
+            ),
         ),
         migrations.RunSQL(sql=UPGRADE_SET_CONTENT_NAMESPACE_REF),
         migrations.AlterField(
@@ -37,7 +39,9 @@ class Migration(migrations.Migration):
             name='namespace',
             field=models.ForeignKey(
                 related_name='content_objects',
-                to='main.Namespace'),
+                to='main.Namespace',
+                on_delete=models.CASCADE,
+            ),
         ),
         migrations.AlterUniqueTogether(
             name='content',

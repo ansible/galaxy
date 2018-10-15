@@ -75,12 +75,15 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         related_name='import_tasks',
                         to=settings.AUTH_USER_MODEL,
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (
                     'role',
                     models.ForeignKey(
-                        related_name='import_tasks', to='main.Role'
+                        related_name='import_tasks',
+                        to='main.Role',
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
@@ -113,7 +116,9 @@ class Migration(migrations.Migration):
                 (
                     'task',
                     models.ForeignKey(
-                        related_name='messages', to='main.ImportTask'
+                        related_name='messages',
+                        to='main.ImportTask',
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
@@ -153,6 +158,7 @@ class Migration(migrations.Migration):
                         related_name='notifications',
                         to=settings.AUTH_USER_MODEL,
                         editable=False,
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (
@@ -231,6 +237,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         related_name='notification_secrets',
                         to=settings.AUTH_USER_MODEL,
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (

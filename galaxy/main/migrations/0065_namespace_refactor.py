@@ -185,9 +185,11 @@ class Migration(migrations.Migration):
                 ('namespace', models.ForeignKey(
                     related_name='namespaces', editable=False,
                     to='main.Namespace', null=True,
+                    on_delete=models.CASCADE,
                     verbose_name=b'Namespace')),
                 ('provider', models.ForeignKey(
                     related_name='provider', verbose_name=b'Provider',
+                    on_delete=models.CASCADE,
                     to='main.Provider', null=True)),
             ],
             options={

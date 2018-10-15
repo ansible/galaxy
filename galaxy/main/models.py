@@ -187,6 +187,7 @@ class UserAlias(models.Model):
     alias_of = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='aliases',
+        on_delete=models.CASCADE,
     )
     alias_name = models.CharField(
         # must be in-sync with galaxy/accounts/models.py:CustomUser
@@ -300,6 +301,7 @@ class Content(CommonModelNameNotUnique):
         'Repository',
         related_name='content_objects',
         editable=False,
+        on_delete=models.CASCADE,
     )
 
     content_type = models.ForeignKey(
@@ -311,6 +313,7 @@ class Content(CommonModelNameNotUnique):
     namespace = models.ForeignKey(
         'Namespace',
         related_name='content_objects',
+        on_delete=models.CASCADE,
     )
     readme = models.ForeignKey(
         'Readme',
@@ -676,7 +679,11 @@ class RepositoryVersion(BaseModel):
     class Meta:
         unique_together = ('repository', 'version')
 
-    repository = models.ForeignKey('Repository', related_name='versions')
+    repository = models.ForeignKey(
+        'Repository',
+        related_name='versions',
+        on_delete=models.CASCADE
+    )
 
     version = fields.VersionField(null=True)
     tag = models.CharField(max_length=64)
@@ -700,11 +707,13 @@ class ImportTaskMessage(PrimordialModel):
     task = models.ForeignKey(
         'ImportTask',
         related_name='messages',
+        on_delete=models.CASCADE,
     )
     content = models.ForeignKey(
         'Content',
         related_name='messages',
         null=True,
+        on_delete=models.CASCADE,
     )
     message_type = models.CharField(
         max_length=10,
@@ -761,11 +770,13 @@ class ImportTask(PrimordialModel):
     repository = models.ForeignKey(
         'Repository',
         related_name='import_tasks',
+        on_delete=models.CASCADE,
     )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='import_tasks',
         db_index=True,
+        on_delete=models.CASCADE,
     )
     import_branch = models.CharField(
         max_length=256,
@@ -856,6 +867,7 @@ class NotificationSecret(PrimordialModel):
         settings.AUTH_USER_MODEL,
         related_name='notification_secrets',
         db_index=True,
+        on_delete=models.CASCADE,
     )
     source = models.CharField(
         max_length=20,
@@ -890,7 +902,8 @@ class Notification(PrimordialModel):
         settings.AUTH_USER_MODEL,
         related_name='notifications',
         db_index=True,
-        editable=False
+        editable=False,
+        on_delete=models.CASCADE,
     )
     source = models.CharField(
         max_length=20,
@@ -927,12 +940,14 @@ class Notification(PrimordialModel):
         'Repository',
         related_name='notifications',
         editable=False,
+        on_delete=models.CASCADE,
     )
     import_task = models.ForeignKey(
         ImportTask,
         related_name='notifications',
         verbose_name='Tasks',
-        editable=False
+        editable=False,
+        on_delete=models.CASCADE,
     )
 
 
@@ -952,6 +967,7 @@ class Repository(BaseModel):
     provider_namespace = models.ForeignKey(
         ProviderNamespace,
         related_name='repositories',
+        on_delete=models.CASCADE,
     )
     readme = models.ForeignKey(
         'Readme',
@@ -1079,6 +1095,7 @@ class Subscription(PrimordialModel):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='subscriptions',
+        on_delete=models.CASCADE,
     )
     # TODO(cutwater): Replace with reference to a Repository model
     github_user = models.CharField(
@@ -1098,11 +1115,13 @@ class Stargazer(BaseModel):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='starred',
+        on_delete=models.CASCADE,
     )
 
     repository = models.ForeignKey(
         Repository,
-        related_name='stars'
+        related_name='stars',
+        on_delete=models.CASCADE,
     )
 
 
@@ -1181,6 +1200,7 @@ class CommunitySurvey(BaseModel):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=False,
+        on_delete=models.CASCADE,
     )
 
     # Survey scores

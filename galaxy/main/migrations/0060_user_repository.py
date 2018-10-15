@@ -71,7 +71,11 @@ class Migration(migrations.Migration):
             model_name='repository',
             name='owner',
             field=models.ForeignKey(
-                to=settings.AUTH_USER_MODEL, null=True, default=None),
+                to=settings.AUTH_USER_MODEL,
+                null=True,
+                default=None,
+                on_delete=models.CASCADE,
+            ),
         ),
         migrations.RunSQL(
             sql=(UPGRADE_USER_REPOSITORY_DATA,

@@ -65,7 +65,9 @@ class Migration(migrations.Migration):
             name='provider_namespace',
             field=models.ForeignKey(
                 to='main.ProviderNamespace',
-                null=True),
+                null=True,
+                on_delete=models.CASCADE,
+            ),
         ),
         migrations.RunSQL(sql=UPGRADE_SET_REPO_NAMESPACE_REF,
                           reverse_sql=migrations.RunSQL.noop),
@@ -76,7 +78,9 @@ class Migration(migrations.Migration):
             name='provider_namespace',
             field=models.ForeignKey(
                 related_name='repositories',
-                to='main.ProviderNamespace'),
+                to='main.ProviderNamespace',
+                on_delete=models.CASCADE,
+            ),
         ),
         migrations.AlterUniqueTogether(
             name='repository',

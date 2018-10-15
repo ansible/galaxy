@@ -14,6 +14,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='stargazer',
             name='role',
-            field=models.ForeignKey(related_name='stars', to='main.Role'),
+            field=models.ForeignKey(
+                related_name='stars',
+                to='main.Role',
+                on_delete=models.CASCADE,
+            ),
         ),
     ]

@@ -16,7 +16,9 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 related_name='content_objects',
                 editable=False,
-                to='main.Repository'),
+                to='main.Repository',
+                on_delete=models.CASCADE,
+            ),
         ),
         migrations.AlterField(
             model_name='content',

@@ -29,7 +29,9 @@ class Migration(migrations.Migration):
             name='repository',
             field=models.ForeignKey(
                 to='main.Repository',
-                null=True),
+                null=True,
+                on_delete=models.CASCADE,
+            ),
         ),
         migrations.RunSQL(sql=UPGRADE_SET_REPOSITORY_REF,
                           reverse_sql=DOWNGRADE_SET_CONTENT_REF),
@@ -38,7 +40,9 @@ class Migration(migrations.Migration):
             name='repository',
             field=models.ForeignKey(
                 to='main.Repository',
-                related_name='stars'),
+                related_name='stars',
+                on_delete=models.CASCADE,
+            ),
         ),
         migrations.AlterUniqueTogether(
             name='stargazer',
