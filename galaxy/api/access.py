@@ -182,22 +182,22 @@ class NotificationSecretAccess(BaseAccess):
     model = models.NotificationSecret
 
     def can_read(self, obj):
-        if (self.user.is_authenticated and obj.active
+        if (self.user.is_authenticated() and obj.active
                 and obj.owner.id == self.user.id):
             return True
         return False
 
     def can_add(self, data):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
     def can_change(self, obj, data):
-        if (self.user.is_authenticated and obj.active
+        if (self.user.is_authenticated() and obj.active
                 and obj.owner.id == self.user.id):
             return True
         return False
 
     def can_delete(self, obj):
-        if (self.user.is_authenticated and obj.active
+        if (self.user.is_authenticated() and obj.active
                 and obj.owner.id == self.user.id):
             return True
 
@@ -206,7 +206,7 @@ class ImportTaskAccess(BaseAccess):
     model = models.ImportTask
 
     def can_add(self, data):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
     def can_change(self, obj, data):
         return False
@@ -249,24 +249,24 @@ class NotificationAccess(BaseAccess):
 
 class SubscriptionAccess(BaseAccess):
     def can_add(self, data):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
     def can_change(self, obj, data):
         return False
 
     def can_delete(self, obj):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
 
 class StargazerAccess(BaseAccess):
     def can_add(self, data):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
     def can_change(self, obj, data):
         return False
 
     def can_delete(self, obj):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
 
 class NamespaceAccess(BaseAccess):
@@ -274,13 +274,13 @@ class NamespaceAccess(BaseAccess):
         return True
 
     def can_add(self, data):
-        return self.user.is_authenticated and self.user.is_staff
+        return self.user.is_authenticated() and self.user.is_staff
 
     def can_change(self, obj, data):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
     def can_delete(self, obj):
-        return self.user.is_authenticated and self.user.is_staff
+        return self.user.is_authenticated() and self.user.is_staff
 
 
 class ProviderNamespaceAccess(BaseAccess):
@@ -288,13 +288,13 @@ class ProviderNamespaceAccess(BaseAccess):
         return True
 
     def can_add(self, data):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
     def can_change(self, obj, data):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
     def can_delete(self, obj):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
 
 class RepositoryAccess(BaseAccess):
@@ -302,13 +302,13 @@ class RepositoryAccess(BaseAccess):
         return True
 
     def can_add(self, data):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
     def can_change(self, obj, data):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
     def can_delete(self, obj):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
 
 class ContentBlockAccess(BaseAccess):
@@ -330,7 +330,7 @@ class UserTokenAccess(BaseAccess):
     model = Token
 
     def can_read(self, obj):
-        if not self.user.is_authenticated:
+        if not self.user.is_authenticated():
             return False
         if self.user.is_staff or self.user.pk == obj.user.pk:
             return True
@@ -351,7 +351,7 @@ class CommunitySurveyAccess(BaseAccess):
         return True
 
     def can_add(self, data):
-        return self.user.is_authenticated
+        return self.user.is_authenticated()
 
     def can_change(self, obj, data):
         return self.user == obj.user
@@ -364,7 +364,7 @@ class EmailAddressAccess(BaseAccess):
     model = EmailAddress
 
     def can_read(self, obj):
-        if self.user.is_authenticated:
+        if self.user.is_authenticated():
             if self.user.is_staff:
                 return True
             if self.user == obj.user:
@@ -372,19 +372,19 @@ class EmailAddressAccess(BaseAccess):
         return False
 
     def can_add(self, data):
-        if self.user.is_authenticated:
+        if self.user.is_authenticated():
             if self.user.id == data.get('user'):
                 return True
         return False
 
     def can_change(self, obj, data):
-        if self.user.is_authenticated:
+        if self.user.is_authenticated():
             if self.user == obj.user:
                 return True
         return False
 
     def can_delete(self, obj):
-        if self.user.is_authenticated:
+        if self.user.is_authenticated():
             if self.user.is_staff:
                 return True
             if self.user == obj.user:
@@ -399,7 +399,7 @@ class EmailConfirmationAccess(BaseAccess):
         return True
 
     def can_add(self, data):
-        if self.user.is_authenticated:
+        if self.user.is_authenticated():
             if data.get('email_address') is None:
                 return False
 

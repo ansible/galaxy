@@ -40,13 +40,13 @@ class ActiveUserSerializer(BaseSerializer):
         fields = USER_FIELDS + ('authenticated', 'primary_email')
 
     def get_summary_fields(self, obj):
-        if not obj or not obj.is_authenticated:
+        if not obj or not obj.is_authenticated():
             return {}
         d = super(ActiveUserSerializer, self).get_summary_fields(obj)
         return d
 
     def get_authenticated(self, obj):
-        return obj.is_authenticated
+        return obj.is_authenticated()
 
     def get_primary_email(self, obj):
         if obj and not isinstance(obj, AnonymousUser):
@@ -64,7 +64,7 @@ class UserSerializer(BaseSerializer):
         fields = USER_FIELDS
 
     def get_related(self, obj):
-        if not obj or not obj.is_authenticated:
+        if not obj or not obj.is_authenticated():
             return {}
         res = super(UserSerializer, self).get_related(obj)
         res.update(dict(
@@ -80,7 +80,7 @@ class UserSerializer(BaseSerializer):
         return res
 
     def get_summary_fields(self, obj):
-        if not obj or not obj.is_authenticated:
+        if not obj or not obj.is_authenticated():
             return {}
         d = super(UserSerializer, self).get_summary_fields(obj)
         d['subscriptions'] = [
