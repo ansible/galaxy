@@ -22,13 +22,8 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-from galaxy import prepare_env
-
 # For public Galaxy, we need to default /etc/galaxy/settings.py
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.custom')
-
-# Prepare the galaxy environment.
-prepare_env()
 
 # Return the default Django WSGI application.
 application = get_wsgi_application()

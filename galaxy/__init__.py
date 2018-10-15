@@ -25,18 +25,12 @@ __all__ = ['__version__']
 __version__ = version.get_package_version(__name__)
 
 
-def prepare_env():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.default')
-    _fix_mimetypes()
-
-
 def manage():
-    prepare_env()
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.default')
+
+    # Fix for serving by dev server SVG images with correct content type
+    mimetypes.add_type("image/svg+xml", ".svg", True)
+    mimetypes.add_type("image/svg+xml", ".svgz", True)
 
     from django.core.management import execute_from_command_line
     execute_from_command_line(sys.argv)
-
-
-def _fix_mimetypes():
-    mimetypes.add_type("image/svg+xml", ".svg", True)
-    mimetypes.add_type("image/svg+xml", ".svgz", True)
