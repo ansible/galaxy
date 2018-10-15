@@ -3,9 +3,9 @@ import json
 import logging
 
 from hashlib import sha256
-from urlparse import urlparse
-
 import requests
+from six.moves.urllib import parse as urlparse
+
 from OpenSSL import crypto
 from django.conf import settings
 from django.db import IntegrityError
