@@ -22,6 +22,7 @@ from django.contrib.staticfiles.views import serve as serve_staticfiles
 from django.views.static import serve as serve_static
 
 
+app_name = 'main'
 urlpatterns = []
 
 if settings.DEBUG:

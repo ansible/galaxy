@@ -26,15 +26,14 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
-    url(r'^api/', include('galaxy.api.urls', namespace='api', app_name='api')),
+    url(r'^api/', include('galaxy.api.urls')),
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
-    # url(r'^avatar/', include('avatar.urls')),
-    url(settings.ADMIN_URL_PATTERN, include(admin.site.urls)),
+    url(settings.ADMIN_URL_PATTERN, admin.site.urls),
     url(r'^robots\.txt$', TemplateView.as_view(template_name="robots.txt",
                                                content_type='text/plain')),
     url(r'', include('django_prometheus.urls')),
-    url(r'', include('galaxy.main.urls', namespace='main', app_name='main')),
+    url(r'', include('galaxy.main.urls')),
 ]
 
 if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:

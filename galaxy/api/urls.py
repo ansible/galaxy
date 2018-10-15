@@ -282,6 +282,7 @@ internal_urls = [
     url(r'^events/', include(event_tracking_urls)),
 ]
 
+app_name = 'api'
 urlpatterns = [
     url(r'^$', views.ApiRootView.as_view(), name='api_root_view'),
     url(r'^v1/', include(v1_urls)),
