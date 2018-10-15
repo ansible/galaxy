@@ -137,6 +137,7 @@ class RepositoryList(views.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         data['provider_namespace'] = provider_namespace
+        data['is_new'] = True
         try:
             repository = models.Repository.objects.create(**data)
         except Exception as exc:

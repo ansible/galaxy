@@ -32,7 +32,8 @@ LOG = logging.getLogger(__name__)
 class NotificationManger(object):
     from_email = 'notifications@galaxy.ansible.com'
 
-    def __init__(self, email_template, preferences_name, user_list, subject):
+    def __init__(self, email_template, preferences_name, user_list, subject,
+                 db_message=None, repo=None):
         self.email_template = email_template
         self.preferences_name = preferences_name
         self.user_list = user_list
@@ -41,9 +42,15 @@ class NotificationManger(object):
             Site.objects.get_current().domain
         )
 
+        self.repo = repo
+        if db_message is None:
+            self.db_message = subject
+        else:
+            self.db_message = db_message
+
     def render_email(self, context):
         text = self.email_template.format(**context)
-        footer = email_foter_template.format(
+        footer = email_footer_template.format(
             preferences_link='%s/preferences/' % (self.url)
         )
 
@@ -51,10 +58,17 @@ class NotificationManger(object):
 
     def send(self, email_message):
         for user in self.user_list:
+            models.UserNotification.objects.create(
+                user=user,
+                type=self.preferences_name,
+                message=self.db_message,
+                repository=self.repo
+            )
+
             if getattr(user, self.preferences_name):
                 email = EmailAddress.objects.filter(
                     primary=True,
-                    user=user
+                    user=user,
                 )
 
                 mail.send_mail(
@@ -81,18 +95,20 @@ def collection_update(repo_id):
     )
 
     repo = models.Repository.objects.get(id=repo_id)
+    author = repo.provider_namespace.namespace.name
 
     notification = NotificationManger(
         email_template=update_collection_template,
         preferences_name='notify_content_release',
         user_list=followers,
-        subject='Ansible Galaxy: New version of ' + repo.name
+        subject='Ansible Galaxy: New version of ' + repo.name,
+        db_message='A new version of %s.%s is available.' % (author, repo.name)
     )
 
     path = '/%s/%s/' % (repo.provider_namespace.namespace.name, repo.name)
 
     ctx = {
-        'namespace_name': repo.provider_namespace.namespace.name,
+        'namespace_name': author,
         'content_name': repo.name,
         'content_url': notification.url + path
     }
@@ -100,8 +116,35 @@ def collection_update(repo_id):
     notification.notify(ctx)
 
 
-def author_release():
-    pass
+@celery.task
+def author_release(repo_id):
+    repo = models.Repository.objects.get(id=repo_id)
+    namespace = repo.provider_namespace.namespace
+    followers = user_models.CustomUser.objects.filter(
+        namespaces_followed=namespace
+    )
+
+    author = repo.provider_namespace.namespace.name
+
+    notification = NotificationManger(
+        email_template=author_release_template,
+        preferences_name='notify_author_release',
+        user_list=followers,
+        subject='Ansible Galaxy: %s has released a new collection' % (author),
+        db_message='New release from {author}: {author}.{name}'.format(
+            author=author,
+            name=repo.name
+        )
+    )
+
+    path = '/%s/%s/' % (author, repo.name)
+    ctx = {
+        'author_name': author,
+        'content_name': repo.name,
+        'content_url': notification.url + path,
+    }
+
+    notification.notify(ctx)
 
 
 def new_survey():
@@ -125,8 +168,8 @@ Ansible Galaxy. To see the new version, visit {content_url}.
 author_release_template = '''Hello,
 
 One of the author's ({author_name}) that you are following on Ansible Galaxy \
-has just released a new {content_type} named {content_name}. To see the new \
-{content_type}, vist {content_url}.
+has just released a new collection named {content_name}. To see it, visit \
+{content_url}.
 '''
 
 
@@ -138,7 +181,7 @@ Your {content_type} now has a user rating of {content_score}. Visit \
 '''
 
 
-email_foter_template = '''
+email_footer_template = '''
 Cheers,
    Ansible Galaxy
 

@@ -155,6 +155,11 @@ def _import_repository(import_task, logger):
         'Import completed with {0} warnings and {1} '
         'errors'.format(warnings, errors))
 
+    if repository.is_new:
+        user_notifications.author_release.delay(repository.id)
+        repository.is_new = False
+        repository.save()
+
 
 def _update_task_msg_content_id(import_task):
     repo_id = import_task.repository.id
