@@ -26,23 +26,6 @@ __all__ = ['__version__']
 __version__ = version.get_package_version(__name__)
 
 
-def find_commands(management_dir):
-    # Modified version of function from django/core/management/__init__.py.
-    command_dir = os.path.join(management_dir, 'commands')
-    commands = []
-    try:
-        for f in os.listdir(command_dir):
-            if f.startswith('_'):
-                continue
-            elif f.endswith('.py') and f[:-3] not in commands:
-                commands.append(f[:-3])
-            elif f.endswith('.pyc') and f[:-4] not in commands:
-                commands.append(f[:-4])
-    except OSError:
-        pass
-    return commands
-
-
 def prepare_env():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.default')
     from django.conf import settings
