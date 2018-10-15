@@ -219,11 +219,8 @@ def _update_quality_score(import_task):
         'yamllint_warning': 1,
     }
     METADATA_SEVERITY = {
-        'importer_invalid_tag': 3,  # RoleMetaParser importer/loaders/role.py
+        'ansible-lint_e702gal': 4,
         'importer_missing_key': 3,
-        'importer_galaxy_tags_not_list': 3,
-        'importer_categories': 3,
-        'importer_categories_not_list': 3,
         'importer_no_platform_name': 3,
         'importer_video_link_not_dict': 3,
         'importer_video_link_key': 3,

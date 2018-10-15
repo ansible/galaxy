@@ -89,11 +89,7 @@ class RoleMetaParser(object):
 
     def _validate_tag(self, tag):
         if not re.match(constants.TAG_REGEXP, tag):
-            msg = ("'{}' is not a valid tag. Tags must container lowercase "
-                   "letters and digits only. Skipping.".format(tag))
-            self.linter_data['linter_rule_id'] = 'invalid_tag'
-            self.linter_data['rule_desc'] = msg
-            self.log.warning(msg, extra=self.linter_data)
+            self.log.warning("Skipping invalid tag '{}'".format(tag))
             return False
         return True
 
@@ -142,26 +138,10 @@ class RoleMetaParser(object):
         galaxy_tags = self.metadata.get('galaxy_tags', [])
         if isinstance(galaxy_tags, list):
             tags += galaxy_tags
-        else:
-            msg = 'Expected "galaxy_tags" in metadata to be a list'
-            self.linter_data['linter_rule_id'] = 'galaxy_tags_not_list'
-            self.linter_data['rule_desc'] = msg
-            self.log.warning(msg, extra=self.linter_data)
 
         if 'categories' in self.metadata:
-            msg = ('Found "categories" in metadata. Update the metadata '
-                   'to use "galaxy_tags" rather than categories.')
-            self.linter_data['linter_rule_id'] = 'categories'
-            self.linter_data['rule_desc'] = msg
-            self.log.warning(msg, extra=self.linter_data)
-
             if isinstance(self.metadata['categories'], list):
                 tags += self.metadata['categories']
-            else:
-                msg = 'Expected "categories" in meta data to be a list'
-                self.linter_data['linter_rule_id'] = 'categories_not_list'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
 
         tags = list(filter(self._validate_tag, tags))
 
