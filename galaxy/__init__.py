@@ -27,8 +27,6 @@ __version__ = version.get_package_version(__name__)
 
 def prepare_env():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.default')
-    from django.conf import settings
-    settings.version = __version__
     _fix_mimetypes()
 
 
