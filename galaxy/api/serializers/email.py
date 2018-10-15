@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from allauth.account.models import EmailAddress, EmailConfirmation
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 from rest_framework import serializers
 from .serializers import BaseSerializer

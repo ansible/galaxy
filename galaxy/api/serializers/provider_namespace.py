@@ -15,7 +15,7 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from galaxy.main.models import ProviderNamespace
 from . import serializers

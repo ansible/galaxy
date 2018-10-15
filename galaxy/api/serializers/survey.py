@@ -19,7 +19,7 @@ from . import serializers
 
 from galaxy.main import models
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 __all__ = (
