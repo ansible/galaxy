@@ -36,6 +36,8 @@ from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import importers
 from galaxy.worker import utils
+from galaxy.main.celerytasks import user_notifications
+
 
 LOG = logging.getLogger(__name__)
 
@@ -130,7 +132,6 @@ def _import_repository(import_task, logger):
         obj.delete()
 
     _update_readme(repository, repo_info.readme, gh_api, gh_repo)
-    _update_repository_versions(repository, gh_repo, logger)
     _update_namespace(gh_repo)
     _update_repo_info(repository, gh_repo, repo_info.commit,
                       repo_info.description)
@@ -138,6 +139,13 @@ def _import_repository(import_task, logger):
 
     _update_task_msg_content_id(import_task)
     _update_quality_score(import_task)
+
+    # Updating versions has to go last because:
+    # - we don't want to update the version number if the import fails.
+    # - version updates send out email notifications and we don't want to
+    #   notify people that an update happened if it failed on one of the other
+    #   steps
+    _update_repository_versions(repository, gh_repo, logger)
 
     warnings = import_task.messages.filter(
         message_type=models.ImportTaskMessage.TYPE_WARNING).count()
@@ -379,6 +387,7 @@ def _update_repository_versions(repository, github_repo, logger):
         db_tags[version].delete()
 
     to_add = set(git_tags) - set(db_tags)
+    tags_added = False
     for version in to_add:
         tag = git_tags[version]
         try:
@@ -399,6 +408,11 @@ def _update_repository_versions(repository, github_repo, logger):
         )
         if not created:
             logger.warning('Version conflict: {}'.format(tag.name))
+        else:
+            tags_added = True
+
+    if tags_added:
+        user_notifications.collection_update.delay(repository.id)
 
     to_update = set(git_tags) & set(db_tags)
     for version in to_update:

@@ -14,3 +14,6 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+
+from .tasks import *                # noqa
+from .user_notifications import *   # noqa

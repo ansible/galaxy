@@ -231,6 +231,10 @@ INFLUX_DB_UI_EVENTS_DB_NAME = os.environ.get(
 # =========================================================
 # System Settings
 # =========================================================
-
-
 include_settings('/etc/galaxy/settings.py', scope=globals(), optional=True)
+
+
+# =========================================================
+# Domain Settings
+# =========================================================
+GALAXY_URL = 'https://{}'

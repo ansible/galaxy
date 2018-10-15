@@ -198,7 +198,7 @@ REST_FRAMEWORK = {
 BROKER_URL = None
 
 CELERY_IMPORTS = (
-    'galaxy.main.celerytasks.tasks',
+    'galaxy.main.celerytasks',
     'galaxy.worker.tasks',
 )
 
@@ -439,3 +439,9 @@ INFLUX_DB_UI_EVENTS_DB_NAME = 'galaxy_metrics'
 # Higher numbers mean more efficient influx inserts, but it also means that
 # more data will potentially be lost when galaxy restarts.
 INFLUX_INSERT_BUFFER_COUNT = 5
+
+
+# =========================================================
+# Domain Settings
+# =========================================================
+GALAXY_URL = 'http://{}:8000'
