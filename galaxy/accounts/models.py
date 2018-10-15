@@ -75,6 +75,7 @@ class CustomUser(auth_models.AbstractBaseUser,
         max_length=256,
         blank=True)
 
+
     objects = auth_models.UserManager()
 
     USERNAME_FIELD = 'username'
