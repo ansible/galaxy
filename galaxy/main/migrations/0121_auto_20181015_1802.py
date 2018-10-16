@@ -19,7 +19,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserNotification',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID'
+                )),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('message', models.CharField(max_length=512)),
@@ -39,11 +44,18 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='usernotification',
             name='repository',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='main.Repository'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to='main.Repository'
+            ),
         ),
         migrations.AddField(
             model_name='usernotification',
             name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

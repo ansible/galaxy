@@ -15,16 +15,27 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='customuser',
             name='notify_author_release',
-            field=models.BooleanField(default=True, help_text="Notify me when an author I'm following creates new content."),
+            field=models.BooleanField(
+                default=True,
+                help_text="Notify me when an author I'm following creates" +
+                " new content."
+            ),
         ),
         migrations.AlterField(
             model_name='customuser',
             name='notify_content_release',
-            field=models.BooleanField(default=True, help_text="Notify me when a new release is available for content I'm following."),
+            field=models.BooleanField(
+                default=True,
+                help_text="Notify me when a new release is available for " +
+                "content I'm following."
+            ),
         ),
         migrations.AlterField(
             model_name='customuser',
             name='notify_galaxy_announce',
-            field=models.BooleanField(default=True, help_text='Notify me when there is a Galaxy announcement'),
+            field=models.BooleanField(
+                default=True,
+                help_text="Notify me when there is a Galaxy announcement"
+            ),
         ),
     ]
