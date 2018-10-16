@@ -221,7 +221,7 @@ def _update_quality_score(import_task):
     METADATA_SEVERITY = {
         'ansible-lint_e701gal': 4,
         'ansible-lint_e702gal': 4,
-        'importer_missing_key': 3,
+        'ansible-lint_e703gal': 4,
         'importer_video_link_not_dict': 3,
         'importer_video_link_key': 3,
         'importer_video_url_format': 3,

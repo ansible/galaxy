@@ -97,21 +97,11 @@ class RoleMetaParser(object):
         self.tox_data = tox_data
 
     def validate_strings(self):
-        string_defaults = [
-            ('author', 'your name', True),
-            ('description', 'your description', True),
-            ('company', 'your company', False),
-            ('license', 'license', True)
-        ]
-        for key, value, required in string_defaults:
-            if key not in self.metadata and required:
+        required_keys = ['author', 'description', 'license']
+        for key in required_keys:
+            if key not in self.metadata:
                 exc.ContentLoadError("Missing required key {0} in metadata"
                                      .format(key))
-            if key in self.metadata and value in self.metadata[key]:
-                msg = "Value of {0} has not been set in metadata.".format(key)
-                self.linter_data['linter_rule_id'] = 'missing_key'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
 
     def validate_license(self):
         role_license = ''
