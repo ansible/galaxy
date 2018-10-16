@@ -217,6 +217,14 @@ export class ContentDetailComponent implements OnInit {
         this[key] = !this[key];
     }
 
+    convertScore(score: number) {
+        if (score === null) {
+            return 'NA';
+        }
+
+        return Math.round(score * 10) / 10;
+    }
+
     // private
 
     private findSelectedContent(name: String): Content {

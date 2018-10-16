@@ -18,6 +18,7 @@ export class ScoreComponent implements OnInit {
 
     ngOnInit() {
         this.scoreClass = this.getScoreColor(this.score);
+        this.score = Math.round(this.score * 10) / 10;
     }
 
     getScoreColor(score: number) {
