@@ -19,6 +19,7 @@
             <div *ngIf="!loading">
                 <app-score-bar [score]="qualityScore" [barText]="qualityBarText" text="Quality Score"></app-score-bar>
                 <div class="details">
+                    Last scored {{ lastScored }}. 
                     <a
                         [appLogEvent]='{type: "button", name: "quality_score_details"}'
                         href=""

@@ -178,6 +178,11 @@ export class ContentDetailComponent implements OnInit {
                     if (this.repository.commit_created) {
                         this.repository.last_commit = moment(this.repository.commit_created).fromNow();
                     }
+
+                    if (this.repository.quality_score_date) {
+                        this.repository.quality_score_date = moment(this.repository.quality_score_date).fromNow();
+                    }
+
                     if (this.content && this.content.length) {
                         this.repoContent = this.content[0];
                         this.fetchContentDetail(this.repoContent.id);

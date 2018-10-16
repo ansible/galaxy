@@ -52,6 +52,9 @@ export class CardCommunitySurveyComponent implements OnInit {
     @Input()
     showQualityDetails = false;
 
+    @Input()
+    lastScored: string;
+
     @Output()
     emitDetails = new EventEmitter<DetailMessage>();
 

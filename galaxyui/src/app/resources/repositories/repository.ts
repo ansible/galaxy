@@ -30,4 +30,5 @@ export class Repository {
     deprecated: boolean;
     community_score: number;
     quality_score: number;
+    quality_score_date: string;
 }
