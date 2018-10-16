@@ -76,7 +76,7 @@ class NotificationManger(object):
                     email_message,
                     self.from_email,
                     [email[0].email],
-                    fail_silently=False
+                    fail_silently=True
                 )
 
     def notify(self, context):
