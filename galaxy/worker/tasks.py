@@ -219,16 +219,14 @@ def _update_quality_score(import_task):
         'yamllint_warning': 1,
     }
     METADATA_SEVERITY = {
+        'ansible-lint_e701gal': 4,
         'ansible-lint_e702gal': 4,
         'importer_missing_key': 3,
-        'importer_no_platform_name': 3,
         'importer_video_link_not_dict': 3,
         'importer_video_link_key': 3,
         'importer_video_url_format': 3,
         'importer_invalid_license': 3,
-        'importer_no_galaxy_tags': 3,  # RoleImporter worker/importers/role.py
         'importer_exceeded_max_tags': 3,
-        'importer_no_platforms': 3,
         'importer_invalid_platform_all': 3,
         'importer_invalid_platform': 3,
         'importer_invalid_cloud_platform': 3,

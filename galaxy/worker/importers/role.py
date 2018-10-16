@@ -69,12 +69,7 @@ class RoleImporter(base.ContentImporter):
                 description=video.description)
 
     def _add_tags(self, role, tags):
-        if not tags:
-            msg = 'No galaxy tags found in metadata'
-            self.linter_data['linter_rule_id'] = 'no_galaxy_tags'
-            self.linter_data['rule_desc'] = msg
-            self.log.warning(msg, extra=self.linter_data)
-        elif len(tags) > constants.MAX_TAGS_COUNT:
+        if tags and len(tags) > constants.MAX_TAGS_COUNT:
             msg = ('Found more than {0} galaxy tags in metadata. '
                    'Only first {0} will be used'
                    .format(constants.MAX_TAGS_COUNT))
@@ -100,10 +95,6 @@ class RoleImporter(base.ContentImporter):
                                   constants.RoleType.ANSIBLE):
             return
         if not platforms:
-            msg = 'No platforms found in metadata'
-            self.linter_data['linter_rule_id'] = 'no_platforms'
-            self.linter_data['rule_desc'] = msg
-            self.log.warning(msg, extra=self.linter_data)
             return
         self.log.info('Adding role platforms')
         new_platforms = []

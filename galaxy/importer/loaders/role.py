@@ -157,14 +157,8 @@ class RoleMetaParser(object):
 
         platforms = []
         for idx, platform in enumerate(meta_platforms):
-            try:
-                name = platform['name']
-            except KeyError:
-                msg = ('No name specified for platform [{0}], skipping'
-                       .format(idx))
-                self.linter_data['linter_rule_id'] = 'no_platform_name'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
+            name = platform.get('name', None)
+            if not name:
                 continue
 
             versions = platform.get('versions', ['all'])
