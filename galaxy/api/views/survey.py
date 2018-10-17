@@ -20,6 +20,7 @@ import logging
 from galaxy.main import models
 from galaxy.api import serializers
 from . import base_views
+from galaxy.main.celerytasks import user_notifications
 
 from rest_framework.response import Response
 
@@ -54,6 +55,14 @@ class CommunitySurveyList(base_views.ListCreateAPIView):
 
         headers = self.get_success_headers(serializer.data)
 
+        # Each question answered comes as a separate POST request, so delay
+        # the email update by 2 minutes to allow for all the questions to be
+        # submitted so that the score includes all of the submitted answers.
+        user_notifications.new_survey.apply_async(
+            (serializer.validated_data['repository'].id,),
+            countdown=120
+        )
+
         return Response(serializer.data, headers=headers)
 
 
@@ -75,11 +84,6 @@ class CommunitySurveyDetail(base_views.RetrieveUpdateDestroyAPIView):
 
 
 def update_community_score(repo):
-    # this function should be itentical to calculateCommunityScore() in
-    # galaxyui/src/app/content-detail/cards/survey/community-survey.component.ts
-    # to ensure that the score on the front end is the same as the one in the
-    # database.
-    # repo = models.Repository.objects.get(pk=repo)
     surveys = models.CommunitySurvey.objects.filter(repository=repo)
 
     score = 0

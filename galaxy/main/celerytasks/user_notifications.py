@@ -187,8 +187,28 @@ def author_release(repo_id):
     notification.notify(ctx)
 
 
-def new_survey():
-    pass
+@celery.task
+def new_survey(repo_id):
+    repo = models.Repository.objects.get(id=repo_id)
+    author = repo.provider_namespace.namespace.name
+    owners = repo.provider_namespace.namespace.owners.all()
+    path = '/%s/%s/' % (author, repo.name)
+
+    notification = NotificationManger(
+        email_template=new_survey_template,
+        preferences_name='notify_survey',
+        user_list=owners,
+        subject='Ansible Galaxy: new rating for %s' % repo.name,
+        db_message='New rating for %s.%s' % (author, repo.name)
+    )
+
+    ctx = {
+        'content_score': repo.community_score,
+        'content_name': repo.name,
+        'content_url': notification.url + path,
+    }
+
+    notification.notify(ctx)
 
 
 import_status_template = '''Hello,
@@ -201,23 +221,27 @@ Ansible galaxy has {status}.
 update_collection_template = '''Hello,
 
 {namespace_name} has just released a new version of {content_name} on \
-Ansible Galaxy. To see the new version, visit {content_url}.
+Ansible Galaxy.
+
+To see the new version, visit {content_url}.
 '''
 
 
 author_release_template = '''Hello,
 
 One of the author's ({author_name}) that you are following on Ansible Galaxy \
-has just released a new collection named {content_name}. To see it, visit \
-{content_url}.
+has just released a new collection named {content_name}.
+
+To see it, visit {content_url}.
 '''
 
 
 new_survey_template = '''Hello,
 
 Someone has just submitted a new rating for {content_name} on Ansible Galaxy.\
-Your {content_type} now has a user rating of {content_score}. Visit \
-{content_url} for more details.
+Your collection now has a user rating of {content_score}.
+
+Visit {content_url} for more details.
 '''
 
 
