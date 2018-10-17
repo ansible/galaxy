@@ -21,7 +21,6 @@ import re
 
 import six
 import yaml
-import json
 import configparser
 
 from ansible.playbook.role import requirement as ansible_req
@@ -89,11 +88,7 @@ class RoleMetaParser(object):
 
     def _validate_tag(self, tag):
         if not re.match(constants.TAG_REGEXP, tag):
-            msg = ("'{}' is not a valid tag. Tags must container lowercase "
-                   "letters and digits only. Skipping.".format(tag))
-            self.linter_data['linter_rule_id'] = 'invalid_tag'
-            self.linter_data['rule_desc'] = msg
-            self.log.warning(msg, extra=self.linter_data)
+            self.log.warning("Skipping invalid tag '{}'".format(tag))
             return False
         return True
 
@@ -101,40 +96,11 @@ class RoleMetaParser(object):
         self.tox_data = tox_data
 
     def validate_strings(self):
-        string_defaults = [
-            ('author', 'your name', True),
-            ('description', 'your description', True),
-            ('company', 'your company', False),
-            ('license', 'license', True)
-        ]
-        for key, value, required in string_defaults:
-            if key not in self.metadata and required:
+        required_keys = ['author', 'description', 'license']
+        for key in required_keys:
+            if key not in self.metadata:
                 exc.ContentLoadError("Missing required key {0} in metadata"
                                      .format(key))
-            if key in self.metadata and value in self.metadata[key]:
-                msg = "Value of {0} has not been set in metadata.".format(key)
-                self.linter_data['linter_rule_id'] = 'missing_key'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
-
-    def validate_license(self):
-        role_license = ''
-        if 'license' in self.metadata:
-            role_license = self.metadata['license']
-
-        cwd = os.path.dirname(os.path.abspath(__file__))
-        license_path = os.path.join(cwd, '..', 'linters', 'spdx_licenses.json')
-        license_data = json.load(open(license_path, 'r'))
-        for lic in license_data['licenses']:
-            if lic['licenseId'] == role_license:
-                if not lic['isDeprecatedLicenseId']:
-                    return
-        msg = ("Expecting 'license' to be a valid SPDX license ID, "
-               "instead found '%s'. "
-               "For more info, visit https://spdx.org" % role_license)
-        self.linter_data['linter_rule_id'] = 'invalid_license'
-        self.linter_data['rule_desc'] = msg
-        self.log.warning(msg, extra=self.linter_data)
 
     def parse_tags(self):
         tags = []
@@ -142,26 +108,10 @@ class RoleMetaParser(object):
         galaxy_tags = self.metadata.get('galaxy_tags', [])
         if isinstance(galaxy_tags, list):
             tags += galaxy_tags
-        else:
-            msg = 'Expected "galaxy_tags" in metadata to be a list'
-            self.linter_data['linter_rule_id'] = 'galaxy_tags_not_list'
-            self.linter_data['rule_desc'] = msg
-            self.log.warning(msg, extra=self.linter_data)
 
         if 'categories' in self.metadata:
-            msg = ('Found "categories" in metadata. Update the metadata '
-                   'to use "galaxy_tags" rather than categories.')
-            self.linter_data['linter_rule_id'] = 'categories'
-            self.linter_data['rule_desc'] = msg
-            self.log.warning(msg, extra=self.linter_data)
-
             if isinstance(self.metadata['categories'], list):
                 tags += self.metadata['categories']
-            else:
-                msg = 'Expected "categories" in meta data to be a list'
-                self.linter_data['linter_rule_id'] = 'categories_not_list'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
 
         tags = list(filter(self._validate_tag, tags))
 
@@ -177,14 +127,8 @@ class RoleMetaParser(object):
 
         platforms = []
         for idx, platform in enumerate(meta_platforms):
-            try:
-                name = platform['name']
-            except KeyError:
-                msg = ('No name specified for platform [{0}], skipping'
-                       .format(idx))
-                self.linter_data['linter_rule_id'] = 'no_platform_name'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
+            name = platform.get('name', None)
+            if not name:
                 continue
 
             versions = platform.get('versions', ['all'])
@@ -223,17 +167,8 @@ class RoleMetaParser(object):
         meta_videos = self.metadata.get('video_links', [])
         for video in meta_videos:
             if not isinstance(video, dict):
-                msg = 'Expected item in video_links to be dictionary'
-                self.linter_data['linter_rule_id'] = 'video_link_not_dict'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
                 continue
             if set(video) != {'url', 'title'}:
-                msg = ("Expected item in video_links to contain "
-                       "only keys 'url' and 'title'")
-                self.linter_data['linter_rule_id'] = 'video_link_key'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
                 continue
             for name, expr in six.iteritems(self.VIDEO_REGEXP):
                 match = expr.match(video['url'])
@@ -242,14 +177,6 @@ class RoleMetaParser(object):
                     embed_url = self.VIDEO_EMBED_URLS[name].format(file_id)
                     videos.append(models.VideoLink(embed_url, video['title']))
                     break
-            else:
-                msg = ("URL format '{0}' is not recognized. "
-                       "Expected it be a shared link from Vimeo, YouTube, "
-                       "or Google Drive.".format(video['url']))
-                self.linter_data['linter_rule_id'] = 'video_url_format'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
-                continue
         return videos
 
     def check_tox(self):
@@ -262,8 +189,6 @@ class RoleMetaParser(object):
             self.linter_data['linter_rule_id'] = 'not_all_versions_tested'
             self.linter_data['rule_desc'] = msg
             self.log.warning(msg, extra=self.linter_data)
-            return
-        pass
 
     def _check_tox(self):
         SUPPORTED_MINOR_VERSIONS = ['2.5', '2.6', '2.7']
@@ -375,7 +300,6 @@ class RoleLoader(base.BaseLoader):
         data['cloud_platforms'] = meta_parser.parse_cloud_platforms()
         data['dependencies'] = meta_parser.parse_dependencies()
         data['video_links'] = meta_parser.parse_videos()
-        meta_parser.validate_license()
         # meta_parser.check_tox()
         readme = self._get_readme()
 
