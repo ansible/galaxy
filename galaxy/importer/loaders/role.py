@@ -189,8 +189,6 @@ class RoleMetaParser(object):
             self.linter_data['linter_rule_id'] = 'not_all_versions_tested'
             self.linter_data['rule_desc'] = msg
             self.log.warning(msg, extra=self.linter_data)
-            return
-        pass
 
     def _check_tox(self):
         SUPPORTED_MINOR_VERSIONS = ['2.5', '2.6', '2.7']

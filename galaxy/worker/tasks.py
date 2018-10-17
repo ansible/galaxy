@@ -224,11 +224,9 @@ def _update_quality_score(import_task):
         'ansible-lint_e703gal': 4,
         'ansible-lint_e704gal': 5,
         'ansible-lint_e705gal': 2,
-        'importer_invalid_platform_all': 3,
-        'importer_invalid_platform': 3,
-        'importer_invalid_cloud_platform': 3,
-        'importer_dependency_load': 3,
-        'importer_no_top_level_readme': 3,  # RepositoryLoader repository.py
+        'importer_importer101': 3,
+        'importer_importer102': 3,
+        'importer_importer103': 4,
     }
     COMPATIBILITY_SEVERITY = {
         'importer_not_all_versions_tested': 5,   # RoleMetaParser

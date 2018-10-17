@@ -105,7 +105,7 @@ class RoleImporter(base.ContentImporter):
                 )
                 if not platform_objs:
                     msg = u'Invalid platform: "{}-all", skipping.'.format(name)
-                    self.linter_data['linter_rule_id'] = 'invalid_platform_all'
+                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
                     self.linter_data['rule_desc'] = msg
                     self.log.warning(msg, extra=self.linter_data)
                     continue
@@ -122,7 +122,7 @@ class RoleImporter(base.ContentImporter):
                 except models.Platform.DoesNotExist:
                     msg = (u'Invalid platform: "{0}-{1}", skipping.'
                            .format(name, version))
-                    self.linter_data['linter_rule_id'] = 'invalid_platform'
+                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
                     self.linter_data['rule_desc'] = msg
                     self.log.warning(msg, extra=self.linter_data)
                 else:
@@ -149,7 +149,7 @@ class RoleImporter(base.ContentImporter):
                 platform = models.CloudPlatform.objects.get(name__iexact=name)
             except models.CloudPlatform.DoesNotExist:
                 msg = u'Invalid cloud platform: "{0}", skipping'.format(name)
-                self.linter_data['linter_rule_id'] = 'invalid_cloud_platform'
+                self.linter_data['linter_rule_id'] = 'IMPORTER102'
                 self.linter_data['rule_desc'] = msg
                 self.log.warning(msg, extra=self.linter_data)
                 continue
@@ -172,7 +172,7 @@ class RoleImporter(base.ContentImporter):
             except Exception:
                 msg = u"Error loading dependency: '{}'".format(
                     '.'.join([d for d in dep]))
-                self.linter_data['linter_rule_id'] = 'dependency_load'
+                self.linter_data['linter_rule_id'] = 'IMPORTER103'
                 self.linter_data['rule_desc'] = msg
                 self.log.warning(msg, extra=self.linter_data)
 
