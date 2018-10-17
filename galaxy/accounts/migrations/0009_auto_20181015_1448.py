@@ -5,6 +5,14 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 
 
+ENABLE_USER_EMAIL_NOTIFICATINS = """
+UPDATE accounts_customuser
+SET notify_author_release = TRUE,
+    notify_content_release = TRUE,
+    notify_galaxy_announce = TRUE;
+"""
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -38,4 +46,5 @@ class Migration(migrations.Migration):
                 help_text="Notify me when there is a Galaxy announcement"
             ),
         ),
+        migrations.RunSQL(ENABLE_USER_EMAIL_NOTIFICATINS),
     ]
