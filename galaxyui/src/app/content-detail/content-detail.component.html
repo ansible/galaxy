@@ -58,6 +58,7 @@
                         [contentId]="repository.id"
                         [showCommunityDetails]="showComunityDetails"
                         [showQualityDetails]="showQualityDetails"
+                        [lastScored]="repository.quality_score_date"
                         (emitDetails)="scoreDetailHandler($event)">
                     </card-community-survey>
                 </div>
@@ -131,7 +132,7 @@
                                         <div class="list-pf-main-content">
                                             <div class="list-pf-title">{{item.name}}</div>
                                             <div class="list-pf-description text-overflow-pf">
-                                                Quality Score: {{ item.quality_score }}
+                                                Quality Score: {{ convertScore(item.quality_score) }}
                                             </div>
                                         </div>
                                         <!-- <div class="list-pf-additional-content">
