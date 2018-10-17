@@ -73,10 +73,8 @@ class RoleImporter(base.ContentImporter):
             msg = ('Found more than {0} galaxy tags in metadata. '
                    'Only first {0} will be used'
                    .format(constants.MAX_TAGS_COUNT))
-            self.linter_data['linter_rule_id'] = 'exceeded_max_tags'
-            self.linter_data['rule_desc'] = msg
-            self.log.warning(msg, extra=self.linter_data)
-            tags = role.tags[:constants.MAX_TAGS_COUNT]
+            self.log.warning(msg)
+            tags = tags[:constants.MAX_TAGS_COUNT]
         self.log.info('Adding role metadata tags')
         for tag in tags:
             db_tag, _ = models.Tag.objects.get_or_create(

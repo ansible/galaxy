@@ -224,7 +224,6 @@ def _update_quality_score(import_task):
         'ansible-lint_e703gal': 4,
         'ansible-lint_e705gal': 2,
         'importer_invalid_license': 3,
-        'importer_exceeded_max_tags': 3,
         'importer_invalid_platform_all': 3,
         'importer_invalid_platform': 3,
         'importer_invalid_cloud_platform': 3,
