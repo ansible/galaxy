@@ -187,8 +187,8 @@ def _update_quality_score(import_task):
         'ansible-lint_e102': 4,
         'ansible-lint_e103': 5,
         'ansible-lint_e104': 5,
-        'ansible-lint_e105gal': 0,
-        'ansible-lint_e106gal': 0,
+        'ansible-lint_e105gal': 2,
+        'ansible-lint_e106gal': 4,
         'ansible-lint_e201': 0,
         'ansible-lint_e202': 5,
         'ansible-lint_e203gal': 2,
@@ -202,13 +202,12 @@ def _update_quality_score(import_task):
         'ansible-lint_e303': 4,
         'ansible-lint_e304': 5,
         'ansible-lint_e305': 4,
-        'ansible-lint_e306gal': 0,
+        'ansible-lint_e306gal': 4,
         'ansible-lint_e401': 3,
         'ansible-lint_e402': 3,
         'ansible-lint_e403': 1,
         'ansible-lint_e404gal': 4,
         'ansible-lint_e405gal': 3,
-        'ansible-lint_e406gal': 0,
         'ansible-lint_e501': 5,
         'ansible-lint_e502': 3,
         'ansible-lint_e503': 3,
@@ -224,9 +223,9 @@ def _update_quality_score(import_task):
         'ansible-lint_e703gal': 4,
         'ansible-lint_e704gal': 5,
         'ansible-lint_e705gal': 2,
-        'importer_importer101': 3,
-        'importer_importer102': 3,
-        'importer_importer103': 4,
+        'importer_importer101': 3,  # RoleImporter
+        'importer_importer102': 3,  # RoleImporter
+        'importer_importer103': 4,  # RoleImporter
     }
     COMPATIBILITY_SEVERITY = {
         'importer_not_all_versions_tested': 5,   # RoleMetaParser
