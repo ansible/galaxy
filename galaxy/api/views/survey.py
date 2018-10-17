@@ -55,7 +55,7 @@ class CommunitySurveyList(base_views.ListCreateAPIView):
 
         headers = self.get_success_headers(serializer.data)
 
-        # Each question answered comes as a separate POST request, so delay
+        # Each question answered comes as a separate HTTP request, so delay
         # the email update by 2 minutes to allow for all the questions to be
         # submitted so that the score includes all of the submitted answers.
         user_notifications.new_survey.apply_async(
