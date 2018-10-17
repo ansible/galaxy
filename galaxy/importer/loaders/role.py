@@ -187,17 +187,8 @@ class RoleMetaParser(object):
         meta_videos = self.metadata.get('video_links', [])
         for video in meta_videos:
             if not isinstance(video, dict):
-                msg = 'Expected item in video_links to be dictionary'
-                self.linter_data['linter_rule_id'] = 'video_link_not_dict'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
                 continue
             if set(video) != {'url', 'title'}:
-                msg = ("Expected item in video_links to contain "
-                       "only keys 'url' and 'title'")
-                self.linter_data['linter_rule_id'] = 'video_link_key'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
                 continue
             for name, expr in six.iteritems(self.VIDEO_REGEXP):
                 match = expr.match(video['url'])
@@ -206,14 +197,6 @@ class RoleMetaParser(object):
                     embed_url = self.VIDEO_EMBED_URLS[name].format(file_id)
                     videos.append(models.VideoLink(embed_url, video['title']))
                     break
-            else:
-                msg = ("URL format '{0}' is not recognized. "
-                       "Expected it be a shared link from Vimeo, YouTube, "
-                       "or Google Drive.".format(video['url']))
-                self.linter_data['linter_rule_id'] = 'video_url_format'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
-                continue
         return videos
 
     def check_tox(self):
