@@ -65,8 +65,8 @@ class RoleImporter(base.ContentImporter):
         role.videos.all().delete()
         for video in videos:
             role.videos.create(
-                url=video['url'],
-                description=video['title'])
+                url=video.url,
+                description=video.description)
 
     def _add_tags(self, role, tags):
         if not tags:
