@@ -86,8 +86,46 @@ class NotificationManger(object):
         self.send(email)
 
 
-def import_status():
-    pass
+@celery.task
+def import_status(task_id, user_initiated, has_failed=False):
+    task = models.ImportTask.objects.get(id=task_id)
+    repo = task.repository
+    owners = repo.provider_namespace.namespace.owners.all()
+    author = repo.provider_namespace.namespace.name
+
+    print owners
+
+    # If the import is kicked off manually, don't notify the person starting it
+    if user_initiated:
+        user = task.owner
+        owners = owners.exclude(pk=user.id)
+
+    print owners
+
+    if has_failed:
+        preference = 'notify_import_fail'
+        status = 'failed'
+    else:
+        preference = 'notify_import_success'
+        status = 'succeeded'
+
+    subject = 'Ansible Galaxy: import of %s has %s' % (repo.name, status)
+    db_message = 'Import %s: %s.%s' % (status, author, repo.name)
+
+    notification = NotificationManger(
+        email_template=import_status_template,
+        preferences_name=preference,
+        user_list=owners,
+        subject=subject,
+        db_message=db_message
+    )
+
+    ctx = {
+        'status': status,
+        'content_name': '%s.%s' % (author, repo.name)
+    }
+
+    notification.notify(ctx)
 
 
 @celery.task

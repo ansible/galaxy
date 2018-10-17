@@ -43,7 +43,7 @@ LOG = logging.getLogger(__name__)
 
 
 @celery.task
-def import_repository(task_id):
+def import_repository(task_id, user_initiated=False):
     LOG.info(u"Starting task: {:d}".format(int(task_id)))
 
     try:
@@ -59,10 +59,21 @@ def import_repository(task_id):
 
     try:
         _import_repository(import_task, logger)
+        user_notifications.import_status.delay(import_task.id, user_initiated)
     except exc.TaskError as e:
+        user_notifications.import_status.delay(
+            import_task.id,
+            user_initiated,
+            has_failed=True
+        )
         import_task.finish_failed(
             reason='Task "{}" failed: {}'.format(import_task.id, str(e)))
     except Exception as e:
+        user_notifications.import_status.delay(
+            import_task.id,
+            user_initiated,
+            has_failed=True
+        )
         LOG.exception(e)
         import_task.finish_failed(
             reason='Task "{}" failed: {}'.format(import_task.id, str(e)))

@@ -152,7 +152,11 @@ class RepositoryList(views.ListCreateAPIView):
             else:
                 owner.repositories.add(repository)
 
-        import_task = tasks.create_import_task(repository, request.user)
+        import_task = tasks.create_import_task(
+            repository,
+            request.user,
+            user_initiated=True
+        )
 
         serializer = self.get_serializer(repository)
         data = serializer.data
@@ -238,7 +242,11 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
         # Don't create an import task if we're just updating the deprication
         # status
         if updated != ['deprecated']:
-            import_task = tasks.create_import_task(instance, request.user)
+            import_task = tasks.create_import_task(
+                instance,
+                request.user,
+                user_initiated=True
+            )
 
             data['summary_fields']['latest_import'] = \
                 serializers.ImportTaskSerializer(import_task).data
