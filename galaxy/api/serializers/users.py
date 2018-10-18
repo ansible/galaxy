@@ -18,10 +18,7 @@ User = get_user_model()
 
 USER_FIELDS = (
     'id', 'url', 'related', 'summary_fields', 'created', 'modified',
-    'username', 'staff', 'full_name', 'date_joined', 'avatar_url',
-    'notify_survey', 'notify_import_fail', 'notify_import_success',
-    'notify_content_release', 'notify_author_release',
-    'notify_galaxy_announce', 'namespaces_followed', 'repositories_followed'
+    'username', 'staff', 'full_name', 'date_joined', 'avatar_url'
 )
 
 __all__ = [
