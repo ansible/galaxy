@@ -75,44 +75,10 @@ class CustomUser(auth_models.AbstractBaseUser,
         max_length=256,
         blank=True)
 
-    # User email notification settings
-    notify_survey = models.BooleanField(
-        default=False,
-        help_text='Notify me when a user adds a survey for my content.')
-    notify_import_fail = models.BooleanField(
-        default=False,
-        help_text='Notify me when an import fails.')
-    notify_import_success = models.BooleanField(
-        default=False,
-        help_text='Notify me when an import succeeds.')
-    notify_content_release = models.BooleanField(
-        default=False,
-        help_text=("Notify me when a new release is available for "
-                   "content I'm following."))
-    notify_author_release = models.BooleanField(
-        default=False,
-        help_text=("Notify me when an author I'm following "
-                   "creates new content."))
-    notify_galaxy_announce = models.BooleanField(
-        default=False,
-        help_text='Notify me when there is a Galaxy announcement')
-
     objects = auth_models.UserManager()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
-
-    repositories_followed = models.ManyToManyField(
-        'main.Repository',
-        editable=True,
-        blank=True
-    )
-
-    namespaces_followed = models.ManyToManyField(
-        'main.Namespace',
-        editable=True,
-        blank=True
-    )
 
     class Meta:
         verbose_name = _('user')
