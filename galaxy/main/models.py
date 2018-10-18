@@ -1269,10 +1269,11 @@ class UserPreferences(BaseModel):
         on_delete=models.CASCADE,
         primary_key=True
     )
+
     preferences = psql_fields.JSONField(
         null=False,
-        default=DEFAULT_PREFERENCES,
-    ),
+        default=DEFAULT_PREFERENCES
+    )
 
     repositories_followed = models.ManyToManyField(
         'main.Repository',
