@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -10,12 +10,6 @@ import { BaseType } from './base-type';
 import { GenericQuery } from './generic-query';
 
 export class GenericQuerySave<ServiceType extends BaseType> extends GenericQuery<ServiceType> {
-    httpOptions = {
-        headers: new HttpHeaders({
-            'Content-Type': 'application/json',
-        }),
-    };
-
     constructor(http: HttpClient, notificationService: NotificationService, url, serviceName) {
         super(http, notificationService, url, serviceName);
     }

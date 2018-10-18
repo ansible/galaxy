@@ -37,6 +37,7 @@ import { EventLoggerService } from './resources/logger/event-logger.service';
 import { NamespaceService } from './resources/namespaces/namespace.service';
 import { PFBodyService } from './resources/pf-body/pf-body.service';
 import { PlatformService } from './resources/platforms/platform.service';
+import { PreferencesService } from './resources/preferences/preferences.service';
 import { ProviderSourceService } from './resources/provider-namespaces/provider-source.service';
 import { RepositoryService } from './resources/repositories/repository.service';
 import { RepositoryImportService } from './resources/repository-imports/repository-import.service';
@@ -95,6 +96,7 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
         SurveyService,
         EmailService,
         EventLoggerService,
+        PreferencesService,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     bootstrap: [AppComponent],
