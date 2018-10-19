@@ -36,9 +36,17 @@ export class VendorCardComponent implements OnInit {
             }
             this.vendor['contentCount'] = 0;
             if (this.vendor['summary_fields']['content_counts']) {
-                for (const key in this.vendor['summary_fields']['content_counts']) {
-                    if (this.vendor['summary_fields']['content_counts'].hasOwnProperty(key)) {
-                        this.vendor['contentCount'] += this.vendor['summary_fields']['content_counts'][key];
+                for (const key in this.vendor['summary_fields'][
+                    'content_counts'
+                ]) {
+                    if (
+                        this.vendor['summary_fields'][
+                            'content_counts'
+                        ].hasOwnProperty(key)
+                    ) {
+                        this.vendor['contentCount'] += this.vendor[
+                            'summary_fields'
+                        ]['content_counts'][key];
                     }
                 }
             }

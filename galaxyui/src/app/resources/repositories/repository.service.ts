@@ -19,22 +19,29 @@ const httpOptions = {
 export class RepositoryService {
     private url = '/api/v1/repositories';
 
-    constructor(private http: HttpClient, private notificationService: NotificationService) {}
+    constructor(
+        private http: HttpClient,
+        private notificationService: NotificationService,
+    ) {}
 
     query(params?: any): Observable<Repository[]> {
-        return this.http.get<PagedResponse>(this.url + '/', { params: params }).pipe(
-            map(response => response.results as Repository[]),
-            tap(_ => this.log('fetched repositories')),
-            catchError(this.handleError('Query', [] as Repository[])),
-        );
+        return this.http
+            .get<PagedResponse>(this.url + '/', { params: params })
+            .pipe(
+                map(response => response.results as Repository[]),
+                tap(_ => this.log('fetched repositories')),
+                catchError(this.handleError('Query', [] as Repository[])),
+            );
     }
 
     pagedQuery(params?: any): Observable<PagedResponse> {
         if (params && typeof params === 'object') {
-            return this.http.get<PagedResponse>(this.url + '/', { params: params }).pipe(
-                tap(_ => this.log('fetched repositories')),
-                catchError(this.handleError('Query', {} as PagedResponse)),
-            );
+            return this.http
+                .get<PagedResponse>(this.url + '/', { params: params })
+                .pipe(
+                    tap(_ => this.log('fetched repositories')),
+                    catchError(this.handleError('Query', {} as PagedResponse)),
+                );
         }
         if (params && typeof params === 'string') {
             return this.http.get<PagedResponse>(this.url + '/' + params).pipe(
@@ -56,22 +63,36 @@ export class RepositoryService {
     }
 
     getVersions(id: number, params?: any): Observable<PagedResponse> {
-        return this.http.get<PagedResponse>(`${this.url}/${id.toString()}/versions/`, { params: params }).pipe(
-            tap(_ => this.log('Fetched repository versions')),
-            catchError(this.handleError('Get', {} as PagedResponse)),
-        );
+        return this.http
+            .get<PagedResponse>(`${this.url}/${id.toString()}/versions/`, {
+                params: params,
+            })
+            .pipe(
+                tap(_ => this.log('Fetched repository versions')),
+                catchError(this.handleError('Get', {} as PagedResponse)),
+            );
     }
 
     save(repository: Repository): Observable<Repository> {
         let httpResult: Observable<Object>;
         if (repository.id) {
-            httpResult = this.http.put<Repository>(`${this.url}/${repository.id}/`, repository, httpOptions);
+            httpResult = this.http.put<Repository>(
+                `${this.url}/${repository.id}/`,
+                repository,
+                httpOptions,
+            );
         } else {
-            httpResult = this.http.post<Repository>(`${this.url}/`, repository, httpOptions);
+            httpResult = this.http.post<Repository>(
+                `${this.url}/`,
+                repository,
+                httpOptions,
+            );
         }
 
         return httpResult.pipe(
-            tap((newRepo: Repository) => this.log(`Saved repository w/ id=${newRepo.id}`)),
+            tap((newRepo: Repository) =>
+                this.log(`Saved repository w/ id=${newRepo.id}`),
+            ),
             catchError(this.handleError<Repository>('Save')),
         );
     }
@@ -100,7 +121,10 @@ export class RepositoryService {
                 }
             }
             this.log(`${operation} repository error: ${error.message}`);
-            this.notificationService.httpError(`${operation} repository failed:`, { data: data });
+            this.notificationService.httpError(
+                `${operation} repository failed:`,
+                { data: data },
+            );
 
             // Let the app keep running by returning an empty result.
             return of(result as T);

@@ -105,8 +105,9 @@ export class AddRepositoryModalComponent implements OnInit {
     filterRepos(filterValue: string) {
         if (filterValue) {
             this.filterValue = filterValue;
-            this.selectedPNS.filteredSources = this.selectedPNS.repoSources.filter(repo =>
-                repo.name.toLowerCase().match(filterValue.toLowerCase()),
+            this.selectedPNS.filteredSources = this.selectedPNS.repoSources.filter(
+                repo =>
+                    repo.name.toLowerCase().match(filterValue.toLowerCase()),
             );
         } else {
             this.filterValue = '';
@@ -137,7 +138,9 @@ export class AddRepositoryModalComponent implements OnInit {
         this.repositoriesAdded = true;
         this.saveInProgress = true;
         const saveRequests: Observable<Repository>[] = [];
-        const selected: RepositorySource[] = this.selectedPNS.repoSources.filter(repoSource => repoSource.isSelected);
+        const selected: RepositorySource[] = this.selectedPNS.repoSources.filter(
+            repoSource => repoSource.isSelected,
+        );
 
         if (!selected.length) {
             // nothing was selected
@@ -151,7 +154,9 @@ export class AddRepositoryModalComponent implements OnInit {
             const newRepo = new Repository();
             newRepo.name = repoSource.name;
             newRepo.original_name = repoSource.name;
-            newRepo.description = repoSource.description ? repoSource.description : repoSource.name;
+            newRepo.description = repoSource.description
+                ? repoSource.description
+                : repoSource.name;
             newRepo.provider_namespace = this.selectedPNS.id;
             newRepo.is_enabled = true;
             saveRequests.push(this.repositoryService.save(newRepo));
@@ -178,7 +183,10 @@ export class AddRepositoryModalComponent implements OnInit {
     }
 
     private getRepoSources() {
-        if (!this.selectedPNS['repoSources'] || !this.selectedPNS.repoSources.length) {
+        if (
+            !this.selectedPNS['repoSources'] ||
+            !this.selectedPNS.repoSources.length
+        ) {
             this.setLoadingStateConfig();
             this.selectedPNS.repoSources = [];
             this.selectedPNS.filteredSources = [];
@@ -190,7 +198,9 @@ export class AddRepositoryModalComponent implements OnInit {
                 .subscribe(repoSources => {
                     repoSources.forEach(repoSource => {
                         if (!repoSource.summary_fields.repository) {
-                            this.selectedPNS.repoSources.push(repoSource as RepositorySource);
+                            this.selectedPNS.repoSources.push(
+                                repoSource as RepositorySource,
+                            );
                         }
                     });
                     this.filterRepos(this.filterValue);

@@ -5,7 +5,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { NamespaceDetailComponent } from './namespace-detail/namespace-detail.component';
 
-import { MeResolver, NamespaceDetailResolver } from './namespace-detail/namespace-detail.resolver.service';
+import {
+    MeResolver,
+    NamespaceDetailResolver,
+} from './namespace-detail/namespace-detail.resolver.service';
 
 import { NamespaceListResolver } from './namespace-list/namespace-list-resolver.service';
 import { NamespaceListComponent } from './namespace-list/namespace-list.component';

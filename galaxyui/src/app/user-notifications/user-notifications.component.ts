@@ -33,6 +33,9 @@ export class UserNotificationsComponent implements OnInit {
     }
 
     handleViewingChange($event: NotificationEvent): void {
-        this.notificationService.setViewing($event.notification, $event.isViewing);
+        this.notificationService.setViewing(
+            $event.notification,
+            $event.isViewing,
+        );
     }
 }

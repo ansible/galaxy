@@ -11,7 +11,12 @@ import { ServiceBase } from './service-base';
 export class GenericQuery<ServiceType> extends ServiceBase {
     protected ObjectType: any;
 
-    constructor(http: HttpClient, notificationService: NotificationService, url, serviceName) {
+    constructor(
+        http: HttpClient,
+        notificationService: NotificationService,
+        url,
+        serviceName,
+    ) {
         super(http, notificationService, url, serviceName);
     }
 
@@ -25,11 +30,13 @@ export class GenericQuery<ServiceType> extends ServiceBase {
                 objectParams = params;
             }
         }
-        return this.http.get<PagedResponse>(objectUrl + '/', { params: objectParams }).pipe(
-            map(response => response.results),
-            tap(_ => this.log(`fetched ${this.serviceName}`)),
-            catchError(this.handleError('Query', [] as ServiceType[])),
-        );
+        return this.http
+            .get<PagedResponse>(objectUrl + '/', { params: objectParams })
+            .pipe(
+                map(response => response.results),
+                tap(_ => this.log(`fetched ${this.serviceName}`)),
+                catchError(this.handleError('Query', [] as ServiceType[])),
+            );
     }
 
     get(id: number): Observable<ServiceType> {

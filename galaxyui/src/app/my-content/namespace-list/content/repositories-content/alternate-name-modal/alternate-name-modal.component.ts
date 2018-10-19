@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
-import { AbstractControl, FormControl, ValidatorFn, Validators } from '@angular/forms';
+import {
+    AbstractControl,
+    FormControl,
+    ValidatorFn,
+    Validators,
+} from '@angular/forms';
 
 import { BsModalRef } from 'ngx-bootstrap';
 
@@ -20,7 +25,9 @@ export function forbiddenFirstCharValidator(): ValidatorFn {
     const charRE = new RegExp('^[A-Za-z0-9]');
     return (control: AbstractControl): { [key: string]: any } => {
         const forbidden = !charRE.test(control.value);
-        return forbidden ? { forbiddenFirstChar: { value: control.value } } : null;
+        return forbidden
+            ? { forbiddenFirstChar: { value: control.value } }
+            : null;
     };
 }
 
@@ -28,7 +35,9 @@ export function forbiddenLastCharValidator(): ValidatorFn {
     const charRE = new RegExp('[A-Za-z0-9]$');
     return (control: AbstractControl): { [key: string]: any } => {
         const forbidden = !charRE.test(control.value);
-        return forbidden ? { forbiddenLastChar: { value: control.value } } : null;
+        return forbidden
+            ? { forbiddenLastChar: { value: control.value } }
+            : null;
     };
 }
 
@@ -78,12 +87,16 @@ export class AlternateNameModalComponent implements OnInit {
             repo.import_branch = this.repository.import_branch;
             repo.is_enabled = this.repository.is_enabled;
             this.repositoryService.save(repo).subscribe(saveResult => {
-                this.repositoryImportService.save({ repository_id: this.repository.id }).subscribe(importResult => {
-                    console.log(`Started import for ${this.repository.name}`);
-                    this.saveInProgress = true;
-                    this.startedImport = true;
-                    this.bsModalRef.hide();
-                });
+                this.repositoryImportService
+                    .save({ repository_id: this.repository.id })
+                    .subscribe(importResult => {
+                        console.log(
+                            `Started import for ${this.repository.name}`,
+                        );
+                        this.saveInProgress = true;
+                        this.startedImport = true;
+                        this.bsModalRef.hide();
+                    });
             });
         }
     }

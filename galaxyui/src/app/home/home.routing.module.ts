@@ -4,7 +4,10 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { HomeComponent } from './home.component';
 
-import { ContentBlockResolver, VendorListResolver } from './home.resolver.service';
+import {
+    ContentBlockResolver,
+    VendorListResolver,
+} from './home.resolver.service';
 
 const homeRoutes: Routes = [
     {

@@ -20,7 +20,11 @@ export class CardCommunitySurveyComponent implements OnInit {
     // Used to track which component is being loaded
     componentName = 'CardCommunitySurveyComponent';
 
-    constructor(private surveyService: SurveyService, private authService: AuthService, private router: Router) {}
+    constructor(
+        private surveyService: SurveyService,
+        private authService: AuthService,
+        private router: Router,
+    ) {}
 
     config: CardConfig;
     communitySurveys: Survey[];
@@ -120,18 +124,22 @@ export class CardCommunitySurveyComponent implements OnInit {
             this.myUserId = me.id;
 
             // The user id has to be set before surveys are loaded from the API
-            this.surveyService.query({ repository: this.contentId, page_size: 1000 }).subscribe(surveys => {
-                this.communitySurveys = surveys;
-                this.numberOfSurveys = this.communitySurveys.length;
-                this.loadMySurvey();
-                this.loading = false;
-            });
+            this.surveyService
+                .query({ repository: this.contentId, page_size: 1000 })
+                .subscribe(surveys => {
+                    this.communitySurveys = surveys;
+                    this.numberOfSurveys = this.communitySurveys.length;
+                    this.loadMySurvey();
+                    this.loading = false;
+                });
         });
     }
 
     // Loads the list of survey that belong to this repo
     private loadMySurvey() {
-        this.mySurvey = this.communitySurveys.find(x => x.user === this.myUserId);
+        this.mySurvey = this.communitySurveys.find(
+            x => x.user === this.myUserId,
+        );
 
         if (!this.mySurvey) {
             this.mySurvey = {
@@ -227,7 +235,9 @@ export class CardCommunitySurveyComponent implements OnInit {
         this.surveyService.save(this.mySurvey).subscribe(dbSurvey => {
             this.mySurvey.id = dbSurvey.id;
             this.communityBarText = null;
-            this.setCommunityScore(dbSurvey.summary_fields.repository.community_score);
+            this.setCommunityScore(
+                dbSurvey.summary_fields.repository.community_score,
+            );
 
             // Submit the cached survey data.
             if (this.waitingForId) {

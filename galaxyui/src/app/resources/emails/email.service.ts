@@ -19,7 +19,11 @@ export class EmailService extends GenericQuerySave<Email> {
         const url = `${this.url}/verification/`;
         let httpResult: Observable<Email>;
 
-        httpResult = this.http.post<any>(url, { email_address: email.id }, this.httpOptions);
+        httpResult = this.http.post<any>(
+            url,
+            { email_address: email.id },
+            this.httpOptions,
+        );
 
         return httpResult.pipe(catchError(this.handleError<any>('Verify')));
     }
@@ -33,6 +37,8 @@ export class EmailService extends GenericQuerySave<Email> {
     }
 
     deleteEmail(email: Email): Observable<any> {
-        return this.http.delete<any>(`${this.url}/${email.id}/`).pipe(catchError(this.handleError('Delete')));
+        return this.http
+            .delete<any>(`${this.url}/${email.id}/`)
+            .pipe(catchError(this.handleError('Delete')));
     }
 }

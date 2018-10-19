@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 
-import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
+import {
+    ActivatedRouteSnapshot,
+    Resolve,
+    RouterStateSnapshot,
+} from '@angular/router';
 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -15,7 +19,10 @@ import { RepositoryService } from '../resources/repositories/repository.service'
 @Injectable()
 export class ContentResolver implements Resolve<Content[]> {
     constructor(private contentService: ContentService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Content[]> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<Content[]> {
         const repository = route.params['repository'].toLowerCase();
         const namespace = route.params['namespace'].toLowerCase();
         const name = route.params['content_name'];
@@ -33,25 +40,35 @@ export class ContentResolver implements Resolve<Content[]> {
 @Injectable()
 export class RepositoryResolver implements Resolve<Repository> {
     constructor(private repositoryService: RepositoryService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Repository> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<Repository> {
         const repository = route.params['repository'].toLowerCase();
         const namespace = route.params['namespace'].toLowerCase();
         const params = {
             name__iexact: repository,
             provider_namespace__namespace__name__iexact: namespace,
         };
-        return this.repositoryService.query(params).pipe(map(results => results[0]));
+        return this.repositoryService
+            .query(params)
+            .pipe(map(results => results[0]));
     }
 }
 
 @Injectable()
 export class NamespaceResolver implements Resolve<Namespace> {
     constructor(private namespaceService: NamespaceService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Namespace> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<Namespace> {
         const namespace = route.params['namespace'].toLowerCase();
         const params = {
             name__iexact: namespace,
         };
-        return this.namespaceService.query(params).pipe(map(results => results[0]));
+        return this.namespaceService
+            .query(params)
+            .pipe(map(results => results[0]));
     }
 }

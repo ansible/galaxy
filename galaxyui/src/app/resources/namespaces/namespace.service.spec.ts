@@ -9,7 +9,10 @@ describe('NamespaceService', () => {
         });
     });
 
-    it('should be created', inject([NamespaceService], (service: NamespaceService) => {
-        expect(service).toBeTruthy();
-    }));
+    it('should be created', inject(
+        [NamespaceService],
+        (service: NamespaceService) => {
+            expect(service).toBeTruthy();
+        },
+    ));
 });

@@ -31,6 +31,10 @@ import { DetailActionsComponent } from './detail/detail-actions/detail-actions.c
         ActionModule,
         UtilitiesModule,
     ],
-    declarations: [DetailActionsComponent, AuthorsComponent, AuthorDetailComponent],
+    declarations: [
+        DetailActionsComponent,
+        AuthorsComponent,
+        AuthorDetailComponent,
+    ],
 })
 export class AuthorsModule {}

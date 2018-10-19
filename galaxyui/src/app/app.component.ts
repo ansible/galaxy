@@ -33,7 +33,10 @@ import { AuthService } from './auth/auth.service';
 import { ApiRootService } from './resources/api-root/api-root.service';
 import { EventLoggerService } from './resources/logger/event-logger.service';
 
-import { BodyCommand, PFBodyService } from './resources/pf-body/pf-body.service';
+import {
+    BodyCommand,
+    PFBodyService,
+} from './resources/pf-body/pf-body.service';
 
 @Component({
     selector: 'galaxy-nav',
@@ -54,7 +57,10 @@ export class AppComponent implements OnInit {
         private eventLogger: EventLoggerService,
     ) {
         this.router.events.subscribe(event => {
-            if (event instanceof NavigationEnd || event instanceof NavigationStart) {
+            if (
+                event instanceof NavigationEnd ||
+                event instanceof NavigationStart
+            ) {
                 // When user navigates away from a page, remove any lingering notifications
                 const notices: Notification[] = this.notificationService.getNotifications();
                 notices.forEach((notice: Notification) => {
@@ -71,7 +77,11 @@ export class AppComponent implements OnInit {
 
             if (event instanceof NavigationEnd) {
                 this.isLoading = false;
-                this.eventLogger.logPageLoad(window.performance.now() - this.timeAtLoad, this.startComponent, this.startUrl);
+                this.eventLogger.logPageLoad(
+                    window.performance.now() - this.timeAtLoad,
+                    this.startComponent,
+                    this.startUrl,
+                );
             }
         });
     }
@@ -139,9 +149,18 @@ export class AppComponent implements OnInit {
         ] as VerticalNavigationItem[];
 
         this.apiRootService.get().subscribe(apiInfo => {
-            this.aboutConfig.productInfo.push({ name: 'Server Version', value: apiInfo.server_version });
-            this.aboutConfig.productInfo.push({ name: 'Version Name', value: apiInfo.version_name });
-            this.aboutConfig.productInfo.push({ name: 'Api Version', value: apiInfo.current_version });
+            this.aboutConfig.productInfo.push({
+                name: 'Server Version',
+                value: apiInfo.server_version,
+            });
+            this.aboutConfig.productInfo.push({
+                name: 'Version Name',
+                value: apiInfo.version_name,
+            });
+            this.aboutConfig.productInfo.push({
+                name: 'Api Version',
+                value: apiInfo.current_version,
+            });
 
             this.teamMembers = apiInfo.team_members;
         });
@@ -296,7 +315,10 @@ export class AppComponent implements OnInit {
 
     private optionallyAddMobileButtons(): void {
         const layoutElement = document.getElementById('verticalNavLayout');
-        const layoutWidth = parseInt(window.getComputedStyle(layoutElement).width, 10);
+        const layoutWidth = parseInt(
+            window.getComputedStyle(layoutElement).width,
+            10,
+        );
         if (layoutWidth <= 768) {
             this.addMobileButtons();
         }

@@ -1,4 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    TemplateRef,
+    ViewChild,
+    ViewEncapsulation,
+} from '@angular/core';
 
 import { Action } from 'patternfly-ng/action/action';
 import { ActionConfig } from 'patternfly-ng/action/action-config';
@@ -37,7 +46,9 @@ export class NamespaceActionComponent implements OnInit {
     constructor(private authService: AuthService) {}
 
     ngOnInit(): void {
-        const provider_namespaces = this.namespace['summary_fields']['provider_namespaces'];
+        const provider_namespaces = this.namespace['summary_fields'][
+            'provider_namespaces'
+        ];
 
         let primaryTooltip = 'Add yor Ansible content repositories';
         if (!this.namespace.active) {
@@ -55,7 +66,8 @@ export class NamespaceActionComponent implements OnInit {
                     styleClass: 'btn-primary',
                     tooltip: primaryTooltip,
                     template: this.buttonTemplate,
-                    disabled: !this.namespace.active || !provider_namespaces.length,
+                    disabled:
+                        !this.namespace.active || !provider_namespaces.length,
                 },
             ] as Action[],
             moreActions: [

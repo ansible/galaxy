@@ -19,24 +19,31 @@ const httpOptions = {
 export class NamespaceService {
     private url = '/api/v1/namespaces';
 
-    constructor(private http: HttpClient, private notificationService: NotificationService) {}
+    constructor(
+        private http: HttpClient,
+        private notificationService: NotificationService,
+    ) {}
 
     encounteredErrors = false;
 
     query(params?: any): Observable<Namespace[]> {
-        return this.http.get<PagedResponse>(this.url + '/', { params: params }).pipe(
-            map(response => response.results),
-            tap(_ => this.log('fetched namespaces')),
-            catchError(this.handleError('Query', [])),
-        );
+        return this.http
+            .get<PagedResponse>(this.url + '/', { params: params })
+            .pipe(
+                map(response => response.results),
+                tap(_ => this.log('fetched namespaces')),
+                catchError(this.handleError('Query', [])),
+            );
     }
 
     pagedQuery(params: any): Observable<PagedResponse> {
         if (params && typeof params === 'object') {
-            return this.http.get<PagedResponse>(this.url + '/', { params: params }).pipe(
-                tap(_ => this.log('fetched paged content')),
-                catchError(this.handleError('Query', {} as PagedResponse)),
-            );
+            return this.http
+                .get<PagedResponse>(this.url + '/', { params: params })
+                .pipe(
+                    tap(_ => this.log('fetched paged content')),
+                    catchError(this.handleError('Query', {} as PagedResponse)),
+                );
         }
         if (params && typeof params === 'string') {
             return this.http.get<PagedResponse>(this.url + '/' + params).pipe(
@@ -61,12 +68,22 @@ export class NamespaceService {
     save(namespace: Namespace): Observable<Namespace> {
         let httpResult: Observable<Object>;
         if (namespace.id) {
-            httpResult = this.http.put<Namespace>(`${this.url}/${namespace.id}/`, namespace, httpOptions);
+            httpResult = this.http.put<Namespace>(
+                `${this.url}/${namespace.id}/`,
+                namespace,
+                httpOptions,
+            );
         } else {
-            httpResult = this.http.post<Namespace>(`${this.url}/`, namespace, httpOptions);
+            httpResult = this.http.post<Namespace>(
+                `${this.url}/`,
+                namespace,
+                httpOptions,
+            );
         }
         return httpResult.pipe(
-            tap((newNamespace: Namespace) => this.log(`Saved namespace w/ id=${newNamespace.id}`)),
+            tap((newNamespace: Namespace) =>
+                this.log(`Saved namespace w/ id=${newNamespace.id}`),
+            ),
             catchError(this.handleError<Namespace>('Save', namespace)),
         );
     }
@@ -86,19 +103,33 @@ export class NamespaceService {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} namespace error: ${error.message}`);
-            if (typeof error === 'object' && 'error' in error && typeof error['error'] === 'object' && result !== undefined) {
+            if (
+                typeof error === 'object' &&
+                'error' in error &&
+                typeof error['error'] === 'object' &&
+                result !== undefined
+            ) {
                 // Unpack error messages, sending each to the notification service
                 for (const fld in error['error']) {
                     if (error['error'].hasOwnProperty(fld)) {
                         if (typeof error['error'][fld] !== 'object') {
                             const msg = result[fld];
-                            this.notificationService.httpError(error['error'][fld], { data: { message: msg } });
+                            this.notificationService.httpError(
+                                error['error'][fld],
+                                { data: { message: msg } },
+                            );
                         } else {
                             for (const idx in error['error'][fld]) {
                                 if (result[fld]) {
-                                    if (Array.isArray(result[fld]) && idx < result[fld].length) {
+                                    if (
+                                        Array.isArray(result[fld]) &&
+                                        idx < result[fld].length
+                                    ) {
                                         const msg = result[fld][idx]['name'];
-                                        this.notificationService.httpError(error['error'][fld][idx], { data: { message: msg } });
+                                        this.notificationService.httpError(
+                                            error['error'][fld][idx],
+                                            { data: { message: msg } },
+                                        );
                                     }
                                 }
                             }
@@ -107,7 +138,10 @@ export class NamespaceService {
                 }
             } else {
                 // Nothing to unpack. Raise the raw error to the notification service.
-                this.notificationService.httpError(`${operation} namespace failed:`, { data: error });
+                this.notificationService.httpError(
+                    `${operation} namespace failed:`,
+                    { data: error },
+                );
             }
             // Let the app keep running by returning an empty result.
             this.encounteredErrors = true;

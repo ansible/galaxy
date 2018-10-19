@@ -42,7 +42,8 @@ export class DetailActionsComponent implements OnInit {
                 {
                     id: 'scmView',
                     title: 'View SCM Repository',
-                    tooltip: 'Opens the SCM repository in new browser window or tab',
+                    tooltip:
+                        'Opens the SCM repository in new browser window or tab',
                 },
                 {
                     disabled: this._repository.issue_tracker_url ? true : false,
@@ -57,7 +58,11 @@ export class DetailActionsComponent implements OnInit {
     handleAction($event) {
         switch ($event.id) {
             case 'more':
-                this.router.navigate(['/', this.repository.summary_fields['namespace']['name'], this.repository.name]);
+                this.router.navigate([
+                    '/',
+                    this.repository.summary_fields['namespace']['name'],
+                    this.repository.name,
+                ]);
                 break;
             case 'scmView':
                 window.open(this.repository.external_url, '_blank');

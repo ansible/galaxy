@@ -9,7 +9,10 @@ describe('NamespaceDetailResolver', () => {
         });
     });
 
-    it('should be created', inject([NamespaceDetailResolver], (service: NamespaceDetailResolver) => {
-        expect(service).toBeTruthy();
-    }));
+    it('should be created', inject(
+        [NamespaceDetailResolver],
+        (service: NamespaceDetailResolver) => {
+            expect(service).toBeTruthy();
+        },
+    ));
 });

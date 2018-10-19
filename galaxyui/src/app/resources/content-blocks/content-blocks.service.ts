@@ -10,7 +10,10 @@ import { ContentBlock } from './content-block';
 export class ContentBlocksService {
     private url = '/api/v1/content_blocks/';
 
-    constructor(private http: HttpClient, private notificationService: NotificationService) {}
+    constructor(
+        private http: HttpClient,
+        private notificationService: NotificationService,
+    ) {}
 
     query(): Observable<ContentBlock[]> {
         return this.http.get<PagedResponse>(this.url).pipe(
@@ -24,7 +27,9 @@ export class ContentBlocksService {
         const url = `${this.url}${name}/`;
         return this.http.get<ContentBlock>(url).pipe(
             tap(_ => this.log('fetched content block')),
-            catchError(this.handleError<ContentBlock>(`Get content block ${name}`)),
+            catchError(
+                this.handleError<ContentBlock>(`Get content block ${name}`),
+            ),
         );
     }
 
@@ -32,7 +37,9 @@ export class ContentBlocksService {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} user error: ${error.message}`);
-            this.notificationService.httpError(`${operation} user failed:`, { data: error });
+            this.notificationService.httpError(`${operation} user failed:`, {
+                data: error,
+            });
 
             // Let the app keep running by returning an empty result.
             return of(result as T);

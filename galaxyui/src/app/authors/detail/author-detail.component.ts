@@ -28,9 +28,17 @@ import { RepositoryService } from '../../resources/repositories/repository.servi
 import { UserPreferences } from '../../resources/preferences/user-preferences';
 import { PreferencesService } from '../../resources/preferences/preferences.service';
 
-import { ContentTypes, ContentTypesIconClasses, ContentTypesPluralChoices } from '../../enums/content-types.enum';
+import {
+    ContentTypes,
+    ContentTypesIconClasses,
+    ContentTypesPluralChoices,
+} from '../../enums/content-types.enum';
 
-import { RepoFormats, RepoFormatsIconClasses, RepoFormatsTooltips } from '../../enums/repo-types.enum';
+import {
+    RepoFormats,
+    RepoFormatsIconClasses,
+    RepoFormatsTooltips,
+} from '../../enums/repo-types.enum';
 
 @Component({
     selector: 'app-author-detail',
@@ -180,10 +188,14 @@ export class AuthorDetailComponent implements OnInit {
                     }
                 });
                 if (this.namespace.is_vendor) {
-                    this.pageTitle = `Partners;/partners;${this.namespace.name}`;
+                    this.pageTitle = `Partners;/partners;${
+                        this.namespace.name
+                    }`;
                     this.pageIcon = 'fa fa-star';
                 } else {
-                    this.pageTitle = `Community Authors;/community;${this.namespace.name}`;
+                    this.pageTitle = `Community Authors;/community;${
+                        this.namespace.name
+                    }`;
                     this.pageIcon = 'fa fa-users';
                 }
                 this.parepareNamespace();
@@ -199,7 +211,11 @@ export class AuthorDetailComponent implements OnInit {
 
     handleListClick($event: ListEvent): void {
         const repository = $event.item;
-        this.router.navigate(['/', repository.summary_fields['namespace']['name'], repository.name]);
+        this.router.navigate([
+            '/',
+            repository.summary_fields['namespace']['name'],
+            repository.name,
+        ]);
     }
 
     filterChanged($event: FilterEvent): void {
@@ -208,7 +224,8 @@ export class AuthorDetailComponent implements OnInit {
                 if (filter.field.type === 'typeahead') {
                     this.filterBy['or__' + filter.field.id] = filter.query.id;
                 } else {
-                    this.filterBy['or__' + filter.field.id + '__icontains'] = filter.value;
+                    this.filterBy['or__' + filter.field.id + '__icontains'] =
+                        filter.value;
                 }
             });
         } else {
@@ -246,7 +263,9 @@ export class AuthorDetailComponent implements OnInit {
     followUser() {
         this.followerClass = 'fa fa-spin fa-spinner';
         if (this.isFollower) {
-            const index = this.preferences.namespaces_followed.indexOf(this.namespace.id);
+            const index = this.preferences.namespaces_followed.indexOf(
+                this.namespace.id,
+            );
             this.preferences.namespaces_followed.splice(index, 1);
         } else {
             this.preferences.namespaces_followed.push(this.namespace.id);
@@ -262,7 +281,11 @@ export class AuthorDetailComponent implements OnInit {
     // private
 
     private setFollower() {
-        if (this.preferences.namespaces_followed.find(x => x === this.namespace.id) !== undefined) {
+        if (
+            this.preferences.namespaces_followed.find(
+                x => x === this.namespace.id,
+            ) !== undefined
+        ) {
             this.isFollower = true;
             this.followerClass = 'fa fa-user-times';
         } else {
@@ -273,7 +296,9 @@ export class AuthorDetailComponent implements OnInit {
 
     private searchRepositories() {
         this.pageLoading = true;
-        this.filterBy['provider_namespace__namespace__name'] = this.namespace.name;
+        this.filterBy[
+            'provider_namespace__namespace__name'
+        ] = this.namespace.name;
         this.filterBy['order'] = this.sortBy;
         this.filterBy['page_size'] = this.pageSize;
         this.filterBy['page'] = this.pageNumber;
@@ -294,9 +319,13 @@ export class AuthorDetailComponent implements OnInit {
                 // summarize plugins
                 let count = 0;
                 const countObj = {};
-                for (const count_key in this.namespace['summary_fields']['content_counts']) {
+                for (const count_key in this.namespace['summary_fields'][
+                    'content_counts'
+                ]) {
                     if (count_key.indexOf('plugin') > -1) {
-                        count += this.namespace['summary_fields']['content_counts'][count_key];
+                        count += this.namespace['summary_fields'][
+                            'content_counts'
+                        ][count_key];
                     }
                 }
                 if (count > 0) {
@@ -305,10 +334,16 @@ export class AuthorDetailComponent implements OnInit {
                     countObj['iconClass'] = ContentTypesIconClasses[ct];
                     contentCounts.push(countObj);
                 }
-            } else if (this.namespace['summary_fields']['content_counts'][ContentTypes[ct]] > 0) {
+            } else if (
+                this.namespace['summary_fields']['content_counts'][
+                    ContentTypes[ct]
+                ] > 0
+            ) {
                 const countObj = {};
                 countObj['title'] = ContentTypesPluralChoices[ct];
-                countObj['count'] = this.namespace['summary_fields']['content_counts'][ContentTypes[ct]];
+                countObj['count'] = this.namespace['summary_fields'][
+                    'content_counts'
+                ][ContentTypes[ct]];
                 countObj['iconClass'] = ContentTypesIconClasses[ct];
                 contentCounts.push(countObj);
             }
@@ -330,9 +365,15 @@ export class AuthorDetailComponent implements OnInit {
 
             item.last_import = 'NA';
             item.last_import_state = 'NA';
-            if (item.summary_fields['latest_import'] && item.summary_fields['latest_import']['finished']) {
-                item.last_import = moment(item.summary_fields['latest_import']['finished']).fromNow();
-                item.last_import_state = item.summary_fields['latest_import']['state'];
+            if (
+                item.summary_fields['latest_import'] &&
+                item.summary_fields['latest_import']['finished']
+            ) {
+                item.last_import = moment(
+                    item.summary_fields['latest_import']['finished'],
+                ).fromNow();
+                item.last_import_state =
+                    item.summary_fields['latest_import']['state'];
             }
 
             item.last_commit = 'NA';
@@ -345,7 +386,8 @@ export class AuthorDetailComponent implements OnInit {
             if (!item.description) {
                 // Legacy Repository objects are missing a description. Will get fixed on first import.
                 if (item.summary_fields['content_objects']) {
-                    for (const contentObject of item.summary_fields.content_objects) {
+                    for (const contentObject of item.summary_fields
+                        .content_objects) {
                         if (contentObject.description) {
                             item.description = contentObject.description;
                             break;

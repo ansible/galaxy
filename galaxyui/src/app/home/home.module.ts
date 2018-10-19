@@ -14,7 +14,13 @@ import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
     declarations: [CarouselComponent, PopularComponent, HomeComponent],
-    imports: [CardModule, SharedModule, HomeRoutingModule, FormsModule, CommonModule],
+    imports: [
+        CardModule,
+        SharedModule,
+        HomeRoutingModule,
+        FormsModule,
+        CommonModule,
+    ],
     providers: [],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

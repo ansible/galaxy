@@ -73,7 +73,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
 
     searchContent(): void {
-        this.router.navigate(['/search'], { queryParams: { keywords: this.searchText } });
+        this.router.navigate(['/search'], {
+            queryParams: { keywords: this.searchText },
+        });
     }
 
     // private

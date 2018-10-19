@@ -12,7 +12,10 @@ import { Content } from './content';
 
 @Injectable()
 export class ContentService {
-    constructor(private http: HttpClient, private notificationService: NotificationService) {}
+    constructor(
+        private http: HttpClient,
+        private notificationService: NotificationService,
+    ) {}
 
     private url = '/api/v1/content/';
 
@@ -26,10 +29,12 @@ export class ContentService {
 
     pagedQuery(params?: any): Observable<PagedResponse> {
         if (params && typeof params === 'object') {
-            return this.http.get<PagedResponse>(this.url, { params: params }).pipe(
-                tap(_ => this.log('fetched paged content')),
-                catchError(this.handleError('Query', {} as PagedResponse)),
-            );
+            return this.http
+                .get<PagedResponse>(this.url, { params: params })
+                .pipe(
+                    tap(_ => this.log('fetched paged content')),
+                    catchError(this.handleError('Query', {} as PagedResponse)),
+                );
         }
         if (params && typeof params === 'string') {
             return this.http.get<PagedResponse>(this.url + params).pipe(
@@ -54,7 +59,9 @@ export class ContentService {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} provider source error: ${error.message}`);
-            this.notificationService.httpError(`${operation} user failed:`, { data: error });
+            this.notificationService.httpError(`${operation} user failed:`, {
+                data: error,
+            });
 
             // Let the app keep running by returning an empty result.
             return of(result as T);

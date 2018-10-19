@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 
-import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
+import {
+    ActivatedRouteSnapshot,
+    Resolve,
+    RouterStateSnapshot,
+} from '@angular/router';
 
 import { Observable } from 'rxjs';
 
@@ -12,7 +16,10 @@ import { PagedResponse } from '../resources/paged-response';
 @Injectable()
 export class VendorListResolver implements Resolve<PagedResponse> {
     constructor(private namespaceService: NamespaceService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<PagedResponse> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<PagedResponse> {
         return this.namespaceService.pagedQuery({ is_vendor: 'true' });
     }
 }
@@ -20,7 +27,10 @@ export class VendorListResolver implements Resolve<PagedResponse> {
 @Injectable()
 export class ContentBlockResolver implements Resolve<ContentBlock[]> {
     constructor(private blockService: ContentBlocksService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ContentBlock[]> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<ContentBlock[]> {
         return this.blockService.query();
     }
 }

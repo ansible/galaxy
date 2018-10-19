@@ -142,7 +142,9 @@ export class PluginsComponent implements OnInit {
             } as Filter);
         }
 
-        this.queryContentList(this.selectedContent ? this.selectedContent.name : null);
+        this.queryContentList(
+            this.selectedContent ? this.selectedContent.name : null,
+        );
     }
 
     handlePageSizeChange($event: PaginationEvent) {
@@ -168,8 +170,15 @@ export class PluginsComponent implements OnInit {
         let query: string = null;
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach((filter: Filter) => {
-                if (filter.field.id === 'name' || filter.field.id === 'description') {
-                    params.push(`or__${filter.field.id}__icontains=${filter.value.toLowerCase()}`);
+                if (
+                    filter.field.id === 'name' ||
+                    filter.field.id === 'description'
+                ) {
+                    params.push(
+                        `or__${
+                            filter.field.id
+                        }__icontains=${filter.value.toLowerCase()}`,
+                    );
                 } else if (filter.field.id === 'plugin_type') {
                     params.push(`content_type__name=${filter.query.id}`);
                 }
@@ -202,7 +211,8 @@ export class PluginsComponent implements OnInit {
                 _tmp.push(`${key}=${params[key]}`);
             }
         }
-        queryString += queryString === '?' ? _tmp.join('&') : '&' + _tmp.join('&');
+        queryString +=
+            queryString === '?' ? _tmp.join('&') : '&' + _tmp.join('&');
         this.contentService.pagedQuery(queryString).subscribe(results => {
             this._plugins = results.results as Content[];
             this.filterConfig.resultsCount = results.count;
@@ -228,7 +238,8 @@ export class PluginsComponent implements OnInit {
             this.items.forEach(item => {
                 if (!item.description) {
                     if (item.metadata && item.metadata['documentation']) {
-                        item.description = item.metadata['documentation']['short_description'];
+                        item.description =
+                            item.metadata['documentation']['short_description'];
                     }
                 }
             });

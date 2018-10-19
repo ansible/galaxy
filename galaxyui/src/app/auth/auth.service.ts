@@ -6,7 +6,12 @@ import { Observable, of } from 'rxjs';
 
 import { map } from 'rxjs/operators';
 
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import {
+    ActivatedRouteSnapshot,
+    CanActivate,
+    Router,
+    RouterStateSnapshot,
+} from '@angular/router';
 
 export interface IMe {
     url: string;
@@ -25,7 +30,10 @@ export interface IMe {
 export class AuthService implements CanActivate {
     constructor(private http: HttpClient, private router: Router) {}
 
-    headers: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json');
+    headers: HttpHeaders = new HttpHeaders().set(
+        'Content-Type',
+        'application/json',
+    );
     meCache: IMe = null;
     meUrl = '/api/v1/me/';
     redirectUrl = '/home';
@@ -44,13 +52,15 @@ export class AuthService implements CanActivate {
 
     logout(): Observable<any> {
         this.meCache = null;
-        return this.http.post('/api/v1/account/logout', {}, { headers: this.headers }).pipe(
-            map(result => {
-                this.meCache = null;
-                this.redirectUrl = '/home';
-                return result;
-            }),
-        );
+        return this.http
+            .post('/api/v1/account/logout', {}, { headers: this.headers })
+            .pipe(
+                map(result => {
+                    this.meCache = null;
+                    this.redirectUrl = '/home';
+                    return result;
+                }),
+            );
     }
 
     checkPermissions(route: ActivatedRouteSnapshot): boolean {
@@ -61,7 +71,10 @@ export class AuthService implements CanActivate {
             result = false;
         }
         if (route['data'] && route['data']['expectedRole']) {
-            if (route['data']['expectedRole'] === 'isStaff' && !this.meCache.staff) {
+            if (
+                route['data']['expectedRole'] === 'isStaff' &&
+                !this.meCache.staff
+            ) {
                 // User does not have is_staff=True
                 this.router.navigate(['/access-denied', { error: true }]);
                 result = false;
@@ -70,7 +83,10 @@ export class AuthService implements CanActivate {
         return result;
     }
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    canActivate(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<boolean> {
         this.redirectUrl = state.url;
         if (this.meCache) {
             return Observable.create(observer => {

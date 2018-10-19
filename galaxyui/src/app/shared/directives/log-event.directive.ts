@@ -6,7 +6,10 @@ import { EventLoggerService } from '../../resources/logger/event-logger.service'
     selector: '[appLogEvent]',
 })
 export class LogButtonLinkDirective {
-    constructor(private el: ElementRef, private eventLoggerService: EventLoggerService) {}
+    constructor(
+        private el: ElementRef,
+        private eventLoggerService: EventLoggerService,
+    ) {}
 
     @Input()
     appLogEvent: any;
@@ -17,7 +20,10 @@ export class LogButtonLinkDirective {
         let name: string;
 
         if (typeof this.appLogEvent === 'string') {
-            name = this.appLogEvent || this.el.nativeElement.text || this.el.nativeElement.innerText;
+            name =
+                this.appLogEvent ||
+                this.el.nativeElement.text ||
+                this.el.nativeElement.innerText;
             if (this.el.nativeElement.nodeName === 'A') {
                 elementType = 'link';
             } else if (this.el.nativeElement.nodeName === 'BUTTON') {
@@ -29,7 +35,8 @@ export class LogButtonLinkDirective {
         }
 
         if (elementType === 'link') {
-            const link = this.appLogEvent.href || this.el.nativeElement.pathname;
+            const link =
+                this.appLogEvent.href || this.el.nativeElement.pathname;
             this.eventLoggerService.logLink(name, link);
         } else if (elementType === 'button') {
             this.eventLoggerService.logButton(name);

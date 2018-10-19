@@ -119,7 +119,9 @@ export class ModuleUtilsComponent implements OnInit {
             } as Filter);
         }
 
-        this.queryContentList(this.selectedContent ? this.selectedContent.name : null);
+        this.queryContentList(
+            this.selectedContent ? this.selectedContent.name : null,
+        );
     }
 
     handlePageSizeChange($event: PaginationEvent) {
@@ -145,7 +147,11 @@ export class ModuleUtilsComponent implements OnInit {
         let query: string = null;
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach((filter: Filter) => {
-                params.push(`or__${filter.field.id}__icontains=${filter.value.toLowerCase()}`);
+                params.push(
+                    `or__${
+                        filter.field.id
+                    }__icontains=${filter.value.toLowerCase()}`,
+                );
             });
             query = '?' + params.join('&');
         }
@@ -173,7 +179,8 @@ export class ModuleUtilsComponent implements OnInit {
                 _tmp.push(`${key}=${params[key]}`);
             }
         }
-        queryString += queryString === '?' ? _tmp.join('&') : '&' + _tmp.join('&');
+        queryString +=
+            queryString === '?' ? _tmp.join('&') : '&' + _tmp.join('&');
         this.contentService.pagedQuery(queryString).subscribe(results => {
             this._modules = results.results as Content[];
             this.filterConfig.resultsCount = results.count;

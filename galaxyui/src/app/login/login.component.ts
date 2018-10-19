@@ -43,7 +43,10 @@ export class LoginComponent implements OnInit {
     errorParam: Observable<boolean>;
     redirectUrl: string = null;
 
-    constructor(private authService: AuthService, private route: ActivatedRoute) {}
+    constructor(
+        private authService: AuthService,
+        private route: ActivatedRoute,
+    ) {}
 
     ngOnInit() {
         this.config = {
@@ -62,22 +65,27 @@ export class LoginComponent implements OnInit {
         this.errorParam = this.route.paramMap.pipe(
             switchMap((params: ParamMap) => {
                 return new Observable<boolean>(observer => {
-                    return observer.next(params.get('error') === 'true' ? true : false);
+                    return observer.next(
+                        params.get('error') === 'true' ? true : false,
+                    );
                 });
             }),
         );
 
         this.errorParam.subscribe(result => {
             if (result) {
-                this.msgText = 'To view the selected page, you must first log into Galaxy by clicking on one of the above SCMs';
+                this.msgText =
+                    'To view the selected page, you must first log into Galaxy by clicking on one of the above SCMs';
             } else {
-                this.msgText = 'Log into Galaxy by clicking on one of the above SCMs';
+                this.msgText =
+                    'Log into Galaxy by clicking on one of the above SCMs';
             }
         });
     }
 
     login(): void {
         this.connectingMsg = 'Connecting to the mother ship...';
-        window.location.href = '/accounts/github/login/?next=' + this.redirectUrl;
+        window.location.href =
+            '/accounts/github/login/?next=' + this.redirectUrl;
     }
 }

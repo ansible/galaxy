@@ -10,14 +10,26 @@ import { InfluxSession } from './influx-session';
 
 @Injectable()
 export class EventLoggerService {
-    constructor(private http: HttpClient, private router: Router, private activatedRoute: ActivatedRoute) {
-        const session = document.cookie.match(new RegExp('(^| )influx_session=([^;]+)'));
+    constructor(
+        private http: HttpClient,
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
+    ) {
+        const session = document.cookie.match(
+            new RegExp('(^| )influx_session=([^;]+)'),
+        );
         if (session) {
             this.sessionId = session[2];
         } else {
             let httpResult: Observable<InfluxSession>;
-            httpResult = this.http.post<InfluxSession>('/api/internal/events/influx_session/', {}, this.httpOptions);
-            httpResult.subscribe(response => (this.sessionId = response.session_id));
+            httpResult = this.http.post<InfluxSession>(
+                '/api/internal/events/influx_session/',
+                {},
+                this.httpOptions,
+            );
+            httpResult.subscribe(
+                response => (this.sessionId = response.session_id),
+            );
         }
     }
     httpOptions = {
@@ -108,7 +120,11 @@ export class EventLoggerService {
 
     private postData(data: any) {
         let httpResult: Observable<Event>;
-        httpResult = this.http.post<Event>('/api/internal/events/', data, this.httpOptions);
+        httpResult = this.http.post<Event>(
+            '/api/internal/events/',
+            data,
+            this.httpOptions,
+        );
         httpResult.subscribe();
     }
 

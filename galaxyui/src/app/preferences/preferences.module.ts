@@ -16,7 +16,16 @@ import { ListModule } from 'patternfly-ng/list/basic-list/list.module';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
-    imports: [CommonModule, PreferencesRoutingModule, SharedModule, CardModule, ListModule, InlineCopyModule, FormsModule, ActionModule],
+    imports: [
+        CommonModule,
+        PreferencesRoutingModule,
+        SharedModule,
+        CardModule,
+        ListModule,
+        InlineCopyModule,
+        FormsModule,
+        ActionModule,
+    ],
     declarations: [PreferencesComponent, EmailActionComponent],
 })
 export class PreferencesModule {}

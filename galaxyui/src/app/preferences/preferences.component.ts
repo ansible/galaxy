@@ -47,7 +47,9 @@ export class PreferencesComponent implements OnInit {
     ngOnInit() {
         this.authService.me().subscribe(me => {
             if (!me.authenticated) {
-                this.router.navigate(['/', 'login'], { queryParams: { next: '/preferences' } });
+                this.router.navigate(['/', 'login'], {
+                    queryParams: { next: '/preferences' },
+                });
             } else {
                 this.userId = me.id;
                 this.getEmails();
@@ -74,11 +76,13 @@ export class PreferencesComponent implements OnInit {
             this.notificationSettings = [
                 {
                     key: 'notify_survey',
-                    description: 'someone submits a new survey for one of your roles',
+                    description:
+                        'someone submits a new survey for one of your roles',
                 },
                 {
                     key: 'notify_content_release',
-                    description: 'there is a new release of a collection you follow',
+                    description:
+                        'there is a new release of a collection you follow',
                 },
                 {
                     key: 'notify_author_release',
@@ -113,7 +117,9 @@ export class PreferencesComponent implements OnInit {
 
     private checkVerification(params: Params) {
         this.emailService.verifyEmail(params.verify).subscribe(result => {
-            const updateEmail = this.emails.find(obj => obj.id === result.email_address);
+            const updateEmail = this.emails.find(
+                obj => obj.id === result.email_address,
+            );
             updateEmail.verified = result.verified;
 
             if (result.verified) {
@@ -157,7 +163,9 @@ export class PreferencesComponent implements OnInit {
         });
 
         if (currentPrimary !== -1) {
-            const currentCopy = JSON.parse(JSON.stringify(this.emails[currentPrimary]));
+            const currentCopy = JSON.parse(
+                JSON.stringify(this.emails[currentPrimary]),
+            );
             currentCopy.primary = false;
             this.emailService.save(currentCopy).subscribe(result => {
                 if (result) {
@@ -183,12 +191,20 @@ export class PreferencesComponent implements OnInit {
     }
 
     showApiKey() {
-        this.userService.getToken(this.userId).subscribe(token => (this.apiKey = token));
+        this.userService
+            .getToken(this.userId)
+            .subscribe(token => (this.apiKey = token));
     }
 
     resetApiKey() {
-        if (confirm('Resetting your key will remove access to all applications that might rely on it. Do you wish to continue?')) {
-            this.userService.resetToken(this.userId).subscribe(token => (this.apiKey = token));
+        if (
+            confirm(
+                'Resetting your key will remove access to all applications that might rely on it. Do you wish to continue?',
+            )
+        ) {
+            this.userService
+                .resetToken(this.userId)
+                .subscribe(token => (this.apiKey = token));
         }
     }
 
@@ -208,7 +224,9 @@ export class PreferencesComponent implements OnInit {
 
         this.emailService.save(email).subscribe(response => {
             if (response) {
-                const i = this.emails.findIndex(val => val.email === email.email);
+                const i = this.emails.findIndex(
+                    val => val.email === email.email,
+                );
                 this.emails[i] = response;
                 this.verifyEmail(response);
             }

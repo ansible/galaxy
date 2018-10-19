@@ -10,7 +10,10 @@ import { ProviderSource } from './provider-source';
 export class ProviderSourceService {
     private url = '/api/v1/providers/sources';
 
-    constructor(private http: HttpClient, private notificationService: NotificationService) {}
+    constructor(
+        private http: HttpClient,
+        private notificationService: NotificationService,
+    ) {}
 
     query(): Observable<ProviderSource[]> {
         return this.http.get<ProviderSource[]>(this.url + '/').pipe(
@@ -20,17 +23,25 @@ export class ProviderSourceService {
     }
 
     getRepoSources(params): Observable<RepositorySource[]> {
-        return this.http.get<RepositorySource[]>(`${this.url}/${params.providerName}/${params.name}/`).pipe(
-            tap(providerNamespaces => this.log('fetched source repositories')),
-            catchError(this.handleError('Query', [])),
-        );
+        return this.http
+            .get<RepositorySource[]>(
+                `${this.url}/${params.providerName}/${params.name}/`,
+            )
+            .pipe(
+                tap(providerNamespaces =>
+                    this.log('fetched source repositories'),
+                ),
+                catchError(this.handleError('Query', [])),
+            );
     }
 
     private handleError<T>(operation = '', result?: T) {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} provider source error: ${error.message}`);
-            this.notificationService.httpError(`${operation} user failed:`, { data: error });
+            this.notificationService.httpError(`${operation} user failed:`, {
+                data: error,
+            });
 
             // Let the app keep running by returning an empty result.
             return of(result as T);
