@@ -19,7 +19,6 @@ import logging
 import celery
 
 from galaxy.main import models
-from galaxy.accounts import models as user_models
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.core import mail
@@ -59,16 +58,19 @@ class NotificationManger(object):
     def send(self, email_message):
         for user in self.user_list:
             models.UserNotification.objects.create(
-                user=user,
+                user=user.user,
                 type=self.preferences_name,
                 message=self.db_message,
                 repository=self.repo
             )
 
-            if getattr(user, self.preferences_name):
+            if self.preferences_name not in user.preferences:
+                continue
+
+            if user.preferences[self.preferences_name]:
                 email = EmailAddress.objects.filter(
                     primary=True,
-                    user=user,
+                    user=user.user,
                 )
 
                 mail.send_mail(
@@ -90,7 +92,7 @@ def import_status():
 
 @celery.task
 def collection_update(repo_id):
-    followers = user_models.CustomUser.objects.filter(
+    followers = models.UserPreferences.objects.filter(
         repositories_followed__pk=repo_id
     )
 
@@ -120,7 +122,7 @@ def collection_update(repo_id):
 def author_release(repo_id):
     repo = models.Repository.objects.get(id=repo_id)
     namespace = repo.provider_namespace.namespace
-    followers = user_models.CustomUser.objects.filter(
+    followers = models.UserPreferences.objects.filter(
         namespaces_followed=namespace
     )
 
