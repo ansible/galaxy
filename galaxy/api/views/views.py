@@ -425,7 +425,7 @@ class ImportTaskList(base_views.ListCreateAPIView):
 
         task = tasks.create_import_task(
             repository, request.user,
-            import_branch=github_reference)
+            import_branch=github_reference, user_initiated=True)
 
         serializer = self.get_serializer(instance=task)
         response = {'results': [serializer.data]}
