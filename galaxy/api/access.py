@@ -435,6 +435,26 @@ class InfluxSessionAccess(BaseAccess):
         return False
 
 
+class UserPreferencesAccess(BaseAccess):
+    model = models.UserPreferences
+
+    def can_add(self, data):
+        return False
+
+    def can_change(self, obj, data):
+        if not self.user.is_authenticated:
+            return False
+        return bool(self.user == obj.user)
+
+    def can_read(self, obj):
+        if not self.user.is_authenticated:
+            return False
+        return bool(self.user == obj.user)
+
+    def can_delete(self, obj):
+        return False
+
+
 register_access(EmailConfirmation, EmailConfirmationAccess)
 register_access(User, UserAccess)
 register_access(EmailAddress, EmailAddressAccess)
@@ -457,3 +477,4 @@ register_access(models.ContentType, ContentTypeAccess)
 register_access(models.CloudPlatform, CloudPlatformsAccess)
 register_access(models.CommunitySurvey, CommunitySurveyAccess)
 register_access(models.InfluxSessionIdentifier, InfluxSessionAccess)
+register_access(models.UserPreferences, UserPreferencesAccess)

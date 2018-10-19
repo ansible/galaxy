@@ -1241,3 +1241,59 @@ class InfluxSessionIdentifier(BaseModel):
 
     def __str__(self):
         return str(self.session_id)
+
+
+@six.python_2_unicode_compatible
+class UserPreferences(BaseModel):
+    DEFAULT_PREFERENCES = {
+        # Notify me when a user adds a survey for my content.
+        'notify_survey': False,
+
+        # Notify me when an import fails.
+        'notify_import_fail': True,
+
+        # Notify me when an import succeeds.
+        'notify_import_success': False,
+
+        # Notify me when a new release is available for content I'm following.
+        'notify_content_release': True,
+
+        # Notify me when an author I'm following creates new content.
+        'notify_author_release': True,
+
+        # Notify me when there is a Galaxy announcement.
+        'notify_galaxy_announce': True
+    }
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        primary_key=True
+    )
+
+    preferences = psql_fields.JSONField(
+        null=False,
+        default=DEFAULT_PREFERENCES
+    )
+
+    repositories_followed = models.ManyToManyField(
+        'main.Repository',
+        editable=True,
+        blank=True
+    )
+
+    namespaces_followed = models.ManyToManyField(
+        'main.Namespace',
+        editable=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return self.user
+
+    # Add any preferences that are in default preferences but missing from
+    # the user's preferences to the user's preferences.
+    def update_defaults(self):
+        for key in self.DEFAULT_PREFERENCES:
+            if key not in self.preferences:
+                self.preferences[key] = self.DEFAULT_PREFERENCES[key]

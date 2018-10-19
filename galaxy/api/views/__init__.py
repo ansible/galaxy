@@ -33,3 +33,4 @@ from .users import *                # noqa
 from .views import *                # noqa
 from .survey import *               # noqa
 from .influx import *               # noqa
+from .user_preferences import *     # noqa

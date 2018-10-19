@@ -60,15 +60,15 @@
             <div class="control-buttons">
                 <div class="header-button">
                     <div
-                        *ngIf="me"
+                        *ngIf="preferences"
                         tooltip="Get notified when this collection gets updated."
                         class="btn btn-default"
                         (click)="followCollection()"
                     >
-                        <span class="fa fa-user-{{ isFollower ? 'times':'plus'}}"></span> {{ isFollower ? 'Unfollow Collection':'Follow Collection'}}
+                        <span class="{{followerClass}}"></span> {{ isFollower ? 'Unfollow Collection':'Follow Collection'}}
                     </div>
                     <a
-                        *ngIf="!me"
+                        *ngIf="!preferences"
                         tooltip="Get notified when this collection gets updated."
                         class="btn btn-default"
                         [routerLink]='["/", "login"]'
