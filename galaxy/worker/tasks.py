@@ -255,6 +255,13 @@ def _update_quality_score(import_task):
         'importer_not_all_versions_tested': 5,   # RoleMetaParser
     }
 
+    # quality score only roles and repos with roles
+    repository = import_task.repository
+    contents = models.Content.objects.filter(repository_id=repository.id) \
+        .filter(content_type__name=constants.ContentType.ROLE)
+    if not contents:
+        return
+
     # for all ImportTaskMessage set score_type and rule_severity
     import_task_messages = models.ImportTaskMessage.objects.filter(
         task_id=import_task.id,
@@ -278,8 +285,6 @@ def _update_quality_score(import_task):
         msg.save()
 
     # calculate quality score for each content in collection
-    repository = import_task.repository
-    contents = models.Content.objects.filter(repository_id=repository.id)
     repo_points = 0.0
     for content in contents:
         content_m = models.ImportTaskMessage.objects.filter(
