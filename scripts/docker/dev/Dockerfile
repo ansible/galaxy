@@ -20,7 +20,7 @@ RUN yum -y install epel-release \
     && rm -rf /var/cache/yum
 
 # Install node dependencies
-RUN yarn global add @angular/cli \
+RUN yarn global add @angular/cli@6.1.2 \
     && ng set --global packageManager=yarn
 
 # Install python dependencies
