@@ -31,11 +31,11 @@ LOG = logging.getLogger(__name__)
 class NotificationManger(object):
     from_email = 'notifications@galaxy.ansible.com'
 
-    def __init__(self, email_template, preferences_name, user_list, subject,
-                 db_message=None, repo=None):
+    def __init__(self, email_template, preferences_name, preferences_list,
+                 subject, db_message=None, repo=None):
         self.email_template = email_template
         self.preferences_name = preferences_name
-        self.user_list = user_list
+        self.preferences_list = preferences_list
         self.subject = subject
         self.url = settings.GALAXY_URL.format(
             Site.objects.get_current().domain
@@ -56,7 +56,7 @@ class NotificationManger(object):
         return text + footer
 
     def send(self, email_message):
-        for user in self.user_list:
+        for user in self.preferences_list:
             models.UserNotification.objects.create(
                 user=user.user,
                 type=self.preferences_name,
@@ -93,14 +93,12 @@ def import_status(task_id, user_initiated, has_failed=False):
     owners = repo.provider_namespace.namespace.owners.all()
     author = repo.provider_namespace.namespace.name
 
-    print owners
-
     # If the import is kicked off manually, don't notify the person starting it
     if user_initiated:
         user = task.owner
         owners = owners.exclude(pk=user.id)
 
-    print owners
+    owners = _get_preferences(owners)
 
     if has_failed:
         preference = 'notify_import_fail'
@@ -115,7 +113,7 @@ def import_status(task_id, user_initiated, has_failed=False):
     notification = NotificationManger(
         email_template=import_status_template,
         preferences_name=preference,
-        user_list=owners,
+        preferences_list=owners,
         subject=subject,
         db_message=db_message
     )
@@ -140,7 +138,7 @@ def collection_update(repo_id):
     notification = NotificationManger(
         email_template=update_collection_template,
         preferences_name='notify_content_release',
-        user_list=followers,
+        preferences_list=followers,
         subject='Ansible Galaxy: New version of ' + repo.name,
         db_message='A new version of %s.%s is available.' % (author, repo.name)
     )
@@ -169,7 +167,7 @@ def author_release(repo_id):
     notification = NotificationManger(
         email_template=author_release_template,
         preferences_name='notify_author_release',
-        user_list=followers,
+        preferences_list=followers,
         subject='Ansible Galaxy: %s has released a new collection' % (author),
         db_message='New release from {author}: {author}.{name}'.format(
             author=author,
@@ -191,13 +189,13 @@ def author_release(repo_id):
 def new_survey(repo_id):
     repo = models.Repository.objects.get(id=repo_id)
     author = repo.provider_namespace.namespace.name
-    owners = repo.provider_namespace.namespace.owners.all()
+    owners = _get_preferences(repo.provider_namespace.namespace.owners.all())
     path = '/%s/%s/' % (author, repo.name)
 
     notification = NotificationManger(
         email_template=new_survey_template,
         preferences_name='notify_survey',
-        user_list=owners,
+        preferences_list=owners,
         subject='Ansible Galaxy: new rating for %s' % repo.name,
         db_message='New rating for %s.%s' % (author, repo.name)
     )
@@ -209,6 +207,17 @@ def new_survey(repo_id):
     }
 
     notification.notify(ctx)
+
+
+def _get_preferences(users):
+    preferences = []
+    for user in users:
+        # there isn't a guarantee that a user has a preferences object, so we
+        # need to make sure to create one if they don't.
+        obj, created = models.UserPreferences.objects.get_or_create(user=user)
+        preferences.append(obj)
+
+    return preferences
 
 
 import_status_template = '''Hello,
