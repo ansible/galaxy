@@ -25,8 +25,8 @@ import { PFBodyService } from '../../resources/pf-body/pf-body.service';
 import { AuthService } from '../../auth/auth.service';
 import { Repository } from '../../resources/repositories/repository';
 import { RepositoryService } from '../../resources/repositories/repository.service';
-import { User } from '../../resources/users/user';
-import { UserService } from '../../resources/users/user.service';
+import { UserPreferences } from '../../resources/preferences/user-preferences';
+import { PreferencesService } from '../../resources/preferences/preferences.service';
 
 import { ContentTypes, ContentTypesIconClasses, ContentTypesPluralChoices } from '../../enums/content-types.enum';
 
@@ -47,7 +47,7 @@ export class AuthorDetailComponent implements OnInit {
         private repositoryService: RepositoryService,
         private pfBody: PFBodyService,
         private authService: AuthService,
-        private userService: UserService,
+        private preferencesService: PreferencesService,
     ) {}
 
     pageTitle = '';
@@ -73,7 +73,7 @@ export class AuthorDetailComponent implements OnInit {
     sortBy = 'name';
     isFollower = false;
 
-    me: User;
+    preferences: UserPreferences = null;
 
     RepoFormats: typeof RepoFormats = RepoFormats;
 
@@ -172,12 +172,10 @@ export class AuthorDetailComponent implements OnInit {
             if (this.namespace && this.namespace.name) {
                 this.authService.me().subscribe(me => {
                     if (me.authenticated) {
-                        this.userService.get(me.id).subscribe(result => {
-                            this.me = result;
+                        this.preferencesService.get().subscribe(result => {
+                            this.preferences = result;
                             this.setFollower();
                         });
-                    } else {
-                        this.me = null;
                     }
                 });
                 if (this.namespace.is_vendor) {
@@ -246,14 +244,14 @@ export class AuthorDetailComponent implements OnInit {
 
     followUser() {
         if (this.isFollower) {
-            const index = this.me.namespaces_followed.indexOf(this.namespace.id);
-            this.me.namespaces_followed.splice(index, 1);
+            const index = this.preferences.namespaces_followed.indexOf(this.namespace.id);
+            this.preferences.namespaces_followed.splice(index, 1);
         } else {
-            this.me.namespaces_followed.push(this.namespace.id);
+            this.preferences.namespaces_followed.push(this.namespace.id);
         }
-        this.userService.save(this.me).subscribe(result => {
+        this.preferencesService.save(this.preferences).subscribe(result => {
             if (result !== null) {
-                this.me = result;
+                this.preferences = result;
                 this.setFollower();
             }
         });
@@ -262,7 +260,7 @@ export class AuthorDetailComponent implements OnInit {
     // private
 
     private setFollower() {
-        if (this.me.namespaces_followed.find(x => x === this.namespace.id) !== undefined) {
+        if (this.preferences.namespaces_followed.find(x => x === this.namespace.id) !== undefined) {
             this.isFollower = true;
         } else {
             this.isFollower = false;

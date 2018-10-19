@@ -51,7 +51,7 @@
                 <div class="control-buttons">
                     <div class="header-button">
                         <div
-                            *ngIf="me"
+                            *ngIf="preferences"
                             tooltip="Get notified when this author posts new content."
                             class="btn btn-default"
                             (click)="followUser()"
@@ -59,7 +59,7 @@
                             <span class="fa fa-user-{{ isFollower ? 'times':'plus'}}"></span> {{ isFollower ? 'Unfollow Author':'Follow Author'}}
                         </div>
                         <a
-                            *ngIf="!me"
+                            *ngIf="!preferences"
                             tooltip="Get notified when this author posts new content."
                             class="btn btn-default"
                             [routerLink]='["/", "login"]'
