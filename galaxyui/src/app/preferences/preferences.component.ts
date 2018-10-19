@@ -12,7 +12,8 @@ import { NotificationType } from 'patternfly-ng/notification/notification-type';
 import { AuthService } from '../auth/auth.service';
 import { Email } from '../resources/emails/email';
 import { EmailService } from '../resources/emails/email.service';
-import { User } from '../resources/users/user';
+import { PreferencesService } from '../resources/preferences/preferences.service';
+import { UserPreferences } from '../resources/preferences/user-preferences';
 import { UserService } from '../resources/users/user.service';
 
 @Component({
@@ -27,6 +28,7 @@ export class PreferencesComponent implements OnInit {
     constructor(
         private notificationService: NotificationService,
         private authService: AuthService,
+        private preferencesService: PreferencesService,
         private userService: UserService,
         private router: Router,
         private emailService: EmailService,
@@ -40,7 +42,7 @@ export class PreferencesComponent implements OnInit {
     notificationSettings: any;
     apiKey: string;
     userId: number;
-    user: User;
+    preferences: UserPreferences;
 
     ngOnInit() {
         this.authService.me().subscribe(me => {
@@ -67,8 +69,9 @@ export class PreferencesComponent implements OnInit {
     }
 
     private getUser() {
-        this.userService.get(this.userId).subscribe(response => {
-            this.user = response;
+        this.preferencesService.get().subscribe(response => {
+            this.preferences = response;
+            console.log(this.preferences);
             this.notificationSettings = [
                 {
                     key: 'notify_survey',
@@ -229,7 +232,7 @@ export class PreferencesComponent implements OnInit {
         // Slow the update to prevent race condition with ngModel;
         // otherwise, the saved value won't match the UI value.
         setTimeout(() => {
-            this.userService.save(this.user).subscribe();
+            this.preferencesService.save(this.preferences).subscribe();
         }, 500);
     }
 }

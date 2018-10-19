@@ -1243,6 +1243,7 @@ class InfluxSessionIdentifier(BaseModel):
         return str(self.session_id)
 
 
+@six.python_2_unicode_compatible
 class UserPreferences(BaseModel):
     DEFAULT_PREFERENCES = {
         # Notify me when a user adds a survey for my content.
@@ -1262,7 +1263,7 @@ class UserPreferences(BaseModel):
 
         # Notify me when there is a Galaxy announcement.
         'notify_galaxy_announce': True
-    },
+    }
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -1286,3 +1287,13 @@ class UserPreferences(BaseModel):
         editable=True,
         blank=True
     )
+
+    def __str__(self):
+        return self.user
+
+    # Add any preferences that are in default preferences but missing from
+    # the user's preferences to the user's preferences.
+    def update_defaults(self):
+        for key in self.DEFAULT_PREFERENCES:
+            if key not in self.preferences:
+                self.preferences[key] = self.DEFAULT_PREFERENCES[key]

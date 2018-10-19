@@ -81,7 +81,7 @@
     <div class="card-content">
         Would you like to receive a notification when...
         <div *ngFor="let item of notificationSettings" class="notification-settings">
-            <input type="checkbox" [(ngModel)]="user[item.key]" (click)="updateNotifications()">
+            <input type="checkbox" [(ngModel)]="preferences.preferences[item.key]" (click)="updateNotifications()">
             {{ item.description }}
         </div>
     </div>
