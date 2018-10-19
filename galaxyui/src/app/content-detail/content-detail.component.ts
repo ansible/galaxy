@@ -140,17 +140,26 @@ export class ContentDetailComponent implements OnInit {
 
                 const req_content_name = params['content_name'];
 
-                if (req_content_name && data['content'] && data['content'].length) {
-                    this.selectedContent = this.findSelectedContent(req_content_name);
+                if (
+                    req_content_name &&
+                    data['content'] &&
+                    data['content'].length
+                ) {
+                    this.selectedContent = this.findSelectedContent(
+                        req_content_name,
+                    );
                 }
                 if (
                     !this.repository ||
                     !this.content ||
-                    (this.repository.format === RepoFormats.multi && req_content_name && !this.selectedContent)
+                    (this.repository.format === RepoFormats.multi &&
+                        req_content_name &&
+                        !this.selectedContent)
                 ) {
                     // Requested content from a multicontent repo not found || No content found
                     this.showEmptyState = true;
-                    this.pageTitle = '<i class="fa fa-frown-o"></i> Content Not Found';
+                    this.pageTitle =
+                        '<i class="fa fa-frown-o"></i> Content Not Found';
                     this.pageLoading = false;
                 } else {
                     // Append author type to breadcrumb
@@ -163,24 +172,41 @@ export class ContentDetailComponent implements OnInit {
                     }
 
                     // Append author namespace and repository name to breadcrumb
-                    this.pageTitle += `${this.namespace.name};/${this.namespace.name};${params['repository']};`;
+                    this.pageTitle += `${this.namespace.name};/${
+                        this.namespace.name
+                    };${params['repository']};`;
 
                     // If content is specified, append it to the breadcrumb
                     if (this.selectedContent) {
-                        this.pageTitle += `/${this.namespace.name}/${params['repository']};${req_content_name}`;
+                        this.pageTitle += `/${this.namespace.name}/${
+                            params['repository']
+                        };${req_content_name}`;
                     }
                     this.repository.last_import = 'NA';
                     this.repository.last_commit = 'NA';
-                    if (this.repository.summary_fields['latest_import'] && this.repository.summary_fields['latest_import']['finished']) {
-                        this.repository.last_import = moment(this.repository.summary_fields['latest_import']['finished']).fromNow();
+                    if (
+                        this.repository.summary_fields['latest_import'] &&
+                        this.repository.summary_fields['latest_import'][
+                            'finished'
+                        ]
+                    ) {
+                        this.repository.last_import = moment(
+                            this.repository.summary_fields['latest_import'][
+                                'finished'
+                            ],
+                        ).fromNow();
                     }
 
                     if (this.repository.commit_created) {
-                        this.repository.last_commit = moment(this.repository.commit_created).fromNow();
+                        this.repository.last_commit = moment(
+                            this.repository.commit_created,
+                        ).fromNow();
                     }
 
                     if (this.repository.quality_score_date) {
-                        this.repository.quality_score_date = moment(this.repository.quality_score_date).fromNow();
+                        this.repository.quality_score_date = moment(
+                            this.repository.quality_score_date,
+                        ).fromNow();
                     }
 
                     if (this.content && this.content.length) {
@@ -271,23 +297,40 @@ export class ContentDetailComponent implements OnInit {
                 }
             }
             // Make it easier to access related data
-            ['platforms', 'versions', 'cloud_platforms', 'task_messages', 'dependencies'].forEach(key => {
+            [
+                'platforms',
+                'versions',
+                'cloud_platforms',
+                'task_messages',
+                'dependencies',
+            ].forEach(key => {
                 this.repoContent[key] = this.repoContent.summary_fields[key];
                 let hasKey = 'has' + key[0].toUpperCase() + key.substring(1);
                 hasKey = hasKey.replace(/\_(\w)/, this.toCamel);
-                this.repoContent[hasKey] = this.repoContent[key] && this.repoContent[key].length ? true : false;
+                this.repoContent[hasKey] =
+                    this.repoContent[key] && this.repoContent[key].length
+                        ? true
+                        : false;
             });
             if (this.repository.format === RepoFormats.multi) {
                 this.getContentTypeCounts();
                 if (this.selectedContent) {
                     // For multi-content repo, set the detail view to the selected content item
-                    if (this.selectedContent.content_type === ContentTypes.module) {
+                    if (
+                        this.selectedContent.content_type ===
+                        ContentTypes.module
+                    ) {
                         this.showingView = ViewTypes.modules;
-                    } else if (this.selectedContent.content_type === ContentTypes.moduleUtils) {
+                    } else if (
+                        this.selectedContent.content_type ===
+                        ContentTypes.moduleUtils
+                    ) {
                         this.showingView = ViewTypes.moduleUtils;
                     } else if (PluginTypes[this.selectedContent.content_type]) {
                         this.showingView = ViewTypes.plugins;
-                    } else if (this.selectedContent.content_type === ContentTypes.role) {
+                    } else if (
+                        this.selectedContent.content_type === ContentTypes.role
+                    ) {
                         this.showingView = ViewTypes.roles;
                     }
                 }
@@ -296,7 +339,12 @@ export class ContentDetailComponent implements OnInit {
         });
     }
 
-    private toCamel(match: string, p1: string, offset: number, value: string): string {
+    private toCamel(
+        match: string,
+        p1: string,
+        offset: number,
+        value: string,
+    ): string {
         return p1.toUpperCase();
     }
 
@@ -305,21 +353,23 @@ export class ContentDetailComponent implements OnInit {
         if (page) {
             params['page'] = page;
         }
-        this.contentService.pagedQuery(params).subscribe((result: PagedResponse) => {
-            result.results.forEach(item => {
-                const ct = item['content_type'];
-                if (PluginTypes[ct]) {
-                    this.contentCounts.plugin++;
-                } else {
-                    const ctKey = ct.replace(/\_(\w)/, this.toCamel);
-                    this.contentCounts[ctKey]++;
+        this.contentService
+            .pagedQuery(params)
+            .subscribe((result: PagedResponse) => {
+                result.results.forEach(item => {
+                    const ct = item['content_type'];
+                    if (PluginTypes[ct]) {
+                        this.contentCounts.plugin++;
+                    } else {
+                        const ctKey = ct.replace(/\_(\w)/, this.toCamel);
+                        this.contentCounts[ctKey]++;
+                    }
+                });
+                if (result.next) {
+                    const matches = result.next.match(/page=(\d+)/);
+                    this.getContentTypeCounts(parseInt(matches[1], 10));
                 }
             });
-            if (result.next) {
-                const matches = result.next.match(/page=(\d+)/);
-                this.getContentTypeCounts(parseInt(matches[1], 10));
-            }
-        });
     }
 
     private getRepoVersions(page?: number) {
@@ -327,12 +377,16 @@ export class ContentDetailComponent implements OnInit {
         if (page) {
             params['page'] = page;
         }
-        this.repoService.getVersions(this.repository.id, params).subscribe(result => {
-            this.repositoryVersions = this.repositoryVersions.concat(result.results);
-            if (result.next) {
-                const matches = result.next.match(/page=(\d+)/);
-                this.getRepoVersions(parseInt(matches[1], 10));
-            }
-        });
+        this.repoService
+            .getVersions(this.repository.id, params)
+            .subscribe(result => {
+                this.repositoryVersions = this.repositoryVersions.concat(
+                    result.results,
+                );
+                if (result.next) {
+                    const matches = result.next.match(/page=(\d+)/);
+                    this.getRepoVersions(parseInt(matches[1], 10));
+                }
+            });
     }
 }

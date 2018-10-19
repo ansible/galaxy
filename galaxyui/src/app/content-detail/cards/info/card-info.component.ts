@@ -58,18 +58,28 @@ export class CardInfoComponent implements OnInit {
         if (this._repoContent) {
             if (this._repoType === 'multi') {
                 this._repoContent['install_cmd'] =
-                    `mazer install ${this._repoContent.summary_fields['namespace']['name']}.` +
+                    `mazer install ${
+                        this._repoContent.summary_fields['namespace']['name']
+                    }.` +
                     `${this._repoContent.summary_fields['repository']['name']}`;
             } else {
                 this._repoContent['install_cmd'] =
-                    `ansible-galaxy install ${this._repoContent.summary_fields['namespace']['name']}.` + `${this._repoContent.name}`;
+                    `ansible-galaxy install ${
+                        this._repoContent.summary_fields['namespace']['name']
+                    }.` + `${this._repoContent.name}`;
             }
-            this._repoContent['tags'] = this._repoContent.summary_fields['tags'];
+            this._repoContent['tags'] = this._repoContent.summary_fields[
+                'tags'
+            ];
             this._repoContent['hasTags'] =
-                this.repoContent.summary_fields['tags'] && this._repoContent.summary_fields['tags'].length ? true : false;
+                this.repoContent.summary_fields['tags'] &&
+                this._repoContent.summary_fields['tags'].length
+                    ? true
+                    : false;
             this.example_name = this._repoContent.name;
             this.example_type = this._repoContent.content_type;
-            this.example_type_plural = ContentTypesPlural[this._repoContent.content_type];
+            this.example_type_plural =
+                ContentTypesPlural[this._repoContent.content_type];
         }
     }
     get repoContent(): Content {

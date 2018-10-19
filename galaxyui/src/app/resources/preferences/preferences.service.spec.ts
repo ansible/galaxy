@@ -9,7 +9,10 @@ describe('PreferencesService', () => {
         });
     });
 
-    it('should be created', inject([PreferencesService], (service: PreferencesService) => {
-        expect(service).toBeTruthy();
-    }));
+    it('should be created', inject(
+        [PreferencesService],
+        (service: PreferencesService) => {
+            expect(service).toBeTruthy();
+        },
+    ));
 });

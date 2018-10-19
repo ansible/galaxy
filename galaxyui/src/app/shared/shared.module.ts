@@ -12,8 +12,18 @@ import { PageLoadingComponent } from './components/page-loading/page-loading.com
 
 @NgModule({
     imports: [CommonModule, RouterModule],
-    declarations: [LogButtonLinkDirective, PageHeaderComponent, PageLoadingComponent, MiddleclickDirective],
-    exports: [LogButtonLinkDirective, PageHeaderComponent, PageLoadingComponent, MiddleclickDirective],
+    declarations: [
+        LogButtonLinkDirective,
+        PageHeaderComponent,
+        PageLoadingComponent,
+        MiddleclickDirective,
+    ],
+    exports: [
+        LogButtonLinkDirective,
+        PageHeaderComponent,
+        PageLoadingComponent,
+        MiddleclickDirective,
+    ],
 })
 export class SharedModule {
     constructor() {}

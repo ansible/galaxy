@@ -33,7 +33,20 @@ export class ClipboardComponent implements OnInit {
     }
 
     calcGuid(): string {
-        return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + this.s4() + this.s4();
+        return (
+            this.s4() +
+            this.s4() +
+            '-' +
+            this.s4() +
+            '-' +
+            this.s4() +
+            '-' +
+            this.s4() +
+            '-' +
+            this.s4() +
+            this.s4() +
+            this.s4()
+        );
     }
 
     copyToClipboard() {

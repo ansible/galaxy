@@ -20,7 +20,11 @@ import { Namespace } from '../resources/namespaces/namespace';
 import { NamespaceService } from '../resources/namespaces/namespace.service';
 import { PFBodyService } from '../resources/pf-body/pf-body.service';
 
-import { ContentTypes, ContentTypesIconClasses, ContentTypesPluralChoices } from '../enums/content-types.enum';
+import {
+    ContentTypes,
+    ContentTypesIconClasses,
+    ContentTypesPluralChoices,
+} from '../enums/content-types.enum';
 
 @Component({
     selector: 'app-authors',
@@ -143,9 +147,11 @@ export class AuthorsComponent implements OnInit {
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach(filter => {
                 if (filter.field.type === 'typeahead') {
-                    this.filterBy['or__' + filter.field.id + '__icontains'] = filter.query.id;
+                    this.filterBy['or__' + filter.field.id + '__icontains'] =
+                        filter.query.id;
                 } else {
-                    this.filterBy['or__' + filter.field.id + '__icontains'] = filter.value;
+                    this.filterBy['or__' + filter.field.id + '__icontains'] =
+                        filter.value;
                 }
             });
         } else {
@@ -202,23 +208,41 @@ export class AuthorsComponent implements OnInit {
                             // summarize plugins
                             let count = 0;
                             const countObj = {};
-                            for (const count_key in item['summary_fields']['content_counts']) {
-                                if (item['summary_fields']['content_counts'].hasOwnProperty(count_key)) {
+                            for (const count_key in item['summary_fields'][
+                                'content_counts'
+                            ]) {
+                                if (
+                                    item['summary_fields'][
+                                        'content_counts'
+                                    ].hasOwnProperty(count_key)
+                                ) {
                                     if (count_key.indexOf('plugin') > -1) {
-                                        count += item['summary_fields']['content_counts'][count_key];
+                                        count +=
+                                            item['summary_fields'][
+                                                'content_counts'
+                                            ][count_key];
                                     }
                                 }
                             }
                             if (count > 0) {
-                                countObj['title'] = ContentTypesPluralChoices[ct];
+                                countObj['title'] =
+                                    ContentTypesPluralChoices[ct];
                                 countObj['count'] = count;
-                                countObj['iconClass'] = ContentTypesIconClasses[ct];
+                                countObj['iconClass'] =
+                                    ContentTypesIconClasses[ct];
                                 contentCounts.push(countObj);
                             }
-                        } else if (item['summary_fields']['content_counts'][ContentTypes[ct]] > 0) {
+                        } else if (
+                            item['summary_fields']['content_counts'][
+                                ContentTypes[ct]
+                            ] > 0
+                        ) {
                             const countObj = {};
                             countObj['title'] = ContentTypesPluralChoices[ct];
-                            countObj['count'] = item['summary_fields']['content_counts'][ContentTypes[ct]];
+                            countObj['count'] =
+                                item['summary_fields']['content_counts'][
+                                    ContentTypes[ct]
+                                ];
                             countObj['iconClass'] = ContentTypesIconClasses[ct];
                             contentCounts.push(countObj);
                         }

@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, InjectionToken, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    InjectionToken,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 
 import { ActivatedRoute } from '@angular/router';
 
@@ -178,7 +185,11 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     selectItem(select: number, deselect?: number): void {
         this.items.forEach(item => {
-            if (deselect !== null && select !== deselect && item.id === deselect) {
+            if (
+                deselect !== null &&
+                select !== deselect &&
+                item.id === deselect
+            ) {
                 this.pfList.selectItem(item, false);
             } else if (item.id === select) {
                 this.pfList.selectItem(item, true);
@@ -207,9 +218,14 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.selectItem(this.selected.id, deselectId);
             }
             this.cancelPageLoading();
-            if (this.selected.state === ImportState.running || this.selected.state === ImportState.pending) {
+            if (
+                this.selected.state === ImportState.running ||
+                this.selected.state === ImportState.pending
+            ) {
                 // monitor the state of a running import
-                this.polling = interval(5000).subscribe(_ => this.refreshImport());
+                this.polling = interval(5000).subscribe(_ =>
+                    this.refreshImport(),
+                );
             }
         });
     }
@@ -227,11 +243,16 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                 location += `${filter.field.id}=${filter.value.toLowerCase()}`;
                 if (filter.field.id === 'namespace' && filter.value) {
                     query += `repository__provider_namespace__namespace__name__iexact=${filter.value.toLowerCase()}`;
-                } else if (filter.field.id === 'repository_name' && filter.value) {
+                } else if (
+                    filter.field.id === 'repository_name' &&
+                    filter.value
+                ) {
                     query += `repository__name__icontains=${filter.value.toLowerCase()}`;
                 }
             });
-            this.appliedFilters = JSON.parse(JSON.stringify($event.appliedFilters));
+            this.appliedFilters = JSON.parse(
+                JSON.stringify($event.appliedFilters),
+            );
             this.filterParams = query;
             this.locationParams = location;
         } else {
@@ -260,7 +281,8 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private scrollDetails() {
         const pgElement = document.getElementById('app-container');
-        const detailHeight = document.getElementById('import-details-container').scrollHeight;
+        const detailHeight = document.getElementById('import-details-container')
+            .scrollHeight;
         const pgHeight = pgElement.scrollHeight;
         const wHeight = window.innerHeight - 110;
         if (detailHeight > wHeight) {
@@ -285,26 +307,37 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
             // TODO: a default value for import branch should be set on the backend
             data.import_branch = 'master';
             if (data.summary_fields.repository.import_branch) {
-                data.import_branch = data.summary_fields.repository.import_branch;
+                data.import_branch =
+                    data.summary_fields.repository.import_branch;
             }
         }
         if (data.state === ImportState.pending) {
             data.last_run = 'Waiting to start...';
         } else if (data.state === ImportState.running) {
             data.last_run = 'Running...';
-        } else if (data.state === ImportState.failed || data.state === ImportState.success) {
-            const state = data.state.charAt(0).toUpperCase() + data.state.slice(1).toLowerCase();
+        } else if (
+            data.state === ImportState.failed ||
+            data.state === ImportState.success
+        ) {
+            const state =
+                data.state.charAt(0).toUpperCase() +
+                data.state.slice(1).toLowerCase();
             data.last_run = state + ' ' + moment(data.finished).fromNow();
         }
     }
 
     private prepareImports(imports: ImportLatest[]): void {
         imports.forEach((item: ImportLatest) => {
-            if (this.selected && this.selected.summary_fields.repository.id === item.id) {
+            if (
+                this.selected &&
+                this.selected.summary_fields.repository.id === item.id
+            ) {
                 item['selected'] = true;
             }
             item.finished = moment(item.modified).fromNow();
-            item.state = item.state.charAt(0).toUpperCase() + item.state.slice(1).toLowerCase();
+            item.state =
+                item.state.charAt(0).toUpperCase() +
+                item.state.slice(1).toLowerCase();
         });
     }
 
@@ -332,7 +365,10 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (!field) {
                     continue;
                 }
-                const values = typeof params[key] === 'object' ? params[key] : [params[key]];
+                const values =
+                    typeof params[key] === 'object'
+                        ? params[key]
+                        : [params[key]];
                 values.forEach(value => {
                     if (filterParams !== '') {
                         filterParams += '&';
@@ -381,7 +417,10 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
         const selected = this.selectedId ? `&selected=${this.selectedId}` : '';
 
         // Refresh params on location URL
-        const location = (this.locationParams + selected + paging).replace(/^&/, ''); // remove leading &
+        const location = (this.locationParams + selected + paging).replace(
+            /^&/,
+            '',
+        ); // remove leading &
         this.location.replaceState(this.getBasePath(), location);
 
         return query;
@@ -420,9 +459,16 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                     const import_result: Import = result[0];
                     this.prepareImport(import_result);
                     this.items.forEach((item: ImportLatest) => {
-                        if (item.repository_id === import_result.summary_fields.repository.id) {
-                            item.finished = moment(import_result.modified).fromNow();
-                            item.state = import_result.state.charAt(0).toUpperCase() + import_result.state.slice(1).toLowerCase();
+                        if (
+                            item.repository_id ===
+                            import_result.summary_fields.repository.id
+                        ) {
+                            item.finished = moment(
+                                import_result.modified,
+                            ).fromNow();
+                            item.state =
+                                import_result.state.charAt(0).toUpperCase() +
+                                import_result.state.slice(1).toLowerCase();
                         }
                     });
                     if (this.selected.id === selectedId) {
@@ -432,7 +478,10 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
                         for (const key of keys) {
                             this.selected[key] = import_result[key];
                         }
-                        if (this.selected.state === ImportState.failed || this.selected.state === ImportState.success) {
+                        if (
+                            this.selected.state === ImportState.failed ||
+                            this.selected.state === ImportState.success
+                        ) {
                             // The import finished
                             if (this.polling) {
                                 this.polling.unsubscribe();

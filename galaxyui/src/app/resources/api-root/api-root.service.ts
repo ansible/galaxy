@@ -9,7 +9,10 @@ import { ApiRoot } from './api-root';
 export class ApiRootService {
     private url = '/api/';
 
-    constructor(private http: HttpClient, private notificationService: NotificationService) {}
+    constructor(
+        private http: HttpClient,
+        private notificationService: NotificationService,
+    ) {}
 
     get(): Observable<ApiRoot> {
         return this.http.get<ApiRoot>(this.url).pipe(
@@ -22,7 +25,9 @@ export class ApiRootService {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} user error: ${error.message}`);
-            this.notificationService.httpError(`${operation} user failed:`, { data: error });
+            this.notificationService.httpError(`${operation} user failed:`, {
+                data: error,
+            });
 
             // Let the app keep running by returning an empty result.
             return of(result as T);

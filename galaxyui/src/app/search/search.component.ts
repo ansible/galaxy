@@ -37,7 +37,10 @@ import { ContentTypesIconClasses } from '../enums/content-types.enum';
 
 import { RepoFormats } from '../enums/repo-types.enum';
 
-import { ContributorTypes, ContributorTypesIconClasses } from '../enums/contributor-types.enum';
+import {
+    ContributorTypes,
+    ContributorTypesIconClasses,
+} from '../enums/contributor-types.enum';
 
 import { PopularEvent } from './popular/popular.component';
 
@@ -118,7 +121,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
                         {
                             id: ContributorTypes.community,
                             value: ContributorTypes.community,
-                            iconStyleClass: ContributorTypesIconClasses.community,
+                            iconStyleClass:
+                                ContributorTypesIconClasses.community,
                         },
                         {
                             id: ContributorTypes.vendor,
@@ -226,11 +230,21 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     this.setSortConfig(this.queryParams);
                     this.setPageSize(this.queryParams);
                     this.setAppliedFilters(this.queryParams);
-                    this.prepareContent(data.content.results, data.content.count);
+                    this.prepareContent(
+                        data.content.results,
+                        data.content.count,
+                    );
                     this.setUrlParams(this.queryParams);
                     this.pageLoading = false;
                 } else {
-                    this.notificationService.message(NotificationType.WARNING, 'Error', 'Invalid search query', false, null, null);
+                    this.notificationService.message(
+                        NotificationType.WARNING,
+                        'Error',
+                        'Invalid search query',
+                        false,
+                        null,
+                        null,
+                    );
 
                     this.setSortConfig(this.queryParams);
                     this.setPageSize(this.queryParams);
@@ -295,11 +309,15 @@ export class SearchComponent implements OnInit, AfterViewInit {
                             }
                         }
                     } else {
-                        params[key] = encodeURIComponent(filterby[key].join(' '));
+                        params[key] = encodeURIComponent(
+                            filterby[key].join(' '),
+                        );
                     }
                 }
             }
-            this.appliedFilters = JSON.parse(JSON.stringify($event.appliedFilters));
+            this.appliedFilters = JSON.parse(
+                JSON.stringify($event.appliedFilters),
+            );
 
             // Apply new filters to queryParams
             for (const key of Object.keys(params)) {
@@ -313,7 +331,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
 
     getToolbarConfig(): ToolbarConfig {
-        this.toolbarConfig.filterConfig.appliedFilters = JSON.parse(JSON.stringify(this.appliedFilters));
+        this.toolbarConfig.filterConfig.appliedFilters = JSON.parse(
+            JSON.stringify(this.appliedFilters),
+        );
         return this.toolbarConfig;
     }
 
@@ -344,7 +364,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
             this.queryParams[$event.itemType] = $event.item['name'];
             update = true;
         } else {
-            if (!this.queryParams[$event.itemType].includes($event.item['name'])) {
+            if (
+                !this.queryParams[$event.itemType].includes($event.item['name'])
+            ) {
                 update = true;
                 this.queryParams[$event.itemType] += ' ' + $event.item['name'];
             }
@@ -429,10 +451,16 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     const ffield: Filter = {} as Filter;
                     ffield.field = field;
                     field.queries.forEach((query: FilterQuery) => {
-                        if (query.id === ContributorTypes.community && params[key] === 'false') {
+                        if (
+                            query.id === ContributorTypes.community &&
+                            params[key] === 'false'
+                        ) {
                             ffield.query = query;
                             ffield.value = query.value;
-                        } else if (query.id === ContributorTypes.vendor && params[key] === 'true') {
+                        } else if (
+                            query.id === ContributorTypes.vendor &&
+                            params[key] === 'true'
+                        ) {
                             ffield.query = query;
                             ffield.value = query.value;
                         }
@@ -488,7 +516,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
         return result;
     }
 
-    private getFilterFieldQuery(field: FilterField, value: string): FilterQuery {
+    private getFilterFieldQuery(
+        field: FilterField,
+        value: string,
+    ): FilterQuery {
         let result: FilterQuery = null;
         field.queries.forEach((item: FilterQuery) => {
             if (item.id === value) {
@@ -501,7 +532,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
     private addToFilter(filter: Filter) {
         let filterExists = false;
         this.appliedFilters.forEach((item: Filter) => {
-            if (item.field.id === filter.field.id && item.value === filter.value) {
+            if (
+                item.field.id === filter.field.id &&
+                item.value === filter.value
+            ) {
                 filterExists = true;
             }
         });
@@ -530,24 +564,39 @@ export class SearchComponent implements OnInit, AfterViewInit {
             } else if (datePattern.exec(item.imported) !== null) {
                 item.imported = moment(item.imported).fromNow();
             }
-            item['repository_format'] = item.summary_fields['repository']['format'];
-            item['avatar_url'] = item.summary_fields['namespace']['avatar_url'] || '/assets/avatar.png';
+            item['repository_format'] =
+                item.summary_fields['repository']['format'];
+            item['avatar_url'] =
+                item.summary_fields['namespace']['avatar_url'] ||
+                '/assets/avatar.png';
             if (!item.summary_fields['namespace']['is_vendor']) {
                 // always show namespace name for community contributors
-                item['namespace_name'] = item.summary_fields['namespace']['name'];
+                item['namespace_name'] =
+                    item.summary_fields['namespace']['name'];
             } else {
                 // for vendors, assume name is in logo
-                item['namespace_name'] = item.summary_fields['namespace']['avatar_url'] ? '' : item.summary_fields['namespace']['name'];
+                item['namespace_name'] = item.summary_fields['namespace'][
+                    'avatar_url'
+                ]
+                    ? ''
+                    : item.summary_fields['namespace']['name'];
             }
             item['displayNamespace'] = item.summary_fields['namespace']['name'];
             if (PluginTypes[item.summary_fields['content_type']['name']]) {
                 item['iconClass'] = ContentTypesIconClasses.plugin;
             } else {
-                item['iconClass'] = ContentTypesIconClasses[item.summary_fields['content_type']['name']];
+                item['iconClass'] =
+                    ContentTypesIconClasses[
+                        item.summary_fields['content_type']['name']
+                    ];
             }
             // Determine navigation for item click
-            const namespace = item.summary_fields['namespace']['name'].toLowerCase();
-            const repository = item.summary_fields['repository']['name'].toLowerCase();
+            const namespace = item.summary_fields['namespace'][
+                'name'
+            ].toLowerCase();
+            const repository = item.summary_fields['repository'][
+                'name'
+            ].toLowerCase();
             const name = item.name.toLowerCase();
             item['contentLink'] = `/${namespace}/${repository}`;
             if (item['repository_format'] === RepoFormats.multi) {

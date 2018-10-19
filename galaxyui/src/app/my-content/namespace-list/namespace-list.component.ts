@@ -82,7 +82,9 @@ export class NamespaceListComponent implements OnInit {
 
     ngOnInit(): void {
         if (!this.authService.meCache.staff) {
-            this.filterBy['owners__username'] = this.authService.meCache.username;
+            this.filterBy[
+                'owners__username'
+            ] = this.authService.meCache.username;
         }
 
         this.filterConfig = {
@@ -182,15 +184,19 @@ export class NamespaceListComponent implements OnInit {
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach(filter => {
                 if (filter.field.type === 'typeahead') {
-                    this.filterBy['or__' + filter.field.id + '__icontains'] = filter.query.id;
+                    this.filterBy['or__' + filter.field.id + '__icontains'] =
+                        filter.query.id;
                 } else {
-                    this.filterBy['or__' + filter.field.id + '__icontains'] = filter.value;
+                    this.filterBy['or__' + filter.field.id + '__icontains'] =
+                        filter.value;
                 }
             });
         } else {
             this.filterBy = {};
             if (!this.authService.meCache.staff) {
-                this.filterBy['owners__username'] = this.authService.meCache.username;
+                this.filterBy[
+                    'owners__username'
+                ] = this.authService.meCache.username;
             }
         }
         this.pageNumber = 1;

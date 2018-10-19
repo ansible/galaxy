@@ -14,7 +14,12 @@ import { UserPreferences } from './user-preferences';
 })
 export class PreferencesService extends ServiceBase {
     constructor(http: HttpClient, notificationService: NotificationService) {
-        super(http, notificationService, '/api/internal/preferences', 'preferences');
+        super(
+            http,
+            notificationService,
+            '/api/internal/preferences',
+            'preferences',
+        );
     }
 
     preferences: UserPreferences = null;
@@ -35,7 +40,11 @@ export class PreferencesService extends ServiceBase {
 
     save(preferences: UserPreferences) {
         let httpResult: Observable<UserPreferences>;
-        httpResult = this.http.put<UserPreferences>(`${this.url}/`, preferences, this.httpOptions);
+        httpResult = this.http.put<UserPreferences>(
+            `${this.url}/`,
+            preferences,
+            this.httpOptions,
+        );
 
         return httpResult.pipe(
             tap(_ => this.log(`Saved ${this.serviceName}`)),

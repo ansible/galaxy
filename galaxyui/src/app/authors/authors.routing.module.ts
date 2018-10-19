@@ -2,7 +2,11 @@ import { NgModule } from '@angular/core';
 
 import { RouterModule, Routes } from '@angular/router';
 
-import { NamespaceDetailResolver, NamespaceListResolver, RepositoryResolver } from './authors.resolver.service';
+import {
+    NamespaceDetailResolver,
+    NamespaceListResolver,
+    RepositoryResolver,
+} from './authors.resolver.service';
 
 import { AuthorsComponent } from './authors.component';
 
@@ -20,6 +24,10 @@ const routes: Routes = [
 @NgModule({
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
-    providers: [NamespaceDetailResolver, NamespaceListResolver, RepositoryResolver],
+    providers: [
+        NamespaceDetailResolver,
+        NamespaceListResolver,
+        RepositoryResolver,
+    ],
 })
 export class AuthorsRoutingModule {}

@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+} from '@angular/core';
 
 import { ImportState } from '../../enums/import-state.enum';
 import { Import } from '../../resources/imports/import';
@@ -37,14 +44,17 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
                 if (me.staff) {
                     this.canImport = true;
                 } else {
-                    this.namespaceService.get(data.summary_fields.namespace.id).subscribe(namespace => {
-                        for (const owner of namespace.summary_fields.owners) {
-                            if (me.username === owner.username) {
-                                this.canImport = true;
-                                break;
+                    this.namespaceService
+                        .get(data.summary_fields.namespace.id)
+                        .subscribe(namespace => {
+                            for (const owner of namespace.summary_fields
+                                .owners) {
+                                if (me.username === owner.username) {
+                                    this.canImport = true;
+                                    break;
+                                }
                             }
-                        }
-                    });
+                        });
                 }
             });
         }
@@ -85,10 +95,18 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {}
 
     startImport(): void {
-        this.repositoryImportService.save({ repository_id: this.importTask.summary_fields.repository.id }).subscribe(response => {
-            console.log(`Started import for repository ${this.importTask.summary_fields.repository.id}`);
-            this.startedImport.emit(true);
-        });
+        this.repositoryImportService
+            .save({
+                repository_id: this.importTask.summary_fields.repository.id,
+            })
+            .subscribe(response => {
+                console.log(
+                    `Started import for repository ${
+                        this.importTask.summary_fields.repository.id
+                    }`,
+                );
+                this.startedImport.emit(true);
+            });
     }
 
     toggleScroll() {

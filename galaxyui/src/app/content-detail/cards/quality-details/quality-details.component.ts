@@ -42,9 +42,15 @@ export class QualityDetailsComponent implements OnInit {
         this.metaWarn = new Warning();
         this.compatibilityWarn = new Warning();
 
-        this.content.content_score = this.convertScore(this.content.content_score);
-        this.content.metadata_score = this.convertScore(this.content.metadata_score);
-        this.content.compatibility_score = this.convertScore(this.content.compatibility_score);
+        this.content.content_score = this.convertScore(
+            this.content.content_score,
+        );
+        this.content.metadata_score = this.convertScore(
+            this.content.metadata_score,
+        );
+        this.content.compatibility_score = this.convertScore(
+            this.content.compatibility_score,
+        );
 
         for (const el of this.content.summary_fields.task_messages) {
             if (el.is_linter_rule_violation && el.rule_severity > 0) {

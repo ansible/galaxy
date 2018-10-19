@@ -1,4 +1,10 @@
-import { Component, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnDestroy,
+    OnInit,
+    ViewEncapsulation,
+} from '@angular/core';
 
 import { ActionConfig } from 'patternfly-ng/action/action-config';
 import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
@@ -93,7 +99,8 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        const provider_namespaces = this.namespace.summary_fields.provider_namespaces;
+        const provider_namespaces = this.namespace.summary_fields
+            .provider_namespaces;
 
         this.filterConfig = {
             fields: [
@@ -120,7 +127,8 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             } as ActionConfig,
             iconStyleClass: 'pficon-warning-triangle-o',
             title: 'No Repositories',
-            info: 'Add repositories by clicking the "Add Content" button above.',
+            info:
+                'Add repositories by clicking the "Add Content" button above.',
             helpLink: {},
         } as EmptyStateConfig;
 
@@ -137,7 +145,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
         this.disabledStateConfig = {
             iconStyleClass: 'pficon-warning-triangle-o',
-            info: `The Namespace ${this.namespace.name} is disabled. You'll need to re-enable it before viewing and modifying its content.`,
+            info: `The Namespace ${
+                this.namespace.name
+            } is disabled. You'll need to re-enable it before viewing and modifying its content.`,
             title: 'Namespace Disabled',
         } as EmptyStateConfig;
 
@@ -253,30 +263,37 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         if (item.summary_fields.latest_import) {
             item['latest_import'] = item.summary_fields.latest_import;
             if (item['latest_import']['finished']) {
-                item['latest_import']['as_of_dt'] = moment(item['latest_import']['finished']).fromNow();
+                item['latest_import']['as_of_dt'] = moment(
+                    item['latest_import']['finished'],
+                ).fromNow();
             } else {
-                item['latest_import']['as_of_dt'] = moment(item['latest_import']['modified']).fromNow();
+                item['latest_import']['as_of_dt'] = moment(
+                    item['latest_import']['modified'],
+                ).fromNow();
             }
         }
     }
 
     private refreshRepositories() {
         const queries: Observable<PagedResponse>[] = [];
-        this.namespace.summary_fields.provider_namespaces.forEach((pns: ProviderNamespace) => {
-            const query = {
-                provider_namespace__id: pns.id,
-                page_size: this.paginationConfig.pageSize,
-                page: this.paginationConfig.pageNumber,
-            };
+        this.namespace.summary_fields.provider_namespaces.forEach(
+            (pns: ProviderNamespace) => {
+                const query = {
+                    provider_namespace__id: pns.id,
+                    page_size: this.paginationConfig.pageSize,
+                    page: this.paginationConfig.pageNumber,
+                };
 
-            if (this.filterConfig) {
-                for (const filter of this.filterConfig.appliedFilters) {
-                    query[`or__${filter.field.id}__icontains`] = filter.value;
+                if (this.filterConfig) {
+                    for (const filter of this.filterConfig.appliedFilters) {
+                        query[`or__${filter.field.id}__icontains`] =
+                            filter.value;
+                    }
                 }
-            }
 
-            queries.push(this.repositoryService.pagedQuery(query));
-        });
+                queries.push(this.repositoryService.pagedQuery(query));
+            },
+        );
 
         forkJoin(queries).subscribe((results: PagedResponse[]) => {
             let repositories: Repository[] = [];
@@ -284,7 +301,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             let resultCount = 0;
 
             for (const response of results) {
-                repositories = repositories.concat(response.results as Repository[]);
+                repositories = repositories.concat(
+                    response.results as Repository[],
+                );
                 resultCount += response.count;
             }
 
@@ -326,9 +345,11 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         // Start an import
         repository['latest_import']['state'] = 'PENDING';
         repository['latest_import']['as_of_dt'] = '';
-        this.repositoryImportService.save({ repository_id: repository.id }).subscribe(response => {
-            console.log(`Started import for repository ${repository.id}`);
-        });
+        this.repositoryImportService
+            .save({ repository_id: repository.id })
+            .subscribe(response => {
+                console.log(`Started import for repository ${repository.id}`);
+            });
     }
 
     private deleteRepository(repository: Repository) {

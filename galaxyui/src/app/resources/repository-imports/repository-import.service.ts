@@ -16,7 +16,10 @@ const httpOptions = {
 export class RepositoryImportService {
     private url = '/api/v1/imports';
 
-    constructor(private http: HttpClient, private notificationService: NotificationService) {}
+    constructor(
+        private http: HttpClient,
+        private notificationService: NotificationService,
+    ) {}
 
     query(params): Observable<RepositoryImport[]> {
         return this.http.get<PagedResponse>(this.url, { params: params }).pipe(
@@ -27,17 +30,24 @@ export class RepositoryImportService {
     }
 
     save(params: any): Observable<RepositoryImport> {
-        return this.http.post<RepositoryImport>(`${this.url}/`, params, httpOptions).pipe(
-            tap((newImport: RepositoryImport) => this.log(`Saved repository import`)),
-            catchError(this.handleError<RepositoryImport>('Save')),
-        );
+        return this.http
+            .post<RepositoryImport>(`${this.url}/`, params, httpOptions)
+            .pipe(
+                tap((newImport: RepositoryImport) =>
+                    this.log(`Saved repository import`),
+                ),
+                catchError(this.handleError<RepositoryImport>('Save')),
+            );
     }
 
     private handleError<T>(operation = '', result?: T) {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} repository import error: ${error.message}`);
-            this.notificationService.httpError(`${operation} repository import failed:`, { data: error });
+            this.notificationService.httpError(
+                `${operation} repository import failed:`,
+                { data: error },
+            );
 
             // Let the app keep running by returning an empty result.
             return of(result as T);

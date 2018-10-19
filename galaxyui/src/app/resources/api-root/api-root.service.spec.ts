@@ -9,7 +9,10 @@ describe('ContentSearchService', () => {
         });
     });
 
-    it('should be created', inject([ApiRootService], (service: ApiRootService) => {
-        expect(service).toBeTruthy();
-    }));
+    it('should be created', inject(
+        [ApiRootService],
+        (service: ApiRootService) => {
+            expect(service).toBeTruthy();
+        },
+    ));
 });

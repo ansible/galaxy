@@ -110,7 +110,9 @@ export class RolesComponent implements OnInit {
             } as Filter);
         }
 
-        this.queryContentList(this.selectedContent ? this.selectedContent.name : null);
+        this.queryContentList(
+            this.selectedContent ? this.selectedContent.name : null,
+        );
     }
 
     handlePageSizeChange($event: PaginationEvent) {
@@ -136,7 +138,11 @@ export class RolesComponent implements OnInit {
         let query: string = null;
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach((filter: Filter) => {
-                params.push(`or__${filter.field.id}__icontains=${filter.value.toLowerCase()}`);
+                params.push(
+                    `or__${
+                        filter.field.id
+                    }__icontains=${filter.value.toLowerCase()}`,
+                );
             });
             query = '?' + params.join('&');
         }
@@ -164,7 +170,8 @@ export class RolesComponent implements OnInit {
                 _tmp.push(`${key}=${params[key]}`);
             }
         }
-        queryString += queryString === '?' ? _tmp.join('&') : '&' + _tmp.join('&');
+        queryString +=
+            queryString === '?' ? _tmp.join('&') : '&' + _tmp.join('&');
         this.contentService.pagedQuery(queryString).subscribe(results => {
             this._roles = results.results as Content[];
             this.filterConfig.resultsCount = results.count;
@@ -188,20 +195,25 @@ export class RolesComponent implements OnInit {
         forkJoin(queries).subscribe((results: Content[]) => {
             this.items = JSON.parse(JSON.stringify(results));
             this.items.forEach(item => {
-                item['install_cmd'] = `mazer install ${item.summary_fields['namespace']['name']}.${
-                    item.summary_fields['repository']['name']
-                }`;
+                item['install_cmd'] = `mazer install ${
+                    item.summary_fields['namespace']['name']
+                }.${item.summary_fields['repository']['name']}`;
                 item['hasTags'] = false;
-                if (item.summary_fields['tags'] && item.summary_fields['tags'].length) {
+                if (
+                    item.summary_fields['tags'] &&
+                    item.summary_fields['tags'].length
+                ) {
                     item['tags'] = item.summary_fields['tags'];
                     item['hasTags'] = true;
                 }
-                ['dependencies', 'platforms', 'cloud_platforms'].forEach(key => {
-                    item[key] = [];
-                    if (item.summary_fields[key]) {
-                        item[key] = item.summary_fields[key];
-                    }
-                });
+                ['dependencies', 'platforms', 'cloud_platforms'].forEach(
+                    key => {
+                        item[key] = [];
+                        if (item.summary_fields[key]) {
+                            item[key] = item.summary_fields[key];
+                        }
+                    },
+                );
             });
             this.loading = false;
         });

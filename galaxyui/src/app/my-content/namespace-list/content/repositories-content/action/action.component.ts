@@ -1,4 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    TemplateRef,
+    ViewChild,
+    ViewEncapsulation,
+} from '@angular/core';
 
 import { Action } from 'patternfly-ng/action/action';
 import { ActionConfig } from 'patternfly-ng/action/action-config';
@@ -39,7 +48,8 @@ export class NamespaceRepositoryActionComponent implements OnInit {
         let importing = false;
         if (
             this.repository['latest_import'] &&
-            (this.repository['latest_import']['state'] === 'PENDING' || this.repository['latest_import']['state'] === 'RUNNING')
+            (this.repository['latest_import']['state'] === 'PENDING' ||
+                this.repository['latest_import']['state'] === 'RUNNING')
         ) {
             importing = true;
         }

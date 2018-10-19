@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 
-import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
+import {
+    ActivatedRouteSnapshot,
+    Resolve,
+    RouterStateSnapshot,
+} from '@angular/router';
 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -34,7 +38,8 @@ export class DefaultParams {
     static getParamString(): string {
         let paramString = '';
         for (const key of Object.keys(this.params)) {
-            paramString += key + '=' + encodeURIComponent(this.params[key]) + '&';
+            paramString +=
+                key + '=' + encodeURIComponent(this.params[key]) + '&';
         }
 
         // Remove trailing '&'
@@ -45,7 +50,10 @@ export class DefaultParams {
 @Injectable()
 export class SearchContentResolver implements Resolve<ContentResponse> {
     constructor(private contentService: ContentSearchService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ContentResponse> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<ContentResponse> {
         let params = {};
         for (const key in route.queryParams) {
             if (route.queryParams.hasOwnProperty(key)) {
@@ -76,7 +84,10 @@ export class SearchContentResolver implements Resolve<ContentResponse> {
 @Injectable()
 export class SearchPlatformResolver implements Resolve<Platform[]> {
     constructor(private platformService: PlatformService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Platform[]> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<Platform[]> {
         return this.platformService.query({ page_size: 1000 });
     }
 }
@@ -84,15 +95,24 @@ export class SearchPlatformResolver implements Resolve<Platform[]> {
 @Injectable()
 export class SearchContentTypeResolver implements Resolve<ContentType[]> {
     constructor(private contentTypeService: ContentTypeService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ContentType[]> {
-        return this.contentTypeService.query({ page_size: 1000, order: 'description' });
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<ContentType[]> {
+        return this.contentTypeService.query({
+            page_size: 1000,
+            order: 'description',
+        });
     }
 }
 
 @Injectable()
 export class SearchCloudPlatformResolver implements Resolve<CloudPlatform[]> {
     constructor(private contentTypeService: CloudPlatformService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CloudPlatform[]> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<CloudPlatform[]> {
         return this.contentTypeService.query({ page_size: 1000 });
     }
 }
@@ -100,7 +120,10 @@ export class SearchCloudPlatformResolver implements Resolve<CloudPlatform[]> {
 @Injectable()
 export class PopularTagsResolver implements Resolve<Tag[]> {
     constructor(private tagsService: TagsService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Tag[]> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<Tag[]> {
         return this.tagsService.search({ order_by: '-roles_count,name' });
     }
 }
@@ -108,36 +131,46 @@ export class PopularTagsResolver implements Resolve<Tag[]> {
 @Injectable()
 export class PopularPlatformsResolver implements Resolve<Platform[]> {
     constructor(private platformService: PlatformService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Platform[]> {
-        return this.platformService.search({ page_size: 1000, order_by: '-roles_count,name' }).pipe(
-            map(result => {
-                // Sum roles_count per platforms, sans release
-                const summary = {};
-                const platforms: Platform[] = [];
-                result.forEach((item: Platform) => {
-                    if (summary[item.name] === undefined) {
-                        summary[item.name] = 0;
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<Platform[]> {
+        return this.platformService
+            .search({ page_size: 1000, order_by: '-roles_count,name' })
+            .pipe(
+                map(result => {
+                    // Sum roles_count per platforms, sans release
+                    const summary = {};
+                    const platforms: Platform[] = [];
+                    result.forEach((item: Platform) => {
+                        if (summary[item.name] === undefined) {
+                            summary[item.name] = 0;
+                        }
+                        summary[item.name] += item.roles_count;
+                    });
+                    for (const key in summary) {
+                        if (summary.hasOwnProperty(key)) {
+                            platforms.push({
+                                name: key,
+                                roles_count: summary[key],
+                            } as Platform);
+                        }
                     }
-                    summary[item.name] += item.roles_count;
-                });
-                for (const key in summary) {
-                    if (summary.hasOwnProperty(key)) {
-                        platforms.push({
-                            name: key,
-                            roles_count: summary[key],
-                        } as Platform);
-                    }
-                }
-                return platforms;
-            }),
-        );
+                    return platforms;
+                }),
+            );
     }
 }
 
 @Injectable()
 export class PopularCloudPlatformsResolver implements Resolve<CloudPlatform[]> {
     constructor(private cloudPlatformService: CloudPlatformService) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CloudPlatform[]> {
-        return this.cloudPlatformService.search({ order_by: '-roles_count,name' });
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<CloudPlatform[]> {
+        return this.cloudPlatformService.search({
+            order_by: '-roles_count,name',
+        });
     }
 }

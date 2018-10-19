@@ -9,7 +9,10 @@ import {
     RepositoryResolver as ContentRepositoryResolver,
 } from './content-detail/content-detail.resolver.service';
 
-import { NamespaceDetailResolver, RepositoryResolver as AuthorRepositoryResolver } from './authors/authors.resolver.service';
+import {
+    NamespaceDetailResolver,
+    RepositoryResolver as AuthorRepositoryResolver,
+} from './authors/authors.resolver.service';
 
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 

@@ -39,7 +39,10 @@ const httpOptions = {
 
 @Injectable()
 export class ImportsService {
-    constructor(private http: HttpClient, private notificationService: NotificationService) {}
+    constructor(
+        private http: HttpClient,
+        private notificationService: NotificationService,
+    ) {}
 
     private url = '/api/v1/imports';
 
@@ -55,11 +58,13 @@ export class ImportsService {
     }
 
     query(params?: any): Observable<Import[]> {
-        return this.http.get<PagedResponse>(this.url + '/', { params: params }).pipe(
-            map(response => response.results),
-            tap(_ => this.log('fetched imports')),
-            catchError(this.handleError('Query', [] as Import[])),
-        );
+        return this.http
+            .get<PagedResponse>(this.url + '/', { params: params })
+            .pipe(
+                map(response => response.results),
+                tap(_ => this.log('fetched imports')),
+                catchError(this.handleError('Query', [] as Import[])),
+            );
     }
 
     get(id: number): Observable<Import> {
@@ -73,7 +78,9 @@ export class ImportsService {
         let httpResult: Observable<Object>;
         httpResult = this.http.post<Import>(this.url, params, httpOptions);
         return httpResult.pipe(
-            tap((newImport: Import) => this.log(`Saved import w/ id=${newImport.id}`)),
+            tap((newImport: Import) =>
+                this.log(`Saved import w/ id=${newImport.id}`),
+            ),
             catchError(this.handleError<Import>('Save')),
         );
     }
@@ -82,7 +89,9 @@ export class ImportsService {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} provider source error: ${error.message}`);
-            this.notificationService.httpError(`${operation} user failed:`, { data: error });
+            this.notificationService.httpError(`${operation} user failed:`, {
+                data: error,
+            });
 
             // Let the app keep running by returning an empty result.
             return of(result as T);

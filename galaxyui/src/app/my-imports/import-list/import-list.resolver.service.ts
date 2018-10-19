@@ -9,13 +9,19 @@ import { PagedResponse } from '../../resources/paged-response';
 
 @Injectable()
 export class ImportListResolver implements Resolve<PagedResponse> {
-    constructor(private importsService: ImportsService, private authService: AuthService) {}
+    constructor(
+        private importsService: ImportsService,
+        private authService: AuthService,
+    ) {}
 
     resolve(route: ActivatedRouteSnapshot): Observable<PagedResponse> {
         let params = '';
         for (const key in route.queryParams) {
             if (route.queryParams.hasOwnProperty(key)) {
-                const values = typeof route.queryParams[key] === 'object' ? route.queryParams[key] : [route.queryParams[key]];
+                const values =
+                    typeof route.queryParams[key] === 'object'
+                        ? route.queryParams[key]
+                        : [route.queryParams[key]];
                 values.forEach(value => {
                     if (params !== '') {
                         params += '&';

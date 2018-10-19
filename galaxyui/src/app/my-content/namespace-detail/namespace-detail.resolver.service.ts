@@ -2,7 +2,12 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
+import {
+    ActivatedRouteSnapshot,
+    Resolve,
+    Router,
+    RouterStateSnapshot,
+} from '@angular/router';
 
 import { Namespace } from '../../resources/namespaces/namespace';
 import { NamespaceService } from '../../resources/namespaces/namespace.service';
@@ -11,9 +16,15 @@ import { AuthService, IMe } from '../../auth/auth.service';
 
 @Injectable()
 export class NamespaceDetailResolver implements Resolve<Namespace> {
-    constructor(private namespaceService: NamespaceService, private router: Router) {}
+    constructor(
+        private namespaceService: NamespaceService,
+        private router: Router,
+    ) {}
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Namespace> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<Namespace> {
         const id = route.paramMap.get('id');
 
         if (id === null || id === 'new') {
@@ -38,7 +49,10 @@ export class NamespaceDetailResolver implements Resolve<Namespace> {
 export class MeResolver implements Resolve<IMe> {
     constructor(private authService: AuthService) {}
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<IMe> {
+    resolve(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot,
+    ): Observable<IMe> {
         return this.authService.me();
     }
 }

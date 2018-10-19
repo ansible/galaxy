@@ -12,27 +12,33 @@ import { EventLoggerService } from '../logger/event-logger.service';
 
 @Injectable()
 export class ContentSearchService {
-    constructor(private http: HttpClient, private notificationService: NotificationService, private eventLogger: EventLoggerService) {}
+    constructor(
+        private http: HttpClient,
+        private notificationService: NotificationService,
+        private eventLogger: EventLoggerService,
+    ) {}
 
     private url = '/api/v1/search/content/';
 
     query(params?: any): Observable<ContentResponse> {
-        return this.http.get<ContentResponse>(this.url, { params: params }).pipe(
-            tap(result => {
-                this.log('fetched content');
-                if (
-                    params['keywords'] ||
-                    params['cloudPlatforms'] ||
-                    params['tags'] ||
-                    params['namespace'] ||
-                    params['platforms'] ||
-                    params['content_type']
-                ) {
-                    this.eventLogger.logSearchQuery(params, result.count);
-                }
-            }),
-            catchError(this.handleError('Query', {} as ContentResponse)),
-        );
+        return this.http
+            .get<ContentResponse>(this.url, { params: params })
+            .pipe(
+                tap(result => {
+                    this.log('fetched content');
+                    if (
+                        params['keywords'] ||
+                        params['cloudPlatforms'] ||
+                        params['tags'] ||
+                        params['namespace'] ||
+                        params['platforms'] ||
+                        params['content_type']
+                    ) {
+                        this.eventLogger.logSearchQuery(params, result.count);
+                    }
+                }),
+                catchError(this.handleError('Query', {} as ContentResponse)),
+            );
     }
 
     get(id: number): Observable<any> {
@@ -46,7 +52,9 @@ export class ContentSearchService {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);
             this.log(`${operation} provider source error: ${error.message}`);
-            this.notificationService.httpError(`${operation} user failed:`, { data: error });
+            this.notificationService.httpError(`${operation} user failed:`, {
+                data: error,
+            });
 
             // Let the app keep running by returning an empty result.
             return of(result as T);

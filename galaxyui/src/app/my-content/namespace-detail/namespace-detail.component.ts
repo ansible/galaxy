@@ -96,8 +96,12 @@ export class NamespaceDetailComponent implements OnInit {
             if (data['namespace']) {
                 this.namespace = data['namespace'];
                 if (this.namespace && this.namespace['summary_fields']) {
-                    this.selectedUsers = this.namespace.summary_fields['owners'] as Owner[];
-                    this.selectedNamespaces = this.namespace.summary_fields['provider_namespaces'] as Source[];
+                    this.selectedUsers = this.namespace.summary_fields[
+                        'owners'
+                    ] as Owner[];
+                    this.selectedNamespaces = this.namespace.summary_fields[
+                        'provider_namespaces'
+                    ] as Source[];
                     this.pageTitle = 'My Content;/my-content;Edit Namespace';
                 } else {
                     // Requested namespace not found
@@ -191,7 +195,10 @@ export class NamespaceDetailComponent implements OnInit {
         namespace.selected = !namespace.selected;
 
         this.selectedNamespaces.forEach((ns: Source, idx: number) => {
-            if (ns.name === namespace.name && ns.provider === namespace.provider) {
+            if (
+                ns.name === namespace.name &&
+                ns.provider === namespace.provider
+            ) {
                 match = true;
                 matchedIdx = idx;
             }
@@ -261,7 +268,9 @@ export class NamespaceDetailComponent implements OnInit {
             avatar_url: [this.namespace.avatar_url],
             email: [this.namespace.email],
             html_url: [this.namespace.html_url],
-            namespaceType: this.namespace.is_vendor ? ['vendor'] : ['community'],
+            namespaceType: this.namespace.is_vendor
+                ? ['vendor']
+                : ['community'],
         });
         if (!this.me.staff) {
             this.namespaceForm.controls['namespaceType'].disable();
@@ -281,7 +290,9 @@ export class NamespaceDetailComponent implements OnInit {
     private getProviderSources(): void {
         this.namespacesLoading = true;
         this.providerSourceService.query().subscribe(providerSources => {
-            this.providerSources = this.prepProviderSourcesForList(providerSources);
+            this.providerSources = this.prepProviderSourcesForList(
+                providerSources,
+            );
             this.providerSourcesFiltered = this.providerSources;
             this.namespacesLoading = false;
         });
@@ -303,7 +314,9 @@ export class NamespaceDetailComponent implements OnInit {
         return clone;
     }
 
-    private prepProviderSourcesForList(providerSources: ProviderSource[]): ProviderSource[] {
+    private prepProviderSourcesForList(
+        providerSources: ProviderSource[],
+    ): ProviderSource[] {
         const clone = cloneDeep(providerSources);
         clone.forEach(item => {
             if (!item.avatar_url) {
@@ -311,7 +324,10 @@ export class NamespaceDetailComponent implements OnInit {
             }
             item.selected = false;
             this.selectedNamespaces.forEach(selected => {
-                if (selected.provider === item.provider && selected.name === item.name) {
+                if (
+                    selected.provider === item.provider &&
+                    selected.name === item.name
+                ) {
                     item.selected = true;
                 }
             });

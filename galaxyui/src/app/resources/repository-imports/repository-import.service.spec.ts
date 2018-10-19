@@ -9,7 +9,10 @@ describe('RepositoryImportService', () => {
         });
     });
 
-    it('should be created', inject([RepositoryImportService], (service: RepositoryImportService) => {
-        expect(service).toBeTruthy();
-    }));
+    it('should be created', inject(
+        [RepositoryImportService],
+        (service: RepositoryImportService) => {
+            expect(service).toBeTruthy();
+        },
+    ));
 });

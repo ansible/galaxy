@@ -2,7 +2,11 @@ import { NgModule } from '@angular/core';
 
 import { RouterModule, Routes } from '@angular/router';
 
-import { ContentResolver, NamespaceResolver, RepositoryResolver } from './content-detail.resolver.service';
+import {
+    ContentResolver,
+    NamespaceResolver,
+    RepositoryResolver,
+} from './content-detail.resolver.service';
 
 const routes: Routes = [
     // ':namespace/:repository/:content_name' and ':namespace/:repository/ moved

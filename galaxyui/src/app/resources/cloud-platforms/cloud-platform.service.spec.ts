@@ -9,7 +9,10 @@ describe('CloudPlatformService', () => {
         });
     });
 
-    it('should be created', inject([CloudPlatformService], (service: CloudPlatformService) => {
-        expect(service).toBeTruthy();
-    }));
+    it('should be created', inject(
+        [CloudPlatformService],
+        (service: CloudPlatformService) => {
+            expect(service).toBeTruthy();
+        },
+    ));
 });
