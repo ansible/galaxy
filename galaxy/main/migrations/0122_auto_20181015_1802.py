@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('main', '0120_repository_quality_score_date'),
+        ('main', '0121_userpreferences'),
     ]
 
     operations = [
