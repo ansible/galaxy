@@ -22,10 +22,31 @@ class Migration(migrations.Migration):
             fields=[
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('preferences', django.contrib.postgres.fields.jsonb.JSONField(default={b'notify_author_release': True, b'notify_content_release': True, b'notify_galaxy_announce': True, b'notify_import_fail': True, b'notify_import_success': False, b'notify_survey': False})),
-                ('namespaces_followed', models.ManyToManyField(blank=True, to='main.Namespace')),
-                ('repositories_followed', models.ManyToManyField(blank=True, to='main.Repository')),
+                ('user', models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    primary_key=True,
+                    serialize=False,
+                    to=settings.AUTH_USER_MODEL
+                )),
+                ('preferences',
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        default={
+                            b'notify_author_release': True,
+                            b'notify_content_release': True,
+                            b'notify_galaxy_announce': True,
+                            b'notify_import_fail': True,
+                            b'notify_import_success': False,
+                            b'notify_survey': False
+                        }
+                    )),
+                ('namespaces_followed', models.ManyToManyField(
+                    blank=True,
+                    to='main.Namespace'
+                )),
+                ('repositories_followed', models.ManyToManyField(
+                    blank=True,
+                    to='main.Repository'
+                )),
             ],
             options={
                 'abstract': False,
