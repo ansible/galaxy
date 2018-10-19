@@ -71,7 +71,6 @@ export class PreferencesComponent implements OnInit {
     private getUser() {
         this.preferencesService.get().subscribe(response => {
             this.preferences = response;
-            console.log(this.preferences);
             this.notificationSettings = [
                 {
                     key: 'notify_survey',
