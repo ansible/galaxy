@@ -1033,6 +1033,10 @@ class Repository(BaseModel):
         verbose_name="DateTime last scored",
     )
 
+    is_new = models.BooleanField(
+        default=False,
+    )
+
     @property
     def clone_url(self):
         return "https://github.com/{user}/{repo}.git".format(
@@ -1289,7 +1293,7 @@ class UserPreferences(BaseModel):
     )
 
     def __str__(self):
-        return self.user
+        return self.user.username
 
     # Add any preferences that are in default preferences but missing from
     # the user's preferences to the user's preferences.
@@ -1297,3 +1301,28 @@ class UserPreferences(BaseModel):
         for key in self.DEFAULT_PREFERENCES:
             if key not in self.preferences:
                 self.preferences[key] = self.DEFAULT_PREFERENCES[key]
+
+
+class UserNotification(BaseModel):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    repository = models.ForeignKey(
+        Repository,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    message = models.CharField(
+        max_length=512
+    )
+
+    type = models.CharField(
+        max_length=128
+    )
+
+    seen = models.BooleanField(
+        default=False
+    )

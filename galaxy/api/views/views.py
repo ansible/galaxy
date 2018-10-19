@@ -400,8 +400,11 @@ class ImportTaskList(base_views.ListCreateAPIView):
                 repository, created = models.Repository.objects.get_or_create(
                     provider_namespace=namespace,
                     name=sanitize_content_name(github_repo),
-                    defaults={'is_enabled': False,
-                              'original_name': github_repo}
+                    defaults={
+                        'is_enabled': False,
+                        'original_name': github_repo,
+                        'is_new': True
+                    }
                 )
         else:
             try:

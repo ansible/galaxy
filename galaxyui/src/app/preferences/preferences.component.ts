@@ -47,7 +47,7 @@ export class PreferencesComponent implements OnInit {
     ngOnInit() {
         this.authService.me().subscribe(me => {
             if (!me.authenticated) {
-                this.router.navigate(['/', 'login']);
+                this.router.navigate(['/', 'login'], { queryParams: { next: '/preferences' } });
             } else {
                 this.userId = me.id;
                 this.getEmails();
