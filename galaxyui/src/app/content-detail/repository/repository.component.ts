@@ -7,8 +7,8 @@ import { Namespace } from '../../resources/namespaces/namespace';
 import { Repository } from '../../resources/repositories/repository';
 
 import { AuthService } from '../../auth/auth.service';
-import { User } from '../../resources/users/user';
-import { UserService } from '../../resources/users/user.service';
+import { UserPreferences } from '../../resources/preferences/user-preferences';
+import { PreferencesService } from '../../resources/preferences/preferences.service';
 
 import { RepoFormats, RepoFormatsIconClasses, RepoFormatsTooltips } from '../../enums/repo-types.enum';
 
@@ -45,7 +45,7 @@ export class RepositoryComponent implements OnInit {
     // Used to track which component is being loaded
     componentName = 'RepositoryComponent';
 
-    constructor(private authService: AuthService, private userService: UserService, private router: Router) {}
+    constructor(private authService: AuthService, private preferencesService: PreferencesService, private router: Router) {}
 
     @Input()
     repository: Repository;
@@ -56,33 +56,34 @@ export class RepositoryComponent implements OnInit {
     repositoryView: RepositoryView;
     RepoFormats: typeof RepoFormats = RepoFormats;
     isFollower = false;
+    followerClass = 'fa fa-user-plus';
 
-    me: User;
+    preferences: UserPreferences = null;
 
     ngOnInit() {
         this.authService.me().subscribe(me => {
             if (me.authenticated) {
-                this.userService.get(me.id).subscribe(result => {
-                    this.me = result;
+                this.preferencesService.get().subscribe(result => {
+                    this.preferences = result;
                     this.setFollower();
                 });
-            } else {
-                this.me = null;
             }
         });
         this.setRepositoryView();
     }
 
     followCollection() {
+        this.followerClass = 'fa fa-spin fa-spinner';
+
         if (this.isFollower) {
-            const index = this.me.repositories_followed.indexOf(this.repository.id);
-            this.me.repositories_followed.splice(index, 1);
+            const index = this.preferences.repositories_followed.indexOf(this.repository.id);
+            this.preferences.repositories_followed.splice(index, 1);
         } else {
-            this.me.repositories_followed.push(this.repository.id);
+            this.preferences.repositories_followed.push(this.repository.id);
         }
-        this.userService.save(this.me).subscribe(result => {
+        this.preferencesService.save(this.preferences).subscribe(result => {
             if (result !== null) {
-                this.me = result;
+                this.preferences = result;
                 this.setFollower();
             }
         });
@@ -90,10 +91,12 @@ export class RepositoryComponent implements OnInit {
 
     // private
     private setFollower() {
-        if (this.me.repositories_followed.find(x => x === this.repository.id) !== undefined) {
+        if (this.preferences.repositories_followed.find(x => x === this.repository.id) !== undefined) {
             this.isFollower = true;
+            this.followerClass = 'fa fa-user-times';
         } else {
             this.isFollower = false;
+            this.followerClass = 'fa fa-user-times';
         }
     }
 

@@ -56,7 +56,7 @@
                             class="btn btn-default"
                             (click)="followUser()"
                         >
-                            <span class="fa fa-user-{{ isFollower ? 'times':'plus'}}"></span> {{ isFollower ? 'Unfollow Author':'Follow Author'}}
+                            <span class="{{followerClass}}"></span> {{ isFollower ? 'Unfollow Author':'Follow Author'}}
                         </div>
                         <a
                             *ngIf="!preferences"

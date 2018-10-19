@@ -72,6 +72,7 @@ export class AuthorDetailComponent implements OnInit {
     filterBy: any = {};
     sortBy = 'name';
     isFollower = false;
+    followerClass = 'fa fa-user-plus';
 
     preferences: UserPreferences = null;
 
@@ -243,6 +244,7 @@ export class AuthorDetailComponent implements OnInit {
     }
 
     followUser() {
+        this.followerClass = 'fa fa-spin fa-spinner';
         if (this.isFollower) {
             const index = this.preferences.namespaces_followed.indexOf(this.namespace.id);
             this.preferences.namespaces_followed.splice(index, 1);
@@ -262,8 +264,10 @@ export class AuthorDetailComponent implements OnInit {
     private setFollower() {
         if (this.preferences.namespaces_followed.find(x => x === this.namespace.id) !== undefined) {
             this.isFollower = true;
+            this.followerClass = 'fa fa-user-times';
         } else {
             this.isFollower = false;
+            this.followerClass = 'fa fa-user-times';
         }
     }
 
