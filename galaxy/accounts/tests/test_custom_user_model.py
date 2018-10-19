@@ -68,12 +68,6 @@ class CustomUserModelTest(TestCase):
         assert user.is_active
         assert user.date_joined == NOW
         assert user.avatar_url == ""
-        assert not user.notify_survey
-        assert not user.notify_import_fail
-        assert not user.notify_import_success
-        assert not user.notify_content_release
-        assert not user.notify_author_release
-        assert not user.notify_galaxy_announce
 
         fake_now.assert_called_once()
 
