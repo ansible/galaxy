@@ -290,7 +290,7 @@ export class AuthorDetailComponent implements OnInit {
             this.followerClass = 'fa fa-user-times';
         } else {
             this.isFollower = false;
-            this.followerClass = 'fa fa-user-times';
+            this.followerClass = 'fa fa-user-plus';
         }
     }
 

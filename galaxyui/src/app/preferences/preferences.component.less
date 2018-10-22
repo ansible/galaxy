@@ -45,3 +45,29 @@
         align-items: center;
     }
 }
+
+#followersCards {
+    .avatar-container {
+        height: 50px;
+        width: 50px;
+        object-fit: contain;
+        display: inline-block;
+
+        .avatar {
+            height: 50px;
+        }
+    }
+
+    .name {
+        display: inline-block;
+        max-width: 180px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-left: 10px;
+    }
+
+    .unfollowed {
+        opacity: 0.5;
+    }
+}

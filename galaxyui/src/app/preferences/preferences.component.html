@@ -1,98 +1,186 @@
 <app-page-header headerIcon="fa fa-gear" headerTitle="Preferences"></app-page-header>
+<div class="row">
+    <pfng-card [config]="emailCard" id="emailCard" class="col-md-12">
+        <div class="card-content">
+            <pfng-list
+                [items]="emails"
+                [itemTemplate]="emailsListTemplate"
+            >
+                <ng-template #emailsListTemplate let-item="item" let-index="index">
+                    <div class="list-pf-content-wrapper">
+                        <div class="list-pf-main-content">
+                            <div class="list-pf-title">
+                                <div *ngIf="!item.summary_fields.new">
+                                    {{ item.email }}
+                                    <span *ngIf="item.primary" class="label label-primary">Primary</span>
+                                </div>
 
-<pfng-card [config]="emailCard" id="emailCard">
-    <div class="card-content">
-        <pfng-list
-            [items]="emails"
-            [itemTemplate]="emailsListTemplate"
-        >
-            <ng-template #emailsListTemplate let-item="item" let-index="index">
-                <div class="list-pf-content-wrapper">
-                    <div class="list-pf-main-content">
-                        <div class="list-pf-title">
-                            <div *ngIf="!item.summary_fields.new">
-                                {{ item.email }}
-                                <span *ngIf="item.primary" class="label label-primary">Primary</span>
+                                <div *ngIf="item.summary_fields.new">
+                                    <span class="no-bold">New Email: </span> &nbsp;
+                                    <input  class="no-bold" [(ngModel)]="item.email" required type="email" (keyup.enter)="saveEmail(item)">
+                                </div>
                             </div>
-
-                            <div *ngIf="item.summary_fields.new">
-                                <span class="no-bold">New Email: </span> &nbsp;
-                                <input  class="no-bold" [(ngModel)]="item.email" required type="email" (keyup.enter)="saveEmail(item)">
+                        </div>
+                        <div class="list-pf-additional-content">
+                            <div>
+                                <span *ngIf="item.verified" class="verified">
+                                    <span class="fa fa-check-circle"></span> Verified
+                                </span>
+                                <span *ngIf="!item.verified" class="unverified">
+                                    <span class="fa fa-times-circle"></span> Unverified
+                                </span>
                             </div>
                         </div>
                     </div>
-                    <div class="list-pf-additional-content">
-                        <div>
-                            <span *ngIf="item.verified" class="verified">
-                                <span class="fa fa-check-circle"></span> Verified
-                            </span>
-                            <span *ngIf="!item.verified" class="unverified">
-                                <span class="fa fa-times-circle"></span> Unverified
-                            </span>
+
+
+
+                    <div *ngIf="!item.summary_fields.new" class="action list-pf-actions">
+                        <div *ngIf="!item.verified" class="btn btn-primary action-button" (click)="verifyEmail(item)">
+                            Resend Verification
+                        </div>
+                        <div *ngIf="item.verified" class="btn btn-primary action-button" disabled tooltip="Email already Verified">
+                            Resend Verification
+                        </div>
+                        <div *ngIf="!item.primary && item.verified" class="btn btn-primary action-button" (click)="setPrimary(item)">
+                            Make Primary
+                        </div>
+                        <div *ngIf="item.primary || !item.verified" class="btn btn-primary action-button" disabled tooltip="Already Primary">
+                            Make Primary
+                        </div>
+
+                        <app-email-action
+                            [email]="item"
+                            (handleAction)="handleEmailAction($event)"
+                        >
+
+                        </app-email-action>
+
+                    </div>
+
+                    <div *ngIf="item.summary_fields.new" class="action list-pf-actions">
+                        <div class="btn btn-primary action-button" (click)="saveEmail(item)">
+                            Save
+                        </div>
+
+                        <div class="btn btn-default action-button" (click)="cancelAddEmail(index)">
+                            Cancel
                         </div>
                     </div>
-                </div>
 
+                </ng-template>
+            </pfng-list>
 
-
-                <div *ngIf="!item.summary_fields.new" class="action list-pf-actions">
-                    <div *ngIf="!item.verified" class="btn btn-primary action-button" (click)="verifyEmail(item)">
-                        Resend Verification
-                    </div>
-                    <div *ngIf="item.verified" class="btn btn-primary action-button" disabled tooltip="Email already Verified">
-                        Resend Verification
-                    </div>
-                    <div *ngIf="!item.primary && item.verified" class="btn btn-primary action-button" (click)="setPrimary(item)">
-                        Make Primary
-                    </div>
-                    <div *ngIf="item.primary || !item.verified" class="btn btn-primary action-button" disabled tooltip="Already Primary">
-                        Make Primary
-                    </div>
-
-                    <app-email-action
-                        [email]="item"
-                        (handleAction)="handleEmailAction($event)"
-                    >
-
-                    </app-email-action>
-
-                </div>
-
-                <div *ngIf="item.summary_fields.new" class="action list-pf-actions">
-                    <div class="btn btn-primary action-button" (click)="saveEmail(item)">
-                        Save
-                    </div>
-
-                    <div class="btn btn-default action-button" (click)="cancelAddEmail(index)">
-                        Cancel
-                    </div>
-                </div>
-
-            </ng-template>
-        </pfng-list>
-
-        <div class="email-options">
-            <div (click)="addNewEmail()" class="btn btn-default"><span class="fa fa-plus"></span> Add Email</div>
+            <div class="email-options">
+                <div (click)="addNewEmail()" class="btn btn-default"><span class="fa fa-plus"></span> Add Email</div>
+            </div>
         </div>
-    </div>
-</pfng-card>
+    </pfng-card>
+</div>
 
-<pfng-card [config]="notificationsCard" id="notificationCard">
-    <div class="card-content">
-        Would you like to receive a notification when...
-        <div *ngFor="let item of notificationSettings" class="notification-settings">
-            <input type="checkbox" [(ngModel)]="preferences.preferences[item.key]" (click)="updateNotifications()">
-            {{ item.description }}
+<div class="row">
+    <pfng-card [config]="apiKeyCard" id="apiTokenCard" class="col-md-12">
+        <div class="card-content middle-align">
+            <div *ngIf="!apiKey" class="btn btn-primary" (click)="showApiKey()">Show API Key</div>
+            <div *ngIf="apiKey" class="btn btn-xs btn-default" (click)="resetApiKey()"><span class="fa fa-refresh"></span> Reset</div>
+            <div>
+                <pfng-inline-copy *ngIf="apiKey" [value]="apiKey" tooltipText="Copy API Key"></pfng-inline-copy>
+            </div>
         </div>
-    </div>
-</pfng-card>
+    </pfng-card>
+</div>
 
-<pfng-card [config]="apiKeyCard" id="apiTokenCard">
-    <div class="card-content middle-align">
-        <div *ngIf="!apiKey" class="btn btn-primary" (click)="showApiKey()">Show API Key</div>
-        <div *ngIf="apiKey" class="btn btn-xs btn-default" (click)="resetApiKey()"><span class="fa fa-refresh"></span> Reset</div>
-        <div>
-            <pfng-inline-copy *ngIf="apiKey" [value]="apiKey" tooltipText="Copy API Key"></pfng-inline-copy>
+<div class="row">
+    <pfng-card [config]="notificationsCard" id="notificationCard" class="col-md-12">
+        <div class="card-content">
+            Would you like to receive a notification when...
+            <div *ngFor="let item of notificationSettings" class="notification-settings">
+                <input type="checkbox" [(ngModel)]="preferences.preferences[item.key]" (click)="updateNotifications()">
+                {{ item.description }}
+            </div>
         </div>
-    </div>
-</pfng-card>
+    </pfng-card>
+</div>
+
+<div class="row" id="followersCards">
+    <pfng-card [config]="authorsFollowedCard" id="authorsFollowedCard" class="col-md-6">
+        <div class="card-content">
+            <pfng-list
+                [items]="followed.namespaces_followed"
+                [itemTemplate]="authorsFollowedListTemplate"
+                *ngIf="preferences"
+            >
+                <ng-template #authorsFollowedListTemplate let-item="item" let-index="index">
+                    <div class="list-pf-content-wrapper">
+                        <div class="list-pf-main-content">
+                            <div class="list-pf-title">
+                                <div [ngClass]="{'unfollowed': !item.hasFollowed}">
+                                    <div class="avatar-container">
+                                        <a [routerLink]="['/', item.name]">
+                                            <img class="avatar" src="{{ item.avatar }}" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="name">
+                                        <a [routerLink]="['/', item.name]">
+                                            {{ item.name }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-pf-additional-content" [ngClass]="{'unfollowed': !item.hasFollowed}">
+                            {{ item.description }}
+                        </div>
+                        <div class="action list-pf-actions">
+                            <div class="action list-pf-actions">
+                                <div class="btn btn-default" (click)="followToggle('namespaces_followed', index)">
+                                    <span class="{{item.iconClass}}"></span> {{ item.hasFollowed ? 'Unfollow' : 'Follow'}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </pfng-list>
+        </div>
+    </pfng-card>
+
+    <pfng-card [config]="collectionsFollowedCard" id="collectionsFollowedCard" class="col-md-6">
+        <div class="card-content">
+            <pfng-list
+                [items]="followed.repositories_followed"
+                [itemTemplate]="collectionsFollowedListTemplate"
+                *ngIf="preferences"
+            >
+                <ng-template #collectionsFollowedListTemplate let-item="item" let-index="index">
+                    <div class="list-pf-content-wrapper">
+                        <div class="list-pf-main-content">
+                            <div class="list-pf-title">
+                                <div [ngClass]="{'unfollowed': !item.hasFollowed}">
+                                    <div class="avatar-container">
+                                        <a [routerLink]="['/', item.namespace]">
+                                            <img class="avatar" src="{{ item.avatar }}" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="name">
+                                        <a [routerLink]="['/', item.namespace, item.name]">
+                                            {{ item.namespace }}.{{ item.name }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-pf-additional-content" [ngClass]="{'unfollowed': !item.hasFollowed}">
+                            {{ item.description }}
+                        </div>
+
+                        <div class="action list-pf-actions">
+                            <div class="btn btn-default" (click)="followToggle('repositories_followed', index)">
+                                <span class="{{item.iconClass}}"></span> {{ item.hasFollowed ? 'Unfollow' : 'Follow'}}
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </pfng-list>
+        </div>
+    </pfng-card>
+</div>
