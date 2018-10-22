@@ -103,7 +103,7 @@
 </div>
 
 <div class="row" id="followersCards">
-    <pfng-card [config]="authorsFollowedCard" id="authorsFollowedCard" class="col-md-6">
+    <pfng-card [config]="authorsFollowedCard" id="authorsFollowedCard" class="col-lg-6">
         <div class="card-content">
             <pfng-list
                 [items]="followed.namespaces_followed"
@@ -111,15 +111,17 @@
                 *ngIf="preferences"
             >
                 <ng-template #authorsFollowedListTemplate let-item="item" let-index="index">
+                    <div class="list-pf-left">
+                        <div class="avatar-container" [ngClass]="{'unfollowed': !item.hasFollowed}">
+                            <a [routerLink]="['/', item.name]">
+                                <img class="avatar" src="{{ item.avatar }}" alt="">
+                            </a>
+                        </div>
+                    </div>
                     <div class="list-pf-content-wrapper">
                         <div class="list-pf-main-content">
                             <div class="list-pf-title">
                                 <div [ngClass]="{'unfollowed': !item.hasFollowed}">
-                                    <div class="avatar-container">
-                                        <a [routerLink]="['/', item.name]">
-                                            <img class="avatar" src="{{ item.avatar }}" alt="">
-                                        </a>
-                                    </div>
                                     <div class="name">
                                         <a [routerLink]="['/', item.name]">
                                             {{ item.name }}
@@ -144,7 +146,7 @@
         </div>
     </pfng-card>
 
-    <pfng-card [config]="collectionsFollowedCard" id="collectionsFollowedCard" class="col-md-6">
+    <pfng-card [config]="collectionsFollowedCard" id="collectionsFollowedCard" class="col-lg-6">
         <div class="card-content">
             <pfng-list
                 [items]="followed.repositories_followed"
@@ -152,15 +154,17 @@
                 *ngIf="preferences"
             >
                 <ng-template #collectionsFollowedListTemplate let-item="item" let-index="index">
+                    <div class="list-pf-left">
+                        <div class="avatar-container" [ngClass]="{'unfollowed': !item.hasFollowed}">
+                            <a [routerLink]="['/', item.name]">
+                                <img class="avatar" src="{{ item.avatar }}" alt="">
+                            </a>
+                        </div>
+                    </div>
                     <div class="list-pf-content-wrapper">
                         <div class="list-pf-main-content">
                             <div class="list-pf-title">
                                 <div [ngClass]="{'unfollowed': !item.hasFollowed}">
-                                    <div class="avatar-container">
-                                        <a [routerLink]="['/', item.namespace]">
-                                            <img class="avatar" src="{{ item.avatar }}" alt="">
-                                        </a>
-                                    </div>
                                     <div class="name">
                                         <a [routerLink]="['/', item.namespace, item.name]">
                                             {{ item.namespace }}.{{ item.name }}
