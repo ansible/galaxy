@@ -8,6 +8,7 @@ export class UserPreferences {
         notify_galaxy_announce: boolean;
     };
 
-    namespaces_followed: any;
-    repositories_followed: any;
+    namespaces_followed: number[];
+    repositories_followed: number[];
+    summary_fields: any;
 }

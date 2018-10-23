@@ -24,4 +24,26 @@ class ActiveUserPreferencesSerializer(BaseSerializer):
         )
 
     def get_summary_fields(self, obj):
-        return {}
+        followed_repos = []
+        for repo in obj.repositories_followed.all():
+            followed_repos.append({
+                'id': repo.id,
+                'name': repo.name,
+                'namespace': repo.provider_namespace.namespace.name,
+                'description': repo.description,
+                'avatar': repo.provider_namespace.namespace.avatar_url
+            })
+
+        followed_ns = []
+        for ns in obj.namespaces_followed.all():
+            followed_ns.append({
+                'id': ns.id,
+                'name': ns.name,
+                'description': ns.description,
+                'avatar': ns.avatar_url
+            })
+
+        return {
+            'repositories_followed': followed_repos,
+            'namespaces_followed': followed_ns
+        }

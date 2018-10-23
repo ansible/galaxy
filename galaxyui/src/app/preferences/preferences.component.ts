@@ -38,11 +38,14 @@ export class PreferencesComponent implements OnInit {
     emailCard: CardConfig;
     notificationsCard: CardConfig;
     apiKeyCard: CardConfig;
+    authorsFollowedCard: CardConfig;
+    collectionsFollowedCard: CardConfig;
     emails: Email[];
     notificationSettings: any;
     apiKey: string;
     userId: number;
     preferences: UserPreferences;
+    followed: any;
 
     ngOnInit() {
         this.authService.me().subscribe(me => {
@@ -53,7 +56,7 @@ export class PreferencesComponent implements OnInit {
             } else {
                 this.userId = me.id;
                 this.getEmails();
-                this.getUser();
+                this.getPreferences();
             }
         });
 
@@ -68,11 +71,37 @@ export class PreferencesComponent implements OnInit {
         this.apiKeyCard = {
             title: 'API Key',
         } as CardConfig;
+
+        this.authorsFollowedCard = {
+            title: 'Authors Followed',
+        } as CardConfig;
+
+        this.collectionsFollowedCard = {
+            title: 'Collections Followed',
+        } as CardConfig;
     }
 
-    private getUser() {
+    private getPreferences() {
         this.preferencesService.get().subscribe(response => {
             this.preferences = response;
+
+            // Copy the follower information into a new variable so that we can
+            // remember what someone was following in case the accidentally
+            // unfollow and want to re follow
+            this.followed = JSON.parse(
+                JSON.stringify(this.preferences.summary_fields),
+            );
+
+            for (const x of this.followed.repositories_followed) {
+                x['hasFollowed'] = true;
+                x['iconClass'] = 'fa fa-user-times';
+            }
+
+            for (const x of this.followed.namespaces_followed) {
+                x['hasFollowed'] = true;
+                x['iconClass'] = 'fa fa-user-times';
+            }
+
             this.notificationSettings = [
                 {
                     key: 'notify_survey',
@@ -117,9 +146,9 @@ export class PreferencesComponent implements OnInit {
 
     private checkVerification(params: Params) {
         this.emailService.verifyEmail(params.verify).subscribe(result => {
-            const updateEmail = this.emails.find(
-                obj => obj.id === result.email_address,
-            );
+            const updateEmail = this.emails.find(obj => {
+                return obj.id === result.email_address;
+            });
             updateEmail.verified = result.verified;
 
             if (result.verified) {
@@ -143,6 +172,41 @@ export class PreferencesComponent implements OnInit {
             if (response === null) {
                 const index = this.emails.findIndex(i => i.id === email.id);
                 this.emails.splice(index, 1);
+            }
+        });
+    }
+
+    followToggle(type: string, objIndex) {
+        let index = this.preferences[type].findIndex(x => {
+            return x === this.followed[type][objIndex].id;
+        });
+
+        this.followed[type][objIndex].iconClass = 'fa fa-spin fa-spinner';
+
+        if (index > -1) {
+            this.preferences[type].splice(index, 1);
+        } else {
+            this.preferences[type].push(this.followed[type][objIndex].id);
+        }
+
+        this.preferencesService.save(this.preferences).subscribe(result => {
+            if (result) {
+                this.preferences = result;
+
+                index = this.preferences[type].findIndex(x => {
+                    return x === this.followed[type][objIndex].id;
+                });
+
+                if (index > -1) {
+                    // We are following the object
+                    this.followed[type][objIndex].hasFollowed = true;
+                    this.followed[type][objIndex].iconClass =
+                        'fa fa-user-times';
+                } else {
+                    // Not following the object
+                    this.followed[type][objIndex].hasFollowed = false;
+                    this.followed[type][objIndex].iconClass = 'fa fa-user-plus';
+                }
             }
         });
     }
@@ -191,9 +255,9 @@ export class PreferencesComponent implements OnInit {
     }
 
     showApiKey() {
-        this.userService
-            .getToken(this.userId)
-            .subscribe(token => (this.apiKey = token));
+        this.userService.getToken(this.userId).subscribe(token => {
+            return (this.apiKey = token);
+        });
     }
 
     resetApiKey() {
@@ -202,9 +266,9 @@ export class PreferencesComponent implements OnInit {
                 'Resetting your key will remove access to all applications that might rely on it. Do you wish to continue?',
             )
         ) {
-            this.userService
-                .resetToken(this.userId)
-                .subscribe(token => (this.apiKey = token));
+            this.userService.resetToken(this.userId).subscribe(token => {
+                return (this.apiKey = token);
+            });
         }
     }
 
