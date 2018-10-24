@@ -32,4 +32,4 @@ from .serializers import *         # noqa
 from .token import *               # noqa
 from .survey import *              # noqa
 from .influx import *              # noqa
-from .user_preferences import *    # noqa
+from .active_user import *         # noqa

@@ -455,6 +455,22 @@ class UserPreferencesAccess(BaseAccess):
         return False
 
 
+class UserNotificationAccess(BaseAccess):
+    model = models.UserNotification
+
+    def can_add(self, data):
+        return False
+
+    def can_change(self, obj, data):
+        return bool(self.user == obj.user)
+
+    def can_read(self, obj):
+        return bool(self.user == obj.user)
+
+    def can_delete(self, obj):
+        return bool(self.user == obj.user)
+
+
 register_access(EmailConfirmation, EmailConfirmationAccess)
 register_access(User, UserAccess)
 register_access(EmailAddress, EmailAddressAccess)
@@ -478,3 +494,4 @@ register_access(models.CloudPlatform, CloudPlatformsAccess)
 register_access(models.CommunitySurvey, CommunitySurveyAccess)
 register_access(models.InfluxSessionIdentifier, InfluxSessionAccess)
 register_access(models.UserPreferences, UserPreferencesAccess)
+register_access(models.UserNotification, UserNotificationAccess)

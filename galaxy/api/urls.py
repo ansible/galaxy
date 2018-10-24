@@ -281,10 +281,15 @@ v1_urls = [
 internal_urls = [
     url(r'^events/', include(event_tracking_urls)),
     url(
-        r'^preferences/',
+        r'^me/preferences/',
         views.ActiveUserPreferencesView.as_view(),
         name='active_user_preferences_view'
     ),
+    url(
+        r'^me/notifications/',
+        views.ActiveUserNotificationsView.as_view(),
+        name='active_user_notifications_view'
+    )
 ]
 
 app_name = 'api'
