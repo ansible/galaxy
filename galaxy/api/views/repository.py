@@ -65,7 +65,7 @@ def get_repo(provider_namespace, user, repo_name):
 def check_name(name):
     if not name:
         raise ValidationError(detail={'name': 'Name is required'})
-    if not re.match('^[\.\w-]+$', name):
+    if not re.match(r'^[\.\w-]+$', name):
         # Allow only names containing word chars
         raise ValidationError(detail={
             'name': "Name can only contain [A-Za-z0-9_]"})

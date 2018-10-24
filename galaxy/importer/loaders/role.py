@@ -205,7 +205,7 @@ class RoleMetaParser(object):
             deps_ansible = [d for d in self.tox_data['deps'].split('\n') if
                             d.startswith('ansible')]
             versions = [d.split(' ')[1][9:] for d in deps_ansible if
-                        re.match('ansible(==|>=|~=)\d', d.split(' ')[1])]
+                        re.match(r'ansible(==|>=|~=)\d', d.split(' ')[1])]
             versions = [v.split(',')[0] for v in versions]
             tested_versions = ['.'.join(v.split('.')[:2]) for v in versions]
         except Exception:

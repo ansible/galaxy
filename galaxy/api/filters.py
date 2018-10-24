@@ -145,7 +145,7 @@ class FieldLookupBackend(BaseFilterBackend):
             try:
                 # try and lookup the user first, to see if it exists
                 GalaxyUser.objects.get(username=request.GET['owner__username'])
-            except ObjectDoesNotExist as e:
+            except ObjectDoesNotExist:
                 # if not, check to see if there's an alias for it
                 try:
                     alias_obj = UserAlias.objects.get(
@@ -162,7 +162,7 @@ class FieldLookupBackend(BaseFilterBackend):
                     # same object is being used with the overridden param.
                     # This may be fixed in later DRF versions?
                     request.GET = qp
-                except Exception as e:
+                except Exception:
                     # if not, we don't care, the later filtering
                     # means an empty set will be returned for this
                     pass

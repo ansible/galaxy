@@ -63,7 +63,7 @@ class ContentImporter(object):
             original_name = self.data.original_name
 
         # Check name
-        if not re.match('^[\w-]+$', name):
+        if not re.match(r'^[\w-]+$', name):
             raise exc.TaskError('Invalid name, only aplhanumeric characters, '
                                 '"-" and "_" symbols are allowed.')
 
