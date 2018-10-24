@@ -16,7 +16,7 @@
  * along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
  */
 
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 
@@ -32,9 +32,10 @@ import { NotificationService } from 'patternfly-ng/notification/notification-ser
 import { AuthService } from './auth/auth.service';
 import { ApiRootService } from './resources/api-root/api-root.service';
 import { EventLoggerService } from './resources/logger/event-logger.service';
-
 import { PreferencesService } from './resources/preferences/preferences.service';
 import { UserPreferences } from './resources/preferences/user-preferences';
+
+import { NotificationDrawerComponent } from './utilities/notification-drawer/notification-drawer.component';
 
 import {
     BodyCommand,
@@ -58,6 +59,7 @@ export class AppComponent implements OnInit {
         private notificationService: NotificationService,
         private pfBodyService: PFBodyService,
         private eventLogger: EventLoggerService,
+        private preferencesService: PreferencesService,
     ) {
         this.router.events.subscribe(event => {
             if (
@@ -102,6 +104,13 @@ export class AppComponent implements OnInit {
     timeAtLoad: number;
     startComponent: string;
     startUrl: string;
+
+    // Notification stuff
+    preferences: UserPreferences = null;
+    unseenNotifications: boolean;
+
+    @ViewChild(NotificationDrawerComponent)
+    notificationList: NotificationDrawerComponent;
 
     ngOnInit(): void {
         // Patternfly embeds everything not related to navigation in a div with
@@ -181,6 +190,11 @@ export class AppComponent implements OnInit {
                     value: me.staff ? 'Staff' : 'User',
                 });
 
+                this.preferencesService.get().subscribe(results => {
+                    this.unseenNotifications =
+                        results.summary_fields.notification_count > 0;
+                });
+
                 this.addContentButtons();
             } else {
                 this.removeContentButtons();
@@ -188,6 +202,10 @@ export class AppComponent implements OnInit {
             this.optionallyAddMobileButtons();
         });
         this.redirectUrl = this.authService.redirectUrl;
+    }
+
+    toggleNotifcations() {
+        this.notificationList.toggleNotifcations();
     }
 
     about(template: TemplateRef<any>): void {

@@ -1,0 +1,37 @@
+<pfng-notification-drawer
+    [allowExpand]="true"
+    [hidden]="!showNotifications"
+    [notificationGroups]="notificationList"
+    [showClearAll]="true"
+    [title]="'Your Notifications'"
+    [titleTemplate]="notificationTitleTemplate"
+    [notificationBodyTemplate]="notificationBodyTemplate"
+    [singleGroup]="true"
+>
+</pfng-notification-drawer>
+
+<ng-template #notificationBodyTemplate let-notify="notify" let-index="index">
+    <div class="pull-right">
+        <pfng-action
+            class="list-pf-actions"
+            [config]="notify.moreActions"
+            (onActionSelect)="handleAction($event, index)"
+        ></pfng-action>
+    </div>
+
+    <span class="pull-left pficon fa fa-plus-square" *ngIf="notify.type === 'notify_content_release'"></span>
+    <span class="pull-left pficon fa fa-plus-square" *ngIf="notify.type === 'notify_author_release'"></span>
+    <span class="pull-left pficon pficon-check" *ngIf="notify.type === 'notify_import_success'"></span>
+    <span class="pull-left pficon fa fa-star" *ngIf="notify.type === 'notify_survey'"></span>
+    <span class="pull-left pficon pficon-warning-triangle-o" *ngIf="notify.type === 'notify_import_fail'"></span>
+
+    <div class="drawer-pf-notification-content">
+        <span class="drawer-pf-notification-message">
+        {{notify.message}}
+        </span>
+        <div class="drawer-pf-notification-info">
+            <span class="date">{{notify.timeStamp | date:'MM/dd/yyyy'}}</span>
+            <span class="time">{{notify.timeStamp | date:'h:mm:ss a'}}</span>
+        </div>
+    </div>
+</ng-template>

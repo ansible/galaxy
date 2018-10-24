@@ -12,7 +12,7 @@ import {
 
 import { BsDropdownModule, ModalModule, TooltipModule } from 'ngx-bootstrap';
 
-import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
+import { NotificationService } from 'patternfly-ng';
 
 import { AppComponent } from './app.component';
 
@@ -26,6 +26,7 @@ import { LoginModule } from './login/login.module';
 import { MyContentModule } from './my-content/my-content.module';
 import { PreferencesModule } from './preferences/preferences.module';
 import { VendorsModule } from './vendors/vendors.module';
+import { UtilitiesModule } from './utilities/utilities.module';
 
 // Custom Services
 import { AuthService } from './auth/auth.service';
@@ -48,6 +49,7 @@ import { RepositoryImportService } from './resources/repository-imports/reposito
 import { SurveyService } from './resources/survey/survey.service';
 import { TagsService } from './resources/tags/tags.service';
 import { UserService } from './resources/users/user.service';
+import { UserNotificationService } from './resources/notifications/user-notification.service';
 // import { MyImportsModule }            from './my-imports/my-imports.module';
 // import { SearchModule }               from './search/search.module';
 import { SharedModule } from './shared/shared.module';
@@ -78,6 +80,7 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
         AppRoutingModule,
         AboutModalModule,
         SharedModule,
+        UtilitiesModule,
     ],
     providers: [
         AuthService,
@@ -101,6 +104,7 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
         EmailService,
         EventLoggerService,
         PreferencesService,
+        UserNotificationService,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     bootstrap: [AppComponent],
