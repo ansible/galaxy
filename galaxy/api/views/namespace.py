@@ -51,7 +51,7 @@ def check_basic(data, errors):
     name = data.get('name')
     if not name:
         errors['name'] = "Attribute 'name' is required"
-    elif not re.match('^[\w]+$', name):
+    elif not re.match(r'^[\w]+$', name):
         # Allow only names containing word chars
         errors['name'] = "Name can only contain [A-Za-z0-9_]"
     elif(len(name) <= 2):
@@ -178,7 +178,7 @@ def update_provider_namespaces(namespace, provider_namespaces):
             # the Galaxy namespace
             try:
                 obj = models.ProviderNamespace.objects.get(pk=id)
-            except ObjectDoesNotExist as exc:
+            except ObjectDoesNotExist:
                 raise
             else:
                 obj.namespace = None

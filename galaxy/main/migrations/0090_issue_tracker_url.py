@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 
 
-UPDATE_REPOSITORY = """
+UPDATE_REPOSITORY = r"""
 UPDATE main_repository rp SET (issue_tracker_url) = (
   SELECT DISTINCT
   regexp_replace(regexp_replace(issue_tracker_url, 'api.', ''),
