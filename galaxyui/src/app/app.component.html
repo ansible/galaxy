@@ -25,6 +25,12 @@
                         <span class="fa pficon-catalog"></span> Documentation
                     </a>
                 </li>
+                <li>
+                    <a *ngIf="authenticated" appLogEvent="Notifications" (onClick)="toggleNotifcations()" class="nav-item-iconic nav-link">
+                        <span class="fa fa-bell"></span>
+                        <span *ngIf="unseenNotifications" class="notification-dot"></span>
+                    </a>
+                </li>
                 <li class="navbar-iconic">
                     <a appLogEvent="Login" class="nav-item-iconic nav-link" [routerLink]="['/login']" [queryParams]="{error: false, next: router.url}" *ngIf="!authenticated"><span
                             class="fa fa-sign-in"></span> &nbsp;Login</a>

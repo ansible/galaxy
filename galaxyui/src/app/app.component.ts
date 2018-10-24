@@ -33,6 +33,9 @@ import { AuthService } from './auth/auth.service';
 import { ApiRootService } from './resources/api-root/api-root.service';
 import { EventLoggerService } from './resources/logger/event-logger.service';
 
+import { PreferencesService } from './resources/preferences/preferences.service';
+import { UserPreferences } from './resources/preferences/user-preferences';
+
 import {
     BodyCommand,
     PFBodyService,
