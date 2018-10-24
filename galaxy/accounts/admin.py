@@ -161,9 +161,10 @@ class CustomUserAdmin(admin.ModelAdmin):
             'save_as': False,
             'show_save': True,
         }
-        return TemplateResponse(request, self.change_user_password_template or
-                                'admin/auth/user/change_password.html',
-                                context, current_app=self.admin_site.name)
+        template = (self.change_user_password_template
+                    or 'admin/auth/user/change_password.html')
+        return TemplateResponse(
+            request, template, context, current_app=self.admin_site.name)
 
     def response_add(self, request, obj, post_url_continue=None):
         """

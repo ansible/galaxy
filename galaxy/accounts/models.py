@@ -50,7 +50,7 @@ class CustomUser(auth_models.AbstractBaseUser,
         help_text=_('Required. 30 characters or fewer. Letters, numbers and '
                     '@/./+/-/_ characters'),
         validators=[
-            validators.RegexValidator(re.compile('^[\w.@+-]+$'),
+            validators.RegexValidator(re.compile(r'^[\w.@+-]+$'),
                                       _('Enter a valid username.'),
                                       'invalid')
         ])
