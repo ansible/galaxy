@@ -346,7 +346,7 @@ class Content(CommonModelNameNotUnique):
     )
     metadata = psql_fields.JSONField(
         null=False,
-        default={}
+        default=dict,
     )
     github_default_branch = models.CharField(
         max_length=256,
@@ -1249,6 +1249,7 @@ class InfluxSessionIdentifier(BaseModel):
 
 @six.python_2_unicode_compatible
 class UserPreferences(BaseModel):
+
     DEFAULT_PREFERENCES = {
         # Notify me when a user adds a survey for my content.
         'notify_survey': False,
@@ -1275,9 +1276,17 @@ class UserPreferences(BaseModel):
         primary_key=True
     )
 
+    # DEFAULT_PREFERENCES dict cannot be used as a default value
+    # for preferences fieldto avoid sharing reference to mutable dict
+    # accross model instances.
+    # Django suggests using calables to generate copies of default value
+    # for JSON field, but since there is no known way how to bind that exeact
+    # value to a migration, it should be avoided.
+    # Therefore preferences field is initialized in model `__init__()` method
+    # and updated when constructed from the database in `from_db()` method.
     preferences = psql_fields.JSONField(
         null=False,
-        default=DEFAULT_PREFERENCES
+        default=dict,
     )
 
     repositories_followed = models.ManyToManyField(
@@ -1292,15 +1301,26 @@ class UserPreferences(BaseModel):
         blank=True
     )
 
+    def __init__(self, *args, **kwargs):
+        super(UserPreferences, self).__init__(*args, **kwargs)
+        self.update_defaults()
+
     def __str__(self):
         return self.user.username
 
-    # Add any preferences that are in default preferences but missing from
-    # the user's preferences to the user's preferences.
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        new = super(UserPreferences, cls).from_db(db, field_names, values)
+        new.update_defaults()
+        return new
+
     def update_defaults(self):
-        for key in self.DEFAULT_PREFERENCES:
-            if key not in self.preferences:
-                self.preferences[key] = self.DEFAULT_PREFERENCES[key]
+        """
+        Add any preferences that are in default preferences but missing from
+        the user's preferences to the user's preferences.
+        """
+        for key in set(self.DEFAULT_PREFERENCES) - set(self.preferences):
+            self.preferences[key] = self.DEFAULT_PREFERENCES[key]
 
 
 class UserNotification(BaseModel):

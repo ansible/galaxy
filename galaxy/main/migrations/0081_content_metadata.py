@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='content',
             name='metadata',
-            field=psql_fields.JSONField(default={}),
+            field=psql_fields.JSONField(default=dict),
         ),
     ]

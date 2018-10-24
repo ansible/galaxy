@@ -3,9 +3,10 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-import django.contrib.postgres.fields.jsonb
+from django.contrib.postgres import fields as psql_fields
 from django.db import migrations, models
 import django.db.models.deletion
+
 import galaxy.main.mixins
 
 
@@ -28,17 +29,7 @@ class Migration(migrations.Migration):
                     serialize=False,
                     to=settings.AUTH_USER_MODEL
                 )),
-                ('preferences',
-                    django.contrib.postgres.fields.jsonb.JSONField(
-                        default={
-                            b'notify_author_release': True,
-                            b'notify_content_release': True,
-                            b'notify_galaxy_announce': True,
-                            b'notify_import_fail': True,
-                            b'notify_import_success': False,
-                            b'notify_survey': False
-                        }
-                    )),
+                ('preferences', psql_fields.JSONField(default=dict)),
                 ('namespaces_followed', models.ManyToManyField(
                     blank=True,
                     to='main.Namespace'
