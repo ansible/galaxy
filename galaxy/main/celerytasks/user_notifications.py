@@ -108,14 +108,15 @@ def import_status(task_id, user_initiated, has_failed=False):
         status = 'succeeded'
 
     subject = 'Ansible Galaxy: import of %s has %s' % (repo.name, status)
-    db_message = 'Import %s: %s.%s' % (status, author, repo.name)
+    db_message = 'Import %s: %s' % (status, repo.name)
 
     notification = NotificationManger(
         email_template=import_status_template,
         preferences_name=preference,
         preferences_list=owners,
         subject=subject,
-        db_message=db_message
+        db_message=db_message,
+        repo=repo
     )
 
     ctx = {
@@ -140,7 +141,8 @@ def collection_update(repo_id):
         preferences_name='notify_content_release',
         preferences_list=followers,
         subject='Ansible Galaxy: New version of ' + repo.name,
-        db_message='A new version of %s.%s is available.' % (author, repo.name)
+        db_message='New version of: %s' % (repo.name),
+        repo=repo
     )
 
     path = '/%s/%s/' % (repo.provider_namespace.namespace.name, repo.name)
@@ -169,10 +171,11 @@ def author_release(repo_id):
         preferences_name='notify_author_release',
         preferences_list=followers,
         subject='Ansible Galaxy: %s has released a new collection' % (author),
-        db_message='New release from {author}: {author}.{name}'.format(
+        db_message='New release from {author}: {name}'.format(
             author=author,
             name=repo.name
-        )
+        ),
+        repo=repo
     )
 
     path = '/%s/%s/' % (author, repo.name)
@@ -196,8 +199,9 @@ def new_survey(repo_id):
         email_template=new_survey_template,
         preferences_name='notify_survey',
         preferences_list=owners,
-        subject='Ansible Galaxy: new rating for %s' % repo.name,
-        db_message='New rating for %s.%s' % (author, repo.name)
+        subject='Ansible Galaxy: new survey for %s' % repo.name,
+        db_message='New survey for %s' % (repo.name),
+        repo=repo
     )
 
     ctx = {

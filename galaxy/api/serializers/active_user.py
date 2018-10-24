@@ -57,6 +57,8 @@ class ActiveUserPreferencesSerializer(BaseSerializer):
 
 
 class ActiveUserNotificationSerializer(BaseSerializer):
+    repository = serializers.SerializerMethodField()
+
     class Meta:
         model = models.UserNotification
         fields = (
@@ -65,3 +67,11 @@ class ActiveUserNotificationSerializer(BaseSerializer):
             'type',
             'seen'
         )
+
+    def get_repository(self, obj):
+        if not obj.repository:
+            return obj.repository
+        return {
+            'name': obj.repository.name,
+            'namespace': obj.repository.provider_namespace.namespace.name
+        }
