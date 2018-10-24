@@ -245,8 +245,7 @@ def _update_quality_score(import_task):
         'ansible-lint_e701gal': 4,
         'ansible-lint_e702gal': 4,
         'ansible-lint_e703gal': 4,
-        'ansible-lint_e704gal': 5,
-        'ansible-lint_e705gal': 2,
+        'ansible-lint_e704gal': 2,
         'importer_importer101': 3,  # RoleImporter
         'importer_importer102': 3,  # RoleImporter
         'importer_importer103': 4,  # RoleImporter
