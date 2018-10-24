@@ -34,8 +34,8 @@ class ActiveUserNotificationsView(base_views.ListAPIView):
     serializer_class = serializers.ActiveUserNotificationSerializer
     view_name = 'my_notifications'
 
-    def get_object(self):
+    def get_queryset(self):
         obj = self.model.objects.filter(
-            user=self.request.user.pk
+            user=self.request.user
         )
         return obj
