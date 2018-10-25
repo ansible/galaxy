@@ -104,6 +104,8 @@ def _import_repository(import_task, logger):
 
     repository.import_branch = repo_info.branch
     repository.format = repo_info.format.value
+    repository.travis_status_url = import_task.travis_status_url
+    repository.travis_build_url = import_task.travis_build_url
 
     if repo_info.name:
         old_name = repository.name
