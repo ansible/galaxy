@@ -1,7 +1,6 @@
 import logging
 
 from rest_framework import exceptions
-from rest_framework import views
 from rest_framework.response import Response
 
 from galaxy.api import serializers
