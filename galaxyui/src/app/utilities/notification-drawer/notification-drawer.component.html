@@ -6,6 +6,7 @@
     [titleTemplate]="notificationTitleTemplate"
     [notificationBodyTemplate]="notificationBodyTemplate"
     [notificationFooterTemplate]="notificationFooter"
+    [subHeadingTemplate]="subHeading"
     [singleGroup]="true"
     (close)="close($event)"
 >
@@ -23,7 +24,7 @@
 
     <span class="pull-left pficon fa fa-plus-square" *ngIf="notify.type === 'notify_content_release'"></span>
     <span class="pull-left pficon fa fa-plus-square" *ngIf="notify.type === 'notify_author_release'"></span>
-    <span class="pull-left pficon pficon-check" *ngIf="notify.type === 'notify_import_success'"></span>
+    <span class="pull-left pficon pficon-ok" *ngIf="notify.type === 'notify_import_success'"></span>
     <span class="pull-left pficon fa fa-star" *ngIf="notify.type === 'notify_survey'"></span>
     <span class="pull-left pficon pficon-warning-triangle-o" *ngIf="notify.type === 'notify_import_fail'"></span>
 
@@ -39,15 +40,15 @@
 </ng-template>
 
 <ng-template #notificationFooter>
-    <div class="drawer-pf-action">
+    <div class="drawer-pf-action" *ngIf="totalNotifications > loadedNotifications">
         <span class="drawer-pf-action-link">
-            <button class="btn btn-link">
+            <button class="btn btn-link" (click)="loadMore()">
                 Load More
             </button>
         </span>
     </div>
 
-    <div class="drawer-pf-action">
+    <div class="drawer-pf-action" *ngIf="loadedNotifications > 0">
         <span class="drawer-pf-action-link">
             <button class="btn btn-link" (click)="markAllAsRead()">Mark All Read</button>
         </span>
@@ -58,4 +59,8 @@
             </button>
         </span>
     </div>
+</ng-template>
+
+<ng-template #subHeading>
+    Showing {{loadedNotifications}} out of {{totalNotifications}} - Unread: {{unreadCount}}
 </ng-template>

@@ -4,6 +4,9 @@ import { Router } from '@angular/router';
 import { UserNotificationService } from '../../resources/notifications/user-notification.service';
 import { UserNotification } from '../../resources/notifications/user-notification';
 
+import { EmptyStateConfig } from 'patternfly-ng';
+import { ActionConfig } from 'patternfly-ng';
+
 @Component({
     selector: 'app-notification-drawer',
     templateUrl: './notification-drawer.component.html',
@@ -19,56 +22,34 @@ export class NotificationDrawerComponent implements OnInit {
     ) {}
     showNotifications = false;
     notificationList: any;
-    rawNotifictions: UserNotification[];
+    rawNotifictions: UserNotification[] = [];
+    emptyStateConfig: EmptyStateConfig;
+    emptyActions: ActionConfig;
 
     unreadCount: number;
+    totalNotifications: number;
+    loadedNotifications: number;
+    notificationsToDisplay = 10;
+    page = 1;
 
     @Output()
     emitUnread = new EventEmitter<number>();
 
     ngOnInit() {
-        this.notificationList = [{ notifications: [] }];
+        this.emptyStateConfig = {
+            iconStyleClass: 'pficon-info',
+            title:
+                'No notifications. Visit preferences to configure your' +
+                'notification settings.',
+        };
+
+        this.notificationList = [
+            { notifications: [], emptyStateConfig: this.emptyStateConfig },
+        ];
         this.userNotificationService.getUnread().subscribe(response => {
             this.setUnreadCount(response.count);
         });
-        this.userNotificationService
-            .pagedQuery({ order_by: '-created' })
-            // .query({ order_by: '-created', page_size: 20 })
-            .subscribe(result => {
-                console.log(result);
-                this.rawNotifictions = result.results;
-                const list = [];
-                const actionConfig = {
-                    moreActions: [
-                        {
-                            id: 'collection',
-                            title: 'Go to Collection',
-                        },
-                        {
-                            id: 'author',
-                            title: 'Go to Author',
-                        },
-                        {
-                            id: 'delete',
-                            title: 'Remove Notification',
-                        },
-                    ],
-                };
-                for (const notification of this.rawNotifictions) {
-                    list.push({
-                        message: notification.message,
-                        type: notification.type,
-                        isViewing: notification.seen,
-                        timeStamp: notification.created,
-                        moreActions: notification.repository
-                            ? actionConfig
-                            : null,
-                        repo: notification.repository,
-                        id: notification.id,
-                    });
-                }
-                this.notificationList[0].notifications = list;
-            });
+        this.getNotifications();
     }
 
     toggleNotifcations() {
@@ -110,19 +91,80 @@ export class NotificationDrawerComponent implements OnInit {
         this.userNotificationService.deleteAll().subscribe(response => {
             if (response) {
                 this.setUnreadCount(0);
+                this.rawNotifictions = [];
+                this.notificationList = [{ notifications: [] }];
+
+                this.loadedNotifications = 0;
+                this.totalNotifications = 0;
             }
         });
-
-        this.rawNotifictions = [];
-        this.notificationList = [{ notifications: [] }];
     }
 
-    close($event: boolean): void {
+    close($event: boolean) {
         this.showNotifications = false;
+    }
+
+    loadMore() {
+        if (this.totalNotifications <= this.loadedNotifications) {
+            return;
+        }
+
+        this.page += 1;
+        this.getNotifications();
     }
 
     private setUnreadCount(count) {
         this.unreadCount = count;
         this.emitUnread.emit(this.unreadCount);
+    }
+
+    private getNotifications() {
+        this.notificationList[0].loading = true;
+        this.userNotificationService
+            // .pagedQuery({ order_by: '-created' })
+            .pagedQuery({
+                order_by: '-created',
+                page_size: this.notificationsToDisplay,
+                page: this.page,
+            })
+            .subscribe(result => {
+                this.rawNotifictions = this.rawNotifictions.concat(
+                    result.results,
+                );
+
+                this.totalNotifications = result.count;
+                this.loadedNotifications = this.rawNotifictions.length;
+
+                const list = [];
+                const actionConfig = {
+                    moreActions: [
+                        {
+                            id: 'collection',
+                            title: 'Go to Collection',
+                        },
+                        {
+                            id: 'author',
+                            title: 'Go to Author',
+                        },
+                    ],
+                } as ActionConfig;
+                for (const notification of result.results) {
+                    list.push({
+                        message: notification.message,
+                        type: notification.type,
+                        isViewing: notification.seen,
+                        timeStamp: notification.created,
+                        moreActions: notification.repository
+                            ? actionConfig
+                            : null,
+                        repo: notification.repository,
+                        id: notification.id,
+                    });
+                }
+                this.notificationList[0].notifications = list.concat(
+                    this.notificationList[0].notifications,
+                );
+                this.notificationList[0].loading = false;
+            });
     }
 }
