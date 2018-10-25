@@ -39,7 +39,7 @@ export class NotificationDrawerComponent implements OnInit {
         this.emptyStateConfig = {
             iconStyleClass: 'pficon-info',
             title:
-                'No notifications. Visit preferences to configure your' +
+                'No notifications. Visit preferences to configure your ' +
                 'notification settings.',
         };
 
