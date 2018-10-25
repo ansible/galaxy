@@ -2,20 +2,22 @@
     [allowExpand]="true"
     [hidden]="!showNotifications"
     [notificationGroups]="notificationList"
-    [showClearAll]="true"
     [title]="'Your Notifications'"
     [titleTemplate]="notificationTitleTemplate"
     [notificationBodyTemplate]="notificationBodyTemplate"
+    [notificationFooterTemplate]="notificationFooter"
     [singleGroup]="true"
+    (close)="close($event)"
 >
 </pfng-notification-drawer>
 
 <ng-template #notificationBodyTemplate let-notify="notify" let-index="index">
     <div class="pull-right">
         <pfng-action
+            *ngIf="notify.moreActions"
             class="list-pf-actions"
             [config]="notify.moreActions"
-            (onActionSelect)="handleAction($event, index)"
+            (onActionSelect)="handleAction($event, notify)"
         ></pfng-action>
     </div>
 
@@ -25,7 +27,7 @@
     <span class="pull-left pficon fa fa-star" *ngIf="notify.type === 'notify_survey'"></span>
     <span class="pull-left pficon pficon-warning-triangle-o" *ngIf="notify.type === 'notify_import_fail'"></span>
 
-    <div class="drawer-pf-notification-content">
+    <div class="drawer-pf-notification-content" (click)="markAsRead(notify)">
         <span class="drawer-pf-notification-message">
         {{notify.message}}
         </span>
@@ -33,5 +35,27 @@
             <span class="date">{{notify.timeStamp | date:'MM/dd/yyyy'}}</span>
             <span class="time">{{notify.timeStamp | date:'h:mm:ss a'}}</span>
         </div>
+    </div>
+</ng-template>
+
+<ng-template #notificationFooter>
+    <div class="drawer-pf-action">
+        <span class="drawer-pf-action-link">
+            <button class="btn btn-link">
+                Load More
+            </button>
+        </span>
+    </div>
+
+    <div class="drawer-pf-action">
+        <span class="drawer-pf-action-link">
+            <button class="btn btn-link" (click)="markAllAsRead()">Mark All Read</button>
+        </span>
+        <span class="drawer-pf-action-link">
+            <button class="btn btn-link" (click)="deleteAll()">
+                <span class="pficon pficon-close"></span>
+                Clear All
+            </button>
+        </span>
     </div>
 </ng-template>

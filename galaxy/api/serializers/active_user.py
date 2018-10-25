@@ -44,15 +44,9 @@ class ActiveUserPreferencesSerializer(BaseSerializer):
                 'avatar': ns.avatar_url
             })
 
-        notification_count = models.UserNotification.objects.filter(
-            user=obj.user,
-            seen=False
-        ).count()
-
         return {
             'repositories_followed': followed_repos,
             'namespaces_followed': followed_ns,
-            'notification_count': notification_count
         }
 
 
@@ -62,10 +56,18 @@ class ActiveUserNotificationSerializer(BaseSerializer):
     class Meta:
         model = models.UserNotification
         fields = (
+            'id',
             'repository',
             'message',
             'type',
             'seen'
+        )
+
+        read_only_fields = (
+            'id',
+            'repository',
+            'message',
+            'type',
         )
 
     def get_repository(self, obj):

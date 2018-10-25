@@ -190,11 +190,6 @@ export class AppComponent implements OnInit {
                     value: me.staff ? 'Staff' : 'User',
                 });
 
-                this.preferencesService.get().subscribe(results => {
-                    this.unseenNotifications =
-                        results.summary_fields.notification_count > 0;
-                });
-
                 this.addContentButtons();
             } else {
                 this.removeContentButtons();
@@ -202,6 +197,10 @@ export class AppComponent implements OnInit {
             this.optionallyAddMobileButtons();
         });
         this.redirectUrl = this.authService.redirectUrl;
+    }
+
+    setUnreadindicator(count) {
+        this.unseenNotifications = count > 0;
     }
 
     toggleNotifcations() {

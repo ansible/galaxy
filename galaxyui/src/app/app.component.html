@@ -12,7 +12,10 @@
         [updateActiveItemsOnClick]="true"
         (onItemClickEvent)="onItemClicked($event)"
     >
-        <app-notification-drawer #notificationList></app-notification-drawer>
+        <app-notification-drawer #notificationList
+            *ngIf='authenticated'
+            (emitUnread)='setUnreadindicator($event)'
+        ></app-notification-drawer>
 
         <div>
             <div *ngIf="isLoading" class="header-spinner">
