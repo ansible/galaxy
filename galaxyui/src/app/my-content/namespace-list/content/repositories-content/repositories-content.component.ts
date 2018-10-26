@@ -36,7 +36,6 @@ import { AlternateNameModalComponent } from './alternate-name-modal/alternate-na
 import { forkJoin, interval, Observable } from 'rxjs';
 
 import * as moment from 'moment';
-import { NONAME } from 'dns';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -126,7 +125,12 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         this.sortConfig = {
             fields: [
                 {
-                    id: '-modified',
+                    id: 'name',
+                    title: 'Name',
+                    sortType: 'alpha',
+                },
+                {
+                    id: 'modified',
                     title: 'Last Modified',
                     sortType: 'alpha',
                 },
@@ -231,8 +235,11 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     }
 
     sortChanged($event: SortEvent): void {
-        this.paginationConfig.pageNumber = 1;
-        this.loading = true;
+        if ($event.isAscending) {
+            this.sortBy = $event.field.id;
+        } else {
+            this.sortBy = '-' + $event.field.id;
+        }
         this.refreshRepositories();
     }
 
@@ -317,9 +324,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                     }
                 }
                 if (this.sortConfig) {
-                    for (const field of this.sortConfig.fields) {
-                        query['order_by'] = field.id;
-                    }
+                    query['order_by'] = this.sortBy;
                 }
                 queries.push(this.repositoryService.pagedQuery(query));
             },
