@@ -444,12 +444,12 @@ class UserPreferencesAccess(BaseAccess):
     def can_change(self, obj, data):
         if not self.user.is_authenticated:
             return False
-        return bool(self.user == obj.user)
+        return self.user == obj.user
 
     def can_read(self, obj):
         if not self.user.is_authenticated:
             return False
-        return bool(self.user == obj.user)
+        return self.user == obj.user
 
     def can_delete(self, obj):
         return False
@@ -462,13 +462,13 @@ class UserNotificationAccess(BaseAccess):
         return False
 
     def can_change(self, obj, data):
-        return bool(self.user == obj.user)
+        return self.user == obj.user
 
     def can_read(self, obj):
-        return bool(self.user == obj.user)
+        return self.user == obj.user
 
     def can_delete(self, obj):
-        return bool(self.user == obj.user)
+        return self.user == obj.user
 
 
 register_access(EmailConfirmation, EmailConfirmationAccess)
