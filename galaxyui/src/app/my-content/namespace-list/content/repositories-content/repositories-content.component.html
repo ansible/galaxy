@@ -2,7 +2,8 @@
     [ngClass]="{'toolbar-empty': filterConfig.appliedFilters.length === 0,
                 'toolbar-with-search': filterConfig.appliedFilters.length > 0}">
     <pfng-toolbar [config]="toolbarConfig"
-                  (onFilterChange)="filterChanged($event)">
+                  (onFilterChange)="filterChanged($event)"
+                  (onSortChange)="sortChanged($event)">
     </pfng-toolbar>
 </div>
 
