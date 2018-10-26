@@ -278,13 +278,41 @@ v1_urls = [
     url(r'^community_surveys/', include(community_survey_urls)),
 ]
 
-internal_urls = [
-    url(r'^events/', include(event_tracking_urls)),
+me_urls = [
     url(
         r'^preferences/',
         views.ActiveUserPreferencesView.as_view(),
         name='active_user_preferences_view'
     ),
+
+    url(
+        r'notifications/clear/',
+        views.ActiveUserClearNotificationView.as_view(),
+        name='active_user_clear_notifications_view'
+    ),
+
+    url(
+        r'notifications/unread/',
+        views.ActiveUserUnreadNotificationView.as_view(),
+        name='active_user_unread_notifications_view'
+    ),
+
+    url(
+        r'notifications/(?P<pk>[0-9]+)/$',
+        views.ActiveUserNotificationsDetailView.as_view(),
+        name='active_user_notifications_view_detail'
+    ),
+
+    url(
+        r'notifications/',
+        views.ActiveUserNotificationsView.as_view(),
+        name='active_user_notifications_view'
+    ),
+]
+
+internal_urls = [
+    url(r'^events/', include(event_tracking_urls)),
+    url(r'^me/', include(me_urls)),
 ]
 
 app_name = 'api'

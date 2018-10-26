@@ -39,6 +39,24 @@ export class GenericQuery<ServiceType> extends ServiceBase {
             );
     }
 
+    pagedQuery(params?: any): Observable<PagedResponse> {
+        let objectUrl = this.url;
+        let objectParams = null;
+        if (params) {
+            if (typeof params === 'string') {
+                objectUrl += `?${params}`;
+            } else {
+                objectParams = params;
+            }
+        }
+        return this.http
+            .get<PagedResponse>(objectUrl + '/', { params: objectParams })
+            .pipe(
+                tap(_ => this.log(`fetched ${this.serviceName}`)),
+                catchError(this.handleError('Query', {} as PagedResponse)),
+            );
+    }
+
     get(id: number): Observable<ServiceType> {
         return this.http.get<ServiceType>(`${this.url}/${id.toString()}/`).pipe(
             tap(_ => this.log(`fetched ${this.serviceName}`)),

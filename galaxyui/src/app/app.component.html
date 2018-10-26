@@ -1,8 +1,22 @@
 <div id="verticalNavLayout" class="layout-pf layout-pf-fixed faux-layout" style="background-color: white;"
     (window:resize)="onResize($event)">
-    <pfng-vertical-navigation [brandAlt]="'Galaxy'" [brandSrc]="'/assets/galaxy-logo-02.svg'" [contentContainer]="contentContainer"
-        [items]="navItems" [persistentSecondary]="false" [pinnableMenus]="true" [showBadges]="true" [showIcons]="true"
-        [updateActiveItemsOnClick]="true" (onItemClickEvent)="onItemClicked($event)">
+    <pfng-vertical-navigation
+        [brandAlt]="'Galaxy'"
+        [brandSrc]="'/assets/galaxy-logo-02.svg'"
+        [contentContainer]="contentContainer"
+        [items]="navItems"
+        [persistentSecondary]="false"
+        [pinnableMenus]="true"
+        [showBadges]="true"
+        [showIcons]="true"
+        [updateActiveItemsOnClick]="true"
+        (onItemClickEvent)="onItemClicked($event)"
+    >
+        <app-notification-drawer #notificationList
+            *ngIf='authenticated'
+            (emitUnread)='setUnreadindicator($event)'
+        ></app-notification-drawer>
+
         <div>
             <div *ngIf="isLoading" class="header-spinner">
                 <div class="inner-spinner">
@@ -23,6 +37,12 @@
                 <li>
                     <a appLogEvent="Documentation" href="/docs/" target="_blank" class="nav-item-iconic nav-link">
                         <span class="fa pficon-catalog"></span> Documentation
+                    </a>
+                </li>
+                <li>
+                    <a *ngIf="authenticated" appLogEvent="Notifications" (click)="toggleNotifcations()" class="nav-item-iconic nav-link">
+                        <span class="fa fa-bell"></span>
+                        <span *ngIf="unseenNotifications" class="notification-dot"></span>
                     </a>
                 </li>
                 <li class="navbar-iconic">
