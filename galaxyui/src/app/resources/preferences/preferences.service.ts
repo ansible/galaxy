@@ -17,7 +17,7 @@ export class PreferencesService extends ServiceBase {
         super(
             http,
             notificationService,
-            '/api/internal/preferences',
+            '/api/internal/me/preferences',
             'preferences',
         );
     }

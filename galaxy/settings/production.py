@@ -237,4 +237,4 @@ include_settings('/etc/galaxy/settings.py', scope=globals(), optional=True)
 # =========================================================
 # Domain Settings
 # =========================================================
-GALAXY_URL = 'https://{}'
+GALAXY_URL = 'https://{site}'

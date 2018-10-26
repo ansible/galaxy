@@ -38,7 +38,7 @@ class NotificationManger(object):
         self.preferences_list = preferences_list
         self.subject = subject
         self.url = settings.GALAXY_URL.format(
-            Site.objects.get_current().domain
+            site=Site.objects.get_current().domain
         )
 
         self.repo = repo
@@ -50,7 +50,7 @@ class NotificationManger(object):
     def render_email(self, context):
         text = self.email_template.format(**context)
         footer = email_footer_template.format(
-            preferences_link='%s/preferences/' % (self.url)
+            preferences_link='{}/preferences/'.format(self.url)
         )
 
         return text + footer
@@ -107,20 +107,21 @@ def import_status(task_id, user_initiated, has_failed=False):
         preference = 'notify_import_success'
         status = 'succeeded'
 
-    subject = 'Ansible Galaxy: import of %s has %s' % (repo.name, status)
-    db_message = 'Import %s: %s.%s' % (status, author, repo.name)
+    subject = 'Ansible Galaxy: import of {} has {}'.format(repo.name, status)
+    db_message = 'Import {}: {}'.format(status, repo.name)
 
     notification = NotificationManger(
         email_template=import_status_template,
         preferences_name=preference,
         preferences_list=owners,
         subject=subject,
-        db_message=db_message
+        db_message=db_message,
+        repo=repo
     )
 
     ctx = {
         'status': status,
-        'content_name': '%s.%s' % (author, repo.name)
+        'content_name': '{}.{}'.format(author, repo.name)
     }
 
     notification.notify(ctx)
@@ -140,10 +141,11 @@ def collection_update(repo_id):
         preferences_name='notify_content_release',
         preferences_list=followers,
         subject='Ansible Galaxy: New version of ' + repo.name,
-        db_message='A new version of %s.%s is available.' % (author, repo.name)
+        db_message='New version of: {}'.format(repo.name),
+        repo=repo
     )
 
-    path = '/%s/%s/' % (repo.provider_namespace.namespace.name, repo.name)
+    path = '/{}/{}/'.format(repo.provider_namespace.namespace.name, repo.name)
 
     ctx = {
         'namespace_name': author,
@@ -168,14 +170,16 @@ def author_release(repo_id):
         email_template=author_release_template,
         preferences_name='notify_author_release',
         preferences_list=followers,
-        subject='Ansible Galaxy: %s has released a new collection' % (author),
-        db_message='New release from {author}: {author}.{name}'.format(
-            author=author,
-            name=repo.name
-        )
+        subject='Ansible Galaxy: {} has released a new collection'.format(
+            author
+        ),
+        db_message='New release from {author}: {name}'.format(
+            author, repo.name
+        ),
+        repo=repo
     )
 
-    path = '/%s/%s/' % (author, repo.name)
+    path = '/{}/{}/'.format(author, repo.name)
     ctx = {
         'author_name': author,
         'content_name': repo.name,
@@ -190,14 +194,15 @@ def new_survey(repo_id):
     repo = models.Repository.objects.get(id=repo_id)
     author = repo.provider_namespace.namespace.name
     owners = _get_preferences(repo.provider_namespace.namespace.owners.all())
-    path = '/%s/%s/' % (author, repo.name)
+    path = '/{}/{}/'.format(author, repo.name)
 
     notification = NotificationManger(
         email_template=new_survey_template,
         preferences_name='notify_survey',
         preferences_list=owners,
-        subject='Ansible Galaxy: new rating for %s' % repo.name,
-        db_message='New rating for %s.%s' % (author, repo.name)
+        subject='Ansible Galaxy: new survey for {}'.format(repo.name),
+        db_message='New survey for {}'.format(repo.name),
+        repo=repo
     )
 
     ctx = {
@@ -247,7 +252,7 @@ To see it, visit {content_url}.
 
 new_survey_template = '''Hello,
 
-Someone has just submitted a new rating for {content_name} on Ansible Galaxy.\
+Someone has just submitted a new survey for {content_name} on Ansible Galaxy.\
 Your collection now has a user rating of {content_score}.
 
 Visit {content_url} for more details.
