@@ -278,7 +278,7 @@ class NotificationList(base_views.ListCreateAPIView):
         payload_json = json.loads(payload)
         travis_host = None
         if payload_json.get('build_url'):
-            parsed = urlparse(payload_json['build_url'])
+            parsed = urlparse.urlparse(payload_json['build_url'])
             travis_host = parsed.netloc
         return travis_host
 
