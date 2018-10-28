@@ -387,18 +387,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         });
     }
 
-    getScoreColor(score: number) {
-        if (score > 3.5) {
-            return 'fa-check-circle score-green';
-        }
-
-        if (score >= 1) {
-            return 'fa-exclamation-circle score-yellow';
-        }
-
-        return 'fa-times-circle score-red';
-    }
-
     contentClick(item: Content, index: number) {
         const itemNumber = (this.pageNumber - 1) * this.pageSize + index + 1;
         this.eventLogger.logSearchClick(
@@ -602,24 +590,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
             if (item['repository_format'] === RepoFormats.multi) {
                 item['contentLink'] += `/${name}`;
             }
-
-            const community = item.summary_fields['repository'].community_score;
-            const quality = item.summary_fields['repository'].quality_score;
-            let score = 0;
-
-            // If both the community and quality score exist average the two
-            // If only one of them exists, set the score to the one that exists.
-            if (community !== null && quality !== null) {
-                score = (community + quality) / 2;
-            } else {
-                score = community || quality;
-            }
-
-            if (score !== null) {
-                score = Math.round(score * 10) / 10;
-            }
-
-            item.summary_fields['score'] = score;
         });
         this.contentItems = data;
         this.filterConfig.resultsCount = count;

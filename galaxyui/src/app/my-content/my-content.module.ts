@@ -21,6 +21,8 @@ import { OwnersContentComponent } from './namespace-list/content/owners-content/
 import { RepositoriesContentComponent } from './namespace-list/content/repositories-content/repositories-content.component';
 import { NamespaceListComponent } from './namespace-list/namespace-list.component';
 
+import { UtilitiesModule } from '../utilities/utilities.module';
+
 // prettier-ignore
 import {
     ProviderNamespacesContentComponent
@@ -65,8 +67,8 @@ import { NamespaceRepositoryActionComponent } from './namespace-list/content/rep
         ListModule,
         PaginationModule,
         SharedModule,
-
         MyContentRoutingModule,
+        UtilitiesModule,
     ],
     providers: [BsDropdownConfig],
 })

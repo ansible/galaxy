@@ -10,12 +10,17 @@
         <div>Warnings: {{ contentWarn.count }}</div>
         <ul>
             <li *ngFor="let rule of contentWarn.rulesViolated">
-                <span class="{{contentWarn.ruleDetails[rule].severityIcon}}"
-                    tooltip="{{contentWarn.ruleDetails[rule].severityText}}"></span>
-                <div class="violation-count">{{ contentWarn.ruleDetails[rule].violationsCount }}</div>
-                {{ rule }}:
-                {{ contentWarn.ruleDetails[rule].message }}
 
+                <div *ngFor="let message of contentWarn.ruleDetails[rule].message; let first = first;">
+
+                    <div class="not-message" [ngClass]='{"hidden-text": !first}'>
+                        <span class="{{contentWarn.ruleDetails[rule].severityIcon}}"
+                            tooltip="{{contentWarn.ruleDetails[rule].severityText}}"></span>
+                        <div class="violation-count">{{ contentWarn.ruleDetails[rule].violationsCount }}</div>
+                        {{ rule }}:
+                    </div>
+                    {{ message }}
+                </div>
             </li>
         </ul>
 
@@ -33,11 +38,17 @@
         <div>Warnings: {{ metaWarn.count }}</div>
         <ul>
             <li *ngFor="let rule of metaWarn.rulesViolated">
-                <span class="{{metaWarn.ruleDetails[rule].severityIcon}}"
-                    tooltip="{{metaWarn.ruleDetails[rule].severityText}}"></span>
-                <div class="violation-count">{{ metaWarn.ruleDetails[rule].violationsCount }}</div>
-                {{ rule }}:
-                {{ metaWarn.ruleDetails[rule].message }}
+
+                <div *ngFor="let message of metaWarn.ruleDetails[rule].message; let first = first;">
+
+                    <div class="not-message" [ngClass]='{"hidden-text": !first}'>
+                        <span class="{{metaWarn.ruleDetails[rule].severityIcon}}"
+                            tooltip="{{metaWarn.ruleDetails[rule].severityText}}"></span>
+                        <div class="violation-count">{{ metaWarn.ruleDetails[rule].violationsCount }}</div>
+                        <span class="rule-id">{{ rule }}:</span>
+                    </div>
+                    {{ message }}
+                </div>
 
             </li>
         </ul>
@@ -56,11 +67,15 @@
         <div>Warnings: {{ compatibilityWarn.count }}</div>
         <ul>
             <li *ngFor="let rule of compatibilityWarn.rulesViolated">
-                <span class="{{compatibilityWarn.ruleDetails[rule].severityIcon}}"
-                    tooltip="{{compatibilityWarn.ruleDetails[rule].severityText}}"></span>
-                <div class="violation-count">{{ compatibilityWarn.ruleDetails[rule].violationsCount }}</div>
-                {{ rule }}:
-                {{ compatibilityWarn.ruleDetails[rule].message }}
+
+                    <div class="not-message" [ngClass]='{"hidden-text": !first}'>
+                        <span class="{{compatibilityWarn.ruleDetails[rule].severityIcon}}"
+                            tooltip="{{compatibilityWarn.ruleDetails[rule].severityText}}"></span>
+                        <div class="violation-count">{{ compatibilityWarn.ruleDetails[rule].violationsCount }}</div>
+                        {{ rule }}:
+                    </div>
+                    {{ message }}
+                </div>
 
             </li>
         </ul>

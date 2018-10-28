@@ -12,11 +12,22 @@ export class ScoreComponent implements OnInit {
     constructor() {}
 
     @Input()
+    quality: number;
+
+    @Input()
+    community: number;
+
     score: number;
 
     scoreClass: string;
 
     ngOnInit() {
+        if (this.community !== null && this.quality !== null) {
+            this.score = (this.community + this.quality) / 2;
+        } else {
+            this.score = this.community || this.quality;
+        }
+
         this.scoreClass = this.getScoreColor(this.score);
 
         if (this.score !== null) {

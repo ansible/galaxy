@@ -28,6 +28,10 @@
                         <div class="list-pf-description text-overflow-pf">{{ item.description | slice:0:60 }}</div>
                     </div>
                     <div class="list-pf-additional-content">
+                        <div>
+                            <app-score [quality]="item.quality_score" [community]="item.community_score"></app-score>
+                        </div>
+
                         <div *ngIf="item['latest_import'] && (item['latest_import']['state'] === 'PENDING' || item['latest_import']['state'] === 'RUNNING')">
                             <a [routerLink]="['/my-imports']" [queryParams]="{namespace: namespace.name, repository_name: item.name}" class="running"
                                 tooltip="View import log">

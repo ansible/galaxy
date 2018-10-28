@@ -93,7 +93,11 @@
                                     </div>
                                     <div class="repository-details">
 
-                                        <app-score class="repo-count" [score]="item.summary_fields.score"></app-score>
+                                        <app-score
+                                            class="repo-count"
+                                            [quality]="item.summary_fields.repository.quality_score"
+                                            [community]="item.summary_fields.repository.community_score"
+                                        ></app-score>
 
                                         <div class="repo-count">
                                             <i class="fa fa-download"></i>

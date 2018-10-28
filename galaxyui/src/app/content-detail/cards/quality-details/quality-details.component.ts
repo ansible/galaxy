@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 class WarningType {
     violationsCount: number;
-    message: string;
+    message: Set<string>;
     severityIcon: string;
     severityText: string;
 }
@@ -104,11 +104,15 @@ export class QualityDetailsComponent implements OnInit {
         warning.count += 1;
         if (warning.ruleDetails[task.linter_rule_id]) {
             warning.ruleDetails[task.linter_rule_id].violationsCount += 1;
+            warning.ruleDetails[task.linter_rule_id].message.add(
+                task.rule_desc,
+            );
         } else {
+            const messages = new Set([task.rule_desc]);
             warning.rulesViolated.push(task.linter_rule_id);
             warning.ruleDetails[task.linter_rule_id] = {
                 violationsCount: 1,
-                message: task.rule_desc,
+                message: messages,
                 severityText: this.getWarningText(task.rule_severity),
                 severityIcon: this.getWarningClass(task.rule_severity),
             } as WarningType;
