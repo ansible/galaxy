@@ -16,6 +16,10 @@ import { FilterConfig } from 'patternfly-ng/filter/filter-config';
 import { FilterField } from 'patternfly-ng/filter/filter-field';
 import { FilterType } from 'patternfly-ng/filter/filter-type';
 
+import { SortConfig } from 'patternfly-ng/sort/sort-config';
+import { SortField } from 'patternfly-ng/sort/sort-field';
+import { SortEvent } from 'patternfly-ng/sort/sort-event';
+
 import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
 import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
@@ -81,6 +85,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     bsModalRef: BsModalRef;
 
     filterConfig: FilterConfig;
+    sortConfig: SortConfig;
+    currentSortField: SortField;
+    sortBy = 'name';
     toolbarConfig: ToolbarConfig;
     isAscendingSort = true;
 
@@ -115,8 +122,25 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             appliedFilters: [],
         } as FilterConfig;
 
+        this.sortConfig = {
+            fields: [
+                {
+                    id: 'name',
+                    title: 'Name',
+                    sortType: 'alpha',
+                },
+                {
+                    id: 'modified',
+                    title: 'Last Modified',
+                    sortType: 'alpha',
+                },
+            ],
+            isAscending: this.isAscendingSort,
+        } as SortConfig;
+
         this.toolbarConfig = {
             filterConfig: this.filterConfig,
+            sortConfig: this.sortConfig,
             views: [],
         } as ToolbarConfig;
 
@@ -210,6 +234,15 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         this.refreshRepositories();
     }
 
+    sortChanged($event: SortEvent): void {
+        if ($event.isAscending) {
+            this.sortBy = $event.field.id;
+        } else {
+            this.sortBy = '-' + $event.field.id;
+        }
+        this.refreshRepositories();
+    }
+
     // Private
 
     private deprecate(isDeprecated: boolean, repo: Repository): void {
@@ -290,7 +323,9 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                             filter.value;
                     }
                 }
-
+                if (this.sortConfig) {
+                    query['order_by'] = this.sortBy;
+                }
                 queries.push(this.repositoryService.pagedQuery(query));
             },
         );
