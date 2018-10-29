@@ -51,7 +51,7 @@ export class PreferencesComponent implements OnInit {
         this.authService.me().subscribe(me => {
             if (!me.authenticated) {
                 this.router.navigate(['/', 'login'], {
-                    queryParams: { next: '/preferences' },
+                    queryParams: { next: '/me/preferences' },
                 });
             } else {
                 this.userId = me.id;
