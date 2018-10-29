@@ -261,7 +261,7 @@ class TestAPBMetaParser(unittest.TestCase):
         with pytest.raises(exc.APBContentLoadError) as excinfo:
             parser.check_data()
         msg = 'Expecting "metadata" in metadata to be a dictionary'
-        assert msg in excinfo.value.message
+        assert msg in str(excinfo.value)
 
     def test_invalid_bindable(self):
         self.data['bindable'] = 'foo'
@@ -269,7 +269,7 @@ class TestAPBMetaParser(unittest.TestCase):
         with pytest.raises(exc.APBContentLoadError) as excinfo:
             parser.check_data()
         msg = 'Expecting "bindable" in metadata to be a boolean'
-        assert msg in excinfo.value.message
+        assert msg in str(excinfo.value)
 
     def test_invalid_plans(self):
         self.data['plans'] = 'foo'
@@ -277,7 +277,7 @@ class TestAPBMetaParser(unittest.TestCase):
         with pytest.raises(exc.APBContentLoadError) as excinfo:
             parser.check_data()
         msg = 'Expecting "plans" in metadata to be a list'
-        assert msg in excinfo.value.message
+        assert msg in str(excinfo.value)
 
     def test_invalid_plan_name(self):
         del self.data['plans'][0]['name']
@@ -285,7 +285,7 @@ class TestAPBMetaParser(unittest.TestCase):
         with pytest.raises(exc.APBContentLoadError) as excinfo:
             parser.check_data()
         msg = 'Expecting "name" to be defined for each plan'
-        assert msg in excinfo.value.message
+        assert msg in str(excinfo.value)
 
     def test_plan_parameters_type(self):
         self.data['plans'][0]['parameters'] = 'foo'
@@ -293,7 +293,7 @@ class TestAPBMetaParser(unittest.TestCase):
         with pytest.raises(exc.APBContentLoadError) as excinfo:
             parser.check_data()
         msg = 'Expecting "parameters" in "plans[0]" of'
-        assert msg in excinfo.value.message
+        assert msg in str(excinfo.value)
 
     def test_plan_parameters_item_type(self):
         self.data['plans'][0]['parameters'] = ['foo']
@@ -301,7 +301,7 @@ class TestAPBMetaParser(unittest.TestCase):
         with pytest.raises(exc.APBContentLoadError) as excinfo:
             parser.check_data()
         msg = 'Expecting "parameters[0]" in "plans[0]" of'
-        assert msg in excinfo.value.message
+        assert msg in str(excinfo.value)
 
     def test_missing_async(self):
         del self.data['async']
@@ -309,7 +309,7 @@ class TestAPBMetaParser(unittest.TestCase):
         with pytest.raises(exc.APBContentLoadError) as excinfo:
             parser.check_data()
         msg = 'Missing "async" field in metadata.'
-        assert msg in excinfo.value.message
+        assert msg in str(excinfo.value)
 
     def test_async_bad_value(self):
         self.data['async'] = 'foo'
@@ -317,7 +317,7 @@ class TestAPBMetaParser(unittest.TestCase):
         with pytest.raises(exc.APBContentLoadError) as excinfo:
             parser.check_data()
         msg = 'Expecting "async" in metadata to be one of'
-        assert msg in excinfo.value.message
+        assert msg in str(excinfo.value)
 
     def test_missing_version(self):
         del self.data['version']
@@ -325,7 +325,7 @@ class TestAPBMetaParser(unittest.TestCase):
         with pytest.raises(exc.APBContentLoadError) as excinfo:
             parser.check_data()
         msg = 'Missing "version" field in metadata.'
-        assert msg in excinfo.value.message
+        assert msg in str(excinfo.value)
 
     def test_param_keys(self):
         parser = apb_loader.APBMetaParser(self.data, self.log)

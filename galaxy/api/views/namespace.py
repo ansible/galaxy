@@ -161,7 +161,7 @@ def update_provider_namespaces(namespace, provider_namespaces):
             except Exception as exc:
                 raise APIException(
                     'Error creating or updating provider namespaces: {}'
-                    .format(exc.message)
+                    .format(exc)
                 )
     # Disassociate provider namespaces not in the list
     for id in [
@@ -258,7 +258,7 @@ class NamespaceList(base_views.ListCreateAPIView):
             namespace = models.Namespace.objects.create(**namespace_attributes)
         except Exception as exc:
             raise APIException(
-                'Error creating namespace: {0}'.format(exc.message)
+                'Error creating namespace: {0}'.format(exc)
             )
 
         update_owners(namespace, owners)

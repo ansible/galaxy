@@ -298,7 +298,7 @@ class NotificationList(base_views.ListCreateAPIView):
             raise APIException(msg)
         except requests.RequestException as e:
             msg = '{0}: Failed to retrieve public key for {1}: {2}'.format(
-                notification_error, travis_host, e.message)
+                notification_error, travis_host, e)
             logger.error(msg)
             raise APIException(msg)
         try:

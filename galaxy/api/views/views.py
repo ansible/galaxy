@@ -979,13 +979,13 @@ class RefreshUserRepos(base_views.APIView):
         try:
             celerytasks.refresh_existing_user_repos(token.token, ghu)
         except Exception as exc:
-            logger.error("Error: refresh_user_repos - {0}".format(exc.message))
+            logger.error("Error: refresh_user_repos - {0}".format(exc))
             raise
 
         try:
             celerytasks.update_user_repos(user_repos, request.user)
         except Exception as exc:
-            logger.error("Error: update_user_repos - {0}".format(exc.message))
+            logger.error("Error: update_user_repos - {0}".format(exc))
             raise
 
         qs = request.user.repositories.all()
