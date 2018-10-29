@@ -1,55 +1,62 @@
-FROM centos:7
-
-# Install nodejs and yarn
-# TODO(cutwater): Use direct package link instead of
-# setup_8.x script execution.
-RUN yum -y install wget \
-    && wget -O - https://rpm.nodesource.com/setup_8.x | bash - \
-    && wget -O /etc/yum.repos.d/yarn.repo https://dl.yarnpkg.com/rpm/yarn.repo \
-    && yum -y install nodejs yarn \
-    && yum -y remove wget \
-    && yum -y clean all \
-    && rm -rf /var/cache/yum
-
-# Install packages and create virtual environment
-ENV PIP_NO_CACHE_DIR off
-RUN yum -y install epel-release \
-    && yum -y install gcc git make python python-pip python-devel \
-    && pip install virtualenv \
-    && yum -y clean all \
-    && rm -rf /var/cache/yum
-
-# Install node dependencies
-RUN yarn global add @angular/cli@6.1.2 \
-    && ng set --global packageManager=yarn
-
-# Install python dependencies
-COPY requirements.txt /tmp/requirements.txt
-ENV VENV_BIN /var/lib/galaxy/venv/bin
-RUN mkdir -p /var/lib/galaxy/ \
-    && virtualenv /var/lib/galaxy/venv \
-    && ${VENV_BIN}/pip install -U pip wheel \
-    && ${VENV_BIN}/pip install -r /tmp/requirements.txt
-
-RUN yum -y install vim tmux make ShellCheck
-RUN ${VENV_BIN}/pip install honcho flake8
-RUN localedef -c -i en_US -f UTF-8 en_US.UTF-8
-
-ENV DJANGO_SETTINGS_MODULE galaxy.settings.development
-
-ENV C_FORCE_ROOT 1
+FROM fedora:27
 
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 ENV PYTHONUNBUFFERED 1
-ENV PYTHONIOENCODING utf8
+ENV PIP_NO_CACHE_DIR off
+
+# FIXME(cutwater): Run galaxy and celery under unprivileged user
+ENV C_FORCE_ROOT 1
+ENV DJANGO_SETTINGS_MODULE galaxy.settings.development
+
+
+# Install nodejs and yarn
+RUN curl -sL -o '/tmp/nodesource-release-fc27-1.noarch.rpm' \
+        'https://rpm.nodesource.com/pub_8.x/fc/27/x86_64/nodesource-release-fc27-1.noarch.rpm' \
+    && rpm -i --nosignature --force '/tmp/nodesource-release-fc27-1.noarch.rpm' \
+    && rm -f '/tmp/nodesource-release-fc27-1.noarch.rpm' \
+    && curl -sL -o '/etc/yum.repos.d/yarn.repo' 'https://dl.yarnpkg.com/rpm/yarn.repo' \
+    && dnf -y install nodejs yarn \
+    && dnf -y clean all \
+    && rm -rf /var/cache/yum
+
+
+# Install packages and create virtual environment
+RUN dnf -y install \
+        findutils gcc git make \
+        vim tmux ShellCheck \
+        python3 python3-pip python3-devel \
+    && dnf -y clean all \
+    && rm -rf /var/cache/yum
+
+
+# Install node dependencies
+# FIXME(cutwater): Drop global angular/cli installation
+RUN yarn global add @angular/cli@6.1.2 \
+    && ng set --global packageManager=yarn
+
+
+# Install python dependencies
+COPY requirements.txt /tmp/requirements.txt
+ENV VENV_BIN /var/lib/galaxy/venv/bin
+RUN mkdir -p /var/lib/galaxy/ \
+    && python3 -m venv /var/lib/galaxy/venv \
+    && ${VENV_BIN}/pip install -U pip wheel \
+    # TODO(cutwater): Move to dev-requirements.txt
+    && ${VENV_BIN}/pip install honcho flake8 \
+    && ${VENV_BIN}/pip install -r /tmp/requirements.txt
+
+
+# Install galaxy lint rules
+# FIXME(cutwater): Better location \ install as python package
+RUN git clone --depth 1 \
+        https://github.com/ansible/galaxy-lint-rules.git \
+        /usr/local/galaxy-lint-rules
+
 
 COPY scripts/docker/dev/entrypoint.sh /entrypoint.sh
-
-RUN git clone https://github.com/ansible/galaxy-lint-rules.git /usr/local/galaxy-lint-rules
-
 WORKDIR /galaxy
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/galaxy/scripts/docker/dev/start-develop.sh"]

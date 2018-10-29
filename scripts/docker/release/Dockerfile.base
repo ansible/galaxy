@@ -1,19 +1,19 @@
 # vim: set ft=Dockerfile:
-FROM centos:7
+FROM fedora:27
 
 ENV PIP_NO_CACHE_DIR off
 ENV VENV_BIN /var/lib/galaxy/venv/bin
 
 # Install packages and create virtual environment
-RUN yum -y install epel-release \
-    && yum -y install git gcc make python python-devel python-pip \
-    && pip install virtualenv \
-    && yum -y clean all \
+RUN && dnf -y install \
+        git gcc make \
+        python3 python3-devel python3-pip \
+    && dnf -y clean all \
     && rm -rf /var/cache/yum
 
 # Install python dependencies
 COPY requirements.txt /tmp/requirements.txt
 RUN mkdir -p /var/lib/galaxy/ \
-    && virtualenv /var/lib/galaxy/venv \
+    && python3 -m venv /var/lib/galaxy/venv \
     && ${VENV_BIN}/pip install -U pip wheel \
     && ${VENV_BIN}/pip install -r /tmp/requirements.txt
