@@ -68,9 +68,9 @@ class ContentBlockModelTest(TestCase):
         with pytest.raises(ValidationError) as excinfo:
             ContentBlock().full_clean()
 
-        assert str(excinfo.value) == (
-            "{'name': [u'This field cannot be blank.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'name': ['This field cannot be blank.']
+        }
 
     @pytest.mark.database_integrity
     def test_name_must_be_unique_in_db(self):
@@ -113,17 +113,15 @@ class ContentBlockModelTest(TestCase):
         with pytest.raises(ValidationError) as excinfo:
             ContentBlock(name='a' * (self.NAME_MAX_LENGTH + 1)).full_clean()
 
-        assert str(excinfo.value) == str({
+        assert excinfo.value.message_dict == {
             "name": [
-                (
-                    u"Ensure this value has at most {valid} characters "
-                    "(it has {given})."
-                ).format(
+                "Ensure this value has at most {valid} characters "
+                "(it has {given}).".format(
                     valid=self.NAME_MAX_LENGTH,
                     given=self.NAME_MAX_LENGTH + 1
                 )
             ]
-        })
+        }
 
     @pytest.mark.model_fields_validation
     def test_name_must_be_slug(self):
@@ -139,22 +137,22 @@ class ContentBlockModelTest(TestCase):
         with pytest.raises(ValidationError) as excinfo:
             ContentBlock(name='with spaces').full_clean()
 
-        assert str(excinfo.value) == str({
+        assert excinfo.value.message_dict == {
             "name": [
-                u"Enter a valid 'slug' consisting of letters, "
+                "Enter a valid 'slug' consisting of letters, "
                 "numbers, underscores or hyphens."
             ]
-        })
+        }
 
         with pytest.raises(ValidationError) as excinfo:
             ContentBlock(name='with spaces').full_clean()
 
-        assert str(excinfo.value) == str({
+        assert excinfo.value.message_dict == {
             "name": [
-                u"Enter a valid 'slug' consisting of letters, "
+                "Enter a valid 'slug' consisting of letters, "
                 "numbers, underscores or hyphens."
             ]
-        })
+        }
 
     @pytest.mark.model_fields_validation
     def test_content_is_unlimited(self):

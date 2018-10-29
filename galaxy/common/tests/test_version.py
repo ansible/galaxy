@@ -31,25 +31,25 @@ class TestGetVersion(unittest.TestCase):
             'subprocess.check_output').start()
 
     def test_release_version(self):
-        self.git_describe_mock.return_value = 'v1.0.0'
+        self.git_describe_mock.return_value = b'v1.0.0'
         version_ = version.get_git_version()
         self.assertEqual(version_, '1.0.0')
 
-        self.git_describe_mock.return_value = 'v2.3rc0'
+        self.git_describe_mock.return_value = b'v2.3rc0'
         version_ = version.get_git_version()
         self.assertEqual(version_, '2.3rc0')
 
     def test_dev_version(self):
-        self.git_describe_mock.return_value = 'v1.0.0'
+        self.git_describe_mock.return_value = b'v1.0.0'
         version_ = version.get_git_version()
         self.assertEqual(version_, '1.0.0')
 
-        self.git_describe_mock.return_value = 'v2.3rc0'
+        self.git_describe_mock.return_value = b'v2.3rc0'
         version_ = version.get_git_version()
         self.assertEqual(version_, '2.3rc0')
 
     def test_no_git_tag_fallback(self):
-        self.git_describe_mock.return_value = 'ef14bf1'
+        self.git_describe_mock.return_value = b'ef14bf1'
         self.assertEqual(version.get_git_version(),
                          '0.0.0.dev0+ef14bf1')
         self.git_describe_mock.assert_called_once()
@@ -62,7 +62,7 @@ class TestGetVersion(unittest.TestCase):
     def test_package_version_fallback(self):
         self.get_distribution_mock.side_effect = \
             pkg_resources.DistributionNotFound()
-        self.git_describe_mock.return_value = '1.0.0'
+        self.git_describe_mock.return_value = b'1.0.0'
 
         self.assertEqual(version.get_package_version('test'), '1.0.0')
         self.git_describe_mock.assert_called_once()

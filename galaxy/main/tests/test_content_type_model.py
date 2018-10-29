@@ -69,14 +69,12 @@ class ContentTypeModelTest(TestCase):
         with pytest.raises(ValidationError) as excinfo:
             ContentType().full_clean()
 
-        assert str(excinfo.value) == (
-            "{'name': [u'This field cannot be blank.']}"
-        )
-        assert str(excinfo.value) == str({
-            "name": [
-                u"This field cannot be blank."
-            ]
-        })
+        assert excinfo.value.message_dict == {
+            'name': ['This field cannot be blank.']
+        }
+        assert excinfo.value.message_dict == {
+            "name": ["This field cannot be blank."]
+        }
 
     @pytest.mark.database_integrity
     def test_name_must_be_unique_in_db(self):
@@ -122,15 +120,12 @@ class ContentTypeModelTest(TestCase):
         with pytest.raises(ValidationError) as excinfo:
             ContentType(name=invald_name).full_clean()
 
-        assert str(excinfo.value) == str({
+        assert excinfo.value.message_dict == {
             "name": [
-                (
-                    u"Value \'{given}\' is not a valid choice."
-                ).format(
-                    given=invald_name
-                )
+                "Value '{given}' is not a valid choice.".format(
+                    given=invald_name)
             ]
-        })
+        }
 
     @pytest.mark.model_fields_validation
     def test_description_is_not_required(self):
@@ -186,17 +181,15 @@ class ContentTypeModelTest(TestCase):
                 description='a' * (self.DESCRIPTION_MAX_LENGTH + 1)
             ).full_clean()
 
-        assert str(excinfo.value) == str({
+        assert excinfo.value.message_dict == {
             "description": [
-                (
-                    u"Ensure this value has at most {valid} characters "
-                    "(it has {given})."
-                ).format(
+                "Ensure this value has at most {valid} characters "
+                "(it has {given}).".format(
                     valid=self.DESCRIPTION_MAX_LENGTH,
                     given=self.DESCRIPTION_MAX_LENGTH + 1
                 )
             ]
-        })
+        }
 
     # testing custom methods
 
