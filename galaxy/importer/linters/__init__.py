@@ -37,7 +37,7 @@ class BaseLinter(object):
     def check_files(self, paths):
         if isinstance(paths, six.string_types):
             paths = [paths]
-        paths = map(os.path.normpath, paths)
+        paths = [os.path.normpath(p) for p in paths]
         return self._check_files(paths)
 
     def _check_files(self, paths):
@@ -74,9 +74,9 @@ class Flake8Linter(BaseLinter):
 
         if not error_id:
             logger.error('No error_id found in {} message'.format(self.cmd))
-            return (None, None)
+            return None, None
 
-        return (error_id, rule_desc)
+        return error_id, rule_desc
 
 
 class YamlLinter(BaseLinter):
@@ -107,9 +107,9 @@ class YamlLinter(BaseLinter):
 
         if not error_id:
             logger.error('No error_id found in {} message'.format(self.cmd))
-            return (None, None)
+            return None, None
 
-        return (error_id, rule_desc)
+        return error_id, rule_desc
 
 
 class AnsibleLinter(BaseLinter):
@@ -156,6 +156,6 @@ class AnsibleLinter(BaseLinter):
 
         if not error_id:
             logger.error('No error_id found in {} message'.format(self.cmd))
-            return (None, None)
+            return None, None
 
-        return (error_id, rule_desc)
+        return error_id, rule_desc
