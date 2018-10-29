@@ -25,13 +25,13 @@ export class GenericQuery<ServiceType> extends ServiceBase {
         let objectParams = null;
         if (params) {
             if (typeof params === 'string') {
-                objectUrl += `?${params}`;
+                objectUrl += `/?${params}`;
             } else {
                 objectParams = params;
             }
         }
         return this.http
-            .get<PagedResponse>(objectUrl + '/', { params: objectParams })
+            .get<PagedResponse>(objectUrl, { params: objectParams })
             .pipe(
                 map(response => response.results),
                 tap(_ => this.log(`fetched ${this.serviceName}`)),
