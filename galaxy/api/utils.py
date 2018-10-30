@@ -23,8 +23,8 @@ import sys
 
 from rest_framework.exceptions import ParseError, PermissionDenied
 
-__all__ = ['get_object_or_400', 'get_object_or_403', 'camelcase_to_underscore',
-           'get_ansible_version', 'get_version']
+__all__ = ['get_object_or_400', 'get_object_or_403',
+           'camelcase_to_underscore', 'get_version']
 
 
 def get_object_or_400(klass, *args, **kwargs):
@@ -71,17 +71,6 @@ class RequireDebugTrueOrTest(logging.Filter):
     def filter(self, record):
         from django.conf import settings
         return settings.DEBUG or 'test' in sys.argv
-
-
-def get_ansible_version():
-    """Return Ansible version installed."""
-    try:
-        proc = subprocess.Popen(['ansible', '--version'],
-                                stdout=subprocess.PIPE)
-        result = proc.communicate()[0]
-        return result.lower().replace('ansible', '').strip()
-    except Exception:
-        return 'unknown'
 
 
 def get_version():
