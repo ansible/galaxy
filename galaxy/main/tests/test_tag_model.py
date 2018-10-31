@@ -64,9 +64,9 @@ class TagModelTest(TestCase):
         with pytest.raises(ValidationError) as excinfo:
             Tag().full_clean()
 
-        assert str(excinfo.value) == (
-            "{'name': [u'This field cannot be blank.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'name': ['This field cannot be blank.']
+        }
 
     @pytest.mark.database_integrity
     def test_name_must_be_unique_in_db(self):
@@ -108,13 +108,15 @@ class TagModelTest(TestCase):
         with pytest.raises(ValidationError) as excinfo:
             Tag(name='*' * (self.NAME_MAX_LENGTH + 1)).full_clean()
 
-        assert str(excinfo.value) == (
-            "{{'name': [u'Ensure this value has at most {valid} "
-            "characters (it has {given}).']}}"
-        ).format(
-            valid=self.NAME_MAX_LENGTH,
-            given=self.NAME_MAX_LENGTH + 1
-        )
+        assert excinfo.value.message_dict == {
+            'name': [
+                'Ensure this value has at most {valid} '
+                'characters (it has {given}).'.format(
+                    valid=self.NAME_MAX_LENGTH,
+                    given=self.NAME_MAX_LENGTH + 1
+                )
+            ]
+        }
 
     # testing custom methods
 

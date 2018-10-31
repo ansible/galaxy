@@ -154,9 +154,9 @@ class CustomUserModelTest(TestCase):
                 password=self.VALID_PASSWORD,
                 email=self.VALID_EMAIL).full_clean()
 
-        assert str(excinfo.value) == (
-            "{'username': [u'This field cannot be blank.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'username': ['This field cannot be blank.']
+        }
 
         with pytest.raises(ValidationError) as excinfo:
             CustomUser(
@@ -165,9 +165,9 @@ class CustomUserModelTest(TestCase):
                 email=self.VALID_EMAIL
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{'username': [u'Enter a valid username.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'username': ['Enter a valid username.']
+        }
 
         with pytest.raises(ValidationError) as excinfo:
             CustomUser(
@@ -176,9 +176,9 @@ class CustomUserModelTest(TestCase):
                 email=self.VALID_EMAIL
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{'username': [u'Enter a valid username.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'username': ['Enter a valid username.']
+        }
 
         with pytest.raises(ValidationError) as excinfo:
             CustomUser(
@@ -187,30 +187,31 @@ class CustomUserModelTest(TestCase):
                 email=self.VALID_EMAIL
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{'username': [u'Enter a valid username.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'username': ['Enter a valid username.']
+        }
 
         with pytest.raises(ValidationError) as excinfo:
             CustomUser(
-                username=u'юникод',
+                username='юникод',
                 password=self.VALID_PASSWORD,
                 email=self.VALID_EMAIL
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{'username': [u'Enter a valid username.']}")
+        assert excinfo.value.message_dict == {
+            'username': ['Enter a valid username.']
+        }
 
         with pytest.raises(ValidationError) as excinfo:
             CustomUser(
-                username=u'юникод',
+                username='юникод',
                 password=self.VALID_PASSWORD,
                 email=self.VALID_EMAIL
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{'username': [u'Enter a valid username.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'username': ['Enter a valid username.']
+        }
 
     @pytest.mark.database_integrity
     def test_full_name_length_is_limited_in_db(self):
@@ -247,13 +248,14 @@ class CustomUserModelTest(TestCase):
                 full_name='*' * (self.EMAIL_MAX_LENGTH + 1)
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{{'full_name': [u'Ensure this value has at most {valid} "
-            "characters (it has {given}).']}}"
-        ).format(
-            valid=self.FULL_NAME_MAX_LENGTH,
-            given=self.FULL_NAME_MAX_LENGTH + 1
-        )
+        assert excinfo.value.message_dict == {
+            'full_name': [
+                'Ensure this value has at most {valid} '
+                'characters (it has {given}).'.format(
+                    valid=self.FULL_NAME_MAX_LENGTH,
+                    given=self.FULL_NAME_MAX_LENGTH + 1)
+            ]
+        }
 
     @pytest.mark.database_integrity
     def test_short_name_length_is_limited_in_db(self):

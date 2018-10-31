@@ -73,9 +73,9 @@ class ProviderModelTest(TestCase):
                 download_url=self.VALID_DOWNLOAD_URL
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{'name': [u'This field cannot be blank.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'name': ['This field cannot be blank.']
+        }
 
     @pytest.mark.database_integrity
     def test_name_must_be_unique_in_db(self):
@@ -138,13 +138,15 @@ class ProviderModelTest(TestCase):
                 download_url=self.VALID_DOWNLOAD_URL
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{{'name': [u'Ensure this value has at most {valid} "
-            "characters (it has {current}).']}}"
-        ).format(
-            valid=self.NAME_MAX_LENGTH,
-            current=self.NAME_MAX_LENGTH + 1
-        )
+        assert excinfo.value.message_dict == {
+            'name': [
+                'Ensure this value has at most {valid} '
+                'characters (it has {current}).'.format(
+                    valid=self.NAME_MAX_LENGTH,
+                    current=self.NAME_MAX_LENGTH + 1
+                )
+            ]
+        }
 
     @pytest.mark.model_fields_validation
     def test_name_is_not_validated(self):
@@ -186,13 +188,15 @@ class ProviderModelTest(TestCase):
                 download_url='*' * (self.DOWNLOAD_URL_MAX_LENGTH + 1)
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{{'download_url': [u'Ensure this value has at most {valid} "
-            "characters (it has {current}).']}}"
-        ).format(
-            valid=self.DOWNLOAD_URL_MAX_LENGTH,
-            current=self.DOWNLOAD_URL_MAX_LENGTH + 1
-        )
+        assert excinfo.value.message_dict == {
+            'download_url': [
+                'Ensure this value has at most {valid} '
+                'characters (it has {current}).'.format(
+                    valid=self.DOWNLOAD_URL_MAX_LENGTH,
+                    current=self.DOWNLOAD_URL_MAX_LENGTH + 1
+                )
+            ]
+        }
 
     @pytest.mark.model_fields_validation
     def test_download_url_is_not_validated(self):

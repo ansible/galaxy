@@ -71,10 +71,10 @@ class PlatformModelTest(TestCase):
         with pytest.raises(ValidationError) as excinfo:
             Platform().full_clean()
 
-        assert str(excinfo.value) == (
-            "{'release': [u'This field cannot be blank.'], "
-            "'name': [u'This field cannot be blank.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'release': ['This field cannot be blank.'],
+            'name': ['This field cannot be blank.']
+        }
 
     # FIXME: This behaviour looks like a bug
     @pytest.mark.database_integrity
@@ -124,13 +124,15 @@ class PlatformModelTest(TestCase):
                 release=self.VALID_RELEASE
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{{'name': [u'Ensure this value has at most {valid} "
-            "characters (it has {given}).']}}"
-        ).format(
-            valid=self.NAME_MAX_LENGTH,
-            given=self.NAME_MAX_LENGTH + 1
-        )
+        assert excinfo.value.message_dict == {
+            'name': [
+                'Ensure this value has at most {valid} '
+                'characters (it has {given}).'.format(
+                    valid=self.NAME_MAX_LENGTH,
+                    given=self.NAME_MAX_LENGTH + 1
+                )
+            ]
+        }
 
     @pytest.mark.database_integrity
     def test_release_length_is_limited_in_db(self):
@@ -163,13 +165,15 @@ class PlatformModelTest(TestCase):
             Platform(
                 name=self.VALID_NAME,
                 release='*' * (self.RELEASE_MAX_LENGTH + 1)).full_clean()
-        assert str(excinfo.value) == (
-            "{{'release': [u'Ensure this value has at most {valid} "
-            "characters (it has {given}).']}}"
-        ).format(
-            valid=self.RELEASE_MAX_LENGTH,
-            given=self.RELEASE_MAX_LENGTH + 1
-        )
+        assert excinfo.value.message_dict == {
+            'release': [
+                "Ensure this value has at most {valid} "
+                "characters (it has {given}).".format(
+                    valid=self.RELEASE_MAX_LENGTH,
+                    given=self.RELEASE_MAX_LENGTH + 1
+                )
+            ]
+        }
 
     @pytest.mark.database_integrity
     def test_alias_length_is_limited_in_db(self):
@@ -206,13 +210,15 @@ class PlatformModelTest(TestCase):
                 name=self.VALID_NAME,
                 release=self.VALID_RELEASE,
                 alias='*' * (self.ALIAS_MAX_LENGTH + 1)).full_clean()
-        assert str(excinfo.value) == (
-            "{{'alias': [u'Ensure this value has at most {valid} "
-            "characters (it has {given}).']}}"
-        ).format(
-            valid=self.ALIAS_MAX_LENGTH,
-            given=self.ALIAS_MAX_LENGTH + 1
-        )
+        assert excinfo.value.message_dict == {
+            'alias': [
+                'Ensure this value has at most {valid} '
+                'characters (it has {given}).'.format(
+                    valid=self.ALIAS_MAX_LENGTH,
+                    given=self.ALIAS_MAX_LENGTH + 1
+                )
+            ]
+        }
 
     # testing custom methods
 

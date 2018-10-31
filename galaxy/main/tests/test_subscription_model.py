@@ -105,9 +105,9 @@ class SubscriptionModelTest(TestCase):
                 github_user=self.VALID_GITHUB_USER
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{'owner': [u'This field cannot be null.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'owner': ['This field cannot be null.']
+        }
 
     @pytest.mark.model_fields_validation
     def test_github_user_is_required(self):
@@ -124,9 +124,9 @@ class SubscriptionModelTest(TestCase):
                 github_repo=self.VALID_GITHUB_REPO,
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{'github_user': [u'This field cannot be blank.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'github_user': ['This field cannot be blank.']
+        }
 
     @pytest.mark.model_fields_validation
     def test_github_user_length_is_limited(self):
@@ -144,13 +144,15 @@ class SubscriptionModelTest(TestCase):
                 github_user='A' * (self.GITHUB_USER_MAX_LENGTH + 1)
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{{'github_user': [u'Ensure this value has at most {valid} "
-            "characters (it has {current}).']}}"
-        ).format(
-            valid=self.GITHUB_USER_MAX_LENGTH,
-            current=self.GITHUB_USER_MAX_LENGTH + 1
-        )
+        assert excinfo.value.message_dict == {
+            'github_user': [
+                'Ensure this value has at most {valid} '
+                'characters (it has {current}).'.format(
+                    valid=self.GITHUB_USER_MAX_LENGTH,
+                    current=self.GITHUB_USER_MAX_LENGTH + 1
+                )
+            ]
+        }
 
     @pytest.mark.database_integrity
     def test_github_user_length_is_limited_in_db(self):
@@ -187,9 +189,9 @@ class SubscriptionModelTest(TestCase):
                 github_user=self.VALID_GITHUB_USER
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{'github_repo': [u'This field cannot be blank.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'github_repo': ['This field cannot be blank.']
+        }
 
     @pytest.mark.model_fields_validation
     def test_github_repo_length_is_limited(self):
@@ -207,13 +209,15 @@ class SubscriptionModelTest(TestCase):
                 github_user=self.VALID_GITHUB_USER,
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{{'github_repo': [u'Ensure this value has at most {valid} "
-            "characters (it has {current}).']}}"
-        ).format(
-            valid=self.GITHUB_REPO_MAX_LENGTH,
-            current=self.GITHUB_REPO_MAX_LENGTH + 1
-        )
+        assert excinfo.value.message_dict == {
+            'github_repo': [
+                'Ensure this value has at most {valid} '
+                'characters (it has {current}).'.format(
+                    valid=self.GITHUB_REPO_MAX_LENGTH,
+                    current=self.GITHUB_REPO_MAX_LENGTH + 1
+                )
+            ]
+        }
 
     @pytest.mark.database_integrity
     def test_github_repo_length_is_limited_in_db(self):

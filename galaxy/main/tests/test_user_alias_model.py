@@ -71,9 +71,9 @@ class UserAliasModelTest(TestCase):
                 alias_of=self.default_user
             ).full_clean()
 
-        assert str(excinfo.value) == (
-            "{'alias_name': [u'This field cannot be blank.']}"
-        )
+        assert excinfo.value.message_dict == {
+            'alias_name': ['This field cannot be blank.']
+        }
 
     @pytest.mark.skip
     @pytest.mark.database_integrity
