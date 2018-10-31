@@ -10,6 +10,7 @@ Contributing Content
    creating_role
    creating_multi
    creating_apb
+   documenting_content
    version
    importing
    deprecate
