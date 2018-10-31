@@ -136,7 +136,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('description', galaxy.main.fields.TruncatingCharField(
-                    default=b'', max_length=255, blank=True)),
+                    default='', max_length=255, blank=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),
                 ('name', models.CharField(
                     unique=True, max_length=512, db_index=True)),
@@ -155,29 +155,29 @@ class Migration(migrations.Migration):
                     verbose_name='ID', serialize=False, auto_created=True,
                     primary_key=True)),
                 ('description', galaxy.main.fields.TruncatingCharField(
-                    default=b'', max_length=255, blank=True)),
+                    default='', max_length=255, blank=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),
                 ('name', models.CharField(
-                    max_length=256, verbose_name=b'Name')),
+                    max_length=256, verbose_name='Name')),
                 ('display_name', models.CharField(
-                    verbose_name=b'Display Name', max_length=256,
+                    verbose_name='Display Name', max_length=256,
                     null=True, editable=False, blank=True)),
                 ('avatar_url', models.CharField(
-                    verbose_name=b'Avatar URL', max_length=256,
+                    verbose_name='Avatar URL', max_length=256,
                     null=True, editable=False, blank=True)),
                 ('location', models.CharField(
-                    verbose_name=b'Location', max_length=256,
+                    verbose_name='Location', max_length=256,
                     null=True, editable=False, blank=True)),
                 ('company', models.CharField(
-                    verbose_name=b'Company Name', max_length=256,
+                    verbose_name='Company Name', max_length=256,
                     null=True, editable=False, blank=True)),
                 ('email', models.CharField(
-                    verbose_name=b'Email Address', max_length=256,
+                    verbose_name='Email Address', max_length=256,
                     null=True, editable=False, blank=True)),
                 ('html_url', models.CharField(
-                    verbose_name=b'Web Site URL', max_length=256,
+                    verbose_name='Web Site URL', max_length=256,
                     null=True, editable=False, blank=True)),
                 ('followers', models.IntegerField(
                     null=True, editable=False,
@@ -186,9 +186,9 @@ class Migration(migrations.Migration):
                     related_name='namespaces', editable=False,
                     to='main.Namespace', null=True,
                     on_delete=models.CASCADE,
-                    verbose_name=b'Namespace')),
+                    verbose_name='Namespace')),
                 ('provider', models.ForeignKey(
-                    related_name='provider', verbose_name=b'Provider',
+                    related_name='provider', verbose_name='Provider',
                     on_delete=models.CASCADE,
                     to='main.Provider', null=True)),
             ],
@@ -218,26 +218,26 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('description', galaxy.main.fields.TruncatingCharField(
-                    default=b'', max_length=255, blank=True)),
+                    default='', max_length=255, blank=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),
                 ('name', models.CharField(
                     unique=True, max_length=512, db_index=True)),
                 ('original_name', models.CharField(max_length=512)),
                 ('avatar_url', models.CharField(
                     max_length=256, null=True,
-                    verbose_name=b'Avatar URL', blank=True)),
+                    verbose_name='Avatar URL', blank=True)),
                 ('location', models.CharField(
                     max_length=256, null=True,
-                    verbose_name=b'Location', blank=True)),
+                    verbose_name='Location', blank=True)),
                 ('company', models.CharField(
                     max_length=256, null=True,
-                    verbose_name=b'Company Name', blank=True)),
+                    verbose_name='Company Name', blank=True)),
                 ('email', models.CharField(
                     max_length=256, null=True,
-                    verbose_name=b'Email Address', blank=True)),
+                    verbose_name='Email Address', blank=True)),
                 ('html_url', models.CharField(
                     max_length=256, null=True,
-                    verbose_name=b'Web Site URL', blank=True)),
+                    verbose_name='Web Site URL', blank=True)),
                 ('owners', models.ManyToManyField(
                     related_name='namespaces', to=settings.AUTH_USER_MODEL)),
             ],

@@ -13,9 +13,9 @@ class Migration(migrations.Migration):
             model_name='role',
             name='github_default_branch',
             field=models.CharField(
-                default=b'master',
+                default='master',
                 max_length=256,
-                verbose_name=b'Default Branch',
+                verbose_name='Default Branch',
             ),
         )
     ]

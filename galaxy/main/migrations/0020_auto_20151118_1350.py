@@ -33,9 +33,9 @@ class Migration(migrations.Migration):
             model_name='role',
             name='travis_status_url',
             field=models.CharField(
-                default=b'',
+                default='',
                 max_length=256,
-                verbose_name=b'Travis Build Status',
+                verbose_name='Travis Build Status',
                 blank=True,
             ),
         ),

@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
             model_name='role',
             name='container_yml',
             field=models.TextField(
-                null=True, verbose_name=b'container.yml', blank=True
+                null=True, verbose_name='container.yml', blank=True
             ),
         )
     ]

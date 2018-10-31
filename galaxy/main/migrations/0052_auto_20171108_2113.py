@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='video',
             name='url',
-            field=models.CharField(help_text=b'', max_length=256),
+            field=models.CharField(help_text='', max_length=256),
         ),
     ]

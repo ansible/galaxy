@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
             model_name='repository',
             name='quality_score_date',
             field=models.DateTimeField(null=True,
-                                       verbose_name=b'DateTime last scored'),
+                                       verbose_name='DateTime last scored'),
         ),
     ]

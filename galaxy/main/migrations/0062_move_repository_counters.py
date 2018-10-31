@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='repository', name='commit_created',
             field=models.DateTimeField(
-                null=True, verbose_name=b'Laste Commit DateTime'),
+                null=True, verbose_name='Laste Commit DateTime'),
         ),
         migrations.AddField(
             model_name='repository', name='forks_count',
