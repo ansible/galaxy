@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                         verbose_name='username',
                         validators=[
                             django.core.validators.RegexValidator(
-                                re.compile('^[\\w.@+-]+$'),
+                                re.compile(r'^[a-zA-Z0-9_.@+-]+$'),
                                 'Enter a valid username.',
                                 'invalid',
                             )

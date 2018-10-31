@@ -34,7 +34,7 @@ class CustomUserCreationForm(forms.ModelForm):
     username = forms.RegexField(
         label=_("Username"),
         max_length=30,
-        regex=r'^[\w.@+-]+$',
+        regex=r'^[a-zA-Z0-9_.@+-]+$',
         help_text=_("Required. 30 characters or fewer. Letters, digits and "
                     "@/./+/-/_ only."),
         error_messages={
@@ -86,7 +86,7 @@ class CustomUserChangeForm(forms.ModelForm):
     username = forms.RegexField(
         label=_("Username"),
         max_length=30,
-        regex=r"^[\w.@+-]+$",
+        regex=r"^[a-zA-Z0-9_.@+-]+$",
         help_text=_("Required. 30 characters or fewer. Letters, digits and "
                     "@/./+/-/_ only."),
         error_messages={

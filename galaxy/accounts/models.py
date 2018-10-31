@@ -16,7 +16,6 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from __future__ import unicode_literals
-import re
 
 from django.contrib.auth import models as auth_models
 
@@ -48,7 +47,7 @@ class CustomUser(auth_models.AbstractBaseUser,
         help_text=_('Required. 30 characters or fewer. Letters, numbers and '
                     '@/./+/-/_ characters'),
         validators=[
-            validators.RegexValidator(re.compile(r'^[\w.@+-]+$'),
+            validators.RegexValidator(r'^[a-zA-Z0-9_.@+-]+$',
                                       _('Enter a valid username.'),
                                       'invalid')
         ])
