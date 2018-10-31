@@ -105,7 +105,8 @@ def get_current_branch(directory=None):
         non-zero exit code.
     """
     cmd = ['git', 'rev-parse', '--abbrev-ref', 'HEAD']
-    return subprocess.check_output(cmd, cwd=directory).strip()
+    return subprocess.check_output(
+        cmd, cwd=directory, encoding='utf-8').strip()
 
 
 # See `git help log` for details

@@ -45,10 +45,9 @@ def get_git_version():
     :return str: A version string.
     :raises RuntimeError: If cannot determine git version string.
     """
+    cmd = ['git', 'describe', '--always', '--match', TAG_PREFIX + '*']
     try:
-        tag_info = subprocess.check_output([
-            'git', 'describe', '--always', '--match', TAG_PREFIX + '*']
-        ).decode().strip()
+        tag_info = subprocess.check_output(cmd, encoding='utf-8').strip()
     except subprocess.CalledProcessError:
         raise RuntimeError('Cannot determine git version string.')
 

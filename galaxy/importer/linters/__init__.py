@@ -55,7 +55,8 @@ class Flake8Linter(BaseLinter):
                '--max-line-length', str(FLAKE8_MAX_LINE_LENGTH),
                '--'] + paths
         logger.debug('CMD: ' + ' '.join(cmd))
-        proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
+        proc = subprocess.Popen(
+            cmd, cwd=self.root, stdout=subprocess.PIPE, encoding='utf-8')
         for line in proc.stdout:
             yield line.strip()
         proc.wait()
@@ -88,7 +89,8 @@ class YamlLinter(BaseLinter):
     def _check_files(self, paths):
         cmd = [self.cmd, '-f', 'parsable', '-c', self.config, '--'] + paths
         logger.debug('CMD: ' + ' '.join(cmd))
-        proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
+        proc = subprocess.Popen(
+            cmd, cwd=self.root, stdout=subprocess.PIPE, encoding='utf-8')
         for line in proc.stdout:
             yield line.strip()
         proc.wait()
@@ -129,7 +131,8 @@ class AnsibleLinter(BaseLinter):
             if paths == ['.'] else
             '/'.join((self.root, paths[0]))
         )
-        proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE)
+        proc = subprocess.Popen(
+            cmd, cwd=cwd, stdout=subprocess.PIPE, encoding='tuf-8')
 
         for line in proc.stdout:
             line_list = line.split(' ')
