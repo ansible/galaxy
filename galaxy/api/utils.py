@@ -18,7 +18,6 @@
 import hashlib
 import logging
 import re
-import subprocess
 import sys
 
 from rest_framework.exceptions import ParseError, PermissionDenied
