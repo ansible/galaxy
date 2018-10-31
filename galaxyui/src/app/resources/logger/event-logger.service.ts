@@ -10,11 +10,7 @@ import { InfluxSession } from './influx-session';
 
 @Injectable()
 export class EventLoggerService {
-    constructor(
-        private http: HttpClient,
-        private router: Router,
-        private activatedRoute: ActivatedRoute,
-    ) {
+    constructor(private http: HttpClient, private router: Router) {
         const session = document.cookie.match(
             new RegExp('(^| )influx_session=([^;]+)'),
         );
@@ -68,14 +64,13 @@ export class EventLoggerService {
 
     logSearchQuery(searchParams: Object, numberOfResults: number) {
         const measurement = this.getBaseMeasurement('search_query');
+
+        delete measurement.tags;
+
         measurement.fields['number_of_results'] = numberOfResults;
 
         for (const key of Object.keys(searchParams)) {
-            if (key === 'keywords' || key === 'namespaces') {
-                measurement.fields[key] = searchParams[key];
-            } else {
-                measurement.tags[key] = searchParams[key];
-            }
+            measurement.fields[key] = searchParams[key];
         }
 
         this.postData(measurement);
@@ -91,6 +86,9 @@ export class EventLoggerService {
         contentID: number,
     ) {
         const measurement = this.getBaseMeasurement('search_click');
+
+        delete measurement.tags;
+
         measurement.fields['content_clicked'] = contentClicked;
         measurement.fields['position_in_results'] = position;
         measurement.fields['download_rank'] = downloadRank;
@@ -99,11 +97,7 @@ export class EventLoggerService {
         measurement.fields['content_clicked_id'] = contentID;
 
         for (const key of Object.keys(searchParams)) {
-            if (key === 'keywords' || key === 'namespaces') {
-                measurement.fields[key] = searchParams[key];
-            } else {
-                measurement.tags[key] = searchParams[key];
-            }
+            measurement.fields[key] = searchParams[key];
         }
         this.postData(measurement);
     }
