@@ -50,7 +50,7 @@ class NotificationManger(object):
     def render_email(self, context):
         text = self.email_template.format(**context)
         footer = email_footer_template.format(
-            preferences_link='{}/preferences/'.format(self.url)
+            preferences_link='{}/me/preferences/'.format(self.url)
         )
 
         return text + footer
