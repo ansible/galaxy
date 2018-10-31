@@ -142,7 +142,7 @@ class RepositoryList(views.ListCreateAPIView):
             repository = models.Repository.objects.create(**data)
         except Exception as exc:
             raise APIException('Error creating repository: {0}'
-                               .format(exc.message))
+                               .format(exc))
 
         for owner_pk in owners:
             try:
@@ -222,8 +222,7 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
                     updated.append(k)
             instance.save()
         except Exception as exc:
-            raise APIException('Error updating repository: {0}'
-                               .format(exc.message))
+            raise APIException('Error updating repository: {0}'.format(exc))
 
         for owner_pk in owners:
             try:

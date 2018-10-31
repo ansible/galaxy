@@ -110,7 +110,7 @@ def refresh_existing_user_repos(token, github_user):
                 db_repo.save()
         except Exception as e:
             LOG.error(u"Error: refresh_existing_user_repos {0} - {1}"
-                      .format(old_name, e.message))
+                      .format(old_name, e))
     LOG.info("Finished refresh_existing_user_repos for GitHub user {0}"
              .format(github_user.login))
 
