@@ -6,7 +6,7 @@ import { PreferencesComponent } from './preferences.component';
 
 const preferencesRoutes: Routes = [
     {
-        path: 'preferences',
+        path: 'me/preferences',
         component: PreferencesComponent,
     },
 ];
