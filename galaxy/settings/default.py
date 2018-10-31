@@ -438,7 +438,7 @@ INFLUX_DB_UI_EVENTS_DB_NAME = 'galaxy_metrics'
 # Number of data points to buffer before galaxy writes them to influx.
 # Higher numbers mean more efficient influx inserts, but it also means that
 # more data will potentially be lost when galaxy restarts.
-INFLUX_INSERT_BUFFER_COUNT = 5
+INFLUX_INSERT_BUFFER_COUNT = 1
 
 
 # =========================================================

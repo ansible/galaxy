@@ -24,8 +24,8 @@ from galaxy.main.models import Content
 
 from .views import filter_role_queryset
 from .base_views import ListAPIView, RetrieveAPIView
-from ..serializers import RoleListSerializer, RoleDetailSerializer
-
+# from ..serializers import RoleListSerializer, RoleDetailSerializer
+from galaxy.api import serializers
 
 __all__ = [
     'RoleList',
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 class RoleList(ListAPIView):
     model = Content
-    serializer_class = RoleListSerializer
+    serializer_class = serializers.RoleListSerializer
     throttle_scope = 'download_count'
 
     def list(self, request, *args, **kwargs):
@@ -61,6 +61,33 @@ class RoleList(ListAPIView):
                 if content is not None:
                     content.repository.download_count += 1
                     content.repository.save()
+                    influx = serializers.\
+                        InfluxInternalTypes['content_download']
+
+                    name = '{}.{}'.format(
+                        content.namespace.name,
+                        content.repository.name
+                    )
+
+                    data = {
+                        'fields': {
+                            'content_name': name,
+                            'content_id': content.id,
+                            'download_count': content.repository.download_count
+                        }
+                    }
+
+                    print data
+
+                    try:
+                        dl_data = influx(data=data)
+                        if dl_data.is_valid(raise_exception=True):
+                            dl_data.save()
+
+                    except Exception as e:
+                        # TODO: find a way of logging influx errors without
+                        # crashing execution
+                        print e
 
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
@@ -78,7 +105,7 @@ class RoleList(ListAPIView):
 
 class RoleDetail(RetrieveAPIView):
     model = Content
-    serializer_class = RoleDetailSerializer
+    serializer_class = serializers.RoleDetailSerializer
 
     def get_object(self, qs=None):
         obj = super(RoleDetail, self).get_object()

@@ -25,7 +25,8 @@ from galaxy.main import models
 
 __all__ = (
     'InfluxSessionSerializer',
-    'InfluxTypes',
+    'InfluxAPITypes',
+    'InfluxInternalTypes'
 )
 
 
@@ -62,13 +63,12 @@ influx_insert_buffer = []
 
 
 class BaseMeasurement(drf_serializers.Serializer):
-    measurement = drf_serializers.CharField()
+    measurement = drf_serializers.SerializerMethodField()
 
     def save(self):
         global influx_insert_buffer
-        if len(influx_insert_buffer) < settings.INFLUX_INSERT_BUFFER_COUNT:
-            influx_insert_buffer.append(self.data)
-        else:
+        influx_insert_buffer.append(self.data)
+        if len(influx_insert_buffer) >= settings.INFLUX_INSERT_BUFFER_COUNT:
             client = influxdb.InfluxDBClient(
                 host=settings.INFLUX_DB_HOST,
                 port=settings.INFLUX_DB_PORT,
@@ -119,6 +119,9 @@ class BaseFields(drf_serializers.Serializer):
 
 # Page Load
 class PageLoadMeasurementSerializer(BaseMeasurement):
+    def get_measurement(self, obj):
+        return 'page_load'
+
     class Tags(BaseTags):
         from_component = drf_serializers.CharField(allow_blank=True)
 
@@ -132,6 +135,10 @@ class PageLoadMeasurementSerializer(BaseMeasurement):
 
 # Search
 class SearchQueryMeasurementSerializer(BaseMeasurement):
+    def get_measurement(self, obj):
+        return 'search_query'
+
+
     # This doen't use any tags becase the number of possible combinations of
     # search parameters exceeds influxdb's ability to index them
     class Fields(BaseFields):
@@ -158,9 +165,12 @@ class SearchQueryMeasurementSerializer(BaseMeasurement):
 
 
 class SearchLinkMeasurementSerializer(BaseMeasurement):
+    def get_measurement(self, obj):
+        return 'search_click'
+
     # This doen't use any tags becase the number of possible combinations of
     # search parameters exceeds influxdb's ability to index them
-    class Fields(BaseFields):
+    class Fields(BaseTags):
         cloud_platforms = drf_serializers.CharField(
             required=False, allow_blank=True
         )
@@ -186,6 +196,9 @@ class SearchLinkMeasurementSerializer(BaseMeasurement):
 
 # UI Interactions
 class ButtonClickMeasurementSerializer(BaseMeasurement):
+    def get_measurement(self, obj):
+        return 'button_click'
+
     class Fields(BaseFields):
         name = drf_serializers.CharField()
 
@@ -194,6 +207,9 @@ class ButtonClickMeasurementSerializer(BaseMeasurement):
 
 
 class LinkClickMeasurementSerializer(BaseMeasurement):
+    def get_measurement(self, obj):
+        return 'link_click'
+
     class Fields(BaseFields):
         name = drf_serializers.CharField()
         href = drf_serializers.CharField(allow_blank=True)
@@ -202,7 +218,55 @@ class LinkClickMeasurementSerializer(BaseMeasurement):
     fields = Fields()
 
 
-InfluxTypes = {
+# Content Metrics
+class ContentDownloadMeasurementSerializer(BaseMeasurement):
+    def get_measurement(self, obj):
+        return 'content_download'
+
+    class Fields(drf_serializers.Serializer):
+        content_name = drf_serializers.CharField()
+        content_id = drf_serializers.IntegerField()
+        download_count = drf_serializers.IntegerField()
+
+    fields = Fields()
+
+
+class ContentScoreMeasurementSerializer(BaseMeasurement):
+    def get_measurement(self, obj):
+        return 'content_score'
+
+    class Fields(drf_serializers.Serializer):
+        content_name = drf_serializers.CharField()
+        content_id = drf_serializers.IntegerField()
+        community_score = drf_serializers.FloatField()
+        content_score = drf_serializers.FloatField()
+        metadata_score = drf_serializers.FloatField()
+        compatibility_score = drf_serializers.FloatField()
+
+    fields = Fields()
+
+
+class ContentFollowerMeasurementSerializer(BaseMeasurement):
+    def get_measurement(self, obj):
+        return 'content_follower'
+
+    class Fields(drf_serializers.Serializer):
+        content_name = drf_serializers.CharField()
+        content_id = drf_serializers.IntegerField()
+        follower_count = drf_serializers.IntegerField()
+
+    fields = Fields()
+
+
+# Serializers that are not meant to be writeable via REST calls
+InfluxInternalTypes = {
+    'content_download': ContentDownloadMeasurementSerializer,
+    'content_score': ContentScoreMeasurementSerializer,
+    'content_follower': ContentFollowerMeasurementSerializer
+}
+
+# Serializers that allow inserts via REST calls
+InfluxAPITypes = {
     'page_load': PageLoadMeasurementSerializer,
     'search_query': SearchQueryMeasurementSerializer,
     'search_click': SearchLinkMeasurementSerializer,

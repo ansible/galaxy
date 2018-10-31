@@ -104,8 +104,8 @@ class InfluxMetrics(views.APIView):
     def load_serializer(self, request):
         if 'measurement' not in request.data:
             return None
-        if request.data['measurement'] in serializers.InfluxTypes:
-            serializer_type = serializers.InfluxTypes[
+        if request.data['measurement'] in serializers.InfluxAPITypes:
+            serializer_type = serializers.InfluxAPITypes[
                 request.data['measurement']
             ]
             return serializer_type(data=request.data)
