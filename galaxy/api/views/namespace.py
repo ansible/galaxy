@@ -51,7 +51,7 @@ def check_basic(data, errors):
     name = data.get('name')
     if not name:
         errors['name'] = "Attribute 'name' is required"
-    elif not re.match(r'^[\w]+$', name):
+    elif not re.match(r'^[a-zA-Z0-9_]+$', name):
         # Allow only names containing word chars
         errors['name'] = "Name can only contain [A-Za-z0-9_]"
     elif(len(name) <= 2):
