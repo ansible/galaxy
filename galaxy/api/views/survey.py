@@ -107,10 +107,6 @@ def update_community_score(repo):
     repo.community_score = score
     repo.save()
 
-    update_metrics(repo)
-
-
-def update_metrics(repo):
     namespace = repo.provider_namespace.namespace.name
 
     fields = {
