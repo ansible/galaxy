@@ -32,6 +32,55 @@ class ActiveUserPreferencesView(base_views.RetrieveUpdateAPIView):
         )
         return obj
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        serializer = self.get_serializer(
+            instance=instance,
+            data=request.data
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        repos = set(serializer.validated_data['repositories_followed']) ^ \
+            set(instance.repositories_followed.all())
+
+        authors = set(serializer.validated_data['namespaces_followed']) ^ \
+            set(instance.namespaces_followed.all())
+
+        serializer.save()
+
+        for repo in repos:
+            count = models.UserPreferences.objects.filter(
+                repositories_followed=repo).count()
+            name = repo.provider_namespace.namespace.name
+            fields = {
+                'content_name': '{}.{}'.format(name, repo.name),
+                'content_id': repo.id,
+                'follower_count': count,
+            }
+
+            serializers.influx_insert_internal({
+                'measurement': 'content_follower',
+                'fields': fields
+            })
+
+        for author in authors:
+            count = models.UserPreferences.objects.filter(
+                namespaces_followed=author).count()
+            fields = {
+                'author_name': author.name,
+                'author_id': author.id,
+                'follower_count': count,
+            }
+
+            serializers.influx_insert_internal({
+                'measurement': 'author_follower',
+                'fields': fields
+            })
+
+        return Response(serializer.data)
+
 
 class ActiveUserNotificationsView(base_views.ListAPIView):
     model = models.UserNotification

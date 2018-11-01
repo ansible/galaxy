@@ -26,7 +26,7 @@ from galaxy.main import models
 __all__ = (
     'InfluxSessionSerializer',
     'InfluxAPITypes',
-    'InfluxInternalTypes'
+    'influx_insert_internal'
 )
 
 
@@ -238,10 +238,14 @@ class ContentScoreMeasurementSerializer(BaseMeasurement):
     class Fields(drf_serializers.Serializer):
         content_name = drf_serializers.CharField()
         content_id = drf_serializers.IntegerField()
-        community_score = drf_serializers.FloatField()
-        content_score = drf_serializers.FloatField()
-        metadata_score = drf_serializers.FloatField()
-        compatibility_score = drf_serializers.FloatField()
+        community_score = drf_serializers.FloatField(
+            required=False,
+            allow_null=True,
+        )
+        quality_score = drf_serializers.FloatField(
+            required=False,
+            allow_null=True,
+        )
 
     fields = Fields()
 
@@ -258,14 +262,44 @@ class ContentFollowerMeasurementSerializer(BaseMeasurement):
     fields = Fields()
 
 
+class AuthorFollowerMeasurementSerializer(BaseMeasurement):
+    def get_measurement(self, obj):
+        return 'author_follower'
+
+    class Fields(drf_serializers.Serializer):
+        author_name = drf_serializers.CharField()
+        author_id = drf_serializers.IntegerField()
+        follower_count = drf_serializers.IntegerField()
+
+    fields = Fields()
+
+
+def influx_insert_internal(data):
+    if data['measurement'] not in InfluxInternalTypes:
+        # TODO: LOG ERROR
+        return
+    influx = InfluxInternalTypes[data['measurement']]
+    try:
+        dl_data = influx(data=data)
+        if dl_data.is_valid(raise_exception=True):
+            dl_data.save()
+
+    except Exception as e:
+        # TODO: find a way of logging influx errors without
+        # crashing execution
+        print e
+
+
 # Serializers that are not meant to be writeable via REST calls
 InfluxInternalTypes = {
     'content_download': ContentDownloadMeasurementSerializer,
     'content_score': ContentScoreMeasurementSerializer,
-    'content_follower': ContentFollowerMeasurementSerializer
+    'content_follower': ContentFollowerMeasurementSerializer,
+    'author_follower': AuthorFollowerMeasurementSerializer
 }
 
-# Serializers that allow inserts via REST calls
+# Serializers that allow inserts via REST calls. Anything in here is
+# automatically loaded into the events API endpoint.
 InfluxAPITypes = {
     'page_load': PageLoadMeasurementSerializer,
     'search_query': SearchQueryMeasurementSerializer,

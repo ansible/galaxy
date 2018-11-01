@@ -106,3 +106,21 @@ def update_community_score(repo):
 
     repo.community_score = score
     repo.save()
+
+    update_metrics(repo)
+
+
+def update_metrics(repo):
+    namespace = repo.provider_namespace.namespace.name
+
+    fields = {
+        'content_name': '{}.{}'.format(namespace, repo.name),
+        'content_id': repo.id,
+        'community_score': repo.community_score,
+        'quality_score': repo.quality_score,
+    }
+
+    serializers.influx_insert_internal({
+        'measurement': 'content_score',
+        'fields': fields
+    })

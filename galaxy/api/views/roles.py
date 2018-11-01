@@ -61,8 +61,6 @@ class RoleList(ListAPIView):
                 if content is not None:
                     content.repository.download_count += 1
                     content.repository.save()
-                    influx = serializers.\
-                        InfluxInternalTypes['content_download']
 
                     name = '{}.{}'.format(
                         content.namespace.name,
@@ -70,24 +68,15 @@ class RoleList(ListAPIView):
                     )
 
                     data = {
+                        'measurement': 'content_download',
                         'fields': {
                             'content_name': name,
-                            'content_id': content.id,
+                            'content_id': content.repository.id,
                             'download_count': content.repository.download_count
                         }
                     }
 
-                    print data
-
-                    try:
-                        dl_data = influx(data=data)
-                        if dl_data.is_valid(raise_exception=True):
-                            dl_data.save()
-
-                    except Exception as e:
-                        # TODO: find a way of logging influx errors without
-                        # crashing execution
-                        print e
+                    serializers.influx_insert_internal(data)
 
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
