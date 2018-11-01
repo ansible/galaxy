@@ -132,7 +132,9 @@ class PageLoadMeasurementSerializer(BaseMeasurement):
 
 # Search
 class SearchQueryMeasurementSerializer(BaseMeasurement):
-    class Tags(BaseTags):
+    # This doen't use any tags becase the number of possible combinations of
+    # search parameters exceeds influxdb's ability to index them
+    class Fields(BaseFields):
         cloud_platforms = drf_serializers.CharField(
             required=False, allow_blank=True
         )
@@ -145,8 +147,6 @@ class SearchQueryMeasurementSerializer(BaseMeasurement):
         platforms = drf_serializers.CharField(required=False, allow_blank=True)
         tags = drf_serializers.CharField(required=False, allow_blank=True)
         order_by = drf_serializers.CharField(required=False, allow_blank=True)
-
-    class Fields(BaseFields):
         keywords = drf_serializers.CharField(required=False, allow_blank=True)
         namespaces = drf_serializers.CharField(
             required=False,
@@ -154,12 +154,13 @@ class SearchQueryMeasurementSerializer(BaseMeasurement):
         )
         number_of_results = drf_serializers.IntegerField()
 
-    tags = Tags()
     fields = Fields()
 
 
 class SearchLinkMeasurementSerializer(BaseMeasurement):
-    class Tags(BaseTags):
+    # This doen't use any tags becase the number of possible combinations of
+    # search parameters exceeds influxdb's ability to index them
+    class Fields(BaseFields):
         cloud_platforms = drf_serializers.CharField(
             required=False, allow_blank=True
         )
@@ -172,8 +173,6 @@ class SearchLinkMeasurementSerializer(BaseMeasurement):
         platforms = drf_serializers.CharField(required=False, allow_blank=True)
         tags = drf_serializers.CharField(required=False, allow_blank=True)
         order_by = drf_serializers.CharField(required=False, allow_blank=True)
-
-    class Fields(BaseFields):
         content_clicked = drf_serializers.CharField()
         content_clicked_id = drf_serializers.IntegerField()
         position_in_results = drf_serializers.IntegerField()
@@ -182,7 +181,6 @@ class SearchLinkMeasurementSerializer(BaseMeasurement):
         relevance = drf_serializers.FloatField()
         keywords = drf_serializers.CharField(required=False, allow_blank=True)
 
-    tags = Tags()
     fields = Fields()
 
 
