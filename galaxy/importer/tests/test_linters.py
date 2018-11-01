@@ -32,7 +32,7 @@ if x == 3 or y == 4:
 
 
 def test_flake8_ok():
-    with tempfile.NamedTemporaryFile() as fp:
+    with tempfile.NamedTemporaryFile('w') as fp:
         fp.write(FLAKE8_TEST_FILE_OK)
         fp.flush()
 
@@ -52,7 +52,7 @@ if (
 
 
 def test_flake8_fail():
-    with tempfile.NamedTemporaryFile() as fp:
+    with tempfile.NamedTemporaryFile('w') as fp:
         fp.write(FLAKE8_TEST_FILE_FAIL)
         fp.flush()
 
@@ -61,7 +61,7 @@ def test_flake8_fail():
 
         expected = [
             "{0}:3:9: F821 undefined name 'x'",
-            '{0}:5:9: W504 line break after binary operator',
+            "{0}:5:9: W504 line break after binary operator",
             "{0}:6:9: F821 undefined name 'y'",
             "{0}:7:1: E101 indentation contains mixed spaces and tabs",
             "{0}:7:1: W191 indentation contains tabs",
@@ -78,7 +78,7 @@ x:
 
 
 def test_yamllint_ok():
-    with tempfile.NamedTemporaryFile() as fp:
+    with tempfile.NamedTemporaryFile('w') as fp:
         fp.write(YAMLLINT_TEST_FILE_OK)
         fp.flush()
 
@@ -95,7 +95,7 @@ x:
 
 
 def test_yamllint_fail():
-    with tempfile.NamedTemporaryFile() as fp:
+    with tempfile.NamedTemporaryFile('w') as fp:
         fp.write(YAMLLINT_TEST_FILE_FAIL)
         fp.flush()
 
