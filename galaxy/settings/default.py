@@ -19,8 +19,6 @@
 import os
 
 import djcelery
-import prometheus_client
-
 
 djcelery.setup_loader()
 
