@@ -143,7 +143,6 @@ class SearchQueryMeasurementSerializer(BaseMeasurement):
     def get_measurement(self, obj):
         return 'search_query'
 
-
     # This doen't use any tags becase the number of possible combinations of
     # search parameters exceeds influxdb's ability to index them
     class Fields(BaseFields):
