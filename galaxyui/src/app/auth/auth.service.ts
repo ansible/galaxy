@@ -4,6 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
 
+import { PreferencesService } from '../resources/preferences/preferences.service';
+
 import { map } from 'rxjs/operators';
 
 import {
@@ -28,7 +30,11 @@ export interface IMe {
 
 @Injectable()
 export class AuthService implements CanActivate {
-    constructor(private http: HttpClient, private router: Router) {}
+    constructor(
+        private http: HttpClient,
+        private router: Router,
+        private preferencesService: PreferencesService,
+    ) {}
 
     headers: HttpHeaders = new HttpHeaders().set(
         'Content-Type',
@@ -52,6 +58,7 @@ export class AuthService implements CanActivate {
 
     logout(): Observable<any> {
         this.meCache = null;
+        this.preferencesService.resetCache();
         return this.http
             .post('/api/v1/account/logout', {}, { headers: this.headers })
             .pipe(
