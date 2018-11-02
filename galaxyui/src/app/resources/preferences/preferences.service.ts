@@ -38,6 +38,10 @@ export class PreferencesService extends ServiceBase {
         );
     }
 
+    resetCache() {
+        this.preferences = null;
+    }
+
     save(preferences: UserPreferences) {
         let httpResult: Observable<UserPreferences>;
         httpResult = this.http.put<UserPreferences>(
