@@ -15,6 +15,9 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import logging
+import traceback
+
 from . import serializers
 from rest_framework import serializers as drf_serializers
 from django.conf import settings
@@ -22,6 +25,8 @@ from django.conf import settings
 import influxdb
 
 from galaxy.main import models
+
+logger = logging.getLogger(__name__)
 
 __all__ = (
     'InfluxSessionSerializer',
@@ -276,7 +281,10 @@ class AuthorFollowerMeasurementSerializer(BaseMeasurement):
 
 def influx_insert_internal(data):
     if data['measurement'] not in InfluxInternalTypes:
-        # TODO: LOG ERROR
+        log_error(
+            'Measurement "{}" not supported'.format(data['measurement']),
+            data
+        )
         return
     influx = InfluxInternalTypes[data['measurement']]
     try:
@@ -285,9 +293,20 @@ def influx_insert_internal(data):
             dl_data.save()
 
     except Exception as e:
-        # TODO: find a way of logging influx errors without
-        # crashing execution
-        print e
+        log_error(str(e), data)
+
+
+def log_error(message, measurement):
+    stack = ''
+
+    for line in traceback.format_stack()[0:-1]:
+        stack += str(line)
+
+    msg = 'InfluxDB Error: {}\n'.format(message)
+    msg += 'Measurement: {}\n'.format(str(measurement))
+    msg += 'Stack Trace: \n{}'.format(stack)
+
+    logger.error(msg)
 
 
 # Serializers that are not meant to be writeable via REST calls
