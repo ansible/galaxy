@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default='', max_length=255, blank=True
+                        default=b'', max_length=255, blank=True
                     ),
                 ),
                 ('active', models.BooleanField(default=True, db_index=True)),
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             name='videos',
             field=models.ManyToManyField(
                 related_name='videos',
-                verbose_name='videos',
+                verbose_name=b'videos',
                 editable=False,
                 to='main.Video',
                 blank=True,

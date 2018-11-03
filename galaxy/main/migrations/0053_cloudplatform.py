@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default='', max_length=255, blank=True
+                        default=b'', max_length=255, blank=True
                     ),
                 ),
                 ('active', models.BooleanField(default=True, db_index=True)),
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
             name='cloud_platforms',
             field=models.ManyToManyField(
                 related_name='roles',
-                verbose_name='Cloud Platforms',
+                verbose_name=b'Cloud Platforms',
                 editable=False,
                 to='main.CloudPlatform',
                 blank=True,

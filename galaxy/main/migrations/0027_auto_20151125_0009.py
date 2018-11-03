@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='role',
             name='imported',
-            field=models.DateTimeField(null=True, verbose_name='Last Import'),
+            field=models.DateTimeField(null=True, verbose_name=b'Last Import'),
         ),
         migrations.AlterIndexTogether(
             name='repository',

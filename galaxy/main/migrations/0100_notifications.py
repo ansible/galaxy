@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='notifications',
                 to='main.ImportTask',
-                verbose_name='Tasks'),
+                verbose_name=b'Tasks'),
         ),
         migrations.AddField(
             model_name='notification',
@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='notifications',
                 to='main.ImportTask',
-                verbose_name='Tasks'),
+                verbose_name=b'Tasks'),
         ),
         migrations.AlterField(
             model_name='notification',

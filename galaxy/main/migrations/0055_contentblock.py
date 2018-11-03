@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
                 ('name', models.SlugField(unique=True)),
                 (
                     'content',
-                    models.TextField(verbose_name='content', blank=True),
+                    models.TextField(verbose_name=b'content', blank=True),
                 ),
             ],
             options={'abstract': False},

@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 max_length=256,
                 null=True,
-                verbose_name='Issue Tracker URL',
+                verbose_name=b'Issue Tracker URL',
             ),
         ),
         migrations.RunSQL(sql=UPDATE_REPOSITORY),

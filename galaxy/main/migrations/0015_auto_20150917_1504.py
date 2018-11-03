@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
                 editable=False,
                 to='main.Category',
                 blank=True,
-                help_text='',
-                verbose_name='Categories',
+                help_text=b'',
+                verbose_name=b'Categories',
             ),
         ),
         migrations.AlterField(
@@ -29,8 +29,8 @@ class Migration(migrations.Migration):
                 editable=False,
                 to='main.Tag',
                 blank=True,
-                help_text='',
-                verbose_name='Tags',
+                help_text=b'',
+                verbose_name=b'Tags',
             ),
         ),
     ]
