@@ -17,8 +17,9 @@
 
 from __future__ import unicode_literals
 
-from django.contrib.auth import models as auth_models
+import re
 
+from django.contrib.auth import models as auth_models
 from django.core import validators
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -47,7 +48,7 @@ class CustomUser(auth_models.AbstractBaseUser,
         help_text=_('Required. 30 characters or fewer. Letters, numbers and '
                     '@/./+/-/_ characters'),
         validators=[
-            validators.RegexValidator(r'^[a-zA-Z0-9_.@+-]+$',
+            validators.RegexValidator(re.compile(r'^[a-zA-Z0-9_.@+-]+$'),
                                       _('Enter a valid username.'),
                                       'invalid')
         ])
