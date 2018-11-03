@@ -13,13 +13,13 @@ class Migration(migrations.Migration):
             model_name='role',
             name='role_type',
             field=models.CharField(
-                default='ANS',
+                default=b'ANS',
                 max_length=3,
                 editable=False,
                 choices=[
-                    ('ANS', 'Ansible'),
-                    ('CON', 'Container Role'),
-                    ('APP', 'Container App'),
+                    (b'ANS', b'Ansible'),
+                    (b'CON', b'Container Role'),
+                    (b'APP', b'Container App'),
                 ],
             ),
         )

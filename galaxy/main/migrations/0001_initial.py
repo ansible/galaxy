@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default='', max_length=255, blank=True
+                        default=b'', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default='', max_length=255, blank=True
+                        default=b'', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
                     'release',
                     models.CharField(
                         max_length=50,
-                        verbose_name='Distribution Release Version',
+                        verbose_name=b'Distribution Release Version',
                     ),
                 ),
             ],
@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default='', max_length=255, blank=True
+                        default=b'', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -107,22 +107,22 @@ class Migration(migrations.Migration):
                 (
                     'github_user',
                     models.CharField(
-                        max_length=256, verbose_name='Github Username'
+                        max_length=256, verbose_name=b'Github Username'
                     ),
                 ),
                 (
                     'github_repo',
                     models.CharField(
-                        max_length=256, verbose_name='Github Repository'
+                        max_length=256, verbose_name=b'Github Repository'
                     ),
                 ),
-                ('readme', models.TextField(default='', blank=True)),
+                ('readme', models.TextField(default=b'', blank=True)),
                 (
                     'min_ansible_version',
                     models.CharField(
                         max_length=10,
                         null=True,
-                        verbose_name='Minimum Ansible Version Required',
+                        verbose_name=b'Minimum Ansible Version Required',
                         blank=True,
                     ),
                 ),
@@ -131,7 +131,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         max_length=256,
                         null=True,
-                        verbose_name='Issue Tracker URL',
+                        verbose_name=b'Issue Tracker URL',
                         blank=True,
                     ),
                 ),
@@ -139,7 +139,7 @@ class Migration(migrations.Migration):
                     'license',
                     models.CharField(
                         max_length=30,
-                        verbose_name='License (optional)',
+                        verbose_name=b'License (optional)',
                         blank=True,
                     ),
                 ),
@@ -148,7 +148,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         max_length=50,
                         null=True,
-                        verbose_name='Company Name (optional)',
+                        verbose_name=b'Company Name (optional)',
                         blank=True,
                     ),
                 ),
@@ -181,8 +181,8 @@ class Migration(migrations.Migration):
                         editable=False,
                         to='main.Category',
                         blank=True,
-                        help_text='',
-                        verbose_name='Categories',
+                        help_text=b'',
+                        verbose_name=b'Categories',
                     ),
                 ),
                 (
@@ -210,8 +210,8 @@ class Migration(migrations.Migration):
                         editable=False,
                         to='main.Platform',
                         blank=True,
-                        help_text='',
-                        verbose_name='Supported Platforms',
+                        help_text=b'',
+                        verbose_name=b'Supported Platforms',
                     ),
                 ),
             ],
@@ -232,7 +232,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default='', max_length=255, blank=True
+                        default=b'', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -241,7 +241,7 @@ class Migration(migrations.Migration):
                 (
                     'celery_task_id',
                     models.CharField(
-                        default='',
+                        default=b'',
                         max_length=100,
                         editable=False,
                         db_index=True,
@@ -252,12 +252,12 @@ class Migration(migrations.Migration):
                 (
                     'state',
                     models.CharField(
-                        default='', max_length=20, db_index=True, blank=True
+                        default=b'', max_length=20, db_index=True, blank=True
                     ),
                 ),
                 (
                     'status_message',
-                    models.CharField(default='', max_length=512, blank=True),
+                    models.CharField(default=b'', max_length=512, blank=True),
                 ),
                 (
                     'role',
@@ -286,7 +286,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default='', max_length=255, blank=True
+                        default=b'', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -353,7 +353,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default='', max_length=255, blank=True
+                        default=b'', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),

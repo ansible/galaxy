@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             model_name='repository',
             name='commit_message',
             field=galaxy.main.fields.TruncatingCharField(
-                default='', max_length=256, blank=True
+                default=b'', max_length=256, blank=True
             ),
         )
     ]

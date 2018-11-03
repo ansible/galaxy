@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
             model_name='role',
             name='commit_created',
             field=models.DateTimeField(
-                null=True, verbose_name='Laste Commit DateTime'
+                null=True, verbose_name=b'Laste Commit DateTime'
             ),
         )
     ]

@@ -13,21 +13,21 @@ class Migration(migrations.Migration):
             model_name='role',
             name='readme_html',
             field=models.TextField(
-                default='', verbose_name='README HTML', blank=True
+                default=b'', verbose_name=b'README HTML', blank=True
             ),
         ),
         migrations.AlterField(
             model_name='namespace',
             name='namespace',
             field=models.CharField(
-                unique=True, max_length=256, verbose_name='GitHub namespace'
+                unique=True, max_length=256, verbose_name=b'GitHub namespace'
             ),
         ),
         migrations.AlterField(
             model_name='role',
             name='readme',
             field=models.TextField(
-                default='', verbose_name='README raw content', blank=True
+                default=b'', verbose_name=b'README raw content', blank=True
             ),
         ),
     ]

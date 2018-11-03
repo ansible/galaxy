@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default='', max_length=255, blank=True
+                        default=b'', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
             name='tags',
             field=models.ManyToManyField(
                 related_name='tags',
-                verbose_name='Tags',
+                verbose_name=b'Tags',
                 editable=False,
                 to='main.Tag',
                 blank=True,

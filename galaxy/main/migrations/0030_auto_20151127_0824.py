@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default='', max_length=255, blank=True
+                        default=b'', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -39,13 +39,13 @@ class Migration(migrations.Migration):
                 (
                     'github_user',
                     models.CharField(
-                        max_length=256, verbose_name='Github Username'
+                        max_length=256, verbose_name=b'Github Username'
                     ),
                 ),
                 (
                     'github_repo',
                     models.CharField(
-                        max_length=256, verbose_name='Github Repository'
+                        max_length=256, verbose_name=b'Github Repository'
                     ),
                 ),
                 (
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default='', max_length=255, blank=True
+                        default=b'', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -84,13 +84,13 @@ class Migration(migrations.Migration):
                 (
                     'github_user',
                     models.CharField(
-                        max_length=256, verbose_name='Github Username'
+                        max_length=256, verbose_name=b'Github Username'
                     ),
                 ),
                 (
                     'github_repo',
                     models.CharField(
-                        max_length=256, verbose_name='Github Repository'
+                        max_length=256, verbose_name=b'Github Repository'
                     ),
                 ),
                 (
