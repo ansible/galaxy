@@ -418,6 +418,8 @@ INFLUX_DB_UI_EVENTS_DB_NAME = 'galaxy_metrics'
 # more data will potentially be lost when galaxy restarts.
 INFLUX_INSERT_BUFFER_COUNT = 5
 
+GALAXY_METRICS_ENABLED = True
+
 
 # =========================================================
 # Domain Settings
