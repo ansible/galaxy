@@ -210,13 +210,6 @@ REQUEST_ID_RESPONSE_HEADER = "X-REQUEST-ID"
 LOGGING = _set_logging()
 
 # =========================================================
-# Metrics Settings
-# =========================================================
-
-METRICS_ENABLED = True
-
-
-# =========================================================
 # InfluxDB Settings
 # =========================================================
 INFLUX_DB_HOST = os.environ.get('GALAXY_INFLUX_DB_HOST', 'influxdb')
