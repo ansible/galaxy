@@ -5,7 +5,7 @@
 Mazer
 *****
 
-Mazer is a a new command-line tool for managing `Ansible <https://github.com/ansible/ansible>`_ content, and an open source project
+Mazer is a new command-line tool for managing `Ansible <https://github.com/ansible/ansible>`_ content, and an open source project
 on GitHub at `ansible/mazer <https://github.com/ansible/mazer>`_.
 
 .. note::
