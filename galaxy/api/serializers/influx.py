@@ -65,6 +65,9 @@ class BaseMeasurement(drf_serializers.Serializer):
     measurement = drf_serializers.CharField()
 
     def save(self):
+        if not settings.GALAXY_METRICS_ENABLED:
+            return
+
         global influx_insert_buffer
         if len(influx_insert_buffer) < settings.INFLUX_INSERT_BUFFER_COUNT:
             influx_insert_buffer.append(self.data)
