@@ -21,6 +21,7 @@ from collections import OrderedDict
 import six
 
 from django.db.models import F, Func, Value, Count, ExpressionWrapper, Q
+from django.db.models.functions import Coalesce
 from django.db.models import fields as db_fields
 from django.urls import reverse
 from django.contrib.postgres import search as psql_search
@@ -50,6 +51,7 @@ RANK_FUNCTION = 'ts_rank'
 RANK_NORMALIZATION = 32
 
 DOWNLOAD_RANK_MULTIPLIER = 0.4
+CONTENT_SCORE_MULTIPLIER = 0.2
 
 
 class ApiV1SearchView(base.APIView):
@@ -145,8 +147,25 @@ class ContentSearchView(base.ListAPIView):
             / (1 + F('download_count_ln'))
             * DOWNLOAD_RANK_MULTIPLIER
         )
+
+        # This is the worlds most complicated way of expressing:
+        # if both scores are available: use the average of the two
+        # if one score is available use it,
+        # if no scores are available use 0
+        # This works becauseCoalesce just picks the first value that isn't
+        # null, and any operation that contains a null, just returns as null.
+        # This format is neccesary because we are limited to using database
+        # functions for performance reasons.
+        score_rank_expr = (Coalesce(
+            (F('repository__quality_score')
+                + F('repository__community_score')) / 10,
+            F('repository__quality_score') / 5,
+            F('repository__community_score') / 5,
+            0) * CONTENT_SCORE_MULTIPLIER
+        )
+
         relevance_expr = ExpressionWrapper(
-            F('search_rank') + F('download_rank'),
+            F('search_rank') + F('download_rank') + F('score_rank'),
             output_field=db_fields.FloatField())
 
         return queryset.annotate(
@@ -155,6 +174,7 @@ class ContentSearchView(base.ListAPIView):
                 download_rank_expr,
                 output_field=db_fields.FloatField()),
             relevance=relevance_expr,
+            score_rank=score_rank_expr
         )
 
     @staticmethod
