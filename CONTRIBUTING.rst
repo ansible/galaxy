@@ -324,26 +324,6 @@ OK, go for it! Your Galaxy web site is available at: `http://localhost:8000 <htt
 Post build setup
 ----------------
 
-Metrics
-^^^^^^^
-
-From the root of the project tree, run ``make dev/setup-metrics`` to initialize
-InfluxDB and import data sources and dashboards for Prometheus and InfluxDB into Grafana.
-
-.. code-block:: console
-
-    $ make dev/setup-metrics
-
-Log into Grafana at `http://localhost:3000 <http://localhost:3000>`_ using the admin user with
-password ``admin``. Navigate to ``Galaxy Search Metrics - InfluxDB`` and
-``Galaxy Search Metrics - Prometheus`` dashboards.
-
-Search metrics are exposed at `http://localhost:8000/metrics <http://localhost:8000/metrics>`_. From
-there, the metrics are being scraped by Prometheus
-(`http://localhost:9090/ <http://localhost:9090/>`_). Prometheus serves as a short-term storage.
-For a long-term metrics storage, the metrics are being sent from
-Prometheus to InfluxDB.
-
 Create an admin user
 ^^^^^^^^^^^^^^^^^^^^
 

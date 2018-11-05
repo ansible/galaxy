@@ -34,7 +34,6 @@ from galaxy.accounts import models as auth_models
 from galaxy.api import filters
 from galaxy.api import serializers
 from galaxy.api.views import base_views as base
-from galaxy.common import metrics
 from galaxy.main import models
 
 __all__ = [
@@ -82,7 +81,6 @@ class ContentSearchView(base.ListAPIView):
                     repository__provider_namespace__namespace__active=True))
 
     # TODO(cutwater): Use serializer to parse request arguments
-    @metrics.send('search')
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 

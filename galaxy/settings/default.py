@@ -19,8 +19,6 @@
 import os
 
 import djcelery
-import prometheus_client
-
 
 djcelery.setup_loader()
 
@@ -298,26 +296,6 @@ If set to `None`, system temporary directory is used.
 """
 
 # =========================================================
-# Metrics Settings
-# =========================================================
-
-METRICS_ENABLED = False
-
-PROM_CNTR_SEARCH = prometheus_client.Counter(
-    'galaxy_search',
-    '',
-    ['keywords', 'platforms', 'cloud_platforms', 'tags'],
-    registry=prometheus_client.REGISTRY
-)
-
-PROM_CNTR_SEARCH_CRITERIA = prometheus_client.Counter(
-    'galaxy_search_criteria',
-    '',
-    ['ctype', 'cvalue'],
-    registry=prometheus_client.REGISTRY
-)
-
-# =========================================================
 # Logging
 # =========================================================
 
@@ -439,6 +417,8 @@ INFLUX_DB_UI_EVENTS_DB_NAME = 'galaxy_metrics'
 # Higher numbers mean more efficient influx inserts, but it also means that
 # more data will potentially be lost when galaxy restarts.
 INFLUX_INSERT_BUFFER_COUNT = 5
+
+GALAXY_METRICS_ENABLED = True
 
 
 # =========================================================
