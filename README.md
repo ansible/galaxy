@@ -24,7 +24,7 @@ For the [galaxy.ansible.com](https://galaxy.ansible.com) site, get alerted when 
 
 ## Contributing
 
- * If you're interested in jumping in and helping out, view the [contributing guide](./CONTRIBUTING.md).
+ * If you're interested in jumping in and helping out, view the [contributing guide](./CONTRIBUTING.rst).
  * Chat with us on irc.freenode.net: #ansible-galaxy
 
 ## Branch Information
