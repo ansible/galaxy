@@ -9,3 +9,8 @@ export class CommunityDetails {
     value: number;
     count: number;
 }
+
+export class NamespaceOwner {
+    username: string;
+    id: number;
+}

@@ -59,6 +59,7 @@
                         [showCommunityDetails]="showComunityDetails"
                         [showQualityDetails]="showQualityDetails"
                         [lastScored]="repository.quality_score_date"
+                        [namespaceOwners]="namespace.summary_fields.owners"
                         (emitDetails)="scoreDetailHandler($event)">
                     </card-community-survey>
                 </div>
