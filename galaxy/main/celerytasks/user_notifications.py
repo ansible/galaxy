@@ -29,8 +29,6 @@ LOG = logging.getLogger(__name__)
 
 
 class NotificationManger(object):
-    from_email = 'notifications@galaxy.ansible.com'
-
     def __init__(self, email_template, preferences_name, preferences_list,
                  subject, db_message=None, repo=None):
         self.email_template = email_template
@@ -77,7 +75,7 @@ class NotificationManger(object):
                 mail.send_mail(
                     self.subject,
                     email_message,
-                    self.from_email,
+                    settings.GALAXY_NOTIFICATION_EMAIL,
                     [email[0].email],
                     fail_silently=True
                 )
