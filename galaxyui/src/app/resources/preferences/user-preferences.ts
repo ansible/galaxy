@@ -6,6 +6,12 @@ export class UserPreferences {
         notify_content_release: boolean;
         notify_author_release: boolean;
         notify_galaxy_announce: boolean;
+        ui_notify_survey: boolean;
+        ui_notify_import_fail: boolean;
+        ui_notify_import_success: boolean;
+        ui_notify_content_release: boolean;
+        ui_notify_author_release: boolean;
+        ui_notify_galaxy_announce: boolean;
     };
 
     namespaces_followed: number[];

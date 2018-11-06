@@ -1253,21 +1253,27 @@ class UserPreferences(BaseModel):
     DEFAULT_PREFERENCES = {
         # Notify me when a user adds a survey for my content.
         'notify_survey': False,
+        'ui_notify_survey': True,
 
         # Notify me when an import fails.
         'notify_import_fail': True,
+        'ui_notify_import_fail': True,
 
         # Notify me when an import succeeds.
         'notify_import_success': False,
+        'ui_notify_import_success': True,
 
         # Notify me when a new release is available for content I'm following.
         'notify_content_release': True,
+        'ui_notify_content_release': True,
 
         # Notify me when an author I'm following creates new content.
         'notify_author_release': True,
+        'ui_notify_author_release': True,
 
         # Notify me when there is a Galaxy announcement.
-        'notify_galaxy_announce': True
+        'notify_galaxy_announce': True,
+        'ui_notify_galaxy_announce': True,
     }
 
     user = models.OneToOneField(

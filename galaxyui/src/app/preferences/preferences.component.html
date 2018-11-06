@@ -123,7 +123,7 @@
                     </div>
 
                     <div class="notification-col check">
-                        <input type="checkbox">
+                        <input type="checkbox"[(ngModel)]="preferences.preferences['ui_' + item.key]" (click)="updateNotifications()">
                     </div>
                 </div>
 
