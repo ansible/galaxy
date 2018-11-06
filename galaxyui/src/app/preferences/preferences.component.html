@@ -94,9 +94,39 @@
     <pfng-card [config]="notificationsCard" id="notificationCard" class="col-md-12">
         <div class="card-content">
             Would you like to receive a notification when...
+
+            <div class="notification-settings">
+
+                <div class="notification-row">
+                    <div class="notification-col description">
+
+                    </div>
+                    <div class="notification-col check">
+                        Email
+                    </div>
+
+                    <div class="notification-col check">
+                        In App
+                    </div>
+                </div>
+
+            </div>
+
             <div *ngFor="let item of notificationSettings" class="notification-settings">
-                <input type="checkbox" [(ngModel)]="preferences.preferences[item.key]" (click)="updateNotifications()">
-                {{ item.description }}
+
+                <div class="notification-row">
+                    <div class="notification-col description">
+                        {{ item.description }}
+                    </div>
+                    <div class="notification-col check">
+                        <input type="checkbox" [(ngModel)]="preferences.preferences[item.key]" (click)="updateNotifications()">
+                    </div>
+
+                    <div class="notification-col check">
+                        <input type="checkbox"[(ngModel)]="preferences.preferences['ui_' + item.key]" (click)="updateNotifications()">
+                    </div>
+                </div>
+
             </div>
         </div>
     </pfng-card>
