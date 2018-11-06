@@ -57,16 +57,17 @@ class NotificationManger(object):
 
     def send(self, email_message):
         for user in self.preferences_list:
-            models.UserNotification.objects.create(
-                user=user.user,
-                type=self.preferences_name,
-                message=self.db_message,
-                repository=self.repo
-            )
 
-            if self.preferences_name not in user.preferences:
-                continue
+            # Create in app notification
+            if user.preferences['ui_' + self.preferences_name]:
+                models.UserNotification.objects.create(
+                    user=user.user,
+                    type=self.preferences_name,
+                    message=self.db_message,
+                    repository=self.repo
+                )
 
+            # Create email notification
             if user.preferences[self.preferences_name]:
                 email = EmailAddress.objects.filter(
                     primary=True,

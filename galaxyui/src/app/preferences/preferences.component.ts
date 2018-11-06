@@ -111,7 +111,7 @@ export class PreferencesComponent implements OnInit {
                 {
                     key: 'notify_content_release',
                     description:
-                        'Shere is a new release of a collection you follow',
+                        'There is a new release of a collection you follow',
                 },
                 {
                     key: 'notify_author_release',
