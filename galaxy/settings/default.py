@@ -386,7 +386,6 @@ LOGGING = {
             'propagate': True,
         },
         'galaxy.worker': {
-            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
         },
