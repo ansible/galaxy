@@ -1,4 +1,4 @@
-Dcumentation source for Galaxy 
+Documentation source for Galaxy 
 ==============================
 
 Contains the source behind [galaxy.ansible.com/docs](https://galaxy.ansible.com/docs)
