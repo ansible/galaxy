@@ -37,7 +37,7 @@ from galaxy.worker import exceptions as exc
 from galaxy.worker import importers
 from galaxy.worker import utils
 from galaxy.main.celerytasks import user_notifications
-
+from galaxy.api import serializers
 
 LOG = logging.getLogger(__name__)
 
@@ -172,6 +172,20 @@ def _import_repository(import_task, logger):
         user_notifications.author_release.delay(repository.id)
         repository.is_new = False
         repository.save()
+
+    namespace = repository.provider_namespace.namespace.name
+
+    fields = {
+        'content_name': '{}.{}'.format(namespace, repository.name),
+        'content_id': repository.id,
+        'community_score': repository.community_score,
+        'quality_score': repository.quality_score,
+    }
+
+    serializers.influx_insert_internal({
+        'measurement': 'content_score',
+        'fields': fields
+    })
 
 
 def _update_task_msg_content_id(import_task):
