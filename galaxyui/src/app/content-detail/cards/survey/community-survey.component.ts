@@ -9,7 +9,7 @@ import { SurveyService } from '../../../resources/survey/survey.service';
 
 import { AuthService } from '../../../auth/auth.service';
 
-import { CommunityDetails, DetailMessage } from './types';
+import { CommunityDetails, DetailMessage, NamespaceOwner } from './types';
 
 @Component({
     selector: 'card-community-survey',
@@ -40,6 +40,8 @@ export class CardCommunitySurveyComponent implements OnInit {
     hideSurvey = false;
     loading = true;
     waitingForId = false;
+    canSubmitSurvey = true;
+    loggedIn = false;
 
     @Input()
     contentId: number;
@@ -58,6 +60,9 @@ export class CardCommunitySurveyComponent implements OnInit {
 
     @Input()
     lastScored: string;
+
+    @Input()
+    namespaceOwners: NamespaceOwner[];
 
     @Output()
     emitDetails = new EventEmitter<DetailMessage>();
@@ -122,6 +127,20 @@ export class CardCommunitySurveyComponent implements OnInit {
 
         this.authService.me().subscribe(me => {
             this.myUserId = me.id;
+
+            if (me.id) {
+                this.loggedIn = true;
+                const isOwner = this.namespaceOwners.find(
+                    x => x.id === this.myUserId,
+                );
+
+                if (isOwner) {
+                    this.canSubmitSurvey = false;
+                }
+            } else {
+                this.loggedIn = false;
+                this.canSubmitSurvey = false;
+            }
 
             // The user id has to be set before surveys are loaded from the API
             this.surveyService
@@ -208,7 +227,7 @@ export class CardCommunitySurveyComponent implements OnInit {
 
     submitRating(questionKey: string, rating: number) {
         // Prevent non users from submitting surveys.
-        if (!this.myUserId) {
+        if (!this.canSubmitSurvey) {
             return;
         }
 
@@ -271,7 +290,7 @@ export class CardCommunitySurveyComponent implements OnInit {
     // Sets the correct color for buttons that have been clicked or are
     // being hovered over
     getButtonClass(buttonVal: number, answerVal: number) {
-        if (!this.myUserId) {
+        if (!this.canSubmitSurvey) {
             return '';
         }
 
@@ -311,7 +330,7 @@ export class CardCommunitySurveyComponent implements OnInit {
     }
 
     showWall(hasEntered: boolean) {
-        if (this.myUserId) {
+        if (this.canSubmitSurvey) {
             return false;
         }
         this.hideSurvey = hasEntered;

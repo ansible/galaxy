@@ -19,7 +19,7 @@
             <div *ngIf="!loading">
                 <app-score-bar [score]="qualityScore" [barText]="qualityBarText" text="Quality Score"></app-score-bar>
                 <div class="details">
-                    Last scored {{ lastScored }}. 
+                    Last scored {{ lastScored }}.
                     <a
                         [appLogEvent]='{type: "button", name: "quality_score_details"}'
                         href=""
@@ -44,10 +44,13 @@
                         class="survey-wall non-transparent"
                     >
                         <div class="login-message">
-                            <a
+                            <a *ngIf="!loggedIn"
                                 [routerLink]="['/', 'login']"
                                 [queryParams]="{next: router.url}"
                             >Please login to submit a rating.</a>
+                            <span *ngIf="loggedIn">
+                                Users are not permitted to rate their own content.
+                            </span>
                         </div>
                     </div>
                     <div class="title">Tell us about this collection</div>
