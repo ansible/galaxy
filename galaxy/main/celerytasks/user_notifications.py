@@ -94,10 +94,12 @@ def import_status(task_id, user_initiated, has_failed=False):
     owners = repo.provider_namespace.namespace.owners.all()
     author = repo.provider_namespace.namespace.name
 
+    # Commenting this out for now because it has potential to confuse usersself
+    # TODO: Add an option to enable this as a preference
     # If the import is kicked off manually, don't notify the person starting it
-    if user_initiated:
-        user = task.owner
-        owners = owners.exclude(pk=user.id)
+    # if user_initiated:
+    #     user = task.owner
+    #     owners = owners.exclude(pk=user.id)
 
     owners = _get_preferences(owners)
 
