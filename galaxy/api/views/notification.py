@@ -188,8 +188,8 @@ class NotificationList(base_views.ListCreateAPIView):
                 name=github_user,
             )
         except models.ProviderNamespace.DoesNotExist:
-            return ValidationError('Prodiver namespace "{}" not found'
-                                   .format(github_user))
+            raise ValidationError('Prodiver namespace "{}" not found'
+                                  .format(github_user))
 
         notification = models.Notification(
             owner=owner,
