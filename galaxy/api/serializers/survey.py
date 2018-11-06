@@ -15,11 +15,11 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from . import serializers
-
-from galaxy.main import models
-
+from rest_framework import serializers as drf_serializers
 from django.urls import reverse
+
+from . import serializers
+from galaxy.main import models
 
 
 __all__ = (
@@ -41,6 +41,18 @@ class CommunitySurveySerializer(serializers.BaseSerializer):
             'works_as_is',
             'used_in_production'
         )
+
+    def validate(self, data):
+        repo = data.get('repository')
+        user = data.get('user')
+
+        is_owner = user in repo.provider_namespace.namespace.owners.all()
+
+        if is_owner:
+            message = 'Users are not permitted to rate their own content.'
+            raise drf_serializers.ValidationError(message)
+
+        return data
 
     def get_url(self, obj):
         if obj is None:
