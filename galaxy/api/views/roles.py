@@ -24,8 +24,8 @@ from galaxy.main.models import Content
 
 from .views import filter_role_queryset
 from .base_views import ListAPIView, RetrieveAPIView
-from ..serializers import RoleListSerializer, RoleDetailSerializer
-
+# from ..serializers import RoleListSerializer, RoleDetailSerializer
+from galaxy.api import serializers
 
 __all__ = [
     'RoleList',
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 class RoleList(ListAPIView):
     model = Content
-    serializer_class = RoleListSerializer
+    serializer_class = serializers.RoleListSerializer
     throttle_scope = 'download_count'
 
     def list(self, request, *args, **kwargs):
@@ -62,6 +62,22 @@ class RoleList(ListAPIView):
                     content.repository.download_count += 1
                     content.repository.save()
 
+                    name = '{}.{}'.format(
+                        content.namespace.name,
+                        content.repository.name
+                    )
+
+                    data = {
+                        'measurement': 'content_download',
+                        'fields': {
+                            'content_name': name,
+                            'content_id': content.repository.id,
+                            'download_count': content.repository.download_count
+                        }
+                    }
+
+                    serializers.influx_insert_internal(data)
+
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
                 return self.get_paginated_response(serializer.data)
@@ -78,7 +94,7 @@ class RoleList(ListAPIView):
 
 class RoleDetail(RetrieveAPIView):
     model = Content
-    serializer_class = RoleDetailSerializer
+    serializer_class = serializers.RoleDetailSerializer
 
     def get_object(self, qs=None):
         obj = super(RoleDetail, self).get_object()
