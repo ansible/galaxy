@@ -40,6 +40,7 @@ from galaxy.main.celerytasks import user_notifications
 from galaxy.api import serializers
 
 LOG = logging.getLogger(__name__)
+LOG.setLevel('DEBUG')
 
 
 @celery.task
