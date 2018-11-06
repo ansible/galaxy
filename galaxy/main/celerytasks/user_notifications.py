@@ -173,7 +173,7 @@ def author_release(repo_id):
         subject='Ansible Galaxy: {} has released a new collection'.format(
             author
         ),
-        db_message='New release from {author}: {name}'.format(
+        db_message='New release from {}: {}'.format(
             author, repo.name
         ),
         repo=repo
