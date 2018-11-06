@@ -106,28 +106,28 @@ export class PreferencesComponent implements OnInit {
                 {
                     key: 'notify_survey',
                     description:
-                        'someone submits a new survey for one of your roles',
+                        'Someone submits a new survey for one of your roles',
                 },
                 {
                     key: 'notify_content_release',
                     description:
-                        'there is a new release of a collection you follow',
+                        'Shere is a new release of a collection you follow',
                 },
                 {
                     key: 'notify_author_release',
-                    description: 'an author you follow releases a new role',
+                    description: 'An author you follow releases a new role',
                 },
                 {
                     key: 'notify_import_fail',
-                    description: 'one of your imports fails',
+                    description: 'One of your imports fails',
                 },
                 {
                     key: 'notify_import_success',
-                    description: 'one of your imports succeeds',
+                    description: 'One of your imports succeeds',
                 },
                 {
                     key: 'notify_galaxy_announce',
-                    description: 'there is an anouncement from the galaxy team',
+                    description: 'There is an anouncement from the galaxy team',
                 },
             ];
         });
