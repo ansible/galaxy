@@ -185,7 +185,7 @@ class NotificationList(base_views.ListCreateAPIView):
         try:
             provider_ns = models.ProviderNamespace.objects.get(
                 provider__name=constants.PROVIDER_GITHUB,
-                name=github_user,
+                name__iexact=github_user,
             )
         except models.ProviderNamespace.DoesNotExist:
             raise ValidationError('Prodiver namespace "{}" not found'
