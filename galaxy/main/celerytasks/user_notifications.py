@@ -77,7 +77,7 @@ class NotificationManger(object):
                     email_message,
                     settings.GALAXY_NOTIFICATION_EMAIL,
                     [email[0].email],
-                    fail_silently=True
+                    fail_silently=False
                 )
 
     def notify(self, context):
