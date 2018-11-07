@@ -11,7 +11,7 @@ def delete_contents_invalid_name(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     Content = apps.get_model('main', 'Content')
 
-    qs = Content.objects.using(db_alias).exclude(name__iregex='^[\w-]+$')
+    qs = Content.objects.using(db_alias).exclude(name__iregex=r'^[\w-]+$')
 
     count = qs.count()
     LOG.info('Deleting {0} Content records'.format(count))

@@ -11,7 +11,7 @@ SET version = substring(version from 2)
 WHERE version ILIKE 'v%'
 """
 
-UPDATE_NON_SEMVER_VERSIONS = """
+UPDATE_NON_SEMVER_VERSIONS = r"""
 UPDATE main_repositoryversion
 SET version = NULL
 WHERE version !~ ('^' ||

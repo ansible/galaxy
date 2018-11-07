@@ -704,7 +704,7 @@ class SubscriptionList(base_views.ListCreateAPIView):
 
         try:
             gh_user.add_to_subscriptions(gh_repo)
-        except GithubException as e:
+        except GithubException:
             msg = (
                 "GitHub API failed to subscribe user {} to for {}/{}"
                 .format(request.user.username, github_user, github_repo)

@@ -98,8 +98,8 @@ class APIView(views.APIView):
             req_hdr = get_authorization_header(request)
             if not req_hdr:
                 continue
-            if (resp_hdr.split()[0] and
-                    resp_hdr.split()[0] == req_hdr.split()[0]):
+            if (resp_hdr.split()[0]
+                    and resp_hdr.split()[0] == req_hdr.split()[0]):
                 return resp_hdr
         return super(APIView, self).get_authenticate_header(request)
 
