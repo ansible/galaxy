@@ -31,4 +31,6 @@ export class Repository {
     community_score: number;
     quality_score: number;
     quality_score_date: string;
+    travis_build_url: string;
+    travis_status_url: string;
 }

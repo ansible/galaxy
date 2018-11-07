@@ -95,6 +95,15 @@
                         tooltip="Visit the repository. Opens in a new browser tab." class="btn btn-default">
                             <i [ngClass]="repositoryView.scmIconClass"></i> {{ repositoryView.scmName }} Repo</a>
                 </div>
+
+                <div class="header-button">
+                    <div class="travis" *ngIf="repository.travis_build_url">
+                        <a href="{{ repository.travis_build_url }}" container="body" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
+                            <img src="{{ repository.travis_status_url }}"
+                                class="travis-status-img" title="Travis Build Status" />
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
