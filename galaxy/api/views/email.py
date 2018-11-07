@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from galaxy.api.views import base_views
 from galaxy.api import serializers
+from galaxy.main.celerytasks import user_notifications
 
 from rest_framework.response import Response
 
@@ -87,7 +88,13 @@ class EmailVerification(base_views.ListCreateAPIView):
                 'verified': True
             })
 
-        verification = email.send_confirmation(request=request)
+        verification = self.model.create(email)
+        user_notifications.email_verification(
+            email=email.email,
+            code=verification.key,
+            username=request.user.username
+        )
+
         serializer = self.get_serializer(instance=verification)
         return Response(serializer.data)
 
