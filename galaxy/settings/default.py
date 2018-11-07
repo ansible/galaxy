@@ -429,5 +429,5 @@ GALAXY_URL = 'http://{site}:8000'
 # =========================================================
 # Notification Settings
 # =========================================================
-GALAXY_NOTIFICATION_EMAIL = 'noreply@galaxy.ansible.com'
+GALAXY_NOTIFICATION_EMAIL = 'notifications@galaxy.ansible.com'
 DEFAULT_FROM_EMAIL = 'noreply@galaxy.ansible.com'

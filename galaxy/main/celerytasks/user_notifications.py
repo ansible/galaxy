@@ -85,6 +85,27 @@ class NotificationManger(object):
         self.send(email)
 
 
+def email_verification(email, code, username):
+    url = settings.GALAXY_URL.format(
+        site=Site.objects.get_current().domain
+    )
+
+    url += '/me/preferences/?verify=' + code
+
+    message = email_verification_template.format(
+        username=username,
+        url=url
+    )
+
+    mail.send_mail(
+        'Ansible Galaxy Please Confirm Your E-mail Address',
+        message,
+        settings.GALAXY_NOTIFICATION_EMAIL,
+        [email],
+        fail_silently=True
+    )
+
+
 @celery.task
 def import_status(task_id, user_initiated, has_failed=False):
     task = models.ImportTask.objects.get(id=task_id)
@@ -266,3 +287,15 @@ Cheers,
 
 -- To stop seeing these messages, visit {preferences_link} to update your \
 settings.'''
+
+
+email_verification_template = '''Hello,
+
+You're receiving this e-mail because user {username} has give this address as \
+an e-mail address to connect their account.
+
+To confirm this is correct, go to {url}.
+
+Cheers,
+   Ansible Galaxy
+'''
