@@ -47,8 +47,18 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def check_basic(data, errors):
+def check_basic(data, errors, instance=None):
     name = data.get('name')
+
+    # The database still contains legacy namesapces with invalid chars in them
+    # This can cause errors when users with legacy names try to update other
+    # information about their namespace (owners, description etc.) To fix this,
+    # just skip checks if the name isn't being update and assume that whatever
+    # is in the database is correct.
+    if name and instance:
+        if name == instance.name:
+            return
+
     if not name:
         errors['name'] = "Attribute 'name' is required"
     elif not re.match(r'^[a-zA-Z0-9_]+$', name):
@@ -284,7 +294,7 @@ class NamespaceDetail(base_views.RetrieveUpdateDestroyAPIView):
         # if no name is submitted on the form, it won't get updated so we can
         # ignore the name check
         if data.get('name') is not None:
-            check_basic(data, errors)
+            check_basic(data, errors, instance=instance)
 
         if data.get('provider_namespaces'):
             provider_errors = check_providers(
