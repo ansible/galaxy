@@ -20,6 +20,7 @@ import subprocess
 import logging
 
 import six
+import pkg_resources
 
 
 logger = logging.getLogger(__name__)
@@ -27,6 +28,10 @@ logger = logging.getLogger(__name__)
 LINTERS_DIR = os.path.abspath(os.path.dirname(__file__))
 FLAKE8_MAX_LINE_LENGTH = 120
 FLAKE8_IGNORE_ERRORS = 'E402'
+
+
+GALAXY_LINT_RULES_PATH = \
+    pkg_resources.get_distribution('galaxy-lint-rules').location
 
 
 class BaseLinter(object):
@@ -118,8 +123,7 @@ class AnsibleLinter(BaseLinter):
     cmd = 'ansible-lint'
 
     def _check_files(self, paths):
-        rules_path = '/usr/local/galaxy-lint-rules/rules'
-        cmd = [self.cmd, '-p', '-r', rules_path, '.']
+        cmd = [self.cmd, '-p', '-r', GALAXY_LINT_RULES_PATH, '.']
         logger.debug('CMD: ' + ' '.join(cmd))
 
         # different logic needed for multi role repos since
