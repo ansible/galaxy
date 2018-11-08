@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 LINTERS_DIR = os.path.abspath(os.path.dirname(__file__))
 FLAKE8_MAX_LINE_LENGTH = 120
 FLAKE8_IGNORE_ERRORS = 'E402'
+FLAKE8_SELECT_ERRORS = 'E,F,W'
 
 
 class BaseLinter(object):
@@ -52,6 +53,7 @@ class Flake8Linter(BaseLinter):
     def _check_files(self, paths):
         cmd = [self.cmd, '--exit-zero', '--isolated',
                '--ignore', FLAKE8_IGNORE_ERRORS,
+               '--select', FLAKE8_SELECT_ERRORS,
                '--max-line-length', str(FLAKE8_MAX_LINE_LENGTH),
                '--'] + paths
         logger.debug('CMD: ' + ' '.join(cmd))
