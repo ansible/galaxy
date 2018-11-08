@@ -420,11 +420,13 @@ def _update_repository_versions(repository, github_repo, logger):
 
     to_add = set(git_tags) - set(db_tags)
     tags_added = False
+    skipped_tags = []
     for version in to_add:
         tag = git_tags[version]
         try:
             version = utils.parse_version_tag(tag.name)
         except ValueError:
+            skipped_tags.append(tag.name)
             continue
 
         commit_date = tag.commit.commit.author.date.replace(tzinfo=pytz.UTC)
@@ -443,6 +445,10 @@ def _update_repository_versions(repository, github_repo, logger):
         else:
             tags_added = True
 
+    if skipped_tags:
+        msg = ('Galaxy will only import git tags that match the '
+               'semantic version format, skipping these tag(s): {}')
+        logger.warning(msg.format(', '.join(skipped_tags)))
     if tags_added:
         user_notifications.collection_update.delay(repository.id)
 
