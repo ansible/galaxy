@@ -88,7 +88,6 @@ class RoleMetaParser(object):
 
     def _validate_tag(self, tag):
         if not re.match(constants.TAG_REGEXP, tag):
-            self.log.warning("Skipping invalid tag '{}'".format(tag))
             return False
         return True
 

@@ -98,8 +98,8 @@ class YamlLinter(BaseLinter):
             msg_parts = message.split(' ')
             rule_desc = ' '.join(msg_parts[2:])
 
-            error_id = msg_parts[1][1:-1]
-            if error_id not in ['error', 'warning']:
+            error_id = 'YAML_{}'.format(msg_parts[1][1:-1]).upper()
+            if error_id not in ['YAML_ERROR', 'YAML_WARNING']:
                 error_id = None
 
         except IndexError:
