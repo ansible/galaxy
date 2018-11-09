@@ -172,7 +172,7 @@ Any missing images (i.e. postgresql, rabbitmq, prometheus, influxdb, grafana)
 will be pulled. Getting all the images downloaded may take a few minutes.
 Once all the images are available, the containers will launch.
 
-Aftr the above commands complete, you can take a look at the containers by
+After the above commands complete, you can take a look at the containers by
 running ``docker ps`` in your second terminal session:
 
 .. code-block:: console
