@@ -292,12 +292,6 @@ me_urls = [
     ),
 
     url(
-        r'notifications/unread/',
-        views.ActiveUserUnreadNotificationView.as_view(),
-        name='active_user_unread_notifications_view'
-    ),
-
-    url(
         r'notifications/(?P<pk>[0-9]+)/$',
         views.ActiveUserNotificationsDetailView.as_view(),
         name='active_user_notifications_view_detail'
