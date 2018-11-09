@@ -27,7 +27,7 @@ class Command(BaseCommand):
             'uses existing linter violations.')
     repos = []
 
-    date_range_start = datetime(2010, 1, 1)
+    date_range_start = datetime(2010, 1, 1).replace(tzinfo=pytz.UTC)
     date_range_end = datetime.now(pytz.UTC)
 
     def add_arguments(self, parser):
@@ -97,8 +97,13 @@ class Command(BaseCommand):
         )
 
     def count(self):
-        msg = "Found {} of {} collections that matched --scored-*"
+        all_scored_repos = Repository.objects.filter(
+            quality_score__isnull=False,
+        )
+        msg = ('Found {} collections that matched --scored-*, out of '
+               '{} scored collections and {} total collections')
         self.stdout.write(msg.format(self.repos.count(),
+                                     all_scored_repos.count(),
                                      Repository.objects.all().count()))
 
     def recompute(self):
