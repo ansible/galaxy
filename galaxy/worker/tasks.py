@@ -250,8 +250,8 @@ def _update_quality_score(import_task):
         'ansible-lint_e504': 3,
         'ansible-lint_e601': 4,
         'ansible-lint_e602': 4,
-        'yamllint_error': 4,
-        'yamllint_warning': 1,
+        'yamllint_yaml_error': 4,
+        'yamllint_yaml_warning': 1,
     }
     METADATA_SEVERITY = {
         'ansible-lint_e701': 4,
@@ -332,6 +332,7 @@ def _update_quality_score(import_task):
         content.save()
         repo_points += content.quality_score
 
+        LOG.debug('scoring content.name: {}'.format(content.name))
         LOG.debug('content - ids, weights, score: {}, {}, {}'.format(
             str([m.linter_rule_id for m in content_m]),
             str(content_w), content.content_score))
