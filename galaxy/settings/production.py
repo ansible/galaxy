@@ -142,6 +142,8 @@ SECRET_KEY = _read_secret_key()
 # ---------------------------------------------------------
 
 # FIXME(cutwater): Review parameters usage
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 EMAIL_HOST = os.environ.get('GALAXY_EMAIL_HOST', '')
 
 EMAIL_PORT = int(os.environ.get('GALAXY_EMAIL_PORT', 587))
