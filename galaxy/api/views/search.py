@@ -165,13 +165,11 @@ class ContentSearchView(base.ListAPIView):
         )
 
         q = 'repository__quality_score'
-        # q / (q+1)
-        # where q = quality_score
         # This function is better than using a linear function because it
         # makes it so that the effect of losing the first few points is
         # relatively minor, which reduces the impact of errors in scoring.
-        quality_rank_expr = (Coalesce(F(q), 0) / (Coalesce(F(q), 0) + 1) *
-                             CONTENT_SCORE_MULTIPLIER)
+        quality_rank_expr = Func(Coalesce(F(q), 0) + 1, function='log') * \
+            CONTENT_SCORE_MULTIPLIER
 
         relevance_expr = ExpressionWrapper(
             F('search_rank') + F('download_rank') + F('quality_rank'),
