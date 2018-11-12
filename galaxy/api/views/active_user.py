@@ -12,7 +12,6 @@ __all__ = [
     'ActiveUserPreferencesView',
     'ActiveUserNotificationsView',
     'ActiveUserNotificationsDetailView',
-    'ActiveUserUnreadNotificationView',
     'ActiveUserClearNotificationView'
 ]
 
@@ -93,6 +92,18 @@ class ActiveUserNotificationsView(base_views.ListAPIView):
         )
         return obj
 
+    def list(self, request, *args, **kwargs):
+        response = super(ActiveUserNotificationsView, self)\
+            .list(request, args, kwargs)
+
+        count = models.UserNotification.objects.filter(
+            user=request.user,
+            seen=False,
+        ).count()
+
+        response.data['unseen_notifications'] = count
+        return response
+
 
 class ActiveUserNotificationsDetailView(
         base_views.RetrieveUpdateDestroyAPIView):
@@ -106,15 +117,6 @@ class ActiveUserNotificationsDetailView(
             user=self.request.user,
         )
         return obj
-
-
-class ActiveUserUnreadNotificationView(base_views.APIView):
-    def get(self, request):
-        count = models.UserNotification.objects.filter(
-            user=request.user,
-            seen=False,
-        ).count()
-        return Response({'count': count})
 
 
 class ActiveUserClearNotificationView(base_views.APIView):

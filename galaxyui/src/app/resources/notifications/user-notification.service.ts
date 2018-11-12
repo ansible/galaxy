@@ -6,7 +6,10 @@ import { catchError, tap } from 'rxjs/operators';
 
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
 
-import { UserNotification } from './user-notification';
+import {
+    UserNotification,
+    NotificationPagedResponse,
+} from './user-notification';
 
 import { GenericQuerySave } from '../base/generic-query-save';
 
@@ -25,12 +28,26 @@ export class UserNotificationService extends GenericQuerySave<
         );
     }
 
-    getUnread(): Observable<any> {
-        const url = this.url + '/unread/';
-        return this.http.get<any>(url).pipe(
-            tap(_ => this.log(`fetched unread ${this.serviceName}`)),
-            catchError(this.handleError('Get', {} as any)),
-        );
+    pagedQuery(params?: any): Observable<NotificationPagedResponse> {
+        let objectUrl = this.url;
+        let objectParams = null;
+        if (params) {
+            if (typeof params === 'string') {
+                objectUrl += `?${params}`;
+            } else {
+                objectParams = params;
+            }
+        }
+        return this.http
+            .get<NotificationPagedResponse>(objectUrl + '/', {
+                params: objectParams,
+            })
+            .pipe(
+                tap(_ => this.log(`fetched ${this.serviceName}`)),
+                catchError(
+                    this.handleError('Query', {} as NotificationPagedResponse),
+                ),
+            );
     }
 
     deleteAll(): Observable<any> {
