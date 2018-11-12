@@ -57,28 +57,34 @@ class NotificationManger(object):
         for user in self.preferences_list:
 
             # Create in app notification
-            if user.preferences['ui_' + self.preferences_name]:
-                models.UserNotification.objects.create(
-                    user=user.user,
-                    type=self.preferences_name,
-                    message=self.db_message,
-                    repository=self.repo
-                )
+            try:
+                if user.preferences['ui_' + self.preferences_name]:
+                    models.UserNotification.objects.create(
+                        user=user.user,
+                        type=self.preferences_name,
+                        message=self.db_message,
+                        repository=self.repo
+                    )
+            except Exception as e:
+                LOG.error(e)
 
             # Create email notification
-            if user.preferences[self.preferences_name]:
-                email = EmailAddress.objects.filter(
-                    primary=True,
-                    user=user.user,
-                )
+            try:
+                if user.preferences[self.preferences_name]:
+                    email = EmailAddress.objects.filter(
+                        primary=True,
+                        user=user.user,
+                    )
 
-                mail.send_mail(
-                    self.subject,
-                    email_message,
-                    settings.GALAXY_NOTIFICATION_EMAIL,
-                    [email[0].email],
-                    fail_silently=True
-                )
+                    mail.send_mail(
+                        self.subject,
+                        email_message,
+                        settings.GALAXY_NOTIFICATION_EMAIL,
+                        [email[0].email],
+                        fail_silently=False
+                    )
+            except Exception as e:
+                LOG.error(e)
 
     def notify(self, context):
         email = self.render_email(context)
