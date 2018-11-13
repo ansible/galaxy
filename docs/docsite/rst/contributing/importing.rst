@@ -166,7 +166,7 @@ next to the username to remove them from the list. The image below provides an e
 .. image:: mycontent-12.png
 
 Anyone in the list of owners can import content into the Namespace. They can also modify properties of the Namespace, remove content,
-and disable the Namespace altogehter, removing content from search results, and making it unavailable for download.
+and disable the Namespace altogether, removing content from search results, and making it unavailable for download.
 
 After making changes to the list of owners, click the *Save* button at the bottom of the page to update the Namespace with your
 changes, as shown below:
