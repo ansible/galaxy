@@ -39,8 +39,8 @@ from galaxy.worker import utils
 from galaxy.main.celerytasks import user_notifications
 from galaxy.api import serializers
 
+
 LOG = logging.getLogger(__name__)
-LOG.setLevel('DEBUG')
 
 BASE_SCORE = 50.0
 SEVERITY_TO_WEIGHT = {
