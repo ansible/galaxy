@@ -138,6 +138,8 @@ def import_status(task_id, user_initiated, has_failed=False):
     subject = 'Ansible Galaxy: import of {} has {}'.format(repo.name, status)
     db_message = 'Import {}: {}'.format(status, repo.name)
 
+    log_path = '/my-imports'
+
     notification = NotificationManger(
         email_template=import_status_template,
         preferences_name=preference,
@@ -149,7 +151,8 @@ def import_status(task_id, user_initiated, has_failed=False):
 
     ctx = {
         'status': status,
-        'content_name': '{}.{}'.format(author, repo.name)
+        'content_name': '{}.{}'.format(author, repo.name),
+        'import_url': notification.url + log_path
     }
 
     notification.notify(ctx)
@@ -257,6 +260,8 @@ import_status_template = '''Hello,
 
 This message is to notify you that a recent import of {content_name} on \
 Ansible galaxy has {status}.
+
+To see the import log, go to: {import_url}
 '''
 
 
@@ -280,7 +285,7 @@ To see it, visit {content_url}.
 
 new_survey_template = '''Hello,
 
-Someone has just submitted a new survey for {content_name} on Ansible Galaxy.\
+Someone has just submitted a new survey for {content_name} on Ansible Galaxy. \
 Your collection now has a user rating of {content_score}.
 
 Visit {content_url} for more details.
