@@ -257,7 +257,7 @@ def _update_task_msg_content_id(import_task):
 
     for msg in import_task_messages:
         if msg.content_name not in name_to_id:
-            LOG.error(u'Importer could not associate content id to rule msg')
+            LOG.warning(u'Importer could not associate content id to rule msg')
             msg.is_linter_rule_violation = False
             msg.save()
             continue
@@ -291,7 +291,7 @@ def _update_quality_score(import_task):
             msg.score_type = 'compatibility'
             msg.rule_severity = COMPATIBILITY_SEVERITY[rule_code]
         else:
-            LOG.error(u'Severity not found for rule: {}'.format(rule_code))
+            LOG.warning(u'Severity not found for rule: {}'.format(rule_code))
             msg.is_linter_rule_violation = False
         msg.save()
 
