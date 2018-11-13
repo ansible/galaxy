@@ -170,9 +170,9 @@ So without further ado, run the following:
 
 Any missing images (i.e. postgresql, rabbitmq, prometheus, influxdb, grafana)
 will be pulled. Getting all the images downloaded may take a few minutes.
-Once all the images are available, the ontainers will launch.
+Once all the images are available, the containers will launch.
 
-Aftr the above commands completes, you can take a look at the containers by
+After the above commands complete, you can take a look at the containers by
 running ``docker ps`` in your second terminal session:
 
 .. code-block:: console
@@ -229,7 +229,7 @@ using ``tmux``.
         ## Start the build process
         $ make dev/up_tmux
 
-#. Once the above commands completes, you can view the containers
+#. Once the above commands complete, you can view the containers
    by running ``docker ps``. The service we're most interested in is
    ``galaxy``, and it's container name will be ``galaxy_galaxy_1``.
    Before we can launch ``tmux``, we need to wait for database migrations and
@@ -409,11 +409,11 @@ To stop all services, run ``make dev/down``.
 Validating your changes
 -----------------------
 
-Once you have galaxy composed and running, you may also run
+Once you have Galaxy composed and running, you may also run
 different commands to check your changes.
 
-To do this you need galaxy running in detached state or run commands from
-separate terminal session.
+To do this you need Galaxy running in detached state or run commands from
+a separate terminal session.
 
 Full list of commands is available in Makefile, however we want to highlight
 the most useful here.
@@ -443,7 +443,7 @@ To automatically format your Angular code run:
 
     $ make dev/prettier
 
-Unformatted code will cause the travis build to fail when you push your changes to
+Unformatted code will cause the Travis build to fail when you push your changes to
 GitHub.
 
 It's recommended that you set up prettier on your editor if you're making lots of
