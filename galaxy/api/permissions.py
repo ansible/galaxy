@@ -129,17 +129,7 @@ class ModelAccessPermission(permissions.BasePermission):
         return result
 
     def has_permission(self, request, view, obj=None):
-        # logger.debug('has_permission(user=%s method=%s data=%r, %s, %r)',
-        #             request.user, request.method, request.data,
-        #             view.__class__.__name__, obj)
-        try:
-            response = self.check_permissions(request, view, obj)
-        except Exception as e:
-            logger.debug('has_permission raised %r', e, exc_info=True)
-            raise
-        else:
-            logger.debug('has_permission returned %r', response)
-            return response
+        return self.check_permissions(request, view, obj)
 
     def has_object_permission(self, request, view, obj):
         return self.has_permission(request, view, obj)
