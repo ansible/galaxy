@@ -214,14 +214,14 @@ def _update_task_msg_content_id(import_task):
 
 
 def _update_quality_score(import_task):
-    BASE_SCORE = 50
+    BASE_SCORE = 50.0
     SEVERITY_TO_WEIGHT = {
-        0: 0,
+        0: 0.0,
         1: 0.75,
         2: 1.25,
         3: 2.5,
-        4: 5,
-        5: 10,
+        4: 5.0,
+        5: 10.0,
     }
     CONTENT_SEVERITY = {
         'ansible-lint_e101': 3,
