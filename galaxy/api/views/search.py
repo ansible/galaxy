@@ -51,6 +51,8 @@ RANK_NORMALIZATION = 32
 
 DOWNLOAD_RANK_MULTIPLIER = 0.4
 CONTENT_SCORE_MULTIPLIER = 0.2
+COMMUNITY_SCORE_MODIFIER = 0.002
+COMMUNITY_SCORE_MODIFIER_MIN = 0.005
 
 
 class ApiV1SearchView(base.APIView):
@@ -138,32 +140,39 @@ class ContentSearchView(base.ListAPIView):
 
     @staticmethod
     def add_relevance(queryset):
+        c = 'repository__community_score'
+        d = 'repository__download_count'
+
+        # ln((MOD*c + MIN) * d + 1)
+        # where c = community_score and d = download_count
+        # We're using the community_score as a modifier to the download count
+        # instead of just allocating a certain number of points based on the
+        # score. The reason for this is that the download score is
+        # a logaritmic scale so adding a fixed number of points ended up
+        # boosting scores way too much for content with low numbers of
+        # downloads. This system allows for the weight of the community score
+        # to scale with the number of downloads
         download_count_ln_expr = Func(
-            F('repository__download_count') + 1, function='ln')
+            (((Coalesce(F(c), 0) * COMMUNITY_SCORE_MODIFIER) +
+                COMMUNITY_SCORE_MODIFIER_MIN)
+                * F(d)) + 1,
+            function='ln'
+        )
         download_rank_expr = (
             F('download_count_ln')
             / (1 + F('download_count_ln'))
             * DOWNLOAD_RANK_MULTIPLIER
         )
 
-        # This is the worlds most complicated way of expressing:
-        # if both scores are available: use the average of the two
-        # if one score is available use it,
-        # if no scores are available use 0
-        # This works becauseCoalesce just picks the first value that isn't
-        # null, and any operation that contains a null, just returns as null.
-        # This format is neccesary because we are limited to using database
-        # functions for performance reasons.
-        score_rank_expr = (Coalesce(
-            (F('repository__quality_score')
-                + F('repository__community_score')) / 10,
-            F('repository__quality_score') / 5,
-            F('repository__community_score') / 5,
-            0) * CONTENT_SCORE_MULTIPLIER
-        )
+        q = 'repository__quality_score'
+        # This function is better than using a linear function because it
+        # makes it so that the effect of losing the first few points is
+        # relatively minor, which reduces the impact of errors in scoring.
+        quality_rank_expr = Func(Coalesce(F(q), 0) + 1, function='log') * \
+            CONTENT_SCORE_MULTIPLIER
 
         relevance_expr = ExpressionWrapper(
-            F('search_rank') + F('download_rank') + F('score_rank'),
+            F('search_rank') + F('download_rank') + F('quality_rank'),
             output_field=db_fields.FloatField())
 
         return queryset.annotate(
@@ -172,7 +181,7 @@ class ContentSearchView(base.ListAPIView):
                 download_rank_expr,
                 output_field=db_fields.FloatField()),
             relevance=relevance_expr,
-            score_rank=score_rank_expr
+            quality_rank=quality_rank_expr
         )
 
     @staticmethod
