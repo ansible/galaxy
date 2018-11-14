@@ -288,21 +288,44 @@ ADMIN_URL_PATTERN = r'^{}/'.format(ADMIN_URL_PATH)
 
 ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
 
+# A base directory used by repository import task to clone repositories into.
+# If set to `None`, system temporary directory is used.
 CONTENT_DOWNLOAD_DIR = None
-"""
-A base directory used by repository import task to clone repositories into.
 
-If set to `None`, system temporary directory is used.
-"""
 
 # =========================================================
-# Logging
+# InfluxDB Settings
 # =========================================================
+INFLUX_DB_HOST = 'influxdb'
+INFLUX_DB_PORT = 8086
+INFLUX_DB_USERNAME = 'admin'
+INFLUX_DB_PASSWORD = 'admin'
+INFLUX_DB_UI_EVENTS_DB_NAME = 'galaxy_metrics'
 
-# LOGS_DIR = os.path.join(BASE_DIR, 'var', 'log')
+# Number of data points to buffer before galaxy writes them to influx.
+# Higher numbers mean more efficient influx inserts, but it also means that
+# more data will potentially be lost when galaxy restarts.
+INFLUX_INSERT_BUFFER_COUNT = 1
 
-# TODO(cutwater): Adjust logging config for production environment
-# TODO(cutwater): Review logging config
+GALAXY_METRICS_ENABLED = True
+
+
+# =========================================================
+# Domain Settings
+# =========================================================
+GALAXY_URL = 'http://{site}:8000'
+
+
+# =========================================================
+# Notification Settings
+# =========================================================
+GALAXY_NOTIFICATION_EMAIL = 'notifications@galaxy.ansible.com'
+DEFAULT_FROM_EMAIL = 'noreply@galaxy.ansible.com'
+
+
+# =========================================================
+# Logging Settings
+# =========================================================
 LOGGING = {
     'version': 1,
 
@@ -351,38 +374,38 @@ LOGGING = {
 
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
             'level': 'ERROR',
+            'handlers': ['mail_admins'],
             'propagate': True,
         },
         'django': {
-            'handlers': ['console'],
             'level': 'INFO',
+            'handlers': ['console'],
             'propagate': True,
         },
         'django.db': {
-            'handlers': ['console'],
             'level': 'INFO',
+            'handlers': ['console'],
             'propagate': True,
         },
         'galaxy.api': {
-            'handlers': ['console'],
             'level': 'DEBUG',
+            'handlers': ['console'],
             'propagate': True,
         },
         'galaxy.accounts': {
-            'handlers': ['console'],
             'level': 'DEBUG',
+            'handlers': ['console'],
             'propagate': True,
         },
         'galaxy.common.metrics': {
-            'handlers': ['console'],
             'level': 'DEBUG',
+            'handlers': ['console'],
             'propagate': True,
         },
         'galaxy.main': {
-            'handlers': ['console'],
             'level': 'DEBUG',
+            'handlers': ['console'],
             'propagate': True,
         },
         'galaxy.worker': {
@@ -390,44 +413,14 @@ LOGGING = {
             'propagate': True,
         },
         'galaxy.worker.tasks.import_repository': {
-            'handlers': ['import_task'],
             'level': 'DEBUG',
+            'handlers': ['import_task'],
             'propagate': False,
         },
         'allauth': {
-            'handlers': ['console'],
             'level': 'DEBUG',
+            'handlers': ['console'],
             'propagate': True,
         },
     }
 }
-
-
-# =========================================================
-# InfluxDB Settings
-# =========================================================
-INFLUX_DB_HOST = 'influxdb'
-INFLUX_DB_PORT = 8086
-INFLUX_DB_USERNAME = 'admin'
-INFLUX_DB_PASSWORD = 'admin'
-INFLUX_DB_UI_EVENTS_DB_NAME = 'galaxy_metrics'
-
-# Number of data points to buffer before galaxy writes them to influx.
-# Higher numbers mean more efficient influx inserts, but it also means that
-# more data will potentially be lost when galaxy restarts.
-INFLUX_INSERT_BUFFER_COUNT = 1
-
-GALAXY_METRICS_ENABLED = True
-
-
-# =========================================================
-# Domain Settings
-# =========================================================
-GALAXY_URL = 'http://{site}:8000'
-
-
-# =========================================================
-# Notification Settings
-# =========================================================
-GALAXY_NOTIFICATION_EMAIL = 'notifications@galaxy.ansible.com'
-DEFAULT_FROM_EMAIL = 'noreply@galaxy.ansible.com'

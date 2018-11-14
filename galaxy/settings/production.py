@@ -22,13 +22,13 @@ The following environment variables are supported:
 
 * GALAXY_SECRET_KEY
 * GALAXY_ALLOWED_HOSTS
-* GALAXY_EMAIL_HOST
 * GALAXY_DB_URL
 * GALAXY_DB_NAME
 * GALAXY_DB_USER
 * GALAXY_DB_PASSWORD
 * GALAXY_DB_HOST
 * GALAXY_DB_PORT
+* GALAXY_EMAIL_HOST
 * GALAXY_EMAIL_PORT
 * GALAXY_EMAIL_USER
 * GALAXY_EMAIL_PASSWORD
@@ -49,9 +49,8 @@ import os
 import dj_database_url
 
 from . import include_settings
+from .default import LOGGING
 from .default import *  # noqa
-
-from .default import LOGGING as default_logging
 
 
 def _read_secret_key(settings_dir='/etc/galaxy'):
@@ -76,25 +75,6 @@ def _read_secret_key(settings_dir='/etc/galaxy'):
     except IOError:
         return None
 
-
-def _set_logging():
-    log = default_logging
-    log['filters']['request_id'] = {
-        '()': 'log_request_id.filters.RequestIDFilter'
-    }
-    log['handlers']['console']['formatter'] = 'json'
-    log['handlers']['console']['filters'] = ['request_id']
-    log['loggers']['django_request'] = {
-        'handlers': ['console'],
-        'level': 'INFO',
-        'propagate': True,
-    }
-    log['loggers']['galaxy.api.access'] = {
-        'handlers': ['console'],
-        'level': 'INFO',
-        'propagate': True,
-    }
-    return log
 
 # =========================================================
 # Django Core Settings
@@ -199,19 +179,6 @@ GITHUB_TASK_USERS = ['galaxytasks01', 'galaxytasks02', 'galaxytasks03',
                      'galaxytasks04', 'galaxytasks05']
 
 # =========================================================
-# Logging Configuration
-# =========================================================
-
-# https://github.com/dabapps/django-log-request-id
-
-LOG_REQUEST_ID_HEADER = "HTTP_X_REQUEST_ID"
-GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
-REQUEST_ID_RESPONSE_HEADER = "X-REQUEST-ID"
-# LOG_REQUESTS = True
-
-LOGGING = _set_logging()
-
-# =========================================================
 # InfluxDB Settings
 # =========================================================
 INFLUX_DB_HOST = os.environ.get('GALAXY_INFLUX_DB_HOST', 'influxdb')
@@ -233,3 +200,30 @@ include_settings('/etc/galaxy/settings.py', scope=globals(), optional=True)
 # Domain Settings
 # =========================================================
 GALAXY_URL = 'https://{site}'
+
+# =========================================================
+# Logging Settings
+# =========================================================
+# https://github.com/dabapps/django-log-request-id
+LOG_REQUEST_ID_HEADER = "HTTP_X_REQUEST_ID"
+GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
+REQUEST_ID_RESPONSE_HEADER = "X-REQUEST-ID"
+
+LOGGING['handlers']['console'] = {
+    'level': 'DEBUG',
+    'class': 'logging.StreamHandler',
+    'filters': ['request_id'],
+    'formatter': 'json',
+}
+
+LOGGING['loggers']['django.request'] = {
+    'handlers': ['console'],
+    'level': 'INFO',
+    'propagate': True,
+}
+
+LOGGING['loggers']['galaxy.api.access'] = {
+    'handlers': ['console'],
+    'level': 'INFO',
+    'propagate': True,
+}
