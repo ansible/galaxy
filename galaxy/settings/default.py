@@ -374,27 +374,19 @@ LOGGING = {
             'handlers': ['console'],
         },
 
-        'galaxy.api': {
+        # Galaxy logger
+        'galaxy': {
             'level': 'DEBUG',
             'handlers': ['console'],
+            # NOTE(cutwater): Setting propage=False prevents galaxy logs
+            # to be handled by root logger, which is customized by
+            # celery.
+            'propagate': False,
         },
-        'galaxy.accounts': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-        },
-        'galaxy.common.metrics': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-        },
-        'galaxy.main': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-        },
-        'galaxy.worker': {
-            'level': 'DEBUG',
-        },
+
+        # A special logger, that sends task logs to the database
         'galaxy.worker.tasks.import_repository': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'handlers': ['import_task'],
             'propagate': False,
         },
