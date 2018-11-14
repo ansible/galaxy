@@ -335,10 +335,10 @@ LOGGING = {
         'json': {
             '()': 'jog.JogFormatter',
             'format': ('%(asctime)s %(request_id)s %(levelname)s '
-                       '%(module)s: %(message)s'),
+                       '%(name)s: %(message)s'),
         },
         'verbose': {
-            'format': '%(asctime)s %(levelname)s %(module)s: %(message)s',
+            'format': '%(asctime)s %(levelname)s %(name)s: %(message)s',
         },
         'simple': {
             'format': '%(levelname)s %(message)s',
