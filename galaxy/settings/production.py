@@ -210,20 +210,14 @@ GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
 REQUEST_ID_RESPONSE_HEADER = "X-REQUEST-ID"
 
 LOGGING['handlers']['console'] = {
-    'level': 'DEBUG',
+    'level': 'INFO',
     'class': 'logging.StreamHandler',
     'filters': ['request_id'],
     'formatter': 'json',
 }
 
-LOGGING['loggers']['django.request'] = {
+LOGGING['loggers']['galaxy'] = {
+    'level': 'WARNING',
     'handlers': ['console'],
-    'level': 'INFO',
-    'propagate': True,
-}
-
-LOGGING['loggers']['galaxy.api.access'] = {
-    'handlers': ['console'],
-    'level': 'INFO',
-    'propagate': True,
+    'propagate': False,
 }
