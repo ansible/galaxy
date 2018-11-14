@@ -1,8 +1,61 @@
 Ansible Galaxy Changes by Release
 =================================
 
-3.1.0 - Active development
---------------------------
+3.1.0 - Release 16-Nov-2018 
+---------------------------
+
+Changes
+```````
+- Community Score
+  - Enable users to rate their content usage experience. Issue `948 <https://github.com/ansible/galaxy/issues/948>`_.
+
+- Quality Scoring
+
+  - Run ansible-lint during import to generate a Quality score for each content item. Issue `1048 <https://github.com/ansible/galaxy/issues/1048>`_, Issue `1097 <https://github.com/ansible/galaxy/issues/1097>`_.
+  - During import, check metadata of each imported Ansible role, and generate a Metadata score. Issue `1178 <https://github.com/ansible/galaxy/issues/1178>`_.
+  - Surface quality and metadata scores on content detail page. Issue `1107 <https://github.com/ansible/galaxy/issues/1107>`_.
+
+- Search
+
+  - Add content and quality score to Best Match weighting Issue `1163 <https://github.com/ansible/galaxy/issues/1163>`_.
+  - Re-designed search UI
+  - Allow searching namespace names from the main search bar
+
+- User preferences. Issue `1046 <https://github.com/ansible/galaxy/issues/1046>`_, Issue `1113 <https://github.com/ansible/galaxy/issues/1113>`_.
+
+  - Enable user management of the following:
+
+    - Email addresses.
+    - Notification settings
+    - Followed content
+    - API keys
+
+- Email notifications. Issue `1047 <https://github.com/ansible/galaxy/issues/1047>`_.
+
+  - Enable email notifications for:
+
+    - Updates to followed content
+    - Updates to content they follow
+    - Import failures
+    - Import successes
+    - Community feedback on content
+
+- Web Analytics
+
+  - Anonymously track Galaxy web site users and gather usage metrics over time, with the goal of enhancing the overall user experience. PR `1176 <https://github.com/ansible/galaxy/pull/1176>`_.
+
+- Python 3. PR `1263 <https://github.com/ansible/galaxy/pull/1263>`_, PR `1199 <https://github.com/ansible/galaxy/pull/1199>`_.
+
+  - Add support for Python 3 to enable future Pulp integration and upgrade to Django 2
+
+- Content Deprecation
+
+  - Add option to deprecate content in galaxy UI. Issue `1008 <https://github.com/ansible/galaxy/issues/1008>`_.
+
+- Travis CI Badges
+
+  - Fixed missing Travis CI badges on successful imports. Issue `1245 <https://github.com/ansible/galaxy/issues/1165>`_.
+
 
 3.0.12 - Released 24-Sep-2018
 -----------------------------
