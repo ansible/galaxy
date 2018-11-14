@@ -355,11 +355,6 @@ LOGGING = {
     },
 
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -373,54 +368,35 @@ LOGGING = {
     },
 
     'loggers': {
-        'django.request': {
-            'level': 'ERROR',
-            'handlers': ['mail_admins'],
-            'propagate': True,
-        },
+        # Django loggers
         'django': {
             'level': 'INFO',
             'handlers': ['console'],
-            'propagate': True,
         },
-        'django.db': {
-            'level': 'INFO',
-            'handlers': ['console'],
-            'propagate': True,
-        },
+
         'galaxy.api': {
             'level': 'DEBUG',
             'handlers': ['console'],
-            'propagate': True,
         },
         'galaxy.accounts': {
             'level': 'DEBUG',
             'handlers': ['console'],
-            'propagate': True,
         },
         'galaxy.common.metrics': {
             'level': 'DEBUG',
             'handlers': ['console'],
-            'propagate': True,
         },
         'galaxy.main': {
             'level': 'DEBUG',
             'handlers': ['console'],
-            'propagate': True,
         },
         'galaxy.worker': {
             'level': 'DEBUG',
-            'propagate': True,
         },
         'galaxy.worker.tasks.import_repository': {
             'level': 'DEBUG',
             'handlers': ['import_task'],
             'propagate': False,
-        },
-        'allauth': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': True,
         },
     }
 }
