@@ -42,6 +42,58 @@ from galaxy.api import serializers
 LOG = logging.getLogger(__name__)
 LOG.setLevel('DEBUG')
 
+BASE_SCORE = 50.0
+SEVERITY_TO_WEIGHT = {
+    0: 0.0,
+    1: 0.75,
+    2: 1.25,
+    3: 2.5,
+    4: 5.0,
+    5: 10.0,
+}
+CONTENT_SEVERITY = {
+    'ansible-lint_e101': 3,
+    'ansible-lint_e102': 4,
+    'ansible-lint_e103': 5,
+    'ansible-lint_e104': 5,
+    'ansible-lint_e105': 4,
+    'ansible-lint_e201': 0,
+    'ansible-lint_e202': 5,
+    'ansible-lint_e203': 2,
+    'ansible-lint_e204': 1,
+    'ansible-lint_e205': 3,
+    'ansible-lint_e206': 2,
+    'ansible-lint_e301': 4,
+    'ansible-lint_e302': 5,
+    'ansible-lint_e303': 4,
+    'ansible-lint_e304': 5,
+    'ansible-lint_e305': 4,
+    'ansible-lint_e401': 3,
+    'ansible-lint_e402': 3,
+    'ansible-lint_e403': 1,
+    'ansible-lint_e404': 4,
+    'ansible-lint_e501': 5,
+    'ansible-lint_e502': 3,
+    'ansible-lint_e503': 3,
+    'ansible-lint_e504': 3,
+    'ansible-lint_e601': 4,
+    'ansible-lint_e602': 4,
+    'yamllint_yaml_error': 4,
+    'yamllint_yaml_warning': 1,
+}
+METADATA_SEVERITY = {
+    'ansible-lint_e701': 4,
+    'ansible-lint_e702': 4,
+    'ansible-lint_e703': 4,
+    'ansible-lint_e704': 2,
+    'importer_importer101': 3,  # RoleImporter
+    'importer_importer102': 3,  # RoleImporter
+    'importer_importer103': 4,  # RoleImporter
+}
+COMPATIBILITY_SEVERITY = {
+    'importer_not_all_versions_tested': 5,  # RoleMetaParser
+}
+
 
 @celery.task
 def import_repository(task_id, user_initiated=False):
@@ -214,58 +266,6 @@ def _update_task_msg_content_id(import_task):
 
 
 def _update_quality_score(import_task):
-    BASE_SCORE = 50.0
-    SEVERITY_TO_WEIGHT = {
-        0: 0.0,
-        1: 0.75,
-        2: 1.25,
-        3: 2.5,
-        4: 5.0,
-        5: 10.0,
-    }
-    CONTENT_SEVERITY = {
-        'ansible-lint_e101': 3,
-        'ansible-lint_e102': 4,
-        'ansible-lint_e103': 5,
-        'ansible-lint_e104': 5,
-        'ansible-lint_e105': 4,
-        'ansible-lint_e201': 0,
-        'ansible-lint_e202': 5,
-        'ansible-lint_e203': 2,
-        'ansible-lint_e204': 1,
-        'ansible-lint_e205': 3,
-        'ansible-lint_e206': 2,
-        'ansible-lint_e301': 4,
-        'ansible-lint_e302': 5,
-        'ansible-lint_e303': 4,
-        'ansible-lint_e304': 5,
-        'ansible-lint_e305': 4,
-        'ansible-lint_e401': 3,
-        'ansible-lint_e402': 3,
-        'ansible-lint_e403': 1,
-        'ansible-lint_e404': 4,
-        'ansible-lint_e501': 5,
-        'ansible-lint_e502': 3,
-        'ansible-lint_e503': 3,
-        'ansible-lint_e504': 3,
-        'ansible-lint_e601': 4,
-        'ansible-lint_e602': 4,
-        'yamllint_yaml_error': 4,
-        'yamllint_yaml_warning': 1,
-    }
-    METADATA_SEVERITY = {
-        'ansible-lint_e701': 4,
-        'ansible-lint_e702': 4,
-        'ansible-lint_e703': 4,
-        'ansible-lint_e704': 2,
-        'importer_importer101': 3,  # RoleImporter
-        'importer_importer102': 3,  # RoleImporter
-        'importer_importer103': 4,  # RoleImporter
-    }
-    COMPATIBILITY_SEVERITY = {
-        'importer_not_all_versions_tested': 5,   # RoleMetaParser
-    }
-
     # quality score only roles and repos with roles
     repository = import_task.repository
     contents = models.Content.objects.filter(repository_id=repository.id) \
