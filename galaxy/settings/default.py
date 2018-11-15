@@ -288,119 +288,9 @@ ADMIN_URL_PATTERN = r'^{}/'.format(ADMIN_URL_PATH)
 
 ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
 
+# A base directory used by repository import task to clone repositories into.
+# If set to `None`, system temporary directory is used.
 CONTENT_DOWNLOAD_DIR = None
-"""
-A base directory used by repository import task to clone repositories into.
-
-If set to `None`, system temporary directory is used.
-"""
-
-# =========================================================
-# Logging
-# =========================================================
-
-# LOGS_DIR = os.path.join(BASE_DIR, 'var', 'log')
-
-# TODO(cutwater): Adjust logging config for production environment
-# TODO(cutwater): Review logging config
-LOGGING = {
-    'version': 1,
-
-    'disable_existing_loggers': False,
-
-    'formatters': {
-        'json': {
-            '()': 'jog.JogFormatter',
-            'format': ('%(asctime)s %(request_id)s %(levelname)s '
-                       '%(module)s: %(message)s'),
-        },
-        'verbose': {
-            'format': '%(asctime)s %(levelname)s %(module)s: %(message)s',
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s',
-        },
-    },
-
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        },
-        'request_id': {
-            '()': 'log_request_id.filters.RequestIDFilter'
-        },
-    },
-
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'import_task': {
-            'level': 'DEBUG',
-            'class': 'galaxy.common.logutils.ImportTaskHandler',
-            'formatter': 'simple',
-        }
-    },
-
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'django.db': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'galaxy.api': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.accounts': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.common.metrics': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.main': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.worker': {
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'galaxy.worker.tasks.import_repository': {
-            'handlers': ['import_task'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'allauth': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    }
-}
 
 
 # =========================================================
@@ -431,3 +321,74 @@ GALAXY_URL = 'http://{site}:8000'
 # =========================================================
 GALAXY_NOTIFICATION_EMAIL = 'notifications@galaxy.ansible.com'
 DEFAULT_FROM_EMAIL = 'noreply@galaxy.ansible.com'
+
+
+# =========================================================
+# Logging Settings
+# =========================================================
+LOGGING = {
+    'version': 1,
+
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'json': {
+            '()': 'jog.JogFormatter',
+            'format': ('%(asctime)s %(request_id)s %(levelname)s '
+                       '%(name)s: %(message)s'),
+        },
+        'verbose': {
+            'format': '%(asctime)s %(levelname)s %(name)s: %(message)s',
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s',
+        },
+    },
+
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'request_id': {
+            '()': 'log_request_id.filters.RequestIDFilter'
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'import_task': {
+            'level': 'DEBUG',
+            'class': 'galaxy.common.logutils.ImportTaskHandler',
+            'formatter': 'simple',
+        }
+    },
+
+    'loggers': {
+        # Django loggers
+        'django': {
+            'level': 'INFO',
+            'handlers': ['console'],
+        },
+
+        # Galaxy logger
+        'galaxy': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            # NOTE(cutwater): Setting propage=False prevents galaxy logs
+            # to be handled by root logger, which is customized by
+            # celery.
+            'propagate': False,
+        },
+
+        # A special logger, that sends task logs to the database
+        'galaxy.worker.tasks.import_repository': {
+            'level': 'INFO',
+            'handlers': ['import_task'],
+            'propagate': False,
+        },
+    }
+}
