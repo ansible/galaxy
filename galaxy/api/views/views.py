@@ -76,6 +76,7 @@ __all__ = [
     'RoleDependenciesList',
     'RoleDownloads',
     'RoleImportTaskList',
+    'RoleImportTaskList',
     'RoleTypes',
     'RoleUsersList',
     'RoleVersionList',
@@ -298,7 +299,13 @@ class RoleImportTaskList(base_views.ListAPIView):
             content = models.Content.objects.get(pk=id)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        qs = content.repository.import_tasks.all()
+        qs = content.repository.import_tasks.select_related(
+            'owner',
+            'repository',
+            'repository__provider_namespace',
+            'repository__provider_namespace__provider',
+            'repository__provider_namespace__namespace',
+        ).all()
         qs = self.filter_queryset(qs)
         page = self.paginate_queryset(qs)
         if page is not None:
@@ -344,7 +351,15 @@ class ImportTaskList(base_views.ListCreateAPIView):
     serializer_class = serializers.ImportTaskSerializer
 
     def get_queryset(self):
-        return super(ImportTaskList, self).get_queryset()
+        qs = super(ImportTaskList, self).get_queryset()
+        qs = qs.select_related(
+            'owner',
+            'repository',
+            'repository__provider_namespace',
+            'repository__provider_namespace__provider',
+            'repository__provider_namespace__namespace',
+        )
+        return qs
 
     def list(self, request, *args, **kwargs):
         github_user = request.GET.get('github_user')
@@ -438,7 +453,7 @@ class ImportTaskDetail(base_views.RetrieveAPIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (ModelAccessPermission,)
     model = models.ImportTask
-    serializer_class = serializers.ImportTaskSerializer
+    serializer_class = serializers.ImportTaskDetailSerializer
 
     def get_object(self, qs=None):
         obj = super(ImportTaskDetail, self).get_object()
