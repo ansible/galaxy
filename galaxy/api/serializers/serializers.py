@@ -51,6 +51,7 @@ __all__ = [
     'RepositoryVersionSerializer',
     'RoleVersionSerializer',
     'TopContributorsSerializer',
+    'ImportTaskDetailSerializer',
     'ImportTaskSerializer',
     'ImportTaskLatestSerializer',
     'RoleTopSerializer',
@@ -372,28 +373,10 @@ class ImportTaskSerializer(BaseSerializer):
     def get_summary_fields(self, obj):
         if obj is None:
             return {}
+
         summary = super(ImportTaskSerializer, self).get_summary_fields(obj)
-        summary['notifications'] = [OrderedDict([
-            ('id', n.id),
-            ('travis_build_url', n.travis_build_url),
-            ('commit_message', n.commit_message),
-            ('committed_at', n.committed_at),
-            ('commit', n.commit)
-        ]) for n in obj.notifications.all().order_by('id')]
 
         # Support ansible-galaxy <= 2.6 by excluding unsupported messges
-        supported_types = ('INFO', 'WARNING', 'ERROR', 'SUCCESS', 'FAILED')
-        summary['task_messages'] = [OrderedDict([
-            ('id', g.id),
-            ('message_type', g.message_type),
-            ('message_text', g.message_text),
-            ('content_id', g.content_id),
-            ('is_linter_rule_violation', g.is_linter_rule_violation),
-            ('linter_type', g.linter_type),
-            ('linter_rule_id', g.linter_rule_id),
-            ('score_type', g.score_type),
-        ]) for g in obj.messages.filter(
-            message_type__in=supported_types).order_by('id')]
         summary['role'] = {
             'namespace': obj.repository.provider_namespace.namespace.name,
             'name': obj.repository.name
@@ -415,6 +398,38 @@ class ImportTaskSerializer(BaseSerializer):
             'import_branch': obj.repository.import_branch,
             'original_name': obj.repository.original_name
         }
+        return summary
+
+
+class ImportTaskDetailSerializer(ImportTaskSerializer):
+
+    def get_summary_fields(self, obj):
+        summary = super(
+            ImportTaskDetailSerializer, self).get_summary_fields(obj)
+
+        supported_types = ('INFO', 'WARNING', 'ERROR', 'SUCCESS', 'FAILED')
+        # FIXME(cutwater): Why OrderedDict here?
+        summary['notifications'] = [OrderedDict([
+            ('id', n.id),
+            ('travis_build_url', n.travis_build_url),
+            ('commit_message', n.commit_message),
+            ('committed_at', n.committed_at),
+            ('commit', n.commit)
+        ]) for n in obj.notifications.all().order_by('id')]
+
+        # FIXME(cutwater): Why OrderedDict here?
+        summary['task_messages'] = [OrderedDict([
+            ('id', g.id),
+            ('message_type', g.message_type),
+            ('message_text', g.message_text),
+            ('content_id', g.content_id),
+            ('is_linter_rule_violation', g.is_linter_rule_violation),
+            ('linter_type', g.linter_type),
+            ('linter_rule_id', g.linter_rule_id),
+            ('score_type', g.score_type),
+        ]) for g in obj.messages.filter(
+            message_type__in=supported_types).order_by('id')]
+
         return summary
 
 

@@ -161,7 +161,7 @@ class RepositoryList(views.ListCreateAPIView):
         serializer = self.get_serializer(repository)
         data = serializer.data
         data['summary_fields']['latest_import'] = \
-            serializers.ImportTaskSerializer(import_task).data
+            serializers.ImportTaskDetailSerializer(import_task).data
         headers = self.get_success_headers(data)
         return Response(serializer.data, status=status.HTTP_201_CREATED,
                         headers=headers)
@@ -248,7 +248,7 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
             )
 
             data['summary_fields']['latest_import'] = \
-                serializers.ImportTaskSerializer(import_task).data
+                serializers.ImportTaskDetailSerializer(import_task).data
         return Response(data)
 
     def destroy(self, request, *args, **kwargs):
@@ -266,7 +266,7 @@ class RepositoryDetail(views.RetrieveUpdateDestroyAPIView):
 class RepositoryImportTaskList(views.SubListAPIView):
     view_name = "Repository Imports"
     model = models.ImportTask
-    serializer_class = serializers.ImportTaskSerializer
+    serializer_class = serializers.ImportTaskDetailSerializer
     parent_model = models.Repository
     relationship = "import_tasks"
 
