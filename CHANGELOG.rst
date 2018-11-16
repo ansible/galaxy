@@ -54,7 +54,11 @@ Changes
 
 - Travis CI Badges
 
-  - Fixed missing Travis CI badges on successful imports. Issue `1245 <https://github.com/ansible/galaxy/issues/1165>`_.
+  - Fix missing Travis CI badges on successful imports. Issue `1245 <https://github.com/ansible/galaxy/issues/1165>`_.
+
+- Mobile Improvements
+
+  - Add ability to log in, and view documentation and help links from mobile browsers. Issue `1148 <https://github.com/ansible/galaxy/issues/1148>`_, PR `1154 <https://github.com/ansible/galaxy/pull/1154>`_, PR `1151 <https://github.com/ansible/galaxy/pull/1151>`_.
 
 
 3.0.12 - Released 24-Sep-2018
