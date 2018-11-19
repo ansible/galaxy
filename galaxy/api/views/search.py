@@ -77,10 +77,26 @@ class ContentSearchView(base.ListAPIView):
     filter_backends = [filters.OrderByFilter]
 
     def get_queryset(self):
-        return (models.Content.objects.distinct()
-                .filter(
-                    repository__provider_namespace__namespace__isnull=False,
-                    repository__provider_namespace__namespace__active=True))
+        return (
+            models.Content.objects.distinct()
+            .select_related(
+                'content_type',
+                'namespace',
+                'repository',
+                'repository__provider_namespace',
+                'repository__provider_namespace__namespace',
+            )
+            .prefetch_related(
+                'videos',
+                'tags',
+                'dependencies',
+                'platforms',
+                'repository__versions',
+            )
+            .filter(
+                repository__provider_namespace__namespace__isnull=False,
+                repository__provider_namespace__namespace__active=True)
+        )
 
     # TODO(cutwater): Use serializer to parse request arguments
     def list(self, request, *args, **kwargs):
@@ -129,8 +145,10 @@ class ContentSearchView(base.ListAPIView):
 
         tags = request.GET.get('tags_autocomplete', '').split()
         queryset = self.add_tags_filter(queryset, tags)
+
         platforms = request.GET.get('platforms_autocomplete', '').split()
         queryset = self.add_platforms_filter(queryset, platforms)
+
         namespaces = request.GET.get('username_autocomplete', '').split()
         queryset = self.add_namespaces_filter(queryset, namespaces)
 
