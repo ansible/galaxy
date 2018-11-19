@@ -26,7 +26,6 @@ from galaxy.worker import exceptions as exc, utils
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel('DEBUG')
 
 
 class ContentImporter(object):
