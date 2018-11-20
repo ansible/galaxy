@@ -26,7 +26,9 @@ function run_web() {
 
 function run_worker() {
     _exec_cmd "${VENV_BIN}/galaxy-manage" celeryd \
-        -B --autoreload -Q 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
+        --beat \
+        --loglevel WARNING \
+        --queues 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
 }
 
 function run_service() {
