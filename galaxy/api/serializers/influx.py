@@ -177,7 +177,7 @@ class SearchLinkMeasurementSerializer(BaseMeasurement):
 
     # This doen't use any tags becase the number of possible combinations of
     # search parameters exceeds influxdb's ability to index them
-    class Fields(BaseTags):
+    class Fields(BaseFields):
         cloud_platforms = drf_serializers.CharField(
             required=False, allow_blank=True
         )
