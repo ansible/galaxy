@@ -52,7 +52,12 @@ class ActiveOnlyBackend(BaseFilterBackend):
         return queryset
 
 
-class FieldLookupBackend(BaseFilterBackend):
+# NOTE(cutwater): Adding `DISTINCT` statement to all database queries
+# may have significant performance impact. To keep compatibility with
+# existing code a `FieldLookupBackend` implementation is moved to
+# base class `_FieldLookupBackend` except calling `.distinct()` for all
+# returned querysets, which is added in child class.
+class _FieldLookupBackend(BaseFilterBackend):
     """
     Filter using field lookups provided via query string parameters.
     """
@@ -241,11 +246,18 @@ class FieldLookupBackend(BaseFilterBackend):
                     else:
                         q = Q(**{k: v})
                     queryset = queryset.filter(q)
-            return queryset.distinct()
+            return queryset
         except (FieldError, FieldDoesNotExist, ValueError) as e:
             raise ParseError(e.args[0])
         except ValidationError as e:
             raise ParseError(e.messages)
+
+
+class FieldLookupBackend(_FieldLookupBackend):
+    def filter_queryset(self, request, queryset, view):
+        qs = super(FieldLookupBackend, self).filter_queryset(
+            request, queryset, view)
+        return qs.distinct()
 
 
 class OrderByBackend(BaseFilterBackend):

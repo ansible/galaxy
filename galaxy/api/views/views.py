@@ -40,10 +40,12 @@ from rest_framework.authentication import (
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import filters as drf_filters
 
 from galaxy import constants
 from galaxy.accounts.models import CustomUser as User
 from galaxy.api.permissions import ModelAccessPermission
+from galaxy.api import filters as galaxy_filters
 from galaxy.api import serializers
 from galaxy.api import tasks
 from galaxy.api.views import base_views
@@ -349,10 +351,15 @@ class ImportTaskList(base_views.ListCreateAPIView):
     permission_classes = (ModelAccessPermission,)
     model = models.ImportTask
     serializer_class = serializers.ImportTaskSerializer
+    filter_backends = (
+        galaxy_filters.ActiveOnlyBackend,
+        galaxy_filters._FieldLookupBackend,
+        drf_filters.SearchFilter,
+        galaxy_filters.OrderByBackend,
+    )
 
     def get_queryset(self):
-        qs = super(ImportTaskList, self).get_queryset()
-        qs = qs.select_related(
+        qs = models.ImportTask.objects.select_related(
             'owner',
             'repository',
             'repository__provider_namespace',
@@ -364,13 +371,13 @@ class ImportTaskList(base_views.ListCreateAPIView):
     def list(self, request, *args, **kwargs):
         github_user = request.GET.get('github_user')
         github_repo = request.GET.get('github_repo')
+        qs = self.get_queryset()
         if github_user and github_repo:
             # Support ansible-galaxy <= 2.6
-            qs = models.ImportTask.objects.filter(
+            qs = qs.filter(
                 repository__provider_namespace__name=github_user,
                 repository__original_name=github_repo)
         else:
-            qs = self.get_queryset()
             qs = self.filter_queryset(qs)
         page = self.paginate_queryset(qs)
         if page is not None:
