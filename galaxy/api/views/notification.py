@@ -29,7 +29,7 @@ from galaxy.api.views import base_views
 from galaxy.main import models
 
 
-TRAVIS_STATUS_URL = "https://travis-ci.org/{user}/{repo}.svg?branch={branch}"
+TRAVIS_STATUS_URL = "{protocol}://{url}/{user}/{repo}.svg?branch={branch}"
 
 __all__ = [
     'NotificationSecretList',
@@ -174,8 +174,16 @@ class NotificationList(base_views.ListCreateAPIView):
         owner = self._get_owner(github_user)
         payload = json.loads(request.POST['payload'])
         request_branch = payload['branch']
+
+        travis_url = urlparse.urlparse(payload.get('build_url'))
+
         travis_status_url = TRAVIS_STATUS_URL.format(
-            user=github_user, repo=github_repo, branch=request_branch)
+            protocol=travis_url.scheme,
+            url=travis_url.netloc,
+            user=github_user,
+            repo=github_repo,
+            branch=request_branch
+        )
         committed_at = payload.get('committed_at')
         if committed_at:
             committed_at = parse_datetime(committed_at)
