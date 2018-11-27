@@ -19,3 +19,8 @@ export class RepositoryImport {
     summary_fields: any;
     related: any;
 }
+
+// Required to get typescript to play nice with our stupid api
+export class RepositoryImportSave {
+    results: RepositoryImport[];
+}
