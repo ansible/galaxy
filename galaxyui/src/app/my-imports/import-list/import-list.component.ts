@@ -183,27 +183,16 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    selectItem(select: number, deselect?: number): void {
-        this.items.forEach(item => {
-            if (
-                deselect !== null &&
-                select !== deselect &&
-                item.id === deselect
-            ) {
-                this.pfList.selectItem(item, false);
-            } else if (item.id === select) {
-                this.pfList.selectItem(item, true);
-            }
-        });
+    selectItem(select: number): void {
+        const item = this.items.find(x => x.id === select);
+        this.pfList.selectItem(item, true);
     }
 
     getImport(id: number, showPageLoader: boolean): void {
         if (showPageLoader) {
             this.pageLoading = true;
         }
-        let deselectId: number;
         if (this.selected) {
-            deselectId = this.selected.id;
             this.selected.id = 0;
         }
         if (this.polling) {
@@ -215,7 +204,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
             this.selectedId = result.id;
             this.setQuery();
             if (this.pfList) {
-                this.selectItem(this.selected.id, deselectId);
+                this.selectItem(this.selected.id);
             }
             this.cancelPageLoading();
             if (
