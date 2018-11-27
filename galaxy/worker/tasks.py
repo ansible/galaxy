@@ -205,6 +205,7 @@ def _import_repository(import_task, logger):
 
     _update_task_msg_content_id(import_task)
     _update_quality_score(import_task)
+    _cleanup_old_task_msg(import_task)
 
     # Updating versions has to go last because:
     # - we don't want to update the version number if the import fails.
@@ -347,6 +348,23 @@ def _update_quality_score(import_task):
     repository.quality_score_date = timezone.now()
     repository.save()
     LOG.debug(u'repo quality score: {}'.format(repository.quality_score))
+
+
+def _cleanup_old_task_msg(import_task):
+    old_task_ids = models.ImportTask.objects.filter(
+        repository=import_task.repository,
+    ).exclude(
+        id=import_task.id,
+    ).values_list(
+        'id',
+        flat=True,
+    )
+
+    if old_task_ids:
+        old_task_msgs = models.ImportTaskMessage.objects.filter(
+            task__in=old_task_ids
+        )
+        old_task_msgs.delete()
 
 
 def _update_namespace(repository):
