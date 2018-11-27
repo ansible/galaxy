@@ -132,19 +132,17 @@ class ContentSerializer(BaseModelSerializer):
         # Support ansible-galaxy <= 2.6 by excluding unsupported messges
         supported_types = ('INFO', 'WARNING', 'ERROR', 'SUCCESS', 'FAILED')
         latest_task = models.ImportTask.objects.filter(
-            repository_id=instance.repository.id
-        ).latest('id')
+            repository_id=instance.repository_id).order_by('-created').first()
 
-        return {
-            'namespace': _NamespaceSerializer().to_representation(
-                instance.repository.provider_namespace.namespace),
-            'repository': _RepositorySerializer().to_representation(
-                instance.repository),
-            'content_type':
-                _ContentTypeSerializer().to_representation(
-                    instance.content_type),
-            'dependencies': [str(g) for g in instance.dependencies.all()],
-            'task_messages': [
+        task_messages = []
+        if latest_task:
+            messages_qs = models.ImportTaskMessage.objects.filter(
+                task_id=latest_task.id,
+                content_id=instance.id,
+                message_type__in=supported_types,
+                is_linter_rule_violation=True,
+            )
+            task_messages = [
                 OrderedDict([
                     ('id', m.id),
                     ('message_type', m.message_type),
@@ -156,13 +154,20 @@ class ContentSerializer(BaseModelSerializer):
                     ('rule_desc', m.rule_desc),
                     ('rule_severity', m.rule_severity),
                     ('score_type', m.score_type),
-                ]) for m in models.ImportTaskMessage.objects.filter(
-                    task_id=latest_task.id,
-                    content_id=instance.id,
-                    message_type__in=supported_types,
-                    is_linter_rule_violation=True,
-                )
-            ],
+                ])
+                for m in messages_qs
+            ]
+
+        return {
+            'namespace': _NamespaceSerializer().to_representation(
+                instance.repository.provider_namespace.namespace),
+            'repository': _RepositorySerializer().to_representation(
+                instance.repository),
+            'content_type':
+                _ContentTypeSerializer().to_representation(
+                    instance.content_type),
+            'dependencies': [str(g) for g in instance.dependencies.all()],
+            'task_messages': task_messages,
         }
 
 
