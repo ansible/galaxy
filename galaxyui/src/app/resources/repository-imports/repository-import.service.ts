@@ -4,7 +4,7 @@ import { NotificationService } from 'patternfly-ng/notification/notification-ser
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { PagedResponse } from '../paged-response';
-import { RepositoryImport } from './repository-import';
+import { RepositoryImport, RepositoryImportSave } from './repository-import';
 
 const httpOptions = {
     headers: new HttpHeaders({
@@ -31,11 +31,12 @@ export class RepositoryImportService {
 
     save(params: any): Observable<RepositoryImport> {
         return this.http
-            .post<RepositoryImport>(`${this.url}/`, params, httpOptions)
+            .post<RepositoryImportSave>(`${this.url}/`, params, httpOptions)
             .pipe(
-                tap((newImport: RepositoryImport) =>
+                tap((newImport: RepositoryImportSave) =>
                     this.log(`Saved repository import`),
                 ),
+                map(response => response.results[0]),
                 catchError(this.handleError<RepositoryImport>('Save')),
             );
     }
