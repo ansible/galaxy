@@ -368,9 +368,16 @@ class ImportTaskList(base_views.ListCreateAPIView):
         )
         return qs
 
+    def get_serializer_class(self):
+        # NOTE(cutwater): This is for compatibility with ansible-galaxy client.
+        if 'id' in self.request.GET:
+            return serializers.ImportTaskDetailSerializer
+        return super(ImportTaskList, self).get_serializer_class()
+
     def list(self, request, *args, **kwargs):
         github_user = request.GET.get('github_user')
         github_repo = request.GET.get('github_repo')
+
         qs = self.get_queryset()
         if github_user and github_repo:
             # Support ansible-galaxy <= 2.6
@@ -380,9 +387,11 @@ class ImportTaskList(base_views.ListCreateAPIView):
         else:
             qs = self.filter_queryset(qs)
         page = self.paginate_queryset(qs)
+
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
+
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
