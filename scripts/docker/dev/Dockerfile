@@ -13,7 +13,10 @@ RUN curl -sL -o '/tmp/nodesource-release-el7-1.noarch.rpm' \
 # Install packages and create virtual environment
 ENV PIP_NO_CACHE_DIR off
 RUN yum -y install epel-release \
-    && yum -y install gcc git make python python-pip python-devel \
+    && yum -y install \
+        gcc git make \
+        python python-pip python-devel \
+        tmux ShellCheck vim \
     && pip install virtualenv \
     && yum -y clean all \
     && rm -rf /var/cache/yum
@@ -30,7 +33,6 @@ RUN mkdir -p /var/lib/galaxy/ \
     && ${VENV_BIN}/pip install -U pip wheel \
     && ${VENV_BIN}/pip install -r /tmp/requirements.txt
 
-RUN yum -y install vim tmux make ShellCheck
 RUN ${VENV_BIN}/pip install honcho flake8
 
 ENV DJANGO_SETTINGS_MODULE galaxy.settings.development
