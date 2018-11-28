@@ -21,10 +21,15 @@ import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 import { ToolbarView } from 'patternfly-ng/toolbar/toolbar-view';
 import { IMe } from '../../auth/auth.service';
 import { AuthService } from '../../auth/auth.service';
-import { Namespace } from '../../resources/namespaces/namespace';
 import { NamespaceService } from '../../resources/namespaces/namespace.service';
 import { PagedResponse } from '../../resources/paged-response';
 import { AddRepositoryModalComponent } from '../add-repository-modal/add-repository-modal.component';
+
+import { Namespace as VanillaNamespace } from '../../resources/namespaces/namespace';
+
+class Namespace extends VanillaNamespace {
+   expanded: boolean;
+}
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -154,6 +159,10 @@ export class NamespaceListComponent implements OnInit {
             this.me = data['me'];
             this.items = this.prepForList(results.results as Namespace[]);
             this.filterConfig.resultsCount = results.count;
+            if (results.count == 1) {
+                console.log(results)
+                this.items[0].expanded = true;
+            }
             this.paginationConfig.totalItems = results.count;
             this.pageLoading = false;
         });
@@ -170,6 +179,7 @@ export class NamespaceListComponent implements OnInit {
                 break;
             case 'disableNamespace':
             case 'enableNamespace':
+                console.log("enable, disable " + item);
                 this.enableDisableNamespace(item);
                 break;
             case 'deleteNamespace':
