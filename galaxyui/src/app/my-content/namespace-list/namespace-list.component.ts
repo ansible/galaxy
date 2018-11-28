@@ -160,7 +160,6 @@ export class NamespaceListComponent implements OnInit {
             this.items = this.prepForList(results.results as Namespace[]);
             this.filterConfig.resultsCount = results.count;
             if (results.count == 1) {
-                console.log(results)
                 this.items[0].expanded = true;
             }
             this.paginationConfig.totalItems = results.count;
@@ -179,7 +178,6 @@ export class NamespaceListComponent implements OnInit {
                 break;
             case 'disableNamespace':
             case 'enableNamespace':
-                console.log("enable, disable " + item);
                 this.enableDisableNamespace(item);
                 break;
             case 'deleteNamespace':
