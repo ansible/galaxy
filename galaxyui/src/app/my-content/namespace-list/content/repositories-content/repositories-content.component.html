@@ -15,6 +15,7 @@
             [config]="listConfig"
             [items]="items"
             [itemTemplate]="itemTemplate"
+            [expandTemplate]="listExpandTemplate"
             (onActionSelect)="handleAction($event, null)">
             <ng-template #itemTemplate let-item="item" let-index="index">
                 <div class="list-pf-left">
@@ -62,6 +63,9 @@
                     [repository]="item"
                     (handleAction)="handleItemAction($event)">
                 </namespace-repository-action>
+            </ng-template>
+            <ng-template #listExpandTemplate let-item="item" let-index="index">
+                <h1>beep boop</h1>
             </ng-template>
             </pfng-list>
 

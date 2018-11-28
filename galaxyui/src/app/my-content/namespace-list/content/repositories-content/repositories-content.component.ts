@@ -27,7 +27,7 @@ import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 import { Namespace } from '../../../../resources/namespaces/namespace';
 import { PagedResponse } from '../../../../resources/paged-response';
 import { ProviderNamespace } from '../../../../resources/provider-namespaces/provider-namespace';
-import { Repository } from '../../../../resources/repositories/repository';
+import { Repository as VanillaRepo } from '../../../../resources/repositories/repository';
 import { RepositoryService } from '../../../../resources/repositories/repository.service';
 import { RepositoryImportService } from '../../../../resources/repository-imports/repository-import.service';
 
@@ -36,6 +36,10 @@ import { AlternateNameModalComponent } from './alternate-name-modal/alternate-na
 import { forkJoin, interval, Observable } from 'rxjs';
 
 import * as moment from 'moment';
+
+class Repository extends VanillaRepo {
+    expanded: boolean;
+}
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -182,7 +186,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             selectItems: false,
             selectionMatchProp: 'name',
             showCheckbox: false,
-            useExpandItems: false,
+            useExpandItems: true,
         } as ListConfig;
 
         if (this.namespace.active && provider_namespaces.length) {
@@ -290,6 +294,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     }
 
     private prepareRepository(item: Repository) {
+        item['expanded'] = false;
         item['latest_import'] = {};
         item['detail_url'] = this.getDetailUrl(item);
         item['iconClass'] = this.getIconClass(item.format);
@@ -352,10 +357,21 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                 this.maxItems = this.paginationConfig.totalItems;
             }
 
+            const expanded = [];
+
+            this.items.forEach(item => {
+                if (item.expanded) {
+                    expanded.push(item.id);
+                }
+            });
+
             // Generate a new list of repos
             const updatedList: Repository[] = [];
             repositories.forEach(repo => {
                 this.prepareRepository(repo);
+                if (expanded.includes(repo.id)) {
+                    repo.expanded = true;
+                }
                 updatedList.push(repo);
             });
 
