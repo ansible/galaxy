@@ -1,13 +1,12 @@
 FROM centos:7
 
-# Install nodejs and yarn
-# TODO(cutwater): Use direct package link instead of
-# setup_8.x script execution.
-RUN yum -y install wget \
-    && wget -O - https://rpm.nodesource.com/setup_8.x | bash - \
-    && wget -O /etc/yum.repos.d/yarn.repo https://dl.yarnpkg.com/rpm/yarn.repo \
+# Install node.js and yarn
+RUN curl -sL -o '/tmp/nodesource-release-el7-1.noarch.rpm' \
+        'https://rpm.nodesource.com/pub_8.x/el/7/x86_64/nodesource-release-el7-1.noarch.rpm' \
+    && rpm -i --nosignature --force '/tmp/nodesource-release-el7-1.noarch.rpm' \
+    && rm -f '/tmp/nodesource-release-el7-1.noarch.rpm' \
+    && curl -sL -o '/etc/yum.repos.d/yarn.repo' 'https://dl.yarnpkg.com/rpm/yarn.repo' \
     && yum -y install nodejs yarn \
-    && yum -y remove wget \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
