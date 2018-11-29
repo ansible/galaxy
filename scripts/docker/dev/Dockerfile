@@ -11,13 +11,11 @@ RUN curl -sL -o '/tmp/nodesource-release-el7-1.noarch.rpm' \
     && rm -rf /var/cache/yum
 
 # Install packages and create virtual environment
-ENV PIP_NO_CACHE_DIR off
 RUN yum -y install epel-release \
     && yum -y install \
         gcc git make \
-        python python-pip python-devel \
+        python36 python36-devel \
         tmux ShellCheck vim \
-    && pip install virtualenv \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
@@ -27,9 +25,10 @@ RUN yarn global add @angular/cli@6.1.2 \
 
 # Install python dependencies
 COPY requirements.txt /tmp/requirements.txt
+ENV PIP_NO_CACHE_DIR off
 ENV VENV_BIN /var/lib/galaxy/venv/bin
 RUN mkdir -p /var/lib/galaxy/ \
-    && virtualenv /var/lib/galaxy/venv \
+    && python3.6 -m venv '/var/lib/galaxy/venv' \
     && ${VENV_BIN}/pip install -U pip wheel \
     && ${VENV_BIN}/pip install -r /tmp/requirements.txt
 
@@ -44,7 +43,6 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 ENV PYTHONUNBUFFERED 1
-ENV PYTHONIOENCODING utf8
 
 COPY scripts/docker/dev/entrypoint.sh /entrypoint.sh
 
