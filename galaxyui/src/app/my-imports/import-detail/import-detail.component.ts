@@ -80,7 +80,7 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
     }
 
     @Output()
-    startedImport = new EventEmitter<boolean>();
+    startedImport = new EventEmitter<Number>();
     @Output()
     scrollToggled = new EventEmitter<boolean>();
 
@@ -105,7 +105,7 @@ export class ImportDetailComponent implements OnInit, AfterViewInit {
                         this.importTask.summary_fields.repository.id
                     }`,
                 );
-                this.startedImport.emit(true);
+                this.startedImport.emit(response.id);
             });
     }
 

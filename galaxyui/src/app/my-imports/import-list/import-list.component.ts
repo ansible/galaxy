@@ -183,27 +183,16 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    selectItem(select: number, deselect?: number): void {
-        this.items.forEach(item => {
-            if (
-                deselect !== null &&
-                select !== deselect &&
-                item.id === deselect
-            ) {
-                this.pfList.selectItem(item, false);
-            } else if (item.id === select) {
-                this.pfList.selectItem(item, true);
-            }
-        });
+    selectItem(select: number): void {
+        const item = this.items.find(x => x.id === select);
+        this.pfList.selectItem(item, true);
     }
 
     getImport(id: number, showPageLoader: boolean): void {
         if (showPageLoader) {
             this.pageLoading = true;
         }
-        let deselectId: number;
         if (this.selected) {
-            deselectId = this.selected.id;
             this.selected.id = 0;
         }
         if (this.polling) {
@@ -215,7 +204,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
             this.selectedId = result.id;
             this.setQuery();
             if (this.pfList) {
-                this.selectItem(this.selected.id, deselectId);
+                this.selectItem(this.selected.id);
             }
             this.cancelPageLoading();
             if (
@@ -224,7 +213,7 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
             ) {
                 // monitor the state of a running import
                 this.polling = interval(5000).subscribe(_ =>
-                    this.refreshImport(),
+                    this.refreshImport(id),
                 );
             }
         });
@@ -266,8 +255,10 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     startedImport($event): void {
-        this.refreshImport();
-        this.polling = interval(5000).subscribe(_ => this.refreshImport());
+        this.refreshImport($event);
+        this.polling = interval(5000).subscribe(_ =>
+            this.refreshImport($event),
+        );
     }
 
     toggleScroll($event): void {
@@ -445,18 +436,26 @@ export class ImportListComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    private refreshImport(): void {
+    private updateList(old_id, data: Import) {
+        const index = this.items.findIndex(x => x.id === old_id);
+
+        const newImport = JSON.parse(JSON.stringify(this.items[index]));
+        newImport.id = data.id;
+        newImport.state = data.state;
+        newImport.finished = data.finished;
+
+        this.items[index] = newImport;
+    }
+
+    private refreshImport(id: number): void {
         // Refresh the attributes of the currently selected import
         if (this.selected) {
             const selectedId = this.selected.id;
             this.refreshing = true;
-            const params: any = {
-                repository__id: this.selected.summary_fields.repository.id,
-                order_by: '-id',
-            };
-            this.importsService.query(params).subscribe(result => {
-                if (result.length) {
-                    const import_result: Import = result[0];
+            this.importsService.get(id).subscribe(import_result => {
+                if (import_result) {
+                    this.updateList(selectedId, import_result);
+
                     this.prepareImport(import_result);
                     this.items.forEach((item: ImportLatest) => {
                         if (
