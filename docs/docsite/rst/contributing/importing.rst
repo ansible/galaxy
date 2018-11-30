@@ -145,7 +145,7 @@ Clicking the *X* next to the name on the right will remove it.
 .. image:: mycontent-09.png
 
 At the top of the list of Provider Namespace is a search box. If you don't see an organization listed, try typing the name in the
-box and pressing Enter. 
+box and pressing Enter.
 
 Click the *Save* button at the bottom of the page to update the Namespace with your changes, as shown below:
 
@@ -286,11 +286,6 @@ add a webhook to the notifications section, as shown below:
 
 .. note::
 
-   The Galaxy webhook only works with integration tests running at ``travis-ci.org``. It is not configured
-   to work with ``travis-ci.com``.
-
-.. note::
-   
    You must first log into Galaxy to create a Namespace and associate GitHub organizations with the
    Namespace. If a Namespace does not exist, or the GitHub organization where the content exists is not
    associated with a Namespace, then Galaxy will not know how to import the content.
