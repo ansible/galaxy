@@ -2,8 +2,7 @@ FROM galaxy-base:latest
 
 # Install tini
 ENV TINI_VERSION v0.16.1
-RUN yum -y install wget \
-    && wget -O /usr/local/bin/tini \
+RUN curl -sL -o '/usr/local/bin/tini' \
         "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini" \
     && chmod +x /usr/local/bin/tini \
     && yum -y remove wget \
@@ -13,8 +12,7 @@ RUN yum -y install wget \
 # Create galaxy user
 ENV HOME /var/lib/galaxy
 RUN mkdir -p /var/lib/galaxy \
-    && useradd --system --gid root \
-        --home-dir "${HOME}" galaxy
+    && useradd --system --gid root --home-dir "${HOME}" galaxy
 
 # Create directories structure
 RUN mkdir -p /etc/galaxy \
@@ -26,7 +24,7 @@ COPY scripts/docker/release/entrypoint.sh /entrypoint.sh
 COPY --from=galaxy-build:latest /galaxy/dist/VERSION /var/lib/galaxy
 COPY --from=galaxy-build:latest /galaxy/dist/*.whl /tmp
 COPY --from=galaxy-build:latest /galaxy/build/static/ /var/lib/galaxy/public/static/
-RUN ${VENV_BIN}/pip install "/tmp/galaxy-$(< /var/lib/galaxy/VERSION)-py2-none-any.whl"
+RUN ${VENV_BIN}/pip install "/tmp/galaxy-$(< /var/lib/galaxy/VERSION)-py3-none-any.whl"
 
 RUN git clone https://github.com/ansible/galaxy-lint-rules.git /usr/local/galaxy-lint-rules
 

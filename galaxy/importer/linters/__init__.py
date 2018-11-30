@@ -59,7 +59,9 @@ class Flake8Linter(BaseLinter):
         logger.debug('CMD: ' + ' '.join(cmd))
         proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
         for line in proc.stdout:
-            yield line.strip()
+            # TODO(cutwater): Replace `.decode('utf-8')` call with subprocess
+            # parameter `encoding` after dropping Python 2.7 support.
+            yield line.decode('utf-8').strip()
         proc.wait()
 
     def parse_id_and_desc(self, message):
@@ -92,7 +94,9 @@ class YamlLinter(BaseLinter):
         logger.debug('CMD: ' + ' '.join(cmd))
         proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
         for line in proc.stdout:
-            yield line.strip()
+            # TODO(cutwater): Replace `.decode('utf-8')` call with subprocess
+            # parameter `encoding` after dropping Python 2.7 support.
+            yield line.decode('utf-8').strip()
         proc.wait()
 
     def parse_id_and_desc(self, message):
@@ -134,7 +138,9 @@ class AnsibleLinter(BaseLinter):
         proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE)
 
         for line in proc.stdout:
-            line_list = line.split(' ')
+            # TODO(cutwater): Replace `.decode('utf-8')` call with subprocess
+            # parameter `encoding` after dropping Python 2.7 support.
+            line_list = line.decode('utf-8').split(' ')
             rel_path = ['.'] + line_list[0].split('/')[3:]
             line_list[0] = '/'.join(rel_path)
             line = ' '.join(line_list)
