@@ -28,7 +28,7 @@ import { AddRepositoryModalComponent } from '../add-repository-modal/add-reposit
 import { Namespace as VanillaNamespace } from '../../resources/namespaces/namespace';
 
 class Namespace extends VanillaNamespace {
-   expanded: boolean;
+    expanded: boolean;
 }
 
 @Component({
