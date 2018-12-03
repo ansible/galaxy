@@ -39,6 +39,7 @@ import { SharedModule } from '../shared/shared.module';
 import { NamespaceActionComponent } from './namespace-list/action/action.component';
 
 import { NamespaceRepositoryActionComponent } from './namespace-list/content/repositories-content/action/action.component';
+import { RepoDetailsComponent } from './namespace-list/content/repositories-content/repo-details/repo-details.component';
 
 @NgModule({
     entryComponents: [AddRepositoryModalComponent, AlternateNameModalComponent],
@@ -52,6 +53,7 @@ import { NamespaceRepositoryActionComponent } from './namespace-list/content/rep
         AlternateNameModalComponent,
         NamespaceActionComponent,
         NamespaceRepositoryActionComponent,
+        RepoDetailsComponent,
     ],
     imports: [
         ActionModule,
