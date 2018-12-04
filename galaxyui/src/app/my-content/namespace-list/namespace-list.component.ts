@@ -159,7 +159,7 @@ export class NamespaceListComponent implements OnInit {
             this.me = data['me'];
             this.items = this.prepForList(results.results as Namespace[]);
             this.filterConfig.resultsCount = results.count;
-            if (results.count == 1) {
+            if (results.count === 1) {
                 this.items[0].expanded = true;
             }
             this.paginationConfig.totalItems = results.count;
