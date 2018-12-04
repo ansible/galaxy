@@ -132,7 +132,7 @@ class ContentSerializer(BaseModelSerializer):
         # Support ansible-galaxy <= 2.6 by excluding unsupported messges
         supported_types = ('INFO', 'WARNING', 'ERROR', 'SUCCESS', 'FAILED')
         latest_task = models.ImportTask.objects.filter(
-            repository_id=instance.repository_id).order_by('-created').first()
+            repository_id=instance.repository_id).order_by('-id').first()
 
         task_messages = []
         if latest_task:
