@@ -7,35 +7,37 @@ import galaxy.main.fields
 import galaxy.main.mixins
 
 
+@transaction.atomic
+def copy_categories_to_tags(apps, schema_editor):
+    # tags will replace categories
+    Categories = apps.get_model("main", "Category")
+    Tag = apps.get_model("main", "Tag")
+    for category in Categories.objects.all():
+        for name in category.name.split(':'):
+            try:
+                with transaction.atomic():
+                    tag = Tag(name=name, description=name, active=True)
+                    tag.save()
+            except IntegrityError:
+                pass
+
+
+@transaction.atomic
+def copy_tags(apps, schema_editor):
+    Roles = apps.get_model("main", "Role")
+    Tags = apps.get_model("main", "Tag")
+    for role in Roles.objects.all():
+        for category in role.categories.all():
+            for name in category.name.split(':'):
+                if not role.tags.filter(name=name).exists():
+                    t = Tags.objects.get(name=name)
+                    role.tags.add(t)
+                    role.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [('main', '0010_auto_20150826_1017')]
-
-    @transaction.atomic
-    def copy_categories_to_tags(apps, schema_editor):
-        # tags will replace categories
-        Categories = apps.get_model("main", "Category")
-        Tag = apps.get_model("main", "Tag")
-        for category in Categories.objects.all():
-            for name in category.name.split(':'):
-                try:
-                    with transaction.atomic():
-                        tag = Tag(name=name, description=name, active=True)
-                        tag.save()
-                except IntegrityError:
-                    pass
-
-    @transaction.atomic
-    def copy_tags(apps, schema_editor):
-        Roles = apps.get_model("main", "Role")
-        Tags = apps.get_model("main", "Tag")
-        for role in Roles.objects.all():
-            for category in role.categories.all():
-                for name in category.name.split(':'):
-                    if not role.tags.filter(name=name).exists():
-                        t = Tags.objects.get(name=name)
-                        role.tags.add(t)
-                        role.save()
 
     operations = [
         migrations.CreateModel(
