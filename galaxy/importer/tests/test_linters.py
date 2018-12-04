@@ -136,6 +136,7 @@ ANSIBLELINT_TEST_FILE_OK = """---
 - name: Add mongodb repo apt_key
   become: true
   apt_key: keyserver=hkp
+  until: result.rc == 0
 """
 
 
