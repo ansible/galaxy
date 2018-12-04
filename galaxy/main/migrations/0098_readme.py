@@ -59,7 +59,7 @@ def copy_readme_to_separate_table(apps, schema_editor):
         readme_bytes = content_obj.readme_raw.encode('utf-8')
         readme_hash = hashlib.sha256(readme_bytes).hexdigest()
 
-        readme_obj, _ = Readme.objects.get_or_create(
+        readme_obj, _ = Readme.objects.using(db_alias).get_or_create(
             repository=content_obj.repository,
             raw_hash=readme_hash,
             defaults={

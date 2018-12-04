@@ -1,36 +1,35 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations, IntegrityError, transaction
+from django.db import models, migrations, IntegrityError
 
 import galaxy.main.fields
 import galaxy.main.mixins
 
 
-@transaction.atomic
 def copy_categories_to_tags(apps, schema_editor):
     # tags will replace categories
+    db_alias = schema_editor.connection.alias
     Categories = apps.get_model("main", "Category")
     Tag = apps.get_model("main", "Tag")
-    for category in Categories.objects.all():
+    for category in Categories.objects.using(db_alias).all():
         for name in category.name.split(':'):
+            tag = Tag(name=name, description=name, active=True)
             try:
-                with transaction.atomic():
-                    tag = Tag(name=name, description=name, active=True)
-                    tag.save()
+                tag.save(using=db_alias)
             except IntegrityError:
                 pass
 
 
-@transaction.atomic
 def copy_tags(apps, schema_editor):
+    db_alias = schema_editor.connection.alias
     Roles = apps.get_model("main", "Role")
     Tags = apps.get_model("main", "Tag")
-    for role in Roles.objects.all():
+    for role in Roles.objects.using(db_alias).all():
         for category in role.categories.all():
             for name in category.name.split(':'):
                 if not role.tags.filter(name=name).exists():
-                    t = Tags.objects.get(name=name)
+                    t = Tags.objects.using(db_alias).get(name=name)
                     role.tags.add(t)
                     role.save()
 
