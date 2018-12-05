@@ -49,6 +49,7 @@ DATABASES['logging'] = DATABASES['default'].copy()
 
 # Set the test database name
 DATABASES['default']['TEST'] = {'NAME': 'test_galaxy'}
+DATABASES['logging']['TEST'] = {'NAME': 'test_galaxy'}
 
 # Email settings
 # ---------------------------------------------------------
