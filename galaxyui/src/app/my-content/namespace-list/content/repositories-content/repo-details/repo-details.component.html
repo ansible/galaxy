@@ -91,6 +91,8 @@
             <div class="repo-warnings">
                 <ul>
                     <li *ngFor="let warn of warnings">
+                        <span class="{{warn.warn_class}}"
+                            tooltip="{{'Severity: ' + warn.rule_severity}}"></span> 
                         <b>{{ warn.linter_rule_id }}</b>: {{ warn.message_text }}
                     </li>
                 </ul>

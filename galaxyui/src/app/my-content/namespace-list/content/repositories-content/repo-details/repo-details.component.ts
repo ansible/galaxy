@@ -26,10 +26,23 @@ export class RepoDetailsComponent implements OnInit {
                 for (const cont of this.repoContent) {
                     for (const task of cont.summary_fields['task_messages']) {
                         if (task.message_type === 'WARNING') {
+                            task.warn_class = this.getWarningClass(
+                                task.rule_severity,
+                            );
                             this.warnings.push(task);
                         }
                     }
                 }
             });
+    }
+
+    getWarningClass(severity: number): string {
+        if (severity >= 4) {
+            return 'pficon-error-circle-o';
+        } else if (severity <= 1) {
+            return 'pficon-info';
+        } else {
+            return 'pficon-warning-triangle-o';
+        }
     }
 }
