@@ -86,6 +86,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     selectType = 'checkbox';
     loading = false;
     polling = null;
+    pollingEnabled = true;
     bsModalRef: BsModalRef;
 
     filterConfig: FilterConfig;
@@ -273,10 +274,16 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         });
     }
 
+    private pollRepos() {
+        if (this.pollingEnabled) {
+            this.refreshRepositories();
+        }
+    }
+
     private getRepositories() {
         this.loading = true;
         this.polling = interval(10000).subscribe(pollingResult => {
-            this.refreshRepositories();
+            this.pollRepos();
         });
     }
 
@@ -361,6 +368,8 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                 this.maxItems = this.paginationConfig.totalItems;
             }
 
+            // Collect a list of expanded items to keep them from getting
+            // closed when the page refreshes.
             const expanded = [];
 
             this.items.forEach(item => {
@@ -371,7 +380,17 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
             // Generate a new list of repos
             const updatedList: Repository[] = [];
+
+            // Only poll imports if there are pending imports
+            this.pollingEnabled = false;
             repositories.forEach(repo => {
+                if (
+                    repo.summary_fields.latest_import.state === 'PENDING' ||
+                    repo.summary_fields.latest_import.state === 'RUNNING'
+                ) {
+                    this.pollingEnabled = true;
+                }
+
                 this.prepareRepository(repo);
                 if (expanded.includes(repo.id)) {
                     repo.expanded = true;
@@ -398,6 +417,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
     private importRepository(repository: Repository) {
         // Start an import
+        this.pollingEnabled = true;
         repository['latest_import']['state'] = 'PENDING';
         repository['latest_import']['as_of_dt'] = '';
         this.repositoryImportService

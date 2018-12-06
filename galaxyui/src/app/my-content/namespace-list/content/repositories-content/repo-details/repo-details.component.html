@@ -82,7 +82,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <div *ngIf="warnings.length > 0" class="row">
         <div class="col-sm-12">
             <h2>
                 Warnings
@@ -92,7 +92,7 @@
                 <ul>
                     <li *ngFor="let warn of warnings">
                         <span class="{{warn.warn_class}}"
-                            tooltip="{{'Severity: ' + warn.rule_severity}}"></span> 
+                            tooltip="{{'Severity: ' + warn.rule_severity}}"></span> &nbsp;
                         <b>{{ warn.linter_rule_id }}</b>: {{ warn.message_text }}
                     </li>
                 </ul>
