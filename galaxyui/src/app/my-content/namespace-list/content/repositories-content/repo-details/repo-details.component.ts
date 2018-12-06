@@ -14,7 +14,22 @@ export class RepoDetailsComponent implements OnInit {
     @Input()
     repo;
 
-    repoContent: Content;
+    repoContent: Content[];
+    warnings: any[] = [];
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.contentService
+            .query({ repository_id: this.repo.id, page_size: 1000 })
+            .subscribe(response => {
+                this.repoContent = response as Content[];
+
+                for (const cont of this.repoContent) {
+                    for (const task of cont.summary_fields['task_messages']) {
+                        if (task.message_type === 'WARNING') {
+                            this.warnings.push(task);
+                        }
+                    }
+                }
+            });
+    }
 }

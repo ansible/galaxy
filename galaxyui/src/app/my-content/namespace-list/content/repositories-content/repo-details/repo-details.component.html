@@ -81,4 +81,20 @@
             </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>
+                Warnings
+            </h2>
+
+            <div class="repo-warnings">
+                <ul>
+                    <li *ngFor="let warn of warnings">
+                        <b>{{ warn.linter_rule_id }}</b>: {{ warn.message_text }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>

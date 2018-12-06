@@ -247,6 +247,10 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         this.refreshRepositories();
     }
 
+    toggleItem(item) {
+        item.expanded = !item.expanded;
+    }
+
     // Private
 
     private deprecate(isDeprecated: boolean, repo: Repository): void {
