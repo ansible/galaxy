@@ -82,13 +82,14 @@
         </div>
     </div>
 
-    <div *ngIf="warnings.length > 0" class="row">
+    <div  class="row">
         <div class="col-sm-12">
             <h2>
                 Warnings
+                <span *ngIf="warningsLoading" class="fa fa-spin fa-spinner"></span>
             </h2>
 
-            <div class="repo-warnings">
+            <div *ngIf="warnings.length > 0" class="repo-warnings">
                 <ul>
                     <li *ngFor="let warn of warnings">
                         <span class="{{warn.warn_class}}"
@@ -96,6 +97,9 @@
                         <b>{{ warn.linter_rule_id }}</b>: {{ warn.message_text }}
                     </li>
                 </ul>
+            </div>
+            <div *ngIf="warnings.length === 0 && !warningsLoading">
+                <span class="fa fa-check-circle green-check"></span> No Warnings
             </div>
         </div>
     </div>

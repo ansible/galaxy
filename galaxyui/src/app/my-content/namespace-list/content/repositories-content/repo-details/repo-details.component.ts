@@ -16,6 +16,7 @@ export class RepoDetailsComponent implements OnInit {
 
     repoContent: Content[];
     warnings: any[] = [];
+    warningsLoading = true;
 
     ngOnInit() {
         this.contentService
@@ -33,6 +34,8 @@ export class RepoDetailsComponent implements OnInit {
                         }
                     }
                 }
+
+                this.warningsLoading = false;
             });
     }
 
