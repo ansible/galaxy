@@ -3,6 +3,13 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ContentService } from '../../../../../resources/content/content.service';
 import { Content } from '../../../../../resources/content/content';
 
+import {
+    ContentTypesIconClasses,
+    ContentTypesChoices,
+} from '../../../../../enums/content-types.enum';
+
+import { PluginTypes } from '../../../../../enums/plugin-types.enum';
+
 @Component({
     selector: 'app-repo-details',
     templateUrl: './repo-details.component.html',
@@ -24,6 +31,16 @@ export class RepoDetailsComponent implements OnInit {
     ngOnInit() {
         this.quality = this.getScore(this.repo.quality_score);
         this.community = this.getScore(this.repo.community_score);
+        this.repo.summary_fields.content_objects.forEach(cont => {
+            if (PluginTypes[cont.content_type]) {
+                cont['icon_class'] = ContentTypesIconClasses.plugin;
+                cont['type_text'] = PluginTypes[cont.content_type];
+            } else {
+                cont['icon_class'] = ContentTypesIconClasses[cont.content_type];
+                cont['type_text'] = ContentTypesChoices[cont.content_type];
+            }
+        });
+
         this.contentService
             .query({ repository_id: this.repo.id, page_size: 1000 })
             .subscribe(response => {
@@ -55,7 +72,6 @@ export class RepoDetailsComponent implements OnInit {
     }
 
     getScore(score) {
-        console.log(score);
         if (score !== null) {
             return Math.round(score * 10) / 10;
         } else {

@@ -58,7 +58,8 @@
             <div class="repo-contents">
                 <ul>
                     <li *ngFor="let content of repo.summary_fields.content_objects">
-                        <b>{{ content.name }}</b>: {{ content.description }}
+                        <span class="{{ content.icon_class }}" tooltip="{{content.type_text}}"></span>&nbsp;
+                        <b>{{ content.name }}</b><span *ngIf="content.description">: {{ content.description }}</span>
                     </li>
                 </ul>
             </div>
