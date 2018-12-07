@@ -18,7 +18,12 @@ export class RepoDetailsComponent implements OnInit {
     warnings: any[] = [];
     warningsLoading = true;
 
+    community: any;
+    quality: any;
+
     ngOnInit() {
+        this.quality = this.getScore(this.repo.quality_score);
+        this.community = this.getScore(this.repo.community_score);
         this.contentService
             .query({ repository_id: this.repo.id, page_size: 1000 })
             .subscribe(response => {
@@ -46,6 +51,15 @@ export class RepoDetailsComponent implements OnInit {
             return 'pficon-info';
         } else {
             return 'pficon-warning-triangle-o';
+        }
+    }
+
+    getScore(score) {
+        console.log(score);
+        if (score !== null) {
+            return Math.round(score * 10) / 10;
+        } else {
+            return 'NA';
         }
     }
 }

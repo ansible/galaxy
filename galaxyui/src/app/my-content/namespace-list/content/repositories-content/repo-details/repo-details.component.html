@@ -7,15 +7,6 @@
             <div class="info">
                 <div class="info-row">
                     <div class="info-left">
-                        Latest Commit:
-                    </div>
-                    <div class="info-right">
-                        {{ repo.commit_message }}
-                    </div>
-                </div>
-
-                <div class="info-row">
-                    <div class="info-left">
                         Downloads:
                     </div>
                     <div class="info-right">
@@ -28,8 +19,7 @@
                         Community Score:
                     </div>
                     <div class="info-right">
-                        <span *ngIf="!repo.community_score">NA</span>
-                        {{ repo.community_score }}
+                        {{ community }}
                     </div>
                 </div>
 
@@ -38,8 +28,7 @@
                         Quality Score:
                     </div>
                     <div class="info-right">
-                        <span *ngIf="!repo.quality_score">NA</span>
-                        {{ repo.quality_score }}
+                        {{ quality }}
                     </div>
                 </div>
 
@@ -58,12 +47,6 @@
         </div>
 
 
-        <!-- Bootstrap stops working when I create two width 6 columns for some reason -->
-        <!-- <div class="col-xs-5">
-            <h2>
-                Surveys
-            </h2>
-        </div> -->
     </div>
 
     <div class="row">
