@@ -8,7 +8,9 @@ For help using the public Galaxy web site to find and install Ansible content, o
 
 ## Installing
 
-**NOTE:** Our installation guide is out of date. The old installer does not work with the latest architectural changes introduced in v3.0, and has since been removed from the devel branch.
+**NOTE:** Our installation guide is out of date. The old installer does not work with the latest architectural changes introduced in v3.0, and has since been removed from the devel branch. (The previously provided docker image was intended to be used by the old installer, and henceforth that image is now considered deprecated.  Our updated [contributing guide](./CONTRIBUTING.rst) now walks you through creating your own docker image) 
+
+**Local Install:** If you want to run Ansible Galaxy locally, follow our contributing guide: [contributing guide](./CONTRIBUTING.rst)
 
 ## Roadmap
 
