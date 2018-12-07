@@ -249,7 +249,7 @@ def _update_task_msg_content_id(import_task):
 
     # single role repo content_name is None in ImportTaskMessage
     if len(contents) == 1:
-        name_to_id[None] = name_to_id[name_to_id.keys()[0]]
+        name_to_id[None] = name_to_id[next(iter(name_to_id))]
 
     import_task_messages = models.ImportTaskMessage.objects.filter(
         task_id=import_task.id,
