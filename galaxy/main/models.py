@@ -1060,6 +1060,12 @@ class Repository(BaseModel):
             .annotate(count=models.Count('content_type__name')) \
             .order_by('content_type__name')
 
+    @property
+    def community_survey_count(self):
+        return CommunitySurvey.objects \
+            .filter(repository=self.pk) \
+            .count()
+
     def get_absolute_url(self):
         return reverse('api:repository_detail', args=(self.pk,))
 
