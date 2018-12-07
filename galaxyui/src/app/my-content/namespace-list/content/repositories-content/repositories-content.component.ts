@@ -27,7 +27,7 @@ import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 import { Namespace } from '../../../../resources/namespaces/namespace';
 import { PagedResponse } from '../../../../resources/paged-response';
 import { ProviderNamespace } from '../../../../resources/provider-namespaces/provider-namespace';
-import { Repository } from '../../../../resources/repositories/repository';
+import { Repository as VanillaRepo } from '../../../../resources/repositories/repository';
 import { RepositoryService } from '../../../../resources/repositories/repository.service';
 import { RepositoryImportService } from '../../../../resources/repository-imports/repository-import.service';
 
@@ -36,6 +36,10 @@ import { AlternateNameModalComponent } from './alternate-name-modal/alternate-na
 import { forkJoin, interval, Observable } from 'rxjs';
 
 import * as moment from 'moment';
+
+class Repository extends VanillaRepo {
+    expanded: boolean;
+}
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -82,6 +86,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     selectType = 'checkbox';
     loading = false;
     polling = null;
+    pollingEnabled = true;
     bsModalRef: BsModalRef;
 
     filterConfig: FilterConfig;
@@ -182,7 +187,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
             selectItems: false,
             selectionMatchProp: 'name',
             showCheckbox: false,
-            useExpandItems: false,
+            useExpandItems: true,
         } as ListConfig;
 
         if (this.namespace.active && provider_namespaces.length) {
@@ -243,6 +248,10 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         this.refreshRepositories();
     }
 
+    toggleItem(item) {
+        item.expanded = !item.expanded;
+    }
+
     // Private
 
     private deprecate(isDeprecated: boolean, repo: Repository): void {
@@ -265,10 +274,16 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         });
     }
 
+    private pollRepos() {
+        if (this.pollingEnabled) {
+            this.refreshRepositories();
+        }
+    }
+
     private getRepositories() {
         this.loading = true;
         this.polling = interval(10000).subscribe(pollingResult => {
-            this.refreshRepositories();
+            this.pollRepos();
         });
     }
 
@@ -290,6 +305,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     }
 
     private prepareRepository(item: Repository) {
+        item['expanded'] = false;
         item['latest_import'] = {};
         item['detail_url'] = this.getDetailUrl(item);
         item['iconClass'] = this.getIconClass(item.format);
@@ -352,10 +368,33 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
                 this.maxItems = this.paginationConfig.totalItems;
             }
 
+            // Collect a list of expanded items to keep them from getting
+            // closed when the page refreshes.
+            const expanded = [];
+
+            this.items.forEach(item => {
+                if (item.expanded) {
+                    expanded.push(item.id);
+                }
+            });
+
             // Generate a new list of repos
             const updatedList: Repository[] = [];
+
+            // Only poll imports if there are pending imports
+            this.pollingEnabled = false;
             repositories.forEach(repo => {
+                if (
+                    repo.summary_fields.latest_import.state === 'PENDING' ||
+                    repo.summary_fields.latest_import.state === 'RUNNING'
+                ) {
+                    this.pollingEnabled = true;
+                }
+
                 this.prepareRepository(repo);
+                if (expanded.includes(repo.id)) {
+                    repo.expanded = true;
+                }
                 updatedList.push(repo);
             });
 
@@ -378,6 +417,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
 
     private importRepository(repository: Repository) {
         // Start an import
+        this.pollingEnabled = true;
         repository['latest_import']['state'] = 'PENDING';
         repository['latest_import']['as_of_dt'] = '';
         this.repositoryImportService

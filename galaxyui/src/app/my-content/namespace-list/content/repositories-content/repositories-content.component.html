@@ -15,6 +15,7 @@
             [config]="listConfig"
             [items]="items"
             [itemTemplate]="itemTemplate"
+            [expandTemplate]="listExpandTemplate"
             (onActionSelect)="handleAction($event, null)">
             <ng-template #itemTemplate let-item="item" let-index="index">
                 <div class="list-pf-left">
@@ -31,6 +32,14 @@
                         <div>
                             <app-score [quality]="item.quality_score" [community]="item.community_score"></app-score>
                         </div>
+                        <div
+                            *ngIf="item.quality_score && item.quality_score < 5"
+                            (click)="toggleItem(item)"
+                        >
+                            <span class="pficon-warning-triangle-o"></span>
+                            <span class="warning-link"> Show Warnings</span>
+                        </div>
+
 
                         <div *ngIf="item['latest_import'] && (item['latest_import']['state'] === 'PENDING' || item['latest_import']['state'] === 'RUNNING')">
                             <a [routerLink]="['/my-imports']" [queryParams]="{namespace: namespace.name, repository_name: item.name}" class="running"
@@ -62,6 +71,9 @@
                     [repository]="item"
                     (handleAction)="handleItemAction($event)">
                 </namespace-repository-action>
+            </ng-template>
+            <ng-template #listExpandTemplate let-item="item" let-index="index">
+                <app-repo-details [repo]="item"></app-repo-details>
             </ng-template>
             </pfng-list>
 

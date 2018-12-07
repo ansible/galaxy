@@ -1,0 +1,90 @@
+<div class="container-fluid extra-details">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>
+                Info
+            </h2>
+            <div class="info">
+                <div class="info-row">
+                    <div class="info-left">
+                        Downloads:
+                    </div>
+                    <div class="info-right">
+                        {{ repo.download_count }}
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-left">
+                        Community Score:
+                    </div>
+                    <div class="info-right">
+                        {{ community }}
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-left">
+                        Quality Score:
+                    </div>
+                    <div class="info-right">
+                        {{ quality }}
+                    </div>
+                </div>
+
+                <div class="info-row" *ngIf="repo.travis_build_url">
+                    <div class="info-left">
+                        Travis Status:
+                    </div>
+                    <div class="info-right">
+                        <a href="{{ repo.travis_build_url }}" container="body" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
+                            <img src="{{ repo.travis_status_url }}"
+                                class="travis-status-img" title="Travis Build Status" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>
+                Content
+            </h2>
+
+            <div class="repo-contents">
+                <ul>
+                    <li *ngFor="let content of repo.summary_fields.content_objects">
+                        <span class="{{ content.icon_class }}" tooltip="{{content.type_text}}"></span>&nbsp;
+                        <b>{{ content.name }}</b><span *ngIf="content.description">: {{ content.description }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div  class="row">
+        <div class="col-sm-12">
+            <h2>
+                Warnings
+                <span *ngIf="warningsLoading" class="fa fa-spin fa-spinner"></span>
+            </h2>
+
+            <div *ngIf="warnings.length > 0" class="repo-warnings">
+                <ul>
+                    <li *ngFor="let warn of warnings">
+                        <span class="{{warn.warn_class}}"
+                            tooltip="{{'Severity: ' + warn.rule_severity}}"></span> &nbsp;
+                        <b>{{ warn.linter_rule_id }}</b>: {{ warn.message_text }}
+                    </li>
+                </ul>
+            </div>
+            <div *ngIf="warnings.length === 0 && !warningsLoading">
+                <span class="fa fa-check-circle green-check"></span> No Warnings
+            </div>
+        </div>
+    </div>
+</div>
