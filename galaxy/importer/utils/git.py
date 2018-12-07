@@ -105,7 +105,9 @@ def get_current_branch(directory=None):
         non-zero exit code.
     """
     cmd = ['git', 'rev-parse', '--abbrev-ref', 'HEAD']
-    return subprocess.check_output(cmd, cwd=directory).strip()
+    # TODO(cutwater): Replace `.decode('utf-8')` call with subprocess
+    # parameter `encoding` after dropping Python 2.7 support.
+    return subprocess.check_output(cmd, cwd=directory).decode('utf-8').strip()
 
 
 # See `git help log` for details
@@ -142,7 +144,10 @@ def get_raw_commit_info(commit_id='HEAD', directory=None, date_format=None):
         cmd.append('--date=' + date_format)
     cmd.append(commit_id)
 
-    values = subprocess.check_output(cmd, cwd=directory).strip().split('\x1f')
+    # TODO(cutwater): Replace `.decode('utf-8')` call with subprocess
+    # parameter `encoding` after dropping Python 2.7 support.
+    values = (subprocess.check_output(cmd, cwd=directory).decode('utf-8')
+              .strip().split('\x1f'))
     return dict(zip((v[0] for v in _LOG_FORMAT), values))
 
 
