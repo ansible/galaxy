@@ -198,8 +198,8 @@ class ContentSearchView(base.ListAPIView):
             download_rank=ExpressionWrapper(
                 download_rank_expr,
                 output_field=db_fields.FloatField()),
-            relevance=relevance_expr,
-            quality_rank=quality_rank_expr
+            quality_rank=quality_rank_expr,
+            relevance=relevance_expr
         )
 
     @staticmethod
