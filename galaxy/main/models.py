@@ -1024,6 +1024,10 @@ class Repository(BaseModel):
     community_score = models.FloatField(
         null=True
     )
+    community_survey_count = models.IntegerField(
+        default=0
+    )
+
     quality_score = models.FloatField(
         null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
@@ -1059,12 +1063,6 @@ class Repository(BaseModel):
             .values('content_type__name') \
             .annotate(count=models.Count('content_type__name')) \
             .order_by('content_type__name')
-
-    @property
-    def community_survey_count(self):
-        return CommunitySurvey.objects \
-            .filter(repository=self.pk) \
-            .count()
 
     def get_absolute_url(self):
         return reverse('api:repository_detail', args=(self.pk,))

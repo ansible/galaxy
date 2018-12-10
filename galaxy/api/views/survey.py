@@ -105,6 +105,7 @@ def update_community_score(repo):
     score = (score / len(surveys)) * 5
 
     repo.community_score = score
+    repo.community_survey_count = len(surveys)
     repo.save()
 
     namespace = repo.provider_namespace.namespace.name
