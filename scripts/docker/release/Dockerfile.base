@@ -11,7 +11,7 @@ RUN yum -y install epel-release \
     && rm -rf /var/cache/yum
 
 # Install python dependencies
-COPY requirements.txt /tmp/requirements.txt
+COPY requirements/requirements.txt /tmp/requirements.txt
 RUN mkdir -p /var/lib/galaxy/ \
     && python3.6 -m venv /var/lib/galaxy/venv \
     && ${VENV_BIN}/pip install -U pip wheel \

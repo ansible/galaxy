@@ -1,0 +1,64 @@
+# Common
+# NOTE(cutwater): Probably some of requirements below are obsolete.
+#                 Review required.
+ansible
+bleach
+gunicorn==19.7.1
+markdown==2.4.1
+marshmallow
+PyGithub
+pyOpenSSL
+python-dateutil
+pytz
+PyYAML
+requests
+requests-oauthlib
+rst2html5-tools
+semver
+setuptools
+
+
+# Django
+django>=1.11,<2.0
+django-allauth==0.34.0
+# TODO(cutwater): Review usage of this package
+django-bootstrap-form
+django-filter
+# logging related
+# add request-id to django logs
+django-log-request-id
+djangorestframework>=3.7,<3.8
+dj-database-url
+# format log output as json
+jog
+
+
+# Database
+psycopg2-binary
+influxdb
+
+
+# Tasking
+celery==3.1.24
+# NOTE(cutwater): django-celery is deprecated and should be removed after
+#                 upgrade to celery 4
+django-celery
+
+
+# Python 3 compatibility
+six
+
+
+# Web analytics/metrics
+prometheus_client
+django-prometheus
+
+
+# Content linting
+ansible-lint
+flake8
+yamllint
+
+
+# Docs
+Sphinx<1.8.0
