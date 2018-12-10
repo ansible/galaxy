@@ -13,47 +13,45 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='importtaskmessage',
             name='message_type',
-            field=models.CharField(max_length=10, choices=[
-                ('DEBUG', 'DEBUG'),
-                ('ERROR', 'ERROR'),
-                ('FAILED', 'FAILED'),
-                ('INFO', 'INFO'),
-                ('SUCCESS', 'SUCCESS'),
-                ('WARNING', 'WARNING')]),
+            field=models.CharField(
+                max_length=10, choices=[
+                    ('DEBUG', 'DEBUG'), ('INFO', 'INFO'),
+                    ('WARNING', 'WARNING'), ('SUCCESS', 'SUCCESS'),
+                    ('FAILED', 'FAILED'), ('ERROR', 'ERROR')]),
         ),
         migrations.AlterField(
             model_name='providernamespace',
             name='avatar_url',
             field=models.CharField(max_length=256, null=True,
-                                   verbose_name=b'Avatar URL', blank=True),
+                                   verbose_name='Avatar URL', blank=True),
         ),
         migrations.AlterField(
             model_name='providernamespace',
             name='company',
             field=models.CharField(max_length=256, null=True,
-                                   verbose_name=b'Company Name', blank=True),
+                                   verbose_name='Company Name', blank=True),
         ),
         migrations.AlterField(
             model_name='providernamespace',
             name='email',
             field=models.CharField(max_length=256, null=True,
-                                   verbose_name=b'Email Address', blank=True),
+                                   verbose_name='Email Address', blank=True),
         ),
         migrations.AlterField(
             model_name='providernamespace',
             name='followers',
-            field=models.IntegerField(null=True, verbose_name=b'Followers'),
+            field=models.IntegerField(null=True, verbose_name='Followers'),
         ),
         migrations.AlterField(
             model_name='providernamespace',
             name='html_url',
             field=models.CharField(max_length=256, null=True,
-                                   verbose_name=b'Web Site URL', blank=True),
+                                   verbose_name='Web Site URL', blank=True),
         ),
         migrations.AlterField(
             model_name='providernamespace',
             name='location',
             field=models.CharField(max_length=256, null=True,
-                                   verbose_name=b'Location', blank=True),
+                                   verbose_name='Location', blank=True),
         ),
     ]

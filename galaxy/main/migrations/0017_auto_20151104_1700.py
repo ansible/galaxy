@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 max_length=256,
                 null=True,
-                verbose_name=b'Namespace',
+                verbose_name='Namespace',
                 blank=True,
             ),
         ),

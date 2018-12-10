@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default=b'', max_length=255, blank=True
+                        default='', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -40,19 +40,19 @@ class Migration(migrations.Migration):
                 (
                     'github_user',
                     models.CharField(
-                        max_length=256, verbose_name=b'Github Username'
+                        max_length=256, verbose_name='Github Username'
                     ),
                 ),
                 (
                     'github_repo',
                     models.CharField(
-                        max_length=256, verbose_name=b'Github Repository'
+                        max_length=256, verbose_name='Github Repository'
                     ),
                 ),
                 (
                     'github_reference',
                     models.CharField(
-                        max_length=256, verbose_name=b'Github Reference'
+                        max_length=256, verbose_name='Github Reference'
                     ),
                 ),
                 (
@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         max_length=256,
                         null=True,
-                        verbose_name=b'Alternate Role Name',
+                        verbose_name='Alternate Role Name',
                         blank=True,
                     ),
                 ),
@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
                     'celery_task_id',
                     models.CharField(max_length=100, null=True, blank=True),
                 ),
-                ('state', models.CharField(default=b'PENDING', max_length=20)),
+                ('state', models.CharField(default='PENDING', max_length=20)),
                 ('started', models.DateTimeField(null=True, blank=True)),
                 (
                     'owner',
@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default=b'', max_length=255, blank=True
+                        default='', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -140,7 +140,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default=b'', max_length=255, blank=True
+                        default='', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -149,7 +149,7 @@ class Migration(migrations.Migration):
                 (
                     'source',
                     models.CharField(
-                        max_length=20, verbose_name=b'Source', editable=False
+                        max_length=20, verbose_name='Source', editable=False
                     ),
                 ),
                 (
@@ -165,7 +165,7 @@ class Migration(migrations.Migration):
                     'roles',
                     models.ManyToManyField(
                         related_name='notifications',
-                        verbose_name=b'Roles',
+                        verbose_name='Roles',
                         to='main.Role',
                         editable=False,
                     ),
@@ -174,7 +174,7 @@ class Migration(migrations.Migration):
                     'imports',
                     models.ManyToManyField(
                         related_name='notifications',
-                        verbose_name=b'Tasks',
+                        verbose_name='Tasks',
                         to='main.ImportTask',
                         editable=False,
                     ),
@@ -183,7 +183,7 @@ class Migration(migrations.Migration):
                     'github_branch',
                     models.CharField(
                         max_length=256,
-                        verbose_name=b'GitHub Branch',
+                        verbose_name='GitHub Branch',
                         blank=True,
                         editable=False,
                     ),
@@ -216,7 +216,7 @@ class Migration(migrations.Migration):
                 (
                     'description',
                     galaxy.main.fields.TruncatingCharField(
-                        default=b'', max_length=255, blank=True
+                        default='', max_length=255, blank=True
                     ),
                 ),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -224,12 +224,12 @@ class Migration(migrations.Migration):
                 ('active', models.BooleanField(default=True, db_index=True)),
                 (
                     'source',
-                    models.CharField(max_length=20, verbose_name=b'Source'),
+                    models.CharField(max_length=20, verbose_name='Source'),
                 ),
                 (
                     'secret',
                     models.CharField(
-                        max_length=256, verbose_name=b'Secret', db_index=True
+                        max_length=256, verbose_name='Secret', db_index=True
                     ),
                 ),
                 (
@@ -243,13 +243,13 @@ class Migration(migrations.Migration):
                 (
                     'github_repo',
                     models.CharField(
-                        max_length=256, verbose_name=b'Github Repository'
+                        max_length=256, verbose_name='Github Repository'
                     ),
                 ),
                 (
                     'github_user',
                     models.CharField(
-                        max_length=256, verbose_name=b'Github Username'
+                        max_length=256, verbose_name='Github Username'
                     ),
                 ),
             ],
@@ -272,7 +272,7 @@ class Migration(migrations.Migration):
             model_name='role',
             name='license',
             field=models.CharField(
-                max_length=50, verbose_name=b'License (optional)', blank=True
+                max_length=50, verbose_name='License (optional)', blank=True
             ),
         ),
         migrations.RemoveField(model_name='roleimport', name='role'),
@@ -281,9 +281,9 @@ class Migration(migrations.Migration):
             model_name='role',
             name='github_branch',
             field=models.CharField(
-                default=b'',
+                default='',
                 max_length=256,
-                verbose_name=b'Github Branch',
+                verbose_name='Github Branch',
                 blank=True,
             ),
         ),
