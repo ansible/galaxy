@@ -24,7 +24,7 @@ RUN yarn global add @angular/cli@6.1.2 \
     && ng set --global packageManager=yarn
 
 # Install python dependencies
-COPY requirements.txt /tmp/requirements.txt
+COPY requirements/dev-requirements.txt /tmp/requirements.txt
 ENV PIP_NO_CACHE_DIR off
 ENV VENV_BIN /var/lib/galaxy/venv/bin
 RUN mkdir -p /var/lib/galaxy/ \

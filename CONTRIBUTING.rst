@@ -486,6 +486,28 @@ If you use PyCharm Professional, then you may configure it according to the
 
 Static HTML files may be used simply by opening them in your favourite web browser.
 
+Upgrading dependencies
+^^^^^^^^^^^^^^^^^^^^^^
+
+Galaxy uses pinned dependencies (aka lock-files) to provide reproducible
+environment installations. These files are compiled from requirements files
+by using ``pip-tools`` package. This package is not included into project
+dependencies and should be installed manually.
+
+To update project requirements you should edit ``*.in`` files stored in ``requirements/`` directory.
+Files ``requirements.in`` and ``dev-requirements.in`` are used for specifying
+common and development requirements respectively.
+
+Then you should generate lock file for the requirements file you modified by
+calling the following command:
+
+.. code-block:: none
+
+  $ pip-tools --output requirements/<filename>.txt requirements/<filename>.in
+
+And then commit the both files to git.
+
+
 Commiting
 ---------
 
