@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 related_name='videos',
                 to='main.Role',
-                help_text=b'',
+                help_text='',
                 null=True,
                 on_delete=models.CASCADE,
             ),
@@ -24,6 +24,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='video',
             name='url',
-            field=models.CharField(help_text=b'', unique=True, max_length=256),
+            field=models.CharField(help_text='', unique=True, max_length=256),
         ),
     ]

@@ -54,17 +54,8 @@ class Migration(migrations.Migration):
             name='state',
             field=models.CharField(
                 default='PENDING', max_length=20,
-                choices=[('FAILED', 'FAILED'), ('PENDING', 'PENDING'),
-                         ('RUNNING', 'RUNNING'), ('SUCCESS', 'SUCCESS')]),
-        ),
-        migrations.AlterField(
-            model_name='importtaskmessage',
-            name='message_type',
-            field=models.CharField(
-                max_length=10,
-                choices=[('INFO', 'INFO'), ('WARNING', 'WARNING'),
-                         ('SUCCESS', 'SUCCESS'), ('FAILED', 'FAILED'),
-                         ('ERROR', 'ERROR')]),
+                choices=[('PENDING', 'PENDING'), ('RUNNING', 'RUNNING'),
+                         ('FAILED', 'FAILED'), ('SUCCESS', 'SUCCESS')]),
         ),
         migrations.AlterField(
             model_name='importtaskmessage',

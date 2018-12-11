@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
                 related_name='provider_namespaces',
                 editable=False, to='main.Namespace',
                 null=True, on_delete=models.CASCADE,
-                verbose_name=b'Namespace'
+                verbose_name='Namespace'
             ),
         ),
         migrations.AlterField(
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
             name='provider',
             field=models.ForeignKey(
                 related_name='provider_namespaces',
-                verbose_name=b'Provider',
+                verbose_name='Provider',
                 to='main.Provider', null=True,
                 on_delete=models.CASCADE,
             ),

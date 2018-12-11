@@ -13,14 +13,14 @@ class Migration(migrations.Migration):
             model_name='role',
             name='readme_type',
             field=models.CharField(
-                max_length=5, null=True, verbose_name=b'README type'
+                max_length=5, null=True, verbose_name='README type'
             ),
         ),
         migrations.AlterField(
             model_name='role',
             name='readme',
             field=models.TextField(
-                default=b'', verbose_name=b'README content', blank=True
+                default='', verbose_name='README content', blank=True
             ),
         ),
     ]

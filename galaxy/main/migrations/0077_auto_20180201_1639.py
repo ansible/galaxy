@@ -21,12 +21,12 @@ class Migration(migrations.Migration):
             model_name='repository',
             name='description',
             field=galaxy.main.fields.TruncatingCharField(
-                default=b'', max_length=255, blank=True),
+                default='', max_length=255, blank=True),
         ),
         migrations.AlterField(
             model_name='repository',
             name='commit_created',
             field=models.DateTimeField(null=True,
-                                       verbose_name=b'Last Commit DateTime'),
+                                       verbose_name='Last Commit DateTime'),
         ),
     ]
