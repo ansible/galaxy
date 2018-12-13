@@ -12,4 +12,5 @@ Contributing Content
    creating_apb
    version
    importing
+   content_scoring
    deprecate
