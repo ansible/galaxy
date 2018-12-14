@@ -1,6 +1,20 @@
 Ansible Galaxy Changes by Release
 =================================
 
+3.1.4 - Released 14-Dec-2018
+----------------------------
+
+Changes
+```````
+- Fix broken repository import when import messages is longer than 256 charaters. Issue `1415 <https://github.com/ansible/galaxy/issues/1370>`_.
+
+Closed PRs
+``````````
+- `1390 Fix getting last import task in ContentSerializer <https://github.com/ansible/galaxy/pull/1390>`_.
+- `1396 Fix linters unit tests <https://github.com/ansible/galaxy/pull/1396>`_.
+- `1417 Fix length constraints on text fields <https://github.com/ansible/galaxy/pull/1417>`_.
+- `1419 Add content scoring docs page <https://github.com/ansible/galaxy/pull/1419>`_.
+
 3.1.3 - Released 29-Nov-2018
 ----------------------------
 
@@ -49,7 +63,7 @@ Closed PRs
 - `1351 Improve Galaxy logging <https://github.com/ansible/galaxy/pull/1351>`_.
 - `1355 Optimize Search API view <https://github.com/ansible/galaxy/pull/1355>`_.
 
-3.1.0 - Released 16-Nov-2018 
+3.1.0 - Released 16-Nov-2018
 ----------------------------
 
 Changes
@@ -302,7 +316,7 @@ Bug Fixes
 
 Closed PRs
 ``````````
-- `930 Fix Nginx static route <https://github.com/ansible/galaxy/pull/930>`_ 
+- `930 Fix Nginx static route <https://github.com/ansible/galaxy/pull/930>`_
 - `913 Merge pull request #912 from newswangerd/author-detail-extravaganza-r <https://github.com/ansible/galaxy/pull/913>`_
 - `910 Author detail extravaganza <https://github.com/ansible/galaxy/pull/910>`_
 - `880 Add regex to check if dates are valid before passing to moment. <https://github.com/ansible/galaxy/pull/880>`_
@@ -330,7 +344,7 @@ Bug Fixes
 `````````
 - Prevent existing repositories from being renamed with '-' converted to '_'
 - Stop failng imports for lint warnings
-- Revert namespace changes, where '-' was converted to '_' for existing namespaces.  
+- Revert namespace changes, where '-' was converted to '_' for existing namespaces.
 
 Closed PRs
 ``````````
@@ -340,23 +354,23 @@ Closed PRs
 - `806 Prevent rename of exisiting repos <https://github.com/ansible/galaxy/pull/806>`_
 
 
-3.0.1 - Released 03-Jul-2018 
+3.0.1 - Released 03-Jul-2018
 ----------------------------
 
 Bug Fixes
 `````````
-- Removed Partner menu 
-- Fixed Sort dropdown not populating on Search page  
+- Removed Partner menu
+- Fixed Sort dropdown not populating on Search page
 - Perform case insensitive matching on Platforms during import
-- Fixed duplicate key error happening on imports when existing Repository object not found 
-- Fixed creation of new Repository objects when existing object not found, which was causing some existing roles to be renamed with '-' converted to '_' 
-- Enable Galaxy Admins to start an import on any repository 
+- Fixed duplicate key error happening on imports when existing Repository object not found
+- Fixed creation of new Repository objects when existing object not found, which was causing some existing roles to be renamed with '-' converted to '_'
+- Enable Galaxy Admins to start an import on any repository
 - Change filter on My Imports page to match exact user namespace
 - Perform case insensitive match when installing roles using ``ansible-galaxy`` CLI
 - Fixes broken ``ansible-galaxy search``, when using keywords
 - Fix broken polling on My Imports page
-- Add tooltip to import status on My Content page 
-- Add missing logging messages to the API and UI 
+- Add tooltip to import status on My Content page
+- Add missing logging messages to the API and UI
 - Fixed missing API response data that contributed to ``ansible-galaxy import`` breaking in Ansible 2.7.0
 - Provide missing page titles in docs
 
