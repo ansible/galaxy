@@ -719,9 +719,7 @@ class ImportTaskMessage(PrimordialModel):
         max_length=10,
         choices=constants.ImportTaskMessageType.choices(),
     )
-    message_text = models.CharField(
-        max_length=256,
-    )
+    message_text = models.TextField()
     is_linter_rule_violation = models.NullBooleanField(
         default=False,
     )
@@ -737,8 +735,7 @@ class ImportTaskMessage(PrimordialModel):
         max_length=256,
         null=True,
     )
-    rule_desc = models.CharField(
-        max_length=256,
+    rule_desc = models.TextField(
         null=True,
     )
     rule_severity = models.IntegerField(
