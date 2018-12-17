@@ -922,7 +922,7 @@ class RemoveRole(base_views.APIView):
 
         roles = models.Content.objects.filter(
             repository__provider_namespace__name=gh_user,
-            repository__name=gh_repo)
+            repository__original_name=gh_repo)
         cnt = len(roles)
         if cnt == 0:
             response['status'] = (
@@ -949,7 +949,7 @@ class RemoveRole(base_views.APIView):
 
         repo = models.Repository.objects.get(
             provider_namespace__name=gh_user,
-            name=gh_repo)
+            original_name=gh_repo)
 
         models.Notification.objects.filter(repository=repo).delete()
         models.Content.objects.filter(repository=repo).delete()
