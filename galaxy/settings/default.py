@@ -259,7 +259,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['r_emailaddress']
     },
     'github': {
-        'SCOPE': ['user:email', 'public_repo', 'read:org']
+        'SCOPE': ['user:email', 'read:org']
     },
 }
 
