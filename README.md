@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ansible/galaxy.svg?branch=devel)](https://travis-ci.org/ansible/galaxy)
+[![Build Status](https://travis-ci.com/ansible/galaxy.svg?branch=devel)](https://travis-ci.com/ansible/galaxy)
 
 # Ansible Galaxy
 
