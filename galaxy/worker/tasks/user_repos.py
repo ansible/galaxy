@@ -17,7 +17,6 @@
 
 import logging
 
-import celery
 import github
 import six
 
@@ -27,6 +26,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from galaxy.main.models import Content
 from galaxy.main import models
 from galaxy import constants
+from galaxy.worker import app
 
 LOG = logging.getLogger(__name__)
 
@@ -115,7 +115,7 @@ def refresh_existing_user_repos(token, github_user):
              .format(github_user.login))
 
 
-@celery.task
+@app.task
 @transaction.atomic
 def refresh_user_repos(user, token):
     LOG.info(u"Refreshing User Repo Cache for {}".format(user.username))
@@ -158,7 +158,7 @@ def refresh_user_repos(user, token):
     user.save()
 
 
-@celery.task
+@app.task
 @transaction.atomic
 def refresh_user_stars(user, token):
     LOG.info(u"Refreshing User Stars for {}".format(user.username))
@@ -227,7 +227,7 @@ def refresh_user_stars(user, token):
         user.starred.create(role=role)
 
 
-@celery.task
+@app.task
 def refresh_role_counts(start, end, token, tracker):
     """
     Update each role with latest counts from GitHub

@@ -193,7 +193,7 @@ REST_FRAMEWORK = {
 # Celery
 # ---------------------------------------------------------
 
-BROKER_URL = None
+CELERY_BROKER_URL = None
 
 CELERY_IMPORTS = (
     'galaxy.worker.tasks',

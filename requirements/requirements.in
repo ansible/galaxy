@@ -39,10 +39,7 @@ influxdb
 
 
 # Tasking
-celery==3.1.24
-# NOTE(cutwater): django-celery is deprecated and should be removed after
-#                 upgrade to celery 4
-django-celery
+celery
 
 
 # Python 3 compatibility

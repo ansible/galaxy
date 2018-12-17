@@ -20,7 +20,6 @@ from __future__ import absolute_import
 import datetime
 import logging
 
-import celery
 import github
 import pytz
 
@@ -34,6 +33,7 @@ from galaxy.common import logutils
 from galaxy.importer import repository as i_repo
 from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
+from galaxy.worker import app
 from galaxy.worker import exceptions as exc
 from galaxy.worker import importers
 from galaxy.worker import utils
@@ -96,7 +96,7 @@ COMPATIBILITY_SEVERITY = {
 }
 
 
-@celery.task
+@app.task
 def import_repository(task_id, user_initiated=False):
     LOG.info(u"Starting task: {:d}".format(int(task_id)))
 
@@ -134,7 +134,7 @@ def import_repository(task_id, user_initiated=False):
         raise
 
 
-@celery.task
+@app.task
 def clear_stuck_imports():
     one_hours_ago = timezone.now() - datetime.timedelta(seconds=3600)
     LOG.info(u"Clear Stuck Imports: {}".format(

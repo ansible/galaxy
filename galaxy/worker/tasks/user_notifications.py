@@ -16,13 +16,13 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
-import celery
 
 from galaxy.main import models
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.core import mail
 from allauth.account.models import EmailAddress
+from galaxy.worker import app
 
 
 LOG = logging.getLogger(__name__)
@@ -112,7 +112,7 @@ def email_verification(email, code, username):
     )
 
 
-@celery.task
+@app.task
 def import_status(task_id, user_initiated, has_failed=False):
     task = models.ImportTask.objects.get(id=task_id)
     repo = task.repository
@@ -158,7 +158,7 @@ def import_status(task_id, user_initiated, has_failed=False):
     notification.notify(ctx)
 
 
-@celery.task
+@app.task
 def collection_update(repo_id):
     followers = models.UserPreferences.objects.filter(
         repositories_followed__pk=repo_id
@@ -187,7 +187,7 @@ def collection_update(repo_id):
     notification.notify(ctx)
 
 
-@celery.task
+@app.task
 def author_release(repo_id):
     repo = models.Repository.objects.get(id=repo_id)
     namespace = repo.provider_namespace.namespace
@@ -220,7 +220,7 @@ def author_release(repo_id):
     notification.notify(ctx)
 
 
-@celery.task
+@app.task
 def new_survey(repo_id):
     repo = models.Repository.objects.get(id=repo_id)
     author = repo.provider_namespace.namespace.name

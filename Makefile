@@ -18,7 +18,7 @@ runserver:
 
 .PHONY: celery
 celery:
-	python manage.py celeryd -B -Q 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
+	celery -A galaxy.worker worker
 
 .PHONY: ng_server
 ng_server:

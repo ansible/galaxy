@@ -141,8 +141,8 @@ EMAIL_USE_TLS = True
 # Celery settings
 # ---------------------------------------------------------
 
-# TODO(cutwater): Replace with BROKER_URL connection string parameter
-BROKER_URL = 'amqp://{user}:{password}@{host}:{port}/{vhost}'.format(
+# TODO(cutwater): Replace with CELERY_BROKER_URL connection string parameter
+CELERY_BROKER_URL = 'amqp://{user}:{password}@{host}:{port}/{vhost}'.format(
     user=os.environ.get('GALAXY_RABBITMQ_USER', 'galaxy'),
     password=os.environ.get('GALAXY_RABBITMQ_PASSWORD', ''),
     host=os.environ.get('GALAXY_RABBITMQ_HOST', ''),

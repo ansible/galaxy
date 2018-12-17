@@ -73,7 +73,7 @@ DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # Celery settings
 # ---------------------------------------------------------
 
-BROKER_URL = 'amqp://galaxy:galaxy@rabbitmq:5672/galaxy'
+CELERY_BROKER_URL = 'amqp://galaxy:galaxy@rabbitmq:5672/galaxy'
 
 # =========================================================
 # Galaxy Settings
