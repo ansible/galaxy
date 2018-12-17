@@ -17,6 +17,7 @@
 
 from __future__ import absolute_import
 
+import datetime
 import logging
 
 import celery
@@ -36,7 +37,7 @@ from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import importers
 from galaxy.worker import utils
-from galaxy.main.celerytasks import user_notifications
+from galaxy.worker.tasks import user_notifications
 from galaxy.api import serializers
 
 
@@ -130,6 +131,34 @@ def import_repository(task_id, user_initiated=False):
         LOG.exception(e)
         import_task.finish_failed(
             reason='Task "{}" failed: {}'.format(import_task.id, str(e)))
+        raise
+
+
+@celery.task
+def clear_stuck_imports():
+    one_hours_ago = timezone.now() - datetime.timedelta(seconds=3600)
+    LOG.info(u"Clear Stuck Imports: {}".format(
+        one_hours_ago.strftime("%Y-%m-%d %H:%M:%S")).encode('utf-8').strip())
+    try:
+        for ri in models.ImportTask.objects.filter(
+                created__lte=one_hours_ago,
+                state__in=[models.ImportTask.STATE_PENDING,
+                           models.ImportTask.STATE_RUNNING]):
+            LOG.info(u"Clear Stuck Imports: {0} - {1}.{2}"
+                     .format(ri.id, ri.repository.github_repo,
+                             ri.repository.github_user))
+            ri.state = u"FAILED"
+            ri.messages.create(
+                message_type=u"ERROR",
+                message_text=(
+                    u'Import timed out, please try again. If you continue '
+                    u'seeing this message you may '
+                    u'have a syntax error in your "meta/main.yml" file.')
+            )
+            ri.save()
+            transaction.commit()
+    except Exception as exc:
+        LOG.error(u"Clear Stuck Imports ERROR: {}".format(exc))
         raise
 
 

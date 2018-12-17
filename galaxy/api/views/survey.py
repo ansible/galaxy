@@ -20,7 +20,7 @@ import logging
 from galaxy.main import models
 from galaxy.api import serializers
 from . import base_views
-from galaxy.main.celerytasks import user_notifications
+from galaxy.worker.tasks import user_notifications
 
 from rest_framework.response import Response
 

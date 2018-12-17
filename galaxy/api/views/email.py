@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from galaxy.api.views import base_views
 from galaxy.api import serializers
-from galaxy.main.celerytasks import user_notifications
+from galaxy.worker.tasks import user_notifications
 
 from rest_framework.response import Response
 

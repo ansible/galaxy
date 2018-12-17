@@ -49,7 +49,7 @@ from galaxy.api import filters as galaxy_filters
 from galaxy.api import serializers
 from galaxy.api import tasks
 from galaxy.api.views import base_views
-from galaxy.main.celerytasks import tasks as celerytasks
+from galaxy.worker import tasks as celerytasks
 from galaxy.main import models
 from galaxy.common import version, sanitize_content_name
 

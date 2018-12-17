@@ -28,7 +28,7 @@ from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from galaxy.accounts.models import CustomUser as User
 from galaxy.main.models import Role, RefreshRoleCount
-from galaxy.main.celerytasks.tasks import refresh_role_counts
+from galaxy.worker.tasks import refresh_role_counts
 from allauth.socialaccount.models import SocialToken
 
 

@@ -196,7 +196,6 @@ REST_FRAMEWORK = {
 BROKER_URL = None
 
 CELERY_IMPORTS = (
-    'galaxy.main.celerytasks',
     'galaxy.worker.tasks',
 )
 
