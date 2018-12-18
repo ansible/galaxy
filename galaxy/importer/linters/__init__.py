@@ -124,8 +124,7 @@ class AnsibleLinter(BaseLinter):
     cmd = 'ansible-lint'
 
     def _check_files(self, paths):
-        rules_path = '/usr/local/galaxy-lint-rules/rules'
-        cmd = [self.cmd, '-p', '-r', rules_path, '.']
+        cmd = [self.cmd, '-p', '.']
         logger.debug('CMD: ' + ' '.join(cmd))
 
         # different logic needed for multi role repos since
