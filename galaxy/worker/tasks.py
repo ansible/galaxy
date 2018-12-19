@@ -72,6 +72,7 @@ CONTENT_SEVERITY = {
     'ansible-lint_e402': 3,
     'ansible-lint_e403': 1,
     'ansible-lint_e404': 4,
+    'ansible-lint_e405': 2,
     'ansible-lint_e501': 5,
     'ansible-lint_e502': 3,
     'ansible-lint_e503': 3,
