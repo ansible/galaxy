@@ -1,6 +1,21 @@
 Ansible Galaxy Changes by Release
 =================================
 
+3.1.5 - Released 18-Dec-2018
+----------------------------
+
+Changes
+```````
+
+- Fix broken repository delete when using ansible-galaxy client. Issue `1420 <https://github.com/ansible/galaxy/issues/1420>`_.
+- Fix Galaxy required write access to user's GitHub account. Issue `1424 <https://github.com/ansible/galaxy/issues/1424>`_.
+
+Closed PRs
+``````````
+
+- `1427 Fix repositories deletion failure when using ansible-galaxy client <https://github.com/ansible/galaxy/pull/1427>`_.
+- `1429 Remove public_repo github OAuth2 scope request <https://github.com/ansible/galaxy/pull/1429>`_.
+
 3.1.4 - Released 14-Dec-2018
 ----------------------------
 
