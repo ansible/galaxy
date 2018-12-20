@@ -25,14 +25,22 @@ function run_web() {
 }
 
 function run_worker() {
-    _exec_cmd "${VENV_BIN}/galaxy-manage" celeryd \
-        --beat \
+    _exec_cmd "${VENV_BIN}/galaxy-manage" celery worker \
+        --loglevel WARNING \
+        --queues 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
+}
+
+function run_scheduler() {
+    _exec_cmd "${VENV_BIN}/galaxy-manage" celery beat \
         --loglevel WARNING \
         --queues 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
 }
 
 function run_service() {
     case $1 in
+        scheduler)
+            run_scheduler
+        ;;
         web)
             run_web
         ;;
@@ -49,6 +57,7 @@ case "$1" in
     manage)
         _exec_cmd "${VENV_BIN}/galaxy-manage" "${@:2}"
     ;;
+    *)
+        _exec_cmd "$@"
+    ;;
 esac
-
-_exec_cmd "$@"
