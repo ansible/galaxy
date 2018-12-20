@@ -32,8 +32,7 @@ function run_worker() {
 
 function run_scheduler() {
     _exec_cmd "${VENV_BIN}/galaxy-manage" celery beat \
-        --loglevel WARNING \
-        --queues 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
+        --loglevel WARNING
 }
 
 function run_service() {
