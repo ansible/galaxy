@@ -136,6 +136,7 @@ class RoleListSerializer(BaseRoleSerializer):
             deprecated=obj.repository.deprecated,
             community_score=obj.repository.community_score,
             quality_score=obj.repository.quality_score,
+            community_survey_count=obj.repository.community_survey_count
         )
         d['tags'] = [g.name for g in obj.tags.all()]
         d['versions'] = [

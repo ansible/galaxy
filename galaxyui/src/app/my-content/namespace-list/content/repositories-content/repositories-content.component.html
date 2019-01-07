@@ -30,7 +30,7 @@
                     </div>
                     <div class="list-pf-additional-content">
                         <div>
-                            <app-score [quality]="item.quality_score" [community]="item.community_score"></app-score>
+                            <app-score [repo]="item"></app-score>
                         </div>
                         <div
                             *ngIf="item.quality_score && item.quality_score < 5"
