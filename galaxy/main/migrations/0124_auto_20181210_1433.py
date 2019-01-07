@@ -15,7 +15,7 @@ set community_survey_count =
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0122_auto_20181015_1802'),
+        ('main', '0123_fix_importtaskmessage_constraints'),
     ]
 
     operations = [
