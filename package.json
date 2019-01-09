@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "@angular-builders/dev-server": "^7.2.0",
+    "@angular-devkit/build-angular": "^0.12.0"
+  }
+}
