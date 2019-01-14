@@ -26,8 +26,6 @@ COPY --from=galaxy-build:latest /galaxy/dist/*.whl /tmp
 COPY --from=galaxy-build:latest /galaxy/build/static/ /var/lib/galaxy/public/static/
 RUN ${VENV_BIN}/pip install "/tmp/galaxy-$(< /var/lib/galaxy/VERSION)-py3-none-any.whl"
 
-RUN git clone https://github.com/ansible/galaxy-lint-rules.git /usr/local/galaxy-lint-rules
-
 # Fix directory permissions
 RUN chown -R galaxy:root \
         /etc/galaxy \
