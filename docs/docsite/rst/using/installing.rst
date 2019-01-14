@@ -26,7 +26,7 @@ Determining Where Roles Are Installed
 When Ansible is first installed, it defaults to installing content in */etc/ansible/roles*, which requires 
 *root* privileges.
 
-The first way to override the deault behavior is to use the *--roles-path* option on the command line, as
+The first way to override the default behavior is to use the *--roles-path* option on the command line, as
 demonstrated by the following example:
 
 .. code-block:: bash
