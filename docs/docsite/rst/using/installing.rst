@@ -206,7 +206,7 @@ The following shows an example ``meta/main.yml`` file with dependent roles:
 
 
 If the source of a role is Galaxy, specify the role in the format *namespace.role_name*, as shown in the
-above example. The more complex format used in *requirements.yml* is also supported, as deomonstrated by
+above example. The more complex format used in *requirements.yml* is also supported, as demonstrated by
 the following:
 
 .. code-block:: yaml
