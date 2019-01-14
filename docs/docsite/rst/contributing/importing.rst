@@ -103,7 +103,7 @@ In the dialog box, as shown in the image below, choose the repositories you wish
 
 .. image:: mycontent-04.png
 
-Galaxy will attempt to import each of the selected repositories, and as shown in the next image, the satus of each import will be
+Galaxy will attempt to import each of the selected repositories, and as shown in the next image, the status of each import will be
 updated every few seconds.
 
 .. image:: mycontent-05.png
