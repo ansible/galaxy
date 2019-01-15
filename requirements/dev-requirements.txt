@@ -89,6 +89,3 @@ urllib3==1.24.1           # via requests
 webencodings==0.5.1       # via bleach
 wrapt==1.10.11            # via deprecated
 yamllint==1.13.0
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
