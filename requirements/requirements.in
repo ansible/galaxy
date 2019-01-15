@@ -31,6 +31,10 @@ dj-database-url
 jog
 
 
+# Pulp
+pulpcore==3.0.0b18
+
+
 # Database
 psycopg2-binary
 influxdb
