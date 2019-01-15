@@ -19,6 +19,8 @@ import { AppComponent } from './app.component';
 // Custom Modules
 import { AppRoutingModule } from './app-routing.module';
 import { AuthorsModule } from './authors/authors.module';
+import { AuthorsReactModule } from './authors-react/authors-react.module';
+
 import { ContentDetailModule } from './content-detail/content-detail.module';
 import { ExceptionPagesModule } from './exception-pages/exception-pages.module';
 import { HomeModule } from './home/home.module';
@@ -57,7 +59,11 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
 import { ReactTestComponent } from './react-test/react-test.component';
 
 @NgModule({
-    declarations: [AppComponent, UserNotificationsComponent, ReactTestComponent],
+    declarations: [
+        AppComponent,
+        UserNotificationsComponent,
+        ReactTestComponent,
+    ],
     imports: [
         HttpClientModule,
         HttpClientXsrfModule.withOptions({
@@ -78,6 +84,7 @@ import { ReactTestComponent } from './react-test/react-test.component';
         ExceptionPagesModule,
         VendorsModule,
         AuthorsModule,
+        AuthorsReactModule,
         AppRoutingModule,
         AboutModalModule,
         SharedModule,

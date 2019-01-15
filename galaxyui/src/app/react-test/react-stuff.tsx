@@ -27,17 +27,17 @@ class Test extends React.Component<{}, {}> {
                             <CardBody>[card contents]</CardBody>
                             <CardFooter>
                                 <CardDropdownButton
-                                    id="cardDropdownButton1"
-                                    title="Last 30 Days"
+                                    id='cardDropdownButton1'
+                                    title='Last 30 Days'
                                     // onClick={onClick}
                                 >
-                                    <MenuItem eventKey="1" active>
+                                    <MenuItem eventKey='1' active>
                                         Last 30 Days
                                     </MenuItem>
-                                    <MenuItem eventKey="2">
+                                    <MenuItem eventKey='2'>
                                         Last 60 Days
                                     </MenuItem>
-                                    <MenuItem eventKey="3">
+                                    <MenuItem eventKey='3'>
                                         Last 90 Days
                                     </MenuItem>
                                 </CardDropdownButton>
@@ -57,23 +57,23 @@ class Test extends React.Component<{}, {}> {
                             <CardBody>[card contents]</CardBody>
                             <CardFooter>
                                 <CardDropdownButton
-                                    id="cardDropdownButton1"
-                                    title="Last 30 Days"
+                                    id='cardDropdownButton1'
+                                    title='Last 30 Days'
                                     // onClick={onClick}
                                 >
-                                    <MenuItem eventKey="1" active>
+                                    <MenuItem eventKey='1' active>
                                         Last 30 Days
                                     </MenuItem>
-                                    <MenuItem eventKey="2">
+                                    <MenuItem eventKey='2'>
                                         Last 60 Days
                                     </MenuItem>
-                                    <MenuItem eventKey="3">
+                                    <MenuItem eventKey='3'>
                                         Last 90 Days
                                     </MenuItem>
                                 </CardDropdownButton>
                                 <CardLink
                                     // onClick={handleClick}
-                                    href="#"
+                                    href='#'
                                     icon={<Icon />}
                                 >
                                     Add New Cluster
@@ -85,22 +85,22 @@ class Test extends React.Component<{}, {}> {
                         <Card>
                             <CardHeading>
                                 <CardDropdownButton
-                                    id="cardDropdownButton1"
-                                    title="Last 30 Days"
+                                    id='cardDropdownButton1'
+                                    title='Last 30 Days'
                                     // onClick={onClick}
                                 >
-                                    <MenuItem eventKey="1" active>
+                                    <MenuItem eventKey='1' active>
                                         Last 30 Days
                                     </MenuItem>
-                                    <MenuItem eventKey="2">
+                                    <MenuItem eventKey='2'>
                                         Last 60 Days
                                     </MenuItem>
-                                    <MenuItem eventKey="3">
+                                    <MenuItem eventKey='3'>
                                         Last 90 Days
                                     </MenuItem>
                                 </CardDropdownButton>
                                 <CardTitle>
-                                    <Icon name="shield" />
+                                    <Icon name='shield' />
                                     Card Title
                                 </CardTitle>
                             </CardHeading>
