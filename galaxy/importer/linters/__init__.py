@@ -124,17 +124,9 @@ class AnsibleLinter(BaseLinter):
     cmd = 'ansible-lint'
 
     def _check_files(self, paths):
-        cmd = [self.cmd, '-p', '.']
+        cmd = [self.cmd, '-p'] + paths
         logger.debug('CMD: ' + ' '.join(cmd))
-
-        # different logic needed for multi role repos since
-        # ansible-lint issue role path cannot contain '/'
-        cwd = (
-            self.root
-            if paths == ['.'] else
-            '/'.join((self.root, paths[0]))
-        )
-        proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE)
+        proc = subprocess.Popen(cmd, cwd=self.root, stdout=subprocess.PIPE)
 
         for line in proc.stdout:
             # TODO(cutwater): Replace `.decode('utf-8')` call with subprocess
