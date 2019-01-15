@@ -133,6 +133,18 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 SESSION_SAVE_EVERY_REQUEST = True
 
+# Files upload
+# ---------------------------------------------------------
+
+DEFAULT_FILE_STORAGE = 'pulpcore.app.models.storage.FileSystem'
+
+FILE_UPLOAD_TEMP_DIR = '/var/tmp/galaxy/collections/'
+# List of upload handler classes to be applied in order.
+FILE_UPLOAD_HANDLERS = (
+    'pulpcore.app.files.HashingFileUploadHandler',
+)
+
+
 # Security
 # ---------------------------------------------------------
 
@@ -290,7 +302,7 @@ ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
 
 # A base directory used by repository import task to clone repositories into.
 # If set to `None`, system temporary directory is used.
-CONTENT_DOWNLOAD_DIR = None
+CONTENT_DOWNLOAD_DIR = '/var/tmp/galaxy/repositories'
 
 
 # =========================================================

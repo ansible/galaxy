@@ -23,12 +23,16 @@ RUN yum -y install epel-release \
 RUN yarn global add @angular/cli@6.1.2 \
     && ng set --global packageManager=yarn
 
+# Create directories structure
+RUN mkdir -p /var/lib/galaxy \
+             /var/tmp/galaxy/repositories \
+             /var/tmp/galaxy/collections
+
 # Install python dependencies
 COPY requirements/dev-requirements.txt /tmp/requirements.txt
 ENV PIP_NO_CACHE_DIR off
 ENV VENV_BIN /var/lib/galaxy/venv/bin
-RUN mkdir -p /var/lib/galaxy/ \
-    && python3.6 -m venv '/var/lib/galaxy/venv' \
+RUN python3.6 -m venv '/var/lib/galaxy/venv' \
     && ${VENV_BIN}/pip install -U pip wheel \
     && ${VENV_BIN}/pip install -r /tmp/requirements.txt
 
