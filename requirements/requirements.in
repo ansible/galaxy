@@ -17,7 +17,7 @@ rst2html5-tools
 semver
 
 # Django
-django>=1.11,<2.0
+django>=2.1,<2.2
 django-allauth==0.34.0
 # TODO(cutwater): Review usage of this package
 django-bootstrap-form
