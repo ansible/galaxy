@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-// import { PageHeader } from './page-header';
-import { Link } from './link';
+import { PageHeader } from './page-header';
 import { Injector } from '@angular/core';
 import { InjectorContext } from './injector-context';
 
@@ -12,7 +11,12 @@ interface ICommunityProp {
 
 class CommunityComponent extends React.Component<ICommunityProp, {}> {
     render() {
-        return <Link to='/home'>Home</Link>;
+        return (
+            <PageHeader
+                headerIcon={this.props.headerIcon}
+                headerTitle='Community Authors;/community;geerlingguy;/geerlingguy;php'
+            />
+        );
     }
 }
 

@@ -154,6 +154,11 @@ export class AppComponent implements OnInit {
                 url: '/community',
             },
             {
+                title: 'Community: React',
+                iconStyleClass: 'fa fa-users',
+                url: '/community-react',
+            },
+            {
                 title: 'React Test',
                 iconStyleClass: 'fa pficon-maintenance',
                 url: '/test',
