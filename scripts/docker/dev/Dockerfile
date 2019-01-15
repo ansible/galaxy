@@ -11,7 +11,6 @@ ENV VENV_BIN /var/lib/galaxy/venv/bin
 ENV DJANGO_SETTINGS_MODULE galaxy.settings.development
 ENV C_FORCE_ROOT 1
 
-
 # Install node.js and yarn
 RUN curl -sL -o '/tmp/nodesource-release-el7-1.noarch.rpm' \
         'https://rpm.nodesource.com/pub_8.x/el/7/x86_64/nodesource-release-el7-1.noarch.rpm' \
@@ -45,8 +44,6 @@ COPY requirements/dev-requirements.txt /tmp/requirements.txt
 RUN python3.6 -m venv '/var/lib/galaxy/venv' \
     && ${VENV_BIN}/pip install -U pip wheel \
     && ${VENV_BIN}/pip install -r /tmp/requirements.txt
-
-RUN ${VENV_BIN}/pip install honcho flake8
 
 COPY scripts/docker/dev/entrypoint.sh /entrypoint.sh
 
