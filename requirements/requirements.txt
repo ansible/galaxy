@@ -4,12 +4,15 @@
 #
 #    pip-compile --output-file requirements/requirements.txt requirements/requirements.in
 #
+aiohttp==3.5.4
 alabaster==0.7.12         # via sphinx
 amqp==1.4.9               # via kombu
 ansible-lint==4.0.0
 ansible==2.7.4
 anyjson==0.3.3            # via kombu
 asn1crypto==0.24.0        # via cryptography
+async-timeout==3.0.1      # via aiohttp
+attrs==18.2.0             # via aiohttp
 babel==2.6.0              # via sphinx
 bcrypt==3.1.4             # via paramiko
 billiard==3.3.0.23        # via celery
@@ -17,7 +20,7 @@ bleach==3.0.2
 celery==3.1.24
 certifi==2018.11.29       # via requests
 cffi==1.11.5              # via bcrypt, cryptography, pynacl
-chardet==3.0.4            # via requests
+chardet==3.0.4            # via aiohttp, requests
 click==7.0                # via dynaconf, rq
 coreapi==2.3.3            # via drf-yasg, pulpcore
 coreschema==0.0.4         # via coreapi, drf-yasg
@@ -40,7 +43,8 @@ drf-yasg==1.12.1          # via pulpcore
 dynaconf==1.2.0           # via pulpcore
 flake8==3.6.0
 gunicorn==19.7.1
-idna==2.7                 # via cryptography, requests
+idna-ssl==1.1.0           # via aiohttp
+idna==2.7                 # via cryptography, idna-ssl, requests, yarl
 imagesize==1.1.0          # via sphinx
 inflection==0.3.1         # via drf-yasg
 influxdb==5.2.1
@@ -52,6 +56,7 @@ markdown==2.4.1
 markupsafe==1.1.0         # via jinja2
 marshmallow==2.16.3
 mccabe==0.6.1             # via flake8
+multidict==4.5.2          # via aiohttp, yarl
 oauthlib==2.1.0           # via requests-oauthlib
 packaging==18.0           # via sphinx
 paramiko==2.4.2           # via ansible
@@ -87,8 +92,10 @@ snowballstemmer==1.2.1    # via sphinx
 sphinx==1.7.9
 sphinxcontrib-websupport==1.1.0  # via sphinx
 toml==0.10.0              # via dynaconf
+typing-extensions==3.7.2  # via aiohttp
 uritemplate==3.0.0        # via coreapi, drf-yasg
 urllib3==1.24.1           # via requests
 webencodings==0.5.1       # via bleach
 wrapt==1.10.11            # via deprecated
 yamllint==1.13.0
+yarl==1.3.0               # via aiohttp
