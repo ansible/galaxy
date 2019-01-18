@@ -32,6 +32,8 @@ The following environment variables are supported:
 * GALAXY_EMAIL_PORT
 * GALAXY_EMAIL_USER
 * GALAXY_EMAIL_PASSWORD
+* GALAXY_REDIS_HOST
+* GALAXY_REDIS_PORT
 * GALAXY_RABBITMQ_HOST
 * GALAXY_RABBITMQ_PORT
 * GALAXY_RABBITMQ_USER
@@ -80,7 +82,6 @@ def _read_secret_key(settings_dir='/etc/galaxy'):
 # Django Core Settings
 # =========================================================
 
-
 DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get('GALAXY_ALLOWED_HOSTS', '*').split(',')
@@ -123,15 +124,10 @@ SECRET_KEY = _read_secret_key()
 
 # FIXME(cutwater): Review parameters usage
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
 EMAIL_HOST = os.environ.get('GALAXY_EMAIL_HOST', '')
-
 EMAIL_PORT = int(os.environ.get('GALAXY_EMAIL_PORT', 587))
-
 EMAIL_HOST_USER = os.environ.get('GALAXY_EMAIL_USER', '')
-
 EMAIL_HOST_PASSWORD = os.environ.get('GALAXY_EMAIL_PASSWORD', '')
-
 EMAIL_USE_TLS = True
 
 # =========================================================
@@ -149,6 +145,24 @@ BROKER_URL = 'amqp://{user}:{password}@{host}:{port}/{vhost}'.format(
     port=os.environ.get('GALAXY_RABBITMQ_PORT', 5672),
     vhost=os.environ.get('GALAXY_RABBITMQ_VHOST', 'galaxy'),
 )
+
+# Redis
+# ---------------------------------------------------------
+
+REDIS_HOST = os.environ.get('GALAXY_REDIS_HOST')
+REDIS_PORT = int(os.environ.get('GALAXY_REDIS_PORT', 6379))
+
+# InfluxDB Settings
+# ---------------------------------------------------------
+
+INFLUX_DB_HOST = os.environ.get('GALAXY_INFLUX_DB_HOST', 'influxdb')
+INFLUX_DB_PORT = os.environ.get('GALAXY_INFLUX_DB_PORT', '8086')
+INFLUX_DB_USERNAME = os.environ.get('GALAXY_INFLUX_DB_USERNAME', 'admin')
+INFLUX_DB_PASSWORD = os.environ.get('GALAXY_INFLUX_DB_PASSWORD', '')
+INFLUX_DB_UI_EVENTS_DB_NAME = os.environ.get(
+    'GALAXY_INFLUX_DB_UI_EVENTS_DB_NAME', 'galaxy_ui_events'
+)
+
 
 # =========================================================
 # Galaxy Settings
@@ -178,32 +192,20 @@ CONTENT_DOWNLOAD_DIR = '/var/lib/galaxy/downloads'
 GITHUB_TASK_USERS = ['galaxytasks01', 'galaxytasks02', 'galaxytasks03',
                      'galaxytasks04', 'galaxytasks05']
 
-# =========================================================
-# InfluxDB Settings
-# =========================================================
-INFLUX_DB_HOST = os.environ.get('GALAXY_INFLUX_DB_HOST', 'influxdb')
-INFLUX_DB_PORT = os.environ.get('GALAXY_INFLUX_DB_PORT', '8086')
-INFLUX_DB_USERNAME = os.environ.get('GALAXY_INFLUX_DB_USERNAME', 'admin')
-INFLUX_DB_PASSWORD = os.environ.get('GALAXY_INFLUX_DB_PASSWORD', '')
-INFLUX_DB_UI_EVENTS_DB_NAME = os.environ.get(
-    'GALAXY_INFLUX_DB_UI_EVENTS_DB_NAME', 'galaxy_ui_events'
-)
+GALAXY_URL = 'https://{site}'
 
 
 # =========================================================
 # System Settings
 # =========================================================
+
 include_settings('/etc/galaxy/settings.py', scope=globals(), optional=True)
 
 
 # =========================================================
-# Domain Settings
-# =========================================================
-GALAXY_URL = 'https://{site}'
-
-# =========================================================
 # Logging Settings
 # =========================================================
+
 # https://github.com/dabapps/django-log-request-id
 LOG_REQUEST_ID_HEADER = "HTTP_X_REQUEST_ID"
 GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True

@@ -181,12 +181,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'build', 'static')
 
 DATABASES = {}
 
-# Redis
-# ---------------------------------------------------------
-
-REDIS_HOST = 'redis'
-REDIS_PORT = 6379
-
 # =========================================================
 # Third Party Apps Settings
 # =========================================================
@@ -285,13 +279,20 @@ SOCIALACCOUNT_PROVIDERS = {
 
 SOCIALACCOUNT_AVATAR_SUPPORT = True
 
-# =========================================================
 # Pulp Settings
-# =========================================================
+# ---------------------------------------------------------
 
 WORKING_DIRECTORY = '/var/run/galaxy'
 
 CONTENT_PATH_PREFIX = '/var/lib/galaxy/data'
+
+# InfluxDB Settings
+# ---------------------------------------------------------
+
+# Number of data points to buffer before galaxy writes them to influx.
+# Higher numbers mean more efficient influx inserts, but it also means that
+# more data will potentially be lost when galaxy restarts.
+INFLUX_INSERT_BUFFER_COUNT = 1
 
 # =========================================================
 # Galaxy Settings
@@ -304,6 +305,8 @@ GITHUB_SERVER = 'https://api.github.com'
 
 # TODO(cutwater): Unused parameter?
 GALAXY_COMMENTS_THRESHOLD = 10.0
+
+GALAXY_METRICS_ENABLED = True
 
 # TODO(cutwater): Unused parameter?
 SITE_ENV = 'PROD'
@@ -322,35 +325,13 @@ ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
 # If set to `None`, system temporary directory is used.
 CONTENT_DOWNLOAD_DIR = '/var/tmp/galaxy/repositories'
 
-# =========================================================
-# InfluxDB Settings
-# =========================================================
-INFLUX_DB_HOST = 'influxdb'
-INFLUX_DB_PORT = 8086
-INFLUX_DB_USERNAME = 'admin'
-INFLUX_DB_PASSWORD = 'admin'
-INFLUX_DB_UI_EVENTS_DB_NAME = 'galaxy_metrics'
-
-# Number of data points to buffer before galaxy writes them to influx.
-# Higher numbers mean more efficient influx inserts, but it also means that
-# more data will potentially be lost when galaxy restarts.
-INFLUX_INSERT_BUFFER_COUNT = 1
-
-GALAXY_METRICS_ENABLED = True
-
-
-# =========================================================
-# Domain Settings
-# =========================================================
 GALAXY_URL = 'http://{site}:8000'
 
-
-# =========================================================
 # Notification Settings
-# =========================================================
+# ---------------------------------------------------------
+
 GALAXY_NOTIFICATION_EMAIL = 'notifications@galaxy.ansible.com'
 DEFAULT_FROM_EMAIL = 'noreply@galaxy.ansible.com'
-
 
 # =========================================================
 # Logging Settings

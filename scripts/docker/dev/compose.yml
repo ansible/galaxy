@@ -5,8 +5,6 @@ services:
     image: galaxy-dev:latest
     volumes:
       - ${PWD}:/galaxy:z
-    environment:
-      - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
     ports:
       - '8000:8000'
     depends_on:

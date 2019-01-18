@@ -46,9 +46,15 @@ MIDDLEWARE += [  # noqa: F405
 
 # Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
 DATABASES = {
-    'default': dj_database_url.config(
-        env='GALAXY_DB_URL', conn_max_age=None
-    )
+        'default': {
+        'NAME': 'galaxy',
+        'USER': 'galaxy',
+        'PASSWORD': 'galaxy',
+        'HOST': 'postgres',
+        'PORT': 5432,
+        'CONN_MAX_AGE': None,
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    }
 }
 
 # Create default alias for worker logging
@@ -74,6 +80,21 @@ DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # ---------------------------------------------------------
 
 BROKER_URL = 'amqp://galaxy:galaxy@rabbitmq:5672/galaxy'
+
+# Redis
+# ---------------------------------------------------------
+
+REDIS_HOST = 'redis'
+REDIS_PORT = 6379
+
+# InfluxDB
+# ---------------------------------------------------------
+
+INFLUX_DB_HOST = 'influxdb'
+INFLUX_DB_PORT = 8086
+INFLUX_DB_USERNAME = 'admin'
+INFLUX_DB_PASSWORD = 'admin'
+INFLUX_DB_UI_EVENTS_DB_NAME = 'galaxy_metrics'
 
 # =========================================================
 # Galaxy Settings
