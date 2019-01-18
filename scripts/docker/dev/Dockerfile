@@ -7,7 +7,7 @@ ENV LC_ALL en_US.UTF-8
 ENV PYTHONUNBUFFERED 1
 ENV PIP_NO_CACHE_DIR off
 
-ENV VENV_BIN /var/lib/galaxy/venv/bin
+ENV GALAXY_VENV /var/lib/galaxy/venv
 ENV DJANGO_SETTINGS_MODULE galaxy.settings.development
 ENV C_FORCE_ROOT 1
 
@@ -30,23 +30,27 @@ RUN yum -y install epel-release \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
+# Create directories structure
+RUN mkdir -p /galaxy \
+             /galaxy/galaxyui \
+             /var/lib/galaxy \
+             /var/lib/galaxy/data \
+             /var/tmp/galaxy/repositories \
+             /var/tmp/galaxy/collections \
+             /var/run/galaxy
+
 # Install node dependencies
 RUN yarn global add @angular/cli@6.1.2 \
     && ng set --global packageManager=yarn
 
-# Create directories structure
-RUN mkdir -p /var/lib/galaxy \
-             /var/tmp/galaxy/repositories \
-             /var/tmp/galaxy/collections
-
 # Create virtual environment and install python dependencies
 COPY requirements/dev-requirements.txt /tmp/requirements.txt
-RUN python3.6 -m venv '/var/lib/galaxy/venv' \
-    && ${VENV_BIN}/pip install -U pip wheel \
-    && ${VENV_BIN}/pip install -r /tmp/requirements.txt
+RUN python3.6 -m venv "${GALAXY_VENV}" \
+    && "${GALAXY_VENV}/bin/pip" install -U pip wheel \
+    && "${GALAXY_VENV}/bin/pip" install -r /tmp/requirements.txt
 
-COPY scripts/docker/dev/entrypoint.sh /entrypoint.sh
+COPY scripts/docker/dev/entrypoint.sh /entrypoint
 
 WORKDIR /galaxy
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/galaxy/scripts/docker/dev/start-develop.sh"]
+ENTRYPOINT ["/entrypoint"]
+CMD ["start", "tmux"]

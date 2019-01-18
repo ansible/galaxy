@@ -218,27 +218,6 @@ dev/rm:
 	$(DOCKER_COMPOSE) stop
 	$(DOCKER_COMPOSE) rm -f
 
-# Create the tmux session. Do NOT call directly. Use dev/tmux or dev/tmuxcc instead.
-.PHONY: dev/tmux_noattach
-dev/tmux_noattach:
-	tmux new-session -d -s galaxy -n galaxy \; \
-		 set-option -g allow-rename off \; \
-		 send-keys "scripts/docker/dev/entrypoint.sh make runserver" Enter \; \
-		 new-window -n celery \; \
-		 send-keys "scripts/docker/dev/entrypoint.sh make celery" Enter \; \
-		 new-window -n ng \; \
-		 send-keys "make ng_server" Enter
-
-.PHONY: dev/tmux
-dev/tmux:
-	# Connect to the galaxy container, start processes, and pipe stdout/stderr through a tmux session
-	$(DOCKER_COMPOSE) exec galaxy script /dev/null -q -c 'make dev/tmux_noattach; tmux -2 attach-session -t galaxy'
-
-.PHONY: dev/tmuxcc
-dev/tmuxcc: dev/tmux_noattach
-	# Same as above using iTerm's built-in tmux support
-	$(DOCKER_COMPOSE) exec galaxy bash -c 'make dev/tmux_noattach; tmux -2 -CC attach-session -t galaxy'
-
 .PHONY: dev/export-test-data
 export-test-data:
 	@echo Export data to test-data/role_data.dmp.gz

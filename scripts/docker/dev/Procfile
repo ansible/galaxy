@@ -1,3 +1,7 @@
-celery:       make celery
-runserver:    make runserver
-ng:           make ng_server
+api:                    /entrypoint run api
+ng:                     /entrypoint run ng
+celery-beat:            /entrypoint run celery-beat
+celery-worker:          /entrypoint run celery-worker
+pulp-content-app:       /entrypoint run pulp-content-app
+pulp-resource-manager:  /entrypoint run pulp-resource-manager
+pulp-worker:            /entrypoint run pulp-worker

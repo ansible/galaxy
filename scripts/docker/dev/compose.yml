@@ -6,33 +6,23 @@ services:
     volumes:
       - ${PWD}:/galaxy:z
     environment:
-      - TMUX
-      - TEST
-      - DJANGO_SETTINGS_MODULE=galaxy.settings.development
       - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
     ports:
       - '8000:8000'
-    links:
+    depends_on:
       - postgres
-      - rabbitmq
       - influxdb
+      - rabbitmq
+      - redis
 
   postgres:
-    image: centos/postgresql-95-centos7
+    image: postgres:9.5
     ports:
       - '2345:5432'
     environment:
-      - POSTGRESQL_DATABASE=galaxy
-      - POSTGRESQL_USER=galaxy
-      - POSTGRESQL_PASSWORD=galaxy
-      - POSTGRESQL_ADMIN_PASSWORD=postgres
-
-  rabbitmq:
-    image: rabbitmq:latest
-    environment:
-      - RABBITMQ_DEFAULT_USER=galaxy
-      - RABBITMQ_DEFAULT_PASS=galaxy
-      - RABBITMQ_DEFAULT_VHOST=galaxy
+      - POSTGRES_DB=galaxy
+      - POSTGRES_USER=galaxy
+      - POSTGRES_PASSWORD=galaxy
 
   influxdb:
     image: influxdb:latest
@@ -45,3 +35,13 @@ services:
       - INFLUXDB_ADMIN_PASSWORD=admin
       - INFLUXDB_WRITE_USER=galaxy
       - INFLUXDB_WRITE_USER_PASSWORD=galaxy
+
+  rabbitmq:
+    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=galaxy
+      - RABBITMQ_DEFAULT_PASS=galaxy
+      - RABBITMQ_DEFAULT_VHOST=galaxy
+
+  redis:
+    image: redis:latest
