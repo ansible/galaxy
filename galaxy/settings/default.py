@@ -71,6 +71,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
 
+    'pulpcore.app',
+
     # Project apps
     'galaxy.accounts',
     'galaxy.main',
@@ -179,6 +181,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'build', 'static')
 
 DATABASES = {}
 
+# Redis
+# ---------------------------------------------------------
+
+REDIS_HOST = 'redis'
+REDIS_PORT = 6379
+
 # =========================================================
 # Third Party Apps Settings
 # =========================================================
@@ -278,6 +286,14 @@ SOCIALACCOUNT_PROVIDERS = {
 SOCIALACCOUNT_AVATAR_SUPPORT = True
 
 # =========================================================
+# Pulp Settings
+# =========================================================
+
+WORKING_DIRECTORY = '/var/run/galaxy'
+
+CONTENT_PATH_PREFIX = '/var/lib/galaxy/data'
+
+# =========================================================
 # Galaxy Settings
 # =========================================================
 
@@ -286,8 +302,10 @@ GITHUB_TASK_USERS = []
 
 GITHUB_SERVER = 'https://api.github.com'
 
+# TODO(cutwater): Unused parameter?
 GALAXY_COMMENTS_THRESHOLD = 10.0
 
+# TODO(cutwater): Unused parameter?
 SITE_ENV = 'PROD'
 
 SITE_NAME = 'localhost'
@@ -303,7 +321,6 @@ ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
 # A base directory used by repository import task to clone repositories into.
 # If set to `None`, system temporary directory is used.
 CONTENT_DOWNLOAD_DIR = '/var/tmp/galaxy/repositories'
-
 
 # =========================================================
 # InfluxDB Settings
