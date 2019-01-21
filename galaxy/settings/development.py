@@ -43,7 +43,6 @@ MIDDLEWARE += [  # noqa: F405
 # Database
 # ---------------------------------------------------------
 
-# Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
 DATABASES = {
     'default': {
         'NAME': 'galaxy',
