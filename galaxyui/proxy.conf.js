@@ -18,6 +18,10 @@ const PROXY_CONFIG = {
     "/metrics": {
         'target': "http://localhost:8888",
         'secure': false
+    },
+    "/content": {
+        'target': "http://localhost:8080",
+        'secure': false
     }
 }
 

@@ -19,6 +19,7 @@ from .account import *              # noqa
 from .content import *              # noqa
 from .content_block import *        # noqa
 from .content_type import *         # noqa
+from .collection import *           # noqa
 from .email import *                # noqa
 from .namespace import *            # noqa
 from .notification import *         # noqa
