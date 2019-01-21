@@ -284,7 +284,11 @@ SOCIALACCOUNT_AVATAR_SUPPORT = True
 
 WORKING_DIRECTORY = '/var/run/galaxy'
 
-CONTENT_PATH_PREFIX = '/var/lib/galaxy/data'
+CONTENT_PATH_PREFIX = '/content'
+
+INSTALLED_PULP_PLUGINS = [
+    'galaxy.pulp',
+]
 
 # InfluxDB Settings
 # ---------------------------------------------------------
@@ -326,6 +330,8 @@ ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
 CONTENT_DOWNLOAD_DIR = '/var/tmp/galaxy/repositories'
 
 GALAXY_URL = 'http://{site}:8000'
+
+GALAXY_PULP_REPOSITORY = 'galaxy'
 
 # Notification Settings
 # ---------------------------------------------------------
