@@ -284,7 +284,7 @@ SOCIALACCOUNT_AVATAR_SUPPORT = True
 
 WORKING_DIRECTORY = '/var/run/galaxy'
 
-CONTENT_PATH_PREFIX = '/content'
+CONTENT_PATH_PREFIX = '/download'
 
 INSTALLED_PULP_PLUGINS = [
     'galaxy.pulp',
