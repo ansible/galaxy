@@ -17,7 +17,6 @@
 # Django settings for galaxy project.
 
 import os
-import dj_database_url
 
 from .default import *  # noqa
 
@@ -46,7 +45,7 @@ MIDDLEWARE += [  # noqa: F405
 
 # Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
 DATABASES = {
-        'default': {
+    'default': {
         'NAME': 'galaxy',
         'USER': 'galaxy',
         'PASSWORD': 'galaxy',
