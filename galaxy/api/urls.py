@@ -250,6 +250,18 @@ community_survey_urls = [
         name='community_survey_detail'),
 ]
 
+collection_urls = [
+    url(r'^$', views.UploadCollectionView.as_view()),
+]
+
+pulp_urls = [
+    url(r'^tasks/$',
+        views.TaskViewSet.as_view({'get': 'list'})),
+    url(r'^tasks/(?P<pk>[^/.]+)/$',
+        views.TaskViewSet.as_view({'get': 'retrieve'}),
+        name='tasks-detail'),
+]
+
 v1_urls = [
     url(r'^$', views.ApiV1RootView.as_view(), name='api_v1_root_view'),
     url(r'^account/', include(account_urls)),
@@ -258,6 +270,7 @@ v1_urls = [
     url(r'^users/', include(user_urls)),
     url(r'^roles/', include(role_urls)),
     url(r'^content/', include(content_urls)),
+    url(r'^collections/', include(collection_urls)),
     url(r'^role_types/', views.RoleTypes.as_view(), name='role_types'),
     url(r'^categories/', include(category_urls)),
     url(r'^tags/', include(tag_urls)),
@@ -276,6 +289,8 @@ v1_urls = [
     url(r'^content_blocks/', include(content_block_urls)),
     url(r'^content_types/', include(content_type_urls)),
     url(r'^community_surveys/', include(community_survey_urls)),
+    # NOTE(cutwater): This is temporary location for pulp task URLs
+    url(r'^pulp/', include(pulp_urls)),
 ]
 
 me_urls = [

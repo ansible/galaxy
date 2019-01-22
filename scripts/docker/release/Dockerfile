@@ -1,7 +1,7 @@
 FROM galaxy-base:latest
 
 # Install tini
-ENV TINI_VERSION v0.16.1
+ENV TINI_VERSION v0.18.0
 RUN curl -sL -o '/usr/local/bin/tini' \
         "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini" \
     && chmod +x /usr/local/bin/tini \
@@ -16,25 +16,30 @@ RUN mkdir -p /var/lib/galaxy \
 
 # Create directories structure
 RUN mkdir -p /etc/galaxy \
-             /var/log/galaxy \
              /var/lib/galaxy/public \
-             /var/lib/galaxy/downloads
+             /var/log/galaxy \
+             /var/tmp/galaxy/repositories \
+             /var/tmp/galaxy/collections
 
-COPY scripts/docker/release/entrypoint.sh /entrypoint.sh
+COPY scripts/docker/release/entrypoint.sh /entrypoint
 COPY --from=galaxy-build:latest /galaxy/dist/VERSION /var/lib/galaxy
 COPY --from=galaxy-build:latest /galaxy/dist/*.whl /tmp
 COPY --from=galaxy-build:latest /galaxy/build/static/ /var/lib/galaxy/public/static/
-RUN ${VENV_BIN}/pip install "/tmp/galaxy-$(< /var/lib/galaxy/VERSION)-py3-none-any.whl"
+RUN "${GALAXY_VENV}/bin/pip" install "/tmp/galaxy-$(< /var/lib/galaxy/VERSION)-py3-none-any.whl"
 
 # Fix directory permissions
 RUN chown -R galaxy:root \
         /etc/galaxy \
         /var/log/galaxy \
         /var/lib/galaxy \
+        /var/tmp/galaxy/repositories \
+        /var/tmp/galaxy/collections \
     && chmod -R u=rwX,g=rwX\
         /etc/galaxy \
         /var/log/galaxy \
-        /var/lib/galaxy
+        /var/lib/galaxy \
+        /var/tmp/galaxy/repositories \
+        /var/tmp/galaxy/collections
 
 WORKDIR /var/lib/galaxy
 
@@ -47,5 +52,5 @@ ENV GIT_COMMITTER_EMAIL 'galaxy@ansible.com'
 USER galaxy
 EXPOSE 8000
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint"]
 CMD ["run", "web"]

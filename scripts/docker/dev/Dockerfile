@@ -1,5 +1,16 @@
 FROM centos:7
 
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+ENV PYTHONUNBUFFERED 1
+ENV PIP_NO_CACHE_DIR off
+
+ENV GALAXY_VENV /var/lib/galaxy/venv
+ENV DJANGO_SETTINGS_MODULE galaxy.settings.development
+ENV C_FORCE_ROOT 1
+
 # Install node.js and yarn
 RUN curl -sL -o '/tmp/nodesource-release-el7-1.noarch.rpm' \
         'https://rpm.nodesource.com/pub_8.x/el/7/x86_64/nodesource-release-el7-1.noarch.rpm' \
@@ -10,7 +21,7 @@ RUN curl -sL -o '/tmp/nodesource-release-el7-1.noarch.rpm' \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
-# Install packages and create virtual environment
+# Install packages
 RUN yum -y install epel-release \
     && yum -y install \
         gcc git make \
@@ -19,33 +30,25 @@ RUN yum -y install epel-release \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
+# Create directories structure
+RUN mkdir -p /galaxy \
+             /var/lib/galaxy \
+             /var/tmp/galaxy/repositories \
+             /var/tmp/galaxy/collections \
+             /var/run/galaxy
+
 # Install node dependencies
 RUN yarn global add @angular/cli@6.1.2 \
     && ng set --global packageManager=yarn
 
-# Install python dependencies
+# Create virtual environment and install python dependencies
 COPY requirements/dev-requirements.txt /tmp/requirements.txt
-ENV PIP_NO_CACHE_DIR off
-ENV VENV_BIN /var/lib/galaxy/venv/bin
-RUN mkdir -p /var/lib/galaxy/ \
-    && python3.6 -m venv '/var/lib/galaxy/venv' \
-    && ${VENV_BIN}/pip install -U pip wheel \
-    && ${VENV_BIN}/pip install -r /tmp/requirements.txt
+RUN python3.6 -m venv "${GALAXY_VENV}" \
+    && "${GALAXY_VENV}/bin/pip" install -U pip wheel \
+    && "${GALAXY_VENV}/bin/pip" install -r /tmp/requirements.txt
 
-RUN ${VENV_BIN}/pip install honcho flake8
-
-ENV DJANGO_SETTINGS_MODULE galaxy.settings.development
-
-ENV C_FORCE_ROOT 1
-
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
-
-ENV PYTHONUNBUFFERED 1
-
-COPY scripts/docker/dev/entrypoint.sh /entrypoint.sh
+COPY scripts/docker/dev/entrypoint.sh /entrypoint
 
 WORKDIR /galaxy
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/galaxy/scripts/docker/dev/start-develop.sh"]
+ENTRYPOINT ["/entrypoint"]
+CMD ["start", "tmux"]

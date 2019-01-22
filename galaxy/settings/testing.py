@@ -17,7 +17,6 @@
 # FIXME: This module is copy-paste of dev settings. It needs review and fixes.
 
 import os
-import dj_database_url
 
 from .default import *  # noqa
 
@@ -33,16 +32,17 @@ ALLOWED_HOSTS = ['*']
 # Database
 # ---------------------------------------------------------
 
-# Define GALAXY_DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
 DATABASES = {
-    'default': dj_database_url.config(
-        env='GALAXY_DB_URL', conn_max_age=None
-    )
+    'default': {
+        'NAME': 'galaxy',
+        'USER': 'galaxy',
+        'PASSWORD': 'galaxy',
+        'HOST': 'postgres',
+        'PORT': 5432,
+        'CONN_MAX_AGE': None,
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    }
 }
-
-# By default prod user is "galaxy", so we want to protect ourselves that
-# tests will not run on prod accidentally.
-assert DATABASES["default"]["USER"] != "galaxy"
 
 # Create default alias for worker logging
 DATABASES['logging'] = DATABASES['default'].copy()

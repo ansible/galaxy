@@ -3,60 +3,100 @@
 set -o nounset
 set -o errexit
 
-readonly VENV_BIN=${VENV_BIN:-/var/lib/galaxy/venv/bin}
+readonly GALAXY_VENV=${GALAXY_VENV:-/var/lib/galaxy/venv}
 
 # shellcheck disable=SC2034
 VIRTUAL_ENV_DISABLE_PROMPT=1
-source "${VENV_BIN}/activate"
+# shellcheck disable=SC1090
+source "${GALAXY_VENV}/bin/activate"
 
 # FIXME(cutwater): Yet another workaround for running entrypoint not as PID 1
 # All run commands should be implemented outside entrypoint (e.g. in manage.py)
-function _exec_cmd() {
+_exec_cmd() {
     [ $$ -eq 1 ] && set -- tini -- "$@"
     exec "$@"
 }
 
-function run_web() {
-    _exec_cmd "${VENV_BIN}/gunicorn" \
+run_web() {
+    _exec_cmd "${GALAXY_VENV}/bin/gunicorn" \
         -b 0.0.0.0:8000 \
         --access-logfile '-' \
         --error-logfile '-' \
         galaxy.wsgi:application
 }
 
-function run_worker() {
-    _exec_cmd "${VENV_BIN}/galaxy-manage" celery worker \
+run_celery_worker() {
+    _exec_cmd "${GALAXY_VENV}/bin/galaxy-manage" celery worker \
         --loglevel WARNING \
         --queues 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
 }
 
-function run_scheduler() {
-    _exec_cmd "${VENV_BIN}/galaxy-manage" celery beat \
+run_celery_beat() {
+    _exec_cmd "${GALAXY_VENV}/bin/galaxy-manage" celery beat \
         --loglevel WARNING
 }
 
-function run_service() {
+run_pulp_content_app() {
+    _exec_cmd "${GALAXY_VENV}/bin/gunicorn" \
+          pulpcore.content:server --bind 'localhost:8080' \
+          --worker-class 'aiohttp.GunicornWebWorker' -w 2
+}
+
+run_pulp_resource_manager() {
+    _exec_cmd "${GALAXY_VENV}/bin/rq" worker \
+        -w 'pulpcore.tasking.worker.PulpWorker' \
+        -n 'resource_manager@%%h' \
+        -c 'pulpcore.rqconfig' \
+        --pid='/var/run/galaxy/resource_manager.pid'
+}
+
+run_pulp_worker() {
+    _exec_cmd "${GALAXY_VENV}/bin/rq" worker \
+        -w 'pulpcore.tasking.worker.PulpWorker' \
+        -n "reserved_resource_worker@%h" \
+        -c 'pulpcore.rqconfig' \
+        --pid="/var/run/galaxy/worker.pid"
+}
+
+run_service() {
     case $1 in
-        scheduler)
-            run_scheduler
-        ;;
-        web)
+        'api')
             run_web
         ;;
-        worker)
-            run_worker
+        'celery-worker')
+            run_celery_worker
+        ;;
+        'celery-beat')
+            run_celery_beat
+        ;;
+        'pulp-content-app')
+            run_pulp_content_app
+        ;;
+        'pulp-resource-manager')
+            run_pulp_resource_manager
+        ;;
+        'pulp-worker')
+            run_pulp_worker
+        ;;
+        *)
+            echo "Invalid command"
+            exit 1
         ;;
     esac
 }
 
-case "$1" in
-    run)
-        run_service "${@:2}"
-    ;;
-    manage)
-        _exec_cmd "${VENV_BIN}/galaxy-manage" "${@:2}"
-    ;;
-    *)
-        _exec_cmd "$@"
-    ;;
-esac
+main() {
+    case "$1" in
+        'run')
+            run_service "${@:2}"
+        ;;
+        'manage')
+            _exec_cmd "${GALAXY_VENV}/bin/galaxy-manage" "${@:2}"
+        ;;
+        *)
+            _exec_cmd "$@"
+        ;;
+    esac
+}
+
+main "$@"

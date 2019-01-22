@@ -180,23 +180,23 @@ dev/test:
 dev/waitenv:
 	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py waitenv
 
-.PHONY: dev/up
-dev/up:
-	$(DOCKER_COMPOSE) up
-
 .PHONY: dev/pip_install
 dev/pip_install:
 	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/pip install -r requirements.txt
 
 # Start all containers detached
+.PHONY: dev/up
+dev/up:
+	$(DOCKER_COMPOSE) up
+
 .PHONY: dev/up_detached
 dev/up_detached:
 	$(DOCKER_COMPOSE) up -d
 
-.PHONY: dev/up_tmux
-dev/up_tmux:
+.PHONY: dev/attach
+dev/attach:
 	# Run before dev/tmux to start containers detached and no processes running in the galaxy container.
-	@TMUX=1 $(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) exec galaxy tmux attach
 
 .PHONY: dev/down
 dev/down:
@@ -217,27 +217,6 @@ dev/rm:
 	# Remove services
 	$(DOCKER_COMPOSE) stop
 	$(DOCKER_COMPOSE) rm -f
-
-# Create the tmux session. Do NOT call directly. Use dev/tmux or dev/tmuxcc instead.
-.PHONY: dev/tmux_noattach
-dev/tmux_noattach:
-	tmux new-session -d -s galaxy -n galaxy \; \
-		 set-option -g allow-rename off \; \
-		 send-keys "scripts/docker/dev/entrypoint.sh make runserver" Enter \; \
-		 new-window -n celery \; \
-		 send-keys "scripts/docker/dev/entrypoint.sh make celery" Enter \; \
-		 new-window -n ng \; \
-		 send-keys "make ng_server" Enter
-
-.PHONY: dev/tmux
-dev/tmux:
-	# Connect to the galaxy container, start processes, and pipe stdout/stderr through a tmux session
-	$(DOCKER_COMPOSE) exec galaxy script /dev/null -q -c 'make dev/tmux_noattach; tmux -2 attach-session -t galaxy'
-
-.PHONY: dev/tmuxcc
-dev/tmuxcc: dev/tmux_noattach
-	# Same as above using iTerm's built-in tmux support
-	$(DOCKER_COMPOSE) exec galaxy bash -c 'make dev/tmux_noattach; tmux -2 -CC attach-session -t galaxy'
 
 .PHONY: dev/export-test-data
 export-test-data:

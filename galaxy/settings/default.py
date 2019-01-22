@@ -71,6 +71,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
 
+    'pulpcore.app',
+
     # Project apps
     'galaxy.accounts',
     'galaxy.main',
@@ -132,6 +134,18 @@ LOGIN_REDIRECT_URL = '/home'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 SESSION_SAVE_EVERY_REQUEST = True
+
+# Files upload
+# ---------------------------------------------------------
+
+DEFAULT_FILE_STORAGE = 'pulpcore.app.models.storage.FileSystem'
+
+FILE_UPLOAD_TEMP_DIR = '/var/tmp/galaxy/collections/'
+# List of upload handler classes to be applied in order.
+FILE_UPLOAD_HANDLERS = (
+    'pulpcore.app.files.HashingFileUploadHandler',
+)
+
 
 # Security
 # ---------------------------------------------------------
@@ -265,6 +279,25 @@ SOCIALACCOUNT_PROVIDERS = {
 
 SOCIALACCOUNT_AVATAR_SUPPORT = True
 
+# Pulp Settings
+# ---------------------------------------------------------
+
+WORKING_DIRECTORY = '/var/run/galaxy'
+
+CONTENT_PATH_PREFIX = '/download'
+
+INSTALLED_PULP_PLUGINS = [
+    'galaxy.pulp',
+]
+
+# InfluxDB Settings
+# ---------------------------------------------------------
+
+# Number of data points to buffer before galaxy writes them to influx.
+# Higher numbers mean more efficient influx inserts, but it also means that
+# more data will potentially be lost when galaxy restarts.
+INFLUX_INSERT_BUFFER_COUNT = 1
+
 # =========================================================
 # Galaxy Settings
 # =========================================================
@@ -274,8 +307,12 @@ GITHUB_TASK_USERS = []
 
 GITHUB_SERVER = 'https://api.github.com'
 
+# TODO(cutwater): Unused parameter?
 GALAXY_COMMENTS_THRESHOLD = 10.0
 
+GALAXY_METRICS_ENABLED = True
+
+# TODO(cutwater): Unused parameter?
 SITE_ENV = 'PROD'
 
 SITE_NAME = 'localhost'
@@ -290,38 +327,17 @@ ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
 
 # A base directory used by repository import task to clone repositories into.
 # If set to `None`, system temporary directory is used.
-CONTENT_DOWNLOAD_DIR = None
+CONTENT_DOWNLOAD_DIR = '/var/tmp/galaxy/repositories'
 
-
-# =========================================================
-# InfluxDB Settings
-# =========================================================
-INFLUX_DB_HOST = 'influxdb'
-INFLUX_DB_PORT = 8086
-INFLUX_DB_USERNAME = 'admin'
-INFLUX_DB_PASSWORD = 'admin'
-INFLUX_DB_UI_EVENTS_DB_NAME = 'galaxy_metrics'
-
-# Number of data points to buffer before galaxy writes them to influx.
-# Higher numbers mean more efficient influx inserts, but it also means that
-# more data will potentially be lost when galaxy restarts.
-INFLUX_INSERT_BUFFER_COUNT = 1
-
-GALAXY_METRICS_ENABLED = True
-
-
-# =========================================================
-# Domain Settings
-# =========================================================
 GALAXY_URL = 'http://{site}:8000'
 
+GALAXY_PULP_REPOSITORY = 'galaxy'
 
-# =========================================================
 # Notification Settings
-# =========================================================
+# ---------------------------------------------------------
+
 GALAXY_NOTIFICATION_EMAIL = 'notifications@galaxy.ansible.com'
 DEFAULT_FROM_EMAIL = 'noreply@galaxy.ansible.com'
-
 
 # =========================================================
 # Logging Settings

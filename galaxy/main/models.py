@@ -30,6 +30,7 @@ from django.contrib.postgres import search as psql_search
 from django.contrib.postgres import indexes as psql_indexes
 from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
+from pulpcore.app import models as pulp_models
 
 from galaxy import constants
 from galaxy.main import fields
@@ -1353,3 +1354,48 @@ class UserNotification(BaseModel):
     seen = models.BooleanField(
         default=False
     )
+
+
+class Collection(pulp_models.Content):
+    """
+    A model representing an Ansible Content Collection.
+    """
+
+    TYPE = 'collection'
+
+    namespace = models.CharField(max_length=64)
+    name = models.CharField(max_length=64)
+
+    _content = models.OneToOneField(
+        pulp_models.Content, on_delete=models.CASCADE, parent_link=True,
+        related_name='+', db_column='id',
+    )
+
+    class Meta:
+        unique_together = (
+            'namespace',
+            'name',
+        )
+
+
+class CollectionVersion(pulp_models.Content):
+    """
+    A model representing an Ansible Content Collection version.
+    """
+
+    TYPE = 'collection-version'
+
+    version = models.CharField(max_length=32)
+    collection = models.ForeignKey(
+        Collection, on_delete=models.PROTECT, related_name='versions')
+
+    _content = models.OneToOneField(
+        pulp_models.Content, on_delete=models.CASCADE, parent_link=True,
+        related_name='+', db_column='id',
+    )
+
+    class Meta:
+        unique_together = (
+            'version',
+            'collection',
+        )

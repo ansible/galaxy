@@ -15,11 +15,10 @@ requests
 requests-oauthlib
 rst2html5-tools
 semver
-setuptools
-
+semantic_version
 
 # Django
-django>=1.11,<2.0
+django>=2.1,<2.2
 django-allauth==0.34.0
 # TODO(cutwater): Review usage of this package
 django-bootstrap-form
@@ -31,6 +30,13 @@ djangorestframework>=3.7,<3.8
 dj-database-url
 # format log output as json
 jog
+
+
+# Pulp
+# NOTE(cutwater): pulpcore requires aiohttp, but does not specifies it as a
+#                 dependency in package metadata
+aiohttp
+pulpcore==3.0.0b18
 
 
 # Database

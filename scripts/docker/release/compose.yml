@@ -1,8 +1,24 @@
 version: '3'
 services:
-  galaxy:
+#  galaxy:
+#    depends_on:
+#      - galaxy-ui
+#      - galaxy-api
+#      - galaxy-celery-beat
+#      - galaxy-celery-worker
+#      - galaxy-pulp-rm
+#      - galaxy-pulp-worker
+#      - galaxy-pulp-content-app
+#
+#  galaxy-headless:
+#    depends_on:
+#      - influxdb
+#      - rabbitmq
+#      - postgres
+
+  galaxy-api:
     image: galaxy:latest
-    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv && /entrypoint.sh manage migrate --noinput && /entrypoint.sh run web']
+    command: ['run', 'api']
     environment:
       - GALAXY_SECRET_KEY=secret
       - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
@@ -10,21 +26,14 @@ services:
       - GALAXY_RABBITMQ_PASSWORD=galaxy
     ports:
       - '8000:8000'
-    links:
+    depends_on:
       - postgres
       - rabbitmq
-      - ui
+      - influxdb
 
-
-  ui:
-    image: galaxy-static:latest
-    ports:
-      - '8080:80'
-
-
-  worker:
+  galaxy-celery-beat:
     image: galaxy:latest
-    command: ['/bin/bash', '-c', '/entrypoint.sh manage waitenv --wait-for galaxy:8000 && /entrypoint.sh run worker']
+    command: ['run', 'celery-beat']
     environment:
       - GALAXY_SECRET_KEY=secret
       - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
@@ -35,13 +44,80 @@ services:
       - postgres
       - rabbitmq
 
+  galaxy-celery-worker:
+    image: galaxy:latest
+    command: ['run', 'celery-worker']
+    environment:
+      - GALAXY_SECRET_KEY=secret
+      - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
+      - GALAXY_RABBITMQ_HOST=rabbitmq
+      - GALAXY_RABBITMQ_PASSWORD=galaxy
+      - C_FORCE_ROOT=1
+    links:
+      - postgres
+      - rabbitmq
+      - influxdb
+
+  galaxy-pulp-rm:
+    image: galaxy:latest
+    command: ['run', 'pulp-resource-manager']
+    environment:
+      - GALAXY_SECRET_KEY=secret
+      - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
+      - C_FORCE_ROOT=1
+    links:
+      - postgres
+      - redis
+
+  galaxy-pulp-worker:
+    image: galaxy:latest
+    command: ['run', 'pulp-worker']
+    environment:
+      - GALAXY_SECRET_KEY=secret
+      - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
+      - C_FORCE_ROOT=1
+    links:
+      - postgres
+      - redis
+
+  galaxy-pulp-worker:
+    image: galaxy:latest
+    command: ['run', 'pulp-content-app']
+    environment:
+      - GALAXY_SECRET_KEY=secret
+      - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
+      - C_FORCE_ROOT=1
+    links:
+      - postgres
+      - redis
+
+
+  galaxy-ui:
+    image: galaxy-static:latest
+    ports:
+      - '8080:80'
+    depends_on:
+      - galaxy-api
+
 
   postgres:
-    image: postgres:9.5.4
+    image: postgres:9.5
+    ports:
+      - '2345:5432'
     environment:
       - POSTGRES_DB=galaxy
       - POSTGRES_USER=galaxy
       - POSTGRES_PASSWORD=galaxy
+
+  influxdb:
+    image: influxdb:latest
+    environment:
+      - INFLUXDB_REPORTING_DISABLED=true
+      - INFLUXDB_DB=galaxy
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin
+      - INFLUXDB_WRITE_USER=galaxy
+      - INFLUXDB_WRITE_USER_PASSWORD=galaxy
 
 
   rabbitmq:
@@ -50,3 +126,7 @@ services:
       - RABBITMQ_DEFAULT_USER=galaxy
       - RABBITMQ_DEFAULT_PASS=galaxy
       - RABBITMQ_DEFAULT_VHOST=galaxy
+
+
+  redis:
+    image: redis:latest
