@@ -182,6 +182,14 @@ WAIT_FOR = [
         'host': os.environ.get('GALAXY_RABBITMQ_HOST', ''),
         'port': int(os.environ.get('GALAXY_RABBITMQ_PORT', 5672))
     },
+    {
+        'host': INFLUX_DB_HOST,
+        'port': INFLUX_DB_PORT,
+    },
+    {
+        'host': REDIS_HOST,
+        'port': REDIS_PORT,
+    },
 ]
 
 ADMIN_URL_PATH = os.environ.get('GALAXY_ADMIN_PATH', 'admin')

@@ -7,6 +7,7 @@ readonly GALAXY_VENV=${GALAXY_VENV:-/var/lib/galaxy/venv}
 
 # shellcheck disable=SC2034
 VIRTUAL_ENV_DISABLE_PROMPT=1
+# shellcheck disable=SC1090
 source "${GALAXY_VENV}/bin/activate"
 
 mkdir -p /galaxy/build/ \

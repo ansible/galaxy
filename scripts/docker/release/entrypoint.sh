@@ -7,6 +7,7 @@ readonly GALAXY_VENV=${GALAXY_VENV:-/var/lib/galaxy/venv}
 
 # shellcheck disable=SC2034
 VIRTUAL_ENV_DISABLE_PROMPT=1
+# shellcheck disable=SC1090
 source "${GALAXY_VENV}/bin/activate"
 
 # FIXME(cutwater): Yet another workaround for running entrypoint not as PID 1
@@ -24,13 +25,13 @@ run_web() {
         galaxy.wsgi:application
 }
 
-run_worker() {
+run_celery_worker() {
     _exec_cmd "${GALAXY_VENV}/bin/galaxy-manage" celery worker \
         --loglevel WARNING \
         --queues 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
 }
 
-run_scheduler() {
+run_celery_beat() {
     _exec_cmd "${GALAXY_VENV}/bin/galaxy-manage" celery beat \
         --loglevel WARNING
 }
@@ -63,13 +64,13 @@ run_service() {
             run_web
         ;;
         'celery-worker')
-            run_worker
+            run_celery_worker
         ;;
         'celery-beat')
-            run_scheduler
+            run_celery_beat
         ;;
         'pulp-content-app')
-            run_pulp_resource_manager
+            run_pulp_content_app
         ;;
         'pulp-resource-manager')
             run_pulp_resource_manager
