@@ -1,14 +1,5 @@
 import * as React from 'react';
-import {
-    Button,
-    DropdownKebab,
-    Filter,
-    FormControl,
-    Icon,
-    MenuItem,
-    Sort,
-    Toolbar,
-} from 'patternfly-react';
+import { Filter, FormControl, Toolbar } from 'patternfly-react';
 
 export class FilterOption {
     id: string;
