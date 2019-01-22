@@ -180,23 +180,23 @@ dev/test:
 dev/waitenv:
 	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py waitenv
 
-.PHONY: dev/up
-dev/up:
-	$(DOCKER_COMPOSE) up
-
 .PHONY: dev/pip_install
 dev/pip_install:
 	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/pip install -r requirements.txt
 
 # Start all containers detached
+.PHONY: dev/up
+dev/up:
+	$(DOCKER_COMPOSE) up
+
 .PHONY: dev/up_detached
 dev/up_detached:
 	$(DOCKER_COMPOSE) up -d
 
-.PHONY: dev/up_tmux
-dev/up_tmux:
+.PHONY: dev/attach
+dev/attach:
 	# Run before dev/tmux to start containers detached and no processes running in the galaxy container.
-	@TMUX=1 $(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) exec galaxy tmux attach
 
 .PHONY: dev/down
 dev/down:
