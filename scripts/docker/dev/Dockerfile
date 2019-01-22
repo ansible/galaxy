@@ -32,9 +32,7 @@ RUN yum -y install epel-release \
 
 # Create directories structure
 RUN mkdir -p /galaxy \
-             /galaxy/galaxyui \
              /var/lib/galaxy \
-             /var/lib/galaxy/data \
              /var/tmp/galaxy/repositories \
              /var/tmp/galaxy/collections \
              /var/run/galaxy
