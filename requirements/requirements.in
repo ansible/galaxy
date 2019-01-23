@@ -10,7 +10,7 @@ PyGithub
 pyOpenSSL
 python-dateutil
 pytz
-PyYAML
+PyYAML>=4.2b0
 requests
 requests-oauthlib
 rst2html5-tools
