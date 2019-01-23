@@ -30,7 +30,7 @@ cryptography==2.4.2       # via ansible, paramiko, pyopenssl
 defusedxml==0.5.0         # via python3-openid
 deprecated==1.2.4         # via pygithub
 dj-database-url==0.5.0
-django-allauth==0.34.0
+django-allauth==0.37.1
 django-bootstrap-form==3.4
 django-celery==3.2.2
 django-debug-toolbar==1.11

@@ -19,7 +19,7 @@ semantic_version
 
 # Django
 django>=2.1,<2.2
-django-allauth==0.34.0
+django-allauth>=0.37,<0.38
 # TODO(cutwater): Review usage of this package
 django-bootstrap-form
 django-filter
