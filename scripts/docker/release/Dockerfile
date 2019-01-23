@@ -18,6 +18,7 @@ RUN mkdir -p /var/lib/galaxy \
 RUN mkdir -p /etc/galaxy \
              /var/lib/galaxy/public \
              /var/log/galaxy \
+             /var/run/galaxy \
              /var/tmp/galaxy/repositories \
              /var/tmp/galaxy/collections
 
@@ -30,15 +31,15 @@ RUN "${GALAXY_VENV}/bin/pip" install "/tmp/galaxy-$(< /var/lib/galaxy/VERSION)-p
 # Fix directory permissions
 RUN chown -R galaxy:root \
         /etc/galaxy \
-        /var/log/galaxy \
         /var/lib/galaxy \
+        /var/log/galaxy \
         /var/run/galaxy \
         /var/tmp/galaxy/repositories \
         /var/tmp/galaxy/collections \
     && chmod -R u=rwX,g=rwX\
         /etc/galaxy \
-        /var/log/galaxy \
         /var/lib/galaxy \
+        /var/log/galaxy \
         /var/run/galaxy \
         /var/tmp/galaxy/repositories \
         /var/tmp/galaxy/collections
