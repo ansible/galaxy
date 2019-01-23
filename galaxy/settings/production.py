@@ -141,7 +141,7 @@ EMAIL_USE_TLS = True
 BROKER_URL = 'amqp://{user}:{password}@{host}:{port}/{vhost}'.format(
     user=os.environ.get('GALAXY_RABBITMQ_USER', 'galaxy'),
     password=os.environ.get('GALAXY_RABBITMQ_PASSWORD', ''),
-    host=os.environ.get('GALAXY_RABBITMQ_HOST', ''),
+    host=os.environ.get('GALAXY_RABBITMQ_HOST', 'localhost'),
     port=os.environ.get('GALAXY_RABBITMQ_PORT', 5672),
     vhost=os.environ.get('GALAXY_RABBITMQ_VHOST', 'galaxy'),
 )
@@ -149,13 +149,13 @@ BROKER_URL = 'amqp://{user}:{password}@{host}:{port}/{vhost}'.format(
 # Redis
 # ---------------------------------------------------------
 
-REDIS_HOST = os.environ.get('GALAXY_REDIS_HOST')
+REDIS_HOST = os.environ.get('GALAXY_REDIS_HOST', 'localhost')
 REDIS_PORT = int(os.environ.get('GALAXY_REDIS_PORT', 6379))
 
 # InfluxDB Settings
 # ---------------------------------------------------------
 
-INFLUX_DB_HOST = os.environ.get('GALAXY_INFLUX_DB_HOST', 'influxdb')
+INFLUX_DB_HOST = os.environ.get('GALAXY_INFLUX_DB_HOST', 'localhost')
 INFLUX_DB_PORT = os.environ.get('GALAXY_INFLUX_DB_PORT', '8086')
 INFLUX_DB_USERNAME = os.environ.get('GALAXY_INFLUX_DB_USERNAME', 'admin')
 INFLUX_DB_PASSWORD = os.environ.get('GALAXY_INFLUX_DB_PASSWORD', '')
