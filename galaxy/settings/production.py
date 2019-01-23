@@ -184,7 +184,7 @@ WAIT_FOR = [
     },
     {
         'host': INFLUX_DB_HOST,
-        'port': INFLUX_DB_PORT,
+        'port': int(INFLUX_DB_PORT),
     },
     {
         'host': REDIS_HOST,
