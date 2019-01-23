@@ -17,7 +17,7 @@ _exec_cmd() {
     exec "$@"
 }
 
-run_web() {
+run_api() {
     _exec_cmd "${GALAXY_VENV}/bin/gunicorn" \
         -b 0.0.0.0:8000 \
         --access-logfile '-' \
@@ -38,7 +38,7 @@ run_celery_beat() {
 
 run_pulp_content_app() {
     _exec_cmd "${GALAXY_VENV}/bin/gunicorn" \
-          pulpcore.content:server --bind 'localhost:8080' \
+          pulpcore.content:server --bind '0.0.0.0:8080' \
           --worker-class 'aiohttp.GunicornWebWorker' -w 2
 }
 
@@ -61,7 +61,7 @@ run_pulp_worker() {
 run_service() {
     case $1 in
         'api')
-            run_web
+            run_api
         ;;
         'celery-worker')
             run_celery_worker
