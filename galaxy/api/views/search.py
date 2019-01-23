@@ -186,20 +186,28 @@ class ContentSearchView(base.ListAPIView):
         # This function is better than using a linear function because it
         # makes it so that the effect of losing the first few points is
         # relatively minor, which reduces the impact of errors in scoring.
-        quality_rank_expr = Func(Coalesce(F(q), 0) + 1, function='log') * \
-            CONTENT_SCORE_MULTIPLIER
+        quality_rank_expr = (
+            Func(Coalesce(F(q), 0) + 1, function='log')
+            * CONTENT_SCORE_MULTIPLIER
+        )
 
-        relevance_expr = ExpressionWrapper(
-            F('search_rank') + F('download_rank') + F('quality_rank'),
-            output_field=db_fields.FloatField())
+        relevance_expr = (
+            F('search_rank') + F('download_rank') + F('quality_rank')
+        )
 
         return queryset.annotate(
-            download_count_ln=download_count_ln_expr,
+            download_count_ln=ExpressionWrapper(
+                download_count_ln_expr,
+                output_field=db_fields.FloatField()),
             download_rank=ExpressionWrapper(
                 download_rank_expr,
                 output_field=db_fields.FloatField()),
-            quality_rank=quality_rank_expr,
-            relevance=relevance_expr
+            quality_rank=ExpressionWrapper(
+                quality_rank_expr,
+                output_field=db_fields.FloatField()),
+            relevance=ExpressionWrapper(
+                relevance_expr,
+                output_field=db_fields.FloatField()),
         )
 
     @staticmethod
