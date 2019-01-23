@@ -1,6 +1,10 @@
 # vim: set ft=Dockerfile:
 FROM centos:7
 
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
 ENV PIP_NO_CACHE_DIR off
 ENV GALAXY_VENV /var/lib/galaxy/venv
 
