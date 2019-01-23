@@ -32,12 +32,14 @@ RUN chown -R galaxy:root \
         /etc/galaxy \
         /var/log/galaxy \
         /var/lib/galaxy \
+        /var/run/galaxy \
         /var/tmp/galaxy/repositories \
         /var/tmp/galaxy/collections \
     && chmod -R u=rwX,g=rwX\
         /etc/galaxy \
         /var/log/galaxy \
         /var/lib/galaxy \
+        /var/run/galaxy \
         /var/tmp/galaxy/repositories \
         /var/tmp/galaxy/collections
 
