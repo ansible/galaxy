@@ -14,5 +14,8 @@ RUN yum -y install epel-release \
 COPY requirements/requirements.txt /tmp/requirements.txt
 RUN mkdir -p /var/lib/galaxy/ \
     && python3.6 -m venv /var/lib/galaxy/venv \
-    && "${GALAXY_VENV}/bin/pip" install -U pip wheel \
+    && "${GALAXY_VENV}/bin/pip" install -U \
+        'pip<19.0' \
+        'wheel' \
+        'setuptools' \
     && "${GALAXY_VENV}/bin/pip" install -r /tmp/requirements.txt

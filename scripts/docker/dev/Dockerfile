@@ -44,7 +44,10 @@ RUN yarn global add @angular/cli@6.1.2 \
 # Create virtual environment and install python dependencies
 COPY requirements/dev-requirements.txt /tmp/requirements.txt
 RUN python3.6 -m venv "${GALAXY_VENV}" \
-    && "${GALAXY_VENV}/bin/pip" install -U pip wheel \
+    && "${GALAXY_VENV}/bin/pip" install -U \
+        'pip<19.0' \
+        'wheel' \
+        'setuptools' \
     && "${GALAXY_VENV}/bin/pip" install -r /tmp/requirements.txt
 
 COPY scripts/docker/dev/entrypoint.sh /entrypoint
