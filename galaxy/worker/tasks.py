@@ -151,6 +151,7 @@ def _import_repository(import_task, logger):
     try:
         repo_info = i_repo.import_repository(
             repository.clone_url,
+            branch=import_task.import_branch,
             temp_dir=settings.CONTENT_DOWNLOAD_DIR,
             logger=logger)
     except i_exc.ImporterError as e:
