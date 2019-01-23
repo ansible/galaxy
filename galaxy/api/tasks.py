@@ -23,6 +23,9 @@ def create_import_task(
         repository, user, import_branch=None, travis_status_url='',
         travis_build_url='', user_initiated=False):
 
+    # if no import_branch specified, use repo import_branch
+    import_branch = import_branch or repository.import_branch
+
     task = models.ImportTask.objects.create(
         repository=repository,
         owner=user,
