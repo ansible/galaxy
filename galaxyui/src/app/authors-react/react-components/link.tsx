@@ -8,6 +8,7 @@ interface ILinkProp {
     innerRef?: () => void;
     onClick?: (event, injector) => void;
     target?: string;
+    className?: string;
 }
 
 function isModifiedEvent(event) {

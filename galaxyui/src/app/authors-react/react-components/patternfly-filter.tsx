@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { Filter, FormControl, Toolbar } from 'patternfly-react';
 
+export class FilterConfig {
+    resultsCount: number;
+    fields: FilterOption[];
+    appliedFilters: AppliedFilter[];
+}
+
 export class FilterOption {
     id: string;
     title: string;
@@ -15,14 +21,14 @@ class AppliedFilter {
 }
 
 interface IProps {
-    options: FilterOption[];
-    onFilterChange: (appliedFilters) => void;
+    filterConfig: FilterConfig;
+    onFilterChange: (state) => void;
 }
 
 interface IState {
-    currentFilter: FilterOption;
-    activeFilters: AppliedFilter[];
-    currentValue?: string;
+    field: FilterOption;
+    appliedFilters: AppliedFilter[];
+    value?: string;
 }
 
 export class FilterPF extends React.Component<IProps, IState> {
@@ -30,25 +36,27 @@ export class FilterPF extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            currentFilter: this.props.options[0],
-            activeFilters: [],
-            currentValue: '',
+            field: this.props.filterConfig.fields[0],
+            appliedFilters: this.props.filterConfig.appliedFilters,
+            value: '',
         };
     }
 
     selectFilter(filter) {
-        this.setState({ currentFilter: filter });
+        this.setState({ field: filter });
     }
 
     updateCurrentValue(event) {
-        this.setState({ currentValue: event.target.value });
+        this.setState({ value: event.target.value });
     }
+
+    emitState() {}
 
     addFilter(value) {
         // Check to see if an instance of the filter has already been added
         let alreadAdded = false;
-        this.state.activeFilters.forEach(i => {
-            if (i.field.id === this.state.currentFilter.id) {
+        this.state.appliedFilters.forEach(i => {
+            if (i.field.id === this.state.field.id) {
                 if (i.value === value) {
                     alreadAdded = true;
                 }
@@ -59,38 +67,43 @@ export class FilterPF extends React.Component<IProps, IState> {
             return;
         }
 
-        const newFilters = this.state.activeFilters.concat([
+        const newFilter = {
+            field: this.state.field,
+            value: value,
+        } as AppliedFilter;
+
+        const newFilters = this.state.appliedFilters.concat([newFilter]);
+
+        this.setState(
             {
-                field: this.state.currentFilter,
-                value: value,
-            } as AppliedFilter,
-        ]);
-
-        this.setState({
-            activeFilters: newFilters,
-        });
-
-        this.props.onFilterChange(newFilters);
+                appliedFilters: newFilters,
+            },
+            () => this.props.onFilterChange(this.state),
+        );
     }
 
     removeFilter(index) {
-        const { activeFilters } = this.state;
-        activeFilters.splice(index.index, 1);
+        const { appliedFilters } = this.state;
+        appliedFilters.splice(index.index, 1);
 
-        this.setState({ activeFilters: activeFilters });
+        this.setState({ appliedFilters: appliedFilters }, () =>
+            this.props.onFilterChange(this.state),
+        );
     }
 
     clearAllFilters() {
-        this.setState({ activeFilters: [] });
+        this.setState({ appliedFilters: [] }, () =>
+            this.props.onFilterChange(this.state),
+        );
     }
 
     pressEnter(event) {
         if (event.key === 'Enter') {
             event.stopPropagation();
             event.preventDefault();
-            if (this.state.currentValue.length > 0) {
-                this.addFilter(this.state.currentValue);
-                this.setState({ currentValue: '' });
+            if (this.state.value.length > 0) {
+                this.addFilter(this.state.value);
+                this.setState({ value: '' });
             }
         }
     }
@@ -98,22 +111,22 @@ export class FilterPF extends React.Component<IProps, IState> {
     renderInput() {
         return (
             <FormControl
-                type={this.state.currentFilter.type}
-                placeholder={this.state.currentFilter.placeholder}
+                type={this.state.field.type}
+                placeholder={this.state.field.placeholder}
                 onChange={e => this.updateCurrentValue(e)}
-                value={this.state.currentValue}
+                value={this.state.value}
                 onKeyPress={e => this.pressEnter(e)}
             />
         );
     }
 
     renderAppliedFilters() {
-        if (this.state.activeFilters.length === 0) return;
+        if (this.state.appliedFilters.length === 0) return;
         return (
             <Toolbar.Results>
                 <Filter.ActiveLabel>{'Active Filters:'}</Filter.ActiveLabel>
                 <Filter.List>
-                    {this.state.activeFilters.map((item, index) => {
+                    {this.state.appliedFilters.map((item, index) => {
                         return (
                             <Filter.Item
                                 key={index}
@@ -143,8 +156,8 @@ export class FilterPF extends React.Component<IProps, IState> {
             <div>
                 <Filter>
                     <Filter.TypeSelector
-                        filterTypes={this.props.options}
-                        currentFilterType={this.state.currentFilter}
+                        filterTypes={this.props.filterConfig.fields}
+                        currentFilterType={this.state.field}
                         onFilterTypeSelected={i => this.selectFilter(i)}
                     />
                     {this.renderInput()}
