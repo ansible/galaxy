@@ -9,6 +9,8 @@ import { Toolbar, ListView, ListViewItem } from 'patternfly-react';
 import { FilterPF, FilterConfig } from './patternfly-filter';
 import { SortPF, SortConfig } from './patternfly-sort';
 import { Link } from './link';
+import { PagerPF } from './patternfly-pager';
+import { PageLoading } from './page-loading';
 
 class PageConfig {
     headerIcon: string;
@@ -19,44 +21,69 @@ class PageConfig {
 
 interface ICommunityProp {
     config: PageConfig;
-    updateFilter?: (event) => void;
-    updateSort?: (event) => void;
-    updatePage?: (event) => void;
-    updateContent?: (data) => void;
-    store?: any;
+    updateFilter: (event) => void;
+    updateSort: (event) => void;
+    store: any;
+    updatePageSize: (event) => void;
+    updatePageNumber: (event) => void;
 }
 
 interface IState {
     content: any;
+    paginationConfig: any;
+    loading: boolean;
 }
 
 class CommunityComponent extends React.Component<ICommunityProp, IState> {
     constructor(props) {
         super(props);
-        this.state = { content: [] };
-        this.props.store.subscribe({ next: x => this.updateContent(x) });
-    }
-
-    updateContent(newContent) {
-        this.setState({ content: newContent });
+        this.state = {
+            loading: true,
+            content: [],
+            paginationConfig: {
+                pageSize: 10,
+                pageNumber: 1,
+                totalItems: 0,
+            },
+        };
+        this.props.store.subscribe({ next: x => this.setState(x) });
     }
 
     render() {
-        return [
-            <PageHeader
-                key={1}
-                headerIcon={this.props.config.headerIcon}
-                headerTitle={this.props.config.headerTitle}
-            />,
-            <div key={2} className='community-react-wrapper'>
-                <div id='authors-page'>
-                    <div className='padding-15'>
-                        <div className='row'>{this.renderToolbar()}</div>
-                        <div className='row'>{this.renderList()}</div>
+        return (
+            <div>
+                <PageHeader
+                    headerIcon={this.props.config.headerIcon}
+                    headerTitle={this.props.config.headerTitle}
+                />
+                <div className='community-react-wrapper'>
+                    <div id='authors-page'>
+                        <div className='padding-15'>
+                            <div className='row'>{this.renderToolbar()}</div>
+                            <div className='row'>{this.renderList()}</div>
+                            <div className='row repository-pagination'>
+                                {this.renderPagination()}
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>,
-        ];
+                <PageLoading loading={this.state.loading} />
+            </div>
+        );
+    }
+
+    renderPagination() {
+        return (
+            <div className='col-sm-12'>
+                <div className='pagination'>
+                    <PagerPF
+                        config={this.state.paginationConfig}
+                        onPageSizeChange={this.props.updatePageSize}
+                        onPageNumberChange={this.props.updatePageNumber}
+                    />
+                </div>
+            </div>
+        );
     }
 
     renderListLeft(item) {
@@ -152,21 +179,6 @@ class CommunityComponent extends React.Component<ICommunityProp, IState> {
     }
 }
 
-//
-//     <div class="row repository-pagination">
-//         <div class="col-sm-12">
-//             <div class="pagination" *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
-//                 <pfng-pagination
-//                     [config]="paginationConfig"
-//                     (onPageSizeChange)="handlePageSizeChange($event)"
-//                     (onPageNumberChange)="handlePageNumberChange($event)">
-//                 </pfng-pagination>
-//             </div>
-//         </div>
-//     </div>
-//
-// </div>
-
 export default class CommunityRenderer {
     static init(
         pageConfig,
@@ -174,6 +186,8 @@ export default class CommunityRenderer {
         updateFilter,
         updateSort,
         store,
+        updatePageSize,
+        updatePageNumber,
     ) {
         ReactDOM.render(
             <InjectorContext.Provider value={{ injector: injector }}>
@@ -182,6 +196,8 @@ export default class CommunityRenderer {
                     updateFilter={updateFilter}
                     updateSort={updateSort}
                     store={store}
+                    updatePageSize={updatePageSize}
+                    updatePageNumber={updatePageNumber}
                 />
             </InjectorContext.Provider>,
             document.getElementById('react-container'),
