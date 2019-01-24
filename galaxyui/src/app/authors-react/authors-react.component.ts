@@ -9,7 +9,6 @@ import { FilterConfig } from 'patternfly-ng/filter/filter-config';
 import { FilterField } from 'patternfly-ng/filter/filter-field';
 import { FilterType } from 'patternfly-ng/filter/filter-type';
 import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent } from 'patternfly-ng/list/list-event';
 import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
 import { SortConfig } from 'patternfly-ng/sort/sort-config';
@@ -42,7 +41,6 @@ export class AuthorsReactComponent implements OnInit {
     componentName = 'AuthorsReactComponent';
 
     constructor(
-        private router: Router,
         private route: ActivatedRoute,
         private namespaceService: NamespaceService,
         private pfBody: PFBodyService,
@@ -51,7 +49,6 @@ export class AuthorsReactComponent implements OnInit {
 
     pageTitle = 'Community Authors: REACT EDITION';
     pageIcon = 'fa fa-users';
-    pageLoading = true;
     items: Namespace[] = [];
 
     emptyStateConfig: EmptyStateConfig;
@@ -67,7 +64,7 @@ export class AuthorsReactComponent implements OnInit {
     };
     pageNumber = 1;
     pageSize = 10;
-    store = new Subject();
+    state = new Subject();
 
     ngOnInit() {
         this.pfBody.scrollToTop();
@@ -112,11 +109,6 @@ export class AuthorsReactComponent implements OnInit {
             isAscending: true,
         } as SortConfig;
 
-        this.toolbarActionConfig = {
-            primaryActions: [],
-            moreActions: [],
-        } as ActionConfig;
-
         this.paginationConfig = {
             pageSize: 10,
             pageNumber: 1,
@@ -135,14 +127,20 @@ export class AuthorsReactComponent implements OnInit {
             this.injector,
             i => this.filterChanged(i),
             i => this.sortChanged(i),
-            this.store,
+            this.state,
+            i => this.handlePageSizeChange(i),
+            i => this.handlePageNumberChange(i),
         );
 
         this.route.data.subscribe(data => {
             this.items = data['namespaces']['results'];
             this.paginationConfig.totalItems = data['namespaces']['count'];
             this.prepareNamespaces();
-            this.store.next(this.items);
+            this.state.next({
+                content: this.items,
+                paginationConfig: this.paginationConfig,
+                loading: false,
+            });
         });
     }
 
@@ -254,11 +252,10 @@ export class AuthorsReactComponent implements OnInit {
                 item['contentCounts'] = contentCounts;
             });
         }
-        this.pageLoading = false;
     }
 
     private searchNamespaces() {
-        this.pageLoading = true;
+        this.state.next({ loading: true });
         this.filterBy['page_size'] = this.pageSize;
         this.filterBy['page'] = this.pageNumber;
         this.filterBy['order'] = this.sortBy;
@@ -267,8 +264,11 @@ export class AuthorsReactComponent implements OnInit {
             this.prepareNamespaces();
             this.filterConfig.resultsCount = result.count;
             this.paginationConfig.totalItems = result.count;
-            this.store.next(this.items);
-            this.pageLoading = false;
+            this.state.next({
+                content: this.items,
+                paginationConfig: this.paginationConfig,
+                loading: false,
+            });
         });
     }
 }
