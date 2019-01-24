@@ -221,7 +221,8 @@ class NotificationList(base_views.ListCreateAPIView):
             })
         notification.repository = repository
 
-        if request_branch != repository.import_branch:
+        if (not payload.get('tag') and
+                request_branch != repository.import_branch):
             msg = ('Travis request_branch does not match repo import_branch. '
                    'Will not import.')
             logger.warning(msg)
