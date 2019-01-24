@@ -24,6 +24,8 @@ import CommunityRenderer from './react-components/community';
 
 import { Injector } from '@angular/core';
 
+import { Subject } from 'rxjs';
+
 import {
     ContentTypes,
     ContentTypesIconClasses,
@@ -47,7 +49,7 @@ export class AuthorsReactComponent implements OnInit {
         public injector: Injector,
     ) {}
 
-    pageTitle = 'Community Authors';
+    pageTitle = 'Community Authors: REACT EDITION';
     pageIcon = 'fa fa-users';
     pageLoading = true;
     items: Namespace[] = [];
@@ -65,6 +67,7 @@ export class AuthorsReactComponent implements OnInit {
     };
     pageNumber = 1;
     pageSize = 10;
+    store = new Subject();
 
     ngOnInit() {
         this.pfBody.scrollToTop();
@@ -114,40 +117,33 @@ export class AuthorsReactComponent implements OnInit {
             moreActions: [],
         } as ActionConfig;
 
-        this.toolbarConfig = {
-            actionConfig: this.toolbarActionConfig,
-            filterConfig: this.filterConfig,
-            sortConfig: this.sortConfig,
-            views: [],
-        } as ToolbarConfig;
-
-        this.listConfig = {
-            dblClick: false,
-            multiSelect: false,
-            selectItems: false,
-            selectionMatchProp: 'name',
-            showCheckbox: false,
-            useExpandItems: false,
-            emptyStateConfig: this.emptyStateConfig,
-        } as ListConfig;
-
         this.paginationConfig = {
             pageSize: 10,
             pageNumber: 1,
             totalItems: 0,
         } as PaginationConfig;
 
+        const pageConfig = {
+            pageIcon: this.pageIcon,
+            headerTitle: this.pageTitle,
+            filterConfig: this.filterConfig,
+            sortConfig: this.sortConfig,
+        };
+
+        CommunityRenderer.init(
+            pageConfig,
+            this.injector,
+            i => this.filterChanged(i),
+            i => this.sortChanged(i),
+            this.store,
+        );
+
         this.route.data.subscribe(data => {
             this.items = data['namespaces']['results'];
             this.paginationConfig.totalItems = data['namespaces']['count'];
             this.prepareNamespaces();
+            this.store.next(this.items);
         });
-
-        CommunityRenderer.init(this.pageIcon, this.pageTitle, this.injector);
-    }
-
-    handleListClick($event: ListEvent): void {
-        this.router.navigate(['/', $event.item.name]);
     }
 
     filterChanged($event): void {
@@ -271,6 +267,7 @@ export class AuthorsReactComponent implements OnInit {
             this.prepareNamespaces();
             this.filterConfig.resultsCount = result.count;
             this.paginationConfig.totalItems = result.count;
+            this.store.next(this.items);
             this.pageLoading = false;
         });
     }

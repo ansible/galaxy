@@ -14,7 +14,7 @@ export class PageHeader extends React.Component<IPageHeaderProp, {}> {
 
         if (this.props.headerIcon) {
             breadcrumbs.push(
-                <li>
+                <li key={-3}>
                     <span className={this.props.headerIcon} />
                 </li>,
             );
@@ -22,20 +22,18 @@ export class PageHeader extends React.Component<IPageHeaderProp, {}> {
 
         if (title_list.length > 1) {
             breadcrumbs.push(
-                <li className='show-on-mobile'>
+                <li key={-2} className='show-on-mobile'>
                     <span className='fa fa-angle-double-right' />
                 </li>,
             );
         }
-
-        console.log(title_list);
 
         title_list.forEach((item: string, idx: number) => {
             if (idx % 2) {
                 const name = title_list[idx - 1];
                 const path = item;
                 breadcrumbs.push(
-                    <li className='hide-on-mobile'>
+                    <li key={idx} className='hide-on-mobile'>
                         <Link to={path}>{name}</Link>
                         <span className='separator'>
                             <span className='fa fa-angle-right' />
@@ -45,7 +43,7 @@ export class PageHeader extends React.Component<IPageHeaderProp, {}> {
             }
             if (idx === title_list.length - 1) {
                 const name = item;
-                breadcrumbs.push(<li>{name}</li>);
+                breadcrumbs.push(<li key={'last'}>{name}</li>);
             }
         });
 

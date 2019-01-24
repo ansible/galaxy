@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TestComponent } from './react-stuff';
+import { Injector } from '@angular/core';
 
 @Component({
     selector: 'app-react-test',
@@ -7,9 +8,9 @@ import { TestComponent } from './react-stuff';
     styleUrls: ['./react-test.component.less'],
 })
 export class ReactTestComponent implements OnInit {
-    constructor() {}
+    constructor(private injector: Injector) {}
 
     ngOnInit() {
-        TestComponent.init();
+        TestComponent.init(this.injector);
     }
 }

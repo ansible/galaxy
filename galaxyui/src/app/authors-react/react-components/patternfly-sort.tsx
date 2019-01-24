@@ -8,7 +8,7 @@ class FieldOption {
     sortType: string;
 }
 
-class SortConfig {
+export class SortConfig {
     fields: FieldOption[];
     isAscending: boolean;
 }
