@@ -27,6 +27,7 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
     url(r'^api/', include('galaxy.api.urls')),
+    url(r'^api/', include('galaxy.pulp.urls')),
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
     url(settings.ADMIN_URL_PATTERN, admin.site.urls),
