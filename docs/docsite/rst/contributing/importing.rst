@@ -284,6 +284,10 @@ add a webhook to the notifications section, as shown below:
     notifications:
       webhooks: https://galaxy.ansible.com/api/v1/notifications/
 
+A ``git push`` to the github branch that was imported (the default branch unless specified
+differently using the ``ansible-galaxy`` command-line interface) will trigger a re-import.
+A ``git push`` of a git tag to the repository will also trigger a re-import.
+
 .. note::
 
    You must first log into Galaxy to create a Namespace and associate GitHub organizations with the
