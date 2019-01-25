@@ -24,7 +24,7 @@ class ActiveUserPreferencesView(base_views.RetrieveUpdateAPIView):
     view_name = 'my_preferences'
 
     def get_object(self):
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             raise exceptions.NotAuthenticated()
         obj, created = self.model.objects.get_or_create(
             pk=self.request.user.pk
