@@ -31,7 +31,7 @@ export class ToolBarPF extends React.Component<IProps, IState> {
         };
     }
 
-    addFilter(value: string, field: filterOption) {
+    addFilter(value: string, field: FilterOption) {
         // // Check to see if an instance of the filter has already been added
         let alreadAdded = false;
         this.state.appliedFilters.forEach(i => {
