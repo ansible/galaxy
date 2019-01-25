@@ -56,14 +56,9 @@ import { UserNotificationService } from './resources/notifications/user-notifica
 // import { SearchModule }               from './search/search.module';
 import { SharedModule } from './shared/shared.module';
 import { UserNotificationsComponent } from './user-notifications/user-notifications.component';
-import { ReactTestComponent } from './react-test/react-test.component';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        UserNotificationsComponent,
-        ReactTestComponent,
-    ],
+    declarations: [AppComponent, UserNotificationsComponent],
     imports: [
         HttpClientModule,
         HttpClientXsrfModule.withOptions({
