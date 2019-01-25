@@ -6,11 +6,13 @@ import { InjectorContext } from './injector-context';
 
 import { Toolbar, ListView, ListViewItem } from 'patternfly-react';
 
-import { FilterPF, FilterConfig } from './patternfly-filter';
-import { SortPF, SortConfig } from './patternfly-sort';
 import { Link } from './link';
 import { PagerPF } from './patternfly-pager';
 import { PageLoading } from './page-loading';
+
+import { ToolBarPF } from './patternfly-tooblar';
+import { SortConfig } from './patternfly-sort';
+import { FilterConfig } from './patternfly-filter';
 
 class PageConfig {
     headerIcon: string;
@@ -164,16 +166,14 @@ class CommunityComponent extends React.Component<ICommunityProp, IState> {
     renderToolbar() {
         return (
             <div className='col-sm-12'>
-                <Toolbar>
-                    <FilterPF
-                        filterConfig={this.props.config.filterConfig}
-                        onFilterChange={this.props.updateFilter}
-                    />
-                    <SortPF
-                        onSortChange={this.props.updateSort}
-                        config={this.props.config.sortConfig}
-                    />
-                </Toolbar>
+                <ToolBarPF
+                    onFilterChange={this.props.updateFilter}
+                    onSortChange={this.props.updateSort}
+                    toolbarConfig={{
+                        filterConfig: this.props.config.filterConfig,
+                        sortConfig: this.props.config.sortConfig,
+                    }}
+                />
             </div>
         );
     }
