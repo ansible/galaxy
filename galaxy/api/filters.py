@@ -86,8 +86,8 @@ class _FieldLookupBackend(BaseFilterBackend):
             else:
                 field = model._meta.get_field(name)
             if n < (len(parts) - 2):
-                if getattr(field, 'rel', None):
-                    model = field.rel.to
+                if getattr(field, 'remote_field', None):
+                    model = field.remote_field.model
                 else:
                     model = field.model
         return field
