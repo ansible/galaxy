@@ -2,7 +2,6 @@ from django.conf import settings
 from rest_framework import views
 from rest_framework.permissions import IsAuthenticated
 
-from pulpcore.app.viewsets import TaskViewSet as _TaskViewSet
 from pulpcore.app.serializers import ArtifactSerializer
 from pulpcore.app.response import OperationPostponedResponse
 from pulpcore.tasking.tasks import enqueue_with_reservation
@@ -13,14 +12,8 @@ from galaxy.pulp import tasks
 
 
 __all__ = [
-    'TaskViewSet',
     'UploadCollectionView'
 ]
-
-
-class TaskViewSet(_TaskViewSet):
-
-    permission_classes = (IsAuthenticated, )
 
 
 class UploadCollectionView(views.APIView):

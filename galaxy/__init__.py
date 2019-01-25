@@ -33,4 +33,5 @@ def manage():
     mimetypes.add_type("image/svg+xml", ".svgz", True)
 
     from django.core.management import execute_from_command_line
+    from dynaconf.contrib import django_dynaconf  # noqa
     execute_from_command_line(sys.argv)
