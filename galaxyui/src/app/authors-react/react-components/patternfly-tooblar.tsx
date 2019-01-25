@@ -5,6 +5,7 @@ import {
     FilterConfig,
     AppliedFilter,
     ToolBarResultsPF,
+    FilterOption,
 } from './patternfly-filter';
 import { SortPF, SortConfig } from './patternfly-sort';
 
@@ -30,7 +31,7 @@ export class ToolBarPF extends React.Component<IProps, IState> {
         };
     }
 
-    addFilter(value, field) {
+    addFilter(value: string, field: filterOption) {
         // // Check to see if an instance of the filter has already been added
         let alreadAdded = false;
         this.state.appliedFilters.forEach(i => {
@@ -65,7 +66,7 @@ export class ToolBarPF extends React.Component<IProps, IState> {
         );
     }
 
-    removeFilter(index) {
+    removeFilter(index: number) {
         const { appliedFilters } = this.state;
         appliedFilters.splice(index.index, 1);
 

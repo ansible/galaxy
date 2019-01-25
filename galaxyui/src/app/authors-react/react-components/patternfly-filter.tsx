@@ -42,7 +42,7 @@ export class FilterPF extends React.Component<IProps, IState> {
         };
     }
 
-    selectFilter(filter) {
+    selectFilter(filter: FilterOption) {
         this.setState({ field: filter });
     }
 
@@ -90,7 +90,7 @@ export class FilterPF extends React.Component<IProps, IState> {
 }
 
 interface IResultsProps {
-    appliedFilters: any;
+    appliedFilters: AppliedFilter[];
     numberOfResults: number;
     removeFilter: (index) => void;
     removeAllFilters: () => void;
