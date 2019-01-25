@@ -14,7 +14,7 @@ export class FilterOption {
     type: string;
 }
 
-class AppliedFilter {
+export class AppliedFilter {
     field: FilterOption;
     query?: string;
     value: string;
@@ -22,7 +22,7 @@ class AppliedFilter {
 
 interface IProps {
     filterConfig: FilterConfig;
-    onFilterChange: (state) => void;
+    addFilter: (value, field) => void;
 }
 
 interface IState {
@@ -50,59 +50,12 @@ export class FilterPF extends React.Component<IProps, IState> {
         this.setState({ value: event.target.value });
     }
 
-    emitState() {}
-
-    addFilter(value) {
-        // Check to see if an instance of the filter has already been added
-        let alreadAdded = false;
-        this.state.appliedFilters.forEach(i => {
-            if (i.field.id === this.state.field.id) {
-                if (i.value === value) {
-                    alreadAdded = true;
-                }
-            }
-        });
-
-        if (alreadAdded) {
-            return;
-        }
-
-        const newFilter = {
-            field: this.state.field,
-            value: value,
-        } as AppliedFilter;
-
-        const newFilters = this.state.appliedFilters.concat([newFilter]);
-
-        this.setState(
-            {
-                appliedFilters: newFilters,
-            },
-            () => this.props.onFilterChange(this.state),
-        );
-    }
-
-    removeFilter(index) {
-        const { appliedFilters } = this.state;
-        appliedFilters.splice(index.index, 1);
-
-        this.setState({ appliedFilters: appliedFilters }, () =>
-            this.props.onFilterChange(this.state),
-        );
-    }
-
-    clearAllFilters() {
-        this.setState({ appliedFilters: [] }, () =>
-            this.props.onFilterChange(this.state),
-        );
-    }
-
     pressEnter(event) {
         if (event.key === 'Enter') {
             event.stopPropagation();
             event.preventDefault();
             if (this.state.value.length > 0) {
-                this.addFilter(this.state.value);
+                this.props.addFilter(this.state.value, this.state.field);
                 this.setState({ value: '' });
             }
         }
@@ -120,37 +73,6 @@ export class FilterPF extends React.Component<IProps, IState> {
         );
     }
 
-    renderAppliedFilters() {
-        if (this.state.appliedFilters.length === 0) return;
-        return (
-            <Toolbar.Results>
-                <Filter.ActiveLabel>{'Active Filters:'}</Filter.ActiveLabel>
-                <Filter.List>
-                    {this.state.appliedFilters.map((item, index) => {
-                        return (
-                            <Filter.Item
-                                key={index}
-                                filterData={{ index: index }}
-                                onRemove={i => this.removeFilter(i)}
-                            >
-                                {item.field.title}: {item.value}
-                            </Filter.Item>
-                        );
-                    })}
-                </Filter.List>
-                <a
-                    href='#'
-                    onClick={e => {
-                        e.preventDefault();
-                        this.clearAllFilters();
-                    }}
-                >
-                    Clear All Filters
-                </a>
-            </Toolbar.Results>
-        );
-    }
-
     render() {
         return (
             <div>
@@ -162,8 +84,44 @@ export class FilterPF extends React.Component<IProps, IState> {
                     />
                     {this.renderInput()}
                 </Filter>
-                {this.renderAppliedFilters()}
             </div>
         );
     }
 }
+
+interface IResultsProps {
+    appliedFilters: any;
+    removeFilter: (index) => void;
+    removeAllFilters: () => void;
+}
+
+export const ToolBarResultsPF: React.SFC<IResultsProps> = props => {
+    if (props.appliedFilters.length === 0) return null;
+    return (
+        <Toolbar.Results>
+            <Filter.ActiveLabel>{'Active Filters:'}</Filter.ActiveLabel>
+            <Filter.List>
+                {props.appliedFilters.map((item, index) => {
+                    return (
+                        <Filter.Item
+                            key={index}
+                            filterData={{ index: index }}
+                            onRemove={i => props.removeFilter(i)}
+                        >
+                            {item.field.title}: {item.value}
+                        </Filter.Item>
+                    );
+                })}
+            </Filter.List>
+            <a
+                href='#'
+                onClick={e => {
+                    e.preventDefault();
+                    props.removeAllFilters();
+                }}
+            >
+                Clear All Filters
+            </a>
+        </Toolbar.Results>
+    );
+};

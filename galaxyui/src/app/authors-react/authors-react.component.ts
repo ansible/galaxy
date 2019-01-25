@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import { ActionConfig } from 'patternfly-ng/action/action-config';
 import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
@@ -176,6 +176,7 @@ export class AuthorsReactComponent implements OnInit {
     handlePageSizeChange($event: PaginationEvent) {
         if ($event.pageSize && this.pageSize !== $event.pageSize) {
             this.pageSize = $event.pageSize;
+            this.paginationConfig.pageSize = this.pageSize;
             this.pageNumber = 1;
             this.searchNamespaces();
         }
