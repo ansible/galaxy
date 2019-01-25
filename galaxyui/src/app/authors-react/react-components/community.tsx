@@ -4,7 +4,13 @@ import { PageHeader } from './page-header';
 import { Injector } from '@angular/core';
 import { InjectorContext } from './injector-context';
 
-import { Toolbar, ListView, ListViewItem } from 'patternfly-react';
+import {
+    ListView,
+    ListViewItem,
+    EmptyState,
+    EmptyStateIcon,
+    EmptyStateTitle,
+} from 'patternfly-react';
 
 import { Link } from './link';
 import { PagerPF } from './patternfly-pager';
@@ -63,6 +69,7 @@ class CommunityComponent extends React.Component<ICommunityProp, IState> {
                         <div className='padding-15'>
                             <div className='row'>{this.renderToolbar()}</div>
                             <div className='row'>{this.renderList()}</div>
+                            <div className='row'>{this.renderEmptyState()}</div>
                             <div className='row repository-pagination'>
                                 {this.renderPagination()}
                             </div>
@@ -74,7 +81,20 @@ class CommunityComponent extends React.Component<ICommunityProp, IState> {
         );
     }
 
+    renderEmptyState() {
+        if (this.state.content.length > 0) return null;
+        return (
+            <EmptyState>
+                <EmptyStateIcon name={'pficon pficon-filter'} />
+                <EmptyStateTitle>
+                    No contributors match your search
+                </EmptyStateTitle>
+            </EmptyState>
+        );
+    }
+
     renderPagination() {
+        if (this.state.content.length === 0) return null;
         return (
             <div className='col-sm-12'>
                 <div className='pagination'>
