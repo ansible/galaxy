@@ -284,9 +284,18 @@ add a webhook to the notifications section, as shown below:
     notifications:
       webhooks: https://galaxy.ansible.com/api/v1/notifications/
 
-A ``git push`` to the github branch that was imported (the default branch unless specified
+A ``git push`` to the github branch that was previously imported (the default branch unless specified
 differently using the ``ansible-galaxy`` command-line interface) will trigger a re-import.
-A ``git push`` of a git tag to the repository will also trigger a re-import.
+
+If you give the webhook a ``branch`` query parameter, it will only trigger an import with pushes to that branch.
+For example a forked repo with a PR ``my_feature`` branch will not trigger an import with this:
+
+.. code-block:: yaml
+
+    notifications:
+      webhooks: https://galaxy.ansible.com/api/v1/notifications/?branch=master
+
+A ``git push`` of a git tag to the repository will always trigger an import.
 
 .. note::
 

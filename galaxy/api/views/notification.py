@@ -175,6 +175,19 @@ class NotificationList(base_views.ListCreateAPIView):
         payload = json.loads(request.POST['payload'])
         request_branch = payload['branch']
 
+        author_branch = request.query_params.get('branch', None)
+        is_author_prevent_import = (
+            author_branch and
+            author_branch != request_branch and
+            not payload.get('tag')
+        )
+        if is_author_prevent_import:
+            msg = ('Travis request_branch does not match branch author set '
+                   'in .travis.yml notification webhook url. '
+                   'Will not import.')
+            logger.info(msg)
+            raise APIException(msg)
+
         travis_url = urlparse.urlparse(payload.get('build_url'))
 
         travis_status_url = TRAVIS_STATUS_URL.format(
@@ -221,11 +234,15 @@ class NotificationList(base_views.ListCreateAPIView):
             })
         notification.repository = repository
 
-        if (not payload.get('tag') and
-                request_branch != repository.import_branch):
+        is_branch_mismatch = (
+            request_branch != repository.import_branch and
+            repository.import_branch and  # repo is not new
+            not payload.get('tag')  # not a tag push
+        )
+        if is_branch_mismatch:
             msg = ('Travis request_branch does not match repo import_branch. '
                    'Will not import.')
-            logger.warning(msg)
+            logger.info(msg)
             raise APIException(msg)
 
         task = tasks.create_import_task(
