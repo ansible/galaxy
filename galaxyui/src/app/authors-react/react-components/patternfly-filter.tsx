@@ -96,8 +96,12 @@ interface IResultsProps {
     removeAllFilters: () => void;
 }
 
-export const ToolBarResultsPF: React.SFC<IResultsProps> = props => {
-    if (props.appliedFilters.length === 0) return null;
+export const ToolBarResultsPF: React.FunctionComponent<
+    IResultsProps
+> = props => {
+    if (props.appliedFilters.length === 0) {
+        return null;
+    }
     return (
         <Toolbar.Results>
             <h5>{props.numberOfResults} Results</h5>

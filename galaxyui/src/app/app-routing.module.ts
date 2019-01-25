@@ -3,8 +3,6 @@ import { AuthorDetailComponent } from './authors/detail/author-detail.component'
 import { ContentDetailComponent } from './content-detail/content-detail.component';
 import { NotFoundComponent } from './exception-pages/not-found/not-found.component';
 
-import { ReactTestComponent } from './react-test/react-test.component';
-
 import {
     ContentResolver,
     NamespaceResolver,
@@ -31,11 +29,6 @@ const appRoutes: Routes = [
     {
         path: 'my-imports',
         loadChildren: './my-imports/my-imports.module#MyImportsModule',
-    },
-
-    {
-        path: 'test',
-        component: ReactTestComponent,
     },
 
     // Routes that resolve variables have to go in app-routing.module to ensure

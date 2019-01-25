@@ -10,7 +10,7 @@ interface IPageHeaderProp {
 export class PageHeader extends React.Component<IPageHeaderProp, {}> {
     render() {
         const title_list = this.props.headerTitle.split(';');
-        let breadcrumbs = [];
+        const breadcrumbs = [];
 
         if (this.props.headerIcon) {
             breadcrumbs.push(

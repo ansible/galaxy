@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Injector } from '@angular/core';
 
-interface ContextDef {
+interface IContextDef {
     injector: Injector;
 }
 
-export const InjectorContext = React.createContext({} as ContextDef);
+export const InjectorContext = React.createContext({} as IContextDef);

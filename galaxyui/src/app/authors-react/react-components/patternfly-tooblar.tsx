@@ -66,7 +66,7 @@ export class ToolBarPF extends React.Component<IProps, IState> {
         );
     }
 
-    removeFilter(index: number) {
+    removeFilter(index) {
         const { appliedFilters } = this.state;
         appliedFilters.splice(index.index, 1);
 

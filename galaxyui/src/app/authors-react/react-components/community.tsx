@@ -82,7 +82,9 @@ class CommunityComponent extends React.Component<ICommunityProp, IState> {
     }
 
     renderEmptyState() {
-        if (this.state.content.length > 0) return null;
+        if (this.state.content.length > 0) {
+            return null;
+        }
         return (
             <EmptyState>
                 <EmptyStateIcon name={'pficon pficon-filter'} />
@@ -94,7 +96,9 @@ class CommunityComponent extends React.Component<ICommunityProp, IState> {
     }
 
     renderPagination() {
-        if (this.state.content.length === 0) return null;
+        if (this.state.content.length === 0) {
+            return null;
+        }
         return (
             <div className='col-sm-12'>
                 <div className='pagination'>

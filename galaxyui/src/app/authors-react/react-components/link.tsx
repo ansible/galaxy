@@ -28,7 +28,9 @@ export class Link extends React.Component<ILinkProp, {}> {
     static contextType = InjectorContext;
 
     handleClick(event, injector) {
-        if (this.props.onClick) this.props.onClick(event, injector);
+        if (this.props.onClick) {
+            this.props.onClick(event, injector);
+        }
 
         if (
             // onClick prevented default
@@ -42,7 +44,7 @@ export class Link extends React.Component<ILinkProp, {}> {
         ) {
             event.preventDefault();
 
-            let router = injector.get(Router);
+            const router = injector.get(Router);
 
             router.navigateByUrl(this.props.to);
         }
