@@ -2,18 +2,14 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute } from '@angular/router';
 
-import { ActionConfig } from 'patternfly-ng/action/action-config';
-import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
 import { Filter } from 'patternfly-ng/filter/filter';
 import { FilterConfig } from 'patternfly-ng/filter/filter-config';
 import { FilterField } from 'patternfly-ng/filter/filter-field';
 import { FilterType } from 'patternfly-ng/filter/filter-type';
-import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
 import { PaginationConfig } from 'patternfly-ng/pagination/pagination-config';
 import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
 import { SortConfig } from 'patternfly-ng/sort/sort-config';
 import { SortEvent } from 'patternfly-ng/sort/sort-event';
-import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 
 import { Namespace } from '../resources/namespaces/namespace';
 import { NamespaceService } from '../resources/namespaces/namespace.service';
@@ -51,12 +47,8 @@ export class AuthorsReactComponent implements OnInit {
     pageIcon = 'fa fa-users';
     items: Namespace[] = [];
 
-    emptyStateConfig: EmptyStateConfig;
-    toolbarActionConfig: ActionConfig;
     filterConfig: FilterConfig;
     sortConfig: SortConfig;
-    toolbarConfig: ToolbarConfig;
-    listConfig: ListConfig;
     paginationConfig: PaginationConfig;
     sortBy = 'name';
     filterBy: any = {
@@ -68,11 +60,6 @@ export class AuthorsReactComponent implements OnInit {
 
     ngOnInit() {
         this.pfBody.scrollToTop();
-        this.emptyStateConfig = {
-            info: '',
-            title: 'No contributors match your search',
-            iconStyleClass: 'pficon pficon-filter',
-        } as EmptyStateConfig;
 
         this.filterConfig = {
             fields: [
