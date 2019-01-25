@@ -91,6 +91,7 @@ export class FilterPF extends React.Component<IProps, IState> {
 
 interface IResultsProps {
     appliedFilters: any;
+    numberOfResults: number;
     removeFilter: (index) => void;
     removeAllFilters: () => void;
 }
@@ -99,6 +100,7 @@ export const ToolBarResultsPF: React.SFC<IResultsProps> = props => {
     if (props.appliedFilters.length === 0) return null;
     return (
         <Toolbar.Results>
+            <h5>{props.numberOfResults} Results</h5>
             <Filter.ActiveLabel>{'Active Filters:'}</Filter.ActiveLabel>
             <Filter.List>
                 {props.appliedFilters.map((item, index) => {

@@ -93,6 +93,9 @@ export class ToolBarPF extends React.Component<IProps, IState> {
                 />
 
                 <ToolBarResultsPF
+                    numberOfResults={
+                        this.props.toolbarConfig.filterConfig.resultsCount
+                    }
                     appliedFilters={this.state.appliedFilters}
                     removeFilter={i => this.removeFilter(i)}
                     removeAllFilters={() => this.removeAllFilters()}
