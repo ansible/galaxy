@@ -104,22 +104,29 @@ export class CardCommunitySurveyComponent implements OnInit {
             docs: {
                 question: 'Quality of docs?',
                 type: likehartType,
+                tooltip: '',
             },
             ease_of_use: {
                 question: 'Ease of use?',
                 type: likehartType,
+                tooltip: '',
             },
             does_what_it_says: {
                 question: 'Does what it promises?',
                 type: boolType,
+                tooltip: '',
             },
             works_as_is: {
                 question: 'Works without change?',
                 type: boolType,
+                tooltip: '',
             },
             used_in_production: {
-                question: 'Used in production?',
+                question: 'Ready for production?',
                 type: boolType,
+                tooltip:
+                    'Would you be comfortable using this in a production ' +
+                    'class or mission critical workflow?',
             },
         };
 
