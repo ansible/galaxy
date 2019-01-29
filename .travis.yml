@@ -27,6 +27,7 @@ script:
 - make dev/up_detached
 - make dev/waitenv
 - make dev/shellcheck
+- make dev/checkmigrations
 - make dev/test
 
 # check images running

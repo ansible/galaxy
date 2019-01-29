@@ -133,6 +133,10 @@ dev/migrate:
 dev/makemigrations:
 	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py makemigrations
 
+.PHONY: dev/checkmigrations
+dev/makemigrations:
+	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py makemigrations --dry-run --check
+
 .PHONY: dev/log
 dev/log:
 	@$(DOCKER_COMPOSE) logs --tail 100 galaxy
