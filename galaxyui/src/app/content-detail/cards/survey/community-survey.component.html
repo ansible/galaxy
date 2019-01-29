@@ -17,7 +17,12 @@
             </div>
 
             <div *ngIf="!loading">
-                <app-score-bar [score]="qualityScore" [barText]="qualityBarText" text="Quality Score"></app-score-bar>
+                <app-score-bar
+                    [score]="qualityScore"
+                    [barText]="qualityBarText"
+                    text="Quality Score"
+                    [infoIcon]="{link: '/docs/contributing/content_scoring.html', text: 'Scoring Method'}"
+                ></app-score-bar>
                 <div class="details">
                     Last scored {{ lastScored }}.
                     <a
@@ -27,7 +32,12 @@
                         (click)="toggleDetails('showQualityDetails')"
                     ><span *ngIf="!showQualityDetails">Show</span><span *ngIf="showQualityDetails">Hide</span> Details</a>
                 </div>
-                <app-score-bar [score]="communityScore" [barText]="communityBarText" text="Community Score"></app-score-bar>
+                <app-score-bar
+                    [score]="communityScore"
+                    [barText]="communityBarText"
+                    text="Community Score"
+                    [infoIcon]="{link: '/docs/contributing/content_scoring.html', text: 'Scoring Method'}"
+                ></app-score-bar>
                 <div class="details">
                     Based on {{ numberOfSurveys }} survey<span *ngIf="numberOfSurveys !== 1">s</span>.
                     <a

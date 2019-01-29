@@ -14,10 +14,21 @@ the content's Community Score and Quality Score.
 Content Scoring is in early iterations, to be improved with
 user feedback and future additions to ansible-lint.
 
+Overall Score
+=============
+
+The overall score is a combination of the community score, the quality score and the number of surveys that have been submitted for a role.
+This number is calculated as the weighted average of the community and quality scores. If there are fewer than three surveys submitted the
+quality score has a slightly higher weight. If there are three or more surveys submitted the community and quality scores have an identical
+weight. For more details on this formula see `PR #1406 <https://github.com/ansible/galaxy/pull/1406>`_.
+
 Community Score
 ===============
 
 * The Community Score is calculated from community surveys submitted by Galaxy users
+  - Each question receives an value of 0 to 5 points based on how the user answers it
+  - The total score is a simple average of the value of all of the questions
+  - Questions that are unanswered are not included in the average
 * Maximum score of ``5.0``
 
 Quality Score
