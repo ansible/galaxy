@@ -21,7 +21,7 @@
                     [score]="qualityScore"
                     [barText]="qualityBarText"
                     text="Quality Score"
-                    [infoIcon]="{link: '/docs/contributing/content_scoring.html', text: 'Scoring Method'}"
+                    [infoIcon]="{link: '/docs/contributing/content_scoring.html', text: 'Documentation'}"
                 ></app-score-bar>
                 <div class="details">
                     Last scored {{ lastScored }}.
@@ -36,7 +36,7 @@
                     [score]="communityScore"
                     [barText]="communityBarText"
                     text="Community Score"
-                    [infoIcon]="{link: '/docs/contributing/content_scoring.html', text: 'Scoring Method'}"
+                    [infoIcon]="{link: '/docs/contributing/content_scoring.html', text: 'Documentation'}"
                 ></app-score-bar>
                 <div class="details">
                     Based on {{ numberOfSurveys }} survey<span *ngIf="numberOfSurveys !== 1">s</span>.
