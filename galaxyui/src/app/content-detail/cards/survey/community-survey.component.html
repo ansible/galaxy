@@ -56,7 +56,7 @@
                     <div class="title">Tell us about this collection</div>
 
                     <div *ngFor="let key of surveyKeys" class="input">
-                        <div class="input-title">{{surveyConfig[key].question}}</div>
+                        <div class="input-title" [tooltip]="surveyConfig[key].tooltip" >{{surveyConfig[key].question}}</div>
                         <div class="input-form">
                             <div *ngFor="let button of surveyConfig[key].type"
                                  (click)="submitRating(key, button.value)"
