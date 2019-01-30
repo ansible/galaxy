@@ -29,8 +29,8 @@ import {
 
 @Component({
     selector: 'app-authors',
-    templateUrl: './authors-react.component.html',
-    styleUrls: ['./authors-react.component.less'],
+    template: '<div id="react-container"></div>',
+    styles: [''],
 })
 export class AuthorsReactComponent implements OnInit {
     // Used to track which component is being loaded
