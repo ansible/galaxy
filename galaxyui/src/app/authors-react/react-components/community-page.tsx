@@ -1,6 +1,4 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { InjectorContext } from './injector-context';
 
 import { ActivatedRoute } from '@angular/router';
 
@@ -33,7 +31,7 @@ interface IState {
     filterConfig: FilterConfig;
 }
 
-class CommunityPage extends React.Component<IProps, IState> {
+export class CommunityPage extends React.Component<IProps, IState> {
     // Static
     route: ActivatedRoute;
     namespaceService: NamespaceService;
@@ -49,12 +47,6 @@ class CommunityPage extends React.Component<IProps, IState> {
 
     constructor(props) {
         super(props);
-
-        this.route = this.props.injector.get(ActivatedRoute);
-        this.namespaceService = this.props.injector.get(NamespaceService);
-        this.pfBody = this.props.injector.get(PFBodyService);
-
-        this.pfBody.scrollToTop();
 
         this.state = {
             items: [],
@@ -102,6 +94,12 @@ class CommunityPage extends React.Component<IProps, IState> {
     }
 
     componentDidMount() {
+        this.route = this.props.injector.get(ActivatedRoute);
+        this.namespaceService = this.props.injector.get(NamespaceService);
+        this.pfBody = this.props.injector.get(PFBodyService);
+
+        this.pfBody.scrollToTop();
+
         this.route.data.subscribe(data => {
             let items = data['namespaces']['results'];
             items = this.prepareNamespaces(items);
@@ -156,7 +154,7 @@ class CommunityPage extends React.Component<IProps, IState> {
         this.searchNamespaces();
     }
 
-    sortChanged($event: SortEvent): void {
+    sortChanged($event): void {
         if ($event.isAscending) {
             this.sortBy = $event.field.id;
         } else {
@@ -258,14 +256,10 @@ class CommunityPage extends React.Component<IProps, IState> {
             const filterConfig = this.state.filterConfig;
             const paginationConfig = this.state.paginationConfig;
 
-            console.log(this.pageNumber);
-
             paginationConfig.totalItems = result.count;
             paginationConfig.pageNumber = this.pageNumber;
             paginationConfig.pageSize = this.pageSize;
             filterConfig.resultsCount = result.count;
-
-            console.log(paginationConfig);
 
             this.setState({
                 items: items,
@@ -274,16 +268,5 @@ class CommunityPage extends React.Component<IProps, IState> {
                 loading: false,
             });
         });
-    }
-}
-
-export default class CommunityPageRenderer {
-    static init(injector: Injector) {
-        ReactDOM.render(
-            <InjectorContext.Provider value={{ injector: injector }}>
-                <CommunityPage injector={injector} />
-            </InjectorContext.Provider>,
-            document.getElementById('react-container'),
-        );
     }
 }

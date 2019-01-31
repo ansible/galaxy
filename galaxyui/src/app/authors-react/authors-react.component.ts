@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import CommunityPageRenderer from './react-components/community-page';
+import { CommunityPage } from './react-components/community-page';
+import { Render } from './react-components/render-react';
 
 import { Injector } from '@angular/core';
 
@@ -16,6 +17,6 @@ export class AuthorsReactComponent implements OnInit {
     constructor(public injector: Injector) {}
 
     ngOnInit() {
-        CommunityPageRenderer.init(this.injector);
+        Render.init(this.injector, CommunityPage, 'react-container');
     }
 }
