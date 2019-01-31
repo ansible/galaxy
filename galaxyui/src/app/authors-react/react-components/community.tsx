@@ -21,8 +21,8 @@ interface ICommunityProp {
     // Configs
     headerIcon: string;
     headerTitle: string;
-    filterConfig: any;
-    sortConfig: any;
+    filterConfig: FilterConfig;
+    sortConfig: SortConfig;
     content: any;
     paginationConfig: any;
     loading: boolean;
