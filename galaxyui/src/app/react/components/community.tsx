@@ -9,7 +9,7 @@ import {
     EmptyStateTitle,
 } from 'patternfly-react';
 
-import { Link } from './link';
+import { Link } from '../lib/link';
 import { PagerPF } from './patternfly-pager';
 import { PageLoading } from './page-loading';
 

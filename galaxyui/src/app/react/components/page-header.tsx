@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Link } from './link';
-import './page-header.less';
+import { Link } from '../lib/link';
 
 interface IPageHeaderProp {
     headerIcon: string;
