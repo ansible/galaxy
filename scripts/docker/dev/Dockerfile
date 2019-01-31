@@ -7,7 +7,7 @@ ENV LC_ALL en_US.UTF-8
 ENV PYTHONUNBUFFERED 1
 ENV PIP_NO_CACHE_DIR off
 
-ENV GALAXY_VENV /var/lib/galaxy/venv
+ENV GALAXY_VENV /usr/share/galaxy/venv
 ENV DJANGO_SETTINGS_MODULE galaxy.settings.development
 ENV C_FORCE_ROOT 1
 
@@ -32,10 +32,13 @@ RUN yum -y install epel-release \
 
 # Create directories structure
 RUN mkdir -p /galaxy \
+             /usr/share/galaxy \
              /var/lib/galaxy \
              /var/tmp/galaxy/repositories \
-             /var/tmp/galaxy/collections \
+             /var/tmp/galaxy/uploads \
              /var/run/galaxy
+
+VOLUME /var/lib/galaxy
 
 # Install node dependencies
 RUN yarn global add @angular/cli@6.1.2 \

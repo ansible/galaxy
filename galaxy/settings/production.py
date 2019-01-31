@@ -112,7 +112,7 @@ DATABASES['logging'] = DATABASES['default'].copy()
 # Static files
 # ---------------------------------------------------------
 
-STATIC_ROOT = '/var/lib/galaxy/public/static'
+STATIC_ROOT = '/usr/share/galaxy/public/static'
 
 # Security
 # ---------------------------------------------------------
@@ -194,8 +194,6 @@ WAIT_FOR = [
 
 ADMIN_URL_PATH = os.environ.get('GALAXY_ADMIN_PATH', 'admin')
 ADMIN_URL_PATTERN = r'^{}/'.format(ADMIN_URL_PATH)
-
-CONTENT_DOWNLOAD_DIR = '/var/lib/galaxy/downloads'
 
 GITHUB_TASK_USERS = ['galaxytasks01', 'galaxytasks02', 'galaxytasks03',
                      'galaxytasks04', 'galaxytasks05']

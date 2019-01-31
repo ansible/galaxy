@@ -3,7 +3,7 @@
 set -o nounset
 set -o errexit
 
-readonly GALAXY_VENV=${GALAXY_VENV:-/var/lib/galaxy/venv}
+readonly GALAXY_VENV=${GALAXY_VENV:-/usr/share/galaxy/venv}
 
 # shellcheck disable=SC2034
 VIRTUAL_ENV_DISABLE_PROMPT=1

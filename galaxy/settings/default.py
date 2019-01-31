@@ -140,7 +140,7 @@ SESSION_SAVE_EVERY_REQUEST = True
 
 DEFAULT_FILE_STORAGE = 'pulpcore.app.models.storage.FileSystem'
 
-FILE_UPLOAD_TEMP_DIR = '/var/tmp/galaxy/collections/'
+FILE_UPLOAD_TEMP_DIR = '/var/tmp/galaxy/uploads/'
 # List of upload handler classes to be applied in order.
 FILE_UPLOAD_HANDLERS = (
     'pulpcore.app.files.HashingFileUploadHandler',
@@ -327,7 +327,7 @@ ROLE_TYPES_ENABLED = frozenset(['ANS', 'CON', 'APP'])
 
 # A base directory used by repository import task to clone repositories into.
 # If set to `None`, system temporary directory is used.
-CONTENT_DOWNLOAD_DIR = '/var/tmp/galaxy/repositories'
+CONTENT_DOWNLOAD_DIR = '/var/tmp/galaxy/imports'
 
 GALAXY_URL = 'http://{site}:8000'
 

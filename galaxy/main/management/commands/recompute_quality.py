@@ -7,9 +7,9 @@ quality score. Does not reimport or relint - uses existing linter violations.
 
 Run from inside a container, examples:
 
-/var/lib/galaxy/venv/bin/python /galaxy/manage.py recompute_quality --help
+/usr/share/galaxy/venv/bin/python /galaxy/manage.py recompute_quality --help
 
-/var/lib/galaxy/venv/bin/django-admin recompute_quality --help
+/usr/share/galaxy/venv/bin/django-admin recompute_quality --help
 """
 
 from datetime import datetime

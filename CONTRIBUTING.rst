@@ -250,13 +250,13 @@ using ``tmux``.
         Applying socialaccount.0003_extra_data_default_dict... OK
         + make build_indexes
         Rebuild Custom Indexes
-        /var/lib/galaxy/venv/bin/python ./manage.py rebuild_galaxy_indexes
-        /var/lib/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
+        /usr/share/galaxy/venv/bin/python ./manage.py rebuild_galaxy_indexes
+        /usr/share/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
         from django.utils.importlib import import_module
 
         Rebuild Search Index
-        /var/lib/galaxy/venv/bin/python ./manage.py rebuild_index --noinput
-        /var/lib/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
+        /usr/share/galaxy/venv/bin/python ./manage.py rebuild_index --noinput
+        /usr/share/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
         from django.utils.importlib import import_module
 
         Removing all documents from your index because you said so.
