@@ -2,15 +2,19 @@ import * as React from 'react';
 
 import { ActivatedRoute } from '@angular/router';
 
-import { PaginationConfig } from './patternfly-pager';
-import { FilterConfig, FilterOption, AppliedFilter } from './patternfly-filter';
-import { SortConfig } from './patternfly-sort';
+import { PaginationConfig } from '../components/patternfly-pager';
+import {
+    FilterConfig,
+    FilterOption,
+    AppliedFilter,
+} from '../components/patternfly-filter';
+import { SortConfig } from '../components/patternfly-sort';
+
+import CommunityComponent from '../components/community';
 
 import { Namespace } from '../../resources/namespaces/namespace';
 import { NamespaceService } from '../../resources/namespaces/namespace.service';
 import { PFBodyService } from '../../resources/pf-body/pf-body.service';
-
-import CommunityComponent from './community';
 
 import { Injector } from '@angular/core';
 

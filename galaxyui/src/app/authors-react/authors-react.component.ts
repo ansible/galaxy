@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { CommunityPage } from './react-components/community-page';
-import { Render } from './react-components/render-react';
+import { CommunityPage } from '../react/containers/community-page';
+import { Render } from '../react/lib/render-react';
 
 import { Injector } from '@angular/core';
 
