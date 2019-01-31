@@ -1,8 +1,5 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { PageHeader } from './page-header';
-import { Injector } from '@angular/core';
-import { InjectorContext } from './injector-context';
 
 import {
     ListView,
@@ -20,49 +17,33 @@ import { ToolBarPF } from './patternfly-tooblar';
 import { SortConfig } from './patternfly-sort';
 import { FilterConfig } from './patternfly-filter';
 
-class PageConfig {
+interface ICommunityProp {
+    // Configs
     headerIcon: string;
     headerTitle: string;
-    filterConfig: FilterConfig;
-    sortConfig: SortConfig;
-}
+    filterConfig: any;
+    sortConfig: any;
+    content: any;
+    paginationConfig: any;
+    loading: boolean;
 
-interface ICommunityProp {
-    config: PageConfig;
+    // Callbacks
     updateFilter: (event) => void;
     updateSort: (event) => void;
-    store: any;
     updatePageSize: (event) => void;
     updatePageNumber: (event) => void;
 }
 
-interface IState {
-    content: any;
-    paginationConfig: any;
-    loading: boolean;
-}
-
-class CommunityComponent extends React.Component<ICommunityProp, IState> {
-    constructor(props) {
-        super(props);
-        this.state = {
-            loading: true,
-            content: [],
-            paginationConfig: {
-                pageSize: 10,
-                pageNumber: 1,
-                totalItems: 0,
-            },
-        };
-        this.props.store.subscribe({ next: x => this.setState(x) });
-    }
-
+export default class CommunityComponent extends React.Component<
+    ICommunityProp,
+    {}
+> {
     render() {
         return (
             <div>
                 <PageHeader
-                    headerIcon={this.props.config.headerIcon}
-                    headerTitle={this.props.config.headerTitle}
+                    headerIcon={this.props.headerIcon}
+                    headerTitle={this.props.headerTitle}
                 />
                 <div className='community-react-wrapper'>
                     <div id='authors-page'>
@@ -76,13 +57,13 @@ class CommunityComponent extends React.Component<ICommunityProp, IState> {
                         </div>
                     </div>
                 </div>
-                <PageLoading loading={this.state.loading} />
+                <PageLoading loading={this.props.loading} />
             </div>
         );
     }
 
     renderEmptyState() {
-        if (this.state.content.length > 0) {
+        if (this.props.content.length > 0) {
             return null;
         }
         return (
@@ -96,14 +77,14 @@ class CommunityComponent extends React.Component<ICommunityProp, IState> {
     }
 
     renderPagination() {
-        if (this.state.content.length === 0) {
+        if (this.props.content.length === 0) {
             return null;
         }
         return (
             <div className='col-sm-12'>
                 <div className='pagination'>
                     <PagerPF
-                        config={this.state.paginationConfig}
+                        config={this.props.paginationConfig}
                         onPageSizeChange={this.props.updatePageSize}
                         onPageNumberChange={this.props.updatePageNumber}
                     />
@@ -166,7 +147,7 @@ class CommunityComponent extends React.Component<ICommunityProp, IState> {
             <div className='col-sm-12'>
                 <div id='authors-list'>
                     <ListView>
-                        {this.state.content.map((item, index) => {
+                        {this.props.content.map((item, index) => {
                             return (
                                 <ListViewItem
                                     key={index}
@@ -194,37 +175,11 @@ class CommunityComponent extends React.Component<ICommunityProp, IState> {
                     onFilterChange={this.props.updateFilter}
                     onSortChange={this.props.updateSort}
                     toolbarConfig={{
-                        filterConfig: this.props.config.filterConfig,
-                        sortConfig: this.props.config.sortConfig,
+                        filterConfig: this.props.filterConfig,
+                        sortConfig: this.props.sortConfig,
                     }}
                 />
             </div>
-        );
-    }
-}
-
-export default class CommunityRenderer {
-    static init(
-        pageConfig,
-        injector: Injector,
-        updateFilter,
-        updateSort,
-        store,
-        updatePageSize,
-        updatePageNumber,
-    ) {
-        ReactDOM.render(
-            <InjectorContext.Provider value={{ injector: injector }}>
-                <CommunityComponent
-                    config={pageConfig}
-                    updateFilter={updateFilter}
-                    updateSort={updateSort}
-                    store={store}
-                    updatePageSize={updatePageSize}
-                    updatePageNumber={updatePageNumber}
-                />
-            </InjectorContext.Provider>,
-            document.getElementById('react-container'),
         );
     }
 }
