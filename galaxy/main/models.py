@@ -930,9 +930,10 @@ class Notification(PrimordialModel):
         auto_now=False,
         null=True
     )
-    commit_message = models.CharField(
+    commit_message = fields.TruncatingCharField(
         max_length=256,
-        blank=True
+        blank=True,
+        default=''
     )
     repository = models.ForeignKey(
         'Repository',
