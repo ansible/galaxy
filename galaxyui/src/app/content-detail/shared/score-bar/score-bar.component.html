@@ -7,4 +7,10 @@
         </div>
     </div>
     <div class="score-number"><span class="numerator">{{score}}</span> / {{dividend}}</div>
+    <div *ngIf="infoIcon" class="info">
+        &nbsp;
+        <a target="_blank" [href]="infoIcon.link">
+            <span [tooltip]="infoIcon.text" class="pficon-info"></span>
+        </a>
+    </div>
 </div>

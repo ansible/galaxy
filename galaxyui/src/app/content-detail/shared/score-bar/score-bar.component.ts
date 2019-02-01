@@ -1,5 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 
+class InfoConfig {
+    link: string;
+    text: string;
+}
+
 @Component({
     selector: 'app-score-bar',
     templateUrl: './score-bar.component.html',
@@ -28,6 +33,9 @@ export class ScoreBarComponent implements OnInit {
 
     @Input()
     barText: string;
+
+    @Input()
+    infoIcon: InfoConfig;
 
     ngOnInit() {}
 
