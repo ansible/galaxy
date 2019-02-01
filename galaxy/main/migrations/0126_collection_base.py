@@ -19,7 +19,7 @@ def delete_galaxy_repository(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [
         ('pulp_app', '0001_initial'),
-        ('main', '0124_auto_20181210_1433'),
+        ('main', '0125_community_score_question_average'),
     ]
 
     operations = [
