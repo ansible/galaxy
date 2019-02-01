@@ -9,8 +9,6 @@ Content Scoring
 
 This topic describes how content is scored.
 
-Scores displayed when browsing content are the average of
-the content's Community Score and Quality Score.
 Content Scoring is in early iterations, to be improved with
 user feedback and future additions to ansible-lint.
 
