@@ -213,13 +213,11 @@ Running through tmux
 
 If you're familiar with ``tmux``, and you would prefer to view the container
 output through a ``tmux`` session, use the following 2-step process to launch
-the containers, and then start the processes within the ``galaxy`` service
+the containers, and then access the processes within the ``galaxy`` service
 using ``tmux``.
 
 #. Execute the following to launch the containers in detached mode,
-   running in the background. Note that there will be no running processes in
-   the ``galaxy`` service container, because you'll start them in the next step
-   with ``tmux``.
+   running in the background.
 
    .. code-block:: console
 
@@ -227,9 +225,9 @@ using ``tmux``.
         $ cd galaxy
 
         ## Start the build process
-        $ make dev/up_tmux
+        $ make dev/up_detached
 
-#. Once the above commands complete, you can view the containers
+#. Once the above command is complete, you can view the containers
    by running ``docker ps``. The service we're most interested in is
    ``galaxy``, and it's container name will be ``galaxy_galaxy_1``.
    Before we can launch ``tmux``, we need to wait for database migrations and
@@ -247,38 +245,31 @@ using ``tmux``.
 
    .. code-block:: none
 
-        Applying socialaccount.0003_extra_data_default_dict... OK
-        + make build_indexes
-        Rebuild Custom Indexes
-        /usr/share/galaxy/venv/bin/python ./manage.py rebuild_galaxy_indexes
-        /usr/share/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
-        from django.utils.importlib import import_module
+          Applying main.0120_repository_quality_score_date... OK
+          Applying main.0121_userpreferences... OK
+          Applying main.0122_auto_20181015_1802... OK
+          Applying main.0123_fix_importtaskmessage_constraints... OK
+          Applying main.0124_auto_20181210_1433... OK
+          Applying main.0125_collection_base... OK
+          Applying sessions.0001_initial... OK
+          Applying sites.0001_initial... OK
+          Applying sites.0002_alter_domain_unique... OK
+          Applying socialaccount.0001_initial... OK
+          Applying socialaccount.0002_token_max_lengths... OK
+          Applying socialaccount.0003_extra_data_default_dict... OK
+        Starting tmux...
 
-        Rebuild Search Index
-        /usr/share/galaxy/venv/bin/python ./manage.py rebuild_index --noinput
-        /usr/share/galaxy/venv/lib/python2.7/site-packages/maintenance/middleware.py:3: RemovedInDjango19Warning: django.utils.importlib will be removed in Django 1.9.
-        from django.utils.importlib import import_module
-
-        Removing all documents from your index because you said so.
-        All documents removed.
-        Indexing 0 roles
-        + '[' 1 == 1 ']'
-        + scripts/docker/dev/sleep.sh
-
-   Once you see the very last line, ``scripts/docker/dev/sleep.sh``,
+   Once you see the very last line, ``Starting tmux...``,
    you're ready for the next step.
 
 #. Now you'll start ``tmux`` and launch the processes inside the ``galaxy``
    service container by running the following. If you're streaming the
-   logging ouptut still, use ``<Ctrl-C>`` to stop the stream.
+   logging output still, use ``<Ctrl-C>`` to stop the stream.
 
    .. code-block:: console
 
-        ## Set your working directory to the project root
-        $ cd galaxy
-
         ## Start tmux
-        $ make dev/tmux
+        $ make dev/attach
 
 Accessing the Galaxy web site
 -----------------------------
