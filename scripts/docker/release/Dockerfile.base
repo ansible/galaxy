@@ -6,7 +6,7 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 ENV PIP_NO_CACHE_DIR off
-ENV GALAXY_VENV /var/lib/galaxy/venv
+ENV GALAXY_VENV /usr/share/galaxy/venv
 
 # Install packages and create virtual environment
 RUN yum -y install epel-release \
@@ -16,8 +16,7 @@ RUN yum -y install epel-release \
 
 # Install python dependencies
 COPY requirements/requirements.txt /tmp/requirements.txt
-RUN mkdir -p /var/lib/galaxy/ \
-    && python3.6 -m venv /var/lib/galaxy/venv \
+RUN python3.6 -m venv ${GALAXY_VENV} \
     && "${GALAXY_VENV}/bin/pip" install -U \
         'pip<19.0' \
         'wheel' \

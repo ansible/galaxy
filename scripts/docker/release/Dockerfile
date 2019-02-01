@@ -5,7 +5,6 @@ ENV TINI_VERSION v0.18.0
 RUN curl -sL -o '/usr/local/bin/tini' \
         "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini" \
     && chmod +x /usr/local/bin/tini \
-    && yum -y remove wget \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
@@ -16,33 +15,36 @@ RUN mkdir -p /var/lib/galaxy \
 
 # Create directories structure
 RUN mkdir -p /etc/galaxy \
-             /var/lib/galaxy/public \
-             /var/log/galaxy \
+             /usr/share/galaxy/public \
+             /var/lib/galaxy/media \
              /var/run/galaxy \
-             /var/tmp/galaxy/repositories \
-             /var/tmp/galaxy/collections
+             /var/tmp/galaxy/imports \
+             /var/tmp/galaxy/uploads
 
 COPY scripts/docker/release/entrypoint.sh /entrypoint
-COPY --from=galaxy-build:latest /galaxy/dist/VERSION /var/lib/galaxy
+COPY --from=galaxy-build:latest /galaxy/dist/VERSION /usr/share/galaxy/
 COPY --from=galaxy-build:latest /galaxy/dist/*.whl /tmp
-COPY --from=galaxy-build:latest /galaxy/build/static/ /var/lib/galaxy/public/static/
-RUN "${GALAXY_VENV}/bin/pip" install "/tmp/galaxy-$(< /var/lib/galaxy/VERSION)-py3-none-any.whl"
+COPY --from=galaxy-build:latest /galaxy/build/static /usr/share/galaxy/public/
+RUN _galaxy_wheel="/tmp/galaxy-$(< /usr/share/galaxy/VERSION)-py3-none-any.whl" \
+    && "${GALAXY_VENV}/bin/pip" install "${_galaxy_wheel}" \
+    && rm -f "${_galaxy_wheel}"
+
 
 # Fix directory permissions
 RUN chown -R galaxy:root \
         /etc/galaxy \
+        /usr/share/galaxy \
         /var/lib/galaxy \
-        /var/log/galaxy \
         /var/run/galaxy \
-        /var/tmp/galaxy/repositories \
-        /var/tmp/galaxy/collections \
+        /var/tmp/galaxy \
     && chmod -R u=rwX,g=rwX\
         /etc/galaxy \
+        /usr/share/galaxy \
         /var/lib/galaxy \
-        /var/log/galaxy \
         /var/run/galaxy \
-        /var/tmp/galaxy/repositories \
-        /var/tmp/galaxy/collections
+        /var/tmp/galaxy
+
+VOLUME /var/lib/galaxy
 
 WORKDIR /var/lib/galaxy
 

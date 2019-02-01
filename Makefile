@@ -1,7 +1,7 @@
 GALAXY_RELEASE_IMAGE ?= galaxy
 GALAXY_RELEASE_TAG ?= latest
 
-VENV_BIN=/var/lib/galaxy/venv/bin
+GALAXY_VENV=/usr/share/galaxy/venv
 DOCKER_COMPOSE=docker-compose -p galaxy -f ./scripts/docker/dev/compose.yml
 
 .PHONY: help
@@ -47,7 +47,7 @@ clean:
 
 .PHONY: createsuperuser
 	@echo Create super user
-	${VENV_BIN}/python ./manage.py createsuperuser
+	python ./manage.py createsuperuser
 
 # ---------------------------------------------------------
 # Build targets
@@ -123,19 +123,19 @@ dev/build: build/docker-dev
 .PHONY: dev/createsuperuser
 dev/createsuperuser:
 	@echo "Create Superuser"
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py createsuperuser
+	@$(DOCKER_COMPOSE) exec galaxy $(GALAXY_VENV)/bin/python ./manage.py createsuperuser
 
 .PHONY: dev/migrate
 dev/migrate:
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py migrate --noinput
+	@$(DOCKER_COMPOSE) exec galaxy $(GALAXY_VENV)/bin/python ./manage.py migrate --noinput
 
 .PHONY: dev/makemigrations
 dev/makemigrations:
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py makemigrations
+	@$(DOCKER_COMPOSE) exec galaxy $(GALAXY_VENV)/bin/python ./manage.py makemigrations
 
 .PHONY: dev/checkmigrations
 dev/checkmigrations:
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py makemigrations --dry-run --check
+	@$(DOCKER_COMPOSE) exec galaxy $(GALAXY_VENV)/bin/python ./manage.py makemigrations --dry-run --check
 
 .PHONY: dev/log
 dev/log:
@@ -148,7 +148,7 @@ dev/logf:
 .PHONY: dev/flake8
 dev/flake8:
 	@echo "Running flake8"
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/flake8 galaxy
+	@$(DOCKER_COMPOSE) exec galaxy $(GALAXY_VENV)/bin/flake8 galaxy
 
 .PHONY: dev/jslint
 dev/jslint:
@@ -169,8 +169,8 @@ dev/shellcheck:
 .PHONY: dev/test
 dev/test:
 	@echo "Running tests"
-# TODO: Revert to $(VENV_BIN)/python. Some tests (flake8 and yamllint) require
-# tools on $PATH, this cannot be chieved with just $(VENV_BIN)/python command.
+# TODO: Revert to $(GALAXY_VENV)/bin/python. Some tests (flake8 and yamllint) require
+# tools on $PATH, this cannot be chieved with just $(GALAXY_VENV)/bin/python command.
 # So virtual environment must be activated in order to expose these utilities.
 # TODO: Since app is isolated in container already, it's probably acceptable to
 # get rid of virtual environment and install python packages in system dirs.
@@ -178,15 +178,15 @@ dev/test:
 # - install side packages globally or
 # - call tools using python api instead of shell commands.
 	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
-		source $(VENV_BIN)/activate; pytest galaxy'
+		source $(GALAXY_VENV)/bin/activate; pytest galaxy'
 
 .PHONY: dev/waitenv
 dev/waitenv:
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/python ./manage.py waitenv
+	@$(DOCKER_COMPOSE) exec galaxy $(GALAXY_VENV)/bin/python ./manage.py waitenv
 
 .PHONY: dev/pip_install
 dev/pip_install:
-	@$(DOCKER_COMPOSE) exec galaxy $(VENV_BIN)/pip install -r requirements.txt
+	@$(DOCKER_COMPOSE) exec galaxy $(GALAXY_VENV)/bin/pip install -r requirements.txt
 
 # Start all containers detached
 .PHONY: dev/up
@@ -235,7 +235,7 @@ import_test_data:
 .PHONY: dev/refresh-role-counts
 refresh-role-counts:
 	@echo Refresh role counts
-	$(DOCKER_COMPOSE) $(VENV_BIN)/python ./manage.py refresh_role_counts
+	$(DOCKER_COMPOSE) $(GALAXY_VENV)/bin/python ./manage.py refresh_role_counts
 
 .PHONY: dev/setup-metrics
 dev/setup-metrics:
