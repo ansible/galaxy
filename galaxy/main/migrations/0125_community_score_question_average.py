@@ -23,7 +23,7 @@ set community_score =
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0125_collection_base'),
+        ('main', '0124_auto_20181210_1433'),
     ]
 
     operations = [
