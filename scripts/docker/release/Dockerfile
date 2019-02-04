@@ -44,7 +44,7 @@ RUN chown -R galaxy:root \
         /var/run/galaxy \
         /var/tmp/galaxy
 
-VOLUME /var/lib/galaxy
+VOLUME ["/var/lib/galaxy", "/var/tmp/galaxy"]
 
 WORKDIR /var/lib/galaxy
 
