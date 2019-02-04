@@ -61,10 +61,11 @@ def test_flake8_fail():
 
         expected = [
             "{0}:3:9: F821 undefined name 'x'",
-            "{0}:5:9: W504 line break after binary operator",
+            "{0}:5:11: W504 line break after binary operator",
             "{0}:6:9: F821 undefined name 'y'",
             "{0}:7:1: E101 indentation contains mixed spaces and tabs",
             "{0}:7:1: W191 indentation contains tabs",
+            "{0}:7:2: E117 over-indented",
         ]
         expected = [s.format(fp.name) for s in expected]
     assert sorted(result) == sorted(expected)
