@@ -34,7 +34,7 @@ RUN yum -y install epel-release \
 RUN mkdir -p /galaxy \
              /usr/share/galaxy \
              /var/lib/galaxy \
-             /var/tmp/galaxy/repositories \
+             /var/tmp/galaxy/imports \
              /var/tmp/galaxy/uploads \
              /var/run/galaxy
 
