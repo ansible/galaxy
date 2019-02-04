@@ -44,7 +44,8 @@ docutils==0.14            # via rst2html5-tools, sphinx
 drf-nested-routers==0.91  # via pulpcore
 drf-yasg==1.12.1          # via pulpcore
 dynaconf==1.2.0           # via pulpcore
-flake8==3.6.0
+entrypoints==0.3          # via flake8
+flake8==3.7.5
 gunicorn==19.7.1
 honcho==1.0.1
 idna-ssl==1.1.0           # via aiohttp
@@ -74,9 +75,9 @@ psycopg2-binary==2.7.6.1
 pulpcore==3.0.0b18
 py==1.7.0                 # via pytest
 pyasn1==0.4.4             # via paramiko
-pycodestyle==2.4.0        # via flake8
+pycodestyle==2.5.0        # via flake8
 pycparser==2.19           # via cffi
-pyflakes==2.0.0           # via flake8
+pyflakes==2.1.0           # via flake8
 pygithub==1.43.3
 pygments==2.3.0           # via sphinx
 pyjwt==1.7.1              # via pygithub
