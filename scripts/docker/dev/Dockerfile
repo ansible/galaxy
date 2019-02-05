@@ -38,7 +38,7 @@ RUN mkdir -p /galaxy \
              /var/tmp/galaxy/uploads \
              /var/run/galaxy
 
-VOLUME /var/lib/galaxy
+VOLUME ["/var/lib/galaxy", "/var/tmp/galaxy"]
 
 # Install node dependencies
 RUN yarn global add @angular/cli@6.1.2 \
