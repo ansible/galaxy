@@ -1,5 +1,7 @@
 from django.conf import settings
 from rest_framework import views
+from rest_framework import status as status_codes
+from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.permissions import IsAuthenticated
 
 from pulpcore.app.serializers import ArtifactSerializer
@@ -14,6 +16,12 @@ from galaxy.pulp import tasks
 __all__ = [
     'UploadCollectionView'
 ]
+
+
+class CollectionExistsError(APIException):
+    status_code = status_codes.HTTP_409_CONFLICT
+    default_detail = 'Collection already exists.'
+    default_code = 'collection_exists'
 
 
 class UploadCollectionView(views.APIView):
@@ -47,5 +55,11 @@ class UploadCollectionView(views.APIView):
 
     def _save_artifact(self, data):
         artifact_serializer = ArtifactSerializer(data=data)
-        artifact_serializer.is_valid(raise_exception=True)
+        try:
+            artifact_serializer.is_valid(raise_exception=True)
+        except ValidationError as e:
+            error_codes = e.get_codes()
+            if 'unique' in error_codes.get('non_field_errors', []):
+                raise CollectionExistsError()
+            raise
         return artifact_serializer.save()
