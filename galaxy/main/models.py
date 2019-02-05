@@ -1021,6 +1021,10 @@ class Repository(BaseModel):
     community_score = models.FloatField(
         null=True
     )
+    community_survey_count = models.IntegerField(
+        default=0
+    )
+
     quality_score = models.FloatField(
         null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],

@@ -63,6 +63,7 @@ class RepositorySerializer(serializers.BaseSerializer):
             'community_score',
             'quality_score',
             'quality_score_date',
+            'community_survey_count'
         )
 
     def get_related(self, instance):
