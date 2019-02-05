@@ -8,7 +8,7 @@ import galaxy.main.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0126_collection_base'),
+        ('main', '0125_community_score_question_average'),
     ]
 
     operations = [
