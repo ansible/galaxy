@@ -355,7 +355,7 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
         this.repositoryService
             .pagedQuery(query)
             .subscribe((result: PagedResponse) => {
-                let repositories: Repository[] = result.results;
+                const repositories: Repository[] = result.results;
 
                 this.filterConfig.resultsCount = result.count;
                 this.paginationConfig.totalItems = result.count;
