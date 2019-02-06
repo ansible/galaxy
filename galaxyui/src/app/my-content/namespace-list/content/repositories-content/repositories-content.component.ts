@@ -33,7 +33,7 @@ import { RepositoryImportService } from '../../../../resources/repository-import
 
 import { AlternateNameModalComponent } from './alternate-name-modal/alternate-name-modal.component';
 
-import { forkJoin, interval, Observable } from 'rxjs';
+import { interval } from 'rxjs';
 
 import * as moment from 'moment';
 
@@ -324,87 +324,86 @@ export class RepositoriesContentComponent implements OnInit, OnDestroy {
     }
 
     private refreshRepositories() {
-        const queries: Observable<PagedResponse>[] = [];
+        // Django REST framework allows us to query multiple namespaces by using
+        // provider_namespace__id__in=id1,id2,id3
+        const query = {
+            provider_namespace__id__in: '',
+            page_size: this.paginationConfig.pageSize,
+            page: this.paginationConfig.pageNumber,
+        };
+
+        if (this.filterConfig) {
+            for (const filter of this.filterConfig.appliedFilters) {
+                query[`or__${filter.field.id}__icontains`] = filter.value;
+            }
+        }
+        if (this.sortConfig) {
+            query['order_by'] = this.sortBy;
+        }
+
         this.namespace.summary_fields.provider_namespaces.forEach(
             (pns: ProviderNamespace) => {
-                const query = {
-                    provider_namespace__id: pns.id,
-                    page_size: this.paginationConfig.pageSize,
-                    page: this.paginationConfig.pageNumber,
-                };
-
-                if (this.filterConfig) {
-                    for (const filter of this.filterConfig.appliedFilters) {
-                        query[`or__${filter.field.id}__icontains`] =
-                            filter.value;
-                    }
-                }
-                if (this.sortConfig) {
-                    query['order_by'] = this.sortBy;
-                }
-                queries.push(this.repositoryService.pagedQuery(query));
+                query.provider_namespace__id__in += pns.id + ',';
             },
         );
 
-        forkJoin(queries).subscribe((results: PagedResponse[]) => {
-            let repositories: Repository[] = [];
+        query.provider_namespace__id__in = query.provider_namespace__id__in.slice(
+            0,
+            -1,
+        );
 
-            let resultCount = 0;
+        this.repositoryService
+            .pagedQuery(query)
+            .subscribe((result: PagedResponse) => {
+                const repositories: Repository[] = result.results;
 
-            for (const response of results) {
-                repositories = repositories.concat(
-                    response.results as Repository[],
-                );
-                resultCount += response.count;
-            }
+                this.filterConfig.resultsCount = result.count;
+                this.paginationConfig.totalItems = result.count;
 
-            this.filterConfig.resultsCount = resultCount;
-            this.paginationConfig.totalItems = resultCount;
-
-            // maxItems is used to determine if we need to show the filter or not
-            // it should never go down to avoid hiding the filter by accident when
-            // a query returns a small number of items.
-            if (this.maxItems < this.paginationConfig.totalItems) {
-                this.maxItems = this.paginationConfig.totalItems;
-            }
-
-            // Collect a list of expanded items to keep them from getting
-            // closed when the page refreshes.
-            const expanded = [];
-
-            this.items.forEach(item => {
-                if (item.expanded) {
-                    expanded.push(item.id);
+                // maxItems is used to determine if we need to show the filter or not
+                // it should never go down to avoid hiding the filter by accident when
+                // a query returns a small number of items.
+                if (this.maxItems < this.paginationConfig.totalItems) {
+                    this.maxItems = this.paginationConfig.totalItems;
                 }
+
+                // Collect a list of expanded items to keep them from getting
+                // closed when the page refreshes.
+                const expanded = [];
+
+                this.items.forEach(item => {
+                    if (item.expanded) {
+                        expanded.push(item.id);
+                    }
+                });
+
+                // Generate a new list of repos
+                const updatedList: Repository[] = [];
+
+                // Only poll imports if there are pending imports
+                this.pollingEnabled = false;
+                repositories.forEach(repo => {
+                    if (
+                        repo.summary_fields.latest_import.state === 'PENDING' ||
+                        repo.summary_fields.latest_import.state === 'RUNNING'
+                    ) {
+                        this.pollingEnabled = true;
+                    }
+
+                    this.prepareRepository(repo);
+                    if (expanded.includes(repo.id)) {
+                        repo.expanded = true;
+                    }
+                    updatedList.push(repo);
+                });
+
+                // set the old list to the new list to avoid screen flickering
+                this.items = updatedList;
+                this.loading = false;
+
+                // Show blank screen during loads.
+                this.updateEmptyState();
             });
-
-            // Generate a new list of repos
-            const updatedList: Repository[] = [];
-
-            // Only poll imports if there are pending imports
-            this.pollingEnabled = false;
-            repositories.forEach(repo => {
-                if (
-                    repo.summary_fields.latest_import.state === 'PENDING' ||
-                    repo.summary_fields.latest_import.state === 'RUNNING'
-                ) {
-                    this.pollingEnabled = true;
-                }
-
-                this.prepareRepository(repo);
-                if (expanded.includes(repo.id)) {
-                    repo.expanded = true;
-                }
-                updatedList.push(repo);
-            });
-
-            // set the old list to the new list to avoid screen flickering
-            this.items = updatedList;
-            this.loading = false;
-
-            // Show blank screen during loads.
-            this.updateEmptyState();
-        });
     }
 
     private updateEmptyState(): void {
