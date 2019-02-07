@@ -25,12 +25,10 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.http import urlquote
 from django.utils import timezone
-import six
 
 import galaxy.main.mixins as mixins
 
 
-@six.python_2_unicode_compatible
 class CustomUser(auth_models.AbstractBaseUser,
                  auth_models.PermissionsMixin,
                  mixins.DirtyMixin):

@@ -18,7 +18,6 @@
 import logging
 import operator
 
-import six
 import uuid
 
 from django.conf import settings
@@ -50,7 +49,6 @@ __all__ = [
 # (e.g. models/base.py, models/content.py, etc.)
 
 
-@six.python_2_unicode_compatible
 class BaseModel(models.Model, DirtyMixin):
     """Common model for objects not needing name, description,
     active attributes."""
@@ -100,7 +98,6 @@ class CommonModelNameNotUnique(PrimordialModel):
 # Actual models
 # -----------------------------------------------------------------------------
 
-@six.python_2_unicode_compatible
 class Category(CommonModel):
     """
     A class represnting the valid categories (formerly tags)
@@ -118,7 +115,6 @@ class Category(CommonModel):
         return reverse('api:category_detail', args=(self.pk,))
 
 
-@six.python_2_unicode_compatible
 class Tag(CommonModel):
     """A class representing the tags that have been assigned to roles."""
 
@@ -136,7 +132,6 @@ class Tag(CommonModel):
         return self.roles.filter(active=True, is_valid=True).count()
 
 
-@six.python_2_unicode_compatible
 class Platform(CommonModelNameNotUnique):
     """A class representing the valid platforms a role supports."""
 
@@ -161,7 +156,6 @@ class Platform(CommonModelNameNotUnique):
         return reverse('api:platform_detail', args=(self.pk,))
 
 
-@six.python_2_unicode_compatible
 class CloudPlatform(CommonModel):
     """A model representing the valid cloud platforms for role."""
 
@@ -175,7 +169,6 @@ class CloudPlatform(CommonModel):
         return reverse('api:cloud_platform_detail', args=(self.pk,))
 
 
-@six.python_2_unicode_compatible
 class UserAlias(models.Model):
     """
     A class representing a mapping between users and aliases to allow
@@ -221,7 +214,6 @@ class Video(PrimordialModel):
     role.help_text = ""
 
 
-@six.python_2_unicode_compatible
 class ContentType(BaseModel):
     """A model that represents content type (e.g. role, module, etc.)."""
     name = models.CharField(max_length=512, unique=True, db_index=True,
@@ -242,7 +234,6 @@ class ContentType(BaseModel):
         return reverse('api:content_type_detail', args=(self.pk,))
 
 
-@six.python_2_unicode_compatible
 class Content(CommonModelNameNotUnique):
     """A class representing a user role."""
 
@@ -675,7 +666,6 @@ class ProviderNamespace(PrimordialModel):
         return reverse('api:provider_namespace_detail', args=(self.pk,))
 
 
-@six.python_2_unicode_compatible
 class RepositoryVersion(BaseModel):
     class Meta:
         unique_together = ('repository', 'version')
@@ -696,7 +686,6 @@ class RepositoryVersion(BaseModel):
             self.content.namespace, self.content.name, self.version)
 
 
-@six.python_2_unicode_compatible
 class ImportTaskMessage(PrimordialModel):
     TYPE_INFO = constants.ImportTaskMessageType.INFO.value
     TYPE_WARNING = constants.ImportTaskMessageType.WARNING.value
@@ -753,7 +742,6 @@ class ImportTaskMessage(PrimordialModel):
             self.task.id, self.message_type, self.message_text)
 
 
-@six.python_2_unicode_compatible
 class ImportTask(PrimordialModel):
     class Meta:
         ordering = ('-id',)
@@ -855,7 +843,6 @@ class ImportTask(PrimordialModel):
         self.save()
 
 
-@six.python_2_unicode_compatible
 class NotificationSecret(PrimordialModel):
     class Meta:
         ordering = ('source', 'github_user', 'github_repo')
@@ -1154,7 +1141,6 @@ class RefreshRoleCount(PrimordialModel):
     )
 
 
-@six.python_2_unicode_compatible
 class ContentBlock(BaseModel):
     name = models.SlugField(unique=True)
     content = models.TextField('content', blank=True)
@@ -1237,7 +1223,6 @@ class CommunitySurvey(BaseModel):
     )
 
 
-@six.python_2_unicode_compatible
 class InfluxSessionIdentifier(BaseModel):
 
     session_id = models.UUIDField(
@@ -1250,7 +1235,6 @@ class InfluxSessionIdentifier(BaseModel):
         return str(self.session_id)
 
 
-@six.python_2_unicode_compatible
 class UserPreferences(BaseModel):
 
     DEFAULT_PREFERENCES = {
