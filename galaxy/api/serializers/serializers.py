@@ -28,7 +28,6 @@ from collections import OrderedDict
 
 from galaxy.main.models import (Platform,
                                 CloudPlatform,
-                                Category,
                                 Tag,
                                 Content,
                                 ImportTask,
@@ -41,7 +40,6 @@ __all__ = [
     'BaseSerializer',
     'SubscriptionSerializer',
     'StargazerSerializer',
-    'CategorySerializer',
     'CloudPlatformSerializer',
     'CloudPlatformSearchSerializer',
     'TagSerializer',
@@ -228,12 +226,6 @@ class StargazerSerializer(BaseSerializer):
             return reverse('api:stargazer_detail', args=(obj.pk,))
         else:
             return obj.get_absolute_url()
-
-
-class CategorySerializer(BaseSerializer):
-    class Meta:
-        model = Category
-        fields = BASE_FIELDS
 
 
 class TagSerializer(BaseSerializer):
