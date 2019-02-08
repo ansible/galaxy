@@ -19,7 +19,6 @@ import { AppComponent } from './app.component';
 // Custom Modules
 import { AppRoutingModule } from './app-routing.module';
 import { AuthorsModule } from './authors/authors.module';
-import { AuthorsReactModule } from './authors-react/authors-react.module';
 
 import { ContentDetailModule } from './content-detail/content-detail.module';
 import { ExceptionPagesModule } from './exception-pages/exception-pages.module';
@@ -79,7 +78,6 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
         ExceptionPagesModule,
         VendorsModule,
         AuthorsModule,
-        AuthorsReactModule,
         AppRoutingModule,
         AboutModalModule,
         SharedModule,

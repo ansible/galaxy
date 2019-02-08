@@ -153,11 +153,6 @@ export class AppComponent implements OnInit {
                 iconStyleClass: 'fa fa-users',
                 url: '/community',
             },
-            {
-                title: 'Community: React',
-                iconStyleClass: 'fa fa-users',
-                url: '/community-react',
-            },
         ] as VerticalNavigationItem[];
 
         this.apiRootService.get().subscribe(apiInfo => {
