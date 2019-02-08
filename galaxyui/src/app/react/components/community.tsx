@@ -82,7 +82,7 @@ export default class CommunityComponent extends React.Component<
         }
         return (
             <div className='col-sm-12'>
-                <div className='pagination'>
+                <div className='pagination-container'>
                     <PagerPF
                         config={this.props.paginationConfig}
                         onPageSizeChange={this.props.updatePageSize}

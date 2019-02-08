@@ -23,6 +23,7 @@ export class AppliedFilter {
 interface IProps {
     filterConfig: FilterConfig;
     addFilter: (value, field) => void;
+    style?: any;
 }
 
 interface IState {
@@ -74,17 +75,17 @@ export class FilterPF extends React.Component<IProps, IState> {
     }
 
     render() {
+        const { filterConfig, addFilter, ...rest } = this.props;
         return (
-            <div>
-                <Filter>
-                    <Filter.TypeSelector
-                        filterTypes={this.props.filterConfig.fields}
-                        currentFilterType={this.state.field}
-                        onFilterTypeSelected={i => this.selectFilter(i)}
-                    />
-                    {this.renderInput()}
-                </Filter>
-            </div>
+            <Filter className='form-group' style={{ width: '275px' }}>
+                <Filter.TypeSelector
+                    {...rest}
+                    filterTypes={this.props.filterConfig.fields}
+                    currentFilterType={this.state.field}
+                    onFilterTypeSelected={i => this.selectFilter(i)}
+                />
+                {this.renderInput()}
+            </Filter>
         );
     }
 }
