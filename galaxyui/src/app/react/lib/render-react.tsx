@@ -9,7 +9,11 @@ export class Render {
             <InjectorContext.Provider value={{ injector: injector }}>
                 <Component injector={injector} />
             </InjectorContext.Provider>,
-            document.getElementById(container),
+            container,
         );
+    }
+
+    static unmount(container) {
+        ReactDOM.unmountComponentAtNode(container);
     }
 }
