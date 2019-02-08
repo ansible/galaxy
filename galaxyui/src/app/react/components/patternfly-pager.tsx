@@ -33,7 +33,7 @@ export class PagerPF extends React.Component<IProps, {}> {
     render() {
         return (
             <Paginator
-                viewType='list'
+                viewType={'list'}
                 pagination={{
                     page: this.props.config.pageNumber,
                     perPage: this.props.config.pageSize,
