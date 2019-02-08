@@ -41,7 +41,7 @@ export class CommunityPage extends React.Component<IProps, IState> {
     namespaceService: NamespaceService;
     pfBody: PFBodyService;
     pageIcon = 'fa fa-users';
-    pageTitle = 'Community Authors: REACT EDITION';
+    pageTitle = 'Community Authors';
     sortConfig: SortConfig;
 
     sortBy = 'name';
