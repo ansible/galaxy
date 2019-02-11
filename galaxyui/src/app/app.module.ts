@@ -19,7 +19,6 @@ import { AppComponent } from './app.component';
 // Custom Modules
 import { AppRoutingModule } from './app-routing.module';
 import { AuthorsModule } from './authors/authors.module';
-
 import { ContentDetailModule } from './content-detail/content-detail.module';
 import { ExceptionPagesModule } from './exception-pages/exception-pages.module';
 import { HomeModule } from './home/home.module';
