@@ -9,9 +9,8 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "customWebpackConfig": {"path": "./custom-webpack.config.js"},
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
