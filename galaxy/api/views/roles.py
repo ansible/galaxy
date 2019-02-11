@@ -50,7 +50,7 @@ class RoleList(ListAPIView):
                     params['namespace__name__iexact'] = val
                 elif key == 'name':
                     params['name__iexact'] = val
-                else:
+                elif key not in ('page', 'page_size'):
                     params[key] = val
             qs = self.get_queryset()
             qs = qs.filter(**params)
