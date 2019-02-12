@@ -62,8 +62,6 @@ __all__ = [
     'ApiRootView',
     'ApiV1ReposView',
     'ApiV1RootView',
-    'CategoryDetail',
-    'CategoryList',
     'CloudPlatformDetail',
     'CloudPlatformList',
     'ImportTaskDetail',
@@ -142,7 +140,6 @@ class ApiV1RootView(base_views.APIView):
     def get(self, request, format=None):
         # list top level resources
         data = OrderedDict()
-        data['categories'] = reverse('api:category_list')
         data['cloud_platforms'] = reverse('api:cloud_platform_list')
         data['content'] = reverse('api:content_list')
         data['content_blocks'] = reverse('api:content_block_list')
@@ -220,15 +217,6 @@ class ApiV1ReposView(base_views.APIView):
         return Response(data)
 
 
-class CategoryList(base_views.ListAPIView):
-    model = models.Category
-    serializer_class = serializers.CategorySerializer
-    paginate_by = None
-
-    def get_queryset(self):
-        return self.model.objects.filter(active=True)
-
-
 class TagList(base_views.ListAPIView):
     model = models.Tag
     serializer_class = serializers.TagSerializer
@@ -240,11 +228,6 @@ class TagList(base_views.ListAPIView):
 class TagDetail(base_views.RetrieveAPIView):
     model = models.Tag
     serializer_class = serializers.TagSerializer
-
-
-class CategoryDetail(base_views.RetrieveAPIView):
-    model = models.Category
-    serializer_class = serializers.CategorySerializer
 
 
 class PlatformList(base_views.ListAPIView):

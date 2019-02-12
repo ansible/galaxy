@@ -38,7 +38,7 @@ from galaxy.main.mixins import DirtyMixin
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    'PrimordialModel', 'Platform', 'CloudPlatform', 'Category', 'Tag',
+    'PrimordialModel', 'Platform', 'CloudPlatform', 'Tag',
     'Content', 'ImportTask', 'ImportTaskMessage', 'RepositoryVersion',
     'UserAlias', 'NotificationSecret', 'Notification', 'Repository',
     'Subscription', 'Stargazer', 'Namespace', 'Provider', 'ProviderNamespace',
@@ -97,23 +97,6 @@ class CommonModelNameNotUnique(PrimordialModel):
 
 # Actual models
 # -----------------------------------------------------------------------------
-
-class Category(CommonModel):
-    """
-    A class represnting the valid categories (formerly tags)
-    that can be assigned to a role.
-    """
-
-    class Meta:
-        ordering = ['name']
-        verbose_name_plural = "Categories"
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return reverse('api:category_detail', args=(self.pk,))
-
 
 class Tag(CommonModel):
     """A class representing the tags that have been assigned to roles."""
@@ -279,15 +262,6 @@ class Content(CommonModelNameNotUnique):
         editable=False,
     )
     tags.help_text = ""
-
-    categories = models.ManyToManyField(
-        'Category',
-        related_name='categories',
-        verbose_name="Categories",
-        blank=True,
-        editable=False,
-    )
-    categories.help_text = ""
 
     repository = models.ForeignKey(
         'Repository',

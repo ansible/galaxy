@@ -82,11 +82,6 @@ cloud_platform_urls = [
         name='cloud_platform_detail'),
 ]
 
-category_urls = [
-    url(r'^$', views.CategoryList.as_view(), name='category_list'),
-    url(r'^(?P<pk>[0-9]+)/$', views.CategoryDetail.as_view(),
-        name='category_detail'),
-]
 
 tag_urls = [
     url(r'^$', views.TagList.as_view(), name='tag_list'),
@@ -264,7 +259,6 @@ v1_urls = [
     url(r'^content/', include(content_urls)),
     url(r'^collections/', include(collection_urls)),
     url(r'^role_types/', views.RoleTypes.as_view(), name='role_types'),
-    url(r'^categories/', include(category_urls)),
     url(r'^tags/', include(tag_urls)),
     url(r'^platforms/', include(platform_urls)),
     url(r'^cloud_platforms/', include(cloud_platform_urls)),
