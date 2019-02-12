@@ -2,5 +2,3 @@ printWidth: 80
 singleQuote: true
 trailingComma: 'all'
 tabWidth: 4
-jsxSingleQuote: true
-jsxBracketSameLine: false
