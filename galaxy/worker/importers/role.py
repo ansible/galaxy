@@ -159,11 +159,9 @@ class RoleImporter(base.ContentImporter):
         if role.role_type not in (constants.RoleType.CONTAINER,
                                   constants.RoleType.ANSIBLE):
             return
-        if not dependencies:
-            return
         self.log.info('Adding role dependencies')
         new_deps = []
-        for dep in dependencies:
+        for dep in dependencies or []:
             try:
                 dep_role = models.Content.objects.get(
                     namespace__name=dep.namespace, name=dep.name)
