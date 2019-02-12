@@ -159,7 +159,7 @@ dev/jslint:
 .PHONY: dev/prettier
 dev/prettier:
 	@echo "Running prettier..."
-	@$(DOCKER_COMPOSE) exec galaxy bash -c 'cd galaxyui; ./node_modules/.bin/prettier --write "src/**/*.less" "src/**/*.ts"'
+	@$(DOCKER_COMPOSE) exec galaxy bash -c 'cd galaxyui; ./node_modules/.bin/prettier --write "src/**/*.less" "src/**/*.ts" "src/**/*.tsx"'
 
 .PHONY: dev/shellcheck
 dev/shellcheck:
