@@ -24,6 +24,11 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
+def deny_anonymous_users(user):
+    if user.is_anonymous:
+        raise PermissionDenied()
+
+
 class UserEmailList(base_views.SubListAPIView):
     model = EmailAddress
     serializer_class = serializers.EmailSerializer
@@ -31,6 +36,8 @@ class UserEmailList(base_views.SubListAPIView):
     relationship = 'emailaddress_set'
 
     def get_queryset(self):
+        deny_anonymous_users(self.request.user)
+
         user_id = self.kwargs.get(self.lookup_field)
         if not self.request.user.is_staff:
             if self.request.user.id != int(user_id):
@@ -44,6 +51,8 @@ class EmailList(base_views.ListCreateAPIView):
     serializer_class = serializers.EmailSerializer
 
     def get_queryset(self):
+        deny_anonymous_users(self.request.user)
+
         qs = super(EmailList, self).get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(user=self.request.user)
@@ -55,6 +64,8 @@ class EmailDetail(base_views.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.EmailSerializer
 
     def get_object(self, qs=None):
+        deny_anonymous_users(self.request.user)
+
         obj = super(EmailDetail, self).get_object()
         if not self.request.user.is_staff:
             if obj.user != self.request.user:
