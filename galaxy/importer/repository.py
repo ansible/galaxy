@@ -87,6 +87,8 @@ class RepositoryLoader(object):
             if result[0][0].description:
                 description = result[0][0].description
 
+        quality_score = self._get_repo_quality_score(result)
+
         return models.Repository(
             branch=branch,
             commit=commit,
@@ -94,7 +96,8 @@ class RepositoryLoader(object):
             contents=[v[0] for v in result],
             readme=readme,
             name=name,
-            description=description
+            description=description,
+            quality_score=quality_score,
         )
 
     def _find_contents(self):
@@ -122,7 +125,9 @@ class RepositoryLoader(object):
             self.log.info('===== LINTING {}{} ====='.format(
                           content_type.name, name))
             lint_result = loader.lint()
+            content.scores = loader.score()
             self.log.info(' ')
+
             yield content, lint_result
 
     def _get_readme(self, repository_format):
@@ -132,3 +137,12 @@ class RepositoryLoader(object):
             except readmeutils.FileSizeError as e:
                 self.log.warning(e)
         return None
+
+    def _get_repo_quality_score(self, result):
+        repo_points = 0.0
+        role_count = 0
+        for content, _ in result:
+            if content.content_type == constants.ContentType.ROLE:
+                repo_points += content.scores['quality']
+                role_count += 1
+        return repo_points / role_count

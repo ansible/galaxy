@@ -23,9 +23,63 @@ import six
 
 from galaxy.common import logutils
 from galaxy.importer.utils import readme as readmeutils
+from galaxy.main import models
 
 
 default_logger = logging.getLogger(__name__)
+
+BASE_SCORE = 50.0
+SEVERITY_TO_WEIGHT = {
+    0: 0.0,
+    1: 0.75,
+    2: 1.25,
+    3: 2.5,
+    4: 5.0,
+    5: 10.0,
+}
+CONTENT_SEVERITY = {
+    'ansible-lint_e101': 3,
+    'ansible-lint_e102': 4,
+    'ansible-lint_e103': 5,
+    'ansible-lint_e104': 5,
+    'ansible-lint_e105': 4,
+    'ansible-lint_e201': 0,
+    'ansible-lint_e202': 5,
+    'ansible-lint_e203': 2,
+    'ansible-lint_e204': 1,
+    'ansible-lint_e205': 3,
+    'ansible-lint_e206': 2,
+    'ansible-lint_e301': 4,
+    'ansible-lint_e302': 5,
+    'ansible-lint_e303': 4,
+    'ansible-lint_e304': 5,
+    'ansible-lint_e305': 4,
+    'ansible-lint_e306': 3,
+    'ansible-lint_e401': 3,
+    'ansible-lint_e402': 3,
+    'ansible-lint_e403': 1,
+    'ansible-lint_e404': 4,
+    'ansible-lint_e501': 5,
+    'ansible-lint_e502': 3,
+    'ansible-lint_e503': 3,
+    'ansible-lint_e504': 3,
+    'ansible-lint_e601': 4,
+    'ansible-lint_e602': 4,
+    'yamllint_yaml_error': 4,
+    'yamllint_yaml_warning': 1,
+}
+METADATA_SEVERITY = {
+    'ansible-lint_e701': 4,
+    'ansible-lint_e702': 4,
+    'ansible-lint_e703': 4,
+    'ansible-lint_e704': 2,
+    'importer_importer101': 3,  # RoleImporter
+    'importer_importer102': 3,  # RoleImporter
+    'importer_importer103': 4,  # RoleImporter
+}
+COMPATIBILITY_SEVERITY = {
+    'importer_not_all_versions_tested': 5,  # RoleMetaParser
+}
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -111,6 +165,58 @@ class BaseLoader(object):
             return readmeutils.get_readme(directory or self.path, self.root)
         except readmeutils.FileSizeError as e:
             self.log.warning(e)
+
+    def score(self):
+        # TODO(awcrosby) ensure importer101-3 warnings are calculated in score
+        # after validation moved from celery worker into importer
+        task_id = self.log.logger.extra['task_id']
+
+        import_task_messages = models.ImportTaskMessage.objects.filter(
+            task_id=task_id,
+            content_name=self.name,
+            is_linter_rule_violation=True,
+        )
+        for msg in import_task_messages:
+            rule_code = '{}_{}'.format(msg.linter_type,
+                                       msg.linter_rule_id).lower()
+            if rule_code in CONTENT_SEVERITY:
+                msg.score_type = 'content'
+                msg.rule_severity = CONTENT_SEVERITY[rule_code]
+            elif rule_code in METADATA_SEVERITY:
+                msg.score_type = 'metadata'
+                msg.rule_severity = METADATA_SEVERITY[rule_code]
+            elif rule_code in COMPATIBILITY_SEVERITY:
+                msg.score_type = 'compatibility'
+                msg.rule_severity = COMPATIBILITY_SEVERITY[rule_code]
+            else:
+                self.log.warning(
+                    u'Severity not found for rule: {}'.format(rule_code))
+                msg.is_linter_rule_violation = False
+            msg.save()
+
+        content_m = models.ImportTaskMessage.objects.filter(
+            task_id=task_id,
+            content_name=self.name,
+            score_type='content',
+            is_linter_rule_violation=True,
+        )
+        meta_m = models.ImportTaskMessage.objects.filter(
+            task_id=task_id,
+            content_name=self.name,
+            score_type='metadata',
+            is_linter_rule_violation=True,
+        )
+
+        content_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in content_m]
+        meta_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in meta_m]
+
+        scores = {}
+        scores['content'] = max(0.0, (BASE_SCORE - sum(content_w)) / 10)
+        scores['metadata'] = max(0.0, (BASE_SCORE - sum(meta_w)) / 10)
+        scores['compatibility'] = None
+        scores['quality'] = sum([scores['content'], scores['metadata']]) / 2.0
+
+        return scores
 
 
 def make_module_name(path):
