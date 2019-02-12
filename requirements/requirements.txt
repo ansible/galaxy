@@ -7,7 +7,7 @@
 aiohttp==3.5.4
 alabaster==0.7.12         # via sphinx
 amqp==1.4.9               # via kombu
-ansible-lint==4.0.1
+ansible-lint==4.1.0
 ansible==2.7.4
 anyjson==0.3.3            # via kombu
 asn1crypto==0.24.0        # via cryptography
