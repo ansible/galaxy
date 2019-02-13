@@ -269,7 +269,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
         sortParams += $event.field.id;
         this.queryParams['order_by'] = sortParams;
-        this.searchContent();
+        this.searchEntered();
     }
 
     filterChanged($event: FilterEvent): void {
@@ -325,7 +325,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
             this.appliedFilters = [];
             this.contentItems = [];
         }
-        this.searchContent();
+        this.searchEntered();
     }
 
     getToolbarConfig(): ToolbarConfig {
@@ -372,8 +372,15 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
         if (update) {
             this.setAppliedFilters(this.queryParams);
-            this.searchContent();
+            this.searchEntered();
         }
+    }
+
+    searchEntered() {
+        this.queryParams['page'] = 1;
+        this.pageNumber = 1;
+        this.paginationConfig.pageNumber = 1;
+        this.searchContent();
     }
 
     searchContent() {
