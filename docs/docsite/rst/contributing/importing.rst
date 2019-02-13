@@ -238,6 +238,12 @@ rather than the repository name.
     to lowercase, and translating '-'  and '.' to '_'. If the name of an existing role should not be
     altered, don't set the value of *role_name*.
 
+Creating Organizational Namespaces
+==================================
+
+At the moment organization namespaces have to be added manually. To request a new namespace for your GitHub org
+please submit an `issue here <https://github.com/ansible/galaxy/issues/new?template=New_namespace.md>`_.
+
 Content Versions
 ================
 
