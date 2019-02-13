@@ -309,9 +309,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                             }
                         }
                     } else {
-                        params[key] = encodeURIComponent(
-                            filterby[key].join(' '),
-                        );
+                        params[key] = filterby[key].join(' ');
                     }
                 }
             }
