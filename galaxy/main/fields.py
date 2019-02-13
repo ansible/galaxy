@@ -15,8 +15,9 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import semver
 import distutils.version
+
+import semantic_version
 
 from django.db import models
 
@@ -37,14 +38,14 @@ class VersionField(models.CharField):
     def from_db_value(self, value, expression, connection, context):
         if value is None:
             return value
-        return semver.parse_version_info(value)
+        return semantic_version.Version(value)
 
     def to_python(self, value):
-        if isinstance(value, semver.VersionInfo):
+        if isinstance(value, semantic_version.Version):
             return value
         if value is None:
             return value
-        return semver.parse_version_info(value)
+        return semantic_version.Version(value)
 
     def get_prep_value(self, value):
         if value is None:
