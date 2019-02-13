@@ -3,7 +3,7 @@ name: Request a Namespace
 about: Request a new namespace for one of your GitHub Orgs
 title: ''
 labels: ''
-assignees: newswangerd
+assignees: chouseknecht
 
 ---
 
