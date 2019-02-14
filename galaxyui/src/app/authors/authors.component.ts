@@ -18,7 +18,7 @@ import { Injector } from '@angular/core';
 })
 export class AuthorsComponent implements OnInit, OnDestroy {
     // Used to track which component is being loaded
-    componentName = 'AuthorsReactComponent';
+    componentName = 'AuthorsComponent';
     @ViewChild('reactContainer')
     reactContainer: ElementRef;
 
