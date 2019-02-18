@@ -13,7 +13,7 @@ source "${GALAXY_VENV}/bin/activate"
 # FIXME(cutwater): Yet another workaround for running entrypoint not as PID 1
 # All run commands should be implemented outside entrypoint (e.g. in manage.py)
 _exec_cmd() {
-    [ $$ -eq 1 ] && set -- tini -- "$@"
+    [[ $$ -eq 1 ]] && set -- tini -- "$@"
     exec "$@"
 }
 
