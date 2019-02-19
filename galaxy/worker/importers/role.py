@@ -86,48 +86,14 @@ class RoleImporter(base.ContentImporter):
         if role.role_type not in (constants.RoleType.CONTAINER,
                                   constants.RoleType.ANSIBLE):
             return
-        if not platforms:
-            return
         self.log.info('Adding role platforms')
-        new_platforms = []
         for platform in platforms:
-            name = platform.name
-            versions = platform.versions
-            if 'all' in versions:
-                platform_objs = models.Platform.objects.filter(
-                    name__iexact=name
-                )
-                if not platform_objs:
-                    msg = u'Invalid platform: "{}-all", skipping.'.format(name)
-                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
-                    self.linter_data['rule_desc'] = msg
-                    self.log.warning(msg, extra=self.linter_data)
-                    continue
-                for p in platform_objs:
-                    role.platforms.add(p)
-                    new_platforms.append((p.name, p.release))
-                continue
-
-            for version in versions:
-                try:
-                    p = models.Platform.objects.get(
-                        name__iexact=name, release__iexact=str(version)
-                    )
-                except models.Platform.DoesNotExist:
-                    msg = (u'Invalid platform: "{0}-{1}", skipping.'
-                           .format(name, version))
-                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
-                    self.linter_data['rule_desc'] = msg
-                    self.log.warning(msg, extra=self.linter_data)
-                else:
-                    role.platforms.add(p)
-                    new_platforms.append((p.name, p.release))
+            role.platforms.add(platform)
 
         # Remove platforms/versions that are no longer listed in the metadata
-        for platform in role.platforms.all():
-            platform_key = (platform.name, platform.release)
-            if platform_key not in new_platforms:
-                role.platforms.remove(platform)
+        for db_platform in role.platforms.all():
+            if db_platform not in platforms:
+                role.platforms.remove(db_platform)
 
     def _add_cloud_platforms(self, role, cloud_platforms):
         cloud_platforms = set(cloud_platforms)

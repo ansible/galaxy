@@ -30,6 +30,7 @@ from galaxy.importer import models, linters
 from galaxy.importer.loaders import base
 from galaxy.importer import exceptions as exc
 from galaxy.common import sanitize_content_name
+from galaxy.main import models as m_models
 
 
 ROLE_META_FILES = [
@@ -272,6 +273,12 @@ class RoleLoader(base.BaseLoader):
 
         self.meta_file = metadata_path
         self.data = {}
+        self.linter_data = {
+            'is_linter_rule_violation': True,
+            'linter_type': 'importer',
+            'linter_rule_id': None,
+            'rule_desc': None,
+        }
 
     def load(self):
         meta_parser = self._get_meta_parser()
@@ -303,6 +310,7 @@ class RoleLoader(base.BaseLoader):
         readme = self._get_readme()
 
         self._check_tags()
+        self._check_platforms()
 
         return models.Content(
             name=self.name,
@@ -427,3 +435,40 @@ class RoleLoader(base.BaseLoader):
                 'Only first {0} will be used'
                 .format(constants.MAX_TAGS_COUNT))
             self.data['tags'] = tags[:constants.MAX_TAGS_COUNT]
+
+    def _check_platforms(self):
+        self.log.info('Checking role platforms')
+        confirmed_platforms = []
+
+        for platform in self.data['platforms']:
+            name = platform.name
+            versions = platform.versions
+            if 'all' in versions:
+                platform_objs = m_models.Platform.objects.filter(
+                    name__iexact=name
+                )
+                if not platform_objs:
+                    msg = u'Invalid platform: "{}-all", skipping.'.format(name)
+                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
+                    self.linter_data['rule_desc'] = msg
+                    self.log.warning(msg, extra=self.linter_data)
+                    continue
+                for p in platform_objs:
+                    confirmed_platforms.append(p)
+                continue
+
+            for version in versions:
+                try:
+                    p = m_models.Platform.objects.get(
+                        name__iexact=name, release__iexact=str(version)
+                    )
+                except m_models.Platform.DoesNotExist:
+                    msg = (u'Invalid platform: "{0}-{1}", skipping.'
+                           .format(name, version))
+                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
+                    self.linter_data['rule_desc'] = msg
+                    self.log.warning(msg, extra=self.linter_data)
+                else:
+                    confirmed_platforms.append(p)
+
+        self.data['platforms'] = confirmed_platforms
