@@ -98,22 +98,13 @@ class RoleImporter(base.ContentImporter):
     def _add_cloud_platforms(self, role, cloud_platforms):
         cloud_platforms = set(cloud_platforms)
 
-        # Remove cloud platforms that are no longer listed in the metadata
-        for platform in role.cloud_platforms.all():
-            if platform.name not in cloud_platforms:
-                role.cloud_platforms.remove(platform)
+        for cloud_platform in cloud_platforms:
+            role.cloud_platforms.add(cloud_platform)
 
-        # Add new cloud platforms
-        for name in cloud_platforms:
-            try:
-                platform = models.CloudPlatform.objects.get(name__iexact=name)
-            except models.CloudPlatform.DoesNotExist:
-                msg = u'Invalid cloud platform: "{0}", skipping'.format(name)
-                self.linter_data['linter_rule_id'] = 'IMPORTER102'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
-                continue
-            role.cloud_platforms.add(platform)
+        # Remove cloud platforms that are no longer listed in the metadata
+        for db_cloud_platform in role.cloud_platforms.all():
+            if db_cloud_platform not in cloud_platforms:
+                role.cloud_platforms.remove(db_cloud_platform)
 
     def _add_dependencies(self, role, dependencies):
         if role.role_type not in (constants.RoleType.CONTAINER,

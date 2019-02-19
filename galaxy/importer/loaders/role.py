@@ -311,6 +311,7 @@ class RoleLoader(base.BaseLoader):
 
         self._check_tags()
         self._check_platforms()
+        self._check_cloud_platforms()
 
         return models.Content(
             name=self.name,
@@ -472,3 +473,20 @@ class RoleLoader(base.BaseLoader):
                     confirmed_platforms.append(p)
 
         self.data['platforms'] = confirmed_platforms
+
+    def _check_cloud_platforms(self):
+        self.log.info('Checking role cloud platforms')
+        confirmed_platforms = []
+
+        for name in self.data['cloud_platforms']:
+            try:
+                c = m_models.CloudPlatform.objects.get(name__iexact=name)
+            except m_models.CloudPlatform.DoesNotExist:
+                msg = u'Invalid cloud platform: "{0}", skipping'.format(name)
+                self.linter_data['linter_rule_id'] = 'IMPORTER102'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
+            else:
+                confirmed_platforms.append(c)
+
+        self.data['cloud_platforms'] = confirmed_platforms
