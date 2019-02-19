@@ -5,5 +5,5 @@ workflow "Code linting" {
 
 action "Flake8" {
   uses = "cclauss/GitHub-Action-for-Flake8@0.0.1"
-  args = "flake8 ."
+  args = "flake8 galaxy/"
 }
