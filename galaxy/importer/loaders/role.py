@@ -271,6 +271,7 @@ class RoleLoader(base.BaseLoader):
             content_type, path, root, logger=logger)
 
         self.meta_file = metadata_path
+        self.data = {}
 
     def load(self):
         meta_parser = self._get_meta_parser()
@@ -284,21 +285,20 @@ class RoleLoader(base.BaseLoader):
         meta_parser.validate_strings()
 
         # TODO: Refactoring required
-        data = {}
-        data.update(self._load_string_attrs(galaxy_info))
+        self.data.update(self._load_string_attrs(galaxy_info))
 
         container_yml_type, container_yml = self._load_container_yml()
 
-        description = data.pop('description')
+        description = self.data.pop('description')
 
-        data['role_type'] = self._get_role_type(
+        self.data['role_type'] = self._get_role_type(
             galaxy_info, container_yml_type
         )
-        data['tags'] = meta_parser.parse_tags()
-        data['platforms'] = meta_parser.parse_platforms()
-        data['cloud_platforms'] = meta_parser.parse_cloud_platforms()
-        data['dependencies'] = meta_parser.parse_dependencies()
-        data['video_links'] = meta_parser.parse_videos()
+        self.data['tags'] = meta_parser.parse_tags()
+        self.data['platforms'] = meta_parser.parse_platforms()
+        self.data['cloud_platforms'] = meta_parser.parse_cloud_platforms()
+        self.data['dependencies'] = meta_parser.parse_dependencies()
+        self.data['video_links'] = meta_parser.parse_videos()
         # meta_parser.check_tox()
         readme = self._get_readme()
 
@@ -308,7 +308,7 @@ class RoleLoader(base.BaseLoader):
             path=self.rel_path,
             content_type=self.content_type,
             description=description,
-            role_meta=data,
+            role_meta=self.data,
             readme=readme,
             metadata={
                 'container_meta': container_yml,

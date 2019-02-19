@@ -214,6 +214,7 @@ class APBLoader(base.BaseLoader):
             content_type, path, root, logger=logger
         )
         self.metadata_file = metadata_path
+        self.data = None
 
     def load(self):
         self.log.info('Loading metadata file: {0}'.format(self.metadata_file))
@@ -222,7 +223,7 @@ class APBLoader(base.BaseLoader):
         description = meta_parser.parse_description()
         meta_parser.check_data()
         metadata = meta_parser.parse_metadata()
-        data = {'tags': meta_parser.parse_tags()}
+        self.data = {'tags': meta_parser.parse_tags()}
         readme = self._get_readme()
 
         return models.Content(
@@ -231,7 +232,7 @@ class APBLoader(base.BaseLoader):
             content_type=self.content_type,
             description=description,
             readme=readme,
-            role_meta=data,
+            role_meta=self.data,
             metadata={
                 'apb_metadata': metadata,
             },
