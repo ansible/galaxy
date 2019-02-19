@@ -69,12 +69,6 @@ class RoleImporter(base.ContentImporter):
                 description=video.description)
 
     def _add_tags(self, role, tags):
-        if tags and len(tags) > constants.MAX_TAGS_COUNT:
-            msg = ('Found more than {0} galaxy tags in metadata. '
-                   'Only first {0} will be used'
-                   .format(constants.MAX_TAGS_COUNT))
-            self.log.warning(msg)
-            tags = tags[:constants.MAX_TAGS_COUNT]
         self.log.info('Adding role metadata tags')
         for tag in tags:
             db_tag, _ = models.Tag.objects.get_or_create(

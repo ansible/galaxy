@@ -226,6 +226,8 @@ class APBLoader(base.BaseLoader):
         self.data = {'tags': meta_parser.parse_tags()}
         readme = self._get_readme()
 
+        self._check_tags()
+
         return models.Content(
             name=name,
             path=self.rel_path,
@@ -245,3 +247,13 @@ class APBLoader(base.BaseLoader):
             raise exc.ContentLoadError(
                 "Invalid 'apb.yml' file format, dict expected.")
         return metadata
+
+    def _check_tags(self):
+        self.log.info('Checking role metadata tags')
+        tags = self.data['tags'] or []
+        if tags and len(tags) > constants.MAX_TAGS_COUNT:
+            self.log.warning(
+                'Found more than {0} galaxy tags in metadata. '
+                'Only first {0} will be used'
+                .format(constants.MAX_TAGS_COUNT))
+            self.data['tags'] = tags[:constants.MAX_TAGS_COUNT]

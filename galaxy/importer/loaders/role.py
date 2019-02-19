@@ -302,6 +302,8 @@ class RoleLoader(base.BaseLoader):
         # meta_parser.check_tox()
         readme = self._get_readme()
 
+        self._check_tags()
+
         return models.Content(
             name=self.name,
             original_name=original_name,
@@ -415,3 +417,13 @@ class RoleLoader(base.BaseLoader):
         if metadata.get('demo'):
             return constants.RoleType.DEMO
         return constants.RoleType.ANSIBLE
+
+    def _check_tags(self):
+        self.log.info('Checking role metadata tags')
+        tags = self.data['tags'] or []
+        if tags and len(tags) > constants.MAX_TAGS_COUNT:
+            self.log.warning(
+                'Found more than {0} galaxy tags in metadata. '
+                'Only first {0} will be used'
+                .format(constants.MAX_TAGS_COUNT))
+            self.data['tags'] = tags[:constants.MAX_TAGS_COUNT]
