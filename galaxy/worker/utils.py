@@ -17,8 +17,9 @@
 
 from __future__ import absolute_import
 
+import semantic_version
 import six
-import semver
+
 
 from galaxy.main import models
 
@@ -57,4 +58,4 @@ def parse_version_tag(value):
         raise ValueError('Empty version value')
     if value[0].lower() == 'v':
         value = value[1:]
-    return semver.parse_version_info(value)
+    return semantic_version.Version(value)
