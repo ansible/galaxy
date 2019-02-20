@@ -2,7 +2,7 @@ workflow "Code linting" {
   on = "push"
   resolves = [
     "Flake8",
-    "ansible/ansible-lint/.github/action@master",
+    "Ansible Lint",
   ]
 }
 
@@ -11,7 +11,7 @@ action "Flake8" {
   args = "flake8 galaxy/"
 }
 
-action "ansible/ansible-lint/.github/action@master" {
+action "Ansible Lint" {
   uses = "ansible/ansible-lint/.github/action@master"
   env = {
     ACTION_PLAYBOOK_NAME = "testing/simple/test.yml"
