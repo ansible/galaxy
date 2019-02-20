@@ -63,7 +63,6 @@ class RoleImporter(base.ContentImporter):
                 description=video.description)
 
     def _add_tags(self, role, tags):
-        self.log.info('Adding role metadata tags')
         for tag in tags:
             db_tag, _ = models.Tag.objects.get_or_create(
                 name=tag,
@@ -80,7 +79,6 @@ class RoleImporter(base.ContentImporter):
         if role.role_type not in (constants.RoleType.CONTAINER,
                                   constants.RoleType.ANSIBLE):
             return
-        self.log.info('Adding role platforms')
         for platform in platforms:
             role.platforms.add(platform)
 
@@ -104,7 +102,6 @@ class RoleImporter(base.ContentImporter):
         if role.role_type not in (constants.RoleType.CONTAINER,
                                   constants.RoleType.ANSIBLE):
             return
-        self.log.info('Adding role dependencies')
         for dep_role in dependencies:
             role.dependencies.add(dep_role)
 
