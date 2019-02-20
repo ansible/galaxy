@@ -17,8 +17,9 @@
 
 import os
 import re
-import semver
+
 import six
+import semantic_version as semver
 import yaml
 
 from galaxy import constants
@@ -70,7 +71,7 @@ class APBMetaParser(object):
             self.log.warning('Version value in metadata is not a string')
             return
         try:
-            semver.parse(version)
+            semver.Version(version)
         except ValueError:
             self.log.warning(
                 'Version "{0}" in metadata does not match the expected '
