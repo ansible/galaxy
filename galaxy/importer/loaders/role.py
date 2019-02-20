@@ -263,6 +263,7 @@ class RoleLoader(base.BaseLoader):
     content_types = constants.ContentType.ROLE
     # temporarily removing linters.Flake8Linter
     linters = (linters.YamlLinter, linters.AnsibleLinter)
+    can_get_scored = True
 
     def __init__(self, content_type, path, root, metadata_path, logger=None):
         """

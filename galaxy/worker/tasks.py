@@ -140,11 +140,13 @@ def _import_repository(import_task, logger):
         repository.issue_tracker_url = issue_tracker_url
         content_obj = importer.do_import()
 
-        content_obj.content_score = content_info.scores['content']
-        content_obj.metadata_score = content_info.scores['metadata']
-        content_obj.quality_score = content_info.scores['quality']
-        content_obj.compatibility_score = content_info.scores['compatibility']
-        content_obj.save()
+        if content_info.scores:
+            content_obj.content_score = content_info.scores['content']
+            content_obj.metadata_score = content_info.scores['metadata']
+            content_obj.quality_score = content_info.scores['quality']
+            content_obj.compatibility_score = \
+                content_info.scores['compatibility']
+            content_obj.save()
 
         new_content_objs.append(content_obj.id)
 

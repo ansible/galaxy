@@ -140,9 +140,10 @@ class RepositoryLoader(object):
 
     def _get_repo_quality_score(self, result):
         repo_points = 0.0
-        role_count = 0
+        count = 0
         for content, _ in result:
-            if content.content_type == constants.ContentType.ROLE:
+            if content.scores:
                 repo_points += content.scores['quality']
-                role_count += 1
-        return repo_points / role_count
+                count += 1
+        quality_score = None if count == 0 else repo_points / count
+        return quality_score

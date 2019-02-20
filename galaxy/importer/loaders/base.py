@@ -87,6 +87,7 @@ class BaseLoader(object):
 
     content_types = None
     linters = None
+    can_get_scored = False
 
     def __init__(self, content_type, path, root, logger=None):
         """
@@ -167,8 +168,8 @@ class BaseLoader(object):
             self.log.warning(e)
 
     def score(self):
-        # TODO(awcrosby) ensure importer101-3 warnings are calculated in score
-        # after validation moved from celery worker into importer
+        if not self.can_get_scored:
+            return None
         task_id = self.log.logger.extra['task_id']
 
         import_task_messages = models.ImportTaskMessage.objects.filter(
