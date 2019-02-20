@@ -312,6 +312,7 @@ class RoleLoader(base.BaseLoader):
         self._check_tags()
         self._check_platforms()
         self._check_cloud_platforms()
+        self._check_dependencies()
 
         return models.Content(
             name=self.name,
@@ -490,3 +491,21 @@ class RoleLoader(base.BaseLoader):
                 confirmed_platforms.append(c)
 
         self.data['cloud_platforms'] = confirmed_platforms
+
+    def _check_dependencies(self):
+        self.log.info('Checking role dependencies')
+        confirmed_deps = []
+
+        for dep in self.data['dependencies'] or []:
+            try:
+                dep_role = m_models.Content.objects.get(
+                    namespace__name=dep.namespace, name=dep.name)
+                confirmed_deps.append(dep_role)
+            except Exception:
+                msg = u"Error loading dependency: '{}'".format(
+                    '.'.join([d for d in dep]))
+                self.linter_data['linter_rule_id'] = 'IMPORTER103'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
+
+        self.data['dependencies'] = confirmed_deps

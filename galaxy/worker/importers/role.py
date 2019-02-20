@@ -25,12 +25,6 @@ from . import base
 
 
 class RoleImporter(base.ContentImporter):
-    linter_data = {
-        'is_linter_rule_violation': True,
-        'linter_type': 'importer',
-        'linter_rule_id': None,
-        'rule_desc': None
-    }
 
     def update_content(self, content):
         super(RoleImporter, self).update_content(content)
@@ -111,20 +105,10 @@ class RoleImporter(base.ContentImporter):
                                   constants.RoleType.ANSIBLE):
             return
         self.log.info('Adding role dependencies')
-        new_deps = []
-        for dep in dependencies or []:
-            try:
-                dep_role = models.Content.objects.get(
-                    namespace__name=dep.namespace, name=dep.name)
-                role.dependencies.add(dep_role)
-                new_deps.append(dep)
-            except Exception:
-                msg = u"Error loading dependency: '{}'".format(
-                    '.'.join([d for d in dep]))
-                self.linter_data['linter_rule_id'] = 'IMPORTER103'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
+        for dep_role in dependencies:
+            role.dependencies.add(dep_role)
 
+        # Remove dependencies no longer in the metadata
         for dep in role.dependencies.all():
-            if (dep.namespace.name, dep.name) not in new_deps:
+            if (dep.namespace.name, dep.name) not in dependencies:
                 role.dependencies.remove(dep)
