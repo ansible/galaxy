@@ -18,7 +18,6 @@
 from . import base
 
 from galaxy.main import models
-from galaxy import constants
 
 
 class APBImporter(base.ContentImporter):
@@ -30,12 +29,6 @@ class APBImporter(base.ContentImporter):
     def _add_tags(self, content, tags):
         if not tags:
             self.log.warning('No tags found in metadata')
-        elif len(tags) > constants.MAX_TAGS_COUNT:
-            self.log.warning(
-                'Found more than {0} tags in metadata. '
-                'Only first {0} will be used'
-                .format(constants.MAX_TAGS_COUNT))
-            tags = content.tags[:constants.MAX_TAGS_COUNT]
 
         for tag in tags:
             db_tag, _ = models.Tag.objects.get_or_create(

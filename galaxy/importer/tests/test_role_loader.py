@@ -17,6 +17,7 @@
 
 import unittest
 import mock
+import pytest
 
 from galaxy import constants
 from galaxy.importer import models
@@ -143,6 +144,7 @@ class TestRoleMetaParser(unittest.TestCase):
 
 
 class TestRoleLoader(unittest.TestCase):
+    @pytest.mark.django_db
     @mock.patch.object(loaders.RoleLoader, '_load_metadata')
     @mock.patch.object(loaders.RoleLoader, '_load_container_yml')
     def test_load_role(self, load_container_yml_mock, load_metadata_mock):
@@ -165,9 +167,10 @@ class TestRoleLoader(unittest.TestCase):
         dependencies = role.role_meta['dependencies']
 
         assert role.name == 'test_role'
-        assert len(dependencies) == 1
-        assert dependencies[0].namespace == 'testing'
-        assert dependencies[0].name == 'test-role-b'
+
+        # dependencies only exist if confirmed to be in database
+        assert len(dependencies) == 0
+
         assert role.description == 'A test role'
         assert role_meta['role_type'] == constants.RoleType.ANSIBLE
         assert role_meta['author'] == 'John Smith'

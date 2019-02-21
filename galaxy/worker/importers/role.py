@@ -25,12 +25,6 @@ from . import base
 
 
 class RoleImporter(base.ContentImporter):
-    linter_data = {
-        'is_linter_rule_violation': True,
-        'linter_type': 'importer',
-        'linter_rule_id': None,
-        'rule_desc': None
-    }
 
     def update_content(self, content):
         super(RoleImporter, self).update_content(content)
@@ -69,13 +63,6 @@ class RoleImporter(base.ContentImporter):
                 description=video.description)
 
     def _add_tags(self, role, tags):
-        if tags and len(tags) > constants.MAX_TAGS_COUNT:
-            msg = ('Found more than {0} galaxy tags in metadata. '
-                   'Only first {0} will be used'
-                   .format(constants.MAX_TAGS_COUNT))
-            self.log.warning(msg)
-            tags = tags[:constants.MAX_TAGS_COUNT]
-        self.log.info('Adding role metadata tags')
         for tag in tags:
             db_tag, _ = models.Tag.objects.get_or_create(
                 name=tag,
@@ -92,88 +79,33 @@ class RoleImporter(base.ContentImporter):
         if role.role_type not in (constants.RoleType.CONTAINER,
                                   constants.RoleType.ANSIBLE):
             return
-        if not platforms:
-            return
-        self.log.info('Adding role platforms')
-        new_platforms = []
         for platform in platforms:
-            name = platform.name
-            versions = platform.versions
-            if 'all' in versions:
-                platform_objs = models.Platform.objects.filter(
-                    name__iexact=name
-                )
-                if not platform_objs:
-                    msg = u'Invalid platform: "{}-all", skipping.'.format(name)
-                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
-                    self.linter_data['rule_desc'] = msg
-                    self.log.warning(msg, extra=self.linter_data)
-                    continue
-                for p in platform_objs:
-                    role.platforms.add(p)
-                    new_platforms.append((p.name, p.release))
-                continue
-
-            for version in versions:
-                try:
-                    p = models.Platform.objects.get(
-                        name__iexact=name, release__iexact=str(version)
-                    )
-                except models.Platform.DoesNotExist:
-                    msg = (u'Invalid platform: "{0}-{1}", skipping.'
-                           .format(name, version))
-                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
-                    self.linter_data['rule_desc'] = msg
-                    self.log.warning(msg, extra=self.linter_data)
-                else:
-                    role.platforms.add(p)
-                    new_platforms.append((p.name, p.release))
+            role.platforms.add(platform)
 
         # Remove platforms/versions that are no longer listed in the metadata
-        for platform in role.platforms.all():
-            platform_key = (platform.name, platform.release)
-            if platform_key not in new_platforms:
-                role.platforms.remove(platform)
+        for db_platform in role.platforms.all():
+            if db_platform not in platforms:
+                role.platforms.remove(db_platform)
 
     def _add_cloud_platforms(self, role, cloud_platforms):
         cloud_platforms = set(cloud_platforms)
 
-        # Remove cloud platforms that are no longer listed in the metadata
-        for platform in role.cloud_platforms.all():
-            if platform.name not in cloud_platforms:
-                role.cloud_platforms.remove(platform)
+        for cloud_platform in cloud_platforms:
+            role.cloud_platforms.add(cloud_platform)
 
-        # Add new cloud platforms
-        for name in cloud_platforms:
-            try:
-                platform = models.CloudPlatform.objects.get(name__iexact=name)
-            except models.CloudPlatform.DoesNotExist:
-                msg = u'Invalid cloud platform: "{0}", skipping'.format(name)
-                self.linter_data['linter_rule_id'] = 'IMPORTER102'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
-                continue
-            role.cloud_platforms.add(platform)
+        # Remove cloud platforms that are no longer listed in the metadata
+        for db_cloud_platform in role.cloud_platforms.all():
+            if db_cloud_platform not in cloud_platforms:
+                role.cloud_platforms.remove(db_cloud_platform)
 
     def _add_dependencies(self, role, dependencies):
         if role.role_type not in (constants.RoleType.CONTAINER,
                                   constants.RoleType.ANSIBLE):
             return
-        self.log.info('Adding role dependencies')
-        new_deps = []
-        for dep in dependencies or []:
-            try:
-                dep_role = models.Content.objects.get(
-                    namespace__name=dep.namespace, name=dep.name)
-                role.dependencies.add(dep_role)
-                new_deps.append(dep)
-            except Exception:
-                msg = u"Error loading dependency: '{}'".format(
-                    '.'.join([d for d in dep]))
-                self.linter_data['linter_rule_id'] = 'IMPORTER103'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
+        for dep_role in dependencies:
+            role.dependencies.add(dep_role)
 
+        # Remove dependencies no longer in the metadata
         for dep in role.dependencies.all():
-            if (dep.namespace.name, dep.name) not in new_deps:
+            if (dep.namespace.name, dep.name) not in dependencies:
                 role.dependencies.remove(dep)

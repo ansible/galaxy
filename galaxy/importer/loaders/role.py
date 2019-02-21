@@ -30,6 +30,7 @@ from galaxy.importer import models, linters
 from galaxy.importer.loaders import base
 from galaxy.importer import exceptions as exc
 from galaxy.common import sanitize_content_name
+from galaxy.main import models as m_models
 
 
 ROLE_META_FILES = [
@@ -271,6 +272,13 @@ class RoleLoader(base.BaseLoader):
             content_type, path, root, logger=logger)
 
         self.meta_file = metadata_path
+        self.data = {}
+        self.linter_data = {
+            'is_linter_rule_violation': True,
+            'linter_type': 'importer',
+            'linter_rule_id': None,
+            'rule_desc': None,
+        }
 
     def load(self):
         meta_parser = self._get_meta_parser()
@@ -284,23 +292,27 @@ class RoleLoader(base.BaseLoader):
         meta_parser.validate_strings()
 
         # TODO: Refactoring required
-        data = {}
-        data.update(self._load_string_attrs(galaxy_info))
+        self.data.update(self._load_string_attrs(galaxy_info))
 
         container_yml_type, container_yml = self._load_container_yml()
 
-        description = data.pop('description')
+        description = self.data.pop('description')
 
-        data['role_type'] = self._get_role_type(
+        self.data['role_type'] = self._get_role_type(
             galaxy_info, container_yml_type
         )
-        data['tags'] = meta_parser.parse_tags()
-        data['platforms'] = meta_parser.parse_platforms()
-        data['cloud_platforms'] = meta_parser.parse_cloud_platforms()
-        data['dependencies'] = meta_parser.parse_dependencies()
-        data['video_links'] = meta_parser.parse_videos()
+        self.data['tags'] = meta_parser.parse_tags()
+        self.data['platforms'] = meta_parser.parse_platforms()
+        self.data['cloud_platforms'] = meta_parser.parse_cloud_platforms()
+        self.data['dependencies'] = meta_parser.parse_dependencies()
+        self.data['video_links'] = meta_parser.parse_videos()
         # meta_parser.check_tox()
         readme = self._get_readme()
+
+        self._check_tags()
+        self._check_platforms()
+        self._check_cloud_platforms()
+        self._check_dependencies()
 
         return models.Content(
             name=self.name,
@@ -308,7 +320,7 @@ class RoleLoader(base.BaseLoader):
             path=self.rel_path,
             content_type=self.content_type,
             description=description,
-            role_meta=data,
+            role_meta=self.data,
             readme=readme,
             metadata={
                 'container_meta': container_yml,
@@ -415,3 +427,85 @@ class RoleLoader(base.BaseLoader):
         if metadata.get('demo'):
             return constants.RoleType.DEMO
         return constants.RoleType.ANSIBLE
+
+    def _check_tags(self):
+        self.log.info('Checking role metadata tags')
+        tags = self.data['tags'] or []
+        if tags and len(tags) > constants.MAX_TAGS_COUNT:
+            self.log.warning(
+                'Found more than {0} galaxy tags in metadata. '
+                'Only first {0} will be used'
+                .format(constants.MAX_TAGS_COUNT))
+            self.data['tags'] = tags[:constants.MAX_TAGS_COUNT]
+
+    def _check_platforms(self):
+        self.log.info('Checking role platforms')
+        confirmed_platforms = []
+
+        for platform in self.data['platforms']:
+            name = platform.name
+            versions = platform.versions
+            if 'all' in versions:
+                platform_objs = m_models.Platform.objects.filter(
+                    name__iexact=name
+                )
+                if not platform_objs:
+                    msg = u'Invalid platform: "{}-all", skipping.'.format(name)
+                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
+                    self.linter_data['rule_desc'] = msg
+                    self.log.warning(msg, extra=self.linter_data)
+                    continue
+                for p in platform_objs:
+                    confirmed_platforms.append(p)
+                continue
+
+            for version in versions:
+                try:
+                    p = m_models.Platform.objects.get(
+                        name__iexact=name, release__iexact=str(version)
+                    )
+                except m_models.Platform.DoesNotExist:
+                    msg = (u'Invalid platform: "{0}-{1}", skipping.'
+                           .format(name, version))
+                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
+                    self.linter_data['rule_desc'] = msg
+                    self.log.warning(msg, extra=self.linter_data)
+                else:
+                    confirmed_platforms.append(p)
+
+        self.data['platforms'] = confirmed_platforms
+
+    def _check_cloud_platforms(self):
+        self.log.info('Checking role cloud platforms')
+        confirmed_platforms = []
+
+        for name in self.data['cloud_platforms']:
+            try:
+                c = m_models.CloudPlatform.objects.get(name__iexact=name)
+            except m_models.CloudPlatform.DoesNotExist:
+                msg = u'Invalid cloud platform: "{0}", skipping'.format(name)
+                self.linter_data['linter_rule_id'] = 'IMPORTER102'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
+            else:
+                confirmed_platforms.append(c)
+
+        self.data['cloud_platforms'] = confirmed_platforms
+
+    def _check_dependencies(self):
+        self.log.info('Checking role dependencies')
+        confirmed_deps = []
+
+        for dep in self.data['dependencies'] or []:
+            try:
+                dep_role = m_models.Content.objects.get(
+                    namespace__name=dep.namespace, name=dep.name)
+                confirmed_deps.append(dep_role)
+            except Exception:
+                msg = u"Error loading dependency: '{}'".format(
+                    '.'.join([d for d in dep]))
+                self.linter_data['linter_rule_id'] = 'IMPORTER103'
+                self.linter_data['rule_desc'] = msg
+                self.log.warning(msg, extra=self.linter_data)
+
+        self.data['dependencies'] = confirmed_deps
