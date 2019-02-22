@@ -123,6 +123,7 @@ class Collection(object):
     collection_info = attr.ib(type=CollectionInfo)
     contents = attr.ib(factory=list)
     readme = attr.ib(default=None)
+    quality_score = attr.ib(default=None)
 
 
 # -----------------------------------------------------------------------------

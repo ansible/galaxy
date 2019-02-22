@@ -65,12 +65,14 @@ class CollectionLoader(object):
         self.contents = list(self._load_contents(content_list))
 
         self._validate_collection_metadata()
-        self._validate_contents()
+
+        quality_score = self._get_collection_quality_score()
 
         return Collection(
             collection_info=self.collection_info,
             contents=self.contents,
             readme=self.readme,
+            quality_score=quality_score,
         )
 
     def _extract_package(self):
@@ -84,6 +86,8 @@ class CollectionLoader(object):
 
         _, dirs, _ = next(os.walk(self.temp_dir))
         self.collection_path = os.path.join(self.temp_dir, dirs[0])
+        self.log.info('Extracting collection: {}'.format(dirs[0]))
+        self.log.info(' ')
 
     def _load_collection_manifest(self):
         with tarfile.open(self.artifact_path, 'r') as pkg:
@@ -95,7 +99,6 @@ class CollectionLoader(object):
             if not manifest:
                 raise exc.ManifestNotFound('No manifest found in collection')
 
-            self.log.info('Extracting %s from artifact', manifest)
             meta_file = pkg.extractfile(manifest)
             with meta_file:
                 meta = CollectionArtifactManifest.parse(meta_file.read())
@@ -126,13 +129,26 @@ class CollectionLoader(object):
             loader_cls = loaders.get_loader(content_type)
             loader = loader_cls(content_type, rel_path, self.collection_path,
                                 logger=self.log, **extra)
+
+            self.log.info('===== LOADING {} ====='.format(
+                          content_type.name))
             content = loader.load()
+            self.log.info(' ')
+
             name = ': {}'.format(content.name) if content.name else ''
             self.log.info('===== LINTING {}{} ====='.format(
                           content_type.name, name))
             loader.lint()
+            # content.scores = loader.score()
             self.log.info(' ')
             yield content
 
-    def _validate_contents(self):
-        pass
+    def _get_collection_quality_score(self):
+        coll_points = 0.0
+        count = 0
+        for content in self.contents:
+            if content.scores:
+                coll_points += content.scores['quality']
+                count += 1
+        quality_score = None if count == 0 else coll_points / count
+        return quality_score

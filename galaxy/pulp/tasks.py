@@ -47,9 +47,15 @@ def import_collection(artifact_pk, repository_pk):
 
     collection_info = importer_coll.collection_info
     contents = importer_coll.contents
-    log.info('collection_info=%s', collection_info)
-    for content in contents:
-        log.info('content: %s %s', content.content_type, content.name)
+
+    log.debug('collection loaded: collection metadata=%s', collection_info)
+    log.debug('collection quality_score=%s', importer_coll.quality_score)
+    for c in contents:
+        c_info = 'content: type={} name={}'.format(c.content_type, c.name)
+        if c.scores:
+            log.debug('{} score={}'.format(c_info, c.scores['quality']))
+        else:
+            log.debug(c_info)
 
     collection, _ = models.Collection.objects.get_or_create(
         namespace=collection_info.namespace,
