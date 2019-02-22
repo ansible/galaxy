@@ -6,7 +6,7 @@ import {
     ElementRef,
 } from '@angular/core';
 
-import { AddRepositoryModalContainer } from '../../react/containers/add-repository-container';
+import { AddRepositoryModalContainer } from '../../react/containers/add-content-container';
 import { Render } from '../../react/lib/render-react';
 
 import { Injector } from '@angular/core';
@@ -18,9 +18,9 @@ import { Namespace } from '../../resources/namespaces/namespace';
     template: '<div #reactContainer></div>',
     styles: [''],
 })
-export class AddRepositoryModalComponent implements OnInit, OnDestroy {
+export class AddContentModalComponent implements OnInit, OnDestroy {
     // Used to track which component is being loaded
-    componentName = 'AddRepositoryModalComponent';
+    componentName = 'AddContentModalComponent';
 
     @ViewChild('reactContainer')
     reactContainer: ElementRef;

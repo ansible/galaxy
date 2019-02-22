@@ -28,7 +28,7 @@ import {
     ProviderNamespacesContentComponent
 } from './namespace-list/content/provider-namespaces-content/provider-namespaces-content.component';
 
-import { AddRepositoryModalComponent } from './add-repository-modal/add-repository-modal.component';
+import { AddContentModalComponent } from './add-content-modal/add-content-modal.component';
 
 // prettier-ignore
 import {
@@ -42,14 +42,14 @@ import { NamespaceRepositoryActionComponent } from './namespace-list/content/rep
 import { RepoDetailsComponent } from './namespace-list/content/repositories-content/repo-details/repo-details.component';
 
 @NgModule({
-    entryComponents: [AddRepositoryModalComponent, AlternateNameModalComponent],
+    entryComponents: [AddContentModalComponent, AlternateNameModalComponent],
     declarations: [
         NamespaceListComponent,
         NamespaceDetailComponent,
         RepositoriesContentComponent,
         OwnersContentComponent,
         ProviderNamespacesContentComponent,
-        AddRepositoryModalComponent,
+        AddContentModalComponent,
         AlternateNameModalComponent,
         NamespaceActionComponent,
         NamespaceRepositoryActionComponent,
