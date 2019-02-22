@@ -42,59 +42,6 @@ from galaxy.api import serializers
 
 LOG = logging.getLogger(__name__)
 
-BASE_SCORE = 50.0
-SEVERITY_TO_WEIGHT = {
-    0: 0.0,
-    1: 0.75,
-    2: 1.25,
-    3: 2.5,
-    4: 5.0,
-    5: 10.0,
-}
-CONTENT_SEVERITY = {
-    'ansible-lint_e101': 3,
-    'ansible-lint_e102': 4,
-    'ansible-lint_e103': 5,
-    'ansible-lint_e104': 5,
-    'ansible-lint_e105': 4,
-    'ansible-lint_e201': 0,
-    'ansible-lint_e202': 5,
-    'ansible-lint_e203': 2,
-    'ansible-lint_e204': 1,
-    'ansible-lint_e205': 3,
-    'ansible-lint_e206': 2,
-    'ansible-lint_e301': 4,
-    'ansible-lint_e302': 5,
-    'ansible-lint_e303': 4,
-    'ansible-lint_e304': 5,
-    'ansible-lint_e305': 4,
-    'ansible-lint_e306': 3,
-    'ansible-lint_e401': 3,
-    'ansible-lint_e402': 3,
-    'ansible-lint_e403': 1,
-    'ansible-lint_e404': 4,
-    'ansible-lint_e501': 5,
-    'ansible-lint_e502': 3,
-    'ansible-lint_e503': 3,
-    'ansible-lint_e504': 3,
-    'ansible-lint_e601': 4,
-    'ansible-lint_e602': 4,
-    'yamllint_yaml_error': 4,
-    'yamllint_yaml_warning': 1,
-}
-METADATA_SEVERITY = {
-    'ansible-lint_e701': 4,
-    'ansible-lint_e702': 4,
-    'ansible-lint_e703': 4,
-    'ansible-lint_e704': 2,
-    'importer_importer101': 3,  # RoleImporter
-    'importer_importer102': 3,  # RoleImporter
-    'importer_importer103': 4,  # RoleImporter
-}
-COMPATIBILITY_SEVERITY = {
-    'importer_not_all_versions_tested': 5,  # RoleMetaParser
-}
-
 
 @celery.task
 def import_repository(task_id, user_initiated=False):
@@ -161,6 +108,8 @@ def _import_repository(import_task, logger):
     repository.format = repo_info.format.value
     repository.travis_status_url = import_task.travis_status_url
     repository.travis_build_url = import_task.travis_build_url
+    repository.quality_score = repo_info.quality_score
+    repository.quality_score_date = timezone.now()
 
     if repo_info.name:
         old_name = repository.name
@@ -190,6 +139,15 @@ def _import_repository(import_task, logger):
             issue_tracker_url = gh_repo.html_url + '/issues'
         repository.issue_tracker_url = issue_tracker_url
         content_obj = importer.do_import()
+
+        if content_info.scores:
+            content_obj.content_score = content_info.scores['content']
+            content_obj.metadata_score = content_info.scores['metadata']
+            content_obj.quality_score = content_info.scores['quality']
+            content_obj.compatibility_score = \
+                content_info.scores['compatibility']
+            content_obj.save()
+
         new_content_objs.append(content_obj.id)
 
     for obj in repository.content_objects.exclude(id__in=new_content_objs):
@@ -206,7 +164,6 @@ def _import_repository(import_task, logger):
     repository.save()
 
     _update_task_msg_content_id(import_task)
-    _update_quality_score(import_task)
     _cleanup_old_task_msg(import_task)
 
     # Updating versions has to go last because:
@@ -266,90 +223,6 @@ def _update_task_msg_content_id(import_task):
             continue
         msg.content_id = name_to_id[msg.content_name]
         msg.save()
-
-
-def _update_quality_score(import_task):
-    # quality score only roles and repos with roles
-    repository = import_task.repository
-    contents = models.Content.objects.filter(repository_id=repository.id) \
-        .filter(content_type__name=constants.ContentType.ROLE)
-    if not contents:
-        return
-
-    # for all ImportTaskMessage set score_type and rule_severity
-    import_task_messages = models.ImportTaskMessage.objects.filter(
-        task_id=import_task.id,
-        is_linter_rule_violation=True
-    )
-    for msg in import_task_messages:
-        rule_code = '{}_{}'.format(msg.linter_type,
-                                   msg.linter_rule_id).lower()
-        if rule_code in CONTENT_SEVERITY:
-            msg.score_type = 'content'
-            msg.rule_severity = CONTENT_SEVERITY[rule_code]
-        elif rule_code in METADATA_SEVERITY:
-            msg.score_type = 'metadata'
-            msg.rule_severity = METADATA_SEVERITY[rule_code]
-        elif rule_code in COMPATIBILITY_SEVERITY:
-            msg.score_type = 'compatibility'
-            msg.rule_severity = COMPATIBILITY_SEVERITY[rule_code]
-        else:
-            LOG.warning(u'Severity not found for rule: {}'.format(rule_code))
-            msg.is_linter_rule_violation = False
-        msg.save()
-
-    # calculate quality score for each content in collection
-    repo_points = 0.0
-    for content in contents:
-        content_m = models.ImportTaskMessage.objects.filter(
-            task_id=import_task.id,
-            content_id=content.id,
-            score_type='content',
-            is_linter_rule_violation=True,
-        )
-        meta_m = models.ImportTaskMessage.objects.filter(
-            task_id=import_task.id,
-            content_id=content.id,
-            score_type='metadata',
-            is_linter_rule_violation=True,
-        )
-        compatibility_m = models.ImportTaskMessage.objects.filter(
-            task_id=import_task.id,
-            content_id=content.id,
-            score_type='compatibility',
-            is_linter_rule_violation=True,
-        )
-
-        content_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in content_m]
-        meta_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in meta_m]
-        compatibility_w = [SEVERITY_TO_WEIGHT[m.rule_severity]
-                           for m in compatibility_m]
-
-        content.content_score = max(0.0, (BASE_SCORE - sum(content_w)) / 10)
-        content.metadata_score = max(0.0, (BASE_SCORE - sum(meta_w)) / 10)
-        # content.compatibility_score = max(0.0, (BASE_SCORE -
-        #                                         sum(compatibility_w)) / 10)
-        content.compatibility_score = None
-        content.quality_score = sum([content.content_score,
-                                     content.metadata_score]) / 2.0
-        content.save()
-        repo_points += content.quality_score
-
-        LOG.debug('scoring content.name: {}'.format(content.name))
-        LOG.debug('content - ids, weights, score: {}, {}, {}'.format(
-            str([m.linter_rule_id for m in content_m]),
-            str(content_w), content.content_score))
-        LOG.debug('meta - ids, weights, score: {}, {}, {}'.format(
-            str([m.linter_rule_id for m in meta_m]),
-            str(meta_w), content.metadata_score))
-        LOG.debug('compatibility - ids, weights, score: {}, {}, {}'.format(
-            str([m.linter_rule_id for m in compatibility_m]),
-            str(compatibility_w), content.compatibility_score))
-
-    repository.quality_score = repo_points / contents.count()
-    repository.quality_score_date = timezone.now()
-    repository.save()
-    LOG.debug(u'repo quality score: {}'.format(repository.quality_score))
 
 
 def _cleanup_old_task_msg(import_task):

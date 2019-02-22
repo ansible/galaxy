@@ -44,7 +44,7 @@ class Content(object):
 
     def __init__(self, name, path, content_type,
                  original_name=None, description='', readme=None,
-                 role_meta=None, metadata=None):
+                 role_meta=None, metadata=None, scores=None):
         self.name = name
         self.original_name = original_name or name
         self.path = path
@@ -53,13 +53,14 @@ class Content(object):
         self.readme = readme
         self.role_meta = role_meta
         self.metadata = metadata or {}
+        self.scores = scores
 
 
 class Repository(object):
     """Represents repository metadata."""
 
     def __init__(self, branch, commit, format, contents,
-                 readme=None, name=None, description=None):
+                 readme=None, name=None, description=None, quality_score=None):
         self.branch = branch
         self.commit = commit
         self.format = format
@@ -67,6 +68,7 @@ class Repository(object):
         self.readme = readme
         self.name = name
         self.description = description
+        self.quality_score = quality_score
 
 
 # -----------------------------------------------------------------------------
