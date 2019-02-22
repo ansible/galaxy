@@ -1,214 +1,56 @@
-import { Component, OnInit } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    ViewChild,
+    ElementRef,
+} from '@angular/core';
 
-import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
-import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
-import { ListEvent } from 'patternfly-ng/list/list-event';
+import { AddRepositoryModalContainer } from '../../react/containers/add-repository-container';
+import { Render } from '../../react/lib/render-react';
 
-import { cloneDeep } from 'lodash';
-import { BsModalRef } from 'ngx-bootstrap';
-
-import { forkJoin, Observable } from 'rxjs';
+import { Injector } from '@angular/core';
 
 import { Namespace } from '../../resources/namespaces/namespace';
-import { ProviderSourceService } from '../../resources/provider-namespaces/provider-source.service';
-import { Repository } from '../../resources/repositories/repository';
-import { RepositoryService } from '../../resources/repositories/repository.service';
-
-class RepositorySource {
-    name: string;
-    description: string;
-    stargazers_count: number;
-    watchers_count: number;
-    forks_count: number;
-    open_issues_count: number;
-    default_branch: string;
-    related: any;
-    summary_fields: any;
-    isSelected: boolean;
-}
-
-class ProviderNamespace {
-    id: number;
-    name: string;
-    description: string;
-    display_name: string;
-    avatar_url: string;
-    location: string;
-    company: string;
-    email: string;
-    html_url: string;
-    followers: number;
-    provider: number;
-    provider_name: string;
-    related: object;
-    summary_fields: any;
-    repoSources: RepositorySource[];
-    filteredSources: RepositorySource[];
-}
 
 @Component({
     selector: 'add-repository-modal',
-    templateUrl: './add-repository-modal.component.html',
-    styleUrls: ['./add-repository-modal.component.less'],
+    template: '<div #reactContainer></div>',
+    styles: [''],
 })
-export class AddRepositoryModalComponent implements OnInit {
+export class AddRepositoryModalComponent implements OnInit, OnDestroy {
     // Used to track which component is being loaded
     componentName = 'AddRepositoryModalComponent';
 
-    emptyStateConfig: EmptyStateConfig = {} as EmptyStateConfig;
+    @ViewChild('reactContainer')
+    reactContainer: ElementRef;
     namespace: Namespace;
-    selectedPNS: ProviderNamespace;
-    providerNamespaces: ProviderNamespace[] = [];
-    originalRepos: any[] = [];
-    displayedRepos: any[] = [];
-    saveInProgress: boolean;
-    repositoriesAdded = false;
-    listConfig: ListConfig;
-    filterValue = '';
 
-    constructor(
-        public bsModalRef: BsModalRef,
-        private repositoryService: RepositoryService,
-        private providerSourceService: ProviderSourceService,
-    ) {}
+    // The Namespace list component expects this property to be set on the modal
+    // so that it knows when to start polling the API for import updates.
+    // Angular can't reat properties off of the React components so this value
+    // unfortunately needs to be passed back up to the angular component.
+    repositoriesAdded = false;
+
+    constructor(public injector: Injector) {}
 
     ngOnInit() {
-        this.providerNamespaces = [];
-        this.namespace.summary_fields.provider_namespaces.forEach(pns => {
-            this.providerNamespaces.push(cloneDeep(pns));
-        });
-        if (this.providerNamespaces.length > 0) {
-            this.selectedPNS = this.providerNamespaces[0];
-        }
-
-        this.setLoadingStateConfig();
-
-        this.listConfig = {
-            dblClick: false,
-            multiSelect: false,
-            selectItems: false,
-            selectionMatchProp: 'name',
-            showCheckbox: true,
-            showRadioButton: false,
-            useExpandItems: false,
-            emptyStateConfig: this.emptyStateConfig,
-        } as ListConfig;
-
-        this.getRepoSources();
-    }
-
-    selectProviderNamespace(pns: ProviderNamespace) {
-        this.selectedPNS = pns;
-        this.getRepoSources();
-    }
-
-    filterRepos(filterValue: string) {
-        if (filterValue) {
-            this.filterValue = filterValue;
-            this.selectedPNS.filteredSources = this.selectedPNS.repoSources.filter(
-                repo =>
-                    repo.name.toLowerCase().match(filterValue.toLowerCase()),
-            );
-        } else {
-            this.filterValue = '';
-            this.selectedPNS.filteredSources = this.selectedPNS.repoSources;
-        }
-    }
-
-    handleSelectionChange($event: ListEvent) {
-        this.selectedPNS.repoSources.forEach((repo: RepositorySource) => {
-            repo.isSelected = false;
-            $event.selectedItems.forEach((selectedRepo: RepositorySource) => {
-                if (selectedRepo.name === repo.name) {
-                    repo.isSelected = true;
-                }
-            });
-        });
-        this.selectedPNS.filteredSources.forEach((repo: RepositorySource) => {
-            repo.isSelected = false;
-            $event.selectedItems.forEach((selectedRepo: RepositorySource) => {
-                if (selectedRepo.name === repo.name) {
-                    repo.isSelected = true;
-                }
-            });
-        });
-    }
-
-    saveRepos() {
-        this.repositoriesAdded = true;
-        this.saveInProgress = true;
-        const saveRequests: Observable<Repository>[] = [];
-        const selected: RepositorySource[] = this.selectedPNS.repoSources.filter(
-            repoSource => repoSource.isSelected,
+        Render.init(
+            this.injector,
+            AddRepositoryModalContainer,
+            this.reactContainer.nativeElement,
+            {
+                namespace: this.namespace,
+                updateAdded: x => this.updateRepositoriesAdded(x),
+            },
         );
-
-        if (!selected.length) {
-            // nothing was selected
-            this.repositoriesAdded = false;
-            this.saveInProgress = false;
-            this.bsModalRef.hide();
-            return;
-        }
-
-        selected.forEach(repoSource => {
-            const newRepo = new Repository();
-            newRepo.name = repoSource.name;
-            newRepo.original_name = repoSource.name;
-            newRepo.description = repoSource.description
-                ? repoSource.description
-                : repoSource.name;
-            newRepo.provider_namespace = this.selectedPNS.id;
-            newRepo.is_enabled = true;
-            saveRequests.push(this.repositoryService.save(newRepo));
-        });
-
-        forkJoin(saveRequests).subscribe((results: Repository[]) => {
-            this.saveInProgress = false;
-            this.bsModalRef.hide();
-        });
     }
 
-    // private
-
-    private setEmptyStateConfig() {
-        this.emptyStateConfig.iconStyleClass = 'pficon-warning-triangle-o';
-        this.emptyStateConfig.title = 'No matching repositories found!';
-        this.emptyStateConfig.info = '';
+    ngOnDestroy() {
+        Render.unmount(this.reactContainer.nativeElement);
     }
 
-    private setLoadingStateConfig() {
-        this.emptyStateConfig.iconStyleClass = 'fa fa-spinner fa-pulse';
-        this.emptyStateConfig.title = 'Loading repositories...';
-        this.emptyStateConfig.info = '';
-    }
-
-    private getRepoSources() {
-        if (
-            !this.selectedPNS['repoSources'] ||
-            !this.selectedPNS.repoSources.length
-        ) {
-            this.setLoadingStateConfig();
-            this.selectedPNS.repoSources = [];
-            this.selectedPNS.filteredSources = [];
-            this.providerSourceService
-                .getRepoSources({
-                    providerName: this.selectedPNS.provider_name,
-                    name: this.selectedPNS.name,
-                })
-                .subscribe(repoSources => {
-                    repoSources.forEach(repoSource => {
-                        if (!repoSource.summary_fields.repository) {
-                            this.selectedPNS.repoSources.push(
-                                repoSource as RepositorySource,
-                            );
-                        }
-                    });
-                    this.filterRepos(this.filterValue);
-                    this.setEmptyStateConfig();
-                });
-        } else {
-            this.filterRepos(this.filterValue);
-            this.setEmptyStateConfig();
-        }
+    private updateRepositoriesAdded(added) {
+        this.repositoriesAdded = added;
     }
 }
