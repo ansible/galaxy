@@ -6,7 +6,7 @@ import {
     ElementRef,
 } from '@angular/core';
 
-import { AddRepositoryModalContainer } from '../../react/containers/add-content-container';
+import { AddContentModalContainer } from '../../react/containers/add-content-container';
 import { Render } from '../../react/lib/render-react';
 
 import { Injector } from '@angular/core';
@@ -37,7 +37,7 @@ export class AddContentModalComponent implements OnInit, OnDestroy {
     ngOnInit() {
         Render.init(
             this.injector,
-            AddRepositoryModalContainer,
+            AddContentModalContainer,
             this.reactContainer.nativeElement,
             {
                 namespace: this.namespace,

@@ -29,3 +29,18 @@ export class ProviderNamespace {
     repoSources: RepositorySource[];
     filteredSources: RepositorySource[];
 }
+
+export enum View {
+    PickImport,
+    RepoImport,
+    CollectionImport,
+}
+
+export class ButtonConfig {
+    back: boolean;
+    okay: {
+        enabled: boolean;
+        text: string;
+    };
+    cancel: boolean;
+}

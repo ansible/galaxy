@@ -7,67 +7,29 @@ import {
     ListView,
     ListViewItem,
     EmptyState,
-    Button,
 } from 'patternfly-react';
-import { PageLoading } from './page-loading';
 
 //Types
-import { Namespace } from '../../resources/namespaces/namespace';
-import { ProviderNamespace } from '../shared-types/add-repository';
+import { ProviderNamespace } from '../../shared-types/add-repository';
 
 interface IProps {
-    namespace: Namespace;
     selectedPNS: ProviderNamespace;
     providerNamespaces: ProviderNamespace[];
     emptyStateIcon: string;
     emptyStateText: string;
-    isSaving: boolean;
-
-    //Callbacks
-    close: () => void;
+    //
+    // //Callbacks
     selectProviderNamespace: (ns: ProviderNamespace) => void;
     filterRepos: (filter: string) => void;
     updateSelected: (repo: string) => void;
-    saveRepos: () => void;
 }
 
-export class AddRepositoryModal extends React.Component<IProps> {
+export class RepoImportView extends React.Component<IProps> {
     render() {
         return (
-            <div className='add-repository-modal-wrapper'>
-                {this.renderHeader()}
-                {this.renderBody()}
-                {this.renderFooter()}
-                <PageLoading loading={this.props.isSaving} />
-            </div>
-        );
-    }
-
-    private renderFooter() {
-        return (
-            <div className='modal-footer'>
-                <Button
-                    bsStyle='primary'
-                    onClick={() => this.props.saveRepos()}
-                >
-                    OK
-                </Button>
-                <Button bsStyle='warning' onClick={this.props.close}>
-                    Cancel
-                </Button>
-            </div>
-        );
-    }
-
-    private renderBody() {
-        return (
-            <div className='modal-body add-repo-modal-body'>
-                <div className='container-fluid'>
-                    <div className='toolbar-pf add-repo-modal-toolbar'>
-                        {this.renderToolbar()}
-                        {this.renderRepos()}
-                    </div>
-                </div>
+            <div className='toolbar-pf add-repo-modal-toolbar'>
+                {this.renderToolbar()}
+                {this.renderRepos()}
             </div>
         );
     }
@@ -175,23 +137,5 @@ export class AddRepositoryModal extends React.Component<IProps> {
         if (pns.provider_name === 'github') {
             return <i className='fa fa-github' />;
         }
-    }
-
-    private renderHeader() {
-        return (
-            <div className='modal-header'>
-                <h4 className='modal-title pull-left'>
-                    Add Repositories to {this.props.namespace.name}
-                </h4>
-                <button
-                    type='button'
-                    className='close pull-right'
-                    aria-label='Close'
-                    onClick={this.props.close}
-                >
-                    <span aria-hidden='true'>&times;</span>
-                </button>
-            </div>
-        );
     }
 }

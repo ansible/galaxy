@@ -23,6 +23,82 @@
         }
     }
 
+    .add-content-type-selector {
+        display: flex;
+        justify-content: space-around;
+
+        .button-container {
+            margin-top: 25px;
+            .right-button {
+                margin-left: 25px;
+            }
+        }
+    }
+
+    .upload-collection {
+        font-size: 14px;
+        .file-error-messages {
+            color: #cc0000;
+        }
+
+        .upload-file {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
+        }
+
+        .upload-file-label {
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+            font-weight: normal;
+
+            .upload-box {
+                display: flex;
+                border-style: solid;
+                border-width: thin;
+                width: 100%;
+                border-radius: 5px;
+
+                .upload-button,
+                .upload-text {
+                    padding: 5px;
+                    font-size: 15px;
+                }
+
+                .upload-button {
+                    border-right: thin solid;
+                    padding-left: 10px;
+                    padding-right: 10px;
+                }
+
+                .upload-button:hover {
+                    color: white;
+                    background-color: @charcoal;
+                }
+
+                .upload-text {
+                    color: @grey;
+                }
+            }
+        }
+    }
+
+    .footer-container {
+        display: flex;
+
+        .left-button {
+            flex-grow: 1;
+        }
+
+        .footer-buttons {
+            display: block;
+        }
+    }
+
     .modal-filter {
         width: 200px;
         margin-left: 20px;

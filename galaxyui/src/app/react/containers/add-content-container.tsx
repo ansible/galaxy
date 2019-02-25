@@ -10,14 +10,19 @@ import { ProviderSourceService } from '../../resources/provider-namespaces/provi
 import { Repository } from '../../resources/repositories/repository';
 import { RepositoryService } from '../../resources/repositories/repository.service';
 
-// ----------------------
 import { Injector } from '@angular/core';
-import { AddRepositoryModal } from '../components/add-repository';
+
+import { RepoImportView } from '../components/import-modal/repo-import-view';
+import { ImportModal } from '../components/import-modal/import-modal';
+import { PickImportType } from '../components/import-modal/pick-import-type';
+import { UploadCollection } from '../components/import-modal/upload-collection';
+
 import {
     ProviderNamespace,
     RepositorySource,
+    View,
+    ButtonConfig,
 } from '../shared-types/add-repository';
-// ----------------------
 
 interface IProps {
     injector: Injector;
@@ -30,12 +35,16 @@ interface IState {
     emptyStateIcon: string;
     emptyStateText: string;
     isSaving: boolean;
+    displayedComponent: View;
+    modalTitle: string;
+    buttonsDisplayed: ButtonConfig;
+    collectionFile: any;
+    fileErrors: string;
 }
 
-export class AddRepositoryModalContainer extends React.Component<
-    IProps,
-    IState
-> {
+const AcceptedFileTypes = ['application/x-tar'];
+
+export class AddContentModalContainer extends React.Component<IProps, IState> {
     // Used to track which component is being loaded
     componentName = 'AddRepositoryModalComponent';
 
@@ -71,31 +80,132 @@ export class AddRepositoryModalContainer extends React.Component<
             emptyStateIcon: 'spinner fa-pulse',
             emptyStateText: 'Loading repositories...',
             isSaving: false,
+            displayedComponent: View.PickImport,
+            modalTitle: 'Add Content',
+            buttonsDisplayed: {
+                back: false,
+                okay: { enabled: false, text: 'OK' },
+                cancel: true,
+            },
+            collectionFile: null,
+            fileErrors: '',
         };
     }
 
     componentDidMount() {
         this.setLoadingStateConfig();
-
-        this.getRepoSources();
     }
 
     render() {
         return (
-            <AddRepositoryModal
-                namespace={this.props.namespace}
-                close={() => this.bsModalRef.hide()}
-                selectedPNS={this.state.selectedPNS}
-                providerNamespaces={this.providerNamespaces}
-                selectProviderNamespace={x => this.selectProviderNamespace(x)}
-                filterRepos={x => this.filterFromView(x)}
-                emptyStateIcon={this.state.emptyStateIcon}
-                emptyStateText={this.state.emptyStateText}
-                updateSelected={x => this.handleSelectionChange(x)}
-                saveRepos={() => this.saveRepos()}
+            <ImportModal
+                title={this.state.modalTitle}
                 isSaving={this.state.isSaving}
-            />
+                buttonsDisplayed={this.state.buttonsDisplayed}
+                save={() => this.save()}
+                close={() => this.bsModalRef.hide()}
+                setDisplayedContent={x => this.setDisplayedContent(x)}
+            >
+                {this.loadModalBody()}
+            </ImportModal>
         );
+    }
+
+    private loadModalBody() {
+        switch (this.state.displayedComponent) {
+            case View.RepoImport:
+                return (
+                    <RepoImportView
+                        selectedPNS={this.state.selectedPNS}
+                        providerNamespaces={this.providerNamespaces}
+                        emptyStateIcon={this.state.emptyStateIcon}
+                        emptyStateText={this.state.emptyStateText}
+                        selectProviderNamespace={x =>
+                            this.selectProviderNamespace(x)
+                        }
+                        filterRepos={x => this.filterFromView(x)}
+                        updateSelected={x => this.handleSelectionChange(x)}
+                    />
+                );
+
+            case View.CollectionImport:
+                return (
+                    <UploadCollection
+                        handeFileUpload={x => this.handleFileUpload(x)}
+                        file={this.state.collectionFile}
+                        errors={this.state.fileErrors}
+                    />
+                );
+
+            case View.PickImport:
+                return (
+                    <PickImportType
+                        setView={x => this.setDisplayedContent(x)}
+                    />
+                );
+        }
+    }
+
+    private handleFileUpload(files) {
+        const newCollection = files[0];
+
+        if (files.length > 1) {
+            this.setState({
+                fileErrors: 'Please select no more than one file.',
+            });
+        } else if (!AcceptedFileTypes.includes(newCollection.type)) {
+            this.setState({
+                fileErrors: 'Invalid file format.',
+                collectionFile: newCollection,
+            });
+        } else {
+            this.setState({
+                fileErrors: '',
+                collectionFile: newCollection,
+            });
+        }
+    }
+
+    private setDisplayedContent(view: View) {
+        switch (view) {
+            case View.RepoImport:
+                this.setState(
+                    {
+                        modalTitle:
+                            'Add repositories to ' + this.props.namespace.name,
+                        buttonsDisplayed: {
+                            back: true,
+                            okay: { enabled: true, text: 'OK' },
+                            cancel: true,
+                        },
+                        displayedComponent: View.RepoImport,
+                    },
+                    () => this.getRepoSources(),
+                );
+                break;
+            case View.CollectionImport:
+                this.setState({
+                    modalTitle: 'Upload a New Collection',
+                    buttonsDisplayed: {
+                        back: true,
+                        okay: { enabled: true, text: 'Upload' },
+                        cancel: true,
+                    },
+                    displayedComponent: View.CollectionImport,
+                });
+                break;
+            case View.PickImport:
+                this.setState({
+                    modalTitle: 'Add Content',
+                    buttonsDisplayed: {
+                        back: false,
+                        okay: { enabled: false, text: 'OK' },
+                        cancel: false,
+                    },
+                    displayedComponent: View.PickImport,
+                });
+                break;
+        }
     }
 
     private selectProviderNamespace(pns: ProviderNamespace) {
@@ -129,6 +239,19 @@ export class AddRepositoryModalContainer extends React.Component<
         pns.repoSources[i].isSelected = !pns.repoSources[i].isSelected;
 
         this.setState({ selectedPNS: pns });
+    }
+
+    private save() {
+        if (this.state.displayedComponent === View.RepoImport) {
+            this.saveRepos();
+        } else if (this.state.displayedComponent === View.CollectionImport) {
+            this.saveCollection();
+        }
+    }
+
+    private saveCollection() {
+        console.log(this.state.collectionFile);
+        this.bsModalRef.hide();
     }
 
     private saveRepos() {
