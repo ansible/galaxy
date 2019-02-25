@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { FieldGroup } from 'patternfly-react';
 
 interface IProps {
-    file: any;
+    file: File;
     errors: string;
-    handeFileUpload: (files) => void;
+    uploadProgress: number;
+    uploadStatus: string;
+    handeFileUpload: (files: FileList) => void;
 }
 
 export class UploadCollection extends React.Component<IProps, {}> {
@@ -27,12 +28,20 @@ export class UploadCollection extends React.Component<IProps, {}> {
                     >
                         <div className='upload-box'>
                             <div className='upload-button'>
-                                <i className='pficon-folder-open' />
+                                {this.renderFileIcon()}
                             </div>
                             <div className='upload-text'>
                                 {this.props.file != null
                                     ? this.props.file.name
                                     : 'Select file'}
+                                <div
+                                    className='loading-bar'
+                                    style={{
+                                        width:
+                                            this.props.uploadProgress * 100 +
+                                            '%',
+                                    }}
+                                />
                             </div>
                         </div>
                     </label>
@@ -45,5 +54,14 @@ export class UploadCollection extends React.Component<IProps, {}> {
                 ) : null}
             </div>
         );
+    }
+
+    renderFileIcon() {
+        switch (this.props.uploadStatus) {
+            case 'uploading':
+                return <i className='fa fa-spinner fa-spin' />;
+            default:
+                return <i className='pficon-folder-open' />;
+        }
     }
 }

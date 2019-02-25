@@ -9,8 +9,11 @@ import { Namespace } from '../../resources/namespaces/namespace';
 import { ProviderSourceService } from '../../resources/provider-namespaces/provider-source.service';
 import { Repository } from '../../resources/repositories/repository';
 import { RepositoryService } from '../../resources/repositories/repository.service';
+import { CollectionUpload } from '../../resources/collections/collection';
+import { CollectionUploadService } from '../../resources/collections/collection.service';
 
 import { Injector } from '@angular/core';
+import { HttpEventType, HttpResponse } from '@angular/common/http';
 
 import { RepoImportView } from '../components/import-modal/repo-import-view';
 import { ImportModal } from '../components/import-modal/import-modal';
@@ -38,11 +41,13 @@ interface IState {
     displayedComponent: View;
     modalTitle: string;
     buttonsDisplayed: ButtonConfig;
-    collectionFile: any;
+    collectionFile: File;
     fileErrors: string;
+    uploadProgress: number;
+    uploadStatus: string;
 }
 
-const AcceptedFileTypes = ['application/x-tar'];
+const AcceptedFileTypes = ['application/x-gzip'];
 
 export class AddContentModalContainer extends React.Component<IProps, IState> {
     // Used to track which component is being loaded
@@ -55,6 +60,7 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
     bsModalRef: BsModalRef;
     repositoryService: RepositoryService;
     providerSourceService: ProviderSourceService;
+    collectionService: CollectionUploadService;
 
     constructor(props) {
         super(props);
@@ -74,6 +80,9 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
         this.providerSourceService = this.props.injector.get(
             ProviderSourceService,
         );
+        this.collectionService = this.props.injector.get(
+            CollectionUploadService,
+        );
 
         this.state = {
             selectedPNS: selectedPNS,
@@ -89,6 +98,8 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
             },
             collectionFile: null,
             fileErrors: '',
+            uploadProgress: 0,
+            uploadStatus: 'waiting',
         };
     }
 
@@ -134,6 +145,8 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
                         handeFileUpload={x => this.handleFileUpload(x)}
                         file={this.state.collectionFile}
                         errors={this.state.fileErrors}
+                        uploadProgress={this.state.uploadProgress}
+                        uploadStatus={this.state.uploadStatus}
                     />
                 );
 
@@ -250,8 +263,26 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
     }
 
     private saveCollection() {
-        console.log(this.state.collectionFile);
-        this.bsModalRef.hide();
+        this.setState({ uploadStatus: 'uploading' });
+        const artifact = {
+            file: this.state.collectionFile,
+            sha256: '',
+        } as CollectionUpload;
+
+        this.collectionService.upload(artifact).subscribe(response => {
+            if (response != undefined) {
+                if (response['type'] === HttpEventType.UploadProgress) {
+                    this.setState({
+                        uploadProgress: response.loaded / response.total,
+                    });
+                } else if (response instanceof HttpResponse) {
+                    this.setState({ uploadStatus: 'waiting' });
+                    this.bsModalRef.hide();
+                }
+            } else {
+                this.bsModalRef.hide();
+            }
+        });
     }
 
     private saveRepos() {

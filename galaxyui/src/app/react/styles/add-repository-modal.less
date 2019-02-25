@@ -61,7 +61,7 @@
                 border-style: solid;
                 border-width: thin;
                 width: 100%;
-                border-radius: 5px;
+                border-radius: 3px;
 
                 .upload-button,
                 .upload-text {
@@ -81,7 +81,17 @@
                 }
 
                 .upload-text {
+                    position: relative;
+                    width: 100%;
                     color: @grey;
+                }
+
+                .loading-bar {
+                    position: absolute;
+                    height: 3px;
+                    background-color: @green;
+                    bottom: 0px;
+                    left: 0px;
                 }
             }
         }
