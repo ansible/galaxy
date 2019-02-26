@@ -52,9 +52,12 @@ def find_readme(directory):
     return None
 
 
-def get_readme(directory, root_dir=None):
-    filename = find_readme(directory)
+def get_readme(directory, root_dir=None, filename=None):
     if not filename:
+        filename = find_readme(directory)
+        if not filename:
+            return None
+    elif not os.path.exists(filename):
         return None
 
     if os.path.getsize(filename) > README_MAX_SIZE:

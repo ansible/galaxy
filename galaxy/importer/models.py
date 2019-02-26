@@ -89,7 +89,7 @@ class CollectionInfo(object):
 
     authors = attr.ib(factory=list)
     tags = attr.ib(factory=list)
-    readme = attr.ib(default='README.md')
+    readme = attr.ib(default=None)
 
     # Note galaxy.yml 'dependencies' field is what mazer and ansible
     # consider 'requirements'. ie, install time requirements.

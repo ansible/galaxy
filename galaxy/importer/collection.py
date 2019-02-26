@@ -99,11 +99,20 @@ class CollectionLoader(object):
             self.collection_info = meta.collection_info
 
     def _load_collection_readme(self):
+        if not self.collection_info.readme:
+            return
+
+        readme_file = os.path.join(self.collection_path,
+                                   self.collection_info.readme)
         try:
             self.readme = readmeutils.get_readme(
-                directory=self.collection_path)
+                directory=self.collection_path,
+                filename=readme_file)
         except readmeutils.FileSizeError as e:
             self.log.warning(e)
+
+        if not self.readme:
+            self.log.warning('Readme listed in manifest not found')
 
     def _validate_collection_metadata(self):
         pass
