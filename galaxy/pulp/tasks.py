@@ -15,30 +15,24 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import os
-import tarfile
-import tempfile
-import shutil
+import logging
 
 from django.db import transaction
-from galaxy.main import models
 from pulpcore.app import models as pulp_models
 
-from . import schema
+from galaxy.main import models
+from galaxy.importer import collection as i_collection
+from galaxy.importer import exceptions as i_exc
+
+log = logging.getLogger(__name__)
 
 
 class VersionConflict(Exception):
     pass
 
 
-def load_metadata(artifact):
-    with tempfile.TemporaryDirectory() as td:
-        temp_path = os.path.join(td, os.path.basename(artifact.file.path))
-        shutil.copy(artifact.file.path, temp_path)
-        with tarfile.open(temp_path, 'r') as pkg:
-            meta_file = pkg.extractfile('METADATA.json')
-            with meta_file:
-                return schema.Metadata.parse(meta_file.read())
+class PulpTaskError(Exception):
+    pass
 
 
 @transaction.atomic
@@ -46,21 +40,38 @@ def import_collection(artifact_pk, repository_pk):
     artifact = pulp_models.Artifact.objects.get(pk=artifact_pk)
     repository = pulp_models.Repository.objects.get(pk=repository_pk)
 
-    meta = load_metadata(artifact)
+    try:
+        importer_coll = i_collection.import_collection(artifact, log)
+    except i_exc.ImporterError as e:
+        raise PulpTaskError(str(e))
+
+    collection_info = importer_coll.collection_info
+    contents = importer_coll.contents
+
+    log.debug('collection loaded: collection metadata=%s', collection_info)
+    log.debug('collection quality_score=%s', importer_coll.quality_score)
+    for c in contents:
+        c_info = 'content: type={} name={}'.format(c.content_type, c.name)
+        if c.scores:
+            log.debug('{} score={}'.format(c_info, c.scores['quality']))
+        else:
+            log.debug(c_info)
 
     collection, _ = models.Collection.objects.get_or_create(
-        namespace=meta.namespace,
-        name=meta.name,
+        namespace=collection_info.namespace,
+        name=collection_info.name,
     )
     collection_version, is_created = collection.versions.get_or_create(
         collection=collection,
-        version=meta.version,
+        version=collection_info.version,
     )
     if not is_created:
         raise VersionConflict()
 
     relative_path = '{0}-{1}-{2}.tar.gz'.format(
-        meta.namespace, meta.name, meta.version
+        collection_info.namespace,
+        collection_info.name,
+        collection_info.version
     )
     pulp_models.ContentArtifact.objects.create(
         artifact=artifact,
@@ -82,3 +93,4 @@ def import_collection(artifact_pk, repository_pk):
         base_path='galaxy',
         defaults={'publication': publication},
     )
+    log.info('Imported artifact: %s', relative_path)

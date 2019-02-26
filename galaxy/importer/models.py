@@ -16,10 +16,12 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import collections
+import json
 
 import marshmallow as mm
 from marshmallow import fields
 from marshmallow import validate
+import attr
 
 from galaxy import constants
 from galaxy.common import schema
@@ -27,7 +29,6 @@ from galaxy.importer.utils import git
 from galaxy.importer.utils import readme as readmeutils
 
 SHA1_LEN = 40
-
 
 # ---------------------------------------------------------
 
@@ -69,6 +70,60 @@ class Repository(object):
         self.name = name
         self.description = description
         self.quality_score = quality_score
+
+
+@attr.s(frozen=True)
+class CollectionInfo(object):
+    """Represents collection_info metadata in collection manifest."""
+
+    namespace = attr.ib()
+    name = attr.ib()
+    version = attr.ib()
+    license = attr.ib()
+    description = attr.ib(default=None)
+
+    repository = attr.ib(default=None)
+    documentation = attr.ib(default=None)
+    homepage = attr.ib(default=None)
+    issues = attr.ib(default=None)
+
+    authors = attr.ib(factory=list)
+    tags = attr.ib(factory=list)
+    readme = attr.ib(default=None)
+
+    # Note galaxy.yml 'dependencies' field is what mazer and ansible
+    # consider 'requirements'. ie, install time requirements.
+    dependencies = attr.ib(factory=list)
+
+    @property
+    def label(self):
+        return '%s.%s' % (self.namespace, self.name)
+
+
+@attr.s(frozen=True)
+class CollectionArtifactManifest(object):
+    """Represents collection manifest metadata."""
+
+    collection_info = attr.ib(type=CollectionInfo)
+    format = attr.ib(default=1)
+    files = attr.ib(factory=list)
+
+    @classmethod
+    def parse(cls, data):
+        meta = json.loads(data)
+        col_info = meta.pop('collection_info', None)
+        meta['collection_info'] = CollectionInfo(**col_info)
+        return cls(**meta)
+
+
+@attr.s(frozen=True)
+class Collection(object):
+    """Represents collection metadata and contents."""
+
+    collection_info = attr.ib(type=CollectionInfo)
+    contents = attr.ib(factory=list)
+    readme = attr.ib(default=None)
+    quality_score = attr.ib(default=None)
 
 
 # -----------------------------------------------------------------------------

@@ -25,6 +25,10 @@ class RepositoryError(ImporterError):
     pass
 
 
+class ManifestNotFound(ImporterError):
+    pass
+
+
 class ContentNotFound(ImporterError):
     pass
 
