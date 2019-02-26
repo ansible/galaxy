@@ -10,6 +10,7 @@ interface IProps {
     title: string;
     isSaving: boolean;
     buttonsDisplayed: ButtonConfig;
+    disableOkay: boolean;
     close: () => void;
     save: () => void;
     setDisplayedContent: (v: View) => void;
@@ -47,6 +48,7 @@ export class ImportModal extends React.Component<IProps> {
                 <div className='footer-buttons left-button'>
                     {this.props.buttonsDisplayed.okay.enabled ? (
                         <Button
+                            disabled={this.props.disableOkay}
                             bsStyle='primary'
                             onClick={() => this.props.save()}
                         >

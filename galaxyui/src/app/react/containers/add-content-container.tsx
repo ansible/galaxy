@@ -34,13 +34,18 @@ interface IProps {
 }
 
 interface IState {
+    // GitHub Import
     selectedPNS: ProviderNamespace;
     emptyStateIcon: string;
     emptyStateText: string;
+
+    // Shared
     isSaving: boolean;
     displayedComponent: View;
     modalTitle: string;
     buttonsDisplayed: ButtonConfig;
+
+    // Collection Import
     collectionFile: File;
     fileErrors: string;
     uploadProgress: number;
@@ -116,13 +121,16 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
                 save={() => this.save()}
                 close={() => this.bsModalRef.hide()}
                 setDisplayedContent={x => this.setDisplayedContent(x)}
+                disableOkay={this.state.fileErrors != ''}
             >
                 {this.loadModalBody()}
             </ImportModal>
         );
     }
 
+    // General Methods
     private loadModalBody() {
+        // Loads view that the user selects
         switch (this.state.displayedComponent) {
             case View.RepoImport:
                 return (
@@ -159,27 +167,9 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
         }
     }
 
-    private handleFileUpload(files) {
-        const newCollection = files[0];
-
-        if (files.length > 1) {
-            this.setState({
-                fileErrors: 'Please select no more than one file.',
-            });
-        } else if (!AcceptedFileTypes.includes(newCollection.type)) {
-            this.setState({
-                fileErrors: 'Invalid file format.',
-                collectionFile: newCollection,
-            });
-        } else {
-            this.setState({
-                fileErrors: '',
-                collectionFile: newCollection,
-            });
-        }
-    }
-
     private setDisplayedContent(view: View) {
+        // Updates the selected view with the component state that is required
+        // for that view.
         switch (view) {
             case View.RepoImport:
                 this.setState(
@@ -205,6 +195,8 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
                         cancel: true,
                     },
                     displayedComponent: View.CollectionImport,
+                    uploadStatus: 'waiting',
+                    uploadProgress: 0,
                 });
                 break;
             case View.PickImport:
@@ -221,16 +213,96 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
         }
     }
 
+    private save() {
+        // Saves the selected repos or collection.
+        if (this.state.displayedComponent === View.RepoImport) {
+            this.saveRepos();
+        } else if (this.state.displayedComponent === View.CollectionImport) {
+            this.saveCollection();
+        }
+    }
+
+    // Collection Methods
+    private handleFileUpload(files) {
+        // Selects the artificat that will be uploaded and performs some basic
+        // preliminary checks on it.
+        const newCollection = files[0];
+
+        if (files.length > 1) {
+            this.setState({
+                fileErrors: 'Please select no more than one file.',
+            });
+        } else if (!AcceptedFileTypes.includes(newCollection.type)) {
+            this.setState({
+                fileErrors: 'Invalid file format.',
+                collectionFile: newCollection,
+                uploadProgress: 0,
+            });
+        } else {
+            this.setState({
+                fileErrors: '',
+                collectionFile: newCollection,
+                uploadProgress: 0,
+            });
+        }
+    }
+
+    private saveCollection() {
+        // Uploads the selected collection to the galaxy API
+        this.setState({ uploadStatus: 'uploading' });
+        const artifact = {
+            file: this.state.collectionFile,
+            sha256: '',
+        } as CollectionUpload;
+
+        this.collectionService.upload(artifact).subscribe(
+            response => {
+                if (response['type'] === HttpEventType.UploadProgress) {
+                    // Updates progress bar
+                    this.setState({
+                        uploadProgress: response.loaded / response.total,
+                    });
+                } else if (response instanceof HttpResponse) {
+                    // Upload succeeds
+                    this.props.updateAdded(true);
+                    this.bsModalRef.hide();
+                }
+            },
+            error => {
+                // Upload fails
+                this.props.updateAdded(false);
+                let errorMessage = '';
+                if (typeof error.error === 'object') {
+                    for (const field of Object.keys(error.error)) {
+                        errorMessage += error.error[field] + ' ';
+                    }
+                } else {
+                    errorMessage = error.error;
+                }
+
+                this.setState({
+                    uploadStatus: 'waiting',
+                    fileErrors: errorMessage,
+                });
+            },
+        );
+    }
+
+    // Repository import methods
     private selectProviderNamespace(pns: ProviderNamespace) {
+        // Updates the provider namespace and pulls a list of repos from it
         this.setState({ selectedPNS: pns }, () => this.getRepoSources());
     }
 
     private filterFromView(filterValue) {
+        // Updates the list of filtered repos on the selected provider namespace
         const pns = cloneDeep(this.state.selectedPNS);
         this.setState({ selectedPNS: this.filterRepos(filterValue, pns) });
     }
 
     private filterRepos(filterValue: string, oldPNS) {
+        // Copies the selected provider namespace out of state and returns an
+        // updated version with a filtered list of repos.
         const pns = cloneDeep(oldPNS);
         if (filterValue) {
             this.filterValue = filterValue;
@@ -246,6 +318,7 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
     }
 
     private handleSelectionChange(repoName: string) {
+        // Handles checking and unchecking repositories in the list of repos
         const pns = cloneDeep(this.state.selectedPNS);
 
         const i = pns.repoSources.findIndex(el => el.name === repoName);
@@ -254,38 +327,9 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
         this.setState({ selectedPNS: pns });
     }
 
-    private save() {
-        if (this.state.displayedComponent === View.RepoImport) {
-            this.saveRepos();
-        } else if (this.state.displayedComponent === View.CollectionImport) {
-            this.saveCollection();
-        }
-    }
-
-    private saveCollection() {
-        this.setState({ uploadStatus: 'uploading' });
-        const artifact = {
-            file: this.state.collectionFile,
-            sha256: '',
-        } as CollectionUpload;
-
-        this.collectionService.upload(artifact).subscribe(response => {
-            if (response != undefined) {
-                if (response['type'] === HttpEventType.UploadProgress) {
-                    this.setState({
-                        uploadProgress: response.loaded / response.total,
-                    });
-                } else if (response instanceof HttpResponse) {
-                    this.setState({ uploadStatus: 'waiting' });
-                    this.bsModalRef.hide();
-                }
-            } else {
-                this.bsModalRef.hide();
-            }
-        });
-    }
-
     private saveRepos() {
+        // Submits the list of checked repos to the API so that they can be
+        // imported.
         this.props.updateAdded(true);
         this.setState({ isSaving: true });
         const saveRequests: Observable<Repository>[] = [];
@@ -318,6 +362,7 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
     }
 
     private setEmptyStateConfig() {
+        // Sets empty state for repository list
         this.setState({
             emptyStateIcon: 'pficon pficon-warning-triangle-o',
             emptyStateText: 'No matching repositories found!',
@@ -325,6 +370,7 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
     }
 
     private setLoadingStateConfig() {
+        // Sets loading state for repository list
         this.setState({
             emptyStateIcon: 'spinner fa-pulse',
             emptyStateText: 'Loading repositories...',
@@ -332,6 +378,8 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
     }
 
     private getRepoSources() {
+        // Loads the list of repositories for a given provider namespace from
+        // the API.
         if (
             !this.state.selectedPNS['repoSources'] ||
             !this.state.selectedPNS.repoSources.length
