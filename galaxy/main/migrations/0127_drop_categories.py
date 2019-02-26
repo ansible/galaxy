@@ -4,7 +4,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0127_collection_base'),
+        ('main', '0126_notification_commit_message'),
     ]
 
     operations = [
