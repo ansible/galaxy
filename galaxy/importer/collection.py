@@ -90,19 +90,13 @@ class CollectionLoader(object):
         self.log.info(' ')
 
     def _load_collection_manifest(self):
-        with tarfile.open(self.artifact_path, 'r') as pkg:
-            for member in pkg.getmembers():
-                if member.isfile() and \
-                        member.path.split('/')[-1] == 'MANIFEST.json':
-                    manifest = member
-                    break
-            if not manifest:
-                raise exc.ManifestNotFound('No manifest found in collection')
+        manifest_file = os.path.join(self.collection_path, 'MANIFEST.json')
+        if not os.path.exists(manifest_file):
+            raise exc.ManifestNotFound('No manifest found in collection')
 
-            meta_file = pkg.extractfile(manifest)
-            with meta_file:
-                meta = CollectionArtifactManifest.parse(meta_file.read())
-                self.collection_info = meta.collection_info
+        with open(manifest_file, 'r') as f:
+            meta = CollectionArtifactManifest.parse(f.read())
+            self.collection_info = meta.collection_info
 
     def _load_collection_readme(self):
         try:
