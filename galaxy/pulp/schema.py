@@ -4,12 +4,12 @@ import re
 import attr
 import semantic_version as semver
 
+from galaxy import constants
 
 _FILENAME_RE = re.compile(
     r'^(?P<namespace>\w+)-(?P<name>\w+)-'
     r'(?P<version>[0-9a-zA-Z.+-]+)\.tar\.gz$'
 )
-_NAME_RE = re.compile(r'^[0-9a-z_]+$')
 
 
 @attr.s(slots=True)
@@ -33,7 +33,7 @@ class CollectionFilename(object):
     @namespace.validator
     @name.validator
     def _validator(self, attribute, value):
-        if not _NAME_RE.match(value):
+        if not constants.NAME_REGEXP.match(value):
             raise ValueError(
                 'Invalid {0}: {1!r}'.format(attribute.name, value)
             )
@@ -52,7 +52,7 @@ class Metadata:
     @name.validator
     @namespace.validator
     def _validate_name(self, attribute, value):
-        if not _NAME_RE.match(value):
+        if not constants.NAME_REGEXP.match(value):
             raise ValueError('Invalid "{0}" attribute'.format(attribute))
 
     @classmethod
