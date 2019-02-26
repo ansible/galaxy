@@ -67,6 +67,8 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
     providerSourceService: ProviderSourceService;
     collectionService: CollectionUploadService;
 
+    uploadSubscription: any;
+
     constructor(props) {
         super(props);
         this.providerNamespaces = [];
@@ -112,6 +114,13 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
         this.setLoadingStateConfig();
     }
 
+    componentWillUnmount() {
+        // Cancel any uploads in progress if the modal is closed.
+        if (this.uploadSubscription) {
+            this.uploadSubscription.unsubscribe();
+        }
+    }
+
     render() {
         return (
             <ImportModal
@@ -121,7 +130,10 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
                 save={() => this.save()}
                 close={() => this.bsModalRef.hide()}
                 setDisplayedContent={x => this.setDisplayedContent(x)}
-                disableOkay={this.state.fileErrors != ''}
+                disableOkay={
+                    this.state.fileErrors != '' ||
+                    this.state.uploadStatus != 'waiting'
+                }
             >
                 {this.loadModalBody()}
             </ImportModal>
@@ -205,7 +217,7 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
                     buttonsDisplayed: {
                         back: false,
                         okay: { enabled: false, text: 'OK' },
-                        cancel: false,
+                        cancel: true,
                     },
                     displayedComponent: View.PickImport,
                 });
@@ -255,37 +267,39 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
             sha256: '',
         } as CollectionUpload;
 
-        this.collectionService.upload(artifact).subscribe(
-            response => {
-                if (response['type'] === HttpEventType.UploadProgress) {
-                    // Updates progress bar
-                    this.setState({
-                        uploadProgress: response.loaded / response.total,
-                    });
-                } else if (response instanceof HttpResponse) {
-                    // Upload succeeds
-                    this.props.updateAdded(true);
-                    this.bsModalRef.hide();
-                }
-            },
-            error => {
-                // Upload fails
-                this.props.updateAdded(false);
-                let errorMessage = '';
-                if (typeof error.error === 'object') {
-                    for (const field of Object.keys(error.error)) {
-                        errorMessage += error.error[field] + ' ';
+        this.uploadSubscription = this.collectionService
+            .upload(artifact)
+            .subscribe(
+                response => {
+                    if (response['type'] === HttpEventType.UploadProgress) {
+                        // Updates progress bar
+                        this.setState({
+                            uploadProgress: response.loaded / response.total,
+                        });
+                    } else if (response instanceof HttpResponse) {
+                        // Upload succeeds
+                        this.props.updateAdded(true);
+                        this.bsModalRef.hide();
                     }
-                } else {
-                    errorMessage = error.error;
-                }
+                },
+                error => {
+                    // Upload fails
+                    this.props.updateAdded(false);
+                    let errorMessage = '';
+                    if (typeof error.error === 'object') {
+                        for (const field of Object.keys(error.error)) {
+                            errorMessage += error.error[field] + ' ';
+                        }
+                    } else {
+                        errorMessage = error.error;
+                    }
 
-                this.setState({
-                    uploadStatus: 'waiting',
-                    fileErrors: errorMessage,
-                });
-            },
-        );
+                    this.setState({
+                        uploadStatus: 'waiting',
+                        fileErrors: errorMessage,
+                    });
+                },
+            );
     }
 
     // Repository import methods
