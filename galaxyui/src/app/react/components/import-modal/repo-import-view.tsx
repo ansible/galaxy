@@ -9,7 +9,7 @@ import {
     EmptyState,
 } from 'patternfly-react';
 
-//Types
+// Types
 import { ProviderNamespace } from '../../shared-types/add-repository';
 
 interface IProps {

@@ -15,7 +15,7 @@ export class UploadCollection extends React.Component<IProps, {}> {
                 <h4>Upload</h4>
                 <form>
                     <input
-                        disabled={this.props.uploadStatus != 'waiting'}
+                        disabled={this.props.uploadStatus !== 'waiting'}
                         className='upload-file'
                         type='file'
                         id='collection-widget'

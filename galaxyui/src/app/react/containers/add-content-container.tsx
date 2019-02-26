@@ -131,8 +131,8 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
                 close={() => this.bsModalRef.hide()}
                 setDisplayedContent={x => this.setDisplayedContent(x)}
                 disableOkay={
-                    this.state.fileErrors != '' ||
-                    this.state.uploadStatus != 'waiting'
+                    this.state.fileErrors !== '' ||
+                    this.state.uploadStatus !== 'waiting'
                 }
             >
                 {this.loadModalBody()}
