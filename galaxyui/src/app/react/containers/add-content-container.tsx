@@ -52,7 +52,7 @@ interface IState {
     uploadStatus: string;
 }
 
-const AcceptedFileTypes = ['application/x-gzip'];
+const AcceptedFileTypes = ['application/x-gzip', 'application/gzip'];
 
 export class AddContentModalContainer extends React.Component<IProps, IState> {
     // Used to track which component is being loaded
