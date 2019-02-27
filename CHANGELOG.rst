@@ -1,8 +1,8 @@
 Ansible Galaxy Changes by Release
 =================================
 
-3.1.7 - Release 1-Mar-2019
---------------------------
+3.1.7 - Released 1-Mar-2019
+---------------------------
 
 Changes
 ```````
@@ -30,8 +30,8 @@ Closed PRs
 - `1557 Add documentation and issue template for requesting a new namespace <https://github.com/ansible/galaxy/pull/1557>`_.
 - `1548 Raise forbidden error if un authenticated users load email api <https://github.com/ansible/galaxy/pull/1548>`_.
 
-3.1.6 - Release 21-Dec-2018
----------------------------
+3.1.6 - Released 21-Dec-2018
+----------------------------
 
 Closed PRs
 ``````````
