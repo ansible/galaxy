@@ -12,6 +12,8 @@ from galaxy.main.celerytasks import user_notifications
 
 from rest_framework.response import Response
 
+from rest_framework.permissions import IsAuthenticated
+
 __all__ = [
     'UserEmailList',
     'EmailList',
@@ -29,6 +31,7 @@ class UserEmailList(base_views.SubListAPIView):
     serializer_class = serializers.EmailSerializer
     parent_model = User
     relationship = 'emailaddress_set'
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         user_id = self.kwargs.get(self.lookup_field)
@@ -42,6 +45,7 @@ class UserEmailList(base_views.SubListAPIView):
 class EmailList(base_views.ListCreateAPIView):
     model = EmailAddress
     serializer_class = serializers.EmailSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         qs = super(EmailList, self).get_queryset()
@@ -53,6 +57,7 @@ class EmailList(base_views.ListCreateAPIView):
 class EmailDetail(base_views.RetrieveUpdateDestroyAPIView):
     model = EmailAddress
     serializer_class = serializers.EmailSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_object(self, qs=None):
         obj = super(EmailDetail, self).get_object()
