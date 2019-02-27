@@ -340,6 +340,13 @@ class RoleLoader(base.BaseLoader):
 
     def _get_name(self, galaxy_info):
         name = self.name
+
+        if name:
+            if galaxy_info.get('role_name'):
+                self.log.warning("Role in collection gets name from directory,"
+                                 " ignoring the 'role_name' attribute")
+            return name
+
         if galaxy_info.get('role_name'):
             name = sanitize_content_name(galaxy_info['role_name'])
         return name
