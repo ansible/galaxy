@@ -24,63 +24,57 @@ from pulpcore.app import models as pulp_models
 
 from galaxy.main import models
 from galaxy.importer import collection as i_collection
+from galaxy.pulp import exceptions as exc
 from galaxy.importer import exceptions as i_exc
+from galaxy.common import logutils
 
 
 log = logging.getLogger(__name__)
 
 
-# TODO(cutwater): Move to exceptions module
-# TODO(cutwater): Better exception hierarchy
-class VersionConflict(Exception):
-    pass
+def import_collection(artifact_pk, repository_pk, namespace_pk, task_id):
+    log.info('Starting collection import task: {}'.format(task_id))
 
-
-class PulpTaskError(Exception):
-    pass
-
-
-def import_collection(artifact_pk, repository_pk, namespace_pk):
     artifact = pulp_models.Artifact.objects.get(pk=artifact_pk)
     repository = pulp_models.Repository.objects.get(pk=repository_pk)
+    import_task = models.ImportTask.objects.get(id=task_id)
+    log_db = _get_import_task_msg_logger(import_task)
+
+    import_task.start()
+    log_db.info('Starting import: task_id={}, artifact_pk={}'.format(
+                import_task.id, artifact_pk))
 
     try:
         with transaction.atomic():
-            collection_info = _process_collection(artifact)
-            _publish_collection(artifact, repository,
-                                namespace_pk, collection_info)
-    except Exception:
-        # Delete artifact file and model if import failed
-        artifact.file.delete(save=False)
-        artifact.delete()
+            collection_info = _process_collection(artifact, log_db)
+            coll, coll_ver = _publish_collection(artifact, repository,
+                                                 namespace_pk, collection_info)
+        _process_import_success(coll, coll_ver, import_task)
+    except i_exc.ImporterError as e:
+        _process_import_fail(artifact, import_task, msg=e)
+    except exc.VersionConflict:
+        msg = 'Collection version already exists in galaxy'
+        _process_import_fail(artifact, import_task, msg)
+    except Exception as e:
+        _process_import_fail(artifact, import_task, msg=e.__class__.__name__)
         raise
 
 
-def _process_collection(artifact):
+def _get_import_task_msg_logger(import_task):
+    log_db = logging.getLogger('galaxy.worker.tasks.import_repository')
+    log_db = logutils.ImportTaskAdapter(log_db, task_id=import_task.id)
+    return log_db
+
+
+def _process_collection(artifact, log_db):
     with tempfile.TemporaryDirectory() as pkg_dir:
         with artifact.file.open() as pkg_file, \
                 tarfile.open(fileobj=pkg_file) as pkg_tar:
             pkg_tar.extractall(pkg_dir)
-        try:
-            collection_info = i_collection.import_collection(pkg_dir, log)
-        except i_exc.ImporterError as e:
-            raise PulpTaskError(str(e))
-
+        collection_info = i_collection.import_collection(pkg_dir, log_db)
         _log_collection_loaded(collection_info)
 
-        return collection_info
-
-
-def _log_collection_loaded(collection_info):
-    log.debug('collection metadata=%s',
-              collection_info.collection_info.__dict__)
-    log.debug('collection quality_score=%s', collection_info.quality_score)
-    for c in collection_info.contents:
-        c_info = 'content: type={} name={}'.format(c.content_type, c.name)
-        if c.scores:
-            log.debug('{} score={}'.format(c_info, c.scores['quality']))
-        else:
-            log.debug(c_info)
+    return collection_info
 
 
 def _publish_collection(artifact, repository, namespace_pk, collection_info):
@@ -99,7 +93,7 @@ def _publish_collection(artifact, repository, namespace_pk, collection_info):
         },
     )
     if not is_created:
-        raise VersionConflict()
+        raise exc.VersionConflict()
 
     relative_path = '{0}-{1}-{2}.tar.gz'.format(
         metadata.namespace,
@@ -126,4 +120,40 @@ def _publish_collection(artifact, repository, namespace_pk, collection_info):
         base_path='galaxy',
         defaults={'publication': publication},
     )
-    log.info('Imported artifact: %s', relative_path)
+    return collection, collection_version
+
+
+def _process_import_success(collection, coll_ver, import_task):
+    import_task.collection = collection
+
+    warnings = import_task.messages.filter(
+        message_type=models.ImportTaskMessage.TYPE_WARNING).count()
+    errors = import_task.messages.filter(
+        message_type=models.ImportTaskMessage.TYPE_ERROR).count()
+    log_entry = 'Import completed with {0} warnings and {1} ' \
+                'errors'.format(warnings, errors)
+    log.info(log_entry)
+    import_task.finish_success(log_entry)
+
+
+def _process_import_fail(artifact, import_task, msg):
+    # Delete artifact file and model if import failed
+    artifact.file.delete(save=False)
+    artifact.delete()
+
+    log_entry = 'Import Task "{}" failed: {}'.format(import_task.id, msg)
+    log.error(log_entry)
+    import_task.finish_failed(reason=log_entry)
+
+
+def _log_collection_loaded(coll_info):
+    log.debug('Collection loaded - metadata={}, quality_score={}'.format(
+        coll_info.collection_info.__dict__,
+        coll_info.quality_score
+    ))
+    for content in coll_info.contents:
+        log.debug('Content: type={} name={} scores={}'.format(
+            content.content_type,
+            content.name,
+            getattr(content, 'scores'),
+        ))

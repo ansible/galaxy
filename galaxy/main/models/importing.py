@@ -18,10 +18,24 @@ class ImportTask(PrimordialModel):
     STATE_FAILED = constants.ImportTaskState.FAILED.value
     STATE_SUCCESS = constants.ImportTaskState.SUCCESS.value
 
+    # collection related
+    artifact_id = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+    )
+    collection = models.ForeignKey(
+        'Collection',
+        related_name='import_tasks',
+        on_delete=models.CASCADE,
+        null=True,
+    )
+
     repository = models.ForeignKey(
         'Repository',
         related_name='import_tasks',
         on_delete=models.CASCADE,
+        null=True,
     )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,

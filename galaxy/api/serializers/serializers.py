@@ -311,6 +311,8 @@ class ImportTaskSerializer(BaseSerializer):
         fields = (
             'id',
             'url',
+            'artifact_id',
+            'collection',
             'related',
             'summary_fields',
             'created',
@@ -346,6 +348,15 @@ class ImportTaskSerializer(BaseSerializer):
         if obj is None:
             return {}
         res = super(ImportTaskSerializer, self).get_related(obj)
+
+        if getattr(obj, 'collection'):
+            pk = obj.collection.namespace.pk
+            res.update({
+                'namespace': reverse('api:namespace_detail', kwargs={'pk': pk})
+            })
+        if getattr(obj, 'repository') is None:
+            return res
+
         res.update({
             'provider': reverse(
                 'api:active_provider_detail',
@@ -363,7 +374,7 @@ class ImportTaskSerializer(BaseSerializer):
         return res
 
     def get_summary_fields(self, obj):
-        if obj is None:
+        if obj is None or getattr(obj, 'repository') is None:
             return {}
 
         summary = super(ImportTaskSerializer, self).get_summary_fields(obj)

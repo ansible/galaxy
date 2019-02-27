@@ -84,6 +84,7 @@ def import_task_post_save(sender, **kwargs):
     When a role is imported enable the role in the user's repository cache
     """
     instance = kwargs['instance']
-    repo = instance.repository
-    repo.is_enabled = True
-    repo.save()
+    if getattr(instance, 'repository'):
+        repo = instance.repository
+        repo.is_enabled = True
+        repo.save()

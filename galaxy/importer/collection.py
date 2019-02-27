@@ -121,7 +121,7 @@ class CollectionLoader(object):
             self.log.info('===== LINTING {}{} ====='.format(
                           content_type.name, name))
             loader.lint()
-            # content.scores = loader.score()
+            content.scores = loader.score()
             self.log.info(' ')
             self.log.info('===== IMPORTING {}{} ====='.format(
                           content_type.name, name))
