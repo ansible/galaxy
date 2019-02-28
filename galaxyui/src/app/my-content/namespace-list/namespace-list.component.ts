@@ -23,7 +23,7 @@ import { IMe } from '../../auth/auth.service';
 import { AuthService } from '../../auth/auth.service';
 import { NamespaceService } from '../../resources/namespaces/namespace.service';
 import { PagedResponse } from '../../resources/paged-response';
-import { AddRepositoryModalComponent } from '../add-repository-modal/add-repository-modal.component';
+import { AddContentModalComponent } from '../add-content-modal/add-content-modal.component';
 
 import { Namespace as VanillaNamespace } from '../../resources/namespaces/namespace';
 
@@ -255,7 +255,7 @@ export class NamespaceListComponent implements OnInit {
         const initialState = {
             namespace: namespace,
         };
-        this.bsModalRef = this.modalService.show(AddRepositoryModalComponent, {
+        this.bsModalRef = this.modalService.show(AddContentModalComponent, {
             initialState: initialState,
             keyboard: true,
             animated: true,
