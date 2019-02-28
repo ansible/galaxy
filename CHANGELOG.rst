@@ -1,6 +1,43 @@
 Ansible Galaxy Changes by Release
 =================================
 
+3.1.7 - Released 1-Mar-2019
+---------------------------
+
+Changes
+```````
+- Added the ability to select which branch to import from after travis builds. Issue `1460 <https://github.com/ansible/galaxy/issues/1460>`_.
+- Weight community score based on number of surveys submitted. Issue `1401 <https://github.com/ansible/galaxy/issues/1401>`_.
+- Set community score to average of the questions. Issue `1480 <https://github.com/ansible/galaxy/issues/1480>`_.
+- Added support for ansible-lint 4.1.0.
+
+Closed PRs
+``````````
+
+- `1475 Support imports on non-default branch <https://github.com/ansible/galaxy/pull/1475>`_.
+- `1481 Add branch query param in travis webhook url <https://github.com/ansible/galaxy/pull/1481>`_.
+- `1511 Upgrade flake8 and corresponding unit tests <https://github.com/ansible/galaxy/pull/1511>`_.
+- `1406 Weight community score based on number of surveys submitted <https://github.com/ansible/galaxy/pull/1406>`_.
+- `1486 Set community score to average of the questions <https://github.com/ansible/galaxy/pull/1486>`_.
+- `1493 Add documentation for community scores <https://github.com/ansible/galaxy/pull/1493>`_.
+- `1523 Fix 'value too long for type character varying(256)' <https://github.com/ansible/galaxy/pull/1523>`_.
+- `1530 Fix pagination issue on My Content <https://github.com/ansible/galaxy/pull/1530>`_.
+- `1540 Fix pagination for roles list API <https://github.com/ansible/galaxy/pull/1540>`_.
+- `1545 Fix updating role dependencies when empty <https://github.com/ansible/galaxy/pull/1545>`_.
+- `1551 Support for ansible-lint 4.1.0 <https://github.com/ansible/galaxy/pull/1551>`_.
+- `1547 Fix tags on search page <https://github.com/ansible/galaxy/pull/1547>`_.
+- `1550 Send user back to first page when they make searches <https://github.com/ansible/galaxy/pull/1550>`_.
+- `1557 Add documentation and issue template for requesting a new namespace <https://github.com/ansible/galaxy/pull/1557>`_.
+- `1548 Raise forbidden error if un authenticated users load email api <https://github.com/ansible/galaxy/pull/1548>`_.
+
+3.1.6 - Released 21-Dec-2018
+----------------------------
+
+Closed PRs
+``````````
+
+- `1434 Use ansible-lint v4.0.0 and its default rules. <https://github.com/ansible/galaxy/pull/1434>`_.
+
 3.1.5 - Released 18-Dec-2018
 ----------------------------
 
