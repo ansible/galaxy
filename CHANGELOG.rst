@@ -16,7 +16,7 @@ Closed PRs
 
 - `1475 Support imports on non-default branch <https://github.com/ansible/galaxy/pull/1475>`_.
 - `1481 Add branch query param in travis webhook url <https://github.com/ansible/galaxy/pull/1481>`_.
-- `1511 Upgrade flake8 and corresponding unit tests <https://github.com/ansible/galaxy/pull/1511`_.
+- `1511 Upgrade flake8 and corresponding unit tests <https://github.com/ansible/galaxy/pull/1511>`_.
 - `1406 Weight community score based on number of surveys submitted <https://github.com/ansible/galaxy/pull/1406>`_.
 - `1486 Set community score to average of the questions <https://github.com/ansible/galaxy/pull/1486>`_.
 - `1493 Add documentation for community scores <https://github.com/ansible/galaxy/pull/1493>`_.
