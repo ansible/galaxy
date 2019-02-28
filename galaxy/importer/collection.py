@@ -144,6 +144,10 @@ class CollectionLoader(object):
             loader.lint()
             # content.scores = loader.score()
             self.log.info(' ')
+            self.log.info('===== IMPORTING {}{} ====='.format(
+                          content_type.name, name))
+            self.log.info(' ')
+
             yield content
 
     def _get_collection_quality_score(self):

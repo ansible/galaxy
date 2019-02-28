@@ -45,6 +45,7 @@ class ContentImporter(object):
         content.clean()
         content.save()
 
+        self.log.info(' ')
         return content
 
     def make_content(self):
@@ -87,6 +88,7 @@ class ContentImporter(object):
                 })
 
         self.data.name = obj.name
+        self._log_create_content()
 
         return obj
 
@@ -108,3 +110,7 @@ class ContentImporter(object):
             repository, readme_obj, readme,
             self.ctx.github_client, self.ctx.github_repo)
         content.save()
+
+    def _log_create_content(self):
+        self.log.info('===== IMPORTING {}: {} ====='.format(
+                      self.data.content_type.name, self.data.name))
