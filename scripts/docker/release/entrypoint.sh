@@ -4,6 +4,7 @@ set -o nounset
 set -o errexit
 
 readonly VENV_BIN=${VENV_BIN:-/var/lib/galaxy/venv/bin}
+readonly GALAXY_NUM_WORKERS=${GALAXY_NUM_WORKERS:-1}
 
 # shellcheck disable=SC2034
 VIRTUAL_ENV_DISABLE_PROMPT=1
@@ -18,7 +19,8 @@ function _exec_cmd() {
 
 function run_web() {
     _exec_cmd "${VENV_BIN}/gunicorn" \
-        -b 0.0.0.0:8000 \
+        --bind 0.0.0.0:8000 \
+        --workers "${GALAXY_NUM_WORKERS}" \
         --access-logfile '-' \
         --error-logfile '-' \
         galaxy.wsgi:application
@@ -27,6 +29,7 @@ function run_web() {
 function run_worker() {
     _exec_cmd "${VENV_BIN}/galaxy-manage" celeryd \
         --beat \
+        --concurrency "${GALAXY_NUM_WORKERS}" \
         --loglevel WARNING \
         --queues 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
 }
