@@ -80,8 +80,6 @@ __all__ = [
     'RoleTypes',
     'RoleUsersList',
     'RoleVersionList',
-    'StargazerDetail',
-    'StargazerList',
     'SubscriptionDetail',
     'SubscriptionList',
     'TagDetail',
@@ -212,7 +210,6 @@ class ApiV1ReposView(base_views.APIView):
         data = OrderedDict()
         data['list'] = reverse('api:repository_list')
         data['refresh'] = reverse('api:refresh_user_repos')
-        data['stargazers'] = reverse('api:stargazer_list')
         data['subscriptions'] = reverse('api:subscription_list')
         return Response(data)
 
@@ -495,142 +492,6 @@ class ImportTaskLatestList(base_views.ListAPIView):
 
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
-
-
-class StargazerList(base_views.ListCreateAPIView):
-    model = models.Stargazer
-    serializer_class = serializers.StargazerSerializer
-
-    def post(self, request, *args, **kwargs):
-        github_user = request.data.get('github_user', None)
-        github_repo = request.data.get('github_repo', None)
-
-        if not github_user or not github_repo:
-            raise ValidationError({
-                'detail': "Invalid request. "
-                          "Missing one or more required values."
-            })
-
-        try:
-            token = SocialToken.objects.get(
-                account__user=request.user, account__provider='github'
-            )
-        except Exception:
-            msg = (
-                "Failed to get GitHub token for user {0} "
-                "You must first authenticate with GitHub."
-                .format(request.user.username)
-            )
-            raise ValidationError({'detail': msg})
-
-        gh_api = Github(token.token)
-
-        try:
-            gh_repo = gh_api.get_repo(github_user + '/' + github_repo)
-        except GithubException as e:
-            msg = (
-                "GitHub API failed to return repo for {0}/{1}. {2} - {3}"
-                .format(github_user, github_repo, e.data, e.status)
-            )
-            raise ValidationError({'detail': msg})
-
-        try:
-            gh_user = gh_api.get_user()
-        except GithubException as e:
-            msg = (
-                "GitHub API failed to return authorized user. {0} - {1}"
-                .format(e.data, e.status)
-            )
-            raise ValidationError({'detail': msg})
-
-        try:
-            gh_user.add_to_starred(gh_repo)
-        except GithubException as e:
-            msg = (
-                "GitHub API failed to add user {0} to stargazers "
-                "for {1}/{2}. {3} - {4}"
-                .format(request.user.username, github_user, github_repo,
-                        e.data, e.status)
-            )
-            raise ValidationError({'detail': msg})
-
-        repo = models.Repository.objects.get(
-            github_user=github_user, github_repo=github_repo
-        )
-        star = repo.stars.create(owner=request.user)
-        repo.stargazers_count = gh_repo.stargazers_count + 1
-        repo.save()
-
-        return Response(dict(
-            result=dict(
-                id=star.id,
-                github_user=repo.github_user,
-                github_repo=repo.github_repo,
-                stargazers_count=repo.stargazers_count)),
-            status=status.HTTP_201_CREATED)
-
-
-class StargazerDetail(base_views.RetrieveUpdateDestroyAPIView):
-    model = models.Stargazer
-    serializer_class = serializers.StargazerSerializer
-
-    def destroy(self, request, *args, **kwargs):
-        obj = super(StargazerDetail, self).get_object()
-
-        try:
-            token = SocialToken.objects.get(
-                account__user=request.user, account__provider='github'
-            )
-        except Exception:
-            msg = (
-                "Failed to connect to GitHub account for Galaxy user {}. "
-                "You must first authenticate with Github."
-                .format(request.user.username)
-            )
-            raise ValidationError({'detail': msg})
-
-        gh_api = Github(token.token)
-
-        try:
-            gh_repo = gh_api.get_repo(
-                obj.role.github_user + '/' + obj.role.github_repo)
-        except GithubException as e:
-            msg = (
-                "GitHub API failed to return repo for {}/{}. {} - {}"
-                .format(obj.github_user, obj.github_repo, e.data, e.status)
-            )
-            raise ValidationError({'detail': msg})
-
-        try:
-            gh_user = gh_api.get_user()
-        except GithubException as e:
-            msg = (
-                "GitHub API failed to return authorized user. {} - {}"
-                .format(e.data, e.status)
-            )
-            raise ValidationError({'detail': msg})
-
-        try:
-            gh_user.remove_from_starred(gh_repo)
-        except GithubException as e:
-            msg = (
-                "GitHub API failed to remove user {} from stargazers "
-                "for {}/{}. {} - {}"
-                .format(request.user.username, obj.github_user,
-                        obj.github_repo, e.data, e.status)
-            )
-            raise ValidationError({'detail': msg})
-
-        obj.delete()
-
-        repo = models.Repository.objects.get(
-            github_user=obj.role.github_user,
-            github_repo=obj.role.github_repo,
-        )
-        repo.stargazers_count = max(0, gh_repo.stargazers_count - 1)
-        repo.save()
-
-        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 class SubscriptionList(base_views.ListCreateAPIView):
