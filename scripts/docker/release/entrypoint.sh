@@ -4,6 +4,7 @@ set -o nounset
 set -o errexit
 
 readonly GALAXY_VENV=${GALAXY_VENV:-/usr/share/galaxy/venv}
+readonly GALAXY_NUM_WORKERS=${GALAXY_NUM_WORKERS:-1}
 
 # shellcheck disable=SC2034
 VIRTUAL_ENV_DISABLE_PROMPT=1
@@ -19,7 +20,8 @@ _exec_cmd() {
 
 run_api() {
     _exec_cmd "${GALAXY_VENV}/bin/gunicorn" \
-        -b 0.0.0.0:8000 \
+        --bind 0.0.0.0:8000 \
+        --workers "${GALAXY_NUM_WORKERS}" \
         --access-logfile '-' \
         --error-logfile '-' \
         galaxy.wsgi:application
@@ -27,6 +29,7 @@ run_api() {
 
 run_celery_worker() {
     _exec_cmd "${GALAXY_VENV}/bin/galaxy-manage" celery worker \
+        --concurrency "${GALAXY_NUM_WORKERS}" \
         --loglevel WARNING \
         --queues 'celery,import_tasks,login_tasks,admin_tasks,user_tasks,star_tasks'
 }
@@ -38,8 +41,10 @@ run_celery_beat() {
 
 run_pulp_content_app() {
     _exec_cmd "${GALAXY_VENV}/bin/gunicorn" \
-          pulpcore.content:server --bind '0.0.0.0:8080' \
-          --worker-class 'aiohttp.GunicornWebWorker' -w 2
+          pulpcore.content:server \
+          --bind '0.0.0.0:8080' \
+          --worker-class 'aiohttp.GunicornWebWorker' \
+          --workers "${GALAXY_NUM_WORKERS}"
 }
 
 run_pulp_resource_manager() {
