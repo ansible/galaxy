@@ -523,16 +523,7 @@ class StargazerList(base_views.ListCreateAPIView):
             )
             raise ValidationError({'detail': msg})
 
-        try:
-            gh_api = Github(token.token)
-            gh_api.get_api_status()
-        except GithubException as e:
-            msg = (
-                "Failed to connect to GitHub API. This is most likely "
-                "a temporary error, please try again in a few minutes. "
-                "{0} - {1}".format(e.data, e.status)
-            )
-            raise ValidationError({'detail': msg})
+        gh_api = Github(token.token)
 
         try:
             gh_repo = gh_api.get_repo(github_user + '/' + github_repo)
@@ -597,16 +588,8 @@ class StargazerDetail(base_views.RetrieveUpdateDestroyAPIView):
                 .format(request.user.username)
             )
             raise ValidationError({'detail': msg})
-        try:
-            gh_api = Github(token.token)
-            gh_api.get_api_status()
-        except GithubException as e:
-            msg = (
-                "Failed to connect to GitHub API. This is most likely a "
-                "temporary error, please try again in a few minutes. {} - {}"
-                .format(e.data, e.status)
-            )
-            raise ValidationError({'detail': msg})
+
+        gh_api = Github(token.token)
 
         try:
             gh_repo = gh_api.get_repo(
@@ -677,16 +660,7 @@ class SubscriptionList(base_views.ListCreateAPIView):
             )
             raise ValidationError(dict(detail=msg))
 
-        try:
-            gh_api = Github(token.token)
-            gh_api.get_api_status()
-        except GithubException as e:
-            msg = (
-                "Failed to connect to GitHub API. This is most likely a "
-                "temporary error, please try again in a few minutes. {} - {}"
-                .format(e.data, e.status)
-            )
-            raise ValidationError(dict(detail=msg))
+        gh_api = Github(token.token)
 
         try:
             gh_repo = gh_api.get_repo(github_user + '/' + github_repo)
@@ -763,16 +737,7 @@ class SubscriptionDetail(base_views.RetrieveUpdateDestroyAPIView):
             )
             raise ValidationError(dict(detail=msg))
 
-        try:
-            gh_api = Github(token.token)
-            gh_api.get_api_status()
-        except GithubException as e:
-            msg = (
-                "Failed to connect to GitHub API. This is most likely a "
-                "temporary error, please try again in a few minutes. {} - {}"
-                .format(e.data, e.status)
-            )
-            raise ValidationError(dict(detail=msg))
+        gh_api = Github(token.token)
 
         try:
             gh_repo = gh_api.get_repo(obj.github_user + '/' + obj.github_repo)
@@ -865,16 +830,7 @@ class RemoveRole(base_views.APIView):
                 )
                 raise ValidationError({'detail': msg})
 
-            try:
-                gh_api = Github(token.token)
-                gh_api.get_api_status()
-            except GithubException as e:
-                msg = (
-                    "Failed to connect to GitHub API. This is most likely a "
-                    "temporary error, please try again in a few minutes. "
-                    "{} - {}".format(e.data, e.status)
-                )
-                raise ValidationError({'detail': msg})
+            gh_api = Github(token.token)
 
             try:
                 ghu = gh_api.get_user()
@@ -965,17 +921,7 @@ class RefreshUserRepos(base_views.APIView):
             logger.error(msg)
             return HttpResponseBadRequest({'detail': msg})
 
-        try:
-            gh_api = Github(token.token)
-            gh_api.get_api_status()
-        except GithubException as e:
-            msg = (
-                "Failed to connect to GitHub API. This is most likely a "
-                "temporary error, please try again in a few minutes. {} - {}"
-                .format(e.data, e.status)
-            )
-            logger.error(msg)
-            return HttpResponseBadRequest({'detail': msg})
+        gh_api = Github(token.token)
 
         try:
             ghu = gh_api.get_user()
