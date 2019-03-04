@@ -18,6 +18,7 @@
 import logging
 
 from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 from pulpcore.app import models as pulp_models
 
 from galaxy.main import models
@@ -57,8 +58,14 @@ def import_collection(artifact_pk, repository_pk):
         else:
             log.debug(c_info)
 
+    try:
+        namespace = models.Namespace.objects.get(
+            name=collection_info.namespace)
+    except ObjectDoesNotExist as e:
+        raise PulpTaskError(str(e))
+
     collection, _ = models.Collection.objects.get_or_create(
-        namespace=collection_info.namespace,
+        namespace=namespace,
         name=collection_info.name,
     )
     collection_version, is_created = collection.versions.get_or_create(
