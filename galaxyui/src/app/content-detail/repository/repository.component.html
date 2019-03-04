@@ -35,6 +35,10 @@
 
         <div class="inner">
             <div class="scores">
+                <app-score
+                    class="repo-count"
+                    [repo]="repository"
+                ></app-score>
                 <div class="repo-count">
                     <i class="fa fa-download fa"></i>
                     <span class="count">{{ repositoryView.downloadCount }}</span>

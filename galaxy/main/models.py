@@ -929,9 +929,10 @@ class Notification(PrimordialModel):
         auto_now=False,
         null=True
     )
-    commit_message = models.CharField(
+    commit_message = fields.TruncatingCharField(
         max_length=256,
-        blank=True
+        blank=True,
+        default=''
     )
     repository = models.ForeignKey(
         'Repository',
@@ -1021,6 +1022,10 @@ class Repository(BaseModel):
     community_score = models.FloatField(
         null=True
     )
+    community_survey_count = models.IntegerField(
+        default=0
+    )
+
     quality_score = models.FloatField(
         null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],

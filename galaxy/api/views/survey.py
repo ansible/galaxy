@@ -88,23 +88,20 @@ def update_community_score(repo):
 
     score = 0
 
+    answer_count = 0
+    survey_score = 0.0
     for survey in surveys:
-        survey_score = 0.0
-        answer_count = 0
         for k in SURVEY_FIElDS:
             data = getattr(survey, k)
             if data is not None:
                 answer_count += 1
-                # Normalize on a scale of 0 to 1
-                survey_score += (data - 1) / 4.0
-
-        if answer_count != 0:
-            score += (survey_score / answer_count)
+                survey_score += (data - 1) / 4
 
     # Average and convert to 0-5 scale
-    score = (score / len(surveys)) * 5
+    score = (survey_score / answer_count) * 5
 
     repo.community_score = score
+    repo.community_survey_count = len(surveys)
     repo.save()
 
     namespace = repo.provider_namespace.namespace.name

@@ -238,6 +238,15 @@ rather than the repository name.
     to lowercase, and translating '-'  and '.' to '_'. If the name of an existing role should not be
     altered, don't set the value of *role_name*.
 
+Creating Organizational Namespaces
+==================================
+
+In order to protect against copyright and trademark infringements, new Galaxy namespaces can only be created by submitting a
+request to the Galaxy team. A team member will review the request and create the new namespace within 1 to 2 business days.
+
+When submitting a request, please include a link to the GitHub organization and a list of Galaxy usernames to be given ownership
+rights to the new namespace. `Click here to submit a request now <https://github.com/ansible/galaxy/issues/new?template=New_namespace.md>`_.
+
 Content Versions
 ================
 
@@ -283,6 +292,19 @@ add a webhook to the notifications section, as shown below:
 
     notifications:
       webhooks: https://galaxy.ansible.com/api/v1/notifications/
+
+A ``git push`` to the github branch that was previously imported (the default branch unless specified
+differently using the ``ansible-galaxy`` command-line interface) will trigger a re-import.
+
+If you give the webhook a ``branch`` query parameter, it will only trigger an import with pushes to that branch.
+For example a forked repo with a PR ``my_feature`` branch will not trigger an import with this:
+
+.. code-block:: yaml
+
+    notifications:
+      webhooks: https://galaxy.ansible.com/api/v1/notifications/?branch=master
+
+A ``git push`` of a git tag to the repository will always trigger an import.
 
 .. note::
 

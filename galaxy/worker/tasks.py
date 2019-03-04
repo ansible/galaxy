@@ -68,11 +68,11 @@ CONTENT_SEVERITY = {
     'ansible-lint_e303': 4,
     'ansible-lint_e304': 5,
     'ansible-lint_e305': 4,
+    'ansible-lint_e306': 3,
     'ansible-lint_e401': 3,
     'ansible-lint_e402': 3,
     'ansible-lint_e403': 1,
     'ansible-lint_e404': 4,
-    'ansible-lint_e405': 2,
     'ansible-lint_e501': 5,
     'ansible-lint_e502': 3,
     'ansible-lint_e503': 3,
@@ -151,6 +151,7 @@ def _import_repository(import_task, logger):
     try:
         repo_info = i_repo.import_repository(
             repository.clone_url,
+            branch=import_task.import_branch,
             temp_dir=settings.CONTENT_DOWNLOAD_DIR,
             logger=logger)
     except i_exc.ImporterError as e:

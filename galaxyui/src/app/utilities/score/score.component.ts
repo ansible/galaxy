@@ -1,5 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 
+class RepoScore {
+    community_score: any;
+    quality_score: any;
+    community_survey_count: number;
+}
+
 @Component({
     selector: 'app-score',
     templateUrl: './score.component.html',
@@ -11,21 +17,37 @@ export class ScoreComponent implements OnInit {
 
     constructor() {}
 
+    _repo: RepoScore;
     @Input()
-    quality: number;
-
-    @Input()
-    community: number;
+    set repo(r: any) {
+        this._repo = r as RepoScore;
+    }
+    get repo() {
+        return this._repo;
+    }
 
     score: number;
 
     scoreClass: string;
 
     ngOnInit() {
-        if (this.community !== null && this.quality !== null) {
-            this.score = (this.community + this.quality) / 2;
+        let survey_count;
+
+        if (this.repo.community_survey_count > 3) {
+            survey_count = 3;
         } else {
-            this.score = this.community || this.quality;
+            survey_count = this.repo.community_survey_count;
+        }
+
+        if (
+            this.repo.community_score !== null &&
+            this.repo.quality_score !== null
+        ) {
+            this.score =
+                this.repo.quality_score * ((6 - survey_count) / 6) +
+                this.repo.community_score * (survey_count / 6);
+        } else {
+            this.score = this.repo.community_score || this.repo.quality_score;
         }
 
         this.scoreClass = this.getScoreColor(this.score);
