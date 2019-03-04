@@ -24,6 +24,7 @@ from pulpcore.app import models as pulp_models
 from . import mixins
 from .namespace import Namespace
 
+
 class Collection(mixins.TimestampsMixin, models.Model):
     """
     A model representing an Ansible Content Collection.
