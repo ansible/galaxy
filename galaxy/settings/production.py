@@ -45,6 +45,9 @@ The following environment variables are supported:
 * GALAXY_INFLUX_DB_USERNAME
 * GALAXY_INFLUX_DB_PASSWORD
 * GALAXY_INFLUX_DB_UI_EVENTS_DB_NAME
+* GALAXY_AWS_ACCESS_KEY_ID
+* GALAXY_AWS_SECRET_ACCESS_KEY
+* GALAXY_AWS_STORAGE_BUCKET_NAME
 """
 
 import os
@@ -119,6 +122,11 @@ STATIC_ROOT = '/usr/share/galaxy/public/static'
 
 SECRET_KEY = _read_secret_key()
 
+# Files upload
+# ---------------------------------------------------------
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
 # Email settings
 # ---------------------------------------------------------
 
@@ -162,6 +170,14 @@ INFLUX_DB_PASSWORD = os.environ.get('GALAXY_INFLUX_DB_PASSWORD', '')
 INFLUX_DB_UI_EVENTS_DB_NAME = os.environ.get(
     'GALAXY_INFLUX_DB_UI_EVENTS_DB_NAME', 'galaxy_ui_events'
 )
+
+# AWS settings
+# ---------------------------------------------------------
+
+AWS_ACCESS_KEY_ID = os.environ['GALAXY_AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['GALAXY_AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ['GALAXY_AWS_STORAGE_BUCKET_NAME']
+# AWS_DEFAULT_ACL = 'public-read'
 
 
 # =========================================================

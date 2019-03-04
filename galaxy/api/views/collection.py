@@ -39,7 +39,7 @@ class UploadCollectionView(views.APIView):
         # TODO(cutwater): Merge Artifact and UploadCollectionSerializers
         # TODO(cutwater): Extract namespace and name from `METADATA.json`
         #                 and validate that collection name matches filename.
-        self._validate_namespace(request.user, data)
+        namespace = self._validate_namespace(request.user, data)
 
         artifact_data = {'file': request.data['file']}
         if serializer.data['sha256'] is not None:
@@ -54,7 +54,8 @@ class UploadCollectionView(views.APIView):
             tasks.import_collection, [],
             kwargs={
                 'artifact_pk': artifact.pk,
-                'repository_pk': repository.pk
+                'repository_pk': repository.pk,
+                'namespace_pk': namespace.pk,
             })
         return OperationPostponedResponse(async_result, request)
 
@@ -69,9 +70,10 @@ class UploadCollectionView(views.APIView):
 
         if not ns.owners.filter(id=user.id).count():
             raise drf_exc.PermissionDenied(
-                'The namespace listed on your filename must match one of ' +
+                'The namespace listed on your filename must match one of '
                 'the namespaces you have access to.'
             )
+        return ns
 
     def _save_artifact(self, data):
         artifact_serializer = ArtifactSerializer(data=data)

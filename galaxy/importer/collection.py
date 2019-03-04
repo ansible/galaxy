@@ -18,9 +18,6 @@
 from __future__ import absolute_import
 
 import os
-import tempfile
-import tarfile
-import shutil
 import logging
 
 from galaxy.importer.models import CollectionArtifactManifest, Collection
@@ -33,10 +30,9 @@ from galaxy.importer import exceptions as exc
 default_logger = logging.getLogger(__name__)
 
 
-def import_collection(artifact, logger=None):
+def import_collection(directory, logger=None):
     logger = logger or default_logger
-    with tempfile.TemporaryDirectory() as temp_dir:
-        return CollectionLoader(artifact, temp_dir, logger=logger).load()
+    return CollectionLoader(directory, logger=logger).load()
 
 
 class CollectionLoader(object):
@@ -46,18 +42,17 @@ class CollectionLoader(object):
         finders_.FileSystemFinder,
     ]
 
-    def __init__(self, artifact, temp_dir, logger=None):
+    def __init__(self, path, logger=None):
         self.log = logger or default_logger
-        self.artifact = artifact
-        self.temp_dir = temp_dir
-        self.artifact_path = None
+        self.path = path
+
         self.collection_path = None
         self.collection_info = None
         self.contents = None
         self.readme = None
 
     def load(self):
-        self._extract_package()
+        self._find_collection_dir()
         self._load_collection_manifest()
         self._load_collection_readme()
 
@@ -75,19 +70,10 @@ class CollectionLoader(object):
             quality_score=quality_score,
         )
 
-    def _extract_package(self):
-        self.artifact_path = os.path.join(
-            self.temp_dir,
-            os.path.basename(self.artifact.file.path))
-        shutil.copy(self.artifact.file.path, self.artifact_path)
-
-        with tarfile.open(self.artifact_path, 'r') as pkg:
-            pkg.extractall(self.temp_dir)
-
-        _, dirs, _ = next(os.walk(self.temp_dir))
-        self.collection_path = os.path.join(self.temp_dir, dirs[0])
-        self.log.info('Extracting collection: {}'.format(dirs[0]))
-        self.log.info(' ')
+    def _find_collection_dir(self):
+        _, dirs, _ = next(os.walk(self.path))
+        self.collection_path = os.path.join(self.path, dirs[0])
+        self.log.info('Collection dir found: {}\n'.format(dirs[0]))
 
     def _load_collection_manifest(self):
         manifest_file = os.path.join(self.collection_path, 'MANIFEST.json')

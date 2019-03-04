@@ -25,6 +25,7 @@ django-filter
 # logging related
 # add request-id to django logs
 django-log-request-id
+django-storages[boto3]>=1.7.1,<1.8
 djangorestframework>=3.7,<3.8
 dj-database-url
 # format log output as json
