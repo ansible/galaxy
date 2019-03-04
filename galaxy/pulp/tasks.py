@@ -71,6 +71,7 @@ def import_collection(artifact_pk, repository_pk):
     collection_version, is_created = collection.versions.get_or_create(
         collection=collection,
         version=collection_info.version,
+        metadata=collection_info.get_json(),
     )
     if not is_created:
         raise VersionConflict()
