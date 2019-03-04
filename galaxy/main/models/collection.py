@@ -15,43 +15,78 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+from django.contrib.postgres import indexes as psql_indexes
+from django.contrib.postgres import fields as psql_fields
+from django.contrib.postgres import search as psql_search
 from django.db import models
 from pulpcore.app import models as pulp_models
 
+from . import mixins
+from .namespace import Namespace
 
-class Collection(pulp_models.Content):
+class Collection(mixins.TimestampsMixin, models.Model):
     """
     A model representing an Ansible Content Collection.
+
+    :var name: Collection name.
+    :var namespace: Reference to a collection nanespace.
+    :var deprecated: Indicates if a collection is deprecated.
+    :var tags: List of a last collection version tags.
+    :var dependencies: List a last collection version direct??? dependencies.
     """
 
-    TYPE = 'collection'
-
-    namespace = models.CharField(max_length=64)
+    namespace = models.ForeignKey(Namespace, on_delete=models.PROTECT)
     name = models.CharField(max_length=64)
 
-    _content = models.OneToOneField(
-        pulp_models.Content, on_delete=models.CASCADE, parent_link=True,
-        related_name='+', db_column='id',
-    )
+    deprecated = models.BooleanField(default=False)
+
+    # Search vector
+    search_vector = psql_search.SearchVectorField(default='')
+    # Community and quality score
+    download_count = models.IntegerField(default=0)
+    community_score = models.FloatField(default=0.0)
+    quality_score = models.FloatField(default=0.0)
+
+    # References
+    tags = models.ManyToManyField('Tag')
+    # NOTE(cutwater): What is the use case for dependencies field?
+    # In case of displaying all cross dependencies list w
+    # dependencies = models.ManyToManyField('Collection')
 
     class Meta:
         unique_together = (
             'namespace',
             'name',
         )
+        indexes = [
+            psql_indexes.GinIndex(fields=['search_vector'])
+        ]
 
 
-class CollectionVersion(pulp_models.Content):
+class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
     """
     A model representing an Ansible Content Collection version.
+
+    :var version: Collection version string in semantic version format.
+    :var hidden: Indicates if a version should not be displayed and allowed
+        for installation.
+    :var metadata: Collection metadata in JSON format.
+    :var contents: Collection contents in JSON format.
+    :var collection: A reference to a related collection object.
     """
 
     TYPE = 'collection-version'
 
-    version = models.CharField(max_length=32)
+    # Fields
+    version = models.CharField(max_length=64)
+    hidden = models.BooleanField(default=False)
+
+    metadata = psql_fields.JSONField(default=dict)
+    contents = psql_fields.JSONField(default=dict)
+
+    # References
     collection = models.ForeignKey(
         Collection, on_delete=models.PROTECT, related_name='versions')
-
     _content = models.OneToOneField(
         pulp_models.Content, on_delete=models.CASCADE, parent_link=True,
         related_name='+', db_column='id',
@@ -59,6 +94,6 @@ class CollectionVersion(pulp_models.Content):
 
     class Meta:
         unique_together = (
-            'version',
             'collection',
+            'version',
         )
