@@ -19,6 +19,7 @@ import logging
 
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 from pulpcore.app import models as pulp_models
 
 from galaxy.main import models
@@ -47,10 +48,11 @@ def import_collection(artifact_pk, repository_pk):
         raise PulpTaskError(str(e))
 
     collection_info = importer_coll.collection_info
+    quality_score = importer_coll.quality_score
     contents = importer_coll.contents
 
-    log.debug('collection loaded: collection metadata=%s', collection_info)
-    log.debug('collection quality_score=%s', importer_coll.quality_score)
+    log.debug('collection metadata=%s', collection_info.__dict__)
+    log.debug('collection quality_score=%s', quality_score)
     for c in contents:
         c_info = 'content: type={} name={}'.format(c.content_type, c.name)
         if c.scores:
@@ -68,6 +70,10 @@ def import_collection(artifact_pk, repository_pk):
         namespace=namespace,
         name=collection_info.name,
     )
+    collection.quality_score = quality_score
+    collection.quality_score_date = timezone.now()
+    collection.save()
+
     collection_version, is_created = collection.versions.get_or_create(
         collection=collection,
         version=collection_info.version,
