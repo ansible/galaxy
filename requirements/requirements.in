@@ -35,7 +35,7 @@ jog
 # NOTE(cutwater): pulpcore requires aiohttp, but does not specifies it as a
 #                 dependency in package metadata
 aiohttp
-pulpcore==3.0.0b18
+pulpcore==3.0.0b21
 
 
 # Database

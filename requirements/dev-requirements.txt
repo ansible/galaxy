@@ -72,7 +72,7 @@ pbr==5.1.1                # via mock
 pluggy==0.8.0             # via pytest
 prometheus-client==0.5.0
 psycopg2-binary==2.7.6.1
-pulpcore==3.0.0b18
+pulpcore==3.0.0b21
 py==1.7.0                 # via pytest
 pyasn1==0.4.4             # via paramiko
 pycodestyle==2.5.0        # via flake8
@@ -99,7 +99,7 @@ requests-oauthlib==1.0.0
 requests==2.20.1
 rq==0.13.0                # via pulpcore
 rst2html5-tools==0.5.3
-ruamel.yaml==0.15.85      # via drf-yasg
+ruamel.yaml==0.15.85      # via ansible-lint, drf-yasg
 semantic-version==2.6.0
 six==1.12.0
 snowballstemmer==1.2.1    # via sphinx
@@ -111,6 +111,7 @@ typing-extensions==3.7.2  # via aiohttp
 uritemplate==3.0.0        # via coreapi, drf-yasg
 urllib3==1.24.1           # via requests
 webencodings==0.5.1       # via bleach
+whitenoise==4.1.2         # via pulpcore
 wrapt==1.10.11            # via deprecated
 yamllint==1.13.0
 yarl==1.3.0               # via aiohttp
