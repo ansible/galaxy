@@ -18,6 +18,7 @@
 from django.contrib.postgres import indexes as psql_indexes
 from django.contrib.postgres import fields as psql_fields
 from django.contrib.postgres import search as psql_search
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from pulpcore.app import models as pulp_models
 
@@ -46,7 +47,14 @@ class Collection(mixins.TimestampsMixin, models.Model):
     # Community and quality score
     download_count = models.IntegerField(default=0)
     community_score = models.FloatField(default=0.0)
-    quality_score = models.FloatField(default=0.0)
+    quality_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
+    )
+    quality_score_date = models.DateTimeField(
+        null=True,
+        verbose_name="DateTime last scored",
+    )
 
     # References
     tags = models.ManyToManyField('Tag')

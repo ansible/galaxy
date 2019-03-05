@@ -99,6 +99,9 @@ class CollectionInfo(object):
     def label(self):
         return '%s.%s' % (self.namespace, self.name)
 
+    def get_json(self):
+        return json.dumps(self.__dict__)
+
 
 @attr.s(frozen=True)
 class CollectionArtifactManifest(object):
