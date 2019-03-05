@@ -14,11 +14,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='collection',
             name='quality_score_date',
-            field=models.DateTimeField(null=True, verbose_name='DateTime last scored'),
+            field=models.DateTimeField(
+                null=True,
+                verbose_name='DateTime last scored'),
         ),
         migrations.AlterField(
             model_name='collection',
             name='quality_score',
-            field=models.FloatField(null=True, validators=[django.core.validators.MinValueValidator(0.0), django.core.validators.MaxValueValidator(5.0)]),
+            field=models.FloatField(
+                null=True,
+                validators=[django.core.validators.MinValueValidator(0.0),
+                            django.core.validators.MaxValueValidator(5.0)]),
         ),
     ]
