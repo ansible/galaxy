@@ -68,7 +68,10 @@ class UploadCollectionView(views.APIView):
                 'Namespace {0} does not exist'.format(ns_name))
 
         if not ns.owners.filter(id=user.id).count():
-            raise drf_exc.PermissionDenied()
+            raise drf_exc.PermissionDenied(
+                'The namespace listed on your filename must match one of ' +
+                'the namespaces you have access to.'
+            )
 
     def _save_artifact(self, data):
         artifact_serializer = ArtifactSerializer(data=data)
