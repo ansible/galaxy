@@ -80,23 +80,29 @@ class CollectionLoader(object):
 
     def _load_collection_readme(self):
         if not self.collection_info.readme:
-            return
+            raise exc.ManifestValidationError(
+                'No readme listed in manifest')
 
         readme_file = os.path.join(self.path,
                                    self.collection_info.readme)
+
+        _, extension = os.path.splitext(readme_file)
+        if extension not in ('.md', '.rst'):
+            raise exc.ManifestValidationError(
+                'Readme must be .md or .rst')
+
         try:
             self.readme = readmeutils.get_readme(
                 directory=self.path,
                 filename=readme_file)
         except readmeutils.FileSizeError as e:
-            self.log.warning(e)
+            raise exc.ManifestValidationError(
+                'Manifest readme FileSizeError: {}'.format(e))
 
         if not self.readme:
             raise exc.ManifestValidationError(
-                'Readme listed in manifest not found')
-
-    def _validate_collection_metadata(self):
-        pass
+                'Readme listed in manifest not found: '
+                '{}'.format(self.collection_info.readme))
 
     def _find_contents(self):
         for finder_cls in self.finders:
