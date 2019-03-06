@@ -43,6 +43,16 @@ VideoLink = collections.namedtuple(
     'VideoLink', ['url', 'description'])
 
 
+def convert_none_to_empty_dict(val):
+    ''' if val is None, return an empty dict'''
+
+    # if val is not a dict or val 'None' return val
+    # and let the validators raise errors later
+    if val is None:
+        return {}
+    return val
+
+
 class Content(object):
     """Represents common content data."""
 
@@ -98,8 +108,8 @@ class BaseCollectionInfo(object):
                      validator=attr.validators.optional(
                         attr.validators.instance_of(str)))
 
-    # TODO confirm... galaxy.yml and manifest are list, mazer has dict
-    dependencies = attr.ib(factory=list)
+    dependencies = attr.ib(factory=dict,
+                           converter=convert_none_to_empty_dict)
 
     @property
     def label(self):
@@ -153,7 +163,7 @@ class BaseCollectionInfo(object):
 
     @dependencies.validator
     def _check_dependencies_type(self, attribute, value):
-        if not isinstance(value, list) or value is None:
+        if not isinstance(value, dict) or value is None:
             self.value_error("Expecting '%s' to be a dict" % attribute.name)
 
     @tags.validator
@@ -167,7 +177,7 @@ class BaseCollectionInfo(object):
     @namespace.validator
     @name.validator
     def _check_name(self, attribute, value):
-        if not re.match(constants.COLLECTION_NAME_REGEX, value):
+        if not re.match(constants.NAME_REGEXP, value):
             raise TypeError("'{}' has invalid format".format(attribute.name))
 
 
