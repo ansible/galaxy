@@ -70,6 +70,7 @@ INSTALLED_APPS = (
     'djcelery',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
 
     'pulpcore.app',
 
