@@ -305,9 +305,18 @@ internal_urls = [
     url(r'^me/', include(me_urls)),
 ]
 
+
 app_name = 'api'
 urlpatterns = [
+    # TODO(cutwater): Remove ApiRootView
     url(r'^$', views.ApiRootView.as_view(), name='api_root_view'),
+    # TODO(cutwater): Move old urls from `api` to `api.v1` package.
     url(r'^v1/', include(v1_urls)),
+    # TODO(cutwater): Move internal urls to `api.internal` package.
     url(r'^internal/', include(internal_urls)),
+
+    # New API endpoints
+    # url(r'^v1/', include('galaxy.api.v1.urls')),
+    url(r'^v2/', include('galaxy.api.v2.urls')),
+    url(r'^internal/', include('galaxy.api.internal.urls')),
 ]
