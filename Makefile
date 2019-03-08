@@ -137,6 +137,11 @@ dev/makemigrations:
 dev/checkmigrations:
 	@$(DOCKER_COMPOSE) exec galaxy $(GALAXY_VENV)/bin/python ./manage.py makemigrations --dry-run --check
 
+.PHONY: dev/compile-reqs
+dev/compile-reqs:
+	pip-compile -o requirements/requirements.txt requirements/requirements.in
+	pip-compile -o requirements/dev-requirements.txt requirements/dev-requirements.in
+
 .PHONY: dev/log
 dev/log:
 	@$(DOCKER_COMPOSE) logs --tail 100 galaxy

@@ -16,9 +16,10 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
+import tempfile
+import tarfile
 
 from django.db import transaction
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from pulpcore.app import models as pulp_models
 
@@ -26,9 +27,12 @@ from galaxy.main import models
 from galaxy.importer import collection as i_collection
 from galaxy.importer import exceptions as i_exc
 
+
 log = logging.getLogger(__name__)
 
 
+# TODO(cutwater): Move to exceptions module
+# TODO(cutwater): Better exception hierarchy
 class VersionConflict(Exception):
     pass
 
@@ -37,55 +41,72 @@ class PulpTaskError(Exception):
     pass
 
 
-@transaction.atomic
-def import_collection(artifact_pk, repository_pk):
+def import_collection(artifact_pk, repository_pk, namespace_pk):
     artifact = pulp_models.Artifact.objects.get(pk=artifact_pk)
     repository = pulp_models.Repository.objects.get(pk=repository_pk)
 
     try:
-        importer_coll = i_collection.import_collection(artifact, log)
-    except i_exc.ImporterError as e:
-        raise PulpTaskError(str(e))
+        with transaction.atomic():
+            collection_info = _process_collection(artifact)
+            _publish_collection(artifact, repository,
+                                namespace_pk, collection_info)
+    except Exception:
+        # Delete artifact file and model if import failed
+        artifact.file.delete(save=False)
+        artifact.delete()
+        raise
 
-    collection_info = importer_coll.collection_info
-    quality_score = importer_coll.quality_score
-    contents = importer_coll.contents
 
-    log.debug('collection metadata=%s', collection_info.__dict__)
-    log.debug('collection quality_score=%s', quality_score)
-    for c in contents:
+def _process_collection(artifact):
+    with tempfile.TemporaryDirectory() as pkg_dir:
+        with artifact.file.open() as pkg_file, \
+                tarfile.open(fileobj=pkg_file) as pkg_tar:
+            pkg_tar.extractall(pkg_dir)
+        try:
+            collection_info = i_collection.import_collection(pkg_dir, log)
+        except i_exc.ImporterError as e:
+            raise PulpTaskError(str(e))
+
+        _log_collection_loaded(collection_info)
+
+        return collection_info
+
+
+def _log_collection_loaded(collection_info):
+    log.debug('collection metadata=%s',
+              collection_info.collection_info.__dict__)
+    log.debug('collection quality_score=%s', collection_info.quality_score)
+    for c in collection_info.contents:
         c_info = 'content: type={} name={}'.format(c.content_type, c.name)
         if c.scores:
             log.debug('{} score={}'.format(c_info, c.scores['quality']))
         else:
             log.debug(c_info)
 
-    try:
-        namespace = models.Namespace.objects.get(
-            name=collection_info.namespace)
-    except ObjectDoesNotExist as e:
-        raise PulpTaskError(str(e))
 
-    collection, _ = models.Collection.objects.get_or_create(
-        namespace=namespace,
-        name=collection_info.name,
+def _publish_collection(artifact, repository, namespace_pk, collection_info):
+    metadata = collection_info.collection_info
+    collection, _ = models.Collection.objects.update_or_create(
+        namespace_id=namespace_pk,
+        name=metadata.name,
+        defaults={
+            'quality_score': collection_info.quality_score,
+            'quality_score_date': timezone.now(),
+        }
     )
-    collection.quality_score = quality_score
-    collection.quality_score_date = timezone.now()
-    collection.save()
 
     collection_version, is_created = collection.versions.get_or_create(
         collection=collection,
-        version=collection_info.version,
-        metadata=collection_info.get_json(),
+        version=metadata.version,
+        defaults={'metadata': metadata.get_json()},
     )
     if not is_created:
         raise VersionConflict()
 
     relative_path = '{0}-{1}-{2}.tar.gz'.format(
-        collection_info.namespace,
-        collection_info.name,
-        collection_info.version
+        metadata.namespace,
+        metadata.name,
+        metadata.version
     )
     pulp_models.ContentArtifact.objects.create(
         artifact=artifact,
