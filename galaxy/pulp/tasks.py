@@ -20,7 +20,6 @@ import tempfile
 import tarfile
 
 from django.db import transaction
-from django.utils import timezone
 from pulpcore.app import models as pulp_models
 
 from galaxy.main import models
@@ -89,16 +88,15 @@ def _publish_collection(artifact, repository, namespace_pk, collection_info):
     collection, _ = models.Collection.objects.update_or_create(
         namespace_id=namespace_pk,
         name=metadata.name,
-        defaults={
-            'quality_score': collection_info.quality_score,
-            'quality_score_date': timezone.now(),
-        }
     )
 
     collection_version, is_created = collection.versions.get_or_create(
         collection=collection,
         version=metadata.version,
-        defaults={'metadata': metadata.get_json()},
+        defaults={
+            'metadata': metadata.get_json(),
+            'quality_score': collection_info.quality_score,
+        },
     )
     if not is_created:
         raise VersionConflict()
