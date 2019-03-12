@@ -19,8 +19,7 @@ class ImportTask(PrimordialModel):
     STATE_SUCCESS = constants.ImportTaskState.SUCCESS.value
 
     # collection related
-    artifact_id = models.CharField(
-        max_length=100,
+    artifact_id = models.IntegerField(
         blank=True,
         null=True,
     )
