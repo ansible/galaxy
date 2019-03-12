@@ -178,7 +178,8 @@ class BaseCollectionInfo(object):
     @name.validator
     def _check_name(self, attribute, value):
         if not re.match(constants.NAME_REGEXP, value):
-            raise TypeError("'{}' has invalid format".format(attribute.name))
+            self.value_error("'%s' has invalid format: %s" %
+                             (attribute.name, value))
 
 
 @attr.s(frozen=True)
