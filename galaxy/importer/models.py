@@ -163,6 +163,9 @@ class BaseCollectionInfo(object):
     def _check_dependencies_type(self, attribute, value):
         if not isinstance(value, dict) or value is None:
             self.value_error("Expecting '%s' to be a dict" % attribute.name)
+        for k, v in value.items():
+            if not isinstance(k, str) or not isinstance(v, str):
+                self.value_error("Expecting dict key and value to be strings")
 
     @tags.validator
     def _check_tags(self, attribute, value):
