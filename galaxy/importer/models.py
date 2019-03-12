@@ -95,7 +95,7 @@ class BaseCollectionInfo(object):
     license = attr.ib(default=None)
     description = attr.ib(default=None)
 
-    # TODO: add license_file to galaxy/mazer, galaxy to halt if cannot find
+    # TODO: see how to handle license_list
 
     repository = attr.ib(default=None)
     documentation = attr.ib(default=None)
@@ -122,9 +122,8 @@ class BaseCollectionInfo(object):
     @namespace.validator
     @name.validator
     @version.validator
-    @authors.validator  # TODO: resolve mazer diff, spec has authors, not license
     def _check_required(self, attribute, value):
-        if not value:  # TODO: resolve mazer diff, better to halt on [] "" also?
+        if not value:
             self.value_error("'%s' is required" % attribute.name)
 
     @version.validator
@@ -148,9 +147,7 @@ class BaseCollectionInfo(object):
         if valid and valid.get('deprecated', None):
             self.value_error("Expecting 'license' SPDX ID to not be "
                              "deprecated: %s" % value)
-            # TODO: mazer and gal both log warn or both halt?
 
-    # TODO: list_of_str ok for mazer? also license likely will be this format
     @authors.validator
     @tags.validator
     def _check_list_of_str(self, attribute, value):
