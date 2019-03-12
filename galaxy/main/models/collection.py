@@ -47,20 +47,9 @@ class Collection(mixins.TimestampsMixin, models.Model):
     # Community and quality score
     download_count = models.IntegerField(default=0)
     community_score = models.FloatField(default=0.0)
-    quality_score = models.FloatField(
-        null=True,
-        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
-    )
-    quality_score_date = models.DateTimeField(
-        null=True,
-        verbose_name="DateTime last scored",
-    )
 
     # References
     tags = models.ManyToManyField('Tag')
-    # NOTE(cutwater): What is the use case for dependencies field?
-    # In case of displaying all cross dependencies list w
-    # dependencies = models.ManyToManyField('Collection')
 
     class Meta:
         unique_together = (
@@ -92,6 +81,10 @@ class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
 
     metadata = psql_fields.JSONField(default=dict)
     contents = psql_fields.JSONField(default=dict)
+    quality_score = models.FloatField(
+        null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
+    )
 
     # References
     collection = models.ForeignKey(
