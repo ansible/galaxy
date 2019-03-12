@@ -122,6 +122,7 @@ class BaseCollectionInfo(object):
     @namespace.validator
     @name.validator
     @version.validator
+    @license.validator
     def _check_required(self, attribute, value):
         if not value:
             self.value_error("'%s' is required" % attribute.name)
@@ -205,6 +206,7 @@ class GalaxyCollectionInfo(BaseCollectionInfo):
         ]
 
         self._check_required('readme')
+        self._check_required('authors')
         for field in non_null_str_fields:
             self._check_non_null_str(field)
 
