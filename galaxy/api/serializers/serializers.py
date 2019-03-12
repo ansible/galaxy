@@ -349,14 +349,16 @@ class ImportTaskSerializer(BaseSerializer):
             return {}
         res = super(ImportTaskSerializer, self).get_related(obj)
 
+        # for collection import task
         if getattr(obj, 'collection'):
             pk = obj.collection.namespace.pk
             res.update({
                 'namespace': reverse('api:namespace_detail', kwargs={'pk': pk})
             })
-        if getattr(obj, 'repository') is None:
+        if not getattr(obj, 'repository'):
             return res
 
+        # for repository import task
         res.update({
             'provider': reverse(
                 'api:active_provider_detail',
