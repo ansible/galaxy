@@ -57,7 +57,7 @@ def import_collection(artifact_pk, repository_pk, namespace_pk, task_id):
         _process_import_fail(artifact, import_task, msg)
     except Exception as e:
         _process_import_fail(artifact, import_task, msg=e.__class__.__name__)
-        raise
+        raise exc.PulpTaskError(str(e))
 
 
 def _get_import_task_msg_logger(import_task):
