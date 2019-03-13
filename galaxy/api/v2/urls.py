@@ -15,11 +15,11 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-# from django.urls import path
+from django.urls import path
 
-# from galaxy.api.v2 import views
+from galaxy.api.v2 import views
 
 
 urlpatterns = [
-    # path('path/to/view/', views.ViewName.as_view()),
+    path('collections/', views.UploadCollectionView.as_view()),
 ]
