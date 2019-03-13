@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils import timezone
+from pulpcore.app import models as pulp_models
 
 from galaxy import constants
 from .base import PrimordialModel
@@ -19,8 +20,12 @@ class ImportTask(PrimordialModel):
     STATE_SUCCESS = constants.ImportTaskState.SUCCESS.value
 
     # collection related
-    artifact_id = models.IntegerField(
-        blank=True,
+    artifact = models.ForeignKey(
+        pulp_models.Artifact,
+        # artifact can be deleted if import not successful
+        db_constraint=False,
+        related_name='import_tasks',
+        on_delete=models.SET_NULL,
         null=True,
     )
     collection = models.ForeignKey(
