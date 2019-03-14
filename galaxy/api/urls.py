@@ -242,10 +242,6 @@ community_survey_urls = [
         name='community_survey_detail'),
 ]
 
-collection_urls = [
-    url(r'^$', views.UploadCollectionView.as_view()),
-]
-
 v1_urls = [
     url(r'^$', views.ApiV1RootView.as_view(), name='api_v1_root_view'),
     url(r'^account/', include(account_urls)),
@@ -254,7 +250,6 @@ v1_urls = [
     url(r'^users/', include(user_urls)),
     url(r'^roles/', include(role_urls)),
     url(r'^content/', include(content_urls)),
-    url(r'^collections/', include(collection_urls)),
     url(r'^role_types/', views.RoleTypes.as_view(), name='role_types'),
     url(r'^tags/', include(tag_urls)),
     url(r'^platforms/', include(platform_urls)),

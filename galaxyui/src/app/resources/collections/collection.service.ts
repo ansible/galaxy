@@ -11,7 +11,7 @@ import { catchError, tap } from 'rxjs/operators';
 @Injectable()
 export class CollectionUploadService extends ServiceBase {
     constructor(http: HttpClient, notificationService: NotificationService) {
-        super(http, notificationService, '/api/v1/collections', 'collection');
+        super(http, notificationService, '/api/v2/collections', 'collection');
     }
 
     upload(artifact: CollectionUpload): Observable<any> {
