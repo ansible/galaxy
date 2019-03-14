@@ -311,7 +311,6 @@ class ImportTaskSerializer(BaseSerializer):
         fields = (
             'id',
             'url',
-            'artifact_id',
             'collection',
             'related',
             'summary_fields',

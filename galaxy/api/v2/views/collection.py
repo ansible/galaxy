@@ -67,7 +67,6 @@ class UploadCollectionView(views.APIView):
         artifact = self._save_artifact(artifact_data)
 
         import_task = models.ImportTask.objects.create(
-            artifact=artifact,
             owner=request.user,
             state=models.ImportTask.STATE_PENDING,
         )
