@@ -14,7 +14,11 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
-
+# FIXME(cutwater): All routes related to APIv1 should be moved to
+#    `galaxy.api.v1.urls`.
+# FIXME(cutwater): Django `url()` function is deprecated, it is replaced with
+#    `re_path()` function, however it's usage is discouraged.
+#    New path-like routes should be preferred over old-style regexp routes.
 from django.conf.urls import include, url
 
 from galaxy.api import views

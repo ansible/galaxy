@@ -15,8 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-# standard python libraries
-
+# FIXME(cutwater): This module is deprecated. It should be moved
+#   to `galaxy.api.v1` package and eventually removed.
 import logging
 
 from allauth.account.models import EmailAddress, EmailConfirmation

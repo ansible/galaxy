@@ -15,18 +15,16 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-# Python
+# FIXME(cutwater): This module is deprecated. It should be moved
+#   to `galaxy.api.v1` package and eventually removed.
 import logging
 
-# Django
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
 
-# Django REST Framework
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import permissions
 
-# galaxy
 from .access import check_user_access
 from .utils import get_object_or_400
 from galaxy.main.models import Namespace
