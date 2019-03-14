@@ -316,6 +316,6 @@ urlpatterns = [
 
     # New API endpoints
     # url(r'^v1/', include('galaxy.api.v1.urls')),
-    url(r'^v2/', include('galaxy.api.v2.urls')),
+    url(r'^v2/', include('galaxy.api.v2.urls', namespace='v2')),
     url(r'^internal/', include('galaxy.api.internal.urls')),
 ]

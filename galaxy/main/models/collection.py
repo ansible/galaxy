@@ -89,9 +89,9 @@ class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
     # References
     collection = models.ForeignKey(
         Collection, on_delete=models.PROTECT, related_name='versions')
-    _content = models.OneToOneField(
-        pulp_models.Content, on_delete=models.CASCADE, parent_link=True,
-        related_name='+', db_column='id',
+    _parent_ref = models.OneToOneField(
+        pulp_models.Content, on_delete=models.CASCADE,
+        parent_link=True, db_column='id'
     )
 
     class Meta:

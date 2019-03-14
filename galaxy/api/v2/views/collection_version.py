@@ -15,25 +15,21 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from django.urls import path
+from rest_framework import exceptions as drf_exc
+from rest_framework import views
+from rest_framework import status as http_codes
+from rest_framework.permissions import IsAuthenticated
 
-from galaxy.api.v2 import views
+
+__all__ = (
+    'CollectionVersionView',
+)
 
 
-app_name = 'api'
-urlpatterns = [
-    # Collection URLs
-    path('collections/',
-         views.CollectionListView.as_view(),
-         name='collections-list'),
+class CollectionVersionView(views.APIView):
+    permission_classes = (IsAuthenticated, )
 
-    # Collection Imports URLs
-    path('collection-imports/<int:pk>/',
-         views.CollectionImportView.as_view(),
-         name='collection-import-detail'),
-
-    # Collection Versions URLs
-    path('collection-versions/<int:pk>/',
-         views.CollectionVersionView.as_view(),
-         name='collection-version-detail'),
-]
+    def get(self, request, **kwargs):
+        raise drf_exc.APIException(
+            detail='Not implemented',
+            code=http_codes.HTTP_501_NOT_IMPLEMENTED)

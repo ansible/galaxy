@@ -16,5 +16,11 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from .collection import (  # noqa: F401
-    UploadCollectionView,
+    CollectionListView,
+)
+from galaxy.api.v2.views.collection_import import (  # noqa: F401
+    CollectionImportView
+)
+from .collection_version import (  # noqa: F401
+    CollectionVersionView,
 )

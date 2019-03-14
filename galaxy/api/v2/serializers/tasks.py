@@ -15,25 +15,26 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from django.urls import path
+from rest_framework import serializers
 
-from galaxy.api.v2 import views
+from pulpcore.app import models as pulp_models
 
 
-app_name = 'api'
-urlpatterns = [
-    # Collection URLs
-    path('collections/',
-         views.CollectionListView.as_view(),
-         name='collections-list'),
+__all__ = (
+    'BaseTaskSerializer',
+)
 
-    # Collection Imports URLs
-    path('collection-imports/<int:pk>/',
-         views.CollectionImportView.as_view(),
-         name='collection-import-detail'),
 
-    # Collection Versions URLs
-    path('collection-versions/<int:pk>/',
-         views.CollectionVersionView.as_view(),
-         name='collection-version-detail'),
-]
+class BaseTaskSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='_id')
+    job_id = serializers.UUIDField()
+    state = serializers.CharField()
+    started_at = serializers.DateTimeField()
+    finished_at = serializers.DateTimeField()
+    error = serializers.JSONField()
+
+    class Meta:
+        model = pulp_models.Task
+        fields = ('id', 'job_id', 'started_at', 'finished_at',
+                  'state', 'error')
+        read_only_fields = fields

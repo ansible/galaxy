@@ -15,39 +15,37 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 from django.conf import settings
-from rest_framework import views
-from rest_framework import status as status_codes
+
 import rest_framework.exceptions as drf_exc
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework import status as status_codes
+from rest_framework import views
 
 from pulpcore.app.serializers import ArtifactSerializer
-from pulpcore.app.response import OperationPostponedResponse
 from pulpcore.tasking.tasks import enqueue_with_reservation
 from pulpcore.app import models as pulp_models
 
-from galaxy.api.v2.serializers import collection as serializers
+from galaxy.api.exceptions import CollectionExistsError
+from galaxy.api.v2 import serializers
 from galaxy.main import models
 from galaxy.pulp import tasks
 
+
 __all__ = [
-    'UploadCollectionView'
+    'CollectionListView',
 ]
 
 
-class CollectionExistsError(drf_exc.APIException):
-    status_code = status_codes.HTTP_409_CONFLICT
-    default_detail = 'Collection already exists.'
-    default_code = 'collection_exists'
-
-
-class UploadCollectionView(views.APIView):
+class CollectionListView(views.APIView):
 
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, *args, **kwargs):
         """Upload an Ansible Collection."""
 
-        serializer = serializers.UploadCollectionSerializer(
+        serializer = serializers.CollectionUploadSerializer(
             data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
@@ -79,7 +77,11 @@ class UploadCollectionView(views.APIView):
                 'namespace_pk': namespace.pk,
                 'task_id': import_task.id,
             })
-        return OperationPostponedResponse(async_result, request)
+
+        task = pulp_models.Task.objects.get(job_id=async_result.id)
+        data = {'task': reverse('api:v2:collection-import-detail',
+                                args=[task.pk], request=None)}
+        return Response(data, status=status_codes.HTTP_202_ACCEPTED)
 
     def _validate_namespace(self, user, data):
         """Validate that collection namespace exists and user owns it."""
