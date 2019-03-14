@@ -46,13 +46,11 @@ class CollectionLoader(object):
         self.log = logger or default_logger
         self.path = path
 
-        self.collection_path = None
         self.collection_info = None
         self.contents = None
         self.readme = None
 
     def load(self):
-        self._find_collection_dir()
         self._load_collection_manifest()
         self._load_collection_readme()
 
@@ -70,13 +68,8 @@ class CollectionLoader(object):
             quality_score=quality_score,
         )
 
-    def _find_collection_dir(self):
-        _, dirs, _ = next(os.walk(self.path))
-        self.collection_path = os.path.join(self.path, dirs[0])
-        self.log.info('Collection dir found: {}\n'.format(dirs[0]))
-
     def _load_collection_manifest(self):
-        manifest_file = os.path.join(self.collection_path, 'MANIFEST.json')
+        manifest_file = os.path.join(self.path, 'MANIFEST.json')
         if not os.path.exists(manifest_file):
             raise exc.ManifestNotFound('No manifest found in collection')
 
@@ -88,11 +81,11 @@ class CollectionLoader(object):
         if not self.collection_info.readme:
             return
 
-        readme_file = os.path.join(self.collection_path,
+        readme_file = os.path.join(self.path,
                                    self.collection_info.readme)
         try:
             self.readme = readmeutils.get_readme(
-                directory=self.collection_path,
+                directory=self.path,
                 filename=readme_file)
         except readmeutils.FileSizeError as e:
             self.log.warning(e)
@@ -106,7 +99,7 @@ class CollectionLoader(object):
     def _find_contents(self):
         for finder_cls in self.finders:
             try:
-                finder = finder_cls(self.collection_path, self.log)
+                finder = finder_cls(self.path, self.log)
                 contents = finder.find_contents()
                 return finder, contents
             except exc.ContentNotFound:
@@ -116,7 +109,7 @@ class CollectionLoader(object):
     def _load_contents(self, content_list):
         for content_type, rel_path, extra in content_list:
             loader_cls = loaders.get_loader(content_type)
-            loader = loader_cls(content_type, rel_path, self.collection_path,
+            loader = loader_cls(content_type, rel_path, self.path,
                                 logger=self.log, **extra)
 
             self.log.info('===== LOADING {} ====='.format(

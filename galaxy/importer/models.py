@@ -109,7 +109,7 @@ class CollectionArtifactManifest(object):
 
     collection_info = attr.ib(type=CollectionInfo)
     format = attr.ib(default=1)
-    files = attr.ib(factory=list)
+    file_manifest_file = attr.ib(factory=dict)
 
     @classmethod
     def parse(cls, data):
