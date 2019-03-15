@@ -29,6 +29,10 @@ class ManifestNotFound(ImporterError):
     pass
 
 
+class ManifestValidationError(ImporterError):
+    pass
+
+
 class ContentNotFound(ImporterError):
     pass
 

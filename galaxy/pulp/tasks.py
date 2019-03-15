@@ -20,6 +20,7 @@ import tempfile
 import tarfile
 
 from django.db import transaction
+from django.db.utils import IntegrityError
 from pulpcore.app import models as pulp_models
 
 from galaxy.main import models
@@ -84,14 +85,18 @@ def _publish_collection(artifact, repository, namespace_pk, collection_info):
         name=metadata.name,
     )
 
-    collection_version, is_created = collection.versions.get_or_create(
-        collection=collection,
-        version=metadata.version,
-        defaults={
-            'metadata': metadata.get_json(),
-            'quality_score': collection_info.quality_score,
-        },
-    )
+    try:
+        collection_version, is_created = collection.versions.get_or_create(
+            collection=collection,
+            version=metadata.version,
+            defaults={
+                'metadata': metadata.get_json(),
+                'quality_score': collection_info.quality_score,
+            },
+        )
+    except IntegrityError as e:
+        # catches dup key value "(collection_id, version)=... already exists"
+        raise VersionConflict(str(e))
     if not is_created:
         raise exc.VersionConflict()
 
