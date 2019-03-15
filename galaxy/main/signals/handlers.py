@@ -61,7 +61,7 @@ def user_logged_in_handler(request, user, **kwargs):
         'avatar_url': social.extra_data.get('avatar_url'),
         'location': social.extra_data.get('location'),
         'company': social.extra_data.get('company'),
-        'email': social.extra_data.get('email'),
+        'email': None,
         'html_url': social.extra_data.get('blog'),
     }
     if not namespace:

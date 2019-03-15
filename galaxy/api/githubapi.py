@@ -102,43 +102,43 @@ class GithubAPI(object):
                             " {0} - {1}".format(exc.data, exc.status))
         return result
 
-    def get_namespace_repositories(self, namespace, name=None):
+    def get_namespace_repositories(self, provider_namespace, name=None):
         """ Return a list of repositories for a given namespace """
-        gh_user = self.client.get_user()
+        gh_user = self.client.get_user(login=provider_namespace)
         repos = []
         for gh_repo in gh_user.get_repos(type='public'):
-            if gh_repo.owner.login == namespace:
-                repo = {
-                    'provider_id': self.provider_id,
-                    'provider': self.provider_name.lower(),
-                    'provider_namespace': namespace,
-                    'name': gh_repo.name,
-                    'description': gh_repo.description,
-                    'default_branch': gh_repo.default_branch,
-                    'stargazers_count': gh_repo.stargazers_count,
-                    'open_issues_count': gh_repo.open_issues_count,
-                    'forks_count': gh_repo.forks_count
-                }
+            repo = {
+                'provider_id': self.provider_id,
+                'provider': self.provider_name.lower(),
+                'provider_namespace': provider_namespace,
+                'name': gh_repo.name,
+                'description': gh_repo.description,
+                'default_branch': gh_repo.default_branch,
+                'stargazers_count': gh_repo.stargazers_count,
+                'open_issues_count': gh_repo.open_issues_count,
+                'forks_count': gh_repo.forks_count
+            }
 
-                if not name:
-                    repos.append(repo)
-                elif gh_repo.name == name:
-                    try:
-                        commits = gh_repo.get_commits()
-                        commit = commits[0].commit
-                    except GithubException:
-                        repo['commit'] = None
-                        repo['commit_message'] = None
-                        repo['commit_url'] = None
-                        repo['commit_created'] = None
-                    else:
-                        repo['commit'] = commit.sha
-                        repo['commit_message'] = commit.message
-                        repo['commit_url'] = commit.url
-                        repo['commit_created'] = commit.author.date
-                    repo['watchers_count'] = 0
-                    for _ in gh_repo.get_subscribers():
-                        repo['watchers_count'] += 1
-                    repos.append(repo)
-                    break
+            if not name:
+                repos.append(repo)
+            elif gh_repo.name == name:
+                try:
+                    commits = gh_repo.get_commits()
+                    commit = commits[0].commit
+                except GithubException:
+                    repo['commit'] = None
+                    repo['commit_message'] = None
+                    repo['commit_url'] = None
+                    repo['commit_created'] = None
+                else:
+                    repo['commit'] = commit.sha
+                    repo['commit_message'] = commit.message
+                    repo['commit_url'] = commit.url
+                    repo['commit_created'] = commit.author.date
+                repo['watchers_count'] = 0
+                for _ in gh_repo.get_subscribers():
+                    repo['watchers_count'] += 1
+                repos.append(repo)
+                break
+
         return repos
