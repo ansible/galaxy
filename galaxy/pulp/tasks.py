@@ -96,7 +96,7 @@ def _publish_collection(artifact, repository, namespace_pk, collection_info):
         )
     except IntegrityError as e:
         # catches dup key value "(collection_id, version)=... already exists"
-        raise VersionConflict(str(e))
+        raise exc.VersionConflict(str(e))
     if not is_created:
         raise exc.VersionConflict()
 
