@@ -66,12 +66,18 @@ class UploadCollectionView(views.APIView):
 
         artifact = self._save_artifact(artifact_data)
 
+        import_task = models.ImportTask.objects.create(
+            owner=request.user,
+            state=models.ImportTask.STATE_PENDING,
+        )
+
         async_result = enqueue_with_reservation(
             tasks.import_collection, [],
             kwargs={
                 'artifact_pk': artifact.pk,
                 'repository_pk': repository.pk,
                 'namespace_pk': namespace.pk,
+                'task_id': import_task.id,
             })
         return OperationPostponedResponse(async_result, request)
 
