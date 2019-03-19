@@ -25,6 +25,7 @@ export class AddContentModalComponent implements OnInit, OnDestroy {
     @ViewChild('reactContainer')
     reactContainer: ElementRef;
     namespace: Namespace;
+    collectionName: string;
 
     // The Namespace list component expects this property to be set on the modal
     // so that it knows when to start polling the API for import updates.
@@ -42,6 +43,7 @@ export class AddContentModalComponent implements OnInit, OnDestroy {
             {
                 namespace: this.namespace,
                 updateAdded: x => this.updateRepositoriesAdded(x),
+                collectionName: this.collectionName,
             },
         );
     }

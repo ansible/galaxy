@@ -34,7 +34,7 @@ export class ImportModal extends React.Component<IProps> {
         return (
             <div className='modal-footer footer-container'>
                 <div className='footer-buttons'>
-                    {this.props.buttonsDisplayed.okay ? (
+                    {this.props.buttonsDisplayed.back ? (
                         <Button
                             onClick={() =>
                                 this.props.setDisplayedContent(View.PickImport)

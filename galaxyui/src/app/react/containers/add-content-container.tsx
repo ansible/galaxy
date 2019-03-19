@@ -31,6 +31,8 @@ interface IProps {
     injector: Injector;
     namespace: Namespace;
     updateAdded: (added: boolean) => void;
+
+    collectionName?: string;
 }
 
 interface IState {
@@ -91,18 +93,30 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
             CollectionUploadService,
         );
 
+        let buttonState = {
+            back: true,
+            okay: { enabled: false, text: 'OK' },
+            cancel: true,
+        };
+
+        if (this.props.collectionName) {
+            buttonState = {
+                back: false,
+                okay: { enabled: true, text: 'Upload' },
+                cancel: true,
+            };
+        }
+
         this.state = {
             selectedPNS: selectedPNS,
             emptyStateIcon: 'spinner fa-pulse',
             emptyStateText: 'Loading repositories...',
             isSaving: false,
-            displayedComponent: View.PickImport,
+            displayedComponent: this.props.collectionName
+                ? View.CollectionImport
+                : View.PickImport,
             modalTitle: 'Add Content',
-            buttonsDisplayed: {
-                back: false,
-                okay: { enabled: false, text: 'OK' },
-                cancel: true,
-            },
+            buttonsDisplayed: buttonState,
             collectionFile: null,
             fileErrors: '',
             uploadProgress: 0,
@@ -167,6 +181,7 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
                         errors={this.state.fileErrors}
                         uploadProgress={this.state.uploadProgress}
                         uploadStatus={this.state.uploadStatus}
+                        collectionName={this.props.collectionName}
                     />
                 );
 
