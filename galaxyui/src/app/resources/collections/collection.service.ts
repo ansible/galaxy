@@ -2,9 +2,10 @@ import { HttpClient, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { NotificationService } from 'patternfly-ng';
-import { CollectionUpload } from './collection';
+import { CollectionUpload, CollectionList } from './collection';
 
 import { ServiceBase } from '../base/service-base';
+import { GenericQuery } from '../base/generic-query';
 import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -30,5 +31,17 @@ export class CollectionUploadService extends ServiceBase {
                     this.log(`Uploaded new ${this.serviceName}`),
                 ),
             );
+    }
+}
+
+@Injectable()
+export class CollectionListService extends GenericQuery<CollectionList> {
+    constructor(http: HttpClient, notificationService: NotificationService) {
+        super(
+            http,
+            notificationService,
+            '/api/internal/galaxyui/collection',
+            'collection',
+        );
     }
 }
