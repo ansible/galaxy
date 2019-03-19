@@ -17,9 +17,15 @@
 
 # from django.urls import path
 
-# from galaxy.api.internal import views
+from galaxy.api.internal import views
+from django.conf.urls import include, url
 
 
 urlpatterns = [
     # path('path/to/view/', views.ViewName.as_view()),
+]
+
+
+galaxyui = [
+    url(r'^collection/', views.CollectionList.as_view())
 ]
