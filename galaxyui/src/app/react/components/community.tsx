@@ -13,7 +13,7 @@ import { Link } from '../lib/link';
 import { PagerPF } from './patternfly-pager';
 import { PageLoading } from './page-loading';
 
-import { ToolBarPF } from './patternfly-tooblar';
+import { ToolBarPF } from './patternfly-toolbar';
 import { SortConfig } from './patternfly-sort';
 import { FilterConfig } from './patternfly-filter';
 
