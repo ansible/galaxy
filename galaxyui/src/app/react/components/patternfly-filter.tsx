@@ -63,7 +63,7 @@ export class FilterPF extends React.Component<IProps, IState> {
     render() {
         const { filterConfig, addFilter, ...rest } = this.props;
         return (
-            <Filter className='form-group' style={{ width: '275px' }}>
+            <Filter className='form-group'>
                 <Filter.TypeSelector
                     {...rest}
                     filterTypes={this.props.filterConfig.fields}
