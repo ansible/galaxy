@@ -14,8 +14,7 @@ import { PagerPF } from './patternfly-pager';
 import { PageLoading } from './page-loading';
 
 import { ToolBarPF } from './patternfly-toolbar';
-import { SortConfig } from './patternfly-sort';
-import { FilterConfig } from './patternfly-filter';
+import { SortConfig, FilterConfig } from '../shared-types/pf-toolbar';
 
 interface ICommunityProp {
     // Configs
