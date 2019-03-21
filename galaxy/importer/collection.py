@@ -22,7 +22,7 @@ import logging
 
 from galaxy.importer.models import CollectionArtifactManifest, Collection
 from galaxy.importer.utils import readme as readmeutils
-from galaxy.importer import finders as finders_
+from galaxy.importer.finders import FileSystemFinder
 from galaxy.importer import loaders
 from galaxy.importer import exceptions as exc
 
@@ -38,10 +38,6 @@ def import_collection(directory, logger=None):
 class CollectionLoader(object):
     """Loads collection and content info."""
 
-    finders = [
-        finders_.FileSystemFinder,
-    ]
-
     def __init__(self, path, logger=None):
         self.log = logger or default_logger
         self.path = path
@@ -54,7 +50,7 @@ class CollectionLoader(object):
         self._load_collection_manifest()
         self._load_collection_readme()
 
-        finder, content_list = self._find_contents()
+        content_list = self._find_contents()
         self.contents = list(self._load_contents(content_list))
 
         quality_score = self._get_collection_quality_score()
@@ -105,14 +101,13 @@ class CollectionLoader(object):
                 '{}'.format(self.collection_info.readme))
 
     def _find_contents(self):
-        for finder_cls in self.finders:
-            try:
-                finder = finder_cls(self.path, self.log)
-                contents = finder.find_contents()
-                return finder, contents
-            except exc.ContentNotFound:
-                pass
-        raise exc.ContentNotFound("No content found in collection")
+        try:
+            finder = FileSystemFinder(self.path, self.log)
+            contents = finder.find_contents()
+            return contents
+        except exc.ContentNotFound:
+            pass
+        return []
 
     def _load_contents(self, content_list):
         for content_type, rel_path, extra in content_list:
