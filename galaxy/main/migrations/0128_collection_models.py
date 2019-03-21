@@ -55,12 +55,11 @@ class Migration(migrations.Migration):
                 ('contents', psql_fields.JSONField(default=dict)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('_content', models.OneToOneField(
+                ('_parent_ref', models.OneToOneField(
                     db_column='id',
                     on_delete=models.CASCADE,
                     parent_link=True,
                     primary_key=True,
-                    related_name='+',
                     serialize=False,
                     to='pulp_app.Content')),
                 ('collection', models.ForeignKey(

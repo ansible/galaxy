@@ -15,25 +15,11 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from django.urls import path
+from rest_framework import exceptions as drf_exc
+from rest_framework import status as http_status
 
-from galaxy.api.v2 import views
 
-
-app_name = 'api'
-urlpatterns = [
-    # Collection URLs
-    path('collections/',
-         views.CollectionListView.as_view(),
-         name='collections-list'),
-
-    # Collection Imports URLs
-    path('collection-imports/<int:pk>/',
-         views.CollectionImportView.as_view(),
-         name='collection-import-detail'),
-
-    # Collection Versions URLs
-    path('collection-versions/<int:pk>/',
-         views.CollectionVersionView.as_view(),
-         name='collection-version-detail'),
-]
+class CollectionExistsError(drf_exc.APIException):
+    status_code = http_status.HTTP_409_CONFLICT
+    default_detail = 'Collection already exists.'
+    default_code = 'collection_exists'

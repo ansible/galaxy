@@ -15,8 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-# Django REST Framework
-
+# FIXME(cutwater): This module is deprecated. It should be moved
+#   to `galaxy.api.v1` package and eventually removed.
 from rest_framework import renderers
 
 
