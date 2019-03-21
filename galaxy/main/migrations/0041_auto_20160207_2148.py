@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# NOTE(cutwater): This migration is replaced by v2_4_0 and should be
+#   deleted once superseding migration is merged into master.
 from __future__ import unicode_literals
 
 from django.db import migrations
@@ -13,10 +14,10 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterUniqueTogether(
             name='repository',
-            unique_together=set([('owner', 'github_user', 'github_repo')]),
+            unique_together={('owner', 'github_user', 'github_repo')},
         ),
         migrations.AlterIndexTogether(
             name='repository',
-            index_together=set([]),
+            index_together=set(),
         )
     ]
