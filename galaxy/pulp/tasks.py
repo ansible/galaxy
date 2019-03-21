@@ -46,8 +46,8 @@ def import_collection(artifact_pk, repository_pk, namespace_pk, task_id):
                 import_task.id, artifact_pk))
 
     try:
+        collection_info = _process_collection(artifact, log_db)
         with transaction.atomic():
-            collection_info = _process_collection(artifact, log_db)
             coll, coll_ver = _publish_collection(artifact, repository,
                                                  namespace_pk, collection_info)
         _process_import_success(coll, coll_ver, import_task)
