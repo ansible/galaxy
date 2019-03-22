@@ -4,12 +4,11 @@ import {
     OnDestroy,
     ViewChild,
     ElementRef,
+    Injector,
 } from '@angular/core';
 
 import { AddContentModalContainer } from '../../react/containers/add-content-container';
 import { Render } from '../../react/lib/render-react';
-
-import { Injector } from '@angular/core';
 
 import { Namespace } from '../../resources/namespaces/namespace';
 
@@ -29,7 +28,7 @@ export class AddContentModalComponent implements OnInit, OnDestroy {
 
     // The Namespace list component expects this property to be set on the modal
     // so that it knows when to start polling the API for import updates.
-    // Angular can't reat properties off of the React components so this value
+    // Angular can't read properties off of the React components so this value
     // unfortunately needs to be passed back up to the angular component.
     repositoriesAdded = false;
 

@@ -12,13 +12,16 @@ import { ContentType } from '../../shared-types/my-content';
 
 interface IProps {
     displayedType: ContentType;
+    numberOfResults: number;
 
     onSortChange: (sortEvent) => void;
     onFilterChange: (state) => void;
+    setDisplayedType: (contentType: ContentType) => void;
 }
 
 export class ContentToolbar extends React.Component<IProps, {}> {
     render() {
+        const { displayedType, numberOfResults } = this.props;
         const filterConfig = {
             fields: [
                 {
@@ -28,7 +31,7 @@ export class ContentToolbar extends React.Component<IProps, {}> {
                     type: 'text',
                 },
             ] as FilterOption[],
-            resultsCount: 0,
+            resultsCount: numberOfResults,
             appliedFilters: [] as AppliedFilter[],
         } as FilterConfig;
 
@@ -49,23 +52,43 @@ export class ContentToolbar extends React.Component<IProps, {}> {
         } as SortConfig;
 
         return (
-            <div className='my-content-wrapper'>
-                <div className='toolbar'>
-                    <div className='content-toggle'>
-                        <a className='btn'>Collections</a>
-                        <a className='btn btn-primary'>Repositories</a>
-                    </div>
-                    &nbsp; &nbsp; &nbsp; &nbsp;
-                    <div>
-                        <ToolBarPF
-                            toolbarConfig={{
-                                filterConfig: filterConfig,
-                                sortConfig: sortConfig,
-                            }}
-                            onFilterChange={this.props.onFilterChange}
-                            onSortChange={this.props.onSortChange}
-                        />
-                    </div>
+            <div className='toolbar'>
+                <div className='content-toggle'>
+                    <a
+                        className={
+                            displayedType === ContentType.Collection
+                                ? 'btn btn-primary'
+                                : 'btn'
+                        }
+                        onClick={() =>
+                            this.props.setDisplayedType(ContentType.Collection)
+                        }
+                    >
+                        Collections
+                    </a>
+                    <a
+                        className={
+                            displayedType === ContentType.Repository
+                                ? 'btn btn-primary'
+                                : 'btn'
+                        }
+                        onClick={() =>
+                            this.props.setDisplayedType(ContentType.Repository)
+                        }
+                    >
+                        Repositories
+                    </a>
+                </div>
+                &nbsp; &nbsp; &nbsp; &nbsp;
+                <div>
+                    <ToolBarPF
+                        toolbarConfig={{
+                            filterConfig: filterConfig,
+                            sortConfig: sortConfig,
+                        }}
+                        onFilterChange={this.props.onFilterChange}
+                        onSortChange={this.props.onSortChange}
+                    />
                 </div>
             </div>
         );

@@ -30,19 +30,11 @@ import {
 
 import { AddContentModalComponent } from './add-content-modal/add-content-modal.component';
 
-// prettier-ignore
-import {
-    AlternateNameModalComponent
-} from './namespace-list/content/repositories-content/alternate-name-modal/alternate-name-modal.component';
-
 import { SharedModule } from '../shared/shared.module';
 import { NamespaceActionComponent } from './namespace-list/action/action.component';
 
-import { NamespaceRepositoryActionComponent } from './namespace-list/content/repositories-content/action/action.component';
-import { RepoDetailsComponent } from './namespace-list/content/repositories-content/repo-details/repo-details.component';
-
 @NgModule({
-    entryComponents: [AddContentModalComponent, AlternateNameModalComponent],
+    entryComponents: [AddContentModalComponent],
     declarations: [
         NamespaceListComponent,
         NamespaceDetailComponent,
@@ -50,10 +42,7 @@ import { RepoDetailsComponent } from './namespace-list/content/repositories-cont
         OwnersContentComponent,
         ProviderNamespacesContentComponent,
         AddContentModalComponent,
-        AlternateNameModalComponent,
         NamespaceActionComponent,
-        NamespaceRepositoryActionComponent,
-        RepoDetailsComponent,
     ],
     imports: [
         ActionModule,
