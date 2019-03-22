@@ -33,7 +33,8 @@ from galaxy.common import logutils
 log = logging.getLogger(__name__)
 
 
-def import_collection(artifact_pk, repository_pk, namespace_pk, task_id):
+def import_collection(artifact_pk, repository_pk, namespace_pk, task_id,
+                      filename):
     log.info('Starting collection import task: {}'.format(task_id))
 
     artifact = pulp_models.Artifact.objects.get(pk=artifact_pk)
@@ -46,7 +47,7 @@ def import_collection(artifact_pk, repository_pk, namespace_pk, task_id):
                 import_task.id, artifact_pk))
 
     try:
-        collection_info = _process_collection(artifact, log_db)
+        collection_info = _process_collection(artifact, filename, log_db)
         with transaction.atomic():
             coll, coll_ver = _publish_collection(artifact, repository,
                                                  namespace_pk, collection_info)
@@ -67,12 +68,13 @@ def _get_import_task_msg_logger(import_task):
     return log_db
 
 
-def _process_collection(artifact, log_db):
+def _process_collection(artifact, filename, log_db):
     with tempfile.TemporaryDirectory() as pkg_dir:
         with artifact.file.open() as pkg_file, \
                 tarfile.open(fileobj=pkg_file) as pkg_tar:
             pkg_tar.extractall(pkg_dir)
-        collection_info = i_collection.import_collection(pkg_dir, log_db)
+        collection_info = i_collection.import_collection(pkg_dir, filename,
+                                                         log_db)
         _log_collection_loaded(collection_info)
 
     return collection_info
