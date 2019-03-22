@@ -30,6 +30,7 @@ from galaxy.common import schema
 from galaxy.importer.utils import git
 from galaxy.importer.utils import readme as readmeutils
 from galaxy.importer.utils import spdx_licenses
+from galaxy.main import models
 
 SHA1_LEN = 40
 
@@ -199,6 +200,45 @@ class GalaxyCollectionInfo(BaseCollectionInfo):
         if value is not None and not isinstance(value, str):
             self.value_error("'%s' must be a string" % name)
 
+    def _check_dependencies(self):
+        for dep_col, ver_spec in self.dependencies.items():
+            ns_name, name = dep_col.split('.')
+
+            if ns_name == self.namespace and name == self.name:
+                self.value_error('Cannot have self dependency')
+
+            try:
+                ns = models.Namespace.objects.get(name=ns_name)
+            except models.Namespace.DoesNotExist:
+                self.value_error('Dependency namespace not in '
+                                 'galaxy: %s' % dep_col)
+            try:
+                col = models.Collection.objects.get(
+                    namespace=ns.pk,
+                    name=name,
+                )
+            except models.Collection.DoesNotExist:
+                self.value_error('Dependency collection not in '
+                                 'galaxy: %s' % dep_col)
+
+            try:
+                spec = semantic_version.Spec(ver_spec)
+            except ValueError:
+                self.value_error('Dependency version spec range '
+                                 'invalid: %s %s' % (dep_col, ver_spec))
+
+            col_vers = models.CollectionVersion.objects.filter(collection=col)
+            for v in [item.version for item in col_vers]:
+                try:
+                    if spec.match(semantic_version.Version(v)):
+                        return
+                except TypeError:
+                    # semantic_version Spec('~1') is ok, but match throws error
+                    pass
+
+            self.value_error('Dependency found in galaxy but no matching '
+                             'version found: %s %s' % (dep_col, ver_spec))
+
     def __attrs_post_init__(self):
         non_null_str_fields = [
             'description',
@@ -210,6 +250,7 @@ class GalaxyCollectionInfo(BaseCollectionInfo):
 
         self._check_required('readme')
         self._check_required('authors')
+        self._check_dependencies()
         for field in non_null_str_fields:
             self._check_non_null_str(field)
 
