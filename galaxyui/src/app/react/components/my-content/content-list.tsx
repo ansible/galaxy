@@ -92,8 +92,8 @@ export class ContentList extends React.Component<IProps, {}> {
                         </EmptyState.Title>
 
                         <EmptyState.Info>
-                            Add repositories by clicking the "Add Content"
-                            button above.
+                            Add conent by clicking the "Add Content" button
+                            above.
                         </EmptyState.Info>
                     </div>
                 )}

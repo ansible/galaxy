@@ -39,6 +39,8 @@ export class ContentDetailContainer extends React.Component<IProps, IState> {
                 <CollectionDetail
                     displayedType={this.state.displayedContent}
                     setDisplayedType={x => this.setDisplayedType(x)}
+                    namespace={this.props.namespace}
+                    injector={this.props.injector}
                 />
             );
         }

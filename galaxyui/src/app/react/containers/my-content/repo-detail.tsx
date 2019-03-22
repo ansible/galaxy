@@ -306,9 +306,6 @@ export class RepoDetail extends React.Component<IProps, IState> {
                     loading: false,
                     numberOfResults: result.count,
                 });
-
-                // Show blank screen during loads.
-                this.updateEmptyState();
             });
     }
 
@@ -348,11 +345,5 @@ export class RepoDetail extends React.Component<IProps, IState> {
                 break;
         }
         return result;
-    }
-
-    private updateEmptyState(): void {
-        if (this.state.items.length === 0) {
-            //TODO show empty state warning
-        }
     }
 }
