@@ -15,8 +15,6 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from __future__ import print_function
-
 import logging
 from collections import OrderedDict
 from allauth.socialaccount.models import SocialToken

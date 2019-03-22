@@ -15,8 +15,6 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from __future__ import absolute_import
-
 import logging
 
 import celery
