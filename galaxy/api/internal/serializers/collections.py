@@ -23,6 +23,18 @@ __all__ = [
 ]
 
 
+class VersionSerializer(serializers.ModelSerializer):
+    metadata = serializers.JSONField(binary=False)
+
+    class Meta:
+        model = models.CollectionVersion
+        fields = (
+            'version',
+            'metadata',
+            'contents'
+        )
+
+
 class CollectionListSerializer(serializers.ModelSerializer):
     community_survey_count = serializers.SerializerMethodField()
     quality_score = serializers.SerializerMethodField()
@@ -52,13 +64,8 @@ class CollectionListSerializer(serializers.ModelSerializer):
         return latest_version.quality_score
 
     def get_latest_version(self, obj):
-        # TODO build a better serializer for collection version
         latest_version = models.CollectionVersion.objects.filter(
             collection=obj
         ).latest('pk')
 
-        return {
-            'version': latest_version.version,
-            'metadata': latest_version.metadata,
-            'contents': latest_version.contents
-        }
+        return VersionSerializer(latest_version).data

@@ -41,7 +41,7 @@ export class CollectionDetail extends React.Component<IProps, IState> {
     collectionListService: CollectionListService;
     modalService: BsModalService;
     appliedFilters: AppliedFilter[] = [];
-    sortBy: string = 'name';
+    sortBy = 'name';
 
     constructor(props) {
         super(props);
@@ -86,8 +86,8 @@ export class CollectionDetail extends React.Component<IProps, IState> {
                                 namespace={this.props.namespace}
                                 key={collection.id}
                                 collection={collection}
-                                handleAction={(event, collection) =>
-                                    this.handleItemAction(event, collection)
+                                handleAction={(event, col) =>
+                                    this.handleItemAction(event, col)
                                 }
                             />
                         );

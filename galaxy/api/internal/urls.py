@@ -18,7 +18,7 @@
 # from django.urls import path
 
 from galaxy.api.internal import views
-from django.conf.urls import include, url
+from django.conf.urls import url
 
 
 urlpatterns = [

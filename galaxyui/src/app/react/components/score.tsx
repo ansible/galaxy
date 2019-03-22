@@ -28,7 +28,9 @@ export class Score extends React.Component<IProps, {}> {
 
         if (score !== null) {
             score = Math.round(score * 10) / 10;
-        } else return null;
+        } else {
+            return null;
+        }
 
         return (
             <div className='combined-score-wrapper'>

@@ -52,9 +52,9 @@ export class RepoDetail extends React.Component<IProps, IState> {
     repositoryImportService: RepositoryImportService;
     modalService: BsModalService;
     polling: Subscription;
-    pollingEnabled: boolean = false;
+    pollingEnabled = false;
     appliedFilters: AppliedFilter[] = [];
-    sortBy: string = 'name';
+    sortBy = 'name';
 
     constructor(props) {
         super(props);
@@ -117,8 +117,8 @@ export class RepoDetail extends React.Component<IProps, IState> {
                                 namespace={this.props.namespace}
                                 key={repo.id}
                                 repo={repo}
-                                handleAction={(event, repo) =>
-                                    this.handleItemAction(event, repo)
+                                handleAction={(event, r) =>
+                                    this.handleItemAction(event, r)
                                 }
                             />
                         );
