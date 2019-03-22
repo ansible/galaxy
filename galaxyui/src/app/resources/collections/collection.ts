@@ -25,6 +25,4 @@ export class CollectionList {
         metadata: any;
         contents: any;
     };
-
-    summary_fields: any;
 }

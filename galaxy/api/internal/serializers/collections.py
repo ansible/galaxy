@@ -24,7 +24,6 @@ __all__ = [
 
 
 class CollectionListSerializer(serializers.ModelSerializer):
-    summary_fields = serializers.SerializerMethodField()
     community_survey_count = serializers.SerializerMethodField()
     quality_score = serializers.SerializerMethodField()
     latest_version = serializers.SerializerMethodField()
@@ -38,26 +37,9 @@ class CollectionListSerializer(serializers.ModelSerializer):
             'download_count',
             'community_score',
             'quality_score',
-            'summary_fields',
             'community_survey_count',
             'latest_version',
         )
-
-    def get_summary_fields(self, obj):
-        latest_import = models.ImportTask.objects.filter(
-            collection=obj
-        ).latest('pk')
-
-        return {
-            'latest_import': {
-                'id': 0,
-                'state': latest_import.state,
-                'started': latest_import.started,
-                'finished': latest_import.finished,
-                'created': latest_import.created,
-                'modified': latest_import.modified
-            }
-        }
 
     def get_community_survey_count(self, obj):
         return 0
