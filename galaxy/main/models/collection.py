@@ -46,7 +46,8 @@ class Collection(mixins.TimestampsMixin, models.Model):
     search_vector = psql_search.SearchVectorField(default='')
     # Community and quality score
     download_count = models.IntegerField(default=0)
-    community_score = models.FloatField(default=0.0)
+    community_score = models.FloatField(null=True)
+    community_survey_count = models.IntegerField(default=0)
 
     # References
     tags = models.ManyToManyField('Tag')

@@ -36,7 +36,6 @@ class VersionSerializer(serializers.ModelSerializer):
 
 
 class CollectionListSerializer(serializers.ModelSerializer):
-    community_survey_count = serializers.SerializerMethodField()
     quality_score = serializers.SerializerMethodField()
     latest_version = serializers.SerializerMethodField()
 
@@ -49,12 +48,8 @@ class CollectionListSerializer(serializers.ModelSerializer):
             'download_count',
             'community_score',
             'quality_score',
-            'community_survey_count',
             'latest_version',
         )
-
-    def get_community_survey_count(self, obj):
-        return 0
 
     def get_quality_score(self, obj):
         latest_version = models.CollectionVersion.objects.filter(
