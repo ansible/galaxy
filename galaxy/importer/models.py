@@ -189,7 +189,7 @@ class GalaxyCollectionInfo(BaseCollectionInfo):
     """Represents collection_info metadata in galaxy."""
 
     def get_json(self):
-        return json.dumps(self.__dict__)
+        return self.__dict__
 
     def _check_required(self, name):
         if not getattr(self, name):
