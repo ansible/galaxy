@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.db import migrations
 
 
@@ -13,7 +10,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterUniqueTogether(
             name='rolerating',
-            unique_together=set([]),
+            unique_together=set(),
         ),
         migrations.RemoveField(
             model_name='rolerating',

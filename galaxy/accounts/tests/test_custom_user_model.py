@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2012-2018, Ansible
 # This file is part of Ansible Galaxy
 #

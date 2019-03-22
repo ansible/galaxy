@@ -15,8 +15,6 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from __future__ import unicode_literals
-
 import re
 
 from django.contrib.auth import models as auth_models
