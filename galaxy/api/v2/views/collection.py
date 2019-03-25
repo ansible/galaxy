@@ -15,6 +15,7 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 from django.conf import settings
+from django.core import exceptions as dj_exc
 
 import rest_framework.exceptions as drf_exc
 from rest_framework.permissions import IsAuthenticated
@@ -53,7 +54,9 @@ class CollectionListView(views.APIView):
         # TODO(cutwater): Merge Artifact and UploadCollectionSerializers
         # TODO(cutwater): Extract namespace and name from `METADATA.json`
         #                 and validate that collection name matches filename.
-        namespace = self._validate_namespace(request.user, data)
+        namespace = self._get_namespace(data)
+        self._check_namespace_access(namespace, request.user)
+        self._check_version_conflict(namespace, data['filename'])
 
         artifact_data = {'file': request.data['file']}
         if serializer.data['sha256'] is not None:
@@ -83,21 +86,33 @@ class CollectionListView(views.APIView):
                                 args=[task.pk], request=None)}
         return Response(data, status=status_codes.HTTP_202_ACCEPTED)
 
-    def _validate_namespace(self, user, data):
-        """Validate that collection namespace exists and user owns it."""
+    def _get_namespace(self, data):
+        """Get collecton namespace from filename."""
         ns_name = data['filename'].namespace
         try:
-            ns = models.Namespace.objects.get(name=ns_name)
+            return models.Namespace.objects.get(name=ns_name)
         except models.Namespace.DoesNotExist:
             raise drf_exc.ValidationError(
                 'Namespace {0} does not exist'.format(ns_name))
 
-        if not ns.owners.filter(id=user.id).count():
+    def _check_namespace_access(self, namespace, user):
+        """Validate that collection namespace exists and user owns it."""
+        if not namespace.owners.filter(id=user.id).count():
             raise drf_exc.PermissionDenied(
                 'The namespace listed on your filename must match one of '
                 'the namespaces you have access to.'
             )
-        return ns
+
+    def _check_version_conflict(self, namespace, filename):
+        """Validate that uploaded collection version does not exist."""
+        try:
+            collection = models.Collection.objects.get(
+                namespace=namespace, name=filename.name)
+            collection.versions.get(version=filename.version)
+        except dj_exc.ObjectDoesNotExist:
+            pass
+        else:
+            raise CollectionExistsError()
 
     def _save_artifact(self, data):
         artifact_serializer = ArtifactSerializer(data=data)
