@@ -21,8 +21,6 @@ import itertools
 import logging
 import os
 
-import six
-
 from galaxy import constants
 from galaxy.importer import exceptions as exc
 
@@ -38,14 +36,14 @@ Result = collections.namedtuple(
     'Result', ['content_type', 'path', 'extra'])
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseFinder(object):
+class BaseFinder(metaclass=abc.ABCMeta):
 
     def __init__(self, path, logger=None):
         self.path = path
         self.log = logger or default_logger
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def repository_format(self):
         pass
 

@@ -19,7 +19,6 @@ import collections
 import os
 import re
 
-import six
 import yaml
 import configparser
 
@@ -138,7 +137,7 @@ class RoleMetaParser(object):
 
     def parse_cloud_platforms(self):
         cloud_platforms = self.metadata.get('cloud_platforms', [])
-        if isinstance(cloud_platforms, six.string_types):
+        if isinstance(cloud_platforms, str):
             cloud_platforms = [cloud_platforms]
         return cloud_platforms
 
@@ -170,7 +169,7 @@ class RoleMetaParser(object):
                 continue
             if set(video) != {'url', 'title'}:
                 continue
-            for name, expr in six.iteritems(self.VIDEO_REGEXP):
+            for name, expr in self.VIDEO_REGEXP.items():
                 match = expr.match(video['url'])
                 if match:
                     file_id = match.group(1)
@@ -355,7 +354,7 @@ class RoleLoader(base.BaseLoader):
         attrs = {}
         for key, default in self.STRING_ATTRS:
             value = metadata.get(key) or default
-            if isinstance(value, six.string_types):
+            if isinstance(value, str):
                 value = value.strip()
             attrs[key] = value
         return attrs

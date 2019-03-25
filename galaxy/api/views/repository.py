@@ -18,8 +18,6 @@
 import logging
 import re
 
-from six import string_types
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 
@@ -125,7 +123,7 @@ class RepositoryList(views.ListCreateAPIView):
 
         for field in GITHUB_REPO_FIELDS:
             if repo.get(field) is not None:
-                if isinstance(repo[field], string_types):
+                if isinstance(repo[field], str):
                     data[field] = repo[field][:256]
                 else:
                     data[field] = repo[field]

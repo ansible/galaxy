@@ -19,8 +19,6 @@ import os
 import subprocess
 import logging
 
-import six
-
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +34,7 @@ class BaseLinter(object):
         self.root = workdir
 
     def check_files(self, paths):
-        if isinstance(paths, six.string_types):
+        if isinstance(paths, str):
             paths = [paths]
         paths = [os.path.normpath(p) for p in paths]
         return self._check_files(paths)

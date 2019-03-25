@@ -19,8 +19,6 @@ import abc
 import logging
 import os
 
-import six
-
 from galaxy.common import logutils
 from galaxy.importer.utils import readme as readmeutils
 from galaxy.main import models
@@ -82,8 +80,7 @@ COMPATIBILITY_SEVERITY = {
 }
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseLoader(object):
+class BaseLoader(metaclass=abc.ABCMeta):
 
     content_types = None
     linters = None
