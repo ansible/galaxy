@@ -21,13 +21,14 @@ import { CardPlatformsComponent } from './cards/platforms/platforms.component';
 import { QualityDetailsComponent } from './cards/quality-details/quality-details.component';
 import { CardVersionsComponent } from './cards/versions/versions.component';
 
-import { ContentDetailComponent } from './content-detail.component';
+import { RepositoryDetailComponent } from './repository-detail/repository-detail.component';
+import { CollectionDetailComponent } from './collection-detail/collection-detail.component';
 import { ContentDetailRoutingModule } from './content-detail.routing.module';
 import { ModuleUtilsComponent } from './content/module-utils/module-utils.component';
 import { ModulesComponent } from './content/modules/modules.component';
 import { PluginsComponent } from './content/plugins/plugins.component';
 import { RolesComponent } from './content/roles/roles.component';
-import { RepositoryComponent } from './repository/repository.component';
+import { ContentHeaderComponent } from './content-header/content-header.component';
 
 import { ScoreBarComponent } from './shared/score-bar/score-bar.component';
 
@@ -46,8 +47,9 @@ import { ScoreBarComponent } from './shared/score-bar/score-bar.component';
         UtilitiesModule,
     ],
     declarations: [
-        ContentDetailComponent,
-        RepositoryComponent,
+        RepositoryDetailComponent,
+        CollectionDetailComponent,
+        ContentHeaderComponent,
         CardInfoComponent,
         CardPlatformsComponent,
         CardVersionsComponent,

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { AuthorDetailComponent } from './authors/detail/author-detail.component';
-import { ContentDetailComponent } from './content-detail/content-detail.component';
+import { RepositoryDetailComponent } from './content-detail/repository-detail/repository-detail.component';
+import { CollectionDetailComponent } from './content-detail/collection-detail/collection-detail.component';
 import { NotFoundComponent } from './exception-pages/not-found/not-found.component';
 
 import {
@@ -34,9 +35,11 @@ const appRoutes: Routes = [
     // Routes that resolve variables have to go in app-routing.module to ensure
     // that they are resolved between the static routes ('/search', '/my-content' etc)
     // and the wildcard ('**')
+
+    // Repository Routes
     {
-        path: ':namespace/:repository/:content_name',
-        component: ContentDetailComponent,
+        path: 'repositories/:namespace/:repository/:content_name',
+        component: RepositoryDetailComponent,
         resolve: {
             content: ContentResolver,
             repository: ContentRepositoryResolver,
@@ -44,13 +47,45 @@ const appRoutes: Routes = [
         },
     },
     {
-        path: ':namespace/:repository',
-        component: ContentDetailComponent,
+        path: 'repositories/:namespace/:repository',
+        component: RepositoryDetailComponent,
         resolve: {
             content: ContentResolver,
             repository: ContentRepositoryResolver,
             namespace: NamespaceResolver,
         },
+    },
+    {
+        path: 'repositories/:namespace',
+        redirectTo: ':namespace',
+    },
+    {
+        path: 'repositories',
+        redirectTo: 'search',
+    },
+
+    // Collection Routes
+    {
+        path: 'collections/:namespace/:repository',
+        component: CollectionDetailComponent,
+    },
+    {
+        path: 'collections/:namespace',
+        redirectTo: ':namespace',
+    },
+    {
+        path: 'collections',
+        redirectTo: 'search',
+    },
+
+    // Legacy repository routes
+    {
+        path: ':namespace/:repository/:content_name',
+        redirectTo: 'repositories/:namespace/:repository/:content_name',
+    },
+    {
+        path: ':namespace/:repository',
+        redirectTo: 'repositories/:namespace/:repository',
     },
     {
         path: ':namespace',

@@ -12,20 +12,20 @@ import { ListConfig } from 'patternfly-ng/list/basic-list/list-config';
 
 import { Action, ActionConfig } from 'patternfly-ng/action';
 
-import { ContentTypes } from '../enums/content-types.enum';
-import { PluginTypes } from '../enums/plugin-types.enum';
-import { RepoFormats } from '../enums/repo-types.enum';
-import { ViewTypes } from '../enums/view-types.enum';
-import { Content } from '../resources/content/content';
-import { Namespace } from '../resources/namespaces/namespace';
-import { PagedResponse } from '../resources/paged-response';
-import { Repository } from '../resources/repositories/repository';
-import { Version } from '../resources/repositories/version';
+import { ContentTypes } from '../../enums/content-types.enum';
+import { PluginTypes } from '../../enums/plugin-types.enum';
+import { RepoFormats } from '../../enums/repo-types.enum';
+import { ViewTypes } from '../../enums/view-types.enum';
+import { Content } from '../../resources/content/content';
+import { Namespace } from '../../resources/namespaces/namespace';
+import { PagedResponse } from '../../resources/paged-response';
+import { Repository } from '../../resources/repositories/repository';
+import { Version } from '../../resources/repositories/version';
 
-import { ContentService } from '../resources/content/content.service';
-import { RepositoryService } from '../resources/repositories/repository.service';
+import { ContentService } from '../../resources/content/content.service';
+import { RepositoryService } from '../../resources/repositories/repository.service';
 
-import { CommunityDetails, DetailMessage } from './cards/survey/types';
+import { CommunityDetails, DetailMessage } from '../cards/survey/types';
 
 class ContentTypeCounts {
     apb: number;
@@ -36,13 +36,13 @@ class ContentTypeCounts {
 }
 
 @Component({
-    selector: 'app-content-detail',
-    templateUrl: './content-detail.component.html',
-    styleUrls: ['./content-detail.component.less'],
+    selector: 'app-repo-detail',
+    templateUrl: './repository-detail.component.html',
+    styleUrls: ['./repository-detail.component.less'],
 })
-export class ContentDetailComponent implements OnInit {
+export class RepositoryDetailComponent implements OnInit {
     // Used to track which component is being loaded
-    componentName = 'ContentDetailComponent';
+    componentName = 'RepositoryDetailComponent';
 
     constructor(
         private router: Router,

@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <content-detail-repo [repository]="repository" [namespace]="namespace" *ngIf="!showEmptyState"></content-detail-repo>
+        <app-content-header [repository]="repository" [namespace]="namespace" *ngIf="!showEmptyState"></app-content-header>
 
         <div class="row btn-row" *ngIf="!showEmptyState">
             <div class="col-sm-12">
