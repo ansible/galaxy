@@ -93,6 +93,7 @@ rst2html5-tools==0.5.3
 ruamel.yaml==0.15.85      # via ansible-lint, drf-yasg
 s3transfer==0.2.0         # via boto3
 semantic-version==2.6.0
+six==1.12.0               # via ansible-lint, bcrypt, bleach, cryptography, drf-yasg, dynaconf, influxdb, packaging, pynacl, pyopenssl, python-dateutil, sphinx
 snowballstemmer==1.2.1    # via sphinx
 sphinx==1.7.9
 sphinxcontrib-websupport==1.1.0  # via sphinx
