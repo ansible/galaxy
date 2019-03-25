@@ -31,12 +31,12 @@ class VersionSerializer(serializers.ModelSerializer):
         fields = (
             'version',
             'metadata',
-            'contents'
+            'contents',
+            'quality_score'
         )
 
 
 class CollectionListSerializer(serializers.ModelSerializer):
-    quality_score = serializers.SerializerMethodField()
     latest_version = serializers.SerializerMethodField()
 
     class Meta:
@@ -47,16 +47,8 @@ class CollectionListSerializer(serializers.ModelSerializer):
             'deprecated',
             'download_count',
             'community_score',
-            'quality_score',
             'latest_version',
         )
-
-    def get_quality_score(self, obj):
-        latest_version = models.CollectionVersion.objects.filter(
-            collection=obj
-        ).latest('pk')
-
-        return latest_version.quality_score
 
     def get_latest_version(self, obj):
         latest_version = models.CollectionVersion.objects.filter(

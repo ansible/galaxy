@@ -6,8 +6,6 @@ import { Link } from '../../lib/link';
 import {
     ListView,
     ListViewItem,
-    OverlayTrigger,
-    Tooltip,
     Button,
     DropdownKebab,
     MenuItem,
@@ -38,6 +36,7 @@ export class CollectionListItem extends React.Component<IProps, {}> {
                         {collection.name}
                     </Link>
                 }
+                description={collection.latest_version.metadata.description}
                 additionalInfo={this.renderAdditional(collection)}
                 actions={this.renderActions(collection)}
             />
@@ -78,9 +77,15 @@ export class CollectionListItem extends React.Component<IProps, {}> {
     private renderAdditional(collection) {
         const items = [];
 
+        const scoreData = {
+            community_score: collection.community_score,
+            quality_score: collection.latest_version.quality_score,
+            community_survey_count: collection.community_survey_count,
+        };
+
         items.push(
             <ListView.InfoItem key='repo-score'>
-                <Score repo={collection} />
+                <Score repo={scoreData} />
             </ListView.InfoItem>,
         );
 

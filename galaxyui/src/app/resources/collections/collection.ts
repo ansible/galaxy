@@ -17,12 +17,17 @@ export class CollectionList {
     download_count: number;
     deprecated: boolean;
     community_score: number;
-    quality_score: number;
-    quality_score_date: string;
     community_survey_count: number;
     latest_version: {
+        quality_score: number;
         version: string;
-        metadata: any;
+        metadata: {
+            tags: string[];
+            authors: string[];
+            license: string;
+            homepage: string;
+            description: string;
+        };
         contents: any;
     };
 }
