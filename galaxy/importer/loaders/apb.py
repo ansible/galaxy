@@ -18,7 +18,6 @@
 import os
 import re
 
-import six
 import semantic_version as semver
 import yaml
 
@@ -67,7 +66,7 @@ class APBMetaParser(object):
 
     def _check_version(self):
         version = self._get_key('version')
-        if not isinstance(version, six.string_types):
+        if not isinstance(version, str):
             self.log.warning('Version value in metadata is not a string')
             return
         try:

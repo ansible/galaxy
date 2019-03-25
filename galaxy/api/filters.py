@@ -19,8 +19,6 @@
 #   to `galaxy.api.v1` package and eventually removed.
 import re
 
-import six
-
 # Django
 from django.core.exceptions import (
     FieldError, ValidationError, ObjectDoesNotExist)
@@ -95,7 +93,7 @@ class _FieldLookupBackend(BaseFilterBackend):
         return field
 
     def to_python_boolean(self, value, allow_none=False):
-        value = six.text_type(value)
+        value = str(value)
         if value.lower() in ('true', '1'):
             return True
         elif value.lower() in ('false', '0'):
@@ -107,7 +105,7 @@ class _FieldLookupBackend(BaseFilterBackend):
                 u'Unable to convert "{}" to boolean'.format(value))
 
     def to_python_related(self, value):
-        value = six.text_type(value)
+        value = str(value)
         if value.lower() in ('none', 'null'):
             return None
         else:

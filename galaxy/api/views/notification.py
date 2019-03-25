@@ -1,10 +1,10 @@
 import base64
 import json
 import logging
+import urllib.parse as urlparse
 
 from hashlib import sha256
 import requests
-from six.moves.urllib import parse as urlparse
 
 from OpenSSL import crypto
 from django.conf import settings

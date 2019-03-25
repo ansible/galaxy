@@ -15,8 +15,6 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import six
-
 
 __all__ = ['DirtyMixin']
 
@@ -32,7 +30,7 @@ class DirtyMixin(object):
     @property
     def is_dirty(self):
         missing = object()
-        for key, value in six.iteritems(self._original_state):
+        for key, value in self._original_state.items():
             if value != self.__dict__.get(key, missing):
                 return True
         return False

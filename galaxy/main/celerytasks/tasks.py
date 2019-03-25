@@ -20,14 +20,12 @@ import logging
 
 import celery
 import github
-import six
 
 from django.db import transaction
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 
-from galaxy.main.models import (Content,
-                                ImportTask)
+from galaxy.main.models import Content, ImportTask
 from galaxy.main import models
 from galaxy import constants
 
@@ -214,7 +212,7 @@ def refresh_user_stars(user, token):
     old_starred = {(s.repository.github_user, s.repository.github_repo): s.id
                    for s in user.starred.select_related('repository').all()}
 
-    to_remove = [v for k, v in six.iteritems(old_starred)
+    to_remove = [v for k, v in old_starred.items()
                  if k not in new_starred]
     to_add = new_starred - set(old_starred)
 

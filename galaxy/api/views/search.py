@@ -17,8 +17,7 @@
 
 import operator
 from collections import OrderedDict
-
-import six
+import functools
 
 from django.db.models import F, Func, Value, Count, ExpressionWrapper, Q
 from django.db.models.functions import Coalesce
@@ -230,7 +229,7 @@ class ContentSearchView(base.ListAPIView):
         if not namespaces:
             return queryset
         queries = [Q(namespace__name__icontains=name) for name in namespaces]
-        query = six.moves.reduce(operator.or_, queries)
+        query = functools.reduce(operator.or_, queries)
         return queryset.filter(query)
 
     @staticmethod
@@ -254,7 +253,7 @@ class ContentSearchView(base.ListAPIView):
             return queryset.annotate(
                 search_rank=Value(0.0, output_field=db_fields.FloatField()))
 
-        tsquery = six.moves.reduce(
+        tsquery = functools.reduce(
             operator.and_,
             (psql_search.SearchQuery(kw) for kw in keywords))
 

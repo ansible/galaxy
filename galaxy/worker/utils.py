@@ -16,15 +16,13 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import semantic_version
-import six
-
 
 from galaxy.main import models
 
 
 class Context(object):
     def __init__(self, **kwargs):
-        for arg, value in six.iteritems(kwargs):
+        for arg, value in kwargs.items():
             setattr(self, arg, value)
 
 
