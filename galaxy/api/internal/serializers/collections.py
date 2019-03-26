@@ -18,10 +18,6 @@
 from rest_framework import serializers
 from galaxy.main import models
 
-__all__ = [
-    'CollectionListSerializer',
-]
-
 
 class VersionSerializer(serializers.ModelSerializer):
     metadata = serializers.JSONField(binary=False)
@@ -37,7 +33,7 @@ class VersionSerializer(serializers.ModelSerializer):
 
 
 class CollectionListSerializer(serializers.ModelSerializer):
-    latest_version = serializers.SerializerMethodField()
+    latest_version = VersionSerializer()
 
     class Meta:
         model = models.Collection
@@ -49,10 +45,3 @@ class CollectionListSerializer(serializers.ModelSerializer):
             'community_score',
             'latest_version',
         )
-
-    def get_latest_version(self, obj):
-        latest_version = models.CollectionVersion.objects.filter(
-            collection=obj
-        ).latest('pk')
-
-        return VersionSerializer(latest_version).data

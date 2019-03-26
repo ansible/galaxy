@@ -61,6 +61,12 @@ class Collection(mixins.TimestampsMixin, models.Model):
             psql_indexes.GinIndex(fields=['search_vector'])
         ]
 
+    @property
+    def latest_version(self):
+        return CollectionVersion.objects.filter(
+            collection=self
+        ).latest('pk')
+
 
 class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
     """
