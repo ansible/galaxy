@@ -208,13 +208,14 @@ class BaseLoader(metaclass=abc.ABCMeta):
         content_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in content_m]
         meta_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in meta_m]
 
-        scores = {}
-        scores['content'] = max(0.0, (BASE_SCORE - sum(content_w)) / 10)
-        scores['metadata'] = max(0.0, (BASE_SCORE - sum(meta_w)) / 10)
-        scores['compatibility'] = None
-        scores['quality'] = sum([scores['content'], scores['metadata']]) / 2.0
+        content_score = max(0.0, (BASE_SCORE - sum(content_w)) / 10)
+        metadata_score = max(0.0, (BASE_SCORE - sum(meta_w)) / 10)
 
-        return scores
+        return {
+            'content': content_score, 'metadata': metadata_score,
+            'compatibility': None,
+            'quality': sum([content_score, metadata_score]) / 2.0
+        }
 
 
 def make_module_name(path):
