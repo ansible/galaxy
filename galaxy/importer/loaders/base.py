@@ -35,6 +35,7 @@ SEVERITY_TO_WEIGHT = {
     4: 5.0,
     5: 10.0,
 }
+CONTENT_SEVERITY_TYPE = 'content'
 CONTENT_SEVERITY = {
     'ansible-lint_e101': 3,
     'ansible-lint_e102': 4,
@@ -66,6 +67,7 @@ CONTENT_SEVERITY = {
     'yamllint_yaml_error': 4,
     'yamllint_yaml_warning': 1,
 }
+METADATA_SEVERITY_TYPE = 'metadata'
 METADATA_SEVERITY = {
     'ansible-lint_e701': 4,
     'ansible-lint_e702': 4,
@@ -75,13 +77,28 @@ METADATA_SEVERITY = {
     'importer_importer102': 3,  # RoleImporter
     'importer_importer103': 4,  # RoleImporter
 }
+COMPATIBILITY_SEVERITY_TYPE = 'compatibility'
 COMPATIBILITY_SEVERITY = {
     'importer_not_all_versions_tested': 5,  # RoleMetaParser
 }
 
 
-class BaseLoader(metaclass=abc.ABCMeta):
+def lookup_lint_rule(rule_code):
+    """Lookup lint rule and return its type and severity.
 
+    :param rule_code: Rule code in `<linter_type>_<code>` format.
+    :return: Tuple of rule type string and severity, None if rule not found.
+    """
+    if rule_code in CONTENT_SEVERITY:
+        return CONTENT_SEVERITY_TYPE, CONTENT_SEVERITY[rule_code]
+    elif rule_code in METADATA_SEVERITY:
+        return METADATA_SEVERITY_TYPE, METADATA_SEVERITY[rule_code]
+    elif rule_code in COMPATIBILITY_SEVERITY:
+        return COMPATIBILITY_SEVERITY_TYPE, COMPATIBILITY_SEVERITY[rule_code]
+    return None
+
+
+class BaseLoader(metaclass=abc.ABCMeta):
     content_types = None
     linters = None
     can_get_scored = False
@@ -140,13 +157,7 @@ class BaseLoader(metaclass=abc.ABCMeta):
                     linter_ok = False
                 error_id, rule_desc = linter_obj.parse_id_and_desc(message)
                 if error_id:
-                    extra = {
-                        'is_linter_rule_violation': True,
-                        'linter_type': linter_cls.id,
-                        'linter_rule_id': error_id,
-                        'rule_desc': rule_desc
-                    }
-                    self.log.warning(message, extra=extra)
+                    self._on_lint_issue(linter_cls.id, error_id, rule_desc)
                 else:
                     self.log.warning(message)
                 all_linters_ok = False
@@ -154,6 +165,15 @@ class BaseLoader(metaclass=abc.ABCMeta):
                 self.log.info('{} OK.'.format(linter_obj.id))
 
         return all_linters_ok
+
+    def _on_lint_issue(self, linter_type, rule_id, message):
+        extra = {
+            'is_linter_rule_violation': True,
+            'linter_type': linter_type,
+            'linter_rule_id': rule_id,
+            'rule_desc': message
+        }
+        self.log.warning(message, extra=extra)
 
     # FIXME(cutwater): Due to current object model current object limitation
     # this leads to copying README file over multiple roles.
@@ -177,15 +197,11 @@ class BaseLoader(metaclass=abc.ABCMeta):
         for msg in import_task_messages:
             rule_code = '{}_{}'.format(msg.linter_type,
                                        msg.linter_rule_id).lower()
-            if rule_code in CONTENT_SEVERITY:
-                msg.score_type = 'content'
-                msg.rule_severity = CONTENT_SEVERITY[rule_code]
-            elif rule_code in METADATA_SEVERITY:
-                msg.score_type = 'metadata'
-                msg.rule_severity = METADATA_SEVERITY[rule_code]
-            elif rule_code in COMPATIBILITY_SEVERITY:
-                msg.score_type = 'compatibility'
-                msg.rule_severity = COMPATIBILITY_SEVERITY[rule_code]
+            rule_info = lookup_lint_rule(rule_code)
+
+            if rule_info is not None:
+                msg.score_type = rule_info[0]
+                msg.rule_severity = rule_info[1]
             else:
                 self.log.warning(
                     u'Severity not found for rule: {}'.format(rule_code))
@@ -208,13 +224,14 @@ class BaseLoader(metaclass=abc.ABCMeta):
         content_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in content_m]
         meta_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in meta_m]
 
-        scores = {}
-        scores['content'] = max(0.0, (BASE_SCORE - sum(content_w)) / 10)
-        scores['metadata'] = max(0.0, (BASE_SCORE - sum(meta_w)) / 10)
-        scores['compatibility'] = None
-        scores['quality'] = sum([scores['content'], scores['metadata']]) / 2.0
+        content_score = max(0.0, (BASE_SCORE - sum(content_w)) / 10)
+        metadata_score = max(0.0, (BASE_SCORE - sum(meta_w)) / 10)
 
-        return scores
+        return {
+            'content': content_score, 'metadata': metadata_score,
+            'compatibility': None,
+            'quality': sum([content_score, metadata_score]) / 2.0
+        }
 
 
 def make_module_name(path):
