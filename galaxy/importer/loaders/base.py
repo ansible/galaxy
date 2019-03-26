@@ -157,13 +157,7 @@ class BaseLoader(metaclass=abc.ABCMeta):
                     linter_ok = False
                 error_id, rule_desc = linter_obj.parse_id_and_desc(message)
                 if error_id:
-                    extra = {
-                        'is_linter_rule_violation': True,
-                        'linter_type': linter_cls.id,
-                        'linter_rule_id': error_id,
-                        'rule_desc': rule_desc
-                    }
-                    self.log.warning(message, extra=extra)
+                    self._on_lint_issue(linter_cls.id, error_id, rule_desc)
                 else:
                     self.log.warning(message)
                 all_linters_ok = False
@@ -171,6 +165,15 @@ class BaseLoader(metaclass=abc.ABCMeta):
                 self.log.info('{} OK.'.format(linter_obj.id))
 
         return all_linters_ok
+
+    def _on_lint_issue(self, linter_type, rule_id, message):
+        extra = {
+            'is_linter_rule_violation': True,
+            'linter_type': linter_type,
+            'linter_rule_id': rule_id,
+            'rule_desc': message
+        }
+        self.log.warning(message, extra=extra)
 
     # FIXME(cutwater): Due to current object model current object limitation
     # this leads to copying README file over multiple roles.

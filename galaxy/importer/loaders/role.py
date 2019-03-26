@@ -450,13 +450,7 @@ class RoleLoader(base.BaseLoader):
                 )
                 if not platform_objs:
                     msg = u'Invalid platform: "{}-all", skipping.'.format(name)
-                    linter_data = {
-                        'is_linter_rule_violation': True,
-                        'linter_type': 'importer',
-                        'linter_rule_id': 'IMPORTER101',
-                        'rule_desc': msg,
-                    }
-                    self.log.warning(msg, extra=linter_data)
+                    self._on_lint_issue('importer', 'IMPORTER101', msg)
                     continue
                 for p in platform_objs:
                     confirmed_platforms.append(p)
@@ -470,13 +464,7 @@ class RoleLoader(base.BaseLoader):
                 except m_models.Platform.DoesNotExist:
                     msg = (u'Invalid platform: "{0}-{1}", skipping.'
                            .format(name, version))
-                    linter_data = {
-                        'is_linter_rule_violation': True,
-                        'linter_type': 'importer',
-                        'linter_rule_id': 'IMPORTER101',
-                        'rule_desc': msg,
-                    }
-                    self.log.warning(msg, extra=linter_data)
+                    self._on_lint_issue('importer', 'IMPORTER101', msg)
                 else:
                     confirmed_platforms.append(p)
 
@@ -491,13 +479,7 @@ class RoleLoader(base.BaseLoader):
                 c = m_models.CloudPlatform.objects.get(name__iexact=name)
             except m_models.CloudPlatform.DoesNotExist:
                 msg = u'Invalid cloud platform: "{0}", skipping'.format(name)
-                linter_data = {
-                    'is_linter_rule_violation': True,
-                    'linter_type': 'importer',
-                    'linter_rule_id': 'IMPORTER102',
-                    'rule_desc': msg,
-                }
-                self.log.warning(msg, extra=linter_data)
+                self._on_lint_issue('importer', 'IMPORTER102', msg)
             else:
                 confirmed_platforms.append(c)
 
@@ -515,12 +497,6 @@ class RoleLoader(base.BaseLoader):
             except Exception:
                 msg = u"Error loading dependency: '{}'".format(
                     '.'.join([d for d in dep]))
-                linter_data = {
-                    'is_linter_rule_violation': True,
-                    'linter_type': 'importer',
-                    'linter_rule_id': 'IMPORTER103',
-                    'rule_desc': msg,
-                }
-                self.log.warning(msg, extra=linter_data)
+                self._on_lint_issue('importer', 'IMPORTER103', msg)
 
         self.data['dependencies'] = confirmed_deps
