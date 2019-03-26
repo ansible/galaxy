@@ -35,6 +35,7 @@ SEVERITY_TO_WEIGHT = {
     4: 5.0,
     5: 10.0,
 }
+CONTENT_SEVERITY_TYPE = 'content'
 CONTENT_SEVERITY = {
     'ansible-lint_e101': 3,
     'ansible-lint_e102': 4,
@@ -66,6 +67,7 @@ CONTENT_SEVERITY = {
     'yamllint_yaml_error': 4,
     'yamllint_yaml_warning': 1,
 }
+METADATA_SEVERITY_TYPE = 'metadata'
 METADATA_SEVERITY = {
     'ansible-lint_e701': 4,
     'ansible-lint_e702': 4,
@@ -75,13 +77,28 @@ METADATA_SEVERITY = {
     'importer_importer102': 3,  # RoleImporter
     'importer_importer103': 4,  # RoleImporter
 }
+COMPATIBILITY_SEVERITY_TYPE = 'compatibility'
 COMPATIBILITY_SEVERITY = {
     'importer_not_all_versions_tested': 5,  # RoleMetaParser
 }
 
 
-class BaseLoader(metaclass=abc.ABCMeta):
+def lookup_lint_rule(rule_code):
+    """Lookup lint rule and return its type and severity.
 
+    :param rule_code: Rule code in `<linter_type>_<code>` format.
+    :return: Tuple of rule type string and severity, None if rule not found.
+    """
+    if rule_code in CONTENT_SEVERITY:
+        return CONTENT_SEVERITY_TYPE, CONTENT_SEVERITY[rule_code]
+    elif rule_code in METADATA_SEVERITY:
+        return METADATA_SEVERITY_TYPE, METADATA_SEVERITY[rule_code]
+    elif rule_code in COMPATIBILITY_SEVERITY:
+        return COMPATIBILITY_SEVERITY_TYPE, COMPATIBILITY_SEVERITY[rule_code]
+    return None
+
+
+class BaseLoader(metaclass=abc.ABCMeta):
     content_types = None
     linters = None
     can_get_scored = False
@@ -177,15 +194,11 @@ class BaseLoader(metaclass=abc.ABCMeta):
         for msg in import_task_messages:
             rule_code = '{}_{}'.format(msg.linter_type,
                                        msg.linter_rule_id).lower()
-            if rule_code in CONTENT_SEVERITY:
-                msg.score_type = 'content'
-                msg.rule_severity = CONTENT_SEVERITY[rule_code]
-            elif rule_code in METADATA_SEVERITY:
-                msg.score_type = 'metadata'
-                msg.rule_severity = METADATA_SEVERITY[rule_code]
-            elif rule_code in COMPATIBILITY_SEVERITY:
-                msg.score_type = 'compatibility'
-                msg.rule_severity = COMPATIBILITY_SEVERITY[rule_code]
+            rule_info = lookup_lint_rule(rule_code)
+
+            if rule_info is not None:
+                msg.score_type = rule_info[0]
+                msg.rule_severity = rule_info[1]
             else:
                 self.log.warning(
                     u'Severity not found for rule: {}'.format(rule_code))
