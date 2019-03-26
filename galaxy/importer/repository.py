@@ -21,8 +21,7 @@ from galaxy import constants
 from galaxy.importer import loaders
 from galaxy.importer import models
 from galaxy.importer.utils import git
-from galaxy.importer.utils import readme as readmeutils
-from galaxy.importer import finders as finders_
+from galaxy.importer.finders import RoleFinder
 from galaxy.importer import exceptions as exc
 
 
@@ -51,13 +50,6 @@ def load_repository(directory, logger=None):
 class RepositoryLoader(object):
     """Loads repository and content info."""
 
-    finders = [
-        # finders_.MetadataFinder,
-        finders_.ApbFinder,
-        finders_.RoleFinder,
-        finders_.FileSystemFinder,
-    ]
-
     def __init__(self, path, name=None, logger=None):
         """
         :param str path: Path to the repository directory.
@@ -72,41 +64,40 @@ class RepositoryLoader(object):
     def load(self):
         branch = git.get_current_branch(directory=self.path)
         commit = git.get_commit_info(directory=self.path)
-        finder, contents = self._find_contents()
-        result = list(self._load_contents(contents))
-        readme = self._get_readme(finder.repository_format)
-        description = None
+        role = self._find_contents()
+        result = list(self._load_contents(role))
 
         name = None
-        if finder.repository_format in (constants.RepositoryFormat.ROLE,
-                                        constants.RepositoryFormat.APB):
-            if result[0][0].name:
-                name = result[0][0].name
-            if result[0][0].description:
-                description = result[0][0].description
+        description = None
+        if result[0][0].name:
+            name = result[0][0].name
+        if result[0][0].description:
+            description = result[0][0].description
 
         quality_score = self._get_repo_quality_score(result)
 
         return models.Repository(
             branch=branch,
             commit=commit,
-            format=finder.repository_format,
+            format=constants.RepositoryFormat.ROLE,
             contents=[v[0] for v in result],
-            readme=readme,
             name=name,
             description=description,
             quality_score=quality_score,
         )
 
     def _find_contents(self):
-        for finder_cls in self.finders:
-            try:
-                finder = finder_cls(self.path, self.log)
-                contents = finder.find_contents()
-                return finder, contents
-            except exc.ContentNotFound:
-                pass
-        raise exc.ContentNotFound("No content found in repository")
+        try:
+            finder = RoleFinder(self.path, self.log)
+            role = finder.find_contents()
+            return role
+        except exc.ContentNotFound:
+            pass
+        raise exc.ContentNotFound(
+            'Role not found. '
+            'GitHub repository import supports only a single top-level role. '
+            'To import multiple contents, please follow '
+            'the collection import workflow.')
 
     def _load_contents(self, contents):
         for content_type, rel_path, extra in contents:
@@ -127,14 +118,6 @@ class RepositoryLoader(object):
             self.log.info(' ')
 
             yield content, lint_result
-
-    def _get_readme(self, repository_format):
-        if repository_format == constants.RepositoryFormat.MULTI:
-            try:
-                return readmeutils.get_readme(directory=self.path)
-            except readmeutils.FileSizeError as e:
-                self.log.warning(e)
-        return None
 
     def _get_repo_quality_score(self, result):
         repo_points = 0.0
