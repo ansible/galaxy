@@ -52,8 +52,6 @@ class CollectionListView(views.APIView):
         data = serializer.validated_data
 
         # TODO(cutwater): Merge Artifact and UploadCollectionSerializers
-        # TODO(cutwater): Extract namespace and name from `METADATA.json`
-        #                 and validate that collection name matches filename.
         namespace = self._get_namespace(data)
         self._check_namespace_access(namespace, request.user)
         self._check_version_conflict(namespace, data['filename'])
@@ -79,6 +77,7 @@ class CollectionListView(views.APIView):
                 'repository_pk': repository.pk,
                 'namespace_pk': namespace.pk,
                 'task_id': import_task.id,
+                'filename': data['filename'],
             })
 
         task = pulp_models.Task.objects.get(job_id=async_result.id)

@@ -18,6 +18,8 @@
 import os
 import logging
 
+import semantic_version
+
 from galaxy.importer.models import CollectionArtifactManifest, Collection
 from galaxy.importer.utils import readme as readmeutils
 from galaxy.importer.finders import FileSystemFinder
@@ -28,17 +30,18 @@ from galaxy.importer import exceptions as exc
 default_logger = logging.getLogger(__name__)
 
 
-def import_collection(directory, logger=None):
+def import_collection(directory, filename, logger=None):
     logger = logger or default_logger
-    return CollectionLoader(directory, logger=logger).load()
+    return CollectionLoader(directory, filename, logger=logger).load()
 
 
 class CollectionLoader(object):
     """Loads collection and content info."""
 
-    def __init__(self, path, logger=None):
+    def __init__(self, path, filename, logger=None):
         self.log = logger or default_logger
         self.path = path
+        self.filename = filename
 
         self.collection_info = None
         self.contents = None
@@ -46,6 +49,7 @@ class CollectionLoader(object):
 
     def load(self):
         self._load_collection_manifest()
+        self._check_filename_matches_manifest()
         self._load_collection_readme()
 
         content_list = self._find_contents()
@@ -97,6 +101,16 @@ class CollectionLoader(object):
             raise exc.ManifestValidationError(
                 'Readme listed in manifest not found: '
                 '{}'.format(self.collection_info.readme))
+
+    def _check_filename_matches_manifest(self):
+        metadata = self.collection_info
+        f = self.filename
+        if f.namespace != metadata.namespace or f.name != metadata.name:
+            raise exc.ManifestValidationError(
+                'Filename did not match metadata')
+        if f.version != semantic_version.Version(metadata.version):
+            raise exc.ManifestValidationError(
+                'Filename version did not match metadata')
 
     def _find_contents(self):
         try:
