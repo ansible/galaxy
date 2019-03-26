@@ -16,9 +16,19 @@
 from galaxy.api.internal import serializers
 from galaxy.main import models
 from rest_framework import generics
+from django import shortcuts
+
 
 
 class CollectionList(generics.ListAPIView):
     model = models.Collection
     serializer_class = serializers.CollectionListSerializer
     queryset = models.Collection.objects.all()
+
+
+class CollectionDetail(generics.RetrieveAPIView):
+    model = models.Collection
+    serializer_class = serializers.CollectionDetailSerializer
+
+    def get_object(self):
+        return shortcuts.get_object_or_404(self.model, **self.kwargs)

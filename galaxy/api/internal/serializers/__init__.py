@@ -16,7 +16,8 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from .collections import (  # noqa: F401
-    CollectionListSerializer
+    CollectionListSerializer,
+    CollectionDetailSerializer
 )
 from .imports import (  # noqa: F401
     CollectionImportTaskItem,
@@ -25,6 +26,7 @@ from .imports import (  # noqa: F401
 
 __all__ = (
     'CollectionListSerializer',
+    'CollectionDetailSerializer',
     'RepositoryImportTaskItem',
     'CollectionImportTaskItem',
 )

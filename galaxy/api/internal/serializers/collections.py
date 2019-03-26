@@ -1,3 +1,4 @@
+
 # (c) 2012-2019, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
@@ -19,31 +20,61 @@ from rest_framework import serializers
 from galaxy.main import models
 
 
-class VersionSerializer(serializers.ModelSerializer):
+collection_list_fields = (
+    'created',
+    'modified',
+    'namespace',
+    'name',
+    'deprecated',
+    'download_count',
+    'community_score',
+    'latest_version',
+)
+
+version_list_fields = (
+    'version',
+    'quality_score',
+)
+
+
+class VersionListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CollectionVersion
+        fields = version_list_fields
+
+
+class VersionDetailSerializer(serializers.ModelSerializer):
     metadata = serializers.JSONField(binary=False)
     contents = serializers.JSONField(binary=False)
 
     class Meta:
         model = models.CollectionVersion
-        fields = (
-            'version',
+        fields = version_list_fields + (
             'metadata',
             'contents',
-            'quality_score'
         )
 
 
 class CollectionListSerializer(serializers.ModelSerializer):
-    latest_version = VersionSerializer()
+    latest_version = VersionDetailSerializer()
 
     class Meta:
         model = models.Collection
-        fields = (
-            'namespace',
-            'name',
-            'deprecated',
-            'download_count',
-            'community_score',
-            'community_survey_count',
-            'latest_version',
+        fields = collection_list_fields
+
+
+class CollectionDetailSerializer(serializers.ModelSerializer):
+    all_versions = serializers.SerializerMethodField()
+    latest_version = VersionDetailSerializer()
+
+    class Meta:
+        model = models.Collection
+        fields = collection_list_fields + ('all_versions',)
+        depth = 1
+
+    def get_all_versions(self, obj):
+        versions = models.CollectionVersion.objects.filter(
+            collection=obj,
+            hidden=False
         )
+        return VersionListSerializer(versions, many=True).data
