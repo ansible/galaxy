@@ -52,12 +52,6 @@ class RoleMetaParser(object):
         'vimeo': 'https://player.vimeo.com/video/{0}',
         'youtube': 'https://www.youtube.com/embed/{0}',
     }
-    linter_data = {
-        'is_linter_rule_violation': True,
-        'linter_type': 'importer',
-        'linter_rule_id': None,
-        'rule_desc': None
-    }
 
     def __init__(self, metadata, logger=None):
         self.log = logger or base.default_logger
@@ -185,9 +179,13 @@ class RoleMetaParser(object):
                    "supported ansible version, set 'min_ansible_version'"
                    "in 'meta/main.yml' and see: "
                    "https://molecule.readthedocs.io/en/latest/ci.html#tox")
-            self.linter_data['linter_rule_id'] = 'not_all_versions_tested'
-            self.linter_data['rule_desc'] = msg
-            self.log.warning(msg, extra=self.linter_data)
+            linter_data = {
+                'is_linter_rule_violation': True,
+                'linter_type': 'importer',
+                'linter_rule_id': 'not_all_versions_tested',
+                'rule_desc': msg,
+            }
+            self.log.warning(msg, extra=linter_data)
 
     def _check_tox(self):
         SUPPORTED_MINOR_VERSIONS = ['2.5', '2.6', '2.7']
@@ -273,12 +271,6 @@ class RoleLoader(base.BaseLoader):
 
         self.meta_file = metadata_path
         self.data = {}
-        self.linter_data = {
-            'is_linter_rule_violation': True,
-            'linter_type': 'importer',
-            'linter_rule_id': None,
-            'rule_desc': None,
-        }
 
     def load(self):
         meta_parser = self._get_meta_parser()
@@ -458,9 +450,13 @@ class RoleLoader(base.BaseLoader):
                 )
                 if not platform_objs:
                     msg = u'Invalid platform: "{}-all", skipping.'.format(name)
-                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
-                    self.linter_data['rule_desc'] = msg
-                    self.log.warning(msg, extra=self.linter_data)
+                    linter_data = {
+                        'is_linter_rule_violation': True,
+                        'linter_type': 'importer',
+                        'linter_rule_id': 'IMPORTER101',
+                        'rule_desc': msg,
+                    }
+                    self.log.warning(msg, extra=linter_data)
                     continue
                 for p in platform_objs:
                     confirmed_platforms.append(p)
@@ -474,9 +470,13 @@ class RoleLoader(base.BaseLoader):
                 except m_models.Platform.DoesNotExist:
                     msg = (u'Invalid platform: "{0}-{1}", skipping.'
                            .format(name, version))
-                    self.linter_data['linter_rule_id'] = 'IMPORTER101'
-                    self.linter_data['rule_desc'] = msg
-                    self.log.warning(msg, extra=self.linter_data)
+                    linter_data = {
+                        'is_linter_rule_violation': True,
+                        'linter_type': 'importer',
+                        'linter_rule_id': 'IMPORTER101',
+                        'rule_desc': msg,
+                    }
+                    self.log.warning(msg, extra=linter_data)
                 else:
                     confirmed_platforms.append(p)
 
@@ -491,9 +491,13 @@ class RoleLoader(base.BaseLoader):
                 c = m_models.CloudPlatform.objects.get(name__iexact=name)
             except m_models.CloudPlatform.DoesNotExist:
                 msg = u'Invalid cloud platform: "{0}", skipping'.format(name)
-                self.linter_data['linter_rule_id'] = 'IMPORTER102'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
+                linter_data = {
+                    'is_linter_rule_violation': True,
+                    'linter_type': 'importer',
+                    'linter_rule_id': 'IMPORTER102',
+                    'rule_desc': msg,
+                }
+                self.log.warning(msg, extra=linter_data)
             else:
                 confirmed_platforms.append(c)
 
@@ -511,8 +515,12 @@ class RoleLoader(base.BaseLoader):
             except Exception:
                 msg = u"Error loading dependency: '{}'".format(
                     '.'.join([d for d in dep]))
-                self.linter_data['linter_rule_id'] = 'IMPORTER103'
-                self.linter_data['rule_desc'] = msg
-                self.log.warning(msg, extra=self.linter_data)
+                linter_data = {
+                    'is_linter_rule_violation': True,
+                    'linter_type': 'importer',
+                    'linter_rule_id': 'IMPORTER103',
+                    'rule_desc': msg,
+                }
+                self.log.warning(msg, extra=linter_data)
 
         self.data['dependencies'] = confirmed_deps
