@@ -23,6 +23,8 @@ from django.conf.urls import include, url
 
 from galaxy.api import views
 
+from galaxy.api.internal import urls as galaxyui_urls
+
 event_tracking_urls = [
     url(r'^influx_session/$',
         views.InfluxSession.as_view(), name='influx_session'),
@@ -302,6 +304,7 @@ me_urls = [
 internal_urls = [
     url(r'^events/', include(event_tracking_urls)),
     url(r'^me/', include(me_urls)),
+    url(r'galaxyui/', include(galaxyui_urls.galaxyui))
 ]
 
 

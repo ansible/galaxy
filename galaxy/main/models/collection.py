@@ -46,7 +46,8 @@ class Collection(mixins.TimestampsMixin, models.Model):
     search_vector = psql_search.SearchVectorField(default='')
     # Community and quality score
     download_count = models.IntegerField(default=0)
-    community_score = models.FloatField(default=0.0)
+    community_score = models.FloatField(null=True)
+    community_survey_count = models.IntegerField(default=0)
 
     # References
     tags = models.ManyToManyField('Tag')
@@ -59,6 +60,12 @@ class Collection(mixins.TimestampsMixin, models.Model):
         indexes = [
             psql_indexes.GinIndex(fields=['search_vector'])
         ]
+
+    @property
+    def latest_version(self):
+        return CollectionVersion.objects.filter(
+            collection=self
+        ).latest('pk')
 
 
 class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):

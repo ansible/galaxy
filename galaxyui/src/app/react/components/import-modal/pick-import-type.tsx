@@ -13,7 +13,7 @@ export class PickImportType extends React.Component<IProps, {}> {
                 <div className='button-container'>
                     <OverlayTrigger
                         overlay={
-                            <Tooltip>
+                            <Tooltip id='repository'>
                                 Legacy Role import. Does not support Collection
                                 format.
                             </Tooltip>
@@ -33,7 +33,7 @@ export class PickImportType extends React.Component<IProps, {}> {
 
                     <OverlayTrigger
                         overlay={
-                            <Tooltip>
+                            <Tooltip id='collection'>
                                 Used for distributing Galaxy hosted roles,
                                 modules and plugins.
                             </Tooltip>

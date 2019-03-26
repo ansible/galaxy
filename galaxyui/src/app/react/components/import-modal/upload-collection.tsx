@@ -5,6 +5,8 @@ interface IProps {
     errors: string;
     uploadProgress: number;
     uploadStatus: string;
+    collectionName?: string;
+
     handeFileUpload: (files: FileList) => void;
 }
 
@@ -12,7 +14,12 @@ export class UploadCollection extends React.Component<IProps, {}> {
     render() {
         return (
             <div className='upload-collection'>
-                <h4>Upload</h4>
+                <h4>
+                    Upload
+                    {this.props.collectionName
+                        ? ' a new version of ' + this.props.collectionName
+                        : ''}
+                </h4>
                 <form>
                     <input
                         disabled={this.props.uploadStatus !== 'waiting'}

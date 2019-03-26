@@ -52,6 +52,8 @@ import { TagsService } from './resources/tags/tags.service';
 import { UserService } from './resources/users/user.service';
 import { UserNotificationService } from './resources/notifications/user-notification.service';
 import { CollectionUploadService } from './resources/collections/collection.service';
+import { CollectionListService } from './resources/collections/collection.service';
+
 // import { MyImportsModule }            from './my-imports/my-imports.module';
 // import { SearchModule }               from './search/search.module';
 import { SharedModule } from './shared/shared.module';
@@ -108,6 +110,7 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
         PreferencesService,
         UserNotificationService,
         CollectionUploadService,
+        CollectionListService,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     bootstrap: [AppComponent],

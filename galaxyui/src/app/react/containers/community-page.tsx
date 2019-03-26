@@ -7,8 +7,8 @@ import {
     FilterConfig,
     FilterOption,
     AppliedFilter,
-} from '../components/patternfly-filter';
-import { SortConfig } from '../components/patternfly-sort';
+    SortConfig,
+} from '../shared-types/pf-toolbar';
 
 import CommunityComponent from '../components/community';
 

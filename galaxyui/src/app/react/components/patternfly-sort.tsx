@@ -1,17 +1,7 @@
 import * as React from 'react';
 
 import { Sort } from 'patternfly-react';
-
-class FieldOption {
-    id: string;
-    title: string;
-    sortType: string;
-}
-
-export class SortConfig {
-    fields: FieldOption[];
-    isAscending: boolean;
-}
+import { SortConfig, SortFieldOption } from '../shared-types/pf-toolbar';
 
 interface IProps {
     config: SortConfig;
@@ -20,7 +10,7 @@ interface IProps {
 
 interface IState {
     isAscending: boolean;
-    activeOption: FieldOption;
+    activeOption: SortFieldOption;
 }
 
 export class SortPF extends React.Component<IProps, IState> {

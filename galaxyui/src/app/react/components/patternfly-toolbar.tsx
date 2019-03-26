@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { Toolbar } from 'patternfly-react';
+import { FilterPF, ToolBarResultsPF } from './patternfly-filter';
+import { SortPF } from './patternfly-sort';
+
+import { SortConfig } from '../shared-types/pf-toolbar';
+
 import {
-    FilterPF,
     FilterConfig,
     AppliedFilter,
-    ToolBarResultsPF,
     FilterOption,
-} from './patternfly-filter';
-import { SortPF, SortConfig } from './patternfly-sort';
+} from '../shared-types/pf-toolbar';
 
 interface IProps {
     toolbarConfig: {

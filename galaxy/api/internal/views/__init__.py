@@ -14,3 +14,11 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+
+from .collections import (  # noqa: F401
+    CollectionList
+)
+
+__all__ = [
+    'CollectionList',
+]

@@ -1,24 +1,10 @@
 import * as React from 'react';
 import { Filter, FormControl, Toolbar } from 'patternfly-react';
-
-export class FilterConfig {
-    resultsCount: number;
-    fields: FilterOption[];
-    appliedFilters: AppliedFilter[];
-}
-
-export class FilterOption {
-    id: string;
-    title: string;
-    placeholder: string;
-    type: string;
-}
-
-export class AppliedFilter {
-    field: FilterOption;
-    query?: string;
-    value: string;
-}
+import {
+    FilterConfig,
+    AppliedFilter,
+    FilterOption,
+} from '../shared-types/pf-toolbar';
 
 interface IProps {
     filterConfig: FilterConfig;
@@ -77,7 +63,7 @@ export class FilterPF extends React.Component<IProps, IState> {
     render() {
         const { filterConfig, addFilter, ...rest } = this.props;
         return (
-            <Filter className='form-group' style={{ width: '275px' }}>
+            <Filter className='form-group'>
                 <Filter.TypeSelector
                     {...rest}
                     filterTypes={this.props.filterConfig.fields}
