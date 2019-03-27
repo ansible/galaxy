@@ -68,16 +68,26 @@ class Flake8Linter(BaseLinter):
             rule_desc = ' '.join(msg_parts[2:])
 
             error_id = msg_parts[1]
+            # REVIEW(cutwater): Flake8 is configured to return `E,F,W` rules.
+            #   Why is parsing rules prefixes list differs
+            #   from FLAKE8_SELECT_ERRORS.
             if error_id[0] not in ['E', 'W']:
                 error_id = None
 
         except IndexError:
+            # REVIEW(cutwater): If this except clause is executed,
+            #  rule_desc may not be defined, but it's used below.
             error_id = None
 
         if not error_id:
-            logger.error('No error_id found in {} message'.format(self.cmd))
+            # REVIEW(cutwater): Couple of questions here:
+            #   1. Why is that error?
+            #   2. Why displaying command that was executed
+            #      but not the message that is parsed?
+            logger.error('No error_id found in message: {}'.format(self.cmd))
             return None, None
 
+        # REVIEW(cutwater): rule_desc reference can be undefined here.
         return error_id, rule_desc
 
 
