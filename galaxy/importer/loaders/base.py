@@ -157,7 +157,8 @@ class BaseLoader(metaclass=abc.ABCMeta):
                     linter_ok = False
                 error_id, rule_desc = linter_obj.parse_id_and_desc(message)
                 if error_id:
-                    self._on_lint_issue(linter_cls.id, error_id, rule_desc)
+                    self._on_lint_issue(linter_cls.id, error_id,
+                                        message, rule_desc)
                 else:
                     self.log.warning(message)
                 all_linters_ok = False
@@ -166,12 +167,12 @@ class BaseLoader(metaclass=abc.ABCMeta):
 
         return all_linters_ok
 
-    def _on_lint_issue(self, linter_type, rule_id, message):
+    def _on_lint_issue(self, linter_type, rule_id, message, rule_desc=None):
         extra = {
             'is_linter_rule_violation': True,
             'linter_type': linter_type,
             'linter_rule_id': rule_id,
-            'rule_desc': message
+            'rule_desc': rule_desc or message,
         }
         self.log.warning(message, extra=extra)
 
