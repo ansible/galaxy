@@ -96,8 +96,6 @@ class BaseCollectionInfo(object):
     license = attr.ib(factory=list)
     description = attr.ib(default=None)
 
-    # TODO: see how to handle license_list
-
     repository = attr.ib(default=None)
     documentation = attr.ib(default=None)
     homepage = attr.ib(default=None)
@@ -105,9 +103,13 @@ class BaseCollectionInfo(object):
 
     authors = attr.ib(factory=list)
     tags = attr.ib(factory=list)
-    readme = attr.ib(default=None,
-                     validator=attr.validators.optional(
-                        attr.validators.instance_of(str)))
+
+    license_file = attr.ib(
+        default=None,
+        validator=attr.validators.optional(attr.validators.instance_of(str)))
+    readme = attr.ib(
+        default=None,
+        validator=attr.validators.optional(attr.validators.instance_of(str)))
 
     dependencies = attr.ib(factory=dict,
                            converter=convert_none_to_empty_dict)
