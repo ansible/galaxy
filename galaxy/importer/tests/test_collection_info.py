@@ -11,7 +11,7 @@ def base_col_info():
         'namespace': 'acme',
         'name': 'jenkins',
         'version': '3.5.0',
-        'license': 'MIT',
+        'license': ['MIT'],
         # 'min_ansible_version': '2.4',
         'tags': ['testcases']
     }
@@ -86,18 +86,18 @@ invalid_semver = [
 ]
 
 valid_licenses = [
-    'MIT',
-    'Apache-2.0',
-    'BSD-3-Clause',
-    'CC-BY-4.0'
+    ['MIT'],
+    ['Apache-2.0'],
+    ['BSD-3-Clause'],
+    ['CC-BY-4.0', 'MIT']
 ]
 
 invalid_licenses = [
-    'BSD',
-    'Apache',
-    'MIT AND Apache-2.0',
-    'something_else',
-    'GPL-1.0',
+    ['BSD'],
+    ['Apache'],
+    ['MIT AND Apache-2.0'],
+    ['something_else'],
+    ['CC-BY-4.0', 'MIT', 'bad_license_id']
 ]
 
 
@@ -169,12 +169,32 @@ def test_valid_license(base_col_info):
         BaseCollectionInfo(**base_col_info)
 
 
+def test_license_file(base_col_info):
+    base_col_info['license'] = []
+    base_col_info['license_file'] = 'my_very_own_license.txt'
+    BaseCollectionInfo(**base_col_info)
+
+
+def test_empty_lic_and_lic_file(base_col_info):
+    base_col_info['license'] = []
+    with pytest.raises(ValueError) as exc:
+        BaseCollectionInfo(**base_col_info)
+    assert "values for 'license' or 'license_file' are required" in str(exc)
+
+
+def test_license_not_list_of_str(base_col_info):
+    base_col_info['license'] = 'MIT'
+    with pytest.raises(ValueError) as exc:
+        BaseCollectionInfo(**base_col_info)
+    assert "Expecting 'license' to be a list of strings" in str(exc)
+
+
 def test_invalid_license(base_col_info):
     for lic in invalid_licenses:
         base_col_info['license'] = lic
         with pytest.raises(ValueError) as exc:
             BaseCollectionInfo(**base_col_info)
-        assert lic in str(exc)
+        assert "Expecting 'license' to be a list of valid" in str(exc)
 
 
 def test_invalid_dep_dict(base_col_info):
@@ -218,7 +238,7 @@ class DependenciesTestCase(TestCase):
             'namespace': 'acme',
             'name': 'jenkins',
             'version': '3.5.0',
-            'license': 'MIT',
+            'license': ['MIT'],
             # 'min_ansible_version': '2.4',
             'authors': ['Bob Smith <b.smith@acme.com>'],
             'tags': ['testcases'],
