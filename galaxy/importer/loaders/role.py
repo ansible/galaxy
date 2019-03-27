@@ -112,6 +112,7 @@ def lookup_lint_rule(rule_code):
         return COMPATIBILITY_SEVERITY_TYPE, COMPATIBILITY_SEVERITY[rule_code]
     return None
 
+
 class RoleMetaParser(object):
     VIDEO_REGEXP = {
         'google': re.compile(
