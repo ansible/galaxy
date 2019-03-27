@@ -93,7 +93,7 @@ class BaseCollectionInfo(object):
     namespace = attr.ib(default=None)
     name = attr.ib(default=None)
     version = attr.ib(default=None)
-    license = attr.ib(default=None)
+    license = attr.ib(factory=list)
     description = attr.ib(default=None)
 
     # TODO: see how to handle license_list
@@ -134,24 +134,9 @@ class BaseCollectionInfo(object):
             self.value_error("Expecting 'version' to be in semantic version "
                              "format, instead found '%s'." % value)
 
-    @license.validator
-    def _check_license(self, attribute, value):
-        # load or return already loaded data
-        licenses = spdx_licenses.get_spdx()
-
-        valid = licenses.get(value, None)
-        if valid is None:
-            self.value_error("Expecting 'license' to be a valid SPDX license "
-                             "ID, instead found '%s'. "
-                             "For more info, visit https://spdx.org" % value)
-
-        # license was in list, but is deprecated
-        if valid and valid.get('deprecated', None):
-            self.value_error("Expecting 'license' SPDX ID to not be "
-                             "deprecated: %s" % value)
-
     @authors.validator
     @tags.validator
+    @license.validator
     def _check_list_of_str(self, attribute, value):
         err_msg = "Expecting '%s' to be a list of strings"
         if not isinstance(value, list):
@@ -159,6 +144,37 @@ class BaseCollectionInfo(object):
         for list_item in value:
             if not isinstance(list_item, str):
                 self.value_error(err_msg % attribute.name)
+
+    @license.validator
+    def _check_licenses(self, attribute, value):
+        # load or return already loaded data
+        valid_license_ids = spdx_licenses.get_spdx()
+
+        invalid_licenses = [license_id for license_id in value
+                            if not self._is_valid_license_id(
+                                license_id, valid_license_ids)]
+        if invalid_licenses:
+            self.value_error(
+                "Expecting 'license' to be a list of valid SPDX license "
+                "identifiers, instead found invalid license identifiers: '%s' "
+                "in 'license' value %s. "
+                "For more info, visit https://spdx.org" %
+                (','.join(invalid_licenses), value))
+
+    @staticmethod
+    def _is_valid_license_id(license_id, valid_license_ids):
+        if license_id is None:
+            return False
+
+        valid = valid_license_ids.get(license_id, None)
+        if valid is None:
+            return False
+
+        # license was in list, but is deprecated
+        if valid and valid.get('deprecated', None):
+            return False
+
+        return True
 
     @dependencies.validator
     def _check_dependencies_type(self, attribute, value):
