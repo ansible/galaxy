@@ -81,6 +81,8 @@ class RoleMetaParser(object):
         return dependencies
 
     def _validate_tag(self, tag):
+        if not isinstance(tag, str):
+            return False
         if not re.match(constants.TAG_REGEXP, tag):
             return False
         return True
