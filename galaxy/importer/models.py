@@ -125,7 +125,6 @@ class BaseCollectionInfo(object):
     @namespace.validator
     @name.validator
     @version.validator
-    @license.validator
     def _check_required(self, attribute, value):
         if not value:
             self.value_error("'%s' is required" % attribute.name)
@@ -201,6 +200,19 @@ class BaseCollectionInfo(object):
             self.value_error("'%s' has invalid format: %s" %
                              (attribute.name, value))
 
+    def __attrs_post_init__(self):
+        '''Checks called post init validation'''
+        self._check_license_or_license_file(self.license, self.license_file)
+
+    def _check_license_or_license_file(self, license_ids, license_file):
+        '''Confirm presence of either license or license_file'''
+        if license_ids or license_file:
+            return
+        self.value_error(
+            "Valid values for 'license' or 'license_file' are required. "
+            "But 'license' (%s) and 'license_file' (%s) were invalid." %
+            (license_ids, license_file))
+
 
 @attr.s(frozen=True)
 class GalaxyCollectionInfo(BaseCollectionInfo):
@@ -258,6 +270,7 @@ class GalaxyCollectionInfo(BaseCollectionInfo):
                              'version found: %s %s' % (dep_col, ver_spec))
 
     def __attrs_post_init__(self):
+        super().__attrs_post_init__()
         non_null_str_fields = [
             'description',
             'repository',
