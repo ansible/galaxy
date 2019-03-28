@@ -40,7 +40,7 @@ export class CollectionListService extends GenericQuery<CollectionList> {
         super(
             http,
             notificationService,
-            '/api/internal/galaxyui/collection',
+            '/api/internal/ui/collections',
             'collection',
         );
     }
