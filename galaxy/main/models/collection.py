@@ -24,6 +24,7 @@ from pulpcore.app import models as pulp_models
 
 from . import mixins
 from .namespace import Namespace
+from .task import Task
 
 
 class Collection(mixins.TimestampsMixin, models.Model):
@@ -106,3 +107,18 @@ class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
             'collection',
             'version',
         )
+
+
+class CollectionImport(Task):
+    """Collection import task info."""
+
+    namespace = models.ForeignKey(Namespace, on_delete=models.CASCADE)
+    name = models.CharField(max_length=64)
+    version = models.CharField(max_length=64)
+
+    messages = psql_fields.JSONField(default=list)
+    lint_records = psql_fields.JSONField(default=list)
+
+    @property
+    def imported_version(self):
+        return self.result['imported_version']
