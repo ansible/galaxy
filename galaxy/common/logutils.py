@@ -17,65 +17,54 @@
 
 import logging
 
+
 from galaxy import constants
+from galaxy.importer.utils import lint as lintutils
 
 
-class ImportTaskAdapter(logging.LoggerAdapter):
-    def __init__(self, logger, task_id):
-        super(ImportTaskAdapter, self).__init__(logger, {'task_id': task_id})
-
+class BaseLoggerAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
-        if self.extra:
-            if 'extra' not in kwargs:
-                kwargs.update({'extra': {}})
-            for key, value in self.extra.items():
-                kwargs['extra'][key] = value
+        kwargs.setdefault('extra', {}).update(self.extra)
         return msg, kwargs
 
 
-class ContentTypeAdapter(logging.LoggerAdapter):
+class ImportTaskAdapter(BaseLoggerAdapter):
+    def __init__(self, logger, task_id):
+        super(ImportTaskAdapter, self).__init__(logger, {'task_id': task_id})
+
+
+class ContentTypeAdapter(BaseLoggerAdapter):
     def __init__(self, logger, content_type, content_name=None):
         super(ContentTypeAdapter, self).__init__(logger, {
             'content_type': content_type,
             'content_name': content_name,
         })
 
-    def process(self, msg, kwargs):
-        if self.extra:
-            if 'extra' not in kwargs:
-                kwargs.update({'extra': {}})
-            for key, value in self.extra.items():
-                kwargs['extra'][key] = value
-        return msg, kwargs
-
 
 class ImportTaskHandler(logging.Handler):
-    def emit(self, record):
-        # type: (logging.LogRecord) -> None
+    def emit(self, record: logging.LogRecord) -> None:
         from galaxy.main import models
 
-        lint = {
-            'is_linter_rule_violation': False,
-            'linter_type': None,
-            'linter_rule_id': None,
-            'rule_desc': None,
-            'content_name': '',
-        }
-        if set(lint.keys()).issubset(vars(record).keys()):
-            lint['is_linter_rule_violation'] = record.is_linter_rule_violation
-            lint['linter_type'] = record.linter_type
-            lint['linter_rule_id'] = record.linter_rule_id
-            lint['rule_desc'] = record.rule_desc
-            lint['content_name'] = record.content_name
+        create_kwargs = {}
 
+        lint_record: lintutils.LintRecord = getattr(
+            record, 'lint_record', None)
+        if lint_record:
+            create_kwargs = {
+                'is_linter_rule_violation': True,
+                'linter_type': lint_record.type,
+                'linter_rule_id': lint_record.code,
+                'rule_desc': lint_record.message,
+                'rule_severity': lint_record.severity,
+                'score_type': lint_record.score_type,
+                'content_name': record.content_name,
+            }
+
+        # TODO(cutwater): Revisit connection alias usage.
         models.ImportTaskMessage.objects.using('logging').create(
             task_id=record.task_id,
             message_type=constants.ImportTaskMessageType.from_logging_level(
                 record.levelno).value,
             message_text=record.msg,
-            is_linter_rule_violation=lint['is_linter_rule_violation'],
-            linter_type=lint['linter_type'],
-            linter_rule_id=lint['linter_rule_id'],
-            rule_desc=lint['rule_desc'],
-            content_name=lint['content_name'],
+            **create_kwargs,
         )

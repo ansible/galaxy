@@ -27,6 +27,7 @@ from ansible.playbook.role import requirement as ansible_req
 from galaxy import constants
 from galaxy.importer import models, linters
 from galaxy.importer.loaders import base
+from galaxy.importer.utils import lint as lintutils
 from galaxy.importer import exceptions as exc
 from galaxy.common import sanitize_content_name
 from galaxy.main import models as m_models
@@ -36,6 +37,80 @@ ROLE_META_FILES = [
     'meta/main.yml', 'meta/main.yaml',
     'meta.yml', 'meta.yaml'
 ]
+
+# TODO(cutwater): Currently scoring is role specific.
+#  We need to revisit this and implement generic scoring mechanism in future.
+
+BASE_SCORE = 50.0
+SEVERITY_TO_WEIGHT = {
+    0: 0.0,
+    1: 0.75,
+    2: 1.25,
+    3: 2.5,
+    4: 5.0,
+    5: 10.0,
+}
+CONTENT_SEVERITY_TYPE = 'content'
+CONTENT_SEVERITY = {
+    'ansible-lint_e101': 3,
+    'ansible-lint_e102': 4,
+    'ansible-lint_e103': 5,
+    'ansible-lint_e104': 5,
+    'ansible-lint_e105': 4,
+    'ansible-lint_e201': 0,
+    'ansible-lint_e202': 5,
+    'ansible-lint_e203': 2,
+    'ansible-lint_e204': 1,
+    'ansible-lint_e205': 3,
+    'ansible-lint_e206': 2,
+    'ansible-lint_e301': 4,
+    'ansible-lint_e302': 5,
+    'ansible-lint_e303': 4,
+    'ansible-lint_e304': 5,
+    'ansible-lint_e305': 4,
+    'ansible-lint_e306': 3,
+    'ansible-lint_e401': 3,
+    'ansible-lint_e402': 3,
+    'ansible-lint_e403': 1,
+    'ansible-lint_e404': 4,
+    'ansible-lint_e501': 5,
+    'ansible-lint_e502': 3,
+    'ansible-lint_e503': 3,
+    'ansible-lint_e504': 3,
+    'ansible-lint_e601': 4,
+    'ansible-lint_e602': 4,
+    'yamllint_yaml_error': 4,
+    'yamllint_yaml_warning': 1,
+}
+METADATA_SEVERITY_TYPE = 'metadata'
+METADATA_SEVERITY = {
+    'ansible-lint_e701': 4,
+    'ansible-lint_e702': 4,
+    'ansible-lint_e703': 4,
+    'ansible-lint_e704': 2,
+    'importer_importer101': 3,  # RoleImporter
+    'importer_importer102': 3,  # RoleImporter
+    'importer_importer103': 4,  # RoleImporter
+}
+COMPATIBILITY_SEVERITY_TYPE = 'compatibility'
+COMPATIBILITY_SEVERITY = {
+    'importer_not_all_versions_tested': 5,  # RoleMetaParser
+}
+
+
+def lookup_lint_rule(rule_code):
+    """Lookup lint rule and return its type and severity.
+
+    :param rule_code: Rule code in `<linter_type>_<code>` format.
+    :return: Tuple of rule type string and severity, None if rule not found.
+    """
+    if rule_code in CONTENT_SEVERITY:
+        return CONTENT_SEVERITY_TYPE, CONTENT_SEVERITY[rule_code]
+    elif rule_code in METADATA_SEVERITY:
+        return METADATA_SEVERITY_TYPE, METADATA_SEVERITY[rule_code]
+    elif rule_code in COMPATIBILITY_SEVERITY:
+        return COMPATIBILITY_SEVERITY_TYPE, COMPATIBILITY_SEVERITY[rule_code]
+    return None
 
 
 class RoleMetaParser(object):
@@ -174,74 +249,6 @@ class RoleMetaParser(object):
                     break
         return videos
 
-    def check_tox(self):
-        tox_tests_found = self._check_tox()
-        if not tox_tests_found:
-            msg = ("Molecule tests via tox not found for each stated "
-                   "supported ansible version, set 'min_ansible_version'"
-                   "in 'meta/main.yml' and see: "
-                   "https://molecule.readthedocs.io/en/latest/ci.html#tox")
-            linter_data = {
-                'is_linter_rule_violation': True,
-                'linter_type': 'importer',
-                'linter_rule_id': 'not_all_versions_tested',
-                'rule_desc': msg,
-            }
-            self.log.warning(msg, extra=linter_data)
-
-    def _check_tox(self):
-        SUPPORTED_MINOR_VERSIONS = ['2.5', '2.6', '2.7']
-
-        min_ansible_version = ''
-        if 'min_ansible_version' in self.metadata:
-            min_ansible_version = str(self.metadata['min_ansible_version'])
-        if not (min_ansible_version and self.tox_data):
-            return False
-
-        # Note: this supports a subset of the version specifiers
-        # see: https://www.python.org/dev/peps/pep-0440/#version-specifiers
-        try:
-            deps_ansible = [d for d in self.tox_data['deps'].split('\n') if
-                            d.startswith('ansible')]
-            versions = [d.split(' ')[1][9:] for d in deps_ansible if
-                        re.match(r'ansible(==|>=|~=)\d', d.split(' ')[1])]
-            versions = [v.split(',')[0] for v in versions]
-            tested_versions = ['.'.join(v.split('.')[:2]) for v in versions]
-        except Exception:
-            self.log.error('Could not parse ansible versions in tox data')
-            return False
-
-        # TODO(awcrosby): edit to support major version changes
-        try:
-            min_minor = '.'.join(min_ansible_version.split('.')[1])
-            max_minor = '.'.join(SUPPORTED_MINOR_VERSIONS[-1].split('.')[1])
-            range_of_minor = range(int(min_minor), int(max_minor) + 1)
-            supported_versions = ['2.{}'.format(minor)
-                                  for minor in range_of_minor]
-        except Exception:
-            self.log.error("Could not parse 'min_ansible_version'='{}' "
-                           "to get supported versions".format(
-                               min_ansible_version))
-            return False
-
-        if not (tested_versions and supported_versions):
-            return False
-
-        self.log.info("Versions supported based on "
-                      "'min_ansible_version'='{}': {}".format(
-                          min_ansible_version, ', '.join(supported_versions)))
-        self.log.info('Stated ansible minor versions tested via '
-                      'molecule in tox.ini: {}'.format(
-                          ', '.join(tested_versions)))
-
-        untested = set(supported_versions) - set(tested_versions)
-        if untested:
-            self.log.info('Not all supported versions tested: '
-                          '{}'.format(', '.join(untested)))
-            return False
-
-        return True
-
 
 class RoleLoader(base.BaseLoader):
     # (attribute name, default value)
@@ -262,7 +269,6 @@ class RoleLoader(base.BaseLoader):
     content_types = constants.ContentType.ROLE
     # temporarily removing linters.Flake8Linter
     linters = (linters.YamlLinter, linters.AnsibleLinter)
-    can_get_scored = True
 
     def __init__(self, content_type, path, root, metadata_path, logger=None):
         """
@@ -273,6 +279,7 @@ class RoleLoader(base.BaseLoader):
 
         self.meta_file = metadata_path
         self.data = {}
+        self._score_stats = {}
 
     def load(self):
         meta_parser = self._get_meta_parser()
@@ -321,11 +328,43 @@ class RoleLoader(base.BaseLoader):
             }
         )
 
+    def score(self):
+        content_w = self._score_stats.get(CONTENT_SEVERITY_TYPE, 0.0)
+        content_score = max(0.0, (BASE_SCORE - content_w) / 10)
+
+        metadata_w = self._score_stats.get(METADATA_SEVERITY_TYPE, 0.0)
+        metadata_score = max(0.0, (BASE_SCORE - metadata_w) / 10)
+
+        return {
+            'content': content_score,
+            'metadata': metadata_score,
+            'compatibility': None,
+            'quality': sum([content_score, metadata_score]) / 2.0
+        }
+
     def make_name(self):
         if self.rel_path:
             return os.path.basename(self.path)
         else:
             return None
+
+    def _on_lint_issue(self, linter_type, rule_id, rule_desc, message=None):
+        lint_record = lintutils.LintRecord(linter_type, rule_id, rule_desc)
+        rule_code = '{}_{}'.format(linter_type, rule_id).lower()
+        rule_info = lookup_lint_rule(rule_code)
+
+        if rule_info is not None:
+            lint_record.score_type = rule_info[0]
+            lint_record.severity = rule_info[1]
+
+            self._score_stats[lint_record.score_type] = (
+                self._score_stats.get(lint_record.score_type, 0.0)
+                + SEVERITY_TO_WEIGHT[lint_record.severity])
+        else:
+            self.log.warning(
+                'Severity not found for rule: {}'.format(rule_code))
+        self.log.warning(message or rule_desc,
+                         extra={'lint_record': lint_record})
 
     def _get_meta_parser(self):
         meta = self._load_metadata()

@@ -21,87 +21,15 @@ import os
 
 from galaxy.common import logutils
 from galaxy.importer.utils import readme as readmeutils
-from galaxy.main import models
+from galaxy.importer.utils import lint as lintutils
 
 
 default_logger = logging.getLogger(__name__)
-
-BASE_SCORE = 50.0
-SEVERITY_TO_WEIGHT = {
-    0: 0.0,
-    1: 0.75,
-    2: 1.25,
-    3: 2.5,
-    4: 5.0,
-    5: 10.0,
-}
-CONTENT_SEVERITY_TYPE = 'content'
-CONTENT_SEVERITY = {
-    'ansible-lint_e101': 3,
-    'ansible-lint_e102': 4,
-    'ansible-lint_e103': 5,
-    'ansible-lint_e104': 5,
-    'ansible-lint_e105': 4,
-    'ansible-lint_e201': 0,
-    'ansible-lint_e202': 5,
-    'ansible-lint_e203': 2,
-    'ansible-lint_e204': 1,
-    'ansible-lint_e205': 3,
-    'ansible-lint_e206': 2,
-    'ansible-lint_e301': 4,
-    'ansible-lint_e302': 5,
-    'ansible-lint_e303': 4,
-    'ansible-lint_e304': 5,
-    'ansible-lint_e305': 4,
-    'ansible-lint_e306': 3,
-    'ansible-lint_e401': 3,
-    'ansible-lint_e402': 3,
-    'ansible-lint_e403': 1,
-    'ansible-lint_e404': 4,
-    'ansible-lint_e501': 5,
-    'ansible-lint_e502': 3,
-    'ansible-lint_e503': 3,
-    'ansible-lint_e504': 3,
-    'ansible-lint_e601': 4,
-    'ansible-lint_e602': 4,
-    'yamllint_yaml_error': 4,
-    'yamllint_yaml_warning': 1,
-}
-METADATA_SEVERITY_TYPE = 'metadata'
-METADATA_SEVERITY = {
-    'ansible-lint_e701': 4,
-    'ansible-lint_e702': 4,
-    'ansible-lint_e703': 4,
-    'ansible-lint_e704': 2,
-    'importer_importer101': 3,  # RoleImporter
-    'importer_importer102': 3,  # RoleImporter
-    'importer_importer103': 4,  # RoleImporter
-}
-COMPATIBILITY_SEVERITY_TYPE = 'compatibility'
-COMPATIBILITY_SEVERITY = {
-    'importer_not_all_versions_tested': 5,  # RoleMetaParser
-}
-
-
-def lookup_lint_rule(rule_code):
-    """Lookup lint rule and return its type and severity.
-
-    :param rule_code: Rule code in `<linter_type>_<code>` format.
-    :return: Tuple of rule type string and severity, None if rule not found.
-    """
-    if rule_code in CONTENT_SEVERITY:
-        return CONTENT_SEVERITY_TYPE, CONTENT_SEVERITY[rule_code]
-    elif rule_code in METADATA_SEVERITY:
-        return METADATA_SEVERITY_TYPE, METADATA_SEVERITY[rule_code]
-    elif rule_code in COMPATIBILITY_SEVERITY:
-        return COMPATIBILITY_SEVERITY_TYPE, COMPATIBILITY_SEVERITY[rule_code]
-    return None
 
 
 class BaseLoader(metaclass=abc.ABCMeta):
     content_types = None
     linters = None
-    can_get_scored = False
 
     def __init__(self, content_type, path, root, logger=None):
         """
@@ -157,7 +85,8 @@ class BaseLoader(metaclass=abc.ABCMeta):
                     linter_ok = False
                 error_id, rule_desc = linter_obj.parse_id_and_desc(message)
                 if error_id:
-                    self._on_lint_issue(linter_cls.id, error_id, rule_desc)
+                    self._on_lint_issue(
+                        linter_cls.id, error_id, rule_desc, message)
                 else:
                     self.log.warning(message)
                 all_linters_ok = False
@@ -166,14 +95,13 @@ class BaseLoader(metaclass=abc.ABCMeta):
 
         return all_linters_ok
 
-    def _on_lint_issue(self, linter_type, rule_id, message):
-        extra = {
-            'is_linter_rule_violation': True,
-            'linter_type': linter_type,
-            'linter_rule_id': rule_id,
-            'rule_desc': message
-        }
-        self.log.warning(message, extra=extra)
+    def score(self):
+        return None
+
+    def _on_lint_issue(self, linter_type, rule_id, rule_desc, message=None):
+        lint_record = lintutils.LintRecord(linter_type, rule_id, rule_desc)
+        self.log.warning(message or rule_desc,
+                         extra={'lint_record': lint_record})
 
     # FIXME(cutwater): Due to current object model current object limitation
     # this leads to copying README file over multiple roles.
@@ -183,55 +111,6 @@ class BaseLoader(metaclass=abc.ABCMeta):
             return readmeutils.get_readme(directory or self.path, self.root)
         except readmeutils.FileSizeError as e:
             self.log.warning(e)
-
-    def score(self):
-        if not self.can_get_scored:
-            return None
-        task_id = self.log.logger.extra['task_id']
-
-        import_task_messages = models.ImportTaskMessage.objects.filter(
-            task_id=task_id,
-            content_name=self.name,
-            is_linter_rule_violation=True,
-        )
-        for msg in import_task_messages:
-            rule_code = '{}_{}'.format(msg.linter_type,
-                                       msg.linter_rule_id).lower()
-            rule_info = lookup_lint_rule(rule_code)
-
-            if rule_info is not None:
-                msg.score_type = rule_info[0]
-                msg.rule_severity = rule_info[1]
-            else:
-                self.log.warning(
-                    u'Severity not found for rule: {}'.format(rule_code))
-                msg.is_linter_rule_violation = False
-            msg.save()
-
-        content_m = models.ImportTaskMessage.objects.filter(
-            task_id=task_id,
-            content_name=self.name,
-            score_type='content',
-            is_linter_rule_violation=True,
-        )
-        meta_m = models.ImportTaskMessage.objects.filter(
-            task_id=task_id,
-            content_name=self.name,
-            score_type='metadata',
-            is_linter_rule_violation=True,
-        )
-
-        content_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in content_m]
-        meta_w = [SEVERITY_TO_WEIGHT[m.rule_severity] for m in meta_m]
-
-        content_score = max(0.0, (BASE_SCORE - sum(content_w)) / 10)
-        metadata_score = max(0.0, (BASE_SCORE - sum(meta_w)) / 10)
-
-        return {
-            'content': content_score, 'metadata': metadata_score,
-            'compatibility': None,
-            'quality': sum([content_score, metadata_score]) / 2.0
-        }
 
 
 def make_module_name(path):
