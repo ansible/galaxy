@@ -16,9 +16,9 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.conf import settings
-from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
+from django.urls import include, re_path as url
 
 
 admin.autodiscover()

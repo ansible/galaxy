@@ -19,8 +19,7 @@
 # FIXME(cutwater): Django `url()` function is deprecated, it is replaced with
 #    `re_path()` function, however it's usage is discouraged.
 #    New path-like routes should be preferred over old-style regexp routes.
-from django.urls import path
-from django.conf.urls import include, url
+from django.urls import include, path, re_path as url
 
 from galaxy.api import views
 
