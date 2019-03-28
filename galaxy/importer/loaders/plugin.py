@@ -29,11 +29,14 @@ class PluginLoader(base.BaseLoader):
 
     content_types = (
         constants.ContentType.ACTION_PLUGIN,
+        constants.ContentType.BECOME_PLUGIN,
         constants.ContentType.CACHE_PLUGIN,
         constants.ContentType.CALLBACK_PLUGIN,
         constants.ContentType.CLICONF_PLUGIN,
         constants.ContentType.CONNECTION_PLUGIN,
+        constants.ContentType.DOC_FRAGMENTS_PLUGIN,
         constants.ContentType.FILTER_PLUGIN,
+        constants.ContentType.HTTPAPI_PLUGIN,
         constants.ContentType.INVENTORY_PLUGIN,
         constants.ContentType.LOOKUP_PLUGIN,
         constants.ContentType.NETCONF_PLUGIN,
@@ -41,6 +44,7 @@ class PluginLoader(base.BaseLoader):
         constants.ContentType.STRATEGY_PLUGIN,
         constants.ContentType.TERMINAL_PLUGIN,
         constants.ContentType.TEST_PLUGIN,
+        constants.ContentType.VARS_PLUGIN,
     )
     linters = linters.Flake8Linter
 

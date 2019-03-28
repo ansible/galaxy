@@ -58,17 +58,19 @@ class RoleType(Enum):
 
 
 class ContentType(Enum):
-    # FIXME(cutwater): Add module_utils type
     APB = 'apb'
     ROLE = 'role'
     MODULE = 'module'
     MODULE_UTILS = 'module_utils'
     ACTION_PLUGIN = 'action'
+    BECOME_PLUGIN = 'become'
     CACHE_PLUGIN = 'cache'
     CALLBACK_PLUGIN = 'callback'
     CLICONF_PLUGIN = 'cliconf'
     CONNECTION_PLUGIN = 'connection'
+    DOC_FRAGMENTS_PLUGIN = 'doc_fragments'
     FILTER_PLUGIN = 'filter'
+    HTTPAPI_PLUGIN = 'httpapi'
     INVENTORY_PLUGIN = 'inventory'
     LOOKUP_PLUGIN = 'lookup'
     NETCONF_PLUGIN = 'netconf'
@@ -76,6 +78,7 @@ class ContentType(Enum):
     STRATEGY_PLUGIN = 'strategy'
     TERMINAL_PLUGIN = 'terminal'
     TEST_PLUGIN = 'test'
+    VARS_PLUGIN = 'vars'
 
     @classmethod
     def choices(cls):
@@ -85,11 +88,14 @@ class ContentType(Enum):
             (cls.MODULE.value, 'Module'),
             (cls.MODULE_UTILS.value, 'Module Utils'),
             (cls.ACTION_PLUGIN.value, 'Action Plugin'),
+            (cls.BECOME_PLUGIN.value, 'Become Plugin'),
             (cls.CACHE_PLUGIN.value, 'Cache Plugin'),
             (cls.CALLBACK_PLUGIN.value, 'Callback Plugin'),
             (cls.CLICONF_PLUGIN.value, 'CLI Conf Plugin'),
             (cls.CONNECTION_PLUGIN.value, 'Connection Plugin'),
+            (cls.DOC_FRAGMENTS_PLUGIN.value, 'Doc Fragments Plugin'),
             (cls.FILTER_PLUGIN.value, 'Filter Plugin'),
+            (cls.HTTPAPI_PLUGIN.value, 'HTTP API Plugin'),
             (cls.INVENTORY_PLUGIN.value, 'Inventory Plugin'),
             (cls.LOOKUP_PLUGIN.value, 'Lookup Plugin'),
             (cls.NETCONF_PLUGIN.value, 'Netconf Plugin'),
@@ -97,6 +103,7 @@ class ContentType(Enum):
             (cls.STRATEGY_PLUGIN.value, 'Strategy Plugin'),
             (cls.TERMINAL_PLUGIN.value, 'Terminal Plugin'),
             (cls.TEST_PLUGIN.value, 'Test Plugin'),
+            (cls.VARS_PLUGIN.value, 'Vars Plugin'),
         ]
 
 

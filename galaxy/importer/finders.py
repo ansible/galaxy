@@ -146,9 +146,7 @@ class FileSystemFinder(BaseFinder):
             if content_type == constants.ContentType.ROLE:
                 yield content_type, 'roles', self._find_roles
             elif content_type == constants.ContentType.MODULE:
-                yield content_type, 'modules', self._find_modules
-            elif content_type == constants.ContentType.MODULE_UTILS:
-                yield content_type, 'module_utils', self._find_modules
+                yield content_type, 'plugins/modules', self._find_modules
             else:
                 yield (content_type, 'plugins/' + content_type.value,
                        self._find_modules)
