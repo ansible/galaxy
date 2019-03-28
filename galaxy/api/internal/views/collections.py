@@ -19,7 +19,6 @@ from rest_framework import generics
 from django import shortcuts
 
 
-
 class CollectionList(generics.ListAPIView):
     model = models.Collection
     serializer_class = serializers.CollectionListSerializer

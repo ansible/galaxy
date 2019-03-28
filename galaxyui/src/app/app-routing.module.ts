@@ -8,6 +8,7 @@ import {
     ContentResolver,
     NamespaceResolver,
     RepositoryResolver as ContentRepositoryResolver,
+    CollectionResolver,
 } from './content-detail/content-detail.resolver.service';
 
 import {
@@ -66,8 +67,11 @@ const appRoutes: Routes = [
 
     // Collection Routes
     {
-        path: 'collections/:namespace/:repository',
+        path: 'collections/:namespace/:collection',
         component: CollectionDetailComponent,
+        resolve: {
+            collection: CollectionResolver,
+        },
     },
     {
         path: 'collections/:namespace',

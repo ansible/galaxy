@@ -21,6 +21,7 @@ from galaxy.main import models
 
 
 collection_list_fields = (
+    'id',
     'created',
     'modified',
     'namespace',
@@ -32,6 +33,7 @@ collection_list_fields = (
 )
 
 version_list_fields = (
+    'pk',
     'version',
     'quality_score',
 )

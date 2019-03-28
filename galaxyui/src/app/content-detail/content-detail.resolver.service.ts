@@ -15,6 +15,8 @@ import { Namespace } from '../resources/namespaces/namespace';
 import { NamespaceService } from '../resources/namespaces/namespace.service';
 import { Repository } from '../resources/repositories/repository';
 import { RepositoryService } from '../resources/repositories/repository.service';
+import { CollectionDetail } from '../resources/collections/collection';
+import { CollectionDetailService } from '../resources/collections/collection.service';
 
 @Injectable()
 export class ContentResolver implements Resolve<Content[]> {
@@ -70,5 +72,17 @@ export class NamespaceResolver implements Resolve<Namespace> {
         return this.namespaceService
             .query(params)
             .pipe(map(results => results[0]));
+    }
+}
+
+@Injectable()
+export class CollectionResolver implements Resolve<CollectionDetail> {
+    constructor(private collectionDetailService: CollectionDetailService) {}
+
+    resolve(route: ActivatedRouteSnapshot) {
+        const namespace = route.params['namespace'].toLowerCase();
+        const collection = route.params['collection'].toLowerCase();
+
+        return this.collectionDetailService.get(namespace, collection);
     }
 }
