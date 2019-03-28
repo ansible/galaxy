@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', 'update_collecion_scores'),
+        ('main', '0133_collection_tasks'),
     ]
 
     operations = [
