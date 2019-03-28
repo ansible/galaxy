@@ -18,7 +18,7 @@
 from rest_framework import exceptions as drf_exc
 from rest_framework import serializers
 
-from galaxy.pulp import schema
+from galaxy.common.schema import CollectionFilename
 
 
 __all__ = (
@@ -42,7 +42,7 @@ class CollectionUploadSerializer(serializers.Serializer):
         super().validate(data)
 
         try:
-            data['filename'] = schema.CollectionFilename.parse(
+            data['filename'] = CollectionFilename.parse(
                 data['file'].name)
         except ValueError as e:
             raise drf_exc.ValidationError(str(e))
