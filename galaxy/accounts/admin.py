@@ -24,6 +24,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
+from django.urls import re_path as url
 from django.utils.html import escape
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -84,7 +85,6 @@ class CustomUserAdmin(admin.ModelAdmin):
         return super(CustomUserAdmin, self).get_form(request, obj, **defaults)
 
     def get_urls(self):
-        from django.conf.urls import url
         return [
             url(r'^(\d+)/password/$', self.admin_site.admin_view(
                 self.user_change_password))
