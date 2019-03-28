@@ -15,17 +15,16 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-# from django.urls import path
+from django.urls import path, include
 
 from galaxy.api.internal import views
-from django.urls import path
 
 
-urlpatterns = [
-    # path('path/to/view/', views.ViewName.as_view()),
+ui_urls = [
+    path('collections/', views.CollectionList.as_view())
 ]
 
-
-galaxyui = [
-    path('collection/', views.CollectionList.as_view())
+app_name = 'api'
+urlpatterns = [
+    path('ui/', include(ui_urls)),
 ]

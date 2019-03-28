@@ -19,11 +19,11 @@
 # FIXME(cutwater): Django `url()` function is deprecated, it is replaced with
 #    `re_path()` function, however it's usage is discouraged.
 #    New path-like routes should be preferred over old-style regexp routes.
+from django.urls import path
 from django.conf.urls import include, url
 
 from galaxy.api import views
 
-from galaxy.api.internal import urls as galaxyui_urls
 
 event_tracking_urls = [
     url(r'^influx_session/$',
@@ -304,7 +304,6 @@ me_urls = [
 internal_urls = [
     url(r'^events/', include(event_tracking_urls)),
     url(r'^me/', include(me_urls)),
-    url(r'galaxyui/', include(galaxyui_urls.galaxyui))
 ]
 
 
@@ -319,6 +318,6 @@ urlpatterns = [
 
     # New API endpoints
     # url(r'^v1/', include('galaxy.api.v1.urls')),
-    url(r'^v2/', include('galaxy.api.v2.urls', namespace='v2')),
-    url(r'^internal/', include('galaxy.api.internal.urls')),
+    path('v2/', include('galaxy.api.v2.urls', namespace='v2')),
+    path('internal/', include('galaxy.api.internal.urls', namespace='int')),
 ]
