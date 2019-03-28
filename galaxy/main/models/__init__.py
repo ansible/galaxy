@@ -24,6 +24,7 @@ from .base import (  # noqa: F401
 from .collection import (  # noqa: F401
     Collection,
     CollectionVersion,
+    CollectionImport,
 )
 from .content import (  # noqa: F401
     CloudPlatform,
@@ -50,6 +51,9 @@ from .repository import (  # noqa: F401
     Repository,
     RepositoryVersion,
     Stargazer,
+)
+from .task import (  # noqa: F401
+    Task
 )
 from .travis import (  # noqa: F401
     Notification,
