@@ -104,6 +104,8 @@ def _publish_collection(task, artifact, repository, collection_info):
             'Collection version "{version}" already exists.'
             .format(version=metadata.version))
 
+    _update_collection_tags(collection, version, metadata)
+
     rel_path = ARTIFACT_REL_PATH.format(
         namespace=metadata.namespace, name=metadata.name,
         version=metadata.version)
@@ -131,6 +133,28 @@ def _publish_collection(task, artifact, repository, collection_info):
 
     task.imported_version = version
     task.save()
+
+
+def _update_collection_tags(collection, version, metadata):
+    '''Update tags at collection-level, only if highest version'''
+
+    if collection.highest_version != version:
+        return
+
+    tags_not_in_db = [
+        {'name': tag, 'description': tag, 'active': True}
+        for tag in metadata.tags
+        if models.Tag.objects.filter(name=tag).count() == 0]
+    models.Tag.objects.bulk_create([models.Tag(**t) for t in tags_not_in_db])
+
+    tags_qs = models.Tag.objects.filter(name__in=metadata.tags)
+    collection.tags.add(*tags_qs)
+
+    tags_not_in_metadata = [
+        tag for tag in collection.tags.all()
+        if tag.name not in metadata.tags
+    ]
+    collection.tags.remove(*tags_not_in_metadata)
 
 
 def _log_collection_info(collection_info):

@@ -24,6 +24,7 @@ from django.contrib.postgres import search as psql_search
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from pulpcore.app import models as pulp_models
+import semantic_version
 
 from galaxy.importer.utils import lint as lintutils
 from . import mixins
@@ -69,9 +70,20 @@ class Collection(mixins.TimestampsMixin, models.Model):
 
     @property
     def latest_version(self):
-        return CollectionVersion.objects.filter(
-            collection=self
-        ).latest('pk')
+        versions = self.versions.filter(hidden=False)
+        if not versions:
+            return None
+        return versions.latest('pk')
+
+    @property
+    def highest_version(self):
+        versions = self.versions.filter(hidden=False)
+        if not versions:
+            return None
+
+        d = {semantic_version.Version(v.version): v for v in versions}
+        highest = semantic_version.Spec('*').select(d.keys())
+        return d[highest]
 
 
 class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
