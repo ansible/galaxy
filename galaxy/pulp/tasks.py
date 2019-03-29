@@ -69,7 +69,7 @@ def import_collection(
 
 def _get_import_task_msg_logger(import_task):
     log_db = logging.getLogger('galaxy.worker.tasks.import_repository')
-    log_db = logutils.ImportTaskAdapter(log_db, task_id=import_task.id)
+    log_db = logutils.ImportTaskAdapter(log_db, task=import_task)
     return log_db
 
 

@@ -29,8 +29,8 @@ class BaseLoggerAdapter(logging.LoggerAdapter):
 
 
 class ImportTaskAdapter(BaseLoggerAdapter):
-    def __init__(self, logger, task_id):
-        super(ImportTaskAdapter, self).__init__(logger, {'task_id': task_id})
+    def __init__(self, logger, task):
+        super(ImportTaskAdapter, self).__init__(logger, {'task': task})
 
 
 class ContentTypeAdapter(BaseLoggerAdapter):
@@ -62,7 +62,7 @@ class ImportTaskHandler(logging.Handler):
 
         # TODO(cutwater): Revisit connection alias usage.
         models.ImportTaskMessage.objects.using('logging').create(
-            task_id=record.task_id,
+            task=record.task,
             message_type=constants.ImportTaskMessageType.from_logging_level(
                 record.levelno).value,
             message_text=record.msg,

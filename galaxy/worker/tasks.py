@@ -54,7 +54,7 @@ def import_repository(task_id, user_initiated=False):
     import_task.start()
 
     logger = logging.getLogger('galaxy.worker.tasks.import_repository')
-    logger = logutils.ImportTaskAdapter(logger, task_id=import_task.id)
+    logger = logutils.ImportTaskAdapter(logger, task=import_task)
 
     try:
         _import_repository(import_task, logger)
