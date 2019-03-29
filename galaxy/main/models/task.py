@@ -38,6 +38,30 @@ class Task(models.Model):
         related_name='galaxy_task'
     )
 
+    @property
+    def job_id(self):
+        return self.pulp_task.job_id
+
+    @property
+    def state(self):
+        return self.pulp_task.state
+
+    @property
+    def started_at(self):
+        return self.pulp_task.started_at
+
+    @property
+    def finished_at(self):
+        return self.pulp_task.finished_at
+
+    @property
+    def warnings(self):
+        return self.pulp_task.non_fatal_errors
+
+    @property
+    def error(self):
+        return self.pulp_task.error
+
     @classmethod
     def current(cls):
         job = rq.job.get_current_job()

@@ -28,29 +28,34 @@ from galaxy.importer import collection as i_collection
 from galaxy.pulp import exceptions as exc
 from galaxy.importer import exceptions as i_exc
 from galaxy.common import logutils
+from galaxy.common import schema
 
 
 log = logging.getLogger(__name__)
 
 
-def import_collection(artifact_pk, repository_pk, namespace_pk, task_id,
-                      filename):
-    log.info('Starting collection import task: {}'.format(task_id))
+def import_collection(
+        artifact_id, repository_id, task_id):
+    task = models.CollectionImport.current()
+    log.info('Starting collection import task: {}'.format(task.id))
 
-    artifact = pulp_models.Artifact.objects.get(pk=artifact_pk)
-    repository = pulp_models.Repository.objects.get(pk=repository_pk)
+    filename = schema.CollectionFilename(
+        task.namespace.name, task.name, task.version)
+
+    artifact = pulp_models.Artifact.objects.get(pk=artifact_id)
+    repository = pulp_models.Repository.objects.get(pk=repository_id)
     import_task = models.ImportTask.objects.get(id=task_id)
     log_db = _get_import_task_msg_logger(import_task)
 
     import_task.start()
     log_db.info('Starting import: task_id={}, artifact_pk={}'.format(
-                import_task.id, artifact_pk))
+                import_task.id, artifact_id))
 
     try:
         collection_info = _process_collection(artifact, filename, log_db)
         with transaction.atomic():
-            coll, coll_ver = _publish_collection(artifact, repository,
-                                                 namespace_pk, collection_info)
+            coll, coll_ver = _publish_collection(
+                artifact, repository, task.namespace, collection_info)
         _process_import_success(coll, coll_ver, import_task)
     except i_exc.ImporterError as e:
         _process_import_fail(artifact, import_task, msg=e)
@@ -73,17 +78,17 @@ def _process_collection(artifact, filename, log_db):
         with artifact.file.open() as pkg_file, \
                 tarfile.open(fileobj=pkg_file) as pkg_tar:
             pkg_tar.extractall(pkg_dir)
-        collection_info = i_collection.import_collection(pkg_dir, filename,
-                                                         log_db)
+        collection_info = i_collection.import_collection(
+            pkg_dir, filename, log_db)
         _log_collection_loaded(collection_info)
 
     return collection_info
 
 
-def _publish_collection(artifact, repository, namespace_pk, collection_info):
+def _publish_collection(artifact, repository, namespace, collection_info):
     metadata = collection_info.collection_info
     collection, _ = models.Collection.objects.update_or_create(
-        namespace_id=namespace_pk,
+        namespace=namespace,
         name=metadata.name,
     )
 

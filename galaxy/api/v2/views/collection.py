@@ -17,7 +17,7 @@
 from django.conf import settings
 from django.core import exceptions as dj_exc
 
-import rest_framework.exceptions as drf_exc
+from rest_framework import exceptions as drf_exc
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -25,13 +25,13 @@ from rest_framework import status as status_codes
 from rest_framework import views
 
 from pulpcore.app.serializers import ArtifactSerializer
-from pulpcore.tasking.tasks import enqueue_with_reservation
 from pulpcore.app import models as pulp_models
 
 from galaxy.api.exceptions import CollectionExistsError
 from galaxy.api.v2 import serializers
 from galaxy.main import models
 from galaxy.pulp import tasks
+from galaxy.common import tasking
 
 
 __all__ = [
@@ -50,11 +50,12 @@ class CollectionListView(views.APIView):
             data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
+        filename = data['filename']
 
         # TODO(cutwater): Merge Artifact and UploadCollectionSerializers
         namespace = self._get_namespace(data)
         self._check_namespace_access(namespace, request.user)
-        self._check_version_conflict(namespace, data['filename'])
+        self._check_version_conflict(namespace, filename)
 
         artifact_data = {'file': request.data['file']}
         if serializer.data['sha256'] is not None:
@@ -70,17 +71,20 @@ class CollectionListView(views.APIView):
             state=models.ImportTask.STATE_PENDING,
         )
 
-        async_result = enqueue_with_reservation(
-            tasks.import_collection, [],
-            kwargs={
-                'artifact_pk': artifact.pk,
-                'repository_pk': repository.pk,
-                'namespace_pk': namespace.pk,
+        task = tasking.create_task(
+            tasks.import_collection,
+            task_cls=models.CollectionImport,
+            params={
+                'artifact_id': artifact.pk,
+                'repository_id': repository.pk,
                 'task_id': import_task.id,
-                'filename': data['filename'],
+            },
+            task_args={
+                'namespace': namespace,
+                'name': filename.name,
+                'version': filename.version,
             })
 
-        task = pulp_models.Task.objects.get(job_id=async_result.id)
         data = {'task': reverse('api:v2:collection-import-detail',
                                 args=[task.pk], request=None)}
         return Response(data, status=status_codes.HTTP_202_ACCEPTED)

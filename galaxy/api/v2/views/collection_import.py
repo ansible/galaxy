@@ -31,7 +31,7 @@ class CollectionImportView(views.APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
-        task = get_object_or_404(pulp_models.Task, pk=self.kwargs['pk'])
+        task = get_object_or_404(models.Task, pk=self.kwargs['pk'])
 
         data = serializers.BaseTaskSerializer(task).data
         data['result'] = None
