@@ -291,10 +291,6 @@ WORKING_DIRECTORY = '/var/run/galaxy'
 
 CONTENT_PATH_PREFIX = '/download'
 
-INSTALLED_PULP_PLUGINS = [
-    'galaxy.pulp',
-]
-
 # InfluxDB Settings
 # ---------------------------------------------------------
 

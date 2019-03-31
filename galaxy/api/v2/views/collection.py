@@ -30,7 +30,7 @@ from pulpcore.app import models as pulp_models
 from galaxy.api.exceptions import CollectionExistsError
 from galaxy.api.v2 import serializers
 from galaxy.main import models
-from galaxy.pulp import tasks
+from galaxy.worker import tasks
 from galaxy.common import tasking
 
 

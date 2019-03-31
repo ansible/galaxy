@@ -22,3 +22,12 @@ class WorkerError(Exception):
 
 class TaskError(WorkerError):
     pass
+
+
+class PulpTaskError(Exception):
+    """Base class for pulp task exceptions"""
+    pass
+
+
+class VersionConflict(PulpTaskError):
+    pass
