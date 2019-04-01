@@ -66,18 +66,12 @@ class CollectionListView(views.APIView):
 
         artifact = self._save_artifact(artifact_data)
 
-        import_task = models.ImportTask.objects.create(
-            owner=request.user,
-            state=models.ImportTask.STATE_PENDING,
-        )
-
         task = tasking.create_task(
             tasks.import_collection,
             task_cls=models.CollectionImport,
             params={
                 'artifact_id': artifact.pk,
                 'repository_id': repository.pk,
-                'task_id': import_task.id,
             },
             task_args={
                 'namespace': namespace,
