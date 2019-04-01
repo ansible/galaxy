@@ -379,7 +379,7 @@ LOGGING = {
         },
         'import_task': {
             'level': 'DEBUG',
-            'class': 'galaxy.common.logutils.ImportTaskHandler',
+            'class': 'galaxy.worker.logutils.ImportTaskHandler',
             'formatter': 'simple',
         }
     },

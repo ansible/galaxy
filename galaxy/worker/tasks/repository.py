@@ -27,12 +27,12 @@ from django.utils import timezone
 from allauth.socialaccount import models as auth_models
 
 from galaxy import constants
-from galaxy.common import logutils
 from galaxy.importer import repository as i_repo
 from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import importers
+from galaxy.worker import logutils
 from galaxy.worker import utils
 from galaxy.main.celerytasks import user_notifications
 from galaxy.api import serializers

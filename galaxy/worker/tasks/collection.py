@@ -23,12 +23,12 @@ from django.db import transaction
 from django.db.utils import IntegrityError
 from pulpcore.app import models as pulp_models
 
-from galaxy.common import logutils
 from galaxy.common import schema
 from galaxy.importer import collection as i_collection
 from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
+from galaxy.worker import logutils
 
 
 log = logging.getLogger(__name__)

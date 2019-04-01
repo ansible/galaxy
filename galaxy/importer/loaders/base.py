@@ -19,9 +19,9 @@ import abc
 import logging
 import os
 
-from galaxy.common import logutils
 from galaxy.importer.utils import readme as readmeutils
 from galaxy.importer.utils import lint as lintutils
+from galaxy.worker import logutils
 
 
 default_logger = logging.getLogger(__name__)
