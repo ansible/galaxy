@@ -64,7 +64,7 @@ def import_collection(
         _process_import_fail(artifact, import_task, msg)
     except Exception as e:
         _process_import_fail(artifact, import_task, msg=e.__class__.__name__)
-        raise exc.PulpTaskError(str(e))
+        raise exc.TaskError(str(e))
 
 
 def _get_import_task_msg_logger(import_task):

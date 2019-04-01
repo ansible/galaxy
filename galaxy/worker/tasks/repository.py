@@ -59,7 +59,7 @@ def import_repository(task_id, user_initiated=False):
     try:
         _import_repository(import_task, logger)
         user_notifications.import_status.delay(import_task.id, user_initiated)
-    except exc.TaskError as e:
+    except exc.LegacyTaskError as e:
         user_notifications.import_status.delay(
             import_task.id,
             user_initiated,
@@ -100,7 +100,7 @@ def _import_repository(import_task, logger):
             temp_dir=settings.CONTENT_DOWNLOAD_DIR,
             logger=logger)
     except i_exc.ImporterError as e:
-        raise exc.TaskError(str(e))
+        raise exc.LegacyTaskError(str(e))
 
     repository.import_branch = repo_info.branch
     repository.format = repo_info.format.value
@@ -268,7 +268,7 @@ def _get_social_token(import_task):
             account__user=user, account__provider='github')
         return token.token
     except Exception:
-        raise exc.TaskError(
+        raise exc.LegacyTaskError(
             u"Failed to get GitHub account for Galaxy user {0}. "
             u"You must first authenticate with GitHub.".format(user.username))
 

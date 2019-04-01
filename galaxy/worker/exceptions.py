@@ -1,4 +1,4 @@
-# (c) 2012-2018, Ansible by Red Hat
+# (c) 2012-2019, Ansible by Red Hat
 #
 # This file is part of Ansible Galaxy
 #
@@ -14,20 +14,32 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+import pulpcore.exceptions as pulp_exc
 
 
-class WorkerError(Exception):
-    pass
+class TaskError(pulp_exc.PulpException):
+    error_code = 'GLW0000'
+    message = 'Unknown task error.'
+
+    def __init__(self, message=None, error_code=None):
+        super().__init__(error_code or self.__class__.error_code)
+        self.message = message or self.__class__.message
+
+    def __str__(self):
+        return self.message
 
 
-class TaskError(WorkerError):
-    pass
+class VersionConflict(TaskError):
+    error_code = 'GLW0001'
+    message = 'Version exists.'
 
 
-class PulpTaskError(Exception):
-    """Base class for pulp task exceptions"""
-    pass
+class ImportFailed(TaskError):
+    error_code = 'GLW0002'
+    message = 'Import failed.'
 
 
-class VersionConflict(PulpTaskError):
+# TODO(cutwater): This exception is part of the old celery worker and
+#   should be removed once migration to Pulp's tasking system is complete.
+class LegacyTaskError(Exception):
     pass
