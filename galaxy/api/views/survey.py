@@ -27,8 +27,8 @@ from rest_framework.response import Response
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    'CommunitySurveyList',
-    'CommunitySurveyDetail'
+    'RepositorySurveyList',
+    'RepositorySurveyDetail'
 ]
 
 SURVEY_FIElDS = (
@@ -40,9 +40,9 @@ SURVEY_FIElDS = (
 )
 
 
-class CommunitySurveyList(base_views.ListCreateAPIView):
-    model = models.CommunitySurvey
-    serializer_class = serializers.CommunitySurveySerializer
+class RepositorySurveyList(base_views.ListCreateAPIView):
+    model = models.RepositorySurvey
+    serializer_class = serializers.RepositorySurveySerializer
 
     def post(self, request, *args, **kwargs):
         request.data['user'] = request.user.id
@@ -66,9 +66,9 @@ class CommunitySurveyList(base_views.ListCreateAPIView):
         return Response(serializer.data, headers=headers)
 
 
-class CommunitySurveyDetail(base_views.RetrieveUpdateDestroyAPIView):
-    model = models.CommunitySurvey
-    serializer_class = serializers.CommunitySurveySerializer
+class RepositorySurveyDetail(base_views.RetrieveUpdateDestroyAPIView):
+    model = models.RepositorySurvey
+    serializer_class = serializers.RepositorySurveySerializer
 
     def update(self, request, *args, **kwargs):
         serializer = self.get_serializer(
@@ -84,7 +84,7 @@ class CommunitySurveyDetail(base_views.RetrieveUpdateDestroyAPIView):
 
 
 def update_community_score(repo):
-    surveys = models.CommunitySurvey.objects.filter(repository=repo)
+    surveys = models.RepositorySurvey.objects.filter(repository=repo)
 
     score = 0
 

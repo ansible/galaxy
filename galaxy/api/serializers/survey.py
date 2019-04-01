@@ -23,13 +23,13 @@ from galaxy.main import models
 
 
 __all__ = (
-    'CommunitySurveySerializer',
+    'RepositorySurveySerializer',
 )
 
 
-class CommunitySurveySerializer(serializers.BaseSerializer):
+class RepositorySurveySerializer(serializers.BaseSerializer):
     class Meta:
-        model = models.CommunitySurvey
+        model = models.RepositorySurvey
         fields = (
             'id',
             'url',

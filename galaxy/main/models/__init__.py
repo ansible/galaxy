@@ -46,7 +46,7 @@ from .provider import (  # noqa: F401
     ProviderNamespace,
 )
 from .repository import (  # noqa: F401
-    CommunitySurvey,
+    RepositorySurvey,
     Readme,
     Repository,
     RepositoryVersion,

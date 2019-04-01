@@ -177,7 +177,7 @@ class RepositoryVersion(BaseModel):
             self.content.namespace, self.content.name, self.version)
 
 
-class CommunitySurvey(BaseModel):
+class RepositorySurvey(BaseModel):
     class Meta:
         unique_together = ('user', 'repository')
 

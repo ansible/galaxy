@@ -239,11 +239,11 @@ content_type_urls = [
 
 community_survey_urls = [
     url(r'^$',
-        views.CommunitySurveyList.as_view(),
+        views.RepositorySurveyList.as_view(),
         name='community_survey_list'),
 
     url(r'^(?P<pk>[0-9]+)/$',
-        views.CommunitySurveyDetail.as_view(),
+        views.RepositorySurveyDetail.as_view(),
         name='community_survey_detail'),
 ]
 
