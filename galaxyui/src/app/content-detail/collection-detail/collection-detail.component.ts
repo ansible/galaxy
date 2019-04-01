@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionDetail } from '../../resources/collections/collection';
+import { ViewTypes } from '../../enums/view-types.enum';
 
 @Component({
     selector: 'app-collection-detail',
@@ -14,6 +15,8 @@ export class CollectionDetailComponent implements OnInit {
     pageLoading = true;
     pageTitle: string;
     pageIcon: string;
+    ViewTypes: typeof ViewTypes = ViewTypes;
+    showingView: string = ViewTypes.detail;
 
     constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -40,5 +43,9 @@ export class CollectionDetailComponent implements OnInit {
                 this.router.navigate(['not-found']);
             }
         });
+    }
+
+    toggleView(view: string) {
+        this.showingView = ViewTypes[view];
     }
 }

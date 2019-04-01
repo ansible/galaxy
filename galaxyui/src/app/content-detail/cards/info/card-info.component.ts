@@ -2,11 +2,20 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
 import { RepoFormats } from '../../../enums/repo-types.enum';
-import { ViewTypes } from '../../../enums/view-types.enum';
 import { Content } from '../../../resources/content/content';
 import { Repository } from '../../../resources/repositories/repository';
+import { CollectionDetail } from '../../../resources/collections/collection';
 
-import { ContentTypesPlural } from '../../../enums/content-types.enum';
+class InfoData {
+    tags: string[];
+    latest_version: string;
+    versions: string[];
+    last_commit: string;
+    last_import: string;
+    apb_metadata: string;
+    install_cmd: string;
+    min_ansible_version: any;
+}
 
 @Component({
     selector: 'card-info',
@@ -18,78 +27,70 @@ export class CardInfoComponent implements OnInit {
     componentName = 'CardInfoComponent';
 
     constructor() {}
-
-    _repoContent: Content;
-    _metadata: object;
-    _repoType: RepoFormats;
-    _repository: Repository;
-
-    example_type: string;
-    example_type_plural: string;
-    example_name: string;
-
     @Input()
-    set repository(data: Repository) {
-        this._repository = data;
-    }
-    get repository(): Repository {
-        return this._repository;
-    }
-
-    @Input()
-    set repoType(repoType: RepoFormats) {
-        this._repoType = repoType;
-    }
-    get repoType(): RepoFormats {
-        return this._repoType;
-    }
-
-    @Input()
-    set metadata(data: object) {
-        this._metadata = data;
-    }
-    get metadata(): object {
-        return this._metadata;
-    }
-
-    @Input()
-    set repoContent(data: Content) {
-        this._repoContent = data;
-        if (this._repoContent) {
-            if (this._repoType === 'multi') {
-                this._repoContent['install_cmd'] =
-                    `mazer install ${
-                        this._repoContent.summary_fields['namespace']['name']
-                    }.` +
-                    `${this._repoContent.summary_fields['repository']['name']}`;
-            } else {
-                this._repoContent['install_cmd'] =
-                    `ansible-galaxy install ${
-                        this._repoContent.summary_fields['namespace']['name']
-                    }.` + `${this._repoContent.name}`;
-            }
-            this._repoContent['tags'] = this._repoContent.summary_fields[
-                'tags'
-            ];
-            this._repoContent['hasTags'] =
-                this.repoContent.summary_fields['tags'] &&
-                this._repoContent.summary_fields['tags'].length
-                    ? true
-                    : false;
-            this.example_name = this._repoContent.name;
-            this.example_type = this._repoContent.content_type;
-            this.example_type_plural =
-                ContentTypesPlural[this._repoContent.content_type];
+    set repository(repo: Repository) {
+        if (repo) {
+            this.infoData.last_commit = repo.last_commit;
+            this.infoData.last_import = repo.last_import;
         }
     }
-    get repoContent(): Content {
-        return this._repoContent;
+
+    @Input()
+    repoType?: RepoFormats;
+
+    @Input()
+    set metadata(metadata) {
+        this.infoData.apb_metadata = metadata;
+    }
+
+    // We're using setter functions here so that the data passed to the
+    // component is bound directly to our infoData object, which has to
+    // represent collections and repositories
+    @Input()
+    set repoContent(repoContent: Content) {
+        if (repoContent) {
+            let cmd;
+            if (this.repoType === 'multi') {
+                cmd =
+                    `mazer install ${
+                        repoContent.summary_fields['namespace']['name']
+                    }.` + `${repoContent.summary_fields['repository']['name']}`;
+            } else {
+                cmd =
+                    `ansible-galaxy install ${
+                        repoContent.summary_fields['namespace']['name']
+                    }.` + `${repoContent.name}`;
+            }
+
+            this.infoData.install_cmd = cmd;
+            this.infoData.tags = repoContent.summary_fields['tags'];
+            this.infoData.min_ansible_version = repoContent.min_ansible_version;
+        }
+    }
+
+    @Input()
+    set collection(collection: CollectionDetail) {
+        this.infoData = {
+            install_cmd: `mazer install ${collection.namespace.name}.${
+                collection.name
+            }`,
+            tags: collection.latest_version.metadata.tags,
+            latest_version: collection.latest_version.version,
+        } as InfoData;
     }
 
     config: CardConfig;
 
-    ViewTypes: typeof ViewTypes = ViewTypes;
-    RepoFormats: typeof RepoFormats = RepoFormats;
+    infoData = {
+        tags: null,
+        latest_version: null,
+        versions: null,
+        last_commit: null,
+        last_import: null,
+        apb_metadata: null,
+        install_cmd: null,
+        min_ansible_version: null,
+    } as InfoData;
 
     ngOnInit() {
         this.config = {
@@ -99,17 +100,5 @@ export class CardInfoComponent implements OnInit {
         } as CardConfig;
     }
 
-    copyToClipboard(elementId: string) {
-        const element = document.getElementById(elementId);
-        const val = element.textContent;
-        const txtArea = document.createElement('textarea');
-        txtArea.setAttribute('readonly', '');
-        txtArea.style.position = 'absolute';
-        txtArea.style.left = '-9999px';
-        document.body.appendChild(txtArea);
-        txtArea.value = val;
-        txtArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(txtArea);
-    }
+    private mapRepository() {}
 }

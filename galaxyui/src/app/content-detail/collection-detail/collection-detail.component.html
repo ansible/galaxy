@@ -2,19 +2,19 @@
     <app-page-header [headerTitle]="pageTitle" [headerIcon]="pageIcon"></app-page-header>
 
     <div class="container-fluid content-detail-container">
-        <!-- <div *ngIf="repository && repository.deprecated" class="alert alert-danger">
+        <div *ngIf="collection && collection.deprecated" class="alert alert-danger">
             <span class="pficon pficon-error-circle-o"></span>
-            This item has been deprecated. We recommend that you take a look at one of <a [routerLink]="['/','search']" [queryParams]="{keywords: repository.name, deprecated: false}">
+            This item has been deprecated. We recommend that you take a look at one of <a [routerLink]="['/','search']" [queryParams]="{keywords: collection.name, deprecated: false}">
                 these instead</a>.
-        </div> -->
+        </div>
 
         <app-content-header [collection]="collection" ></app-content-header>
 
-        <!-- <div class="row btn-row" *ngIf="!showEmptyState">
+        <div class="row btn-row">
             <div class="col-sm-12">
                 <button appLogEvent type="button" class="btn btn-default" [ngClass]="{'btn-primary': showingView === ViewTypes.detail}" tooltip="Return to main content view"
                     (click)="toggleView(ViewTypes.detail)">Details</button>
-                <button appLogEvent type="button" class="btn btn-default" *ngIf="hasReadme" [ngClass]="{'btn-primary': showingView === ViewTypes.readme}"
+                <!-- <button appLogEvent type="button" class="btn btn-default" *ngIf="hasReadme" [ngClass]="{'btn-primary': showingView === ViewTypes.readme}"
                     tooltip="View the repository's README file" (click)="toggleView(ViewTypes.readme)">Read Me</button>
                 <button appLogEvent type="button" class="btn btn-default" *ngIf="hasMetadata" [ngClass]="{'btn-primary': showingView === ViewTypes.meta}"
                     tooltip="View the {{ metadataFilename }} file" (click)="toggleView(ViewTypes.meta)">Metadata</button>
@@ -30,22 +30,19 @@
                     {{ contentCounts.plugin }} Plugins</button>
                 <button appLogEvent="Roles" type="button" class="btn btn-default" *ngIf="contentCounts.role" [ngClass]="{'btn-primary': showingView === ViewTypes.roles}"
                     tooltip="View modules" (click)="toggleView(ViewTypes.roles)"><i class="fa fa-gear"></i>
-                    {{ contentCounts.role }} Roles</button>
+                    {{ contentCounts.role }} Roles</button> -->
             </div>
-        </div> -->
+        </div>
 
-        <!-- <div *ngIf="!showEmptyState && showingView === ViewTypes.detail">
+        <div *ngIf="!showEmptyState && showingView === ViewTypes.detail">
             <div class="row detail display-flex">
                 <div class="col-lg-8 ">
                     <card-info
-                        [repository]="repository"
-                        [repoContent]="repoContent"
-                        [repoType]="repoType"
-                        [metadata]="metadata">
+                        [collection]="collection">
                     </card-info>
                 </div>
 
-                <div class="col-lg-4">
+                <!-- <div class="col-lg-4">
                     <card-community-survey
                         [communityScore]="repository.community_score"
                         [qualityScore]="repository.quality_score"
@@ -56,9 +53,10 @@
                         [namespaceOwners]="namespace.summary_fields.owners"
                         (emitDetails)="scoreDetailHandler($event)">
                     </card-community-survey>
-                </div>
+                </div> -->
             </div>
 
+        <!--
             <div *ngIf="showComunityDetails" class="row detail score-detail">
                 <div class="col-sm-12">
                     <pfng-card
