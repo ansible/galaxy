@@ -25,16 +25,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from collections import OrderedDict
 
-
-from galaxy.main.models import (Platform,
-                                CloudPlatform,
-                                Tag,
-                                Content,
-                                ImportTask,
-                                RepositoryVersion,
-                                Subscription,
-                                Stargazer
-                                )
+from galaxy.main.models import (
+    Platform,
+    CloudPlatform,
+    Tag,
+    Content,
+    ImportTask,
+    RepositoryVersion,
+    Subscription,
+    Stargazer
+)
 
 __all__ = [
     'BaseSerializer',
@@ -311,7 +311,6 @@ class ImportTaskSerializer(BaseSerializer):
         fields = (
             'id',
             'url',
-            'collection',
             'related',
             'summary_fields',
             'created',
@@ -347,15 +346,6 @@ class ImportTaskSerializer(BaseSerializer):
         if obj is None:
             return {}
         res = super(ImportTaskSerializer, self).get_related(obj)
-
-        # for collection import task
-        if getattr(obj, 'collection'):
-            pk = obj.collection.namespace.pk
-            res.update({
-                'namespace': reverse('api:namespace_detail', kwargs={'pk': pk})
-            })
-        if not getattr(obj, 'repository'):
-            return res
 
         # for repository import task
         res.update({
