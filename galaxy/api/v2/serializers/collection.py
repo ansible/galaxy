@@ -51,12 +51,15 @@ class CollectionImportSerializer(BaseTaskSerializer):
             'messages', 'lint_records', 'imported_version',
         )
 
+    # TODO(cutwater): Replace with custom field
     def get_namespace(self, obj):
+        pk = obj.namespace.pk
         return {
-            'id': obj.namespace.pk,
-            'href': '#'
+            'id': pk,
+            'href': reverse('api:namespace_detail', kwargs={'pk': pk})
         }
 
+    # TODO(cutwater): Replace with custom field
     def get_imported_version(self, obj):
         if obj.imported_version is None:
             return None

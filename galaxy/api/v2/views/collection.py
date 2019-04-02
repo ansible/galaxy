@@ -39,6 +39,7 @@ __all__ = [
 ]
 
 
+# FIXME(cutwater): Implement consistent error reporting format.
 class CollectionListView(views.APIView):
 
     permission_classes = (IsAuthenticated, )
@@ -90,7 +91,7 @@ class CollectionListView(views.APIView):
             return models.Namespace.objects.get(name=ns_name)
         except models.Namespace.DoesNotExist:
             raise drf_exc.ValidationError(
-                'Namespace {0} does not exist'.format(ns_name))
+                'Namespace "{0}" does not exist.'.format(ns_name))
 
     def _check_namespace_access(self, namespace, user):
         """Validate that collection namespace exists and user owns it."""

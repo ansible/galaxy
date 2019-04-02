@@ -21,7 +21,9 @@ from galaxy.api.internal import views
 
 
 ui_urls = [
-    path('collections/', views.CollectionList.as_view())
+    path('collections/', views.CollectionList.as_view()),
+    path('namespaces/<int:namespace_id>/imports/',
+         views.NamespaceImportsList.as_view())
 ]
 
 app_name = 'api'
