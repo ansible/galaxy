@@ -15,16 +15,24 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from .collection import (  # noqa: F401
-    CollectionImportSerializer,
-    CollectionUploadSerializer,
-)
-from .tasks import (  # noqa: F401
-    BaseTaskSerializer,
-)
+import datetime as dt
 
-__all__ = (
-    'CollectionImportSerializer',
-    'CollectionUploadSerializer',
-    'BaseTaskSerializer',
-)
+from rest_framework import serializers
+
+
+class NativeTimestampField(serializers.DateTimeField):
+    """Represents internal timestamp value as date time string."""
+
+    def to_representation(self, value):
+        if value is None:
+            return None
+
+        value = dt.datetime.utcfromtimestamp(value).replace(
+            tzinfo=dt.timezone.utc)
+        return super().to_representation(value)
+
+    def to_internal_value(self, value):
+        if value is None:
+            return None
+        value = super().to_internal_value(value)
+        return value.astimezone(dt.timezone.utc).timestamp()
