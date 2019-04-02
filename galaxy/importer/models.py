@@ -133,6 +133,14 @@ class BaseCollectionInfo(object):
         if not value:
             self.value_error("'%s' is required" % attribute.name)
 
+    @namespace.validator
+    @name.validator
+    def _check_name(self, attribute, value):
+        '''Check value against name regular expression'''
+        if not re.match(constants.NAME_REGEXP, value):
+            self.value_error("'%s' has invalid format: %s" %
+                             (attribute.name, value))
+
     @version.validator
     def _check_version_format(self, attribute, value):
         '''Check that version is in semantic version format'''
@@ -202,14 +210,6 @@ class BaseCollectionInfo(object):
             # https://github.com/ansible/galaxy/issues/1563
             if not re.match(constants.TAG_REGEXP, tag):
                 self.value_error("'tag' has invalid format: %s" % tag)
-
-    @namespace.validator
-    @name.validator
-    def _check_name(self, attribute, value):
-        '''Check value against name regular expression'''
-        if not re.match(constants.NAME_REGEXP, value):
-            self.value_error("'%s' has invalid format: %s" %
-                             (attribute.name, value))
 
     def __attrs_post_init__(self):
         '''Checks called post init validation'''
