@@ -25,6 +25,7 @@ from .collection import (  # noqa: F401
     Collection,
     CollectionVersion,
     CollectionImport,
+    CollectionSurvey
 )
 from .content import (  # noqa: F401
     CloudPlatform,

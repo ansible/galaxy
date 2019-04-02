@@ -43,5 +43,6 @@ class CollectionListSerializer(serializers.ModelSerializer):
             'deprecated',
             'download_count',
             'community_score',
+            'community_survey_count',
             'latest_version',
         )
