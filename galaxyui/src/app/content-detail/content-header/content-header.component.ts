@@ -41,13 +41,13 @@ export class RepoChangeEvent {
 }
 
 @Component({
-    selector: 'content-detail-repo',
-    templateUrl: './repository.component.html',
-    styleUrls: ['./repository.component.less'],
+    selector: 'app-content-header',
+    templateUrl: './content-header.component.html',
+    styleUrls: ['./content-header.component.less'],
 })
-export class RepositoryComponent implements OnInit {
+export class ContentHeaderComponent implements OnInit {
     // Used to track which component is being loaded
-    componentName = 'RepositoryComponent';
+    componentName = 'ContentHeaderComponent';
 
     constructor(
         private authService: AuthService,
