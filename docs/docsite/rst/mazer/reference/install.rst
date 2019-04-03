@@ -26,7 +26,7 @@ The namespace to use when installing content. Required when installing from a gi
 
 .. option:: -n, --no-deps
 
-Do NOT download and isntall any dependencies.
+Do NOT download and install any dependencies.
 
 .. option:: -r ROLE_FILE, --role-file=ROLE_FILE
 
