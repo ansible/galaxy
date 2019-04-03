@@ -1,3 +1,5 @@
+import random
+
 import pytest
 from django.test import TestCase
 
@@ -226,6 +228,34 @@ def test_non_null_str_fields(galaxy_col_info):
     with pytest.raises(ValueError) as exc:
         GalaxyCollectionInfo(**galaxy_col_info)
     assert 'description' in str(exc)
+
+
+def test_dependency_bad_dot_format(galaxy_col_info):
+    dependent_collections = [
+        'no_dot_in_collection',
+        'too.many.dots',
+        '.too.many.dots',
+        'too.many.dots.',
+    ]
+    for collection in dependent_collections:
+        galaxy_col_info['dependencies'] = {collection: '1.0.0'}
+        with pytest.raises(ValueError) as exc:
+            GalaxyCollectionInfo(**galaxy_col_info)
+        assert 'Invalid dependency format' in str(exc)
+
+
+def test_dependency_not_match_regex(galaxy_col_info):
+    dependent_collections = [
+        'empty_name.',
+        '.empty_namespace',
+        'a_user.{}'.format(random.choice(invalid_names)),
+        '{}.gunicorn'.format(random.choice(invalid_names)),
+    ]
+    for collection in dependent_collections:
+        galaxy_col_info['dependencies'] = {collection: '1.0.0'}
+        with pytest.raises(ValueError) as exc:
+            GalaxyCollectionInfo(**galaxy_col_info)
+        assert 'Invalid dependency format' in str(exc)
 
 
 class DependenciesTestCase(TestCase):

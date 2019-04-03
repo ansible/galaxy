@@ -194,13 +194,28 @@ class BaseCollectionInfo(object):
         return True
 
     @dependencies.validator
-    def _check_dependencies_type(self, attribute, value):
-        '''Check type of dependencies dictionary and its contents'''
-        if not isinstance(value, dict) or value is None:
-            self.value_error("Expecting '%s' to be a dict" % attribute.name)
-        for k, v in value.items():
-            if not isinstance(k, str) or not isinstance(v, str):
-                self.value_error("Expecting dict key and value to be strings")
+    def _check_dependencies_format(self, attribute, dependencies):
+        '''Check type and format of dependencies collection and version'''
+        if not isinstance(dependencies, dict) or dependencies is None:
+            self.value_error("Expecting 'dependencies' to be a dictionary")
+
+        for collection, version_spec in dependencies.items():
+            if not isinstance(collection, str):
+                self.value_error("Expecting depencency to be string")
+            if not isinstance(version_spec, str):
+                self.value_error("Expecting depencency version to be string")
+
+            try:
+                namespace, name = collection.split('.')
+            except ValueError:
+                self.value_error(
+                    "Invalid dependency format: '%s'" % collection)
+
+            for value in [namespace, name]:
+                if not re.match(constants.NAME_REGEXP, value):
+                    self.value_error(
+                        "Invalid dependency format: '%s' in '%s.%s'"
+                        % (value, namespace, name))
 
     @tags.validator
     def _check_tags(self, attribute, value):
