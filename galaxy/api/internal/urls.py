@@ -25,8 +25,9 @@ ui_urls = [
     path(
         'collection/<slug:namespace__name>/<slug:name>/',
         views.CollectionDetail.as_view()),
-    path('namespaces/<int:namespace_id>/imports/',
-         views.NamespaceImportsList.as_view())
+    path(
+        'namespaces/<int:namespace_id>/imports/',
+        views.NamespaceImportsList.as_view())
 ]
 
 

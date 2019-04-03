@@ -56,7 +56,7 @@ export class CollectionDetailService extends ServiceBase {
         super(
             http,
             notificationService,
-            '/api/internal/galaxyui/collection',
+            '/api/internal/ui/collections',
             'collection',
         );
     }
