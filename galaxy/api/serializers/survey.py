@@ -49,7 +49,7 @@ class CollectionSurveySerializer(serializers.BaseSerializer):
         collection = data.get('collection')
         user = data.get('user')
 
-        validate_not_owner(user, collection.namespace.owners.all())
+        validate_not_owner(collection.namespace.is_owner(user))
 
         return data
 
@@ -76,10 +76,7 @@ class RepositorySurveySerializer(serializers.BaseSerializer):
         repo = data.get('repository')
         user = data.get('user')
 
-        validate_not_owner(
-            user,
-            repo.provider_namespace.namespace.owners.all()
-        )
+        validate_not_owner(repo.provider_namespace.namespace.is_owner(user))
 
         return data
 
@@ -97,9 +94,7 @@ class RepositorySurveySerializer(serializers.BaseSerializer):
         }
 
 
-def validate_not_owner(user, user_list):
-    is_owner = user in user_list
-
+def validate_not_owner(is_owner):
     if is_owner:
         message = 'Users are not permitted to rate their own content.'
         raise drf_serializers.ValidationError(message)
