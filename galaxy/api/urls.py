@@ -238,13 +238,21 @@ content_type_urls = [
 ]
 
 community_survey_urls = [
-    url(r'^$',
-        views.CommunitySurveyList.as_view(),
-        name='community_survey_list'),
+    url(r'^repository/$',
+        views.RepositorySurveyList.as_view(),
+        name='repository_survey_list'),
 
-    url(r'^(?P<pk>[0-9]+)/$',
-        views.CommunitySurveyDetail.as_view(),
-        name='community_survey_detail'),
+    url(r'^repository/(?P<pk>[0-9]+)/$',
+        views.RepositorySurveyDetail.as_view(),
+        name='repository_survey_detail'),
+
+    url(r'^collection/$',
+        views.CollectionSurveyList.as_view(),
+        name='collection_survey_list'),
+
+    url(r'^collection/(?P<pk>[0-9]+)/$',
+        views.CollectionSurveyDetail.as_view(),
+        name='collection_survey_detail'),
 ]
 
 v1_urls = [

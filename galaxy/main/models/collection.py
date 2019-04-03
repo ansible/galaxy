@@ -25,6 +25,7 @@ from pulpcore.app import models as pulp_models
 from . import mixins
 from .namespace import Namespace
 from .task import Task
+from .base import SurveyBase
 
 
 class Collection(mixins.TimestampsMixin, models.Model):
@@ -122,3 +123,14 @@ class CollectionImport(Task):
     @property
     def imported_version(self):
         return self.result['imported_version']
+
+
+class CollectionSurvey(SurveyBase):
+    class Meta:
+        unique_together = ('user', 'collection')
+
+    collection = models.ForeignKey(
+        Collection,
+        null=False,
+        on_delete=models.CASCADE,
+    )

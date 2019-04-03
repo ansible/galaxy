@@ -346,7 +346,21 @@ class UserTokenAccess(BaseAccess):
         return False
 
 
-class CommunitySurveyAccess(BaseAccess):
+class RepositorySurveyAccess(BaseAccess):
+    def can_read(self, obj):
+        return True
+
+    def can_add(self, data):
+        return self.user.is_authenticated
+
+    def can_change(self, obj, data):
+        return self.user == obj.user
+
+    def can_delete(self, data):
+        return False
+
+
+class CollectionSurveyAccess(BaseAccess):
     def can_read(self, obj):
         return True
 
@@ -491,7 +505,8 @@ register_access(models.Repository, RepositoryAccess)
 register_access(models.ContentBlock, ContentBlockAccess)
 register_access(models.ContentType, ContentTypeAccess)
 register_access(models.CloudPlatform, CloudPlatformsAccess)
-register_access(models.CommunitySurvey, CommunitySurveyAccess)
+register_access(models.RepositorySurvey, RepositorySurveyAccess)
+register_access(models.CollectionSurvey, CollectionSurveyAccess)
 register_access(models.InfluxSessionIdentifier, InfluxSessionAccess)
 register_access(models.UserPreferences, UserPreferencesAccess)
 register_access(models.UserNotification, UserNotificationAccess)

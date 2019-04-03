@@ -23,17 +23,14 @@ from galaxy.main import models
 
 
 __all__ = (
-    'CommunitySurveySerializer',
+    'RepositorySurveySerializer',
+    'CollectionSurveySerializer'
 )
 
 
-class CommunitySurveySerializer(serializers.BaseSerializer):
-    class Meta:
-        model = models.CommunitySurvey
-        fields = (
+SHARED_FIELDS = (
             'id',
             'url',
-            'repository',
             'user',
             'docs',
             'ease_of_use',
@@ -42,22 +39,51 @@ class CommunitySurveySerializer(serializers.BaseSerializer):
             'used_in_production'
         )
 
+
+class CollectionSurveySerializer(serializers.BaseSerializer):
+    class Meta:
+        model = models.CollectionSurvey
+        fields = SHARED_FIELDS + ('collection',)
+
     def validate(self, data):
-        repo = data.get('repository')
+        collection = data.get('collection')
         user = data.get('user')
 
-        is_owner = user in repo.provider_namespace.namespace.owners.all()
-
-        if is_owner:
-            message = 'Users are not permitted to rate their own content.'
-            raise drf_serializers.ValidationError(message)
+        validate_not_owner(collection.namespace.is_owner(user))
 
         return data
 
     def get_url(self, obj):
         if obj is None:
             return ''
-        return reverse('api:community_survey_detail', args=(obj.pk,))
+        return reverse('api:collection_survey_detail', args=(obj.pk,))
+
+    def get_summary_fields(self, instance):
+        return {
+            'collection': {
+                'name': instance.collection.name,
+                'community_score': instance.collection.community_score
+            }
+        }
+
+
+class RepositorySurveySerializer(serializers.BaseSerializer):
+    class Meta:
+        model = models.RepositorySurvey
+        fields = SHARED_FIELDS + ('repository', )
+
+    def validate(self, data):
+        repo = data.get('repository')
+        user = data.get('user')
+
+        validate_not_owner(repo.provider_namespace.namespace.is_owner(user))
+
+        return data
+
+    def get_url(self, obj):
+        if obj is None:
+            return ''
+        return reverse('api:repository_survey_detail', args=(obj.pk,))
 
     def get_summary_fields(self, instance):
         return {
@@ -66,3 +92,9 @@ class CommunitySurveySerializer(serializers.BaseSerializer):
                 'community_score': instance.repository.community_score
             }
         }
+
+
+def validate_not_owner(is_owner):
+    if is_owner:
+        message = 'Users are not permitted to rate their own content.'
+        raise drf_serializers.ValidationError(message)

@@ -24,25 +24,21 @@ from galaxy.main.celerytasks import user_notifications
 
 from rest_framework.response import Response
 
+from galaxy.common.survey import calculate_survey_score
+
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    'CommunitySurveyList',
-    'CommunitySurveyDetail'
+    'RepositorySurveyList',
+    'RepositorySurveyDetail',
+    'CollectionSurveyList',
+    'CollectionSurveyDetail'
 ]
 
-SURVEY_FIElDS = (
-    'docs',
-    'ease_of_use',
-    'does_what_it_says',
-    'works_as_is',
-    'used_in_production',
-)
 
-
-class CommunitySurveyList(base_views.ListCreateAPIView):
-    model = models.CommunitySurvey
-    serializer_class = serializers.CommunitySurveySerializer
+class CollectionSurveyList(base_views.ListCreateAPIView):
+    model = models.CollectionSurvey
+    serializer_class = serializers.CollectionSurveySerializer
 
     def post(self, request, *args, **kwargs):
         request.data['user'] = request.user.id
@@ -51,7 +47,51 @@ class CommunitySurveyList(base_views.ListCreateAPIView):
 
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        update_community_score(serializer.validated_data['repository'])
+        update_collection_score(serializer.validated_data['collection'])
+
+        headers = self.get_success_headers(serializer.data)
+
+        # TODO(newswangerd): make notifications work with collections
+        # Each question answered comes as a separate HTTP request, so delay
+        # the email update by 2 minutes to allow for all the questions to be
+        # submitted so that the score includes all of the submitted answers.
+        # user_notifications.new_survey.apply_async(
+        #     (serializer.validated_data['repository'].id,),
+        #     countdown=120
+        # )
+
+        return Response(serializer.data, headers=headers)
+
+
+class CollectionSurveyDetail(base_views.RetrieveUpdateDestroyAPIView):
+    model = models.CollectionSurvey
+    serializer_class = serializers.CollectionSurveySerializer
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(
+            instance=self.get_object(),
+            data=request.data
+        )
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        update_collection_score(serializer.validated_data['collection'])
+
+        return Response(serializer.data)
+
+
+class RepositorySurveyList(base_views.ListCreateAPIView):
+    model = models.RepositorySurvey
+    serializer_class = serializers.RepositorySurveySerializer
+
+    def post(self, request, *args, **kwargs):
+        request.data['user'] = request.user.id
+
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        update_repo_score(serializer.validated_data['repository'])
 
         headers = self.get_success_headers(serializer.data)
 
@@ -66,9 +106,9 @@ class CommunitySurveyList(base_views.ListCreateAPIView):
         return Response(serializer.data, headers=headers)
 
 
-class CommunitySurveyDetail(base_views.RetrieveUpdateDestroyAPIView):
-    model = models.CommunitySurvey
-    serializer_class = serializers.CommunitySurveySerializer
+class RepositorySurveyDetail(base_views.RetrieveUpdateDestroyAPIView):
+    model = models.RepositorySurvey
+    serializer_class = serializers.RepositorySurveySerializer
 
     def update(self, request, *args, **kwargs):
         serializer = self.get_serializer(
@@ -78,27 +118,15 @@ class CommunitySurveyDetail(base_views.RetrieveUpdateDestroyAPIView):
 
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        update_community_score(serializer.validated_data['repository'])
+        update_repo_score(serializer.validated_data['repository'])
 
         return Response(serializer.data)
 
 
-def update_community_score(repo):
-    surveys = models.CommunitySurvey.objects.filter(repository=repo)
+def update_repo_score(repo):
+    surveys = models.RepositorySurvey.objects.filter(repository=repo)
 
-    score = 0
-
-    answer_count = 0
-    survey_score = 0.0
-    for survey in surveys:
-        for k in SURVEY_FIElDS:
-            data = getattr(survey, k)
-            if data is not None:
-                answer_count += 1
-                survey_score += (data - 1) / 4
-
-    # Average and convert to 0-5 scale
-    score = (survey_score / answer_count) * 5
+    score = calculate_survey_score(surveys)
 
     repo.community_score = score
     repo.community_survey_count = len(surveys)
@@ -117,3 +145,28 @@ def update_community_score(repo):
         'measurement': 'content_score',
         'fields': fields
     })
+
+
+def update_collection_score(collection):
+    surveys = models.CollectionSurvey.objects.filter(collection=collection)
+
+    score = calculate_survey_score(surveys)
+
+    collection.community_score = score
+    collection.community_survey_count = len(surveys)
+    collection.save()
+
+    # TODO(newswangerd): make logger work on collections
+    # namespace = repo.provider_namespace.namespace.name
+    #
+    # fields = {
+    #     'content_name': '{}.{}'.format(namespace, repo.name),
+    #     'content_id': repo.id,
+    #     'community_score': repo.community_score,
+    #     'quality_score': repo.quality_score,
+    # }
+    #
+    # serializers.influx_insert_internal({
+    #     'measurement': 'content_score',
+    #     'fields': fields
+    # })

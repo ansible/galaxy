@@ -59,6 +59,12 @@ class UserPreferences(BaseModel):
         blank=True
     )
 
+    collections_followed = models.ManyToManyField(
+        'main.Collection',
+        editable=True,
+        blank=True
+    )
+
     namespaces_followed = models.ManyToManyField(
         'main.Namespace',
         editable=True,

@@ -25,6 +25,7 @@ from .collection import (  # noqa: F401
     Collection,
     CollectionVersion,
     CollectionImport,
+    CollectionSurvey
 )
 from .content import (  # noqa: F401
     CloudPlatform,
@@ -46,7 +47,7 @@ from .provider import (  # noqa: F401
     ProviderNamespace,
 )
 from .repository import (  # noqa: F401
-    CommunitySurvey,
+    RepositorySurvey,
     Readme,
     Repository,
     RepositoryVersion,

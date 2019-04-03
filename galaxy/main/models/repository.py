@@ -11,6 +11,7 @@ from galaxy.main import fields
 from .base import BaseModel
 from .provider import ProviderNamespace
 from .content import Content
+from .base import SurveyBase
 
 
 class Repository(BaseModel):
@@ -177,7 +178,7 @@ class RepositoryVersion(BaseModel):
             self.content.namespace, self.content.name, self.version)
 
 
-class CommunitySurvey(BaseModel):
+class RepositorySurvey(SurveyBase):
     class Meta:
         unique_together = ('user', 'repository')
 
@@ -185,38 +186,6 @@ class CommunitySurvey(BaseModel):
         Repository,
         null=False,
         on_delete=models.CASCADE,
-    )
-
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        null=False,
-        on_delete=models.CASCADE,
-    )
-
-    # Survey scores
-    docs = models.IntegerField(
-        null=True,
-        validators=[MinValueValidator(0), MaxValueValidator(5)]
-    )
-
-    ease_of_use = models.IntegerField(
-        null=True,
-        validators=[MinValueValidator(0), MaxValueValidator(5)]
-    )
-
-    does_what_it_says = models.IntegerField(
-        null=True,
-        validators=[MinValueValidator(0), MaxValueValidator(5)]
-    )
-
-    works_as_is = models.IntegerField(
-        null=True,
-        validators=[MinValueValidator(0), MaxValueValidator(5)]
-    )
-
-    used_in_production = models.IntegerField(
-        null=True,
-        validators=[MinValueValidator(0), MaxValueValidator(5)]
     )
 
 

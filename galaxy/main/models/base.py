@@ -19,6 +19,8 @@ from django.db import models
 
 from galaxy.main import fields
 from galaxy.main.mixins import DirtyMixin
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.conf import settings
 
 
 class BaseModel(models.Model, DirtyMixin):
@@ -65,3 +67,44 @@ class CommonModelNameNotUnique(PrimordialModel):
         abstract = True
 
     name = models.CharField(max_length=512, unique=False, db_index=True)
+
+
+class SurveyBase(BaseModel):
+    """This allows for us to split surveys into RepositorySurvey and
+    CollectionSurvey without causing inconsistencies in the questions we ask
+    user"""
+
+    class Meta:
+        abstract = True
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=False,
+        on_delete=models.CASCADE,
+    )
+
+    # Survey scores
+    docs = models.IntegerField(
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
+    ease_of_use = models.IntegerField(
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
+    does_what_it_says = models.IntegerField(
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
+    works_as_is = models.IntegerField(
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
+    used_in_production = models.IntegerField(
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )

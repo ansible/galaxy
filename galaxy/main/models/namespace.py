@@ -79,3 +79,6 @@ class Namespace(CommonModel):
             .values('content_type__name') \
             .annotate(count=models.Count('content_type__name')) \
             .order_by('content_type__name')
+
+    def is_owner(self, user):
+        return self.owners.filter(pk=user.pk).exists()
