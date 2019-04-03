@@ -42,18 +42,19 @@
                     </card-info>
                 </div>
 
-                <!-- <div class="col-lg-4">
+                <div class="col-lg-4">
                     <card-community-survey
-                        [communityScore]="repository.community_score"
-                        [qualityScore]="repository.quality_score"
-                        [contentId]="repository.id"
+                        [communityScore]="collection.community_score"
+                        [qualityScore]="collection.latest_version.quality_score"
+                        [contentId]="collection.id"
                         [showCommunityDetails]="showComunityDetails"
                         [showQualityDetails]="showQualityDetails"
-                        [lastScored]="repository.quality_score_date"
-                        [namespaceOwners]="namespace.summary_fields.owners"
+                        [lastScored]="collection.latest_version.created"
+                        [namespaceOwners]="mappedNamespaceOwners"
+                        contentFormat="collection"
                         (emitDetails)="scoreDetailHandler($event)">
                     </card-community-survey>
-                </div> -->
+                </div>
             </div>
 
         <!--

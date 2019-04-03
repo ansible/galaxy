@@ -30,6 +30,7 @@ collection_list_fields = (
     'download_count',
     'community_score',
     'latest_version',
+    'community_survey_count'
 )
 
 version_list_fields = (
@@ -54,6 +55,8 @@ class VersionDetailSerializer(serializers.ModelSerializer):
         fields = version_list_fields + (
             'metadata',
             'contents',
+            'created',
+            'modified'
         )
 
 

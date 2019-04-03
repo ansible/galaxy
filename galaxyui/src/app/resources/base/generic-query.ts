@@ -20,8 +20,13 @@ export class GenericQuery<ServiceType> extends ServiceBase {
         super(http, notificationService, url, serviceName);
     }
 
-    query(params?: any): Observable<ServiceType[]> {
+    query(params?: any, urlExtras?: string): Observable<ServiceType[]> {
         let objectUrl = this.url;
+
+        if (urlExtras) {
+            objectUrl = this.append_to_url(this.url, urlExtras);
+        }
+
         let objectParams = null;
         if (params) {
             if (typeof params === 'string') {
@@ -39,8 +44,13 @@ export class GenericQuery<ServiceType> extends ServiceBase {
             );
     }
 
-    pagedQuery(params?: any): Observable<PagedResponse> {
+    pagedQuery(params?: any, urlExtras?: string): Observable<PagedResponse> {
         let objectUrl = this.url;
+
+        if (urlExtras) {
+            objectUrl = this.append_to_url(this.url, urlExtras);
+        }
+
         let objectParams = null;
         if (params) {
             if (typeof params === 'string') {
@@ -57,10 +67,18 @@ export class GenericQuery<ServiceType> extends ServiceBase {
             );
     }
 
-    get(id: number): Observable<ServiceType> {
-        return this.http.get<ServiceType>(`${this.url}/${id.toString()}/`).pipe(
-            tap(_ => this.log(`fetched ${this.serviceName}`)),
-            catchError(this.handleError('Get', {} as ServiceType)),
-        );
+    get(id: number, urlExtras?: string): Observable<ServiceType> {
+        let objectUrl = this.url;
+
+        if (urlExtras) {
+            objectUrl = this.append_to_url(this.url, urlExtras);
+        }
+
+        return this.http
+            .get<ServiceType>(`${objectUrl}/${id.toString()}/`)
+            .pipe(
+                tap(_ => this.log(`fetched ${this.serviceName}`)),
+                catchError(this.handleError('Get', {} as ServiceType)),
+            );
     }
 }

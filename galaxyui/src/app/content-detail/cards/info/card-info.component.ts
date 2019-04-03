@@ -75,7 +75,9 @@ export class CardInfoComponent implements OnInit {
                 collection.name
             }`,
             tags: collection.latest_version.metadata.tags,
-            latest_version: collection.latest_version.version,
+            latest_version: `${collection.latest_version.version} uploaded ${
+                collection.latest_version.created
+            }`,
         } as InfoData;
     }
 

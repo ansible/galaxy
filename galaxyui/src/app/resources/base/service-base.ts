@@ -21,6 +21,27 @@ export class ServiceBase {
         }),
     };
 
+    append_to_url(url: string, extras: string) {
+        // Concatenate two urls
+
+        let u1, u2;
+
+        // remove extra slashes.
+        if (url[url.length - 1] === '/') {
+            u1 = url.substring(0, url.length - 1);
+        } else {
+            u1 = url;
+        }
+
+        if (extras[extras.length - 1] === '/') {
+            u2 = extras.substring(1, extras.length);
+        } else {
+            u2 = extras;
+        }
+
+        return `${u1}/${u2}`;
+    }
+
     handleError<T>(operation = '', result?: T) {
         return (error: any): Observable<T> => {
             console.error(`${operation} failed, error:`, error);

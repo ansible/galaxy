@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionDetail } from '../../resources/collections/collection';
 import { ViewTypes } from '../../enums/view-types.enum';
+import * as moment from 'moment';
 
 @Component({
     selector: 'app-collection-detail',
@@ -17,14 +18,21 @@ export class CollectionDetailComponent implements OnInit {
     pageIcon: string;
     ViewTypes: typeof ViewTypes = ViewTypes;
     showingView: string = ViewTypes.detail;
+    showQualityDetails = false;
+    showComunityDetails = false;
+
+    // For binding to the survey
+    mappedNamespaceOwners: any[];
 
     constructor(private route: ActivatedRoute, private router: Router) {}
 
     ngOnInit() {
         this.route.data.subscribe(data => {
-            console.log(data.collection);
             if (data.collection['name']) {
                 this.collection = data.collection;
+                this.collection.latest_version.created = moment(
+                    this.collection.latest_version.created,
+                ).fromNow();
                 this.pageLoading = false;
 
                 if (this.collection.namespace.is_vendor) {
@@ -39,6 +47,11 @@ export class CollectionDetailComponent implements OnInit {
                 this.pageTitle += `${this.collection.namespace.name};/${
                     this.collection.namespace.name
                 };${this.collection.name};`;
+
+                this.mappedNamespaceOwners = [];
+                this.collection.namespace.owners.forEach(id => {
+                    this.mappedNamespaceOwners.push({ id: id });
+                });
             } else {
                 this.router.navigate(['not-found']);
             }
@@ -47,5 +60,9 @@ export class CollectionDetailComponent implements OnInit {
 
     toggleView(view: string) {
         this.showingView = ViewTypes[view];
+    }
+
+    scoreDetailHandler($event) {
+        console.log($event);
     }
 }

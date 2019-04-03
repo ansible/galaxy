@@ -10,6 +10,7 @@ import { SurveyService } from '../../../resources/survey/survey.service';
 import { AuthService } from '../../../auth/auth.service';
 
 import { CommunityDetails, DetailMessage, NamespaceOwner } from './types';
+import { ContentFormat } from '../../../enums/format';
 
 @Component({
     selector: 'card-community-survey',
@@ -44,6 +45,9 @@ export class CardCommunitySurveyComponent implements OnInit {
     loggedIn = false;
 
     @Input()
+    contentFormat: ContentFormat;
+
+    @Input()
     contentId: number;
 
     @Input()
@@ -68,6 +72,7 @@ export class CardCommunitySurveyComponent implements OnInit {
     emitDetails = new EventEmitter<DetailMessage>();
 
     ngOnInit() {
+        console.log(this.namespaceOwners);
         this.config = {
             titleBorder: true,
             topBorder: true,
@@ -150,8 +155,15 @@ export class CardCommunitySurveyComponent implements OnInit {
             }
 
             // The user id has to be set before surveys are loaded from the API
+            let query;
+            if (this.contentFormat === ContentFormat.repository) {
+                query = { repository: this.contentId, page_size: 1000 };
+            } else {
+                query = { collection: this.contentId, page_size: 1000 };
+            }
+
             this.surveyService
-                .query({ repository: this.contentId, page_size: 1000 })
+                .query(query, this.contentFormat)
                 .subscribe(surveys => {
                     this.communitySurveys = surveys;
                     this.numberOfSurveys = this.communitySurveys.length;
@@ -170,7 +182,7 @@ export class CardCommunitySurveyComponent implements OnInit {
         if (!this.mySurvey) {
             this.mySurvey = {
                 user: this.myUserId,
-                repository: this.contentId,
+                content_id: this.contentId,
             } as Survey;
 
             for (const key of this.surveyKeys) {
@@ -258,32 +270,36 @@ export class CardCommunitySurveyComponent implements OnInit {
             this.numberOfSurveys += 1;
         }
 
-        this.surveyService.save(this.mySurvey).subscribe(dbSurvey => {
-            this.mySurvey.id = dbSurvey.id;
-            this.communityBarText = null;
-            this.setCommunityScore(
-                dbSurvey.summary_fields.repository.community_score,
-            );
+        this.surveyService
+            .save(this.mySurvey, this.contentFormat)
+            .subscribe(dbSurvey => {
+                this.mySurvey.id = dbSurvey.id;
+                this.communityBarText = null;
+                this.setCommunityScore(
+                    dbSurvey.summary_fields.content.community_score,
+                );
 
-            // Submit the cached survey data.
-            if (this.waitingForId) {
-                this.waitingForId = false;
-                let submitCached = false;
+                // Submit the cached survey data.
+                if (this.waitingForId) {
+                    this.waitingForId = false;
+                    let submitCached = false;
 
-                // Submit cached changes if they are different from what's
-                // in the DB.
-                for (const key of this.surveyKeys) {
-                    if (this.mySurvey[key] !== dbSurvey[key]) {
-                        submitCached = true;
-                        break;
+                    // Submit cached changes if they are different from what's
+                    // in the DB.
+                    for (const key of this.surveyKeys) {
+                        if (this.mySurvey[key] !== dbSurvey[key]) {
+                            submitCached = true;
+                            break;
+                        }
+                    }
+
+                    if (submitCached) {
+                        this.surveyService
+                            .save(this.mySurvey, this.contentFormat)
+                            .subscribe();
                     }
                 }
-
-                if (submitCached) {
-                    this.surveyService.save(this.mySurvey).subscribe();
-                }
-            }
-        });
+            });
 
         this.calculateCategoryScores();
         this.updateCommunityDetails();

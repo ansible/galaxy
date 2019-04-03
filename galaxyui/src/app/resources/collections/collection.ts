@@ -16,6 +16,8 @@ export class CollectionVersion {
         description: string;
     };
     contents: any;
+    created: string;
+    modified: string;
 }
 
 class CollectionBase {
@@ -46,6 +48,6 @@ export class CollectionDetail extends CollectionBase {
         email: string;
         html_url: string;
         is_vendor: boolean;
-        owners: number;
+        owners: number[];
     };
 }
