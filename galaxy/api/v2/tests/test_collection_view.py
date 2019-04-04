@@ -1,10 +1,7 @@
-import pytest
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from galaxy.importer.models import BaseCollectionInfo, GalaxyCollectionInfo
 from galaxy.main import models
-
 
 
 class CollectionViewTests(TestCase):
