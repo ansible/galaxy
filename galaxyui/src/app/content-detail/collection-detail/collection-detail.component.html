@@ -14,9 +14,9 @@
             <div class="col-sm-12">
                 <button appLogEvent type="button" class="btn btn-default" [ngClass]="{'btn-primary': showingView === ViewTypes.detail}" tooltip="Return to main content view"
                     (click)="toggleView(ViewTypes.detail)">Details</button>
-                <!-- <button appLogEvent type="button" class="btn btn-default" *ngIf="hasReadme" [ngClass]="{'btn-primary': showingView === ViewTypes.readme}"
+                <button appLogEvent type="button" class="btn btn-default" [ngClass]="{'btn-primary': showingView === ViewTypes.readme}"
                     tooltip="View the repository's README file" (click)="toggleView(ViewTypes.readme)">Read Me</button>
-                <button appLogEvent type="button" class="btn btn-default" *ngIf="hasMetadata" [ngClass]="{'btn-primary': showingView === ViewTypes.meta}"
+                <!--<button appLogEvent type="button" class="btn btn-default" *ngIf="hasMetadata" [ngClass]="{'btn-primary': showingView === ViewTypes.meta}"
                     tooltip="View the {{ metadataFilename }} file" (click)="toggleView(ViewTypes.meta)">Metadata</button>
                 <button appLogEvent="Modules" type="button" class="btn btn-default" *ngIf="contentCounts.module" [ngClass]="{'btn-primary': showingView === ViewTypes.modules}"
                     tooltip="View modules" (click)="toggleView(ViewTypes.modules)">{{ contentCounts.module }}
@@ -140,29 +140,18 @@
                                     </td>
                                 </tr>
                             </table>
-                            <!-- <pfng-list *ngIf="content.length > 1"
-                                [config]="qualityListConfig"
-                                [expandTemplate]="listExpandTemplate"
-                                [items]="collection.latest_version.content"
-                                [itemTemplate]="itemTemplate">
-                                <ng-template #itemTemplate let-item="item">
-                                    <div class="list-pf-content-wrapper">
-                                        <div class="list-pf-main-content">
-                                            <div class="list-pf-title">{{item.name}}</div>
-                                            <div class="list-pf-description text-overflow-pf">
-                                                Quality Score: {{ convertScore(item.quality_score) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ng-template>
-                                <ng-template #listExpandTemplate let-item="item" let-index="index">
-                                    <app-quality-details [content]="item"></app-quality-details>
-                                </ng-template>
-                            </pfng-list> -->
                         </div>
                     </pfng-card>
                 </div>
             </div>
+        </div>
+
+        <div class="row row-readme" *ngIf="showingView === ViewTypes.readme">
+            <div class="col-sm-12">
+                <div class="readme" [innerHTML]="collection.latest_version.readme"></div>
+            </div>
+        </div>
+
             <!--
 
             <div class="row detail">
@@ -188,12 +177,9 @@
                 </div>
             </div>
         </div>
+        -->
 
-        <div class="row row-readme" *ngIf="!showEmptyState && showingView === ViewTypes.readme">
-            <div class="col-sm-12">
-                <div class="readme" [innerHTML]="repoContent.readme_html"></div>
-            </div>
-        </div>
+        <!--
         <div class="row meta" *ngIf="!showEmptyState && showingView === ViewTypes.meta">
             <div class="col-sm-12">
                 <pre>{{ metadata | json }}</pre>
@@ -222,5 +208,4 @@
         </div>
     </div> -->
 
-</div>
 <app-page-loading [loading]="pageLoading"></app-page-loading>

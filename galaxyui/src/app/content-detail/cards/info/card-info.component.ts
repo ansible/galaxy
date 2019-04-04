@@ -101,6 +101,4 @@ export class CardInfoComponent implements OnInit {
             topBorder: true,
         } as CardConfig;
     }
-
-    private mapRepository() {}
 }

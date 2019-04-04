@@ -56,7 +56,8 @@ class VersionDetailSerializer(serializers.ModelSerializer):
             'metadata',
             'contents',
             'created',
-            'modified'
+            'modified',
+            'readme'
         )
 
 
@@ -74,7 +75,7 @@ class CollectionDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Collection
-        fields = collection_list_fields + ('all_versions',)
+        fields = collection_list_fields + ('all_versions', )
         depth = 1
 
     def get_all_versions(self, obj):
