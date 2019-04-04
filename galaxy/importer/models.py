@@ -220,6 +220,13 @@ class BaseCollectionInfo(object):
             if namespace == self.namespace and name == self.name:
                 self.value_error("Cannot have self dependency")
 
+            try:
+                semantic_version.Spec(version_spec)
+            except ValueError:
+                self.value_error(
+                    "Dependency version spec range invalid: %s %s"
+                    % (collection, version_spec))
+
     @tags.validator
     def _check_tags(self, attribute, value):
         '''Check value against tag regular expression'''
@@ -283,12 +290,7 @@ class GalaxyCollectionInfo(BaseCollectionInfo):
                 self.value_error('Dependency collection not in '
                                  'galaxy: %s' % dep_col)
 
-            try:
-                spec = semantic_version.Spec(ver_spec)
-            except ValueError:
-                self.value_error('Dependency version spec range '
-                                 'invalid: %s %s' % (dep_col, ver_spec))
-
+            spec = semantic_version.Spec(ver_spec)
             col_vers = models.CollectionVersion.objects.filter(collection=col)
             for v in [item.version for item in col_vers]:
                 try:

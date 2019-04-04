@@ -269,6 +269,22 @@ def test_self_dependency(galaxy_col_info):
     assert 'Cannot have self dependency' in str(exc)
 
 
+def test_dep_bad_version_spec(galaxy_col_info):
+    bad_version_specs = [
+        {'alice.apache': 'bad_version'},
+        {'alice.apache': '1.2.*'},
+        {'alice.apache': ''},
+        {'alice.apache': '*.*.*'},
+        {'alice.apache': '>=1.0.0, <=2.0.0'},
+        {'alice.apache': '>1 <2'},
+    ]
+    for dep in bad_version_specs:
+        galaxy_col_info['dependencies'] = dep
+        with pytest.raises(ValueError) as exc:
+            GalaxyCollectionInfo(**galaxy_col_info)
+        assert 'version spec range invalid' in str(exc)
+
+
 class DependenciesTestCase(TestCase):
     @classmethod
     def setUpClass(self):
@@ -309,18 +325,6 @@ class DependenciesTestCase(TestCase):
         with pytest.raises(ValueError) as exc:
             GalaxyCollectionInfo(**self.metadata)
         assert 'collection not in galaxy' in str(exc)
-
-    def test_dep_bad_version_spec(self):
-        bad_version_specs = [
-            {'alice.apache': 'bad_version'},
-            {'alice.apache': '1.2.*'},
-            {'alice.apache': '>=1.0.0, <=2.0.0'},
-        ]
-        for dep in bad_version_specs:
-            self.metadata['dependencies'] = dep
-            with pytest.raises(ValueError) as exc:
-                GalaxyCollectionInfo(**self.metadata)
-            assert 'version spec range invalid' in str(exc)
 
     def test_dep_cannot_find_ver(self):
         missing_versions = [
