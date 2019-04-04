@@ -112,10 +112,38 @@
                         </ng-template>
 
                         <div class="card-body">
-                            <pfng-list *ngIf="content.length > 1"
+                            <table>
+                                <tr>
+                                    <th>Name </th>
+                                    <th>Quality Score </th>
+                                    <th>Content Score </th>
+                                    <th>Metadata Score </th>
+                                    <th>Compatibility Score </th>
+                                </tr>
+                                <tr *ngFor="let item of collection.latest_version.contents">
+                                    <td>{{item.name}}</td>
+                                    <td>
+                                        <span *ngIf="item.scores && item.scores.quality">{{item.scores.quality}}</span>
+                                        <span *ngIf="!(item.scores && item.scores.quality)">NA</span>
+                                    </td>
+                                    <td>
+                                        <span *ngIf="item.scores && item.scores.content">{{item.scores.content}}</span>
+                                        <span *ngIf="!(item.scores && item.scores.content)">NA</span>
+                                    </td>
+                                    <td>
+                                        <span *ngIf="item.scores && item.scores.metadata">{{item.scores.metadata}}</span>
+                                        <span *ngIf="!(item.scores && item.scores.metadata)">NA</span>
+                                    </td>
+                                    <td>
+                                        <span *ngIf="item.scores && item.scores.compatibility">{{item.scores.compatibility}}</span>
+                                        <span *ngIf="!(item.scores && item.scores.compatibility)">NA</span>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!-- <pfng-list *ngIf="content.length > 1"
                                 [config]="qualityListConfig"
                                 [expandTemplate]="listExpandTemplate"
-                                [items]="content"
+                                [items]="collection.latest_version.content"
                                 [itemTemplate]="itemTemplate">
                                 <ng-template #itemTemplate let-item="item">
                                     <div class="list-pf-content-wrapper">
@@ -130,9 +158,7 @@
                                 <ng-template #listExpandTemplate let-item="item" let-index="index">
                                     <app-quality-details [content]="item"></app-quality-details>
                                 </ng-template>
-                            </pfng-list>
-
-                            <app-quality-details *ngIf="content.length === 1" [content]="content[0]"></app-quality-details>
+                            </pfng-list> -->
                         </div>
                     </pfng-card>
                 </div>

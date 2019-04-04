@@ -76,4 +76,12 @@ export class CollectionDetailComponent implements OnInit {
     toggleSurveyDetails(key: string) {
         this[key] = !this[key];
     }
+
+    convertScore(score: number) {
+        if (score === null) {
+            return 'NA';
+        }
+
+        return Math.round(score * 10) / 10;
+    }
 }
