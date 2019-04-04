@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionDetail } from '../../resources/collections/collection';
 import { ViewTypes } from '../../enums/view-types.enum';
 import * as moment from 'moment';
+import { CommunityDetails, DetailMessage } from '../cards/survey/types';
 
 @Component({
     selector: 'app-collection-detail',
@@ -20,6 +21,7 @@ export class CollectionDetailComponent implements OnInit {
     showingView: string = ViewTypes.detail;
     showQualityDetails = false;
     showComunityDetails = false;
+    communityScoreDetails: CommunityDetails[];
 
     // For binding to the survey
     mappedNamespaceOwners: any[];
@@ -62,7 +64,16 @@ export class CollectionDetailComponent implements OnInit {
         this.showingView = ViewTypes[view];
     }
 
-    scoreDetailHandler($event) {
-        console.log($event);
+    scoreDetailHandler(detailData: DetailMessage) {
+        if (detailData.type === 'community') {
+            this.communityScoreDetails = detailData.payload;
+            this.showComunityDetails = detailData.visible;
+        } else if (detailData.type === 'quality') {
+            this.showQualityDetails = detailData.visible;
+        }
+    }
+
+    toggleSurveyDetails(key: string) {
+        this[key] = !this[key];
     }
 }
