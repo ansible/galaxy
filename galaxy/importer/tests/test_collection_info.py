@@ -258,6 +258,17 @@ def test_dependency_not_match_regex(galaxy_col_info):
         assert 'Invalid dependency format' in str(exc)
 
 
+def test_self_dependency(galaxy_col_info):
+    namespace = galaxy_col_info['namespace']
+    name = galaxy_col_info['name']
+    galaxy_col_info['dependencies'] = {
+        '{}.{}'.format(namespace, name): '1.0.0'
+    }
+    with pytest.raises(ValueError) as exc:
+        GalaxyCollectionInfo(**galaxy_col_info)
+    assert 'Cannot have self dependency' in str(exc)
+
+
 class DependenciesTestCase(TestCase):
     @classmethod
     def setUpClass(self):

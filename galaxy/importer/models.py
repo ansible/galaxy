@@ -217,6 +217,9 @@ class BaseCollectionInfo(object):
                         "Invalid dependency format: '%s' in '%s.%s'"
                         % (value, namespace, name))
 
+            if namespace == self.namespace and name == self.name:
+                self.value_error("Cannot have self dependency")
+
     @tags.validator
     def _check_tags(self, attribute, value):
         '''Check value against tag regular expression'''
@@ -265,9 +268,6 @@ class GalaxyCollectionInfo(BaseCollectionInfo):
         '''Check dependencies and matching version present in database'''
         for dep_col, ver_spec in self.dependencies.items():
             ns_name, name = dep_col.split('.')
-
-            if ns_name == self.namespace and name == self.name:
-                self.value_error('Cannot have self dependency')
 
             try:
                 ns = models.Namespace.objects.get(name=ns_name)
