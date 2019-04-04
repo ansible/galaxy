@@ -94,6 +94,7 @@ def _publish_collection(artifact, repository, namespace_pk, collection_info):
             defaults={
                 'metadata': metadata.get_json(),
                 'quality_score': collection_info.quality_score,
+                'contents': collection_info.contents,
             },
         )
     except IntegrityError as e:
@@ -160,7 +161,7 @@ def _log_collection_loaded(coll_info):
     ))
     for content in coll_info.contents:
         log.debug('Content: type={} name={} scores={}'.format(
-            content.content_type,
-            content.name,
-            getattr(content, 'scores'),
+            content['content_type'],
+            content['name'],
+            content['scores'],
         ))
