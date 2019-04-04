@@ -90,6 +90,21 @@ build/release:
 # Test targets
 # ---------------------------------------------------------
 
+.PHONY: test
+test:
+	@export DJANGO_SETTINGS_MODULE=galaxy.settings.testing
+	@pytest galaxy \
+	--cov galaxy \
+	--cov-report xml \
+	--cov-report term \
+	--cov-report html \
+	--cov-config setup.cfg \
+
+.PHONY: test/changed
+test/changed:
+	@export DJANGO_SETTINGS_MODULE=galaxy.settings.testing
+	@git status | grep 'test' | xargs pytest -s -vvv --reuse-db
+
 .PHONY: test/flake8
 test/flake8:
 	flake8 galaxy
@@ -183,7 +198,23 @@ dev/test:
 # - install side packages globally or
 # - call tools using python api instead of shell commands.
 	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
-		source $(GALAXY_VENV)/bin/activate; pytest galaxy'
+		source $(GALAXY_VENV)/bin/activate \
+		export DJANGO_SETTINGS_MODULE=galaxy.settings.testing \
+		pytest galaxy \
+		--cov galaxy \
+		--cov-report xml \
+		--cov-report term \
+		--cov-report html \
+		--cov-config setup.cfg \
+		'
+
+.PHONY: dev/test/changed
+dev/test/changed:
+	@echo "Running changed tests"
+	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
+		export DJANGO_SETTINGS_MODULE=galaxy.settings.testing \
+		git status | grep 'test' | xargs pytest -s -vvv --reuse-db \
+		'
 
 .PHONY: dev/waitenv
 dev/waitenv:
