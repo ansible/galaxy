@@ -37,6 +37,8 @@ version_list_fields = (
     'pk',
     'version',
     'quality_score',
+    'created',
+    'modified',
 )
 
 
@@ -55,8 +57,6 @@ class VersionDetailSerializer(serializers.ModelSerializer):
         fields = version_list_fields + (
             'metadata',
             'contents',
-            'created',
-            'modified',
             'readme'
         )
 

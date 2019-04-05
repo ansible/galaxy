@@ -5,11 +5,12 @@ import { RepoFormats } from '../../../enums/repo-types.enum';
 import { Content } from '../../../resources/content/content';
 import { Repository } from '../../../resources/repositories/repository';
 import { CollectionDetail } from '../../../resources/collections/collection';
+import * as moment from 'moment';
 
 class InfoData {
     tags: string[];
-    latest_version: string;
-    versions: string[];
+    latest_version: any;
+    versions: any[];
     last_commit: string;
     last_import: string;
     apb_metadata: string;
@@ -70,14 +71,21 @@ export class CardInfoComponent implements OnInit {
 
     @Input()
     set collection(collection: CollectionDetail) {
+        let versions = [];
+
+        for (let version of collection.all_versions) {
+            if (version.version != collection.latest_version.version) {
+                version.created = moment(version.created).fromNow();
+                versions.push(version);
+            }
+        }
         this.infoData = {
             install_cmd: `mazer install ${collection.namespace.name}.${
                 collection.name
             }`,
             tags: collection.latest_version.metadata.tags,
-            latest_version: `${collection.latest_version.version} uploaded ${
-                collection.latest_version.created
-            }`,
+            latest_version: collection.latest_version,
+            versions: versions,
         } as InfoData;
     }
 
@@ -100,5 +108,15 @@ export class CardInfoComponent implements OnInit {
             titleBorder: true,
             topBorder: true,
         } as CardConfig;
+    }
+
+    updateVersion(version) {
+        const cmd = this.infoData.install_cmd.split(',')[0];
+
+        if (version === '') {
+            this.infoData.install_cmd = cmd;
+        } else {
+            this.infoData.install_cmd = `${cmd},version=${version}`;
+        }
     }
 }

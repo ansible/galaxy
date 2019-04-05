@@ -72,7 +72,6 @@ export class CardCommunitySurveyComponent implements OnInit {
     emitDetails = new EventEmitter<DetailMessage>();
 
     ngOnInit() {
-        console.log(this.namespaceOwners);
         this.config = {
             titleBorder: true,
             topBorder: true,
