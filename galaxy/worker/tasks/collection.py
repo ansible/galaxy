@@ -98,6 +98,9 @@ def _publish_collection(task, artifact, repository, collection_info):
             metadata=metadata.get_json(),
             quality_score=collection_info.quality_score,
             contents=collection_info.contents,
+            readme_mimetype=collection_info.readme['mimetype'],
+            readme_text=collection_info.readme['text'],
+            readme_html=collection_info.readme['html'],
         )
     except IntegrityError:
         raise exc.VersionConflict(
