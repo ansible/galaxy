@@ -35,6 +35,8 @@ class HeaderData {
     score: any;
     travis_build_url: string;
     travis_status_url: string;
+    follow_type: string;
+    content_id: number;
 }
 
 export class RepoChangeEvent {
@@ -73,31 +75,34 @@ export class ContentHeaderComponent implements OnInit {
     preferences: UserPreferences = null;
 
     ngOnInit() {
-        if (this.collection) {
-            this.mapCollection();
-        } else if (this.repository) {
-            this.mapRepository();
-            this.authService.me().subscribe(me => {
-                if (me.authenticated) {
-                    this.preferencesService.get().subscribe(result => {
-                        this.preferences = result;
-                        this.setFollower();
-                    });
-                }
-            });
-        }
+        this.authService.me().subscribe(me => {
+            if (me.authenticated) {
+                this.preferencesService.get().subscribe(result => {
+                    if (this.collection) {
+                        this.mapCollection();
+                    } else if (this.repository) {
+                        this.mapRepository();
+                    }
+
+                    this.preferences = result;
+                    this.setFollower();
+                });
+            }
+        });
     }
 
     followCollection() {
         this.followerClass = 'fa fa-spin fa-spinner';
 
         if (this.isFollower) {
-            const index = this.preferences.repositories_followed.indexOf(
-                this.repository.id,
+            const index = this.preferences[this.headerData.follow_type].indexOf(
+                this.headerData.content_id,
             );
-            this.preferences.repositories_followed.splice(index, 1);
+            this.preferences[this.headerData.follow_type].splice(index, 1);
         } else {
-            this.preferences.repositories_followed.push(this.repository.id);
+            this.preferences[this.headerData.follow_type].push(
+                this.headerData.content_id,
+            );
         }
         this.preferencesService.save(this.preferences).subscribe(result => {
             if (result !== null) {
@@ -110,8 +115,8 @@ export class ContentHeaderComponent implements OnInit {
     // private
     private setFollower() {
         if (
-            this.preferences.repositories_followed.find(
-                x => x === this.repository.id,
+            this.preferences[this.headerData.follow_type].find(
+                x => x === this.headerData.content_id,
             ) !== undefined
         ) {
             this.isFollower = true;
@@ -139,6 +144,8 @@ export class ContentHeaderComponent implements OnInit {
                 community_score: this.collection.community_score,
                 quality_score: this.collection.latest_version.quality_score,
             },
+            follow_type: 'collections_followed',
+            content_id: this.collection.id,
         } as HeaderData;
     }
 
@@ -173,6 +180,8 @@ export class ContentHeaderComponent implements OnInit {
             score: this.repository,
             travis_build_url: this.repository.travis_build_url,
             travis_status_url: this.repository.travis_status_url,
+            follow_type: 'repositories_followed',
+            content_id: this.repository.id,
         } as HeaderData;
     }
 }

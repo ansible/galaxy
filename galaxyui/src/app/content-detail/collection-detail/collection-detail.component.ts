@@ -18,7 +18,7 @@ export class CollectionDetailComponent implements OnInit {
     pageTitle: string;
     pageIcon: string;
     ViewTypes: typeof ViewTypes = ViewTypes;
-    showingView: string = ViewTypes.content;
+    showingView: string = ViewTypes.detail;
     showQualityDetails = false;
     showComunityDetails = false;
     communityScoreDetails: CommunityDetails[];

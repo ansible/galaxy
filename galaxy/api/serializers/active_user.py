@@ -21,7 +21,8 @@ class ActiveUserPreferencesSerializer(BaseSerializer):
         fields = (
             'preferences',
             'repositories_followed',
-            'namespaces_followed'
+            'namespaces_followed',
+            'collections_followed'
         )
 
     def get_summary_fields(self, obj):
