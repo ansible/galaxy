@@ -1,0 +1,93 @@
+@import '../../../../variables';
+
+.filter-bar {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    .filter-checkbox {
+        text-transform: capitalize;
+        margin-left: 10px;
+
+        label {
+            margin-bottom: 0px;
+            cursor: pointer;
+        }
+    }
+}
+
+.card-container {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.card-item {
+    padding: 10px;
+    width: 350px;
+    height: 130px;
+    margin-top: 10px;
+    margin-right: 10px;
+    border: 1px solid #d1d1d1;
+    box-shadow: 0px 2px 8px #d1d1d1;
+    font-size: 12px;
+    position: relative;
+
+    .content-type {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 1px;
+        color: white;
+        width: 50px;
+        text-align: center;
+        text-transform: capitalize;
+    }
+
+    .role {
+        background-color: #2d7623;
+    }
+
+    .module {
+        background-color: #005c66;
+    }
+
+    .playbook {
+        background-color: #008bad;
+    }
+
+    .plugin {
+        background-color: #582fc0;
+    }
+
+    .title {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .description {
+        margin-top: 8px;
+        height: 40px;
+        overflow: hidden;
+    }
+
+    .tags {
+        margin-top: 8px;
+        width: 100%;
+        overflow: hidden;
+        .tag {
+            display: inline-block;
+            font-weight: normal;
+            margin-right: 5px;
+            margin-top: 5px;
+            padding: 1px 5px;
+            background-color: @blue;
+            color: @white;
+            border-radius: 1px;
+        }
+    }
+}

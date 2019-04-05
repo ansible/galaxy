@@ -6,4 +6,5 @@ export enum ViewTypes {
     moduleUtils = 'moduleUtils',
     roles = 'roles',
     plugins = 'plugins',
+    content = 'content',
 }
