@@ -64,8 +64,9 @@ class ContentImporter(object):
 
         # Check name
         if not re.match(r'^[a-zA-Z0-9_-]+$', name):
-            raise exc.TaskError('Invalid name, only aplhanumeric characters, '
-                                '"-" and "_" symbols are allowed.')
+            raise exc.LegacyTaskError(
+                'Invalid name, only aplhanumeric characters, '
+                '"-" and "_" symbols are allowed.')
 
         try:
             # Check for an existing Content object matching name

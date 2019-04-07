@@ -15,16 +15,11 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from .collection import (  # noqa: F401
-    CollectionImportSerializer,
-    CollectionUploadSerializer,
-)
-from .tasks import (  # noqa: F401
-    BaseTaskSerializer,
-)
+from .collection import import_collection  # noqa: F401
+from .repository import import_repository  # noqa: F401
+
 
 __all__ = (
-    'CollectionImportSerializer',
-    'CollectionUploadSerializer',
-    'BaseTaskSerializer',
+    'import_collection',
+    'import_repository',
 )

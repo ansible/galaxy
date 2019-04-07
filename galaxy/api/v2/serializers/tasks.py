@@ -17,7 +17,7 @@
 
 from rest_framework import serializers
 
-from pulpcore.app import models as pulp_models
+from galaxy.main import models
 
 
 __all__ = (
@@ -26,7 +26,7 @@ __all__ = (
 
 
 class BaseTaskSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(source='_id')
+    id = serializers.IntegerField()
     job_id = serializers.UUIDField()
     state = serializers.CharField()
     started_at = serializers.DateTimeField()
@@ -34,7 +34,7 @@ class BaseTaskSerializer(serializers.ModelSerializer):
     error = serializers.JSONField()
 
     class Meta:
-        model = pulp_models.Task
+        model = models.Task
         fields = ('id', 'job_id', 'started_at', 'finished_at',
                   'state', 'error')
         read_only_fields = fields

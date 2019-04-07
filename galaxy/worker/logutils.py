@@ -17,8 +17,7 @@
 
 import logging
 
-
-from galaxy import constants
+from galaxy import constants as const
 from galaxy.importer.utils import lint as lintutils
 
 
@@ -29,8 +28,8 @@ class BaseLoggerAdapter(logging.LoggerAdapter):
 
 
 class ImportTaskAdapter(BaseLoggerAdapter):
-    def __init__(self, logger, task_id):
-        super(ImportTaskAdapter, self).__init__(logger, {'task_id': task_id})
+    def __init__(self, logger, task):
+        super(ImportTaskAdapter, self).__init__(logger, {'task': task})
 
 
 class ContentTypeAdapter(BaseLoggerAdapter):
@@ -62,9 +61,22 @@ class ImportTaskHandler(logging.Handler):
 
         # TODO(cutwater): Revisit connection alias usage.
         models.ImportTaskMessage.objects.using('logging').create(
-            task_id=record.task_id,
-            message_type=constants.ImportTaskMessageType.from_logging_level(
+            task=record.task,
+            message_type=const.ImportTaskMessageType.from_logging_level(
                 record.levelno).value,
             message_text=record.msg,
             **create_kwargs,
         )
+
+
+class CollectionImportHandler(logging.Handler):
+    def emit(self, record: logging.LogRecord) -> None:
+        from galaxy.main import models
+        task: models.CollectionImport = record.task
+
+        lint_record: lintutils.LintRecord = getattr(
+            record, 'lint_record', None)
+        if lint_record is not None:
+            task.add_lint_record(lint_record)
+        task.add_log_record(record)
+        task.save()

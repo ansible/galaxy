@@ -27,12 +27,12 @@ from django.utils import timezone
 from allauth.socialaccount import models as auth_models
 
 from galaxy import constants
-from galaxy.common import logutils
 from galaxy.importer import repository as i_repo
 from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import importers
+from galaxy.worker import logutils
 from galaxy.worker import utils
 from galaxy.main.celerytasks import user_notifications
 from galaxy.api import serializers
@@ -54,12 +54,12 @@ def import_repository(task_id, user_initiated=False):
     import_task.start()
 
     logger = logging.getLogger('galaxy.worker.tasks.import_repository')
-    logger = logutils.ImportTaskAdapter(logger, task_id=import_task.id)
+    logger = logutils.ImportTaskAdapter(logger, task=import_task)
 
     try:
         _import_repository(import_task, logger)
         user_notifications.import_status.delay(import_task.id, user_initiated)
-    except exc.TaskError as e:
+    except exc.LegacyTaskError as e:
         user_notifications.import_status.delay(
             import_task.id,
             user_initiated,
@@ -100,7 +100,7 @@ def _import_repository(import_task, logger):
             temp_dir=settings.CONTENT_DOWNLOAD_DIR,
             logger=logger)
     except i_exc.ImporterError as e:
-        raise exc.TaskError(str(e))
+        raise exc.LegacyTaskError(str(e))
 
     repository.import_branch = repo_info.branch
     repository.format = repo_info.format.value
@@ -268,7 +268,7 @@ def _get_social_token(import_task):
             account__user=user, account__provider='github')
         return token.token
     except Exception:
-        raise exc.TaskError(
+        raise exc.LegacyTaskError(
             u"Failed to get GitHub account for Galaxy user {0}. "
             u"You must first authenticate with GitHub.".format(user.username))
 

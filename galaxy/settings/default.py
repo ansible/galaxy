@@ -291,10 +291,6 @@ WORKING_DIRECTORY = '/var/run/galaxy'
 
 CONTENT_PATH_PREFIX = '/download'
 
-INSTALLED_PULP_PLUGINS = [
-    'galaxy.pulp',
-]
-
 # InfluxDB Settings
 # ---------------------------------------------------------
 
@@ -381,9 +377,14 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
-        'import_task': {
+        'repository_import': {
             'level': 'DEBUG',
-            'class': 'galaxy.common.logutils.ImportTaskHandler',
+            'class': 'galaxy.worker.logutils.ImportTaskHandler',
+            'formatter': 'simple',
+        },
+        'collection_import': {
+            'level': 'DEBUG',
+            'class': 'galaxy.worker.logutils.CollectionImportHandler',
             'formatter': 'simple',
         }
     },
@@ -408,7 +409,12 @@ LOGGING = {
         # A special logger, that sends task logs to the database
         'galaxy.worker.tasks.import_repository': {
             'level': 'INFO',
-            'handlers': ['import_task'],
+            'handlers': ['repository_import'],
+            'propagate': False,
+        },
+        'galaxy.worker.tasks.import_collection': {
+            'level': 'INFO',
+            'handlers': ['collection_import'],
             'propagate': False,
         },
     }
