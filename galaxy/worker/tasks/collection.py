@@ -33,6 +33,8 @@ from galaxy.worker import logutils
 
 log = logging.getLogger(__name__)
 
+ARTIFACT_REL_PATH = '{namespace}-{name}-{version}.tar.gz'
+
 
 def import_collection(artifact_id, repository_id):
     task = models.CollectionImport.current()
@@ -98,17 +100,17 @@ def _publish_collection(task, artifact, repository, collection_info):
             contents=collection_info.contents,
         )
     except IntegrityError:
-        raise exc.VersionConflict('Collection version already exists.')
+        raise exc.VersionConflict(
+            'Collection version "{version}" already exists.'
+            .format(version=metadata.version))
 
-    relative_path = '{0}-{1}-{2}.tar.gz'.format(
-        metadata.namespace,
-        metadata.name,
-        metadata.version
-    )
+    rel_path = ARTIFACT_REL_PATH.format(
+        namespace=metadata.namespace, name=metadata.name,
+        version=metadata.version)
     pulp_models.ContentArtifact.objects.create(
         artifact=artifact,
         content=version,
-        relative_path=relative_path,
+        relative_path=rel_path,
     )
 
     with pulp_models.RepositoryVersion.create(repository) as new_version:
