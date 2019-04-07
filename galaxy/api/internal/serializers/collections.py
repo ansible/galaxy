@@ -21,6 +21,7 @@ from galaxy.main import models
 
 class VersionSerializer(serializers.ModelSerializer):
     metadata = serializers.JSONField(binary=False)
+    contents = serializers.JSONField(binary=False)
 
     class Meta:
         model = models.CollectionVersion
