@@ -26,6 +26,7 @@ from galaxy.importer.utils import readme as readmeutils
 from galaxy.importer.finders import FileSystemFinder
 from galaxy.importer import loaders
 from galaxy.importer import exceptions as exc
+from galaxy.main.models import Platform
 
 
 default_logger = logging.getLogger(__name__)
@@ -42,6 +43,10 @@ class _ContentJSONEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, obj)
         except TypeError:
             pass
+
+        if isinstance(obj, Platform):
+            return {'name': obj.name.lower(),
+                    'release': obj.release.lower()}
 
         try:
             return obj.name.lower()
