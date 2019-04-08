@@ -51,14 +51,19 @@ class VersionListSerializer(serializers.ModelSerializer):
 class VersionDetailSerializer(serializers.ModelSerializer):
     metadata = serializers.JSONField(binary=False)
     contents = serializers.JSONField(binary=False)
+    readme_html = serializers.SerializerMethodField()
 
     class Meta:
         model = models.CollectionVersion
         fields = version_list_fields + (
             'metadata',
             'contents',
-            'readme'
+            'readme_html'
         )
+
+    def get_readme_html(self, obj):
+        # PLACEHOLDER WHILE README IS BEING IMPLEMENTED ON THE BACK END
+        return "<h1>README PLACEHOLDER</h1>"
 
 
 class CollectionListSerializer(serializers.ModelSerializer):

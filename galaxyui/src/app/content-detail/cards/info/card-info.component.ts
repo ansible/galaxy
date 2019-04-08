@@ -93,7 +93,7 @@ export class CardInfoComponent implements OnInit {
             tags: collection.latest_version.metadata.tags,
             latest_version: collection.latest_version,
             versions: versions,
-            readme: collection.latest_version.readme,
+            readme: collection.latest_version.readme_html,
         } as InfoData;
     }
 

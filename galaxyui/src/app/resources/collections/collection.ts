@@ -18,7 +18,7 @@ export class CollectionVersion {
     contents: any;
     created: string;
     modified: string;
-    readme: string;
+    readme_html: string;
 }
 
 class CollectionBase {
