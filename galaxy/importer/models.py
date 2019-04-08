@@ -286,12 +286,21 @@ class GalaxyCollectionInfo(BaseCollectionInfo):
             self.value_error('Dependency found in galaxy but no matching '
                              'version found: %s %s' % (dep_col, ver_spec))
 
+    def _check_tags_count(self):
+        '''Checks tag count in metadata against max tags count constant'''
+        tags = getattr(self, 'tags')
+        if tags is not None and len(tags) > constants.MAX_TAGS_COUNT:
+            self.value_error(
+                'Expecting no more than %s tags in metadata' %
+                constants.MAX_TAGS_COUNT)
+
     def __attrs_post_init__(self):
         '''Additional galaxy checks called post init'''
         super().__attrs_post_init__()
         self._check_required('readme')
         self._check_required('authors')
         self._check_dependencies()
+        self._check_tags_count()
         for field in [
                         'description',
                         'repository',
