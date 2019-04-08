@@ -29,7 +29,9 @@
         <div class="content-type" [ngClass]="getContentTypeClass(item.content_type)">
             {{getContentTypeClass(item.content_type)}}
         </div>
-        <div class="description">{{item.description}}</div>
+        <div class="description">
+            {{item.description.length > maxDescriptionLength ? (item.description | slice:0:maxDescriptionLength) + '...' : item.description}}
+        </div>
         <div class="tags" *ngIf="item.role_meta">
             <i class="fa fa-tags fa-lg"></i> &nbsp;
             <span class="tag" *ngFor="let tag of item.role_meta.tags">

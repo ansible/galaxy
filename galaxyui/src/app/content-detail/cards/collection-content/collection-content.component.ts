@@ -24,6 +24,7 @@ export class CardCollectionContentComponent implements OnInit {
     };
     availableTypes: string[];
     appliedTypes: Set<string>;
+    maxDescriptionLength = 100;
 
     ngOnInit() {
         this.displayedContents = this.contents;
