@@ -1,12 +1,12 @@
-from django.test import TestCase
-from rest_framework.test import APIClient
+from rest_framework.test import APITestCase, APIClient
 
 from galaxy.main import models
 
 
-class CollectionViewTests(TestCase):
+class CollectionViewTests(APITestCase):
 
     def setUp(self):
+        super().setUp()
         self.namespace = models.Namespace.objects.create(
             name='mynamespace',
         )
@@ -21,8 +21,17 @@ class CollectionViewTests(TestCase):
         )
 
     def test_get_collections(self):
-        client = APIClient()
-        resp = client.get("/api/internal/ui/collections/")
+        resp = self.client.get("/api/internal/ui/collections/")
+        results = resp.json()['results']
+
+        collection = results[0]
+
+        assert collection['namespace'] == self.namespace.id
+        assert collection['name'] == self.collection.name
+        assert collection['latest_version']['version'] == self.version.version
+
+    def test_get_collections2(self):
+        resp = self.client.get("/api/internal/ui/collections/")
         results = resp.json()['results']
 
         collection = results[0]

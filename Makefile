@@ -92,7 +92,6 @@ build/release:
 
 .PHONY: test
 test:
-	@export DJANGO_SETTINGS_MODULE=galaxy.settings.testing
 	@pytest galaxy \
 	--cov galaxy \
 	--cov-report xml \
@@ -102,8 +101,7 @@ test:
 
 .PHONY: test/changed
 test/changed:
-	@export DJANGO_SETTINGS_MODULE=galaxy.settings.testing
-	@git status | grep 'test' | xargs pytest -s -vvv --reuse-db
+	@git status | grep -e '   .*test' | cut -d: -f2 | xargs pytest -s -vvv --reuse-db
 
 .PHONY: test/flake8
 test/flake8:
