@@ -75,15 +75,15 @@ export class ContentHeaderComponent implements OnInit {
     preferences: UserPreferences = null;
 
     ngOnInit() {
+        if (this.collection) {
+            this.mapCollection();
+        } else if (this.repository) {
+            this.mapRepository();
+        }
+
         this.authService.me().subscribe(me => {
             if (me.authenticated) {
                 this.preferencesService.get().subscribe(result => {
-                    if (this.collection) {
-                        this.mapCollection();
-                    } else if (this.repository) {
-                        this.mapRepository();
-                    }
-
                     this.preferences = result;
                     this.setFollower();
                 });
@@ -146,6 +146,7 @@ export class ContentHeaderComponent implements OnInit {
             },
             follow_type: 'collections_followed',
             content_id: this.collection.id,
+            scmUrl: null,
         } as HeaderData;
     }
 

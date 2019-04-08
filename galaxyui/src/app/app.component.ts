@@ -226,11 +226,6 @@ export class AppComponent implements OnInit {
             iconStyleClass: 'fa fa-upload',
             url: '/my-imports',
         } as VerticalNavigationItem);
-        this.addNavItem({
-            title: 'Saved Collections',
-            iconStyleClass: 'fa fa-folder-open',
-            url: '/my-imports',
-        } as VerticalNavigationItem);
     }
 
     logout(): void {

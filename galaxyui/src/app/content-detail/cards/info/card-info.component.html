@@ -91,9 +91,11 @@
                 </div>
             </div>
             <div *ngIf="infoData.readme" class="readme">
-                <div class="fade">HI</div>
-                <div class="readme-container" [innerHTML]="infoData.readme"></div>
-                <a>Load full Read Me</a>
+                <div class="readme-container">
+                    <div [innerHTML]="infoData.readme"></div>
+                    <div class="fade-out"></div>
+                </div>
+                <a (click)="switchToReadme()">Load full Read Me</a>
             </div>
         </div>
     </pfng-card>

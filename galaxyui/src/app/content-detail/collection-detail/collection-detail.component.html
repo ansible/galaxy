@@ -21,11 +21,13 @@
             </div>
         </div>
 
-        <div *ngIf="!showEmptyState && showingView === ViewTypes.detail">
+        <div *ngIf="showingView === ViewTypes.detail">
             <div class="row detail display-flex">
                 <div class="col-lg-8 ">
                     <card-info
-                        [collection]="collection">
+                        [collection]="collection"
+                        (emitView)="toggleView($event)"
+                    >
                     </card-info>
                 </div>
 

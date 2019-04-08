@@ -33,6 +33,7 @@ export class CardCollectionContentComponent implements OnInit {
     ngOnInit() {
         this.displayedContents = this.contents;
         this.availableTypes = Object.keys(this.typeFilter);
+        this.appliedTypes = new Set(this.availableTypes);
     }
 
     getContentTypeClass(type) {

@@ -1,10 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
 
 import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
 import { RepoFormats } from '../../../enums/repo-types.enum';
 import { Content } from '../../../resources/content/content';
 import { Repository } from '../../../resources/repositories/repository';
 import { CollectionDetail } from '../../../resources/collections/collection';
+import { ViewTypes } from '../../../enums/view-types.enum';
+
 import * as moment from 'moment';
 
 class InfoData {
@@ -16,6 +18,7 @@ class InfoData {
     apb_metadata: string;
     install_cmd: string;
     min_ansible_version: any;
+    readme: string;
 }
 
 @Component({
@@ -28,6 +31,10 @@ export class CardInfoComponent implements OnInit {
     componentName = 'CardInfoComponent';
 
     constructor() {}
+
+    @Output()
+    emitView = new EventEmitter<ViewTypes>();
+
     @Input()
     set repository(repo: Repository) {
         if (repo) {
@@ -86,6 +93,7 @@ export class CardInfoComponent implements OnInit {
             tags: collection.latest_version.metadata.tags,
             latest_version: collection.latest_version,
             versions: versions,
+            readme: collection.latest_version.readme,
         } as InfoData;
     }
 
@@ -118,5 +126,9 @@ export class CardInfoComponent implements OnInit {
         } else {
             this.infoData.install_cmd = `${cmd},version=${version}`;
         }
+    }
+
+    switchToReadme() {
+        this.emitView.emit(ViewTypes.readme);
     }
 }
