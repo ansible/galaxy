@@ -24,7 +24,8 @@ export class ServiceBase {
     append_to_url(url: string, extras: string) {
         // Concatenate two urls
 
-        let u1, u2;
+        let u1;
+        let u2;
 
         // remove extra slashes.
         if (url[url.length - 1] === '/') {

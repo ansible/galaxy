@@ -78,10 +78,10 @@ export class CardInfoComponent implements OnInit {
 
     @Input()
     set collection(collection: CollectionDetail) {
-        let versions = [];
+        const versions = [];
 
-        for (let version of collection.all_versions) {
-            if (version.version != collection.latest_version.version) {
+        for (const version of collection.all_versions) {
+            if (version.version !== collection.latest_version.version) {
                 version.created = moment(version.created).fromNow();
                 versions.push(version);
             }

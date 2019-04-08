@@ -1,10 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-class typeFilter {
-    type: string;
-    checked: true;
-}
-
 @Component({
     selector: 'card-collection-content',
     templateUrl: './collection-content.component.html',
@@ -59,7 +54,7 @@ export class CardCollectionContentComponent implements OnInit {
 
         this.typeFilter[key] = !this.typeFilter[key];
 
-        for (let type of this.availableTypes) {
+        for (const type of this.availableTypes) {
             if (this.typeFilter[type]) {
                 this.appliedTypes.add(type);
             }
@@ -69,8 +64,8 @@ export class CardCollectionContentComponent implements OnInit {
     }
 
     private filter() {
-        let newContent = [];
-        for (let content of this.contents) {
+        const newContent = [];
+        for (const content of this.contents) {
             if (
                 content.name.match(this.textFilter) &&
                 this.appliedTypes.has(
