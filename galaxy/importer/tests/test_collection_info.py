@@ -149,6 +149,17 @@ def test_invalid_tags(base_col_info):
         assert tag in str(exc)
 
 
+def test_max_tags(galaxy_col_info):
+    galaxy_col_info['tags'] = [str(i) for i in range(90, 110)]
+    res = GalaxyCollectionInfo(**galaxy_col_info)
+    assert '101' in res.tags
+
+    galaxy_col_info['tags'] = [str(i) for i in range(90, 111)]
+    with pytest.raises(ValueError) as exc:
+        GalaxyCollectionInfo(**galaxy_col_info)
+    assert 'tags in metadata' in str(exc)
+
+
 def test_valid_semver(base_col_info):
     for ver in valid_semver:
         base_col_info['version'] = ver
