@@ -75,7 +75,7 @@ For example, the following installs a specific commit:
 Listing Your Installed Roles
 ----------------------------
 
-You can use the ``ansible-galaxy list`` command to list all the roles you have installed.
+You can use the ``ansible-galaxy list`` command to list all the roles and role versions you have installed.
 
 .. code-block:: bash
 
