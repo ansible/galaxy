@@ -21,6 +21,7 @@ WSGI config for Galaxy project.
 import os
 
 from django.core.wsgi import get_wsgi_application
+from dynaconf.contrib import django_dynaconf  # noqa
 
 # For public Galaxy, we need to default /etc/galaxy/settings.py
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'galaxy.settings.custom')
