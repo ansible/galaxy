@@ -28,8 +28,9 @@ class VersionSerializer(serializers.ModelSerializer):
         fields = (
             'version',
             'metadata',
+            'quality_score',
+            'readme_html',
             'contents',
-            'quality_score'
         )
 
 
