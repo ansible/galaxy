@@ -15,6 +15,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL('SET CONSTRAINTS ALL IMMEDIATE',
+                          reverse_sql=migrations.RunSQL.noop),
         migrations.RunPython(
             code=drop_collection_import_tasks,
             reverse_code=migrations.RunPython.noop),
