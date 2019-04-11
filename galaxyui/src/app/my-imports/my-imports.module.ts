@@ -11,7 +11,6 @@ import { ToolbarModule } from 'patternfly-ng/toolbar/toolbar.module';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 import { SharedModule } from '../shared/shared.module';
-import { ImportDetailComponent } from './import-detail/import-detail.component';
 import { ImportListComponent } from './import-list/import-list.component';
 import { MyImportsRoutingModule } from './my-imports.routing.module';
 
@@ -29,7 +28,6 @@ import { MyImportsRoutingModule } from './my-imports.routing.module';
         PaginationModule,
         MyImportsRoutingModule,
     ],
-    declarations: [ImportListComponent, ImportDetailComponent],
-    exports: [ImportDetailComponent],
+    declarations: [ImportListComponent],
 })
 export class MyImportsModule {}

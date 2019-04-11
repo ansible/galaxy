@@ -1,0 +1,53 @@
+.my-imports-wrapper {
+    .selected-item {
+        background-color: #edf8ff;
+        border-left-color: transparent;
+        border-right-color: transparent;
+    }
+
+    .status-icon {
+        font-size: 12px;
+    }
+
+    .clickable {
+        cursor: pointer;
+    }
+
+    .sub-text {
+        font-weight: normal;
+    }
+
+    .message-list {
+        background-color: @black;
+        padding: 10px;
+        border: 1px solid @black;
+        border-radius: 2px;
+        color: @white;
+        line-height: 18px;
+        margin-bottom: 150px;
+
+        .log-follow-button {
+            position: relative;
+            top: 0;
+            float: right;
+            font-size: 18px;
+        }
+
+        .follow-active {
+            color: @green;
+        }
+
+        .message {
+            .error,
+            .failed {
+                color: @red;
+            }
+            .warning {
+                color: @warning;
+            }
+            .success {
+                color: @green;
+            }
+        }
+    }
+}
