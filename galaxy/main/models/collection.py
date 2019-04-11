@@ -111,6 +111,10 @@ class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
         validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
     )
 
+    readme_mimetype = models.CharField(max_length=32, blank=True)
+    readme_text = models.TextField(blank=True)
+    readme_html = models.TextField(blank=True)
+
     # References
     collection = models.ForeignKey(
         Collection, on_delete=models.PROTECT, related_name='versions')

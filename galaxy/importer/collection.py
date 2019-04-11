@@ -31,6 +31,8 @@ from galaxy.main.models import Platform
 
 default_logger = logging.getLogger(__name__)
 
+ALLOWED_TYPES = ['text/markdown', 'text/x-rst']
+
 
 def import_collection(directory, filename, logger=None):
     logger = logger or default_logger
@@ -102,26 +104,32 @@ class CollectionLoader(object):
             raise exc.ManifestValidationError(
                 'No readme listed in manifest')
 
-        readme_file = os.path.join(self.path,
+        readme_path = os.path.join(self.path,
                                    self.collection_info.readme)
-
-        _, extension = os.path.splitext(readme_file)
-        if extension not in ('.md', '.rst'):
-            raise exc.ManifestValidationError(
-                'Readme must be .md or .rst')
-
         try:
-            self.readme = readmeutils.get_readme(
+            readme_file = readmeutils.get_readme(
                 directory=self.path,
-                filename=readme_file)
+                filename=readme_path)
         except readmeutils.FileSizeError as e:
             raise exc.ManifestValidationError(
                 'Manifest readme FileSizeError: {}'.format(e))
 
-        if not self.readme:
+        if not readme_file:
             raise exc.ManifestValidationError(
                 'Readme listed in manifest not found: '
                 '{}'.format(self.collection_info.readme))
+
+        if readme_file.mimetype not in ALLOWED_TYPES:
+            raise exc.ManifestValidationError(
+                'Readme type must be in {}'.format(ALLOWED_TYPES))
+
+        html = readmeutils.render_html(readme_file)
+
+        self.readme = {
+            'mimetype': readme_file.mimetype,
+            'text': readme_file.text,
+            'html': html,
+        }
 
     def _check_filename_matches_manifest(self):
         metadata = self.collection_info

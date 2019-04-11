@@ -18,6 +18,7 @@ babel==2.6.0              # via sphinx
 bcrypt==3.1.4             # via paramiko
 billiard==3.3.0.23        # via celery
 bleach==3.0.2
+bleach-whitelist==0.0.10
 boto3==1.9.107            # via django-storages
 botocore==1.12.107        # via boto3, s3transfer
 celery==3.1.24
@@ -61,7 +62,7 @@ jinja2==2.10              # via ansible, coreschema, sphinx
 jmespath==0.9.4           # via boto3, botocore
 jog==0.1.1
 kombu==3.0.37             # via celery
-markdown==2.4.1
+markdown==3.1
 markupsafe==1.1.0         # via jinja2
 marshmallow==2.16.3
 mccabe==0.6.1             # via flake8

@@ -20,6 +20,10 @@ import hashlib
 import mimetypes
 import os
 
+import markdown
+import bleach
+from bleach_whitelist import markdown_tags, markdown_attrs
+
 README_NAME = 'README'
 README_EXTENSIONS = [
     '',
@@ -76,3 +80,17 @@ def get_readme(directory, root_dir=None, filename=None):
         mimetype=mimetype,
         hash=hash_
     )
+
+
+def render_html(readme_file):
+    html = ''
+    if readme_file.mimetype == 'text/x-rst':
+        pass
+    elif readme_file.mimetype == 'text/markdown':
+        unsafe_html = markdown.markdown(readme_file.text, extensions=['extra'])
+
+        # note on bleach coming after markdown, and bleach_whitelist
+        # https://github.com/Python-Markdown/markdown/issues/225
+        html = bleach.clean(unsafe_html, tags=markdown_tags,
+                            attributes=markdown_attrs, styles=[], strip=True)
+    return html

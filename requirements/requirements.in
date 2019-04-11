@@ -3,8 +3,9 @@
 #                 Review required.
 ansible
 bleach
+bleach-whitelist==0.0.10
 gunicorn==19.7.1
-markdown==2.4.1
+markdown
 marshmallow
 PyGithub
 pyOpenSSL
