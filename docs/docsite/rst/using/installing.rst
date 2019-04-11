@@ -23,7 +23,7 @@ For example, the following downloads the `debops.apt role <https://galaxy.ansibl
 Determining Where Roles Are Installed
 -------------------------------------
 
-When Ansible is first installed, it defaults to installing content in */etc/ansible/roles*, which requires 
+When Ansible is first installed, it defaults to installing content in */etc/ansible/roles*, which requires
 *root* privileges.
 
 The first way to override the default behavior is to use the *--roles-path* option on the command line, as
@@ -36,11 +36,11 @@ demonstrated by the following example:
 Override the default behavior by setting the environment variable ``ANSIBLE_ROLES_PATH``. When set, the
 *ANSIBLE_ROLES_PATH* variable is used during playbook execution to locate installed roles, and by ``ansible-galaxy``
 to determine where to install roles. It can be set to a single directory path, or to a list of paths
-(e.g., */etc/ansible/roles:~/.ansible/roles*). If set to a list, ``ansible-galaxy`` will install roles to 
+(e.g., */etc/ansible/roles:~/.ansible/roles*). If set to a list, ``ansible-galaxy`` will install roles to
 the first writable path.
 
 Ansible also supports a `configuration file <https://docs.ansible.com/ansible/latest/installation_guide/intro_configuration.html>`_,
-where ``roles_path`` can be set. Setting the value of ``roles_path`` behaves the same as setting the 
+where ``roles_path`` can be set. Setting the value of ``roles_path`` behaves the same as setting the
 *ANSIBLE_ROLES_PATH* environment variable.
 
 Role Versions
@@ -72,6 +72,19 @@ For example, the following installs a specific commit:
 
    $ ansible-galaxy install git+https://github.com/geerlingguy/ansible-role-apache.git,0b7cd353c0250e87a26e0499e59e7fd265cc2f25
 
+Listing Your Installed Roles
+----------------------------
+
+You can use the ``ansible-galaxy list`` command to list all the roles and role versions you have installed.
+
+.. code-block:: bash
+
+  $ ansible-galaxy list
+   - ansible-network.network-engine, v2.7.2
+   - ansible-network.config_manager, v2.6.2
+   - ansible-network.cisco_nxos, v2.7.1
+   - ansible-network.vyos, v2.7.3
+   - ansible-network.cisco_ios, v2.7.0
 
 Installing Multiple Roles From a File
 -------------------------------------
@@ -88,7 +101,7 @@ Use the following command to install roles included in *requirements.yml*:
 Each role in the file will have one or more of the following attributes:
 
    src
-     The source of the role, and a required attribute. Specify a role from Galaxy by using the format 
+     The source of the role, and a required attribute. Specify a role from Galaxy by using the format
      *namespace.role_name*, or provide a URL to a repository within a git based SCM.
    scm
      If the *src* is a URL, specify the SCM. Only *git* or *hg* are supported. Defaults to *git*.
@@ -145,7 +158,7 @@ shows the contents of the *requirements.yml* file:
     # from galaxy
     - src: yatesr.timezone
     - include: <path_to_requirements>/webserver.yml
-  
+
 Below are the contents of the *webserver.yml* file:
 
 .. code-block:: bash
@@ -222,7 +235,7 @@ the Ansible doc site <https://docs.ansible.com/ansible/latest/user_guide/playboo
 
 .. note::
 
-    Galaxy expects all role dependencies to exist in Galaxy, and therefore dependencies to be specified 
+    Galaxy expects all role dependencies to exist in Galaxy, and therefore dependencies to be specified
     using the *namespace.role_name* format.
 
 .. _installing_multi_repos:
@@ -237,11 +250,11 @@ Installing a mult-role repository requires using the ``mazer`` command line tool
 Mazer project <https://github.com/ansible/mazer>`_.
 
 .. note::
-  
+
   This is a tech-preview feature. Future releases of Galaxy may change or break support of multi-role
   repositories.
 
-All the roles from a multi-role repository can be installed using mazer's ``install`` command, and passing the 
+All the roles from a multi-role repository can be installed using mazer's ``install`` command, and passing the
 *namespace.repository_name*, as demonstrated by the following command:
 
 .. code-block:: bash
