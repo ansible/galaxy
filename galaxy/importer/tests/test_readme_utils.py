@@ -17,8 +17,6 @@
 
 import collections
 
-from django.test import TestCase
-
 from galaxy.importer import utils
 
 TEXT_SIMPLE = 'A simple description'
@@ -42,48 +40,50 @@ TEXT_FORMATTING = '''
 * Item2
 '''
 
+Data = collections.namedtuple('Data', 'text mimetype')
 
-class ReadmeRenderHtmlTestCase(TestCase):
-    def setUp(self):
-        self.Data = collections.namedtuple('Data', 'text mimetype')
 
-    def call_render(self, raw_text, mimetype):
-        readme_file = self.Data(text=raw_text, mimetype=mimetype)
-        return utils.readme.render_html(readme_file)
+def call_render(raw_text, mimetype):
+    readme_file = Data(text=raw_text, mimetype=mimetype)
+    return utils.readme.render_html(readme_file)
 
-    def test_render_simple(self):
-        html = self.call_render(TEXT_SIMPLE, 'text/x-rst')
-        self.assertEqual(html, '')
 
-        html = self.call_render(TEXT_SIMPLE, 'text/markdown')
-        self.assertEqual(html, '<p>{}</p>'.format(TEXT_SIMPLE))
+def test_render_simple():
+    html = call_render(TEXT_SIMPLE, 'text/x-rst')
+    assert html == ''
 
-    def test_render_bad_tag(self):
-        html = self.call_render(TEXT_BAD_TAG, 'text/x-rst')
-        self.assertEqual(html, '')
-        self.assertNotIn('<script>', html)
+    html = call_render(TEXT_SIMPLE, 'text/markdown')
+    assert html == '<p>{}</p>'.format(TEXT_SIMPLE)
 
-        html = self.call_render(TEXT_BAD_TAG, 'text/markdown')
-        self.assertNotIn('<script>', html)
 
-    def test_render_bad_html_hidden_in_md(self):
-        html = self.call_render(TEXT_BAD_HTML_IN_MD, 'text/x-rst')
-        self.assertEqual(html, '')
-        self.assertNotIn('javascript', html)
+def test_render_bad_tag():
+    html = call_render(TEXT_BAD_TAG, 'text/x-rst')
+    assert html == ''
+    assert '<script>' not in html
 
-        html = self.call_render(TEXT_BAD_HTML_IN_MD, 'text/markdown')
-        self.assertNotIn('javascript', html)
+    html = call_render(TEXT_BAD_TAG, 'text/markdown')
+    assert '<script>' not in html
 
-    def test_render_formatting(self):
-        html = self.call_render(TEXT_FORMATTING, 'text/x-rst')
-        self.assertEqual(html, '')
 
-        html = self.call_render(TEXT_FORMATTING, 'text/markdown')
-        self.assertIn('<h1>Role</h1>', html)
-        self.assertIn('<a href="https://www.example.com">Tool</a>', html)
-        self.assertIn('<code>$PATH</code>', html)
-        self.assertIn('<h3>Installation</h3>', html)
-        self.assertIn('<code>package_version: "1.2.0"', html)
-        self.assertIn('<blockquote>\n<p>NOTE:', html)
-        self.assertIn('Tool \'feature\' is <em>beta</em>', html)
-        self.assertIn('<ul>\n<li>Item1</li>', html)
+def test_render_bad_html_hidden_in_md():
+    html = call_render(TEXT_BAD_HTML_IN_MD, 'text/x-rst')
+    assert html == ''
+    assert 'javascript' not in html
+
+    html = call_render(TEXT_BAD_HTML_IN_MD, 'text/markdown')
+    assert 'javascript' not in html
+
+
+def test_render_formatting():
+    html = call_render(TEXT_FORMATTING, 'text/x-rst')
+    assert html == ''
+
+    html = call_render(TEXT_FORMATTING, 'text/markdown')
+    assert '<h1>Role</h1>' in html
+    assert '<a href="https://www.example.com">Tool</a>' in html
+    assert '<code>$PATH</code>' in html
+    assert '<h3>Installation</h3>' in html
+    assert '<code>package_version: "1.2.0"' in html
+    assert '<blockquote>\n<p>NOTE:' in html
+    assert 'Tool \'feature\' is <em>beta</em>' in html
+    assert '<ul>\n<li>Item1</li>' in html

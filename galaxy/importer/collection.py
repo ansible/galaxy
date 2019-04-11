@@ -31,6 +31,8 @@ from galaxy.main.models import Platform
 
 default_logger = logging.getLogger(__name__)
 
+ALLOWED_TYPES = ['text/markdown', 'text/x-rst']
+
 
 def import_collection(directory, filename, logger=None):
     logger = logger or default_logger
@@ -98,8 +100,6 @@ class CollectionLoader(object):
             self.collection_info = meta.collection_info
 
     def _load_collection_readme(self):
-        ALLOWED_TYPES = ['text/markdown', 'text/x-rst']
-
         if not self.collection_info.readme:
             raise exc.ManifestValidationError(
                 'No readme listed in manifest')
