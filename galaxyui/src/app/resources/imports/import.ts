@@ -1,3 +1,6 @@
+import { ContentFormat } from '../../enums/format';
+import { PulpStatus } from '../../enums/import-state.enum';
+
 class Related {
     owner: string;
     notifications: string;
@@ -84,8 +87,9 @@ export class CollectionImport {
     id: number;
     job_id: string;
     finished_at: string;
-    state: string;
-    error: string;
+    state: PulpStatus;
+    // Oh pulp, what mysterious error object do you use?
+    error: any;
     namespace: {
         id: number;
     };
@@ -97,8 +101,8 @@ export class CollectionImport {
 
 export class ImportList {
     id: number;
-    type: string;
-    state: string;
+    type: ContentFormat;
+    state: PulpStatus;
     started_at: string;
     finished_at: string;
     namespace: {

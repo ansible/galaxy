@@ -4,8 +4,13 @@ import * as React from 'react';
 import { Injector } from '@angular/core';
 import { ImportsService } from '../../resources/imports/imports.service';
 import { AuthService } from '../../auth/auth.service';
-import { Namespace } from '../../resources/namespaces/namespace';
+
+// Types
+import { ContentFormat } from '../../enums/format';
+import { PulpStatus, ImportState } from '../../enums/import-state.enum';
 import { ImportList, ImporterMessage } from '../../resources/imports/import';
+import { Namespace } from '../../resources/namespaces/namespace';
+import { ImportMetadata } from '../shared-types/my-imports';
 
 // Components
 import { ImportListComponent } from '../components/my-imports/import-list';
@@ -27,6 +32,7 @@ interface IState {
     selectedImport: ImportList;
     taskMessages: ImporterMessage[];
     followMessages: boolean;
+    importMetadata: ImportMetadata;
 }
 
 export class MyImportsPage extends React.Component<IProps, IState> {
@@ -42,6 +48,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
             selectedImport: this.props.selectedImport,
             taskMessages: [],
             followMessages: false,
+            importMetadata: {} as ImportMetadata,
         };
     }
 
@@ -73,6 +80,8 @@ export class MyImportsPage extends React.Component<IProps, IState> {
                         <ImportConsoleComponent
                             taskMessages={this.state.taskMessages}
                             followMessages={this.state.followMessages}
+                            selectedImport={this.state.selectedImport}
+                            importMetadata={this.state.importMetadata}
                             toggleFollowMessages={() =>
                                 this.toggleFollowMessages()
                             }
@@ -132,13 +141,24 @@ export class MyImportsPage extends React.Component<IProps, IState> {
     }
 
     private loadTaskMessages() {
-        if (this.state.selectedImport.type === 'collection') {
+        if (this.state.selectedImport.type === ContentFormat.collection) {
             this.importsService
                 .get_collection_import(this.state.selectedImport.id)
                 .subscribe(result => {
-                    this.setState({ taskMessages: result.messages });
+                    this.setState({
+                        taskMessages: result.messages,
+                        importMetadata: {
+                            version: result.version,
+                            error: result.error
+                                ? result.error.description
+                                : null,
+                            state: result.state,
+                        } as ImportMetadata,
+                    });
                 });
-        } else if (this.state.selectedImport.type === 'repository') {
+        } else if (
+            this.state.selectedImport.type === ContentFormat.repository
+        ) {
             // Map repo import messages so that they look like collection
             // messages
             this.importsService
@@ -154,12 +174,39 @@ export class MyImportsPage extends React.Component<IProps, IState> {
                                 };
                             },
                         ),
+                        importMetadata: {
+                            state: this.mapStates(result.state),
+                            branch: result.import_branch,
+                            commit_message: result.commit_message,
+                            travis_build_url: result.travis_build_url,
+                            travis_status_url: result.travis_status_url,
+                        } as ImportMetadata,
                     });
                 });
         }
     }
 
+    private mapStates(state) {
+        switch (state) {
+            case ImportState.pending:
+                return PulpStatus.running;
+            case ImportState.running:
+                return PulpStatus.running;
+            case ImportState.failed:
+                return PulpStatus.failed;
+            case ImportState.success:
+                return PulpStatus.completed;
+        }
+    }
+
     private selectImportDetail(item: ImportList) {
-        this.setState({ selectedImport: item }, () => this.loadTaskMessages());
+        this.setState(
+            {
+                selectedImport: item,
+                taskMessages: null,
+                importMetadata: {} as ImportMetadata,
+            },
+            () => this.loadTaskMessages(),
+        );
     }
 }
