@@ -10,6 +10,7 @@ interface IProps {
     followMessages: boolean;
     selectedImport: ImportList;
     importMetadata: ImportMetadata;
+    noImportsExist: boolean;
 
     toggleFollowMessages: () => void;
 }
@@ -24,14 +25,18 @@ export class ImportConsoleComponent extends React.Component<IProps, {}> {
     }
 
     render() {
-        const { selectedImport, taskMessages } = this.props;
+        const { selectedImport, taskMessages, noImportsExist } = this.props;
 
         if (!taskMessages || !selectedImport) {
             return (
                 <div className='import-console'>
                     {selectedImport ? this.renderTitle(selectedImport) : null}
                     <div className='loading message-list'>
-                        <div className='spinner spinner-inverse' />
+                        {noImportsExist ? (
+                            <div className='message'>No data</div>
+                        ) : (
+                            <div className='spinner spinner-inverse' />
+                        )}
                     </div>
                 </div>
             );
@@ -71,6 +76,14 @@ export class ImportConsoleComponent extends React.Component<IProps, {}> {
                     {taskMessages.map((x, i) => {
                         return this.renderMessage(x, i);
                     })}
+
+                    {taskMessages.length === 0 ? (
+                        <div className='message'>
+                            <span className='error'>
+                                No task messages available
+                            </span>
+                        </div>
+                    ) : null}
 
                     <div
                         className='message'

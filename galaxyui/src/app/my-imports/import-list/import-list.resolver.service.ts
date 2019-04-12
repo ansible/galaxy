@@ -21,3 +21,15 @@ export class UserNamespacesResolver implements Resolve<PagedResponse> {
         });
     }
 }
+
+@Injectable()
+export class ImportListResolver implements Resolve<PagedResponse> {
+    constructor(private importsService: ImportsService) {}
+
+    resolve(route: ActivatedRouteSnapshot): Observable<PagedResponse> {
+        return this.importsService.get_import_list(
+            route.params['namespaceid'],
+            route.queryParams,
+        );
+    }
+}

@@ -2,6 +2,7 @@ import * as React from 'react';
 
 // Services
 import { Injector } from '@angular/core';
+import { Location } from '@angular/common';
 import { ImportsService } from '../../resources/imports/imports.service';
 import { AuthService } from '../../auth/auth.service';
 
@@ -20,10 +21,8 @@ import { ImportConsoleComponent } from '../components/my-imports/import-console'
 interface IProps {
     injector: Injector;
     namespaces: Namespace[];
-    selectedNamespace?: Namespace;
+    selectedNamespace?: number;
     importList?: any;
-    selectedImport?: any;
-    selectedImportDetail?: any;
 }
 
 interface IState {
@@ -33,28 +32,44 @@ interface IState {
     taskMessages: ImporterMessage[];
     followMessages: boolean;
     importMetadata: ImportMetadata;
+    noImportsExist: boolean;
 }
 
 export class MyImportsPage extends React.Component<IProps, IState> {
     importsService: ImportsService;
     authService: AuthService;
+    location: Location;
 
     constructor(props) {
         super(props);
 
+        // The state of the page is mostly loaded by a series of API calls that
+        // need to happen in a sequential order, so we'll initialize the state
+        // as null and then load each piece as it comes in through the API.
+
+        // This page basically requires three pieces of information:
+        // - the tasks to display in the terminal, which we can't load until
+        //   the list of imports is loaded
+        // - the list of imports, which can't be loaded until the namespace is
+        //   picked
+        // - the namespace, which can't be loaded until the list of the user's
+        //   namespaces is available
+
         this.state = {
-            selectedNS: this.props.selectedNamespace,
-            importList: this.props.importList,
-            selectedImport: this.props.selectedImport,
-            taskMessages: [],
+            selectedNS: null,
+            importList: null,
+            selectedImport: null,
+            taskMessages: null,
             followMessages: false,
             importMetadata: {} as ImportMetadata,
+            noImportsExist: false,
         };
     }
 
     componentDidMount() {
         this.importsService = this.props.injector.get(ImportsService);
         this.authService = this.props.injector.get(AuthService);
+        this.location = this.props.injector.get(Location);
 
         this.loadSelectedNS();
     }
@@ -74,6 +89,8 @@ export class MyImportsPage extends React.Component<IProps, IState> {
                             importList={this.state.importList}
                             selectedImport={this.state.selectedImport}
                             selectImport={x => this.selectImportDetail(x)}
+                            selectNamespace={ns => this.selectedNamespace(ns)}
+                            noImportsExist={this.state.noImportsExist}
                         />
                     </div>
                     <div className='col-sm-8'>
@@ -82,6 +99,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
                             followMessages={this.state.followMessages}
                             selectedImport={this.state.selectedImport}
                             importMetadata={this.state.importMetadata}
+                            noImportsExist={this.state.noImportsExist}
                             toggleFollowMessages={() =>
                                 this.toggleFollowMessages()
                             }
@@ -97,8 +115,14 @@ export class MyImportsPage extends React.Component<IProps, IState> {
     }
 
     private loadSelectedNS() {
-        if (this.state.selectedNS) {
-            this.loadImportList();
+        if (this.props.selectedNamespace) {
+            const selectedNS = this.props.namespaces.find(
+                x => x.id === this.props.selectedNamespace,
+            );
+
+            this.setState({ selectedNS: selectedNS }, () =>
+                this.loadImportList(),
+            );
         } else {
             this.authService.me().subscribe(me => {
                 // If no namespace is defined by the route, load whichever one
@@ -121,9 +145,16 @@ export class MyImportsPage extends React.Component<IProps, IState> {
     }
 
     private loadImportList() {
-        if (this.state.importList) {
-            this.setState({ selectedImport: this.state.importList[0] }, () =>
-                this.loadTaskMessages(),
+        // If the namespace has been pre loaded via URL params then it gets
+        // passed to this component via props and we don't have to load it from
+        // the API
+        if (this.props.importList) {
+            this.setState(
+                {
+                    selectedImport: this.props.importList.results[0],
+                    importList: this.props.importList.results,
+                },
+                () => this.loadTaskMessages(),
             );
         } else {
             this.importsService
@@ -131,8 +162,8 @@ export class MyImportsPage extends React.Component<IProps, IState> {
                 .subscribe(importList => {
                     this.setState(
                         {
-                            importList: importList,
-                            selectedImport: importList[0],
+                            importList: importList.results,
+                            selectedImport: importList.results[0],
                         },
                         () => this.loadTaskMessages(),
                     );
@@ -141,11 +172,16 @@ export class MyImportsPage extends React.Component<IProps, IState> {
     }
 
     private loadTaskMessages() {
-        if (this.state.selectedImport.type === ContentFormat.collection) {
+        if (!this.state.selectedImport) {
+            this.setState({ noImportsExist: true });
+        } else if (
+            this.state.selectedImport.type === ContentFormat.collection
+        ) {
             this.importsService
                 .get_collection_import(this.state.selectedImport.id)
                 .subscribe(result => {
                     this.setState({
+                        noImportsExist: false,
                         taskMessages: result.messages,
                         importMetadata: {
                             version: result.version,
@@ -207,6 +243,18 @@ export class MyImportsPage extends React.Component<IProps, IState> {
                 importMetadata: {} as ImportMetadata,
             },
             () => this.loadTaskMessages(),
+        );
+    }
+
+    private selectedNamespace(ns: Namespace) {
+        this.location.replaceState(`my-imports/${ns.id}`);
+        this.setState(
+            {
+                selectedNS: ns,
+                importList: null,
+                noImportsExist: false,
+            },
+            () => this.loadImportList(),
         );
     }
 }

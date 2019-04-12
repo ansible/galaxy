@@ -54,15 +54,14 @@ export class ImportsService extends ServiceBase {
         );
     }
 
-    get_import_list(namespace_id, params?): Observable<ImportList[]> {
+    get_import_list(namespace_id, params?): Observable<PagedResponse> {
         return this.http
             .get<PagedResponse>(this.combined_url(namespace_id), {
                 params: params,
             })
             .pipe(
-                map(response => response.results),
                 tap(_ => this.log(`fetched import list`)),
-                catchError(this.handleError('Query', {} as ImportList[])),
+                catchError(this.handleError('Query', {} as PagedResponse)),
             );
     }
 }

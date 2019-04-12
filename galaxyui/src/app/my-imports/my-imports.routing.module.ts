@@ -22,9 +22,21 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AuthService } from '../auth/auth.service';
 import { ImportListComponent } from './import-list/import-list.component';
-import { UserNamespacesResolver } from './import-list/import-list.resolver.service';
+import {
+    UserNamespacesResolver,
+    ImportListResolver,
+} from './import-list/import-list.resolver.service';
 
 const myImportRoutes: Routes = [
+    {
+        path: ':namespaceid',
+        component: ImportListComponent,
+        resolve: {
+            namespaces: UserNamespacesResolver,
+            importList: ImportListResolver,
+        },
+        canActivate: [AuthService],
+    },
     {
         path: '',
         component: ImportListComponent,
@@ -38,6 +50,6 @@ const myImportRoutes: Routes = [
 @NgModule({
     imports: [RouterModule.forChild(myImportRoutes)],
     exports: [RouterModule],
-    providers: [UserNamespacesResolver],
+    providers: [UserNamespacesResolver, ImportListResolver],
 })
 export class MyImportsRoutingModule {}

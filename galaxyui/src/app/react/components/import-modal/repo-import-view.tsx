@@ -1,8 +1,10 @@
 import * as React from 'react';
 
 // Components
-import { DropdownButton, MenuItem, Form } from 'react-bootstrap';
 import {
+    DropdownButton,
+    MenuItem,
+    Form,
     FormControl,
     ListView,
     ListViewItem,
