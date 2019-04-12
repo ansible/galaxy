@@ -19,6 +19,8 @@ import enum
 import logging
 import re
 
+from pulpcore import constants as pulp_const
+
 
 MAX_TAGS_COUNT = 20
 PROVIDER_GITHUB = 'GitHub'
@@ -134,6 +136,16 @@ class ImportTaskState(Enum):
     RUNNING = 'RUNNING'
     FAILED = 'FAILED'
     SUCCESS = 'SUCCESS'
+
+    def as_task_state(self):
+        if self is self.PENDING:
+            return pulp_const.TASK_STATES.WAITING
+        elif self is self.RUNNING:
+            return pulp_const.TASK_STATES.RUNNING
+        elif self is self.FAILED:
+            return pulp_const.TASK_STATES.FAILED
+        elif self is self.SUCCESS:
+            return pulp_const.TASK_STATES.COMPLETED
 
 
 class LinterType(Enum):

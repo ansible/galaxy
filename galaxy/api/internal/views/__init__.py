@@ -18,7 +18,11 @@
 from .collections import (  # noqa: F401
     CollectionList
 )
+from .imports import (  # noqa: F401
+    NamespaceImportsList,
+)
 
-__all__ = [
+__all__ = (
     'CollectionList',
-]
+    'NamespaceImportsList',
+)
