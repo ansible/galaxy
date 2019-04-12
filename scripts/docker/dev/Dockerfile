@@ -48,7 +48,7 @@ RUN yarn global add @angular/cli@6.1.2 \
 COPY requirements/dev-requirements.txt /tmp/requirements.txt
 RUN python3.6 -m venv "${GALAXY_VENV}" \
     && "${GALAXY_VENV}/bin/pip" install -U \
-        'pip<19.0' \
+        'pip' \
         'wheel' \
         'setuptools' \
     && "${GALAXY_VENV}/bin/pip" install -r /tmp/requirements.txt
