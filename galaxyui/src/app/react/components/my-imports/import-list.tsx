@@ -15,7 +15,18 @@ import {
     EmptyState,
 } from 'patternfly-react';
 
+import {
+    FilterConfig,
+    FilterOption,
+    AppliedFilter,
+    SortConfig,
+} from '../../shared-types/pf-toolbar';
+
+import { FilterPF, ToolBarResultsPF } from '../patternfly-filter';
+
 import { PulpStatus } from '../../../enums/import-state.enum';
+
+import { cloneDeep } from 'lodash';
 
 interface IProps {
     namespaces: Namespace[];
@@ -23,12 +34,18 @@ interface IProps {
     importList: ImportList[];
     selectedImport: ImportList;
     noImportsExist: boolean;
+    numberOfResults: number;
+    queryParams: any;
 
     selectImport: (x) => void;
     selectNamespace: (ns) => void;
+    setQueryParams: (filters) => void;
 }
 
 export class ImportListComponent extends React.Component<IProps, {}> {
+    appliedFilters = [] as AppliedFilter[];
+    filterConfig = {} as FilterConfig;
+
     render() {
         const {
             selectImport,
@@ -37,11 +54,58 @@ export class ImportListComponent extends React.Component<IProps, {}> {
             selectedNS,
             namespaces,
             noImportsExist,
+            numberOfResults,
+            queryParams,
         } = this.props;
+
+        this.filterConfig = {
+            fields: [
+                {
+                    id: 'name',
+                    title: 'Name',
+                    placeholder: 'Filter by Name...',
+                    type: 'text',
+                },
+                {
+                    id: 'type',
+                    title: 'Type',
+                    placeholder: 'Filter by Collection Type...',
+                    type: 'text',
+                },
+            ] as FilterOption[],
+            resultsCount: 0,
+            appliedFilters: [] as AppliedFilter[],
+        } as FilterConfig;
+
+        this.appliedFilters = [];
+
+        for (const key of Object.keys(queryParams)) {
+            const field = this.filterConfig.fields.find(x => x.id === key);
+            if (field) {
+                this.appliedFilters.push({
+                    field: field,
+                    value: queryParams[key],
+                });
+            }
+        }
 
         return (
             <div>
                 {this.renderNamespacePicker(namespaces, selectedNS)}
+                <FilterPF
+                    filterConfig={this.filterConfig}
+                    addFilter={(v, f) => this.addFilter(v, f)}
+                />
+
+                {this.appliedFilters.length > 0 ? (
+                    <ToolBarResultsPF
+                        numberOfResults={numberOfResults}
+                        appliedFilters={this.appliedFilters}
+                        removeFilter={i => this.removeFilter(i)}
+                        removeAllFilters={() => this.removeAllFilters()}
+                    />
+                ) : null}
+
                 <div>
                     {this.renderList(
                         selectImport,
@@ -52,6 +116,32 @@ export class ImportListComponent extends React.Component<IProps, {}> {
                 </div>
             </div>
         );
+    }
+
+    addFilter(value: string, field: FilterOption) {
+        // // Check to see if an instance of the filter has already been added
+        const params = cloneDeep(this.props.queryParams);
+        params[field.id] = value;
+
+        this.props.setQueryParams(params);
+    }
+
+    removeFilter(index) {
+        const filter = this.appliedFilters[index.index];
+        const params = cloneDeep(this.props.queryParams);
+        delete params[filter.field.id];
+
+        this.props.setQueryParams(params);
+    }
+
+    removeAllFilters() {
+        const params = cloneDeep(this.props.queryParams);
+
+        for (const field of this.filterConfig.fields) {
+            delete params[field.id];
+        }
+
+        this.props.setQueryParams(params);
     }
 
     private renderList(

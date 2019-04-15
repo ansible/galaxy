@@ -12,6 +12,7 @@ import { PulpStatus, ImportState } from '../../enums/import-state.enum';
 import { ImportList, ImporterMessage } from '../../resources/imports/import';
 import { Namespace } from '../../resources/namespaces/namespace';
 import { ImportMetadata } from '../shared-types/my-imports';
+import { AppliedFilter } from '../shared-types/pf-toolbar';
 
 // Components
 import { ImportListComponent } from '../components/my-imports/import-list';
@@ -35,6 +36,7 @@ interface IState {
     followMessages: boolean;
     importMetadata: ImportMetadata;
     noImportsExist: boolean;
+    resultsCount: number;
 }
 
 export class MyImportsPage extends React.Component<IProps, IState> {
@@ -66,6 +68,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
             importMetadata: {} as ImportMetadata,
             noImportsExist: false,
             queryParams: this.props.queryParams,
+            resultsCount: 0,
         };
     }
 
@@ -94,6 +97,9 @@ export class MyImportsPage extends React.Component<IProps, IState> {
                             selectImport={x => this.selectImportDetail(x)}
                             selectNamespace={ns => this.selectedNamespace(ns)}
                             noImportsExist={this.state.noImportsExist}
+                            queryParams={this.state.queryParams}
+                            numberOfResults={this.state.resultsCount}
+                            setQueryParams={x => this.SetQueryParams(x)}
                         />
                     </div>
                     <div className='col-sm-8'>
@@ -131,6 +137,10 @@ export class MyImportsPage extends React.Component<IProps, IState> {
 
             this.location.replaceState(`my-imports/${ns.id}`, paramString);
         }
+    }
+
+    private SetQueryParams(params) {
+        this.setState({ queryParams: params }, () => this.loadImportList(true));
     }
 
     private toggleFollowMessages() {
