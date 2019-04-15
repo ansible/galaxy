@@ -12,7 +12,6 @@ import { PulpStatus, ImportState } from '../../enums/import-state.enum';
 import { ImportList, ImporterMessage } from '../../resources/imports/import';
 import { Namespace } from '../../resources/namespaces/namespace';
 import { ImportMetadata } from '../shared-types/my-imports';
-import { AppliedFilter } from '../shared-types/pf-toolbar';
 
 // Components
 import { ImportListComponent } from '../components/my-imports/import-list';

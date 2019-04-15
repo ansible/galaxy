@@ -18,6 +18,7 @@ export class UserNamespacesResolver implements Resolve<PagedResponse> {
     resolve(route: ActivatedRouteSnapshot): Observable<PagedResponse> {
         return this.namespaceService.pagedQuery({
             owners__username: this.authService.meCache.username,
+            page_size: 100,
         });
     }
 }

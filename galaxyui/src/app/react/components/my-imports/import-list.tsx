@@ -13,6 +13,7 @@ import {
     ListView,
     ListViewItem,
     EmptyState,
+    Paginator,
 } from 'patternfly-react';
 
 import {
@@ -58,6 +59,9 @@ export class ImportListComponent extends React.Component<IProps, {}> {
             queryParams,
         } = this.props;
 
+        const pageNumber = queryParams.page || 1;
+        const pageSize = queryParams.page_size || 10;
+
         this.filterConfig = {
             fields: [
                 {
@@ -94,7 +98,7 @@ export class ImportListComponent extends React.Component<IProps, {}> {
         }
 
         return (
-            <div>
+            <div className='import-list'>
                 {this.renderNamespacePicker(namespaces, selectedNS)}
                 <FilterPF
                     filterConfig={this.filterConfig}
@@ -118,32 +122,61 @@ export class ImportListComponent extends React.Component<IProps, {}> {
                         noImportsExist,
                     )}
                 </div>
+
+                <Paginator
+                    viewType={'list'}
+                    pagination={{
+                        page: pageNumber,
+                        perPage: pageSize,
+                        perPageOptions: [10, 20, 40, 80, 100],
+                    }}
+                    itemCount={numberOfResults}
+                    onPageSet={i => this.setPageNumber(i)}
+                    onPerPageSelect={i => this.setPageSize(i)}
+                />
             </div>
         );
     }
 
-    addFilter(value: string, field: FilterOption) {
+    private setPageSize(size) {
+        const params = cloneDeep(this.props.queryParams);
+
+        params['page_size'] = size;
+        params['page'] = 1;
+        this.props.setQueryParams(params);
+    }
+
+    private setPageNumber(pageNum) {
+        const params = cloneDeep(this.props.queryParams);
+        params['page'] = pageNum;
+        this.props.setQueryParams(params);
+    }
+
+    private addFilter(value: string, field: FilterOption) {
         // // Check to see if an instance of the filter has already been added
         const params = cloneDeep(this.props.queryParams);
         params[field.id] = value;
+        params['page'] = 1;
 
         this.props.setQueryParams(params);
     }
 
-    removeFilter(index) {
+    private removeFilter(index) {
         const filter = this.appliedFilters[index.index];
         const params = cloneDeep(this.props.queryParams);
         delete params[filter.field.id];
+        params['page'] = 1;
 
         this.props.setQueryParams(params);
     }
 
-    removeAllFilters() {
+    private removeAllFilters() {
         const params = cloneDeep(this.props.queryParams);
 
         for (const field of this.filterConfig.fields) {
             delete params[field.id];
         }
+        params['page'] = 1;
 
         this.props.setQueryParams(params);
     }
@@ -237,32 +270,22 @@ export class ImportListComponent extends React.Component<IProps, {}> {
             return null;
         }
         return (
-            <Form horizontal>
-                <FormGroup>
-                    <Col componentClass={ControlLabel} sm={2}>
-                        Namespace
-                    </Col>
-
-                    <Col sm={10}>
-                        <FormControl
-                            value={selectedNS.id}
-                            componentClass='select'
-                        >
-                            {namespaces.map(ns => (
-                                <option
-                                    key={ns.id}
-                                    value={ns.id}
-                                    onClick={() =>
-                                        this.props.selectNamespace(ns)
-                                    }
-                                >
-                                    {ns.name}
-                                </option>
-                            ))}
-                        </FormControl>
-                    </Col>
-                </FormGroup>
-            </Form>
+            <div className='namespace-selector-wrapper'>
+                <div className='label'>Namespace</div>
+                <div className='selector'>
+                    <FormControl value={selectedNS.id} componentClass='select'>
+                        {namespaces.map(ns => (
+                            <option
+                                key={ns.id}
+                                value={ns.id}
+                                onClick={() => this.props.selectNamespace(ns)}
+                            >
+                                {ns.name}
+                            </option>
+                        ))}
+                    </FormControl>
+                </div>
+            </div>
         );
     }
 }
