@@ -4,6 +4,7 @@ import {
     FilterConfig,
     AppliedFilter,
     FilterOption,
+    SelectorOption,
 } from '../shared-types/pf-toolbar';
 
 interface IProps {
@@ -48,7 +49,21 @@ export class FilterPF extends React.Component<IProps, IState> {
         }
     }
 
+    filterValueSelected(option: SelectorOption) {
+        this.props.addFilter(option.id, this.state.field);
+    }
+
     renderInput() {
+        if (this.state.field.type === 'select') {
+            return (
+                <Filter.ValueSelector
+                    filterValues={this.state.field.options}
+                    currentValue={this.state.value}
+                    onFilterValueSelected={x => this.filterValueSelected(x)}
+                />
+            );
+        }
+
         return (
             <FormControl
                 type={this.state.field.type}

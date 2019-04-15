@@ -70,7 +70,11 @@ export class ImportListComponent extends React.Component<IProps, {}> {
                     id: 'type',
                     title: 'Type',
                     placeholder: 'Filter by Collection Type...',
-                    type: 'text',
+                    type: 'select',
+                    options: [
+                        { id: 'collection', title: 'Collection' },
+                        { id: 'repository', title: 'Repository' },
+                    ],
                 },
             ] as FilterOption[],
             resultsCount: 0,

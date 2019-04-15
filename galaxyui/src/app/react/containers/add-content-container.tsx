@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { cloneDeep } from 'lodash';
 import { BsModalRef } from 'ngx-bootstrap';
+import { Router } from '@angular/router';
 
 import { forkJoin, Observable } from 'rxjs';
 
@@ -68,6 +69,7 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
     repositoryService: RepositoryService;
     providerSourceService: ProviderSourceService;
     collectionService: CollectionUploadService;
+    router: Router;
 
     uploadSubscription: any;
 
@@ -92,6 +94,7 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
         this.collectionService = this.props.injector.get(
             CollectionUploadService,
         );
+        this.router = this.props.injector.get(Router);
 
         let buttonState = {
             back: true,
@@ -293,7 +296,11 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
                         });
                     } else if (response instanceof HttpResponse) {
                         // Upload succeeds
-                        this.props.updateAdded(true);
+                        this.router.navigateByUrl(
+                            `/my-imports/${
+                                this.props.namespace.id
+                            }?type=collection`,
+                        );
                         this.bsModalRef.hide();
                     }
                 },

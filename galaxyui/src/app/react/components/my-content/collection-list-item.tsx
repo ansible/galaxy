@@ -91,7 +91,11 @@ export class CollectionListItem extends React.Component<IProps, {}> {
 
         items.push(
             <ListView.InfoItem key='import-status'>
-                <Link to={`/my-imports?namespace=${this.props.namespace.name}`}>
+                <Link
+                    to={`/my-imports/${
+                        this.props.namespace.id
+                    }?type=collection&name=${this.props.collection.name}`}
+                >
                     See Imports
                 </Link>
             </ListView.InfoItem>,

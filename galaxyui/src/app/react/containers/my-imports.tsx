@@ -140,7 +140,10 @@ export class MyImportsPage extends React.Component<IProps, IState> {
     }
 
     private SetQueryParams(params) {
-        this.setState({ queryParams: params }, () => this.loadImportList(true));
+        this.setState(
+            { queryParams: params, importList: null, noImportsExist: false },
+            () => this.loadImportList(true),
+        );
     }
 
     private toggleFollowMessages() {
@@ -186,6 +189,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
                 {
                     selectedImport: this.props.importList.results[0],
                     importList: this.props.importList.results,
+                    resultsCount: this.props.importList.count,
                 },
                 () => this.loadTaskMessages(),
             );
@@ -200,6 +204,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
                         {
                             importList: importList.results,
                             selectedImport: importList.results[0],
+                            resultsCount: importList.count,
                         },
                         () => this.loadTaskMessages(),
                     );

@@ -78,7 +78,7 @@ class NamespaceImportsList(generics.ListAPIView):
 
         name = self.request.query_params.get('name')
         if name:
-            qs = qs.filter(name__iexact=name)
+            qs = qs.filter(name__icontains=name)
 
         return qs
 
@@ -97,7 +97,7 @@ class NamespaceImportsList(generics.ListAPIView):
 
         name = self.request.query_params.get('name')
         if name:
-            qs = qs.filter(repository__name__iexact=name)
+            qs = qs.filter(repository__name__icontains=name)
 
         return qs
 
