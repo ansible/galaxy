@@ -27,4 +27,4 @@ __all__ = (
     'CollectionList',
     'CollectionDetail',
     'NamespaceImportsList'
-]
+)
