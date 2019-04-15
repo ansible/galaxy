@@ -33,24 +33,29 @@ export class ImportListComponent implements OnInit, OnDestroy {
     constructor(public injector: Injector, private route: ActivatedRoute) {}
 
     ngOnInit() {
-        this.route.params.subscribe(params => {
-            this.route.data.subscribe(data => {
-                const props = { namespaces: data.namespaces.results };
+        this.route.queryParams.subscribe(queryParams => {
+            this.route.params.subscribe(params => {
+                this.route.data.subscribe(data => {
+                    const props = {
+                        namespaces: data.namespaces.results,
+                        queryParams: queryParams,
+                    };
 
-                if (data.importList) {
-                    props['importList'] = data.importList;
-                    props['selectedNamespace'] = parseInt(
-                        params['namespaceid'],
-                        10,
+                    if (data.importList) {
+                        props['importList'] = data.importList;
+                        props['selectedNamespace'] = parseInt(
+                            params['namespaceid'],
+                            10,
+                        );
+                    }
+
+                    Render.init(
+                        this.injector,
+                        MyImportsPage,
+                        this.reactContainer.nativeElement,
+                        props,
                     );
-                }
-
-                Render.init(
-                    this.injector,
-                    MyImportsPage,
-                    this.reactContainer.nativeElement,
-                    props,
-                );
+                });
             });
         });
     }

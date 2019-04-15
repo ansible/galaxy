@@ -21,12 +21,14 @@ import { ImportConsoleComponent } from '../components/my-imports/import-console'
 interface IProps {
     injector: Injector;
     namespaces: Namespace[];
+    queryParams: any;
     selectedNamespace?: number;
     importList?: any;
 }
 
 interface IState {
     selectedNS: Namespace;
+    queryParams: any;
     importList: ImportList[];
     selectedImport: ImportList;
     taskMessages: ImporterMessage[];
@@ -63,6 +65,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
             followMessages: false,
             importMetadata: {} as ImportMetadata,
             noImportsExist: false,
+            queryParams: this.props.queryParams,
         };
     }
 
@@ -110,6 +113,26 @@ export class MyImportsPage extends React.Component<IProps, IState> {
         );
     }
 
+    setState(newState, callback?) {
+        // Update the page's URL if the queryParams or namespace state changes
+        super.setState(newState, callback);
+
+        if (newState.queryParams || newState.selectedNS) {
+            const params = newState.queryParams || this.state.queryParams;
+            const ns = newState.selectedNS || this.state.selectedNS;
+
+            let paramString = '';
+            for (const key of Object.keys(params)) {
+                paramString += key + '=' + params[key] + '&';
+            }
+
+            // Remove trailing '&'
+            paramString = paramString.substring(0, paramString.length - 1);
+
+            this.location.replaceState(`my-imports/${ns.id}`, paramString);
+        }
+    }
+
     private toggleFollowMessages() {
         this.setState({ followMessages: !this.state.followMessages });
     }
@@ -144,11 +167,11 @@ export class MyImportsPage extends React.Component<IProps, IState> {
         }
     }
 
-    private loadImportList() {
+    private loadImportList(forceLoad = false) {
         // If the namespace has been pre loaded via URL params then it gets
         // passed to this component via props and we don't have to load it from
         // the API
-        if (this.props.importList) {
+        if (this.props.importList && !forceLoad) {
             this.setState(
                 {
                     selectedImport: this.props.importList.results[0],
@@ -158,7 +181,10 @@ export class MyImportsPage extends React.Component<IProps, IState> {
             );
         } else {
             this.importsService
-                .get_import_list(this.state.selectedNS.id)
+                .get_import_list(
+                    this.state.selectedNS.id,
+                    this.state.queryParams,
+                )
                 .subscribe(importList => {
                     this.setState(
                         {
@@ -247,14 +273,13 @@ export class MyImportsPage extends React.Component<IProps, IState> {
     }
 
     private selectedNamespace(ns: Namespace) {
-        this.location.replaceState(`my-imports/${ns.id}`);
         this.setState(
             {
                 selectedNS: ns,
                 importList: null,
                 noImportsExist: false,
             },
-            () => this.loadImportList(),
+            () => this.loadImportList(true),
         );
     }
 }
