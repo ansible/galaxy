@@ -255,9 +255,9 @@ export class ImportListComponent extends React.Component<IProps, {}> {
 
         switch (state) {
             case PulpStatus.running:
-                return statusClass + 'fa-spinner color-orange';
+                return statusClass + 'fa-spin fa-spinner color-green';
             case PulpStatus.waiting:
-                return statusClass + 'fa-spinner color-orange';
+                return statusClass + 'fa-spin fa-spinner color-green';
             case PulpStatus.completed:
                 return statusClass + 'fa-circle color-green';
             default:

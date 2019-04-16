@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { interval, Subscription } from 'rxjs';
+import { cloneDeep } from 'lodash';
 
 // Services
 import { Injector } from '@angular/core';
@@ -42,6 +44,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
     importsService: ImportsService;
     authService: AuthService;
     location: Location;
+    polling: Subscription;
 
     constructor(props) {
         super(props);
@@ -75,6 +78,10 @@ export class MyImportsPage extends React.Component<IProps, IState> {
         this.importsService = this.props.injector.get(ImportsService);
         this.authService = this.props.injector.get(AuthService);
         this.location = this.props.injector.get(Location);
+
+        this.polling = interval(2000).subscribe(() => {
+            this.poll();
+        });
 
         this.loadSelectedNS();
     }
@@ -136,6 +143,40 @@ export class MyImportsPage extends React.Component<IProps, IState> {
 
             this.location.replaceState(`my-imports/${ns.id}`, paramString);
         }
+    }
+
+    componentWillUnmount() {
+        if (this.polling) {
+            this.polling.unsubscribe();
+        }
+    }
+
+    private poll() {
+        this.loadTaskMessages(() => {
+            // Update the state of the selected import in the list if it's
+            // different from the one loaded from the API. This makes it so
+            if (
+                this.state.selectedImport.state !==
+                this.state.importMetadata.state
+            ) {
+                const importIndex = this.state.importList.findIndex(
+                    x =>
+                        x.id === this.state.selectedImport.id &&
+                        x.type === this.state.selectedImport.type,
+                );
+
+                const imports = cloneDeep(this.state.importList);
+                const selectedImport = cloneDeep(this.state.selectedImport);
+
+                imports[importIndex].state = this.state.importMetadata.state;
+                selectedImport.state = this.state.importMetadata.state;
+
+                this.setState({
+                    selectedImport: selectedImport,
+                    importList: imports,
+                });
+            }
+        });
     }
 
     private SetQueryParams(params) {
@@ -211,7 +252,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
         }
     }
 
-    private loadTaskMessages() {
+    private loadTaskMessages(callback?: () => void) {
         if (!this.state.selectedImport) {
             this.setState({ noImportsExist: true });
         } else if (
@@ -220,17 +261,20 @@ export class MyImportsPage extends React.Component<IProps, IState> {
             this.importsService
                 .get_collection_import(this.state.selectedImport.id)
                 .subscribe(result => {
-                    this.setState({
-                        noImportsExist: false,
-                        taskMessages: result.messages,
-                        importMetadata: {
-                            version: result.version,
-                            error: result.error
-                                ? result.error.description
-                                : null,
-                            state: result.state,
-                        } as ImportMetadata,
-                    });
+                    this.setState(
+                        {
+                            noImportsExist: false,
+                            taskMessages: result.messages,
+                            importMetadata: {
+                                version: result.version,
+                                error: result.error
+                                    ? result.error.description
+                                    : null,
+                                state: result.state,
+                            } as ImportMetadata,
+                        },
+                        callback,
+                    );
                 });
         } else if (
             this.state.selectedImport.type === ContentFormat.repository
@@ -240,24 +284,27 @@ export class MyImportsPage extends React.Component<IProps, IState> {
             this.importsService
                 .get_repo_import(this.state.selectedImport.id)
                 .subscribe(result => {
-                    this.setState({
-                        taskMessages: result.summary_fields.task_messages.map(
-                            el => {
-                                return {
-                                    level: el.message_type,
-                                    message: el.message_text,
-                                    time: '',
-                                };
-                            },
-                        ),
-                        importMetadata: {
-                            state: this.mapStates(result.state),
-                            branch: result.import_branch,
-                            commit_message: result.commit_message,
-                            travis_build_url: result.travis_build_url,
-                            travis_status_url: result.travis_status_url,
-                        } as ImportMetadata,
-                    });
+                    this.setState(
+                        {
+                            taskMessages: result.summary_fields.task_messages.map(
+                                el => {
+                                    return {
+                                        level: el.message_type,
+                                        message: el.message_text,
+                                        time: '',
+                                    };
+                                },
+                            ),
+                            importMetadata: {
+                                state: this.mapStates(result.state),
+                                branch: result.import_branch,
+                                commit_message: result.commit_message,
+                                travis_build_url: result.travis_build_url,
+                                travis_status_url: result.travis_status_url,
+                            } as ImportMetadata,
+                        },
+                        callback,
+                    );
                 });
         }
     }
