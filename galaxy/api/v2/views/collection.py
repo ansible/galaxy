@@ -19,7 +19,7 @@ from django.core import exceptions as dj_exc
 from django.shortcuts import get_object_or_404
 
 from rest_framework import exceptions as drf_exc
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import status as status_codes
@@ -45,7 +45,7 @@ __all__ = (
 
 
 class CollectionDetailView(views.APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
 
     def get(self, request, *args, **kwargs):
         """Return a collection."""

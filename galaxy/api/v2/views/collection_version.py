@@ -19,7 +19,7 @@ from django.shortcuts import redirect, get_object_or_404
 from rest_framework import views
 from rest_framework import generics
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 
 from galaxy.main import models
 from galaxy.api.v2 import serializers
@@ -48,7 +48,7 @@ def _lookup_collection(kwargs):
 
 
 class VersionListView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
     serializer_class = serializers.VersionSummarySerializer
     pagination_class = CustomPagination
 
@@ -59,7 +59,7 @@ class VersionListView(generics.ListAPIView):
 
 
 class VersionDetailView(views.APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
 
     def get(self, request, *args, **kwargs):
         """Return a collection version."""
