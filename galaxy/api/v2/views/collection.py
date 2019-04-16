@@ -49,15 +49,15 @@ class CollectionDetailView(views.APIView):
 
     def get(self, request, *args, **kwargs):
         """Return a collection."""
-        collection = self._get_collection(kwargs)
+        collection = self._get_collection()
         serializer = serializers.CollectionSerializer(collection)
         return Response(serializer.data)
 
-    def _get_collection(self, kwargs):
+    def _get_collection(self):
         """Get collection from either id, or namespace and name."""
-        pk = kwargs.get('pk', None)
-        ns_name = kwargs.get('namespace', None)
-        name = kwargs.get('name', None)
+        pk = self.kwargs.get('pk', None)
+        ns_name = self.kwargs.get('namespace', None)
+        name = self.kwargs.get('name', None)
 
         if pk:
             return get_object_or_404(models.Collection, pk=pk)

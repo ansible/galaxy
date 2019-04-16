@@ -63,21 +63,21 @@ class VersionDetailView(views.APIView):
 
     def get(self, request, *args, **kwargs):
         """Return a collection version."""
-        version = self._get_version(kwargs)
+        version = self._get_version()
         serializer = serializers.VersionDetailSerializer(version)
         return Response(serializer.data)
 
-    def _get_version(self, kwargs):
+    def _get_version(self):
         """
         Get collection version from either version id, or from
         collection namespace, collection name, and version string.
         """
-        version_pk = kwargs.get('version_pk', None)
-        version_str = kwargs.get('version', None)
+        version_pk = self.kwargs.get('version_pk', None)
+        version_str = self.kwargs.get('version', None)
         if version_pk:
             return get_object_or_404(models.CollectionVersion, pk=version_pk)
         else:
-            collection = _lookup_collection(kwargs)
+            collection = _lookup_collection(self.kwargs)
             return get_object_or_404(
                 models.CollectionVersion,
                 collection=collection,
