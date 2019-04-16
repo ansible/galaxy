@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from rest_framework.test import APITestCase
+from rest_framework import status as http_codes
 
 from galaxy.main import models
 
@@ -31,9 +32,14 @@ class CollectionViewTests(APITestCase):
             namespace=self.namespace,
             name='mycollection',
         )
-        self.version = models.CollectionVersion.objects.create(
+        self.version0 = models.CollectionVersion.objects.create(
             collection=self.collection,
             version='1.0.0',
+            contents='{}',
+        )
+        self.version = models.CollectionVersion.objects.create(
+            collection=self.collection,
+            version='1.0.1',
             contents='{}',
         )
 
@@ -56,3 +62,25 @@ class CollectionViewTests(APITestCase):
         assert collection['namespace'] == self.namespace.id
         assert collection['name'] == self.collection.name
         assert collection['latest_version']['version'] == self.version.version
+
+    def test_get_collection_details(self):
+        url = "/api/internal/ui/collections/mynamespace/mycollection/"
+        resp = self.client.get(url)
+
+        collection = resp.json()
+
+        assert collection['namespace']['id'] == self.namespace.id
+        assert collection['namespace']['name'] == self.namespace.name
+        assert collection['name'] == self.collection.name
+        assert collection['latest_version']['version'] == self.version.version
+        assert len(collection['all_versions']) == 2
+        assert 'contents' not in collection['all_versions'][0]
+
+    def test_get_collection_details_404(self):
+        url = "/api/internal/ui/collections/mynamespace/bogus/"
+        resp = self.client.get(url)
+
+        collection = resp.json()
+
+        assert collection['detail'] == "Not found."
+        assert resp.status_code == http_codes.HTTP_404_NOT_FOUND
