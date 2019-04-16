@@ -19,13 +19,15 @@ from django.urls import path
 
 from galaxy.api.v2 import views
 
-
 app_name = 'api'
 urlpatterns = [
     # Collection URLs
     path('collections/',
          views.CollectionListView.as_view(),
          name='collections-list'),
+    path('collections/<namespace>/<name>/versions/<version>/artifact/',
+         views.CollectionArtifactView.as_view(),
+         name='collection-version-artifact'),
 
     # Collection Imports URLs
     path('collection-imports/<int:pk>/',
@@ -36,4 +38,7 @@ urlpatterns = [
     path('collection-versions/<int:pk>/',
          views.CollectionVersionView.as_view(),
          name='collection-version-detail'),
+    path('collection-versions/<int:pk>/artifact/',
+         views.CollectionArtifactView.as_view(),
+         name='collection-version-artifact')
 ]
