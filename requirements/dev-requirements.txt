@@ -58,7 +58,7 @@ imagesize==1.1.0          # via sphinx
 inflection==0.3.1         # via drf-yasg
 influxdb==5.2.1
 itypes==1.1.0             # via coreapi
-jinja2==2.10              # via ansible, coreschema, sphinx
+jinja2==2.10.1            # via ansible, coreschema, sphinx
 jmespath==0.9.4           # via boto3, botocore
 jog==0.1.1
 kombu==3.0.37             # via celery
