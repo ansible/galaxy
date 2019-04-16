@@ -336,6 +336,8 @@ GALAXY_URL = 'http://{site}:8000'
 
 GALAXY_PULP_REPOSITORY = 'galaxy'
 
+GALAXY_DOWNLOAD_URL = '/download/'
+
 # Notification Settings
 # ---------------------------------------------------------
 

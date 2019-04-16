@@ -22,6 +22,7 @@ from django.contrib.postgres import indexes as psql_indexes
 from django.contrib.postgres import fields as psql_fields
 from django.contrib.postgres import search as psql_search
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.conf import settings
 from django.db import models
 from pulpcore.app import models as pulp_models
 import semantic_version
@@ -128,6 +129,18 @@ class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
             'collection',
             'version',
         )
+
+    def get_content_artifact(self) -> pulp_models.ContentArtifact:
+        """Returns a ContentArtifact object related to collection version."""
+        return pulp_models.ContentArtifact.objects.filter(content=self).first()
+
+    def get_download_url(self) -> str:
+        """Builds artifact download url pointing to Pulp's content app."""
+        prefix = settings.GALAXY_DOWNLOAD_URL
+        repository = settings.GALAXY_PULP_REPOSITORY
+        ca = self.get_content_artifact()
+        return '/' + '/'.join(
+            s.strip('/') for s in (prefix, repository, ca.relative_path))
 
 
 class CollectionImport(Task):
