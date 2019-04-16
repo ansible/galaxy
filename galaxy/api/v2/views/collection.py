@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 from django.conf import settings
 from django.core import exceptions as dj_exc
+from django.shortcuts import get_object_or_404
 
 from rest_framework import exceptions as drf_exc
 from rest_framework.permissions import IsAuthenticated
@@ -36,10 +37,34 @@ from galaxy.common import tasking
 
 __all__ = (
     'CollectionListView',
+    'CollectionDetailView',
 )
 
 
 # FIXME(cutwater): Implement consistent error reporting format.
+
+
+class CollectionDetailView(views.APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, *args, **kwargs):
+        """Return a collection."""
+        collection = self._get_collection(kwargs)
+        serializer = serializers.CollectionSerializer(collection)
+        return Response(serializer.data)
+
+    def _get_collection(self, kwargs):
+        """Get collection from either id, or namespace and name."""
+        pk = kwargs.get('pk', None)
+        ns_name = kwargs.get('namespace', None)
+        name = kwargs.get('name', None)
+
+        if pk:
+            return get_object_or_404(models.Collection, pk=pk)
+        ns = get_object_or_404(models.Namespace, name=ns_name)
+        return get_object_or_404(models.Collection, namespace=ns, name=name)
+
+
 class CollectionListView(views.APIView):
 
     permission_classes = (IsAuthenticated, )

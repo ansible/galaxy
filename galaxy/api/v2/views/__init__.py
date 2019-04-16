@@ -17,11 +17,13 @@
 
 from .collection import (  # noqa: F401
     CollectionListView,
+    CollectionDetailView,
 )
 from galaxy.api.v2.views.collection_import import (  # noqa: F401
     CollectionImportView
 )
 from .collection_version import (  # noqa: F401
-    CollectionVersionView,
     CollectionArtifactView,
+    VersionListView,
+    VersionDetailView,
 )

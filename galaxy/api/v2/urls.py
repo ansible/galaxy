@@ -25,20 +25,45 @@ urlpatterns = [
     path('collections/',
          views.CollectionListView.as_view(),
          name='collections-list'),
-    path('collections/<namespace>/<name>/versions/<version>/artifact/',
-         views.CollectionArtifactView.as_view(),
-         name='collection-version-artifact'),
 
     # Collection Imports URLs
     path('collection-imports/<int:pk>/',
          views.CollectionImportView.as_view(),
          name='collection-import-detail'),
 
-    # Collection Versions URLs
-    path('collection-versions/<int:pk>/',
-         views.CollectionVersionView.as_view(),
-         name='collection-version-detail'),
+    # Collection Version detail URLs
+    path('collection-versions/<int:version_pk>/',
+         views.VersionDetailView.as_view(),
+         name='version-detail-by-id'),
+    path('collections/<str:namespace>/<str:name>/versions/<str:version>/',
+         views.VersionDetailView.as_view(),
+         name='version-detail-by-collection-and-version-name'),
+
+    # Artifact download URLs
     path('collection-versions/<int:pk>/artifact/',
          views.CollectionArtifactView.as_view(),
-         name='collection-version-artifact')
+         name='collection-version-artifact'),
+    path('collections/<namespace>/<name>/versions/<version>/artifact/',
+         views.CollectionArtifactView.as_view(),
+         name='collection-version-artifact'),
+
+    # Collection Version list URLs
+    path('collections/<int:pk>/versions/',
+         views.VersionListView.as_view(),
+         name='version-list-by-collection-id'),
+    path('collections/<str:namespace>/<str:name>/versions/',
+         views.VersionListView.as_view(),
+         name='version-list-by-collection-name'),
+
+    # Collection URLs
+    path('collections/',
+         views.CollectionListView.as_view(),
+         name='collection-list'),
+    path('collections/<int:pk>/',
+         views.CollectionDetailView.as_view(),
+         name='collection-detail-by-id'),
+    # NOTE: needs to come after 'collections/<int:collection_pk>/versions/'
+    path('collections/<str:namespace>/<str:name>/',
+         views.CollectionDetailView.as_view(),
+         name='collection-detail-by-name'),
 ]

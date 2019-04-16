@@ -16,28 +16,73 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.shortcuts import redirect, get_object_or_404
-
-from rest_framework import exceptions as drf_exc
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework import status as http_codes
 from rest_framework import views
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from galaxy.main import models
+from galaxy.api.v2 import serializers
+from galaxy.api.v2.pagination import CustomPagination
 
 
 __all__ = (
-    'CollectionVersionView',
     'CollectionArtifactView',
+    'VersionListView',
+    'VersionDetailView',
 )
 
 
-class CollectionVersionView(views.APIView):
+# TODO(awcrosby): Move to views/utils.py and reuse across views
+def _lookup_collection(kwargs):
+    """Helper method to get collection from id, or namespace and name."""
+    pk = kwargs.get('pk', None)
+    ns_name = kwargs.get('namespace', None)
+    name = kwargs.get('name', None)
+
+    if pk:
+        return get_object_or_404(models.Collection, pk=pk)
+
+    ns = get_object_or_404(models.Namespace, name=ns_name)
+    return get_object_or_404(models.Collection, namespace=ns, name=name)
+
+
+class VersionListView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = serializers.VersionSummarySerializer
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        """Return list of versions for a specific collection."""
+        collection = _lookup_collection(self.kwargs)
+        return models.CollectionVersion.objects.filter(collection=collection)
+
+
+class VersionDetailView(views.APIView):
     permission_classes = (IsAuthenticated, )
 
-    def get(self, request, **kwargs):
-        raise drf_exc.APIException(
-            detail='Not implemented',
-            code=http_codes.HTTP_501_NOT_IMPLEMENTED)
+    def get(self, request, *args, **kwargs):
+        """Return a collection version."""
+        version = self._get_version(kwargs)
+        serializer = serializers.VersionDetailSerializer(version)
+        return Response(serializer.data)
+
+    def _get_version(self, kwargs):
+        """
+        Get collection version from either version id, or from
+        collection namespace, collection name, and version string.
+        """
+        version_pk = kwargs.get('version_pk', None)
+        version_str = kwargs.get('version', None)
+        if version_pk:
+            return get_object_or_404(models.CollectionVersion, pk=version_pk)
+        else:
+            collection = _lookup_collection(kwargs)
+            return get_object_or_404(
+                models.CollectionVersion,
+                collection=collection,
+                version=version_str,
+            )
 
 
 # TODO(cutwater): Use internal redirect for nginx
