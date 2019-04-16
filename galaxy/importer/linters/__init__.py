@@ -18,6 +18,7 @@
 import os
 import subprocess
 import logging
+import re
 
 
 logger = logging.getLogger(__name__)
@@ -26,6 +27,8 @@ LINTERS_DIR = os.path.abspath(os.path.dirname(__file__))
 FLAKE8_MAX_LINE_LENGTH = 120
 FLAKE8_IGNORE_ERRORS = 'E402'
 FLAKE8_SELECT_ERRORS = 'E,F,W'
+FLAKE8_ERROR_ID_REGEXP = r'^[EFW][0-9]{3}$'
+ANSIBLE_LINT_ERROR_ID_REGEXP = r'^\[E[0-9]{3}]$'
 
 
 class BaseLinter(object):
@@ -64,21 +67,15 @@ class Flake8Linter(BaseLinter):
 
     def parse_id_and_desc(self, message):
         try:
-            msg_parts = message.split(' ')
-            rule_desc = ' '.join(msg_parts[2:])
+            error_id, rule_desc = message.split(' ', 1)
+        except ValueError:
+            pass
+        else:
+            if re.match(FLAKE8_ERROR_ID_REGEXP, error_id):
+                return error_id, rule_desc
 
-            error_id = msg_parts[1]
-            if error_id[0] not in ['E', 'W']:
-                error_id = None
-
-        except IndexError:
-            error_id = None
-
-        if not error_id:
-            logger.error('No error_id found in {} message'.format(self.cmd))
-            return None, None
-
-        return error_id, rule_desc
+        logger.warning('Cannot parse linter message: {}'.format(message))
+        return None, None
 
 
 class YamlLinter(BaseLinter):
@@ -99,21 +96,17 @@ class YamlLinter(BaseLinter):
 
     def parse_id_and_desc(self, message):
         try:
-            msg_parts = message.split(' ')
-            rule_desc = ' '.join(msg_parts[2:])
+            _, error_level, rule_desc = message.split(' ', 2)
+        except ValueError:
+            pass
+        else:
+            error_level = re.sub(r'\[|]', '', error_level)
+            error_id = 'YAML_{}'.format(error_level).upper()
+            if error_id in ['YAML_ERROR', 'YAML_WARNING']:
+                return error_id, rule_desc
 
-            error_id = 'YAML_{}'.format(msg_parts[1][1:-1]).upper()
-            if error_id not in ['YAML_ERROR', 'YAML_WARNING']:
-                error_id = None
-
-        except IndexError:
-            error_id = None
-
-        if not error_id:
-            logger.error('No error_id found in {} message'.format(self.cmd))
-            return None, None
-
-        return error_id, rule_desc
+        logger.warning('Cannot parse linter message: {}'.format(message))
+        return None, None
 
 
 class AnsibleLinter(BaseLinter):
@@ -141,18 +134,13 @@ class AnsibleLinter(BaseLinter):
 
     def parse_id_and_desc(self, message):
         try:
-            msg_parts = message.split(' ')
-            rule_desc = ' '.join(msg_parts[2:])
+            _, error_id, rule_desc = message.split(' ', 2)
+        except ValueError:
+            pass
+        else:
+            if re.match(ANSIBLE_LINT_ERROR_ID_REGEXP, error_id):
+                error_id = re.sub(r'\[|]', '', error_id)
+                return error_id, rule_desc
 
-            error_id = msg_parts[1][1:-1]
-            if error_id[0] not in ['E']:
-                error_id = None
-
-        except IndexError:
-            error_id = None
-
-        if not error_id:
-            logger.error('No error_id found in {} message'.format(self.cmd))
-            return None, None
-
-        return error_id, rule_desc
+        logger.warning('Cannot parse linter message: {}'.format(message))
+        return None, None
