@@ -244,7 +244,10 @@ export class ImportListComponent extends React.Component<IProps, {}> {
                     {item.name} {item.version ? 'v' + item.version : ''}
                 </div>
                 <div className='sub-text'>
-                    Status: {item.state} {moment(item.finished_at).fromNow()}
+                    Status: {item.state}{' '}
+                    {item.finished_at
+                        ? moment(item.finished_at).fromNow()
+                        : null}
                 </div>
             </div>
         );

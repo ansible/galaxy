@@ -80,7 +80,12 @@ export class MyImportsPage extends React.Component<IProps, IState> {
         this.location = this.props.injector.get(Location);
 
         this.polling = interval(2000).subscribe(() => {
-            this.poll();
+            if (
+                this.state.importMetadata.state === PulpStatus.running ||
+                this.state.importMetadata.state === PulpStatus.waiting
+            ) {
+                this.poll();
+            }
         });
 
         this.loadSelectedNS();
@@ -169,7 +174,11 @@ export class MyImportsPage extends React.Component<IProps, IState> {
                 const selectedImport = cloneDeep(this.state.selectedImport);
 
                 imports[importIndex].state = this.state.importMetadata.state;
+                imports[
+                    importIndex
+                ].finished_at = this.state.importMetadata.finished_date;
                 selectedImport.state = this.state.importMetadata.state;
+                selectedImport.finished_at = this.state.importMetadata.finished_date;
 
                 this.setState({
                     selectedImport: selectedImport,

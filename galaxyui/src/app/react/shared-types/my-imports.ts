@@ -8,4 +8,5 @@ export class ImportMetadata {
     travis_build_url?: string;
     travis_status_url?: string;
     state: PulpStatus;
+    finished_date: string;
 }

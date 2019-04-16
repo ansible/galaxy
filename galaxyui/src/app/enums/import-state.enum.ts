@@ -11,5 +11,5 @@ export enum PulpStatus {
     running = 'running',
     completed = 'completed',
     failed = 'failed',
-    calceled = 'canceled',
+    canceled = 'canceled',
 }
