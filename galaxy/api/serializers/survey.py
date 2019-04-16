@@ -42,7 +42,7 @@ SHARED_FIELDS = (
 
 
 class CollectionSurveySerializer(serializers.BaseSerializer):
-    content_id = drf_serializers.SerializerMethodField()
+    content_id = drf_serializers.IntegerField(source='collection.id')
 
     class Meta:
         model = models.CollectionSurvey
@@ -75,7 +75,7 @@ class CollectionSurveySerializer(serializers.BaseSerializer):
 
 
 class RepositorySurveySerializer(serializers.BaseSerializer):
-    content_id = drf_serializers.SerializerMethodField()
+    content_id = drf_serializers.IntegerField(source='repository.id')
 
     class Meta:
         model = models.RepositorySurvey

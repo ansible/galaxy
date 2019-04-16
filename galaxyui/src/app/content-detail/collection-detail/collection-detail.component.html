@@ -107,7 +107,6 @@
                                     <th>Quality Score </th>
                                     <th>Content Score </th>
                                     <th>Metadata Score </th>
-                                    <th>Compatibility Score </th>
                                 </tr>
                                 <tr *ngFor="let item of collection.latest_version.contents">
                                     <td>{{item.name}}</td>
@@ -122,10 +121,6 @@
                                     <td>
                                         <span *ngIf="item.scores && item.scores.metadata">{{item.scores.metadata}}</span>
                                         <span *ngIf="!(item.scores && item.scores.metadata)">NA</span>
-                                    </td>
-                                    <td>
-                                        <span *ngIf="item.scores && item.scores.compatibility">{{item.scores.compatibility}}</span>
-                                        <span *ngIf="!(item.scores && item.scores.compatibility)">NA</span>
                                     </td>
                                 </tr>
                             </table>

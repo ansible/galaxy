@@ -20,7 +20,7 @@ from rest_framework import serializers
 from galaxy.main import models
 
 
-collection_list_fields = (
+COLLECTION_LIST_FIELDS = (
     'id',
     'created',
     'modified',
@@ -33,7 +33,7 @@ collection_list_fields = (
     'community_survey_count'
 )
 
-version_list_fields = (
+VERSION_LIST_FIELDS = (
     'pk',
     'version',
     'quality_score',
@@ -45,7 +45,7 @@ version_list_fields = (
 class VersionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CollectionVersion
-        fields = version_list_fields
+        fields = VERSION_LIST_FIELDS
 
 
 class VersionDetailSerializer(serializers.ModelSerializer):
@@ -54,7 +54,7 @@ class VersionDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.CollectionVersion
-        fields = version_list_fields + (
+        fields = VERSION_LIST_FIELDS + (
             'metadata',
             'contents',
             'readme_html'
@@ -66,7 +66,7 @@ class CollectionListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Collection
-        fields = collection_list_fields
+        fields = COLLECTION_LIST_FIELDS
 
 
 class CollectionDetailSerializer(serializers.ModelSerializer):
@@ -75,7 +75,7 @@ class CollectionDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Collection
-        fields = collection_list_fields + ('all_versions', )
+        fields = COLLECTION_LIST_FIELDS + ('all_versions', )
         depth = 1
 
     def get_all_versions(self, obj):
