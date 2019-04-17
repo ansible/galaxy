@@ -1,3 +1,6 @@
+import { ContentFormat } from '../../enums/format';
+import { PulpStatus } from '../../enums/import-state.enum';
+
 class Related {
     owner: string;
     notifications: string;
@@ -52,7 +55,7 @@ class SummaryFields {
     repository: Repository;
 }
 
-export class Import {
+export class RepoImport {
     url: string;
     related: Related;
     summary_fields: SummaryFields;
@@ -72,4 +75,40 @@ export class Import {
     travis_status_url: string;
     travis_build_url: string;
     last_run: string;
+}
+
+export class ImporterMessage {
+    level: string;
+    message: string;
+    time: string;
+}
+
+export class CollectionImport {
+    id: number;
+    job_id: string;
+    finished_at: string;
+    state: PulpStatus;
+    // Oh pulp, what mysterious error object do you use?
+    error: any;
+    namespace: {
+        id: number;
+    };
+    name: string;
+    version: string;
+    messages: ImporterMessage[];
+    lint_records: any[];
+}
+
+export class ImportList {
+    id: number;
+    type: ContentFormat;
+    state: PulpStatus;
+    started_at: string;
+    finished_at: string;
+    namespace: {
+        id: number;
+        name: string;
+    };
+    name: string;
+    version: string;
 }

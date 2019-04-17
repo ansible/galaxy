@@ -91,9 +91,9 @@ export class RepoListItem extends React.Component<IProps, {}> {
     private renderAdditional(repo) {
         const items = [];
 
-        const importLink = `/my-imports?namespace=${
-            this.props.namespace.name
-        }&repository_name=${repo.name}`;
+        const importLink = `/my-imports/${
+            this.props.namespace.id
+        }?type=repository&name=${repo.name}`;
 
         let importElement;
 

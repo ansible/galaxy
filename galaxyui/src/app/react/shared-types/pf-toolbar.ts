@@ -11,6 +11,7 @@ export class FilterOption {
     title: string;
     placeholder: string;
     type: string;
+    options?: SelectorOption[];
 }
 
 // Filters that have been added to a particular query (these are the little
@@ -32,4 +33,11 @@ export class SortFieldOption {
     id: string;
     title: string;
     sortType: string;
+}
+
+// List of options for filter dropdown menu when type: select is sepcified in
+// the FilterOption
+export class SelectorOption {
+    id: string;
+    title: string;
 }

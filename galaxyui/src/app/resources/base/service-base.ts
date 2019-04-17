@@ -11,8 +11,8 @@ export class ServiceBase {
     constructor(
         protected http: HttpClient,
         protected notificationService: NotificationService,
-        protected url,
-        protected serviceName,
+        protected url?,
+        protected serviceName?,
     ) {}
 
     httpOptions = {

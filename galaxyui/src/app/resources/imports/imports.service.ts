@@ -18,87 +18,50 @@
 
 import { Injectable } from '@angular/core';
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, tap, map } from 'rxjs/operators';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-import { Observable, of } from 'rxjs';
 import { PagedResponse } from '../paged-response';
-import { Import } from './import';
+import { CollectionImport, RepoImport, ImportList } from './import';
 
-export class SaveParams {
-    github_user: string;
-    github_repo: string;
-}
-
-const httpOptions = {
-    headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-    }),
-};
+import { ServiceBase } from '../base/service-base';
 
 @Injectable()
-export class ImportsService {
-    constructor(
-        private http: HttpClient,
-        private notificationService: NotificationService,
-    ) {}
+export class ImportsService extends ServiceBase {
+    constructor(http: HttpClient, notificationService: NotificationService) {
+        super(http, notificationService);
+    }
 
-    private url = '/api/v1/imports';
+    collection_url = import_id => `/api/v2/collection-imports/${import_id}/`;
+    repo_url = import_id => `/api/v1/imports/${import_id}/`;
+    combined_url = namespace_id =>
+        /* tslint:disable */
+        `/api/internal/ui/namespaces/${namespace_id}/imports/`;
 
-    latest(query?: string): Observable<PagedResponse> {
-        let requestUrl = `${this.url}/latest/`;
-        if (query) {
-            requestUrl += `?${query}`;
-        }
-        return this.http.get<PagedResponse>(requestUrl).pipe(
-            tap(_ => this.log('fetched latest imports')),
-            catchError(this.handleError('Latest', {} as PagedResponse)),
+    get_collection_import(id): Observable<CollectionImport> {
+        return this.http.get<CollectionImport>(this.collection_url(id)).pipe(
+            tap(_ => this.log(`fetched collection import`)),
+            catchError(this.handleError('Get', {} as CollectionImport)),
         );
     }
 
-    query(params?: any): Observable<Import[]> {
+    get_repo_import(id): Observable<RepoImport> {
+        return this.http.get<RepoImport>(this.repo_url(id)).pipe(
+            tap(_ => this.log(`fetched repository import`)),
+            catchError(this.handleError('Get', {} as RepoImport)),
+        );
+    }
+
+    get_import_list(namespace_id, params?): Observable<PagedResponse> {
         return this.http
-            .get<PagedResponse>(this.url + '/', { params: params })
+            .get<PagedResponse>(this.combined_url(namespace_id), {
+                params: params,
+            })
             .pipe(
-                map(response => response.results),
-                tap(_ => this.log('fetched imports')),
-                catchError(this.handleError('Query', [] as Import[])),
+                tap(_ => this.log(`fetched import list`)),
+                catchError(this.handleError('Query', {} as PagedResponse)),
             );
-    }
-
-    get(id: number): Observable<Import> {
-        return this.http.get<any>(`${this.url}/${id.toString()}/`).pipe(
-            tap(_ => this.log('fetched import')),
-            catchError(this.handleError('Get', {} as Import)),
-        );
-    }
-
-    save(params: SaveParams): Observable<Import> {
-        let httpResult: Observable<Object>;
-        httpResult = this.http.post<Import>(this.url, params, httpOptions);
-        return httpResult.pipe(
-            tap((newImport: Import) =>
-                this.log(`Saved import w/ id=${newImport.id}`),
-            ),
-            catchError(this.handleError<Import>('Save')),
-        );
-    }
-
-    private handleError<T>(operation = '', result?: T) {
-        return (error: any): Observable<T> => {
-            console.error(`${operation} failed, error:`, error);
-            this.log(`${operation} provider source error: ${error.message}`);
-            this.notificationService.httpError(`${operation} user failed:`, {
-                data: error,
-            });
-
-            // Let the app keep running by returning an empty result.
-            return of(result as T);
-        };
-    }
-
-    private log(message: string) {
-        console.log('ImportService: ' + message);
     }
 }

@@ -90,10 +90,12 @@ export class ToolBarPF extends React.Component<IProps, IState> {
                     filterConfig={this.props.toolbarConfig.filterConfig}
                     addFilter={(v, f) => this.addFilter(v, f)}
                 />
-                <SortPF
-                    config={this.props.toolbarConfig.sortConfig}
-                    onSortChange={this.props.onSortChange}
-                />
+                {this.props.toolbarConfig.sortConfig ? (
+                    <SortPF
+                        config={this.props.toolbarConfig.sortConfig}
+                        onSortChange={this.props.onSortChange}
+                    />
+                ) : null}
 
                 <ToolBarResultsPF
                     numberOfResults={
