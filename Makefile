@@ -210,8 +210,14 @@ dev/test:
 dev/test/changed:
 	@echo "Running changed tests"
 	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
-		export DJANGO_SETTINGS_MODULE=galaxy.settings.testing \
-		git status | grep 'test' | xargs pytest -s -vvv --reuse-db \
+		source $(GALAXY_VENV)/bin/activate; \
+		export DJANGO_SETTINGS_MODULE="galaxy.settings.testing"; \
+		git status | grep test | cut -d: -f2 > /tmp/tests_changed ;\
+		if [[ -s /tmp/tests_changed ]]; then \
+				cat /tmp/tests_changed | xargs pytest -s -vvv --reuse-db \
+		;else \
+				echo "No test changes found. make dev/test to run all tests." \
+		;fi \
 		'
 
 .PHONY: dev/waitenv
