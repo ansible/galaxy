@@ -89,7 +89,14 @@ class VersionDetailSerializer(serializers.ModelSerializer):
         )
 
     def get_download_url(self, obj):
-        return None
+        return reverse(
+            'api:v2:version-artifact',
+            kwargs={
+                'namespace': obj.collection.namespace.name,
+                'name': obj.collection.name,
+                'version': obj.version,
+            }
+        )
 
     def get_collection(self, obj):
         ns_name = obj.collection.namespace.name
