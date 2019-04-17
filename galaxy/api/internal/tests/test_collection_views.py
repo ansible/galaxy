@@ -74,6 +74,10 @@ class CollectionViewTests(APITestCase):
         assert collection['name'] == self.collection.name
         assert collection['latest_version']['version'] == self.version.version
         assert len(collection['all_versions']) == 2
+
+        # We want to make sure that contents aren't returned for all versions
+        # because we don't need it and including this would send way too much
+        # data over the wire
         assert 'contents' not in collection['all_versions'][0]
 
     def test_get_collection_details_404(self):
