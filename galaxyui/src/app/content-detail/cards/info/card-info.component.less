@@ -28,9 +28,44 @@
     }
     .card-info-body {
         font-size: 14px;
-        td {
-            padding-bottom: 20px;
-            vertical-align: top;
+
+        .readme {
+            a {
+                cursor: pointer;
+            }
+
+            .readme-container {
+                position: relative;
+                max-height: 300px;
+                overflow: hidden;
+            }
+
+            .fade-out {
+                position: absolute;
+                z-index: 1;
+                bottom: 0;
+                left: 0;
+                pointer-events: none;
+                background-image: linear-gradient(
+                    to bottom,
+                    rgba(255, 255, 255, 0),
+                    rgba(255, 255, 255, 1) 90%
+                );
+                width: 100%;
+                height: 50px;
+            }
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 5px;
+            align-items: center;
+
+            .info-title {
+                width: 200px;
+                font-weight: bold;
+                margin-right: 5px;
+            }
 
             .min-version {
                 background-color: @grey;
@@ -38,9 +73,7 @@
                 padding: 3px;
             }
         }
-        td:first-child {
-            padding-right: 15px;
-        }
+
         .tag {
             display: inline-block;
             font-weight: normal;

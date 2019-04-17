@@ -3,13 +3,13 @@
     <div class="col-lg-8 header-left">
         <div class="namespace-img">
             <div class="img-wrapper">
-                <a appLogEvent="Author Profile" [routerLink]="['/', repositoryView.namespace]"
+                <a appLogEvent="Author Profile" [routerLink]="['/', headerData.namespace]"
                     tooltip="View the author's profile." >
-                    <img class="namespace-avatar" [src]="repositoryView.avatarUrl"></a>
+                    <img class="namespace-avatar" [src]="headerData.avatarUrl"></a>
             </div>
-            <div class="namespace-name" tooltip="{{ repositoryView.namespace }}">
-                <a appLogEvent="Author Profile" [routerLink]="['/', repositoryView.namespace]">
-                    {{ repositoryView.namespace }}</a>
+            <div class="namespace-name" tooltip="{{ headerData.namespace }}">
+                <a appLogEvent="Author Profile" [routerLink]="['/', headerData.namespace]">
+                    {{ headerData.namespace }}</a>
             </div>
         </div>
 
@@ -17,14 +17,14 @@
             <div>
                 <div class="description-box">
                     <div class="repo-name text-overflow-pf">
-                        <span class="fa" [ngClass]="repositoryView.iconClass" tooltip="{{ repositoryView.tooltip }}"></span>
-                        {{ repositoryView.name }}
-                        <div *ngIf="repository.deprecated" tooltip="This item has been deprecated. Use at your own risk." class="label label-danger deprecation-notice">
+                        <span class="fa" [ngClass]="headerData.iconClass" tooltip="{{ headerData.tooltip }}"></span>
+                        {{ headerData.name }}
+                        <div *ngIf="headerData.deprecated" tooltip="This item has been deprecated. Use at your own risk." class="label label-danger deprecation-notice">
                             Deprecated
                         </div>
                     </div>
                     <div class="repo-description">
-                        {{ repositoryView.description }}
+                        {{ headerData.description }}
                     </div>
                 </div>
             </div>
@@ -37,27 +37,12 @@
             <div class="scores">
                 <app-score
                     class="repo-count"
-                    [repo]="repository"
+                    [repo]="headerData.score"
                 ></app-score>
                 <div class="repo-count">
                     <i class="fa fa-download fa"></i>
-                    <span class="count">{{ repositoryView.downloadCount }}</span>
+                    <span class="count">{{ headerData.downloadCount }}</span>
                     <span class="count-label">Downloads</span>
-                </div>
-                <div class="repo-count">
-                    <i class="fa fa-eye fa"></i>
-                    <span class="count">{{ repositoryView.watchersCount }}</span>
-                    <span class="count-label">Watchers</span>
-                </div>
-                <div class="repo-count">
-                    <i class="fa fa-star fa"></i>
-                    <span class="count">{{ repositoryView.stargazersCount }}</span>
-                    <span class="count-label">Stars</span>
-                </div>
-                <div class="repo-count">
-                    <i class="fa fa-copy fa"></i>
-                    <span class="count">{{ repositoryView.forksCount }}</span>
-                    <span class="count-label">Forks</span>
                 </div>
             </div>
 
@@ -65,15 +50,15 @@
                 <div class="header-button">
                     <div
                         *ngIf="preferences"
-                        tooltip="Get notified when this collection gets updated."
+                        [tooltip]='"Get notified when this "+headerData.formatType+" gets updated."'
                         class="btn btn-default"
                         (click)="followCollection()"
                     >
-                        <span class="{{followerClass}}"></span> {{ isFollower ? 'Unfollow Collection':'Follow Collection'}}
+                        <span class="{{followerClass}}"></span> {{ isFollower ? 'Unfollow ' + headerData.formatType :'Follow ' + headerData.formatType}}
                     </div>
                     <a
                         *ngIf="!preferences"
-                        tooltip="Get notified when this collection gets updated."
+                        [tooltip]='"Get notified when this "+headerData.formatType+" gets updated."'
                         class="btn btn-default"
                         [routerLink]='["/", "login"]'
                         [queryParams]='{next: router.url}'
@@ -83,27 +68,27 @@
                 </div>
 
                 <div class="header-button">
-                    <a [href]="repositoryView.issueTrackerUrl" *ngIf="repositoryView.issueTrackerUrl"
+                    <a [href]="headerData.issueTrackerUrl" *ngIf="headerData.issueTrackerUrl"
                         target="_blank"
                         tooltip="Visit the issue tracker. Opens in a new browser tab."
                         class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
 
-                    <a *ngIf="!repositoryView.issueTrackerUrl"
+                    <a *ngIf="!headerData.issueTrackerUrl"
                         disabled
                         tooltip="No issue tracker available."
                         class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
                 </div>
 
-                <div class="header-button">
-                    <a [href]="repositoryView.scmUrl" target="_blank"
+                <div class="header-button" *ngIf="headerData.scmURL">
+                    <a [href]="headerData.scmUrl" target="_blank"
                         tooltip="Visit the repository. Opens in a new browser tab." class="btn btn-default">
-                            <i [ngClass]="repositoryView.scmIconClass"></i> {{ repositoryView.scmName }} Repo</a>
+                            <i [ngClass]="headerData.scmIconClass"></i> {{ headerData.scmName }} Repo</a>
                 </div>
 
                 <div class="header-button">
-                    <div class="travis" *ngIf="repository.travis_build_url">
-                        <a href="{{ repository.travis_build_url }}" container="body" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
-                            <img src="{{ repository.travis_status_url }}"
+                    <div class="travis" *ngIf="headerData.travis_build_url">
+                        <a href="{{ headerData.travis_build_url }}" container="body" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
+                            <img src="{{ headerData.travis_status_url }}"
                                 class="travis-status-img" title="Travis Build Status" />
                         </a>
                     </div>

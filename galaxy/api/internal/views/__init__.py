@@ -16,7 +16,8 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from .collections import (  # noqa: F401
-    CollectionList
+    CollectionList,
+    CollectionDetail,
 )
 from .imports import (  # noqa: F401
     NamespaceImportsList,
@@ -24,5 +25,6 @@ from .imports import (  # noqa: F401
 
 __all__ = (
     'CollectionList',
-    'NamespaceImportsList',
+    'CollectionDetail',
+    'NamespaceImportsList'
 )

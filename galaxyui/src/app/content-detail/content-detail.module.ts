@@ -20,6 +20,7 @@ import { CardInfoComponent } from './cards/info/card-info.component';
 import { CardPlatformsComponent } from './cards/platforms/platforms.component';
 import { QualityDetailsComponent } from './cards/quality-details/quality-details.component';
 import { CardVersionsComponent } from './cards/versions/versions.component';
+import { CardCollectionContentComponent } from './cards/collection-content/collection-content.component';
 
 import { RepositoryDetailComponent } from './repository-detail/repository-detail.component';
 import { CollectionDetailComponent } from './collection-detail/collection-detail.component';
@@ -56,6 +57,7 @@ import { ScoreBarComponent } from './shared/score-bar/score-bar.component';
         CardCloudPlatformsComponent,
         CardDependenciesComponent,
         CardCommunitySurveyComponent,
+        CardCollectionContentComponent,
         ModulesComponent,
         RolesComponent,
         ModuleUtilsComponent,

@@ -16,5 +16,6 @@ export class UserPreferences {
 
     namespaces_followed: number[];
     repositories_followed: number[];
+    collections_followed: number[];
     summary_fields: any;
 }

@@ -10,89 +10,92 @@
                 <div class="title-text">Info</div>
             </div>
         </ng-template>
-        <div class="card-info-body" *ngIf="repoType === RepoFormats.role">
-            <table>
-                <tr>
-                    <td>Minimum Ansible Version</td>
-                    <td><span class="min-version">{{ repoContent.min_ansible_version }}</span></td>
-                </tr>
-                <tr>
-                    <td>Installation</td>
-                    <td class="install-instructions">
-                        <copy-to-clipboard [copyText]="repoContent['install_cmd']"></copy-to-clipboard>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Last Commit</td>
-                    <td>{{ repository.last_commit }}</td>
-                </tr>
-                <tr>
-                    <td>Last Import</td>
-                    <td>{{ repository.last_import }}</td>
-                </tr>
-                <tr *ngIf="repoContent && repoContent['hasTags']">
-                    <td><i class="fa fa-tags"></i> Tags</td>
-                    <td>
-                        <div class="tag" *ngFor="let tag of repoContent['tags']">
-                            {{ tag }}
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div class="card-info-body apb" *ngIf="repoType === RepoFormats.apb">
-            <div class="title" *ngIf="metadata && metadata['metadata'] && metadata['metadata']['imageUrl']">
-                <img [src]="metadata['metadata']['imageUrl']" /> {{ metadata['metadata']['displayName'] }}
+        <div class="card-info-body">
+            <div class="info-row" *ngIf="infoData.apb_metadata && infoData.apb_metadata['metadata']['documentationUrl']">
+                <div>
+                    <h3>References</h3>
+                    <ul>
+                        <li>
+                            <a [href]="infoData.apb_metadata['metadata']['documentationUrl']" target="_blank">{{ infoData.apb_metadata['metadata']['displayName'] }} Documentation</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/ansibleplaybookbundle/ansible-playbook-bundle"
+                               target="_blank">APB Documentation Repo</a>
+                        </li>
+                    </ul>
+                </div>
+
             </div>
-            <div *ngIf="metadata && metadata['metadata']['documentationUrl']">
-                <h3>References</h3>
-                <ul>
-                    <li>
-                        <a [href]="metadata['metadata']['documentationUrl']" target="_blank">{{ metadata['metadata']['displayName'] }} Documentation</a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/ansibleplaybookbundle/ansible-playbook-bundle"
-                           target="_blank">APB Documentation Repo</a>
-                    </li>
-                </ul>
+
+            <div class="info-row" *ngIf="infoData.min_ansible_version">
+                <div class="info-title">
+                    Minimum Ansible Version
+                </div>
+                <div class="info-data">
+                    <span class="min-version">{{infoData.min_ansible_version}}</span>
+                </div>
             </div>
-            <table>
-                <tr>
-                    <td>Last Commit</td>
-                    <td>{{ repository.last_commit }}</td>
-                </tr>
-                <tr>
-                    <td>Last Import</td>
-                    <td>{{ repository.last_import }}</td>
-                </tr>
-                <tr *ngIf="repoContent && repoContent['hasTags']">
-                    <td><i class="fa fa-tags"></i> Tags</td>
-                    <td>
-                        <div class="tag" *ngFor="let tag of repoContent['tags']">
-                            {{ tag }}
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div class="card-info-body" *ngIf="repoType === RepoFormats.multi">
-            <div *ngIf="repoContent">
-                <table class="multi-table">
-                    <tr>
-                        <td>Installation</td>
-                        <td class="install-instructions">
-                            <copy-to-clipboard [copyText]="repoContent['install_cmd']"></copy-to-clipboard>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Last Commit</td>
-                        <td>{{ repository.last_commit }}</td>
-                    </tr>
-                    <tr>
-                        <td>Last Import</td>
-                        <td>{{ repository.last_import }}</td>
-                    </tr>
-                </table>
+
+            <div class="info-row">
+                <div class="info-title">
+                    Installation
+                </div>
+                <div class="info-data">
+                    <copy-to-clipboard [copyText]="infoData.install_cmd"></copy-to-clipboard>
+                </div>
+            </div>
+
+            <div class="info-row" *ngIf="infoData.latest_version">
+                <div class="info-title">
+                    Version
+                </div>
+                <div class="info-data" >
+                    <select>
+                        <option (click)="updateVersion('')" value="infoData.latest_version.version" selected>
+                            {{infoData.latest_version.version}} released {{infoData.latest_version.created}} (latest)
+                        </option>
+                        <option (click)="updateVersion(item.version)" *ngFor="let item of infoData.versions" [value]="item.version">
+                            {{item.version}}
+                            released {{item.created}}
+                        <option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="info-row" *ngIf="infoData.last_commit">
+                <div class="info-title">
+                    Last Commit
+                </div>
+                <div class="info-data" >
+                    {{ infoData.last_commit }}
+                </div>
+            </div>
+
+            <div class="info-row" *ngIf="infoData.last_import">
+                <div class="info-title">
+                    Last Import
+                </div>
+                <div class="info-data">
+                    {{ infoData.last_import }}
+                </div>
+            </div>
+
+            <div class="info-row" *ngIf="infoData.tags && infoData.tags.length > 0">
+                <div class="info-title">
+                    <i class="fa fa-tags"></i> Tags
+                </div>
+                <div class="info-data">
+                    <div class="tag" *ngFor="let tag of infoData.tags">
+                        {{ tag }}
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="infoData.readme" class="readme">
+                <div class="readme-container">
+                    <div [innerHTML]="infoData.readme"></div>
+                    <div class="fade-out"></div>
+                </div>
+                <a (click)="switchToReadme()">Load full Read Me</a>
             </div>
         </div>
     </pfng-card>

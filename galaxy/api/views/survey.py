@@ -42,6 +42,7 @@ class CollectionSurveyList(base_views.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         request.data['user'] = request.user.id
+        request.data['collection'] = request.data['content_id']
 
         serializer = self.get_serializer(data=request.data)
 
@@ -68,6 +69,7 @@ class CollectionSurveyDetail(base_views.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.CollectionSurveySerializer
 
     def update(self, request, *args, **kwargs):
+        request.data['collection'] = request.data['content_id']
         serializer = self.get_serializer(
             instance=self.get_object(),
             data=request.data
@@ -86,6 +88,7 @@ class RepositorySurveyList(base_views.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         request.data['user'] = request.user.id
+        request.data['repository'] = request.data['content_id']
 
         serializer = self.get_serializer(data=request.data)
 
@@ -111,6 +114,7 @@ class RepositorySurveyDetail(base_views.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.RepositorySurveySerializer
 
     def update(self, request, *args, **kwargs):
+        request.data['repository'] = request.data['content_id']
         serializer = self.get_serializer(
             instance=self.get_object(),
             data=request.data

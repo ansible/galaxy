@@ -36,14 +36,17 @@ SHARED_FIELDS = (
             'ease_of_use',
             'does_what_it_says',
             'works_as_is',
-            'used_in_production'
+            'used_in_production',
+            'content_id'
         )
 
 
 class CollectionSurveySerializer(serializers.BaseSerializer):
+    content_id = drf_serializers.IntegerField(source='collection.id')
+
     class Meta:
         model = models.CollectionSurvey
-        fields = SHARED_FIELDS + ('collection',)
+        fields = SHARED_FIELDS + ('collection', )
 
     def validate(self, data):
         collection = data.get('collection')
@@ -60,14 +63,20 @@ class CollectionSurveySerializer(serializers.BaseSerializer):
 
     def get_summary_fields(self, instance):
         return {
-            'collection': {
+            'content': {
                 'name': instance.collection.name,
-                'community_score': instance.collection.community_score
+                'community_score': instance.collection.community_score,
+                'type': 'collection'
             }
         }
 
+    def get_content_id(self, obj):
+        return obj.collection.id
+
 
 class RepositorySurveySerializer(serializers.BaseSerializer):
+    content_id = drf_serializers.IntegerField(source='repository.id')
+
     class Meta:
         model = models.RepositorySurvey
         fields = SHARED_FIELDS + ('repository', )
@@ -87,11 +96,15 @@ class RepositorySurveySerializer(serializers.BaseSerializer):
 
     def get_summary_fields(self, instance):
         return {
-            'repository': {
+            'content': {
                 'name': instance.repository.name,
-                'community_score': instance.repository.community_score
+                'community_score': instance.repository.community_score,
+                'type': 'repository'
             }
         }
+
+    def get_content_id(self, obj):
+        return obj.repository.id
 
 
 def validate_not_owner(is_owner):

@@ -1,6 +1,6 @@
 export class Survey {
     id: number;
-    repository: number;
+    content_id: number;
     user: number;
     docs: number;
     ease_of_use: number;

@@ -6,6 +6,7 @@ import {
     ContentResolver,
     NamespaceResolver,
     RepositoryResolver,
+    CollectionResolver,
 } from './content-detail.resolver.service';
 
 const routes: Routes = [
@@ -16,6 +17,11 @@ const routes: Routes = [
 @NgModule({
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
-    providers: [ContentResolver, RepositoryResolver, NamespaceResolver],
+    providers: [
+        ContentResolver,
+        RepositoryResolver,
+        NamespaceResolver,
+        CollectionResolver,
+    ],
 })
 export class ContentDetailRoutingModule {}

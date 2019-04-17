@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Content } from '../../resources/content/content';
 import { Namespace } from '../../resources/namespaces/namespace';
 import { Repository } from '../../resources/repositories/repository';
+import { CollectionDetail } from '../../resources/collections/collection';
 
 import { AuthService } from '../../auth/auth.service';
 import { UserPreferences } from '../../resources/preferences/user-preferences';
@@ -16,23 +17,26 @@ import {
     RepoFormatsTooltips,
 } from '../../enums/repo-types.enum';
 
-class RepositoryView {
+class HeaderData {
     repoType: RepoFormats;
     name: string;
-    displayName: string;
     description: string;
     iconClass: string;
     tooltip: string;
-    watchersCount: number;
-    stargazersCount: number;
     downloadCount: number;
-    forksCount: number;
     namespace: string;
     avatarUrl: string;
     issueTrackerUrl: string;
     scmUrl: string;
     scmIconClass: string;
     scmName: string;
+    formatType: string;
+    deprecated: boolean;
+    score: any;
+    travis_build_url: string;
+    travis_status_url: string;
+    follow_type: string;
+    content_id: number;
 }
 
 export class RepoChangeEvent {
@@ -56,12 +60,14 @@ export class ContentHeaderComponent implements OnInit {
     ) {}
 
     @Input()
-    repository: Repository;
+    collection?: CollectionDetail;
     @Input()
-    namespace: Namespace;
+    repository?: Repository;
+    @Input()
+    namespace?: Namespace;
 
     mainContent: Content = {} as Content;
-    repositoryView: RepositoryView;
+    headerData: HeaderData;
     RepoFormats: typeof RepoFormats = RepoFormats;
     isFollower = false;
     followerClass = 'fa fa-user-plus';
@@ -69,6 +75,12 @@ export class ContentHeaderComponent implements OnInit {
     preferences: UserPreferences = null;
 
     ngOnInit() {
+        if (this.collection) {
+            this.mapCollection();
+        } else if (this.repository) {
+            this.mapRepository();
+        }
+
         this.authService.me().subscribe(me => {
             if (me.authenticated) {
                 this.preferencesService.get().subscribe(result => {
@@ -77,19 +89,20 @@ export class ContentHeaderComponent implements OnInit {
                 });
             }
         });
-        this.setRepositoryView();
     }
 
     followCollection() {
         this.followerClass = 'fa fa-spin fa-spinner';
 
         if (this.isFollower) {
-            const index = this.preferences.repositories_followed.indexOf(
-                this.repository.id,
+            const index = this.preferences[this.headerData.follow_type].indexOf(
+                this.headerData.content_id,
             );
-            this.preferences.repositories_followed.splice(index, 1);
+            this.preferences[this.headerData.follow_type].splice(index, 1);
         } else {
-            this.preferences.repositories_followed.push(this.repository.id);
+            this.preferences[this.headerData.follow_type].push(
+                this.headerData.content_id,
+            );
         }
         this.preferencesService.save(this.preferences).subscribe(result => {
             if (result !== null) {
@@ -102,8 +115,8 @@ export class ContentHeaderComponent implements OnInit {
     // private
     private setFollower() {
         if (
-            this.preferences.repositories_followed.find(
-                x => x === this.repository.id,
+            this.preferences[this.headerData.follow_type].find(
+                x => x === this.headerData.content_id,
             ) !== undefined
         ) {
             this.isFollower = true;
@@ -114,63 +127,62 @@ export class ContentHeaderComponent implements OnInit {
         }
     }
 
-    private setRepositoryView() {
-        // Determine repoType: role, apb, multiconent
-        this.repositoryView = {} as RepositoryView;
-        this.repositoryView.repoType = RepoFormats[this.repository.format];
-        this.repositoryView.iconClass =
-            RepoFormatsIconClasses[this.repository.format];
-        this.repositoryView.tooltip =
-            RepoFormatsTooltips[this.repository.format];
-        this.repositoryView.name = this.repository.name;
+    private mapCollection() {
+        this.headerData = {
+            namespace: this.collection.namespace.name,
+            avatarUrl:
+                this.collection.namespace.avatar_url || '/assets/avatar.png',
+            iconClass: 'pficon-repository',
+            tooltip: 'Collection',
+            name: this.collection.name,
+            description: this.collection.latest_version.metadata.description,
+            downloadCount: this.collection.download_count,
+            formatType: 'Collection',
+            deprecated: this.collection.deprecated,
+            score: {
+                community_survey_count: this.collection.community_survey_count,
+                community_score: this.collection.community_score,
+                quality_score: this.collection.latest_version.quality_score,
+            },
+            follow_type: 'collections_followed',
+            content_id: this.collection.id,
+            scmUrl: null,
+        } as HeaderData;
+    }
 
+    private mapRepository() {
+        let description;
         // description for legacy roles
         if (
             !this.repository.description &&
             this.repository.summary_fields.content_objects.length === 1
         ) {
-            this.repositoryView.description = this.repository.summary_fields.content_objects[0].description;
+            description = this.repository.summary_fields.content_objects[0]
+                .description;
         } else {
-            this.repositoryView.description = this.repository.description;
+            description = this.repository.description;
         }
 
-        this.repositoryView.namespace = this.repository.summary_fields.namespace[
-            'name'
-        ];
-
-        if (this.repository.summary_fields.namespace['is_vendor']) {
-            // assuming vendor name in logo img
-            this.repositoryView.displayName = '';
-        } else {
-            this.repositoryView.displayName = this.repository.summary_fields.namespace[
-                'name'
-            ];
-        }
-
-        if (!this.namespace.avatar_url) {
-            // missing avatar_url
-            this.repositoryView.displayName = this.repository.summary_fields.namespace[
-                'name'
-            ];
-            this.repositoryView.avatarUrl = '/assets/avatar.png';
-        } else {
-            this.repositoryView.avatarUrl = this.namespace.avatar_url;
-        }
-
-        this.repositoryView.watchersCount = this.repository.watchers_count;
-        this.repositoryView.stargazersCount = this.repository.stargazers_count;
-        this.repositoryView.downloadCount = this.repository.download_count;
-        this.repositoryView.forksCount = this.repository.forks_count;
-        this.repositoryView.issueTrackerUrl = this.repository.issue_tracker_url;
-        this.repositoryView.scmUrl = this.repository.external_url;
-        this.repositoryView.scmName = this.repository.summary_fields.provider[
-            'name'
-        ];
-
-        switch (this.repository.summary_fields.provider['name'].toLowerCase()) {
-            case 'github':
-                this.repositoryView.scmIconClass = 'fa fa-github';
-                break;
-        }
+        this.headerData = {
+            formatType: 'Repository',
+            repoType: RepoFormats[this.repository.format],
+            iconClass: RepoFormatsIconClasses[this.repository.format],
+            tooltip: RepoFormatsTooltips[this.repository.format],
+            name: this.repository.name,
+            description: description,
+            namespace: this.repository.summary_fields.namespace['name'],
+            avatarUrl: this.namespace.avatar_url || '/assets/avatar.png',
+            downloadCount: this.repository.download_count,
+            issueTrackerUrl: this.repository.issue_tracker_url,
+            scmUrl: this.repository.external_url,
+            scmName: this.repository.summary_fields.provider['name'],
+            scmIconClass: 'fa fa-github',
+            deprecated: this.repository.deprecated,
+            score: this.repository,
+            travis_build_url: this.repository.travis_build_url,
+            travis_status_url: this.repository.travis_status_url,
+            follow_type: 'repositories_followed',
+            content_id: this.repository.id,
+        } as HeaderData;
     }
 }

@@ -21,17 +21,23 @@ export class GenericQuerySave<
         super(http, notificationService, url, serviceName);
     }
 
-    save(object: ServiceType): Observable<ServiceType> {
+    save(object: ServiceType, urlExtras?: string): Observable<ServiceType> {
+        let objectUrl = this.url;
+
+        if (urlExtras) {
+            objectUrl = this.append_to_url(this.url, urlExtras);
+        }
+
         let httpResult: Observable<Object>;
         if (object.id) {
             httpResult = this.http.put<ServiceType>(
-                `${this.url}/${object.id}/`,
+                `${objectUrl}/${object.id}/`,
                 object,
                 this.httpOptions,
             );
         } else {
             httpResult = this.http.post<ServiceType>(
-                `${this.url}/`,
+                `${objectUrl}/`,
                 object,
                 this.httpOptions,
             );

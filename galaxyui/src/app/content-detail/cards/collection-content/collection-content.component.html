@@ -1,0 +1,42 @@
+<div class="filter-bar">
+    <div>
+        <input
+            type="text"
+            #textFilter
+            (keyup)="filterByKeyword(textFilter.value)"
+            placeholder="Filter content..."
+        />
+    </div>
+
+    <div class="filter-checkbox">Show: </div>
+
+    <div class="filter-checkbox" *ngFor="let type of availableTypes">
+        <label>
+            <input
+                id="{{type}}"
+                type="checkbox"
+                [checked]="typeFilter[type]"
+                (change)="filterByType(type)"
+            />
+            {{type}}s
+        </label>
+    </div>
+</div>
+
+<ul class="card-container">
+    <li *ngFor="let item of displayedContents" class="card-item">
+        <div class="title">{{item.name}}</div>
+        <div class="content-type" [ngClass]="getContentTypeClass(item.content_type)">
+            {{getContentTypeClass(item.content_type)}}
+        </div>
+        <div class="description">
+            {{item.description.length > maxDescriptionLength ? (item.description | slice:0:maxDescriptionLength) + '...' : item.description}}
+        </div>
+        <div class="tags" *ngIf="item.role_meta && item.role_meta.tags">
+            <i class="fa fa-tags fa-lg"></i> &nbsp;
+            <span class="tag" *ngFor="let tag of item.role_meta.tags">
+                {{ tag }}
+            </span>
+        </div>
+    </li>
+</ul>

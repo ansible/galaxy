@@ -12,7 +12,7 @@ export class SurveyService extends GenericQuerySave<Survey> {
         super(
             http,
             notificationService,
-            '/api/v1/community_surveys/repository',
+            '/api/v1/community_surveys/',
             'survey',
         );
     }

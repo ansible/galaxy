@@ -2,7 +2,11 @@ import { HttpClient, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { NotificationService } from 'patternfly-ng';
-import { CollectionUpload, CollectionList } from './collection';
+import {
+    CollectionUpload,
+    CollectionList,
+    CollectionDetail,
+} from './collection';
 
 import { ServiceBase } from '../base/service-base';
 import { GenericQuery } from '../base/generic-query';
@@ -43,5 +47,26 @@ export class CollectionListService extends GenericQuery<CollectionList> {
             '/api/internal/ui/collections',
             'collection',
         );
+    }
+}
+
+@Injectable()
+export class CollectionDetailService extends ServiceBase {
+    constructor(http: HttpClient, notificationService: NotificationService) {
+        super(
+            http,
+            notificationService,
+            '/api/internal/ui/collections',
+            'collection',
+        );
+    }
+
+    get(namespace: string, name: string): Observable<CollectionDetail> {
+        return this.http
+            .get<CollectionDetail>(`${this.url}/${namespace}/${name}`)
+            .pipe(
+                tap(_ => this.log('fetched collection detail')),
+                catchError(this.handleError('Get', {} as CollectionDetail)),
+            );
     }
 }
