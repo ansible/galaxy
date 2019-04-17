@@ -48,7 +48,7 @@ class VersionDetailUrlField(serializers.Field):
     """Return version detail url under collection namespace and name."""
     def to_representation(self, value):
         return reverse(
-            'api:v2:version-detail-by-collection-and-version-name',
+            'api:v2:version-detail',
             kwargs={
                 'namespace': value.collection.namespace.name,
                 'name': value.collection.name,
@@ -97,7 +97,7 @@ class VersionDetailSerializer(serializers.ModelSerializer):
         result = {
             'id': obj.collection.pk,
             'href': reverse(
-                'api:v2:collection-detail-by-name',
+                'api:v2:collection-detail',
                 kwargs={'namespace': ns_name, 'name': name}),
             'name': name,
         }
@@ -126,7 +126,7 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     def get_href(self, obj):
         return reverse(
-            'api:v2:collection-detail-by-name',
+            'api:v2:collection-detail',
             kwargs={
                 'namespace': obj.namespace.name,
                 'name': obj.name,
@@ -135,7 +135,7 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     def get_versions_url(self, obj):
         return reverse(
-            'api:v2:version-list-by-collection-name',
+            'api:v2:version-list',
             kwargs={
                 'namespace': obj.namespace.name,
                 'name': obj.name,
@@ -177,7 +177,7 @@ class CollectionImportSerializer(BaseTaskSerializer):
             return None
         return {
             'id': obj.imported_version.pk,
-            'href': reverse('api:v2:version-detail-by-id',
+            'href': reverse('api:v2:version-detail',
                             args=[obj.imported_version.pk]),
         }
 
