@@ -79,7 +79,7 @@
                         class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
                 </div>
 
-                <div class="header-button" *ngIf="headerData.scmURL">
+                <div class="header-button" *ngIf="headerData.scmUrl">
                     <a [href]="headerData.scmUrl" target="_blank"
                         tooltip="Visit the repository. Opens in a new browser tab." class="btn btn-default">
                             <i [ngClass]="headerData.scmIconClass"></i> {{ headerData.scmName }} Repo</a>
