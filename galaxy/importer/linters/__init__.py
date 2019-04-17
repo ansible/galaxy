@@ -67,7 +67,7 @@ class Flake8Linter(BaseLinter):
 
     def parse_id_and_desc(self, message):
         try:
-            error_id, rule_desc = message.split(' ', 1)
+            _, error_id, rule_desc = message.split(' ', 2)
         except ValueError:
             pass
         else:
