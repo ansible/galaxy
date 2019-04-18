@@ -20,6 +20,7 @@ from rest_framework import views
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+import semantic_version
 
 from galaxy.main import models
 from galaxy.api.v2 import serializers
@@ -56,6 +57,22 @@ class VersionListView(generics.ListAPIView):
         """Return list of versions for a specific collection."""
         collection = _lookup_collection(self.kwargs)
         return models.CollectionVersion.objects.filter(collection=collection)
+
+    def list(self, request, *args, **kwargs):
+        """Override drf ListModelMixin to sort versions by semver."""
+        queryset = self.filter_queryset(self.get_queryset())
+
+        data = sorted(queryset,
+                      key=lambda x: semantic_version.Version(x.version),
+                      reverse=True)
+
+        page = self.paginate_queryset(data)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class VersionDetailView(views.APIView):

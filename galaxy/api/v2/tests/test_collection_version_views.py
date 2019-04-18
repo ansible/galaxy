@@ -145,8 +145,12 @@ class TestVersionListView(APITestCase):
         self.version1 = models.CollectionVersion.objects.create(
             collection=self.collection, version='1.0.0')
         self.version2 = models.CollectionVersion.objects.create(
-            collection=self.collection, version='2.2.2')
+            collection=self.collection, version='2.2.1')
         self.version3 = models.CollectionVersion.objects.create(
+            collection=self.collection, version='2.12.2')
+        self.version4 = models.CollectionVersion.objects.create(
+            collection=self.collection, version='2.2.2')
+        self.version5 = models.CollectionVersion.objects.create(
             collection=self.collection, version='0.3.0')
 
     def test_view_success(self):
@@ -162,12 +166,11 @@ class TestVersionListView(APITestCase):
             response = self.client.get(url)
             assert response.status_code == http_codes.HTTP_200_OK
             results = response.json()['results']
-
-            # TODO: when view returns sorted versions, test the order
-            all_versions = [x['version'] for x in results]
-            assert self.version1.version in all_versions
-            assert self.version2.version in all_versions
-            assert self.version3.version in all_versions
+            assert results[0]['version'] == self.version3.version
+            assert results[1]['version'] == self.version4.version
+            assert results[2]['version'] == self.version2.version
+            assert results[3]['version'] == self.version1.version
+            assert results[4]['version'] == self.version5.version
 
     def test_view_404(self):
         response = self.client.get(self.url_id.format(pk=self.collection.pk+1))
