@@ -23,8 +23,13 @@ from .imports import (  # noqa: F401
     NamespaceImportsList,
 )
 
+from .combined import (  # noqa: F401
+    CombinedList
+)
+
 __all__ = (
     'CollectionList',
     'CollectionDetail',
-    'NamespaceImportsList'
+    'NamespaceImportsList',
+    'CombinedList'
 )
