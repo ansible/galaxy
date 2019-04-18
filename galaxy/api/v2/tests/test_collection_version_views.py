@@ -80,3 +80,95 @@ class TestCollectionArtifactView(APITestCase):
             response = self.client.generic(method, url.format(pk=42))
             assert (response.status_code
                     == http_codes.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class TestVersionDetailView(APITestCase):
+    url_id = '/api/v2/collection-versions/{pk}/'
+    url_version = '/api/v2/collections/{ns}/{name}/versions/{version}/'
+
+    def setUp(self):
+        super().setUp()
+        self.namespace = models.Namespace.objects.create(
+            name='mynamespace')
+        self.collection = models.Collection.objects.create(
+            namespace=self.namespace,
+            name='mycollection')
+        self.version = models.CollectionVersion.objects.create(
+            collection=self.collection,
+            version='1.0.0',
+            metadata={
+                'name': self.collection.name,
+                'version': '1.0.0',
+            },
+        )
+
+    def test_view_success(self):
+        urls = [
+            self.url_id.format(pk=self.version.pk),
+            self.url_version.format(
+                ns=self.namespace.name,
+                name=self.collection.name,
+                version=self.version.version,
+            ),
+        ]
+
+        for url in urls:
+            response = self.client.get(url)
+            assert response.status_code == http_codes.HTTP_200_OK
+            result = response.json()
+            assert result['id'] == self.version.pk
+            assert result['href'] == urls[1]
+            assert result['download_url'] == urls[1] + 'artifact/'
+            assert result['namespace']['name'] == self.namespace.name
+            assert result['collection']['name'] == self.collection.name
+            assert result['version'] == self.version.version
+            assert result['hidden'] is False
+            assert result['metadata']['name'] == self.collection.name
+            assert result['metadata']['version'] == self.version.version
+
+    def test_view_404(self):
+        response = self.client.get(self.url_id.format(pk=self.version.pk+1))
+        assert response.status_code == http_codes.HTTP_404_NOT_FOUND
+
+
+class TestVersionListView(APITestCase):
+    url_id = '/api/v2/collections/{pk}/versions/'
+    url_name = '/api/v2/collections/{ns}/{name}/versions/'
+
+    def setUp(self):
+        super().setUp()
+        self.namespace = models.Namespace.objects.create(
+            name='mynamespace')
+        self.collection = models.Collection.objects.create(
+            namespace=self.namespace,
+            name='mycollection')
+        self.version1 = models.CollectionVersion.objects.create(
+            collection=self.collection, version='1.0.0')
+        self.version2 = models.CollectionVersion.objects.create(
+            collection=self.collection, version='2.2.2')
+        self.version3 = models.CollectionVersion.objects.create(
+            collection=self.collection, version='0.3.0')
+
+    def test_view_success(self):
+        urls = [
+            self.url_id.format(pk=self.collection.pk),
+            self.url_name.format(
+                ns=self.namespace.name,
+                name=self.collection.name,
+            ),
+        ]
+
+        for url in urls:
+            response = self.client.get(url)
+            assert response.status_code == http_codes.HTTP_200_OK
+            results = response.json()['results']
+
+            # TODO: when view returns sorted versions, test the order
+            all_versions = [x['version'] for x in results]
+            assert self.version1.version in all_versions
+            assert self.version2.version in all_versions
+            assert self.version3.version in all_versions
+
+    def test_view_404(self):
+        response = self.client.get(self.url_id.format(pk=self.collection.pk+1))
+        assert response.status_code == http_codes.HTTP_404_NOT_FOUND
