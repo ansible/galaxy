@@ -52,7 +52,7 @@ class RepoAndCollectionList(views.APIView):
             collection_filter[
                 'latest_version__metadata__description__icontaines'
             ] = request.GET['description']
-            repo_filter['description'] = request.GET['description']
+            repo_filter['description__icontains'] = request.GET['description']
 
         # Avoid loading models if the type is set.
         if package_type == 'collection':
