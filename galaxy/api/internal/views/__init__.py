@@ -24,12 +24,12 @@ from .imports import (  # noqa: F401
 )
 
 from .combined import (  # noqa: F401
-    CombinedList
+    RepoAndCollectionList
 )
 
 __all__ = (
     'CollectionList',
     'CollectionDetail',
     'NamespaceImportsList',
-    'CombinedList'
+    'RepoAndCollectionList'
 )

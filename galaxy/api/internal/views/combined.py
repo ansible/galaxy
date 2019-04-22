@@ -18,16 +18,23 @@ from galaxy.main import models
 from rest_framework import response
 from galaxy.api.internal import serializers as internal_serializers
 from galaxy.api import serializers as v1_serializers
+from rest_framework import status
 
 
-class CombinedList(views.APIView):
+class RepoAndCollectionList(views.APIView):
     def get(self, request):
         # params: page, page size, namespace, name, description, type
         # order by: name, downloads
-        namespace = request.GET['namespace']
+        namespace = request.GET.get('namespace', None)
         page = int(request.GET.get('page', 1))
         page_size = int(request.GET.get('page_size', 10))
-        type = request.GET.get('type', None)
+        package_type = request.GET.get('type', None)
+
+        if not namespace:
+            return response.Response(
+                {'detail': 'The namespace parameter is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         collection_filter = {
             'namespace__name': namespace,
@@ -48,15 +55,15 @@ class CombinedList(views.APIView):
             repo_filter['description'] = request.GET['description']
 
         # Avoid loading models if the type is set.
-        if type == 'collection':
-            repos = []
+        if package_type == 'collection':
+            repos = models.Repository.objects.none()
             repo_count = 0
         else:
             repos = models.Repository.objects.filter(**repo_filter)
             repo_count = repos.count()
 
-        if type == 'repository':
-            collections = []
+        if package_type == 'repository':
+            collections = models.collection.objects.none()
             collection_count = 0
         else:
             collections = models.Collection.objects.filter(**collection_filter)
@@ -74,8 +81,7 @@ class CombinedList(views.APIView):
         else:
             # Django gets cranky if you try to slice a queryset with a negative
             # index
-            r_start = start - collection_count
-            r_start = 0 if r_start < 0 else r_start
+            r_start = max(0, start - collection_count)
 
             repo_results = repos[r_start:end-collection_count]
 
