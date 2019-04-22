@@ -114,7 +114,7 @@ class CollectionListView(base.APIView):
             })
 
         data = {'task': reverse('api:v2:collection-import-detail',
-                                args=[task.pk], request=None)}
+                                args=[task.pk], request=request)}
         return Response(data, status=http_codes.HTTP_202_ACCEPTED)
 
     def _get_namespace(self, data):

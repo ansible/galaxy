@@ -170,7 +170,7 @@ class CollectionImportSerializer(BaseTaskSerializer):
     messages = _MessageSerializer(many=True)
     lint_records = serializers.JSONField()
 
-    namespace = serializers.SerializerMethodField()
+    namespace = NamespaceObjectField()
     imported_version = serializers.SerializerMethodField()
 
     class Meta:
@@ -181,21 +181,14 @@ class CollectionImportSerializer(BaseTaskSerializer):
         )
 
     # TODO(cutwater): Replace with custom field
-    def get_namespace(self, obj):
-        pk = obj.namespace.pk
-        return {
-            'id': pk,
-            'href': reverse('api:namespace_detail', kwargs={'pk': pk})
-        }
-
-    # TODO(cutwater): Replace with custom field
     def get_imported_version(self, obj):
         if obj.imported_version is None:
             return None
         return {
             'id': obj.imported_version.pk,
             'href': reverse('api:v2:version-detail',
-                            args=[obj.imported_version.pk]),
+                            args=[obj.imported_version.pk],
+                            request=self.context.get('request')),
         }
 
 
