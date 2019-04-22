@@ -69,9 +69,11 @@ html body .navbar .navbar-inner .dropdown-menu li a,
 html body .navbar .navbar-inner .dropdown-menu li,
 html body .hero-unit h2,
 html body .hero-unit h1,
-html body a,
 html body a {
  color: #2078be;
+}
+html body a span {
+ color: #2078be !important;
 }
 html body .navbar .navbar-inner .dropdown-menu li a:hover,
 html body a:hover {
@@ -141,10 +143,6 @@ html body #push {
 $(function() {
   // Make links from relative URLs to resources.
   $('span.str').each(function() {
-    // Remove REST API links within data.
-    if ($(this).parent('a').size()) {
-      $(this).unwrap();
-    }
     var s = $(this).html();
     if (s.match(/^\"\/.+\/\"$/) || s.match(/^\"\/.+\/\?.*\"$/)) {
       $(this).html('"<a href=' + s + '>' + s.replace(/\"/g, '') + '</a>"');
