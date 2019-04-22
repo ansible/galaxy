@@ -39,7 +39,11 @@ class NamespaceObjectField(serializers.Field):
     def to_representation(self, value):
         return {
             'id': value.pk,
-            'href': reverse('api:namespace_detail', kwargs={'pk': value.pk}),
+            'href': reverse(
+                'api:namespace_detail',
+                kwargs={'pk': value.pk},
+                request=self.parent.context.get('request'),
+            ),
             'name': value.name,
         }
 
@@ -53,7 +57,8 @@ class VersionDetailUrlField(serializers.Field):
                 'namespace': value.collection.namespace.name,
                 'name': value.collection.name,
                 'version': value.version,
-            }
+            },
+            request=self.parent.context.get('request'),
         )
 
 
@@ -95,7 +100,8 @@ class VersionDetailSerializer(serializers.ModelSerializer):
                 'namespace': obj.collection.namespace.name,
                 'name': obj.collection.name,
                 'version': obj.version,
-            }
+            },
+            request=self.context.get('request'),
         )
 
     def get_collection(self, obj):
@@ -105,7 +111,9 @@ class VersionDetailSerializer(serializers.ModelSerializer):
             'id': obj.collection.pk,
             'href': reverse(
                 'api:v2:collection-detail',
-                kwargs={'namespace': ns_name, 'name': name}),
+                kwargs={'namespace': ns_name, 'name': name},
+                request=self.context.get('request'),
+            ),
             'name': name,
         }
         return result
@@ -137,7 +145,8 @@ class CollectionSerializer(serializers.ModelSerializer):
             kwargs={
                 'namespace': obj.namespace.name,
                 'name': obj.name,
-            }
+            },
+            request=self.context.get('request'),
         )
 
     def get_versions_url(self, obj):
@@ -146,7 +155,8 @@ class CollectionSerializer(serializers.ModelSerializer):
             kwargs={
                 'namespace': obj.namespace.name,
                 'name': obj.name,
-            }
+            },
+            request=self.context.get('request'),
         )
 
 

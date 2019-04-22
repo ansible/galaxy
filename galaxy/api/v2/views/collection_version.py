@@ -77,7 +77,8 @@ class VersionDetailView(base.APIView):
     def get(self, request, *args, **kwargs):
         """Return a collection version."""
         version = self._get_version()
-        serializer = serializers.VersionDetailSerializer(version)
+        serializer = serializers.VersionDetailSerializer(
+            version, context={'request': self.request})
         return Response(serializer.data)
 
     def _get_version(self):

@@ -57,7 +57,8 @@ class CollectionDetailView(base.APIView):
     def get(self, request, *args, **kwargs):
         """Return a collection."""
         collection = self._get_collection()
-        serializer = serializers.CollectionSerializer(collection)
+        serializer = serializers.CollectionSerializer(
+            collection, context={'request': request})
         return Response(serializer.data)
 
     def _get_collection(self):
