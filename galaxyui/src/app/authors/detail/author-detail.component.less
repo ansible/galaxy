@@ -9,6 +9,7 @@
     .type-heading {
         background-color: #ebebeb;
         font-size: 14px;
+        margin-bottom: -1px;
 
         .counter {
             background-color: #9c9c9c;
@@ -39,9 +40,17 @@
         }
 
         .pull-right {
-            justify-content: flex-end;
-            div {
-                margin-left: 10px;
+            @media (min-width: 800px) {
+                justify-content: flex-end;
+                div {
+                    margin-left: 10px;
+                }
+            }
+
+            @media (max-width: 800px) {
+                div {
+                    margin-right: 10px;
+                }
             }
         }
 
