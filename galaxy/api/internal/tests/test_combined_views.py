@@ -73,8 +73,10 @@ class RepoAndCollectionListTest(APITestCase):
 
         assert len(resp['collection']['results']) == 10
         assert resp['collection']['count'] == self.num_collections
-        assert resp['collection']['results'][0]['name'] == self.collections[0].name
-        assert resp['collection']['results'][9]['name'] == self.collections[9].name
+        assert resp['collection']['results'][0]['name'] == \
+            self.collections[0].name
+        assert resp['collection']['results'][9]['name'] == \
+            self.collections[9].name
 
         assert len(resp['repository']['results']) == 0
         assert resp['repository']['count'] == self.num_repositories
@@ -85,8 +87,10 @@ class RepoAndCollectionListTest(APITestCase):
 
         assert len(resp['collection']['results']) == 8
         assert resp['collection']['count'] == self.num_collections
-        assert resp['collection']['results'][0]['name'] == self.collections[10].name
-        assert resp['collection']['results'][7]['name'] == self.collections[17].name
+        assert resp['collection']['results'][0]['name'] == \
+            self.collections[10].name
+        assert resp['collection']['results'][7]['name'] == \
+            self.collections[17].name
 
         assert len(resp['repository']['results']) == 2
         assert resp['repository']['count'] == self.num_repositories
@@ -111,8 +115,10 @@ class RepoAndCollectionListTest(APITestCase):
 
         assert len(resp['collection']['results']) == 8
         assert resp['collection']['count'] == self.num_collections
-        assert resp['collection']['results'][0]['name'] == self.collections[10].name
-        assert resp['collection']['results'][7]['name'] == self.collections[17].name
+        assert resp['collection']['results'][0]['name'] == \
+            self.collections[10].name
+        assert resp['collection']['results'][7]['name'] == \
+            self.collections[17].name
 
         assert len(resp['repository']['results']) == 0
         assert resp['repository']['count'] == 0
@@ -135,7 +141,8 @@ class RepoAndCollectionListTest(APITestCase):
 
         assert len(resp['collection']['results']) == self.num_collections
         assert resp['collection']['count'] == 18
-        assert resp['collection']['results'][0]['name'] == self.collections[0].name
+        assert resp['collection']['results'][0]['name'] == \
+            self.collections[0].name
         assert resp['collection']['results'][17]['name'] == \
             self.collections[17].name
 
