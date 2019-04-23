@@ -5,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {
     NamespaceDetailResolver,
     NamespaceListResolver,
-    RepositoryResolver,
+    RepositoryCollectionResolver,
 } from './authors.resolver.service';
 
 import { AuthorsComponent } from './authors.component';
@@ -27,7 +27,7 @@ const routes: Routes = [
     providers: [
         NamespaceDetailResolver,
         NamespaceListResolver,
-        RepositoryResolver,
+        RepositoryCollectionResolver,
     ],
 })
 export class AuthorsRoutingModule {}

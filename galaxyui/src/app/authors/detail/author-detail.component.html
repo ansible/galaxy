@@ -95,11 +95,67 @@
         </div>
     </div>
 
-    <div class="row repository-list" *ngIf="!authorNotFound">
+    <div class="row" *ngIf="!authorNotFound && collections.length > 0">
+        <div class="col-sm-12 type-heading">Collections <div class="counter">{{ collectionCount }}</div></div>
+    </div>
+
+    <div class="row item-row" *ngFor="let item of collections">
+        <div class="col-sm-6">
+            <div class="title list-content">
+                <a [routerLink]="['/', 'collections', namespace.name, item.name]">
+                    {{item.name}}
+                </a>
+            </div>
+            <div class="description list-content">
+                <b>Description: </b>
+                {{item.latest_version.metadata.description}}
+            </div>
+            <div class="metric-box mid-font pull-left list-content">
+                <div>
+                    <b>{{item.latest_version.content_counts.module}}</b>
+                    Modules
+                </div>
+                <div>
+                    <b>{{item.latest_version.content_counts.role}}</b>
+                    Roles
+                </div>
+                <div>
+                    <b>{{item.latest_version.content_counts.plugin}}</b>
+                    Plugins
+                </div>
+                <div>
+                    <b>{{item.latest_version.content_counts.playbook}}</b>
+                    Playbooks
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+
+            <div class="metric-box mid-font pull-right list-content">
+                <div>
+                    <app-score [repo]="item"></app-score>
+                </div>
+                <div>
+                    <i class="fa fa-download"></i>
+                    {{item.download_count}} Downloads
+                </div>
+            </div>
+
+            <div class="metric-box pull-right list-content">
+                <div>
+                    <b>Current Version: </b> {{item.latest_version.version}}
+                    uploaded {{ formatDate(item.latest_version.created) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row repository-list" *ngIf="!authorNotFound && repositories.length > 0">
+        <div class="col-sm-12 type-heading">Roles <div class="counter">{{ repoCount }}</div></div>
         <div class="col-sm-12">
             <pfng-list
                 [config]="listConfig"
-                [items]="items"
+                [items]="repositories"
                 [itemTemplate]="itemTemplate"
                 [actionTemplate]="actionTemplate"
                 (onClick)="handleListClick($event)">
@@ -133,24 +189,6 @@
                                 <span class="count-label">Downloads</span>
                             </div>
 
-                            <div class="content-count">
-                                <i class="fa fa-eye"></i>
-                                <span class="count">{{ item.watchers_count }}</span>
-                                <span class="count-label">Watchers</span>
-                            </div>
-
-                            <div class="content-count">
-                                <i class="fa fa-star"></i>
-                                <span class="count">{{ item.stargazers_count }}</span>
-                                <span class="count-label">Stars</span>
-                            </div>
-
-                            <div class="content-count">
-                                <i class="fa fa-copy"></i>
-                                <span class="count">{{ item.forks_count }}</span>
-                                <span class="count-label">Forks</span>
-                            </div>
-
                             <div *ngIf="item.travis_build_url">
                                 <div class="travis">
                                     <a [appLogEvent]='"travis: " + item.name' href="{{ item.travis_build_url }}" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
@@ -172,7 +210,7 @@
     <div class="row repository-pagination" *ngIf="!authorNotFound">
         <div class="col-sm-12">
             <div class="pagination"
-                *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
+                *ngIf="repositories && repositories.length && paginationConfig.totalItems > paginationConfig.pageSize">
                 <pfng-pagination
                     [config]='paginationConfig'
                     (onPageSizeChange)="handlePageSizeChange($event)"

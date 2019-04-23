@@ -1,9 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-class RepoScore {
+interface IRepoScore {
     community_score: any;
-    quality_score: any;
+    quality_score?: any;
     community_survey_count: number;
+    latest_version?: {
+        quality_score: number;
+    };
 }
 
 @Component({
@@ -17,10 +20,13 @@ export class ScoreComponent implements OnInit {
 
     constructor() {}
 
-    _repo: RepoScore;
+    _repo: IRepoScore;
     @Input()
     set repo(r: any) {
-        this._repo = r as RepoScore;
+        if (r.latest_version) {
+            r['quality_score'] = r.latest_version.quality_score;
+        }
+        this._repo = r as IRepoScore;
     }
     get repo() {
         return this._repo;

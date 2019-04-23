@@ -24,9 +24,11 @@ import { PFBodyService } from '../../resources/pf-body/pf-body.service';
 
 import { AuthService } from '../../auth/auth.service';
 import { Repository } from '../../resources/repositories/repository';
-import { RepositoryService } from '../../resources/repositories/repository.service';
 import { UserPreferences } from '../../resources/preferences/user-preferences';
 import { PreferencesService } from '../../resources/preferences/preferences.service';
+import { RepoCollectionListService } from '../../resources/combined/combined.service';
+import { PaginatedRepoCollection } from '../../resources/combined/combined';
+import { CollectionList } from '../../resources/collections/collection';
 
 import {
     ContentTypes,
@@ -52,7 +54,7 @@ export class AuthorDetailComponent implements OnInit {
     constructor(
         private router: Router,
         private route: ActivatedRoute,
-        private repositoryService: RepositoryService,
+        private repoCollectionListService: RepoCollectionListService,
         private pfBody: PFBodyService,
         private authService: AuthService,
         private preferencesService: PreferencesService,
@@ -63,7 +65,10 @@ export class AuthorDetailComponent implements OnInit {
     pageLoading = true;
 
     namespace: Namespace;
-    items: Repository[] = [];
+    repositories: Repository[] = [];
+    repoCount: number;
+    collections: CollectionList[] = [];
+    collectionCount: number;
 
     emptyStateConfig: EmptyStateConfig;
     nameEmptyStateConfig: EmptyStateConfig;
@@ -104,10 +109,20 @@ export class AuthorDetailComponent implements OnInit {
                     type: FilterType.TEXT,
                 },
                 {
-                    id: 'description',
-                    title: 'Description',
-                    placeholder: 'Filter by Description...',
-                    type: FilterType.TEXT,
+                    id: 'type',
+                    title: 'Type',
+                    placeholder: 'Filter by Collection or Repository...',
+                    type: FilterType.SELECT,
+                    queries: [
+                        {
+                            id: 'collection',
+                            value: 'Collection',
+                        },
+                        {
+                            id: 'repository',
+                            value: 'Repository',
+                        },
+                    ],
                 },
             ] as FilterField[],
             resultsCount: 0,
@@ -124,21 +139,6 @@ export class AuthorDetailComponent implements OnInit {
                 {
                     id: 'download_count',
                     title: 'Downloads',
-                    sortType: 'numeric',
-                },
-                {
-                    id: 'stargazers_count',
-                    title: 'Stars',
-                    sortType: 'numeric',
-                },
-                {
-                    id: 'watchers_count',
-                    title: 'Watchers',
-                    sortType: 'numeric',
-                },
-                {
-                    id: 'forks_count',
-                    title: 'Forks',
                     sortType: 'numeric',
                 },
             ],
@@ -160,7 +160,7 @@ export class AuthorDetailComponent implements OnInit {
         this.listConfig = {
             dblClick: false,
             multiSelect: false,
-            selectItems: false,
+            selectrepositories: false,
             selectionMatchProp: 'name',
             showCheckbox: false,
             useExpandItems: false,
@@ -175,9 +175,9 @@ export class AuthorDetailComponent implements OnInit {
 
         this.route.data.subscribe(data => {
             this.namespace = data['namespace'];
-            this.items = data['repositories']['results'];
-            this.paginationConfig.totalItems = data['repositories']['count'];
-            this.pageLoading = false;
+
+            this.setStateFromResponse(data['content']);
+
             if (this.namespace && this.namespace.name) {
                 this.authService.me().subscribe(me => {
                     if (me.authenticated) {
@@ -199,7 +199,7 @@ export class AuthorDetailComponent implements OnInit {
                     this.pageIcon = 'fa fa-users';
                 }
                 this.parepareNamespace();
-                if (this.items && this.items.length) {
+                if (this.repositories && this.repositories.length) {
                     this.prepareRepositories();
                 }
             } else {
@@ -221,11 +221,10 @@ export class AuthorDetailComponent implements OnInit {
     filterChanged($event: FilterEvent): void {
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach((filter: Filter) => {
-                if (filter.field.type === 'typeahead') {
-                    this.filterBy['or__' + filter.field.id] = filter.query.id;
+                if (filter.field.type === 'select') {
+                    this.filterBy[filter.field.id] = filter.query.id;
                 } else {
-                    this.filterBy['or__' + filter.field.id + '__icontains'] =
-                        filter.value;
+                    this.filterBy[filter.field.id] = filter.value;
                 }
             });
         } else {
@@ -278,7 +277,24 @@ export class AuthorDetailComponent implements OnInit {
         });
     }
 
+    formatDate(date) {
+        return moment(date).fromNow();
+    }
+
     // private
+
+    private setStateFromResponse(data: PaginatedRepoCollection) {
+        this.repositories = data['repository']['results'];
+        this.collections = data['collection']['results'];
+
+        this.repoCount = data['repository']['count'];
+        this.collectionCount = data['collection']['count'];
+
+        this.pageLoading = false;
+        this.paginationConfig.totalItems =
+            this.repoCount + this.collectionCount;
+        this.filterConfig.resultsCount = this.repoCount + this.collectionCount;
+    }
 
     private setFollower() {
         if (
@@ -296,19 +312,16 @@ export class AuthorDetailComponent implements OnInit {
 
     private searchRepositories() {
         this.pageLoading = true;
-        this.filterBy[
-            'provider_namespace__namespace__name'
-        ] = this.namespace.name;
+        this.filterBy['namespace'] = this.namespace.name;
         this.filterBy['order'] = this.sortBy;
         this.filterBy['page_size'] = this.pageSize;
         this.filterBy['page'] = this.pageNumber;
-        this.repositoryService.pagedQuery(this.filterBy).subscribe(response => {
-            this.items = response.results as Repository[];
-            this.prepareRepositories();
-            this.filterConfig.resultsCount = response.count;
-            this.paginationConfig.totalItems = response.count;
-            this.pageLoading = false;
-        });
+        this.repoCollectionListService
+            .query(this.filterBy)
+            .subscribe(response => {
+                this.setStateFromResponse(response);
+                this.prepareRepositories();
+            });
     }
 
     private parepareNamespace() {
@@ -356,7 +369,7 @@ export class AuthorDetailComponent implements OnInit {
     }
 
     private prepareRepositories() {
-        this.items.forEach((item: Repository) => {
+        this.repositories.forEach((item: Repository) => {
             if (!item.format) {
                 item.format = 'role';
             }
