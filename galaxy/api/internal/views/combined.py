@@ -66,7 +66,7 @@ class RepoAndCollectionList(views.APIView):
             repo_count = repos.count()
 
         if package_type == 'repository':
-            collections = models.collection.objects.none()
+            collections = models.Collection.objects.none()
             collection_count = 0
         else:
             collections = models.Collection.objects.filter(
