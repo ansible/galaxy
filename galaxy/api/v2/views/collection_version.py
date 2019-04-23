@@ -24,7 +24,7 @@ import semantic_version
 
 from galaxy.main import models
 from galaxy.api.v2 import serializers
-from galaxy.api.v2.pagination import CustomPagination
+from galaxy.api.v2.pagination import DefaultPagination
 
 
 __all__ = (
@@ -37,7 +37,7 @@ __all__ = (
 class VersionListView(generics.ListAPIView):
     permission_classes = (AllowAny, )
     serializer_class = serializers.VersionSummarySerializer
-    pagination_class = CustomPagination
+    pagination_class = DefaultPagination
 
     def get_queryset(self):
         """Return list of versions for a specific collection."""
