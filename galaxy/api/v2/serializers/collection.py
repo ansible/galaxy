@@ -28,7 +28,126 @@ from .tasks import BaseTaskSerializer
 __all__ = (
     'CollectionImportSerializer',
     'CollectionUploadSerializer',
+    'CollectionSerializer',
+    'VersionSummarySerializer',
+    'VersionDetailSerializer',
 )
+
+
+class NamespaceObjectField(serializers.Field):
+    """Return namespace object for a serializer field."""
+    def to_representation(self, value):
+        return {
+            'id': value.pk,
+            'href': reverse('api:namespace_detail', kwargs={'pk': value.pk}),
+            'name': value.name,
+        }
+
+
+class VersionDetailUrlField(serializers.Field):
+    """Return version detail url under collection namespace and name."""
+    def to_representation(self, value):
+        return reverse(
+            'api:v2:version-detail',
+            kwargs={
+                'namespace': value.collection.namespace.name,
+                'name': value.collection.name,
+                'version': value.version,
+            }
+        )
+
+
+class VersionSummarySerializer(serializers.ModelSerializer):
+    """Collection version with short summary of data."""
+    href = VersionDetailUrlField(source='*')
+
+    class Meta:
+        model = models.CollectionVersion
+        fields = ('version', 'href')
+
+
+class VersionDetailSerializer(serializers.ModelSerializer):
+    """Collection version with detailed data."""
+    id = serializers.IntegerField(source='pk')
+    href = VersionDetailUrlField(source='*')
+    download_url = serializers.SerializerMethodField()
+    namespace = NamespaceObjectField(source='collection.namespace')
+    collection = serializers.SerializerMethodField()
+    metadata = serializers.JSONField(binary=False)
+
+    class Meta:
+        model = models.CollectionVersion
+        fields = (
+            'id',
+            'href',
+            'download_url',
+            'namespace',
+            'collection',
+            'version',
+            'hidden',
+            'metadata',
+        )
+
+    def get_download_url(self, obj):
+        return reverse(
+            'api:v2:version-artifact',
+            kwargs={
+                'namespace': obj.collection.namespace.name,
+                'name': obj.collection.name,
+                'version': obj.version,
+            }
+        )
+
+    def get_collection(self, obj):
+        ns_name = obj.collection.namespace.name
+        name = obj.collection.name
+        result = {
+            'id': obj.collection.pk,
+            'href': reverse(
+                'api:v2:collection-detail',
+                kwargs={'namespace': ns_name, 'name': name}),
+            'name': name,
+        }
+        return result
+
+
+class CollectionSerializer(serializers.ModelSerializer):
+    namespace = NamespaceObjectField()
+    href = serializers.SerializerMethodField()
+    versions_url = serializers.SerializerMethodField()
+    highest_version = VersionSummarySerializer()
+
+    class Meta:
+        model = models.Collection
+        fields = (
+            'id',
+            'href',
+            'name',
+            'namespace',
+            'versions_url',
+            'highest_version',
+            'deprecated',
+            'created',
+            'modified',
+        )
+
+    def get_href(self, obj):
+        return reverse(
+            'api:v2:collection-detail',
+            kwargs={
+                'namespace': obj.namespace.name,
+                'name': obj.name,
+            }
+        )
+
+    def get_versions_url(self, obj):
+        return reverse(
+            'api:v2:version-list',
+            kwargs={
+                'namespace': obj.namespace.name,
+                'name': obj.name,
+            }
+        )
 
 
 class _MessageSerializer(serializers.Serializer):
@@ -65,7 +184,7 @@ class CollectionImportSerializer(BaseTaskSerializer):
             return None
         return {
             'id': obj.imported_version.pk,
-            'href': reverse('api:v2:collection-version-detail',
+            'href': reverse('api:v2:version-detail',
                             args=[obj.imported_version.pk]),
         }
 

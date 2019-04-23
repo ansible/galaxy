@@ -15,15 +15,10 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from .collection import (  # noqa: F401
-    CollectionListView,
-    CollectionDetailView,
-)
-from galaxy.api.v2.views.collection_import import (  # noqa: F401
-    CollectionImportView
-)
-from .collection_version import (  # noqa: F401
-    CollectionArtifactView,
-    VersionListView,
-    VersionDetailView,
-)
+from rest_framework import pagination
+
+
+class DefaultPagination(pagination.PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100

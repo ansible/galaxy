@@ -18,6 +18,9 @@
 from .collection import (  # noqa: F401
     CollectionImportSerializer,
     CollectionUploadSerializer,
+    CollectionSerializer,
+    VersionSummarySerializer,
+    VersionDetailSerializer,
 )
 from .tasks import (  # noqa: F401
     BaseTaskSerializer,
@@ -26,5 +29,8 @@ from .tasks import (  # noqa: F401
 __all__ = (
     'CollectionImportSerializer',
     'CollectionUploadSerializer',
+    'CollectionSerializer',
+    'VersionSummarySerializer',
+    'VersionDetailSerializer',
     'BaseTaskSerializer',
 )
