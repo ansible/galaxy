@@ -14,11 +14,17 @@
 #
 # You should have received a copy of the Apache License
 from rest_framework import views
-from galaxy.main import models
 from rest_framework import response
+from rest_framework import exceptions
+
+from galaxy.main import models
 from galaxy.api.internal import serializers as internal_serializers
 from galaxy.api import serializers as v1_serializers
-from rest_framework import status
+
+
+class InvalidParams(exceptions.APIException):
+    status_code = 400
+    default_detail = 'The namespace parameter is required'
 
 
 class RepoAndCollectionList(views.APIView):
@@ -30,28 +36,25 @@ class RepoAndCollectionList(views.APIView):
         order = request.GET.get('order', 'name')
 
         if not namespace:
-            return response.Response(
-                {'detail': 'The namespace parameter is required'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            raise InvalidParams()
 
-        collection_filter = {
+        collection_filters = {
             'namespace__name': namespace,
         }
 
-        repo_filter = {
+        repo_filters = {
             'provider_namespace__namespace__name': namespace
         }
 
         if 'name' in request.GET:
-            collection_filter['name__icontains'] = request.GET['name']
-            repo_filter['name__icontains'] = request.GET['name']
+            collection_filters['name__icontains'] = request.GET['name']
+            repo_filters['name__icontains'] = request.GET['name']
 
         if 'description' in request.GET:
-            collection_filter[
+            collection_filters[
                 'latest_version__metadata__description__icontaines'
             ] = request.GET['description']
-            repo_filter['description__icontains'] = request.GET['description']
+            repo_filters['description__icontains'] = request.GET['description']
 
         # Avoid loading models if the type is set.
         if package_type == 'collection':
@@ -59,7 +62,7 @@ class RepoAndCollectionList(views.APIView):
             repo_count = 0
         else:
             repos = models.Repository.objects.filter(
-                **repo_filter).order_by(order)
+                **repo_filters).order_by(order)
             repo_count = repos.count()
 
         if package_type == 'repository':
@@ -67,7 +70,7 @@ class RepoAndCollectionList(views.APIView):
             collection_count = 0
         else:
             collections = models.Collection.objects.filter(
-                **collection_filter).order_by(order)
+                **collection_filters).order_by(order)
             collection_count = collections.count()
 
         start = (page * page_size) - page_size
@@ -77,7 +80,7 @@ class RepoAndCollectionList(views.APIView):
 
         # If the collections fill the whole page, don't bother loading the
         # repos
-        if (len(collection_results) == page_size):
+        if len(collection_results) == page_size:
             repo_results = []
         else:
             # Django gets cranky if you try to slice a queryset with a negative
@@ -105,4 +108,4 @@ class RepoAndCollectionList(views.APIView):
                 }
         }
 
-        return(response.Response(result))
+        return response.Response(result)
