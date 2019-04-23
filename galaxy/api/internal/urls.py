@@ -16,7 +16,6 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.urls import path, include
-
 from galaxy.api.internal import views
 
 
@@ -27,7 +26,8 @@ ui_urls = [
         views.CollectionDetail.as_view()),
     path(
         'namespaces/<int:namespace_id>/imports/',
-        views.NamespaceImportsList.as_view())
+        views.NamespaceImportsList.as_view()),
+    path('repos-and-collections/', views.RepoAndCollectionList.as_view())
 ]
 
 

@@ -61,8 +61,36 @@ class VersionDetailSerializer(serializers.ModelSerializer):
         )
 
 
+class VersionSummarySerializer(serializers.ModelSerializer):
+    '''
+    Returns summary information for a collection version. Returning all of a
+    collection's contents in a list is too much data to surface.
+    '''
+    content_summary = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.CollectionVersion
+        fields = VERSION_LIST_FIELDS + ('content_summary', 'metadata')
+
+    def get_content_summary(self, obj):
+        counts = {
+            'module': 0,
+            'role': 0,
+            'playbook': 0,
+            'plugin': 0
+        }
+
+        for content in obj.contents:
+            if content['content_type'] in counts:
+                counts[content['content_type']] += 1
+            else:
+                counts['plugin'] += 1
+
+        return {'total_count': len(obj.contents), 'type_count': counts}
+
+
 class CollectionListSerializer(serializers.ModelSerializer):
-    latest_version = VersionDetailSerializer()
+    latest_version = VersionSummarySerializer()
 
     class Meta:
         model = models.Collection
