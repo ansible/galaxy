@@ -84,7 +84,8 @@ class CollectionViewTests(APITestCase):
         url = "/api/internal/ui/collections/mynamespace/bogus/"
         resp = self.client.get(url)
 
-        collection = resp.json()
-
-        assert collection['detail'] == "Not found."
         assert resp.status_code == http_codes.HTTP_404_NOT_FOUND
+        assert resp.json() == {
+            'code': 'not_found',
+            'message': 'Not found.',
+        }

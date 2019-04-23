@@ -19,20 +19,18 @@ import collections
 from django.db.models import fields
 from django.db.models import F, Value
 
-from rest_framework import generics
-
-
-from galaxy.main import models
+from galaxy.api import base
 from galaxy.api.internal.serializers.imports import (
     TYPE_REPOSITORY, TYPE_COLLECTION, SERIALIZER_BY_TYPE
 )
+from galaxy.main import models
 
 __all__ = (
     'NamespaceImportsList',
 )
 
 
-class NamespaceImportsList(generics.ListAPIView):
+class NamespaceImportsList(base.ListAPIView):
 
     QS_BY_TYPE = {
         TYPE_COLLECTION: (

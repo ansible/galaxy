@@ -14,12 +14,31 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+"""
+Base API exception classes.
+"""
+from rest_framework.exceptions import (
+    APIException,
+    PermissionDenied,
+)
+from rest_framework import status as http_codes
 
-from rest_framework import exceptions as drf_exc
-from rest_framework import status as http_status
+
+__all__ = (
+    'APIException',
+    'ConflictError',
+    'PermissionDenied',
+    'ValidationError',
+)
 
 
-class CollectionExistsError(drf_exc.APIException):
-    status_code = http_status.HTTP_409_CONFLICT
-    default_detail = 'Collection already exists.'
-    default_code = 'collection_exists'
+class ValidationError(APIException):
+    status_code = http_codes.HTTP_400_BAD_REQUEST
+    default_detail = 'Validation error.'
+    default_code = 'invalid'
+
+
+class ConflictError(APIException):
+    status_code = http_codes.HTTP_409_CONFLICT
+    default_detail = 'Conflict.'
+    default_code = 'conflict'

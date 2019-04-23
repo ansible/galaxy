@@ -22,13 +22,13 @@ from rest_framework import exceptions as drf_exc
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework import status as status_codes
-from rest_framework import views
+from rest_framework import status as http_codes
 
 from pulpcore.app.serializers import ArtifactSerializer
 from pulpcore.app import models as pulp_models
 
-from galaxy.api.exceptions import CollectionExistsError
+from galaxy.api import base
+from galaxy.api import exceptions
 from galaxy.api.v2 import serializers
 from galaxy.main import models
 from galaxy.worker import tasks
@@ -41,10 +41,17 @@ __all__ = (
 )
 
 
-# FIXME(cutwater): Implement consistent error reporting format.
+class CollectionExistsError(exceptions.ConflictError):
+    default_detail = 'Collection already exists.'
+    default_code = 'conflict.collection_exists'
 
 
-class CollectionDetailView(views.APIView):
+class ArtifactExistsError(exceptions.ConflictError):
+    default_detail = 'Artifact already exists.'
+    default_code = 'conflict.artifact_exists'
+
+
+class CollectionDetailView(base.APIView):
     permission_classes = (AllowAny, )
 
     def get(self, request, *args, **kwargs):
@@ -65,7 +72,7 @@ class CollectionDetailView(views.APIView):
         return get_object_or_404(models.Collection, namespace=ns, name=name)
 
 
-class CollectionListView(views.APIView):
+class CollectionListView(base.APIView):
 
     permission_classes = (IsAuthenticated, )
 
@@ -107,7 +114,7 @@ class CollectionListView(views.APIView):
 
         data = {'task': reverse('api:v2:collection-import-detail',
                                 args=[task.pk], request=None)}
-        return Response(data, status=status_codes.HTTP_202_ACCEPTED)
+        return Response(data, status=http_codes.HTTP_202_ACCEPTED)
 
     def _get_namespace(self, data):
         """Get collecton namespace from filename."""
@@ -115,13 +122,14 @@ class CollectionListView(views.APIView):
         try:
             return models.Namespace.objects.get(name=ns_name)
         except models.Namespace.DoesNotExist:
-            raise drf_exc.ValidationError(
-                'Namespace "{0}" does not exist.'.format(ns_name))
+            raise exceptions.ValidationError(
+                f'Namespace "{ns_name}" does not exist.'
+            )
 
     def _check_namespace_access(self, namespace, user):
         """Validate that collection namespace exists and user owns it."""
         if not namespace.owners.filter(id=user.id).count():
-            raise drf_exc.PermissionDenied(
+            raise exceptions.PermissionDenied(
                 'The namespace listed on your filename must match one of '
                 'the namespaces you have access to.'
             )
@@ -135,7 +143,9 @@ class CollectionListView(views.APIView):
         except dj_exc.ObjectDoesNotExist:
             pass
         else:
-            raise CollectionExistsError()
+            raise CollectionExistsError(
+                f'Collection "{filename.namespace}-{filename.name}'
+                f'-{filename.version}" already exists.')
 
     def _save_artifact(self, data):
         artifact_serializer = ArtifactSerializer(data=data)
@@ -144,6 +154,6 @@ class CollectionListView(views.APIView):
         except drf_exc.ValidationError as e:
             error_codes = e.get_codes()
             if 'unique' in error_codes.get('non_field_errors', []):
-                raise CollectionExistsError()
+                raise ArtifactExistsError()
             raise
         return artifact_serializer.save()

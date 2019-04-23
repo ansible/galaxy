@@ -13,10 +13,10 @@
 # Apache License for more details.
 #
 # You should have received a copy of the Apache License
-from rest_framework import views
 from rest_framework import response
 from rest_framework import exceptions
 
+from galaxy.api import base
 from galaxy.main import models
 from galaxy.api.internal import serializers as internal_serializers
 from galaxy.api import serializers as v1_serializers
@@ -27,7 +27,7 @@ class InvalidParams(exceptions.APIException):
     default_code = 'invalid_params'
 
 
-class RepoAndCollectionList(views.APIView):
+class RepoAndCollectionList(base.APIView):
     def get(self, request):
         try:
             page = int(request.GET.get('page', 1))

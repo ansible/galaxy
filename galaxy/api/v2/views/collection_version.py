@@ -16,12 +16,11 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from django.shortcuts import redirect, get_object_or_404
-from rest_framework import views
-from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 import semantic_version
 
+from galaxy.api import base
 from galaxy.main import models
 from galaxy.api.v2 import serializers
 from galaxy.api.v2.pagination import DefaultPagination
@@ -34,7 +33,7 @@ __all__ = (
 )
 
 
-class VersionListView(generics.ListAPIView):
+class VersionListView(base.ListAPIView):
     permission_classes = (AllowAny, )
     serializer_class = serializers.VersionSummarySerializer
     pagination_class = DefaultPagination
@@ -72,7 +71,7 @@ class VersionListView(generics.ListAPIView):
         return get_object_or_404(models.Collection, namespace=ns, name=name)
 
 
-class VersionDetailView(views.APIView):
+class VersionDetailView(base.APIView):
     permission_classes = (AllowAny, )
 
     def get(self, request, *args, **kwargs):
@@ -107,7 +106,7 @@ class VersionDetailView(views.APIView):
 
 
 # TODO(cutwater): Use internal redirect for nginx
-class CollectionArtifactView(views.APIView):
+class CollectionArtifactView(base.APIView):
     permission_classes = (AllowAny, )
 
     def get(self, request, pk=None, namespace=None, name=None, version=None):

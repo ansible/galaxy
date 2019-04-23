@@ -13,19 +13,20 @@
 # Apache License for more details.
 #
 # You should have received a copy of the Apache License
-from galaxy.api.internal import serializers
-from galaxy.main import models
-from rest_framework import generics
 from django import shortcuts
 
+from galaxy.api import base
+from galaxy.api.internal import serializers
+from galaxy.main import models
 
-class CollectionList(generics.ListAPIView):
+
+class CollectionList(base.ListAPIView):
     model = models.Collection
     serializer_class = serializers.CollectionListSerializer
     queryset = models.Collection.objects.all()
 
 
-class CollectionDetail(generics.RetrieveAPIView):
+class CollectionDetail(base.RetrieveAPIView):
     model = models.Collection
     serializer_class = serializers.CollectionDetailSerializer
 

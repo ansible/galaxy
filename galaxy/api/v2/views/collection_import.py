@@ -15,14 +15,14 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
+from galaxy.api import base
 from galaxy.api.v2 import serializers
 from galaxy.main import models
 
 
-class CollectionImportView(generics.RetrieveAPIView):
+class CollectionImportView(base.RetrieveAPIView):
     permission_classes = (IsAuthenticated, )
     queryset = models.CollectionImport.objects.all()
     serializer_class = serializers.CollectionImportSerializer
