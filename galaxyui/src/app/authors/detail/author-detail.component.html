@@ -3,7 +3,7 @@
 <div id="author-detail" class="container-fluid">
 
     <div class="row" *ngIf="!authorNotFound">
-        <div class="col-sm-6">
+        <div class="col-sm-9">
             <div class="namespace namespace-header-left">
                 <div class="namespace-details">
                     <div class="namespace-img">
@@ -30,17 +30,6 @@
                                 <i class="fa fa-link"></i> {{ namespace.html_url }}
                             </a>
                         </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-sm-3">
-            <div class="namespace namespace-header-right">
-                <div class="content-summary">
-                    <div *ngFor="let count of namespace.contentCounts" class="namespace-content-count">
-                         <span class="{{ count.iconClass }}"></span>
-                        <strong>{{count.count}}</strong> {{count.title}}
                     </div>
                 </div>
             </div>
