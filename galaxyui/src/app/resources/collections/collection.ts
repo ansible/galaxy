@@ -16,7 +16,7 @@ export class CollectionVersion {
         description: string;
     };
     contents: any;
-    content_counts: any;
+    content_summary: any;
     created: string;
     modified: string;
     readme_html: string;
