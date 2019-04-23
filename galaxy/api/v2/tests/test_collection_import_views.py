@@ -27,7 +27,7 @@ UserModel = get_user_model()
 
 
 class TestCollectionImportView(APITestCase):
-    url = '/api/v2/collection-imports/{id}/'
+    url = 'http://testserver/api/v2/collection-imports/{id}/'
 
     def setUp(self):
         super().setUp()
@@ -67,7 +67,8 @@ class TestCollectionImportView(APITestCase):
             'state': 'waiting',
             'namespace': {
                 'id': 12,
-                'href': '/api/v1/namespaces/12/',
+                'href': 'http://testserver/api/v1/namespaces/12/',
+                'name': 'mynamespace',
             },
             'name': 'mycollection',
             'version': '1.2.3',
@@ -136,7 +137,8 @@ class TestCollectionImportView(APITestCase):
             'state': 'completed',
             'namespace': {
                 'id': 12,
-                'href': '/api/v1/namespaces/12/',
+                'href': 'http://testserver/api/v1/namespaces/12/',
+                'name': 'mynamespace',
             },
             'name': 'mycollection',
             'version': '1.2.3',
@@ -162,7 +164,7 @@ class TestCollectionImportView(APITestCase):
                 }
             ],
             'imported_version': {
-                'href': '/api/v2/collection-versions/26/',
+                'href': 'http://testserver/api/v2/collection-versions/26/',
                 'id': 26,
             },
         }

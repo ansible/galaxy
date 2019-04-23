@@ -28,7 +28,7 @@ UserModel = get_user_model()
 
 class TestCollectionListView(APITestCase):
 
-    url = '/api/v2/collections/'
+    url = 'http://testserver/api/v2/collections/'
 
     def setUp(self):
         super().setUp()
@@ -58,7 +58,8 @@ class TestCollectionListView(APITestCase):
 
         self.create_task_mock.assert_called_once()
         assert response.status_code == http_codes.HTTP_202_ACCEPTED
-        assert response.json() == {'task': '/api/v2/collection-imports/42/'}
+        assert response.json() == {
+            'task': 'http://testserver/api/v2/collection-imports/42/'}
 
     def test_upload_w_sha(self):
         task_obj = models.ImportTask(id=42)
@@ -76,7 +77,8 @@ class TestCollectionListView(APITestCase):
             })
 
         assert response.status_code == http_codes.HTTP_202_ACCEPTED
-        assert response.json() == {'task': '/api/v2/collection-imports/42/'}
+        assert response.json() == {
+            'task': 'http://testserver/api/v2/collection-imports/42/'}
         self.create_task_mock.assert_called_once()
 
     def test_upload_w_invalid_sha(self):
@@ -139,8 +141,8 @@ class TestCollectionListView(APITestCase):
 
 
 class TestCollectionDetailView(APITestCase):
-    url_id = '/api/v2/collections/{pk}/'
-    url_name = '/api/v2/collections/{ns}/{name}/'
+    url_id = 'http://testserver/api/v2/collections/{pk}/'
+    url_name = 'http://testserver/api/v2/collections/{ns}/{name}/'
 
     def setUp(self):
         super().setUp()

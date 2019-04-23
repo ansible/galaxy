@@ -46,36 +46,38 @@ class TestCollectionArtifactView(APITestCase):
 
     def test_get_by_id(self):
         response = self.client.get(
-            '/api/v2/collection-versions/{pk}/artifact/'
+            'http://testserver/api/v2/collection-versions/{pk}/artifact/'
             .format(pk=self.version.pk))
 
         assert response.status_code == http_codes.HTTP_302_FOUND
         assert (response['Location']
-                == '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz')
+                == 'http://testserver'
+                '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz')
 
     def test_get_by_name(self):
         response = self.client.get(
-            '/api/v2/collections/mynamespace/mycollection'
+            'http://testserver/api/v2/collections/mynamespace/mycollection'
             '/versions/1.2.3/artifact/')
 
         assert response.status_code == http_codes.HTTP_302_FOUND
         assert (response['Location']
-                == '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz')
+                == 'http://testserver'
+                '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz')
 
     def test_get_by_id_found(self):
         response = self.client.get(
-            '/api/v2/collection-versions/{pk}/artifact/'
+            'http://testserver/api/v2/collection-versions/{pk}/artifact/'
             .format(pk=self.version.pk + 1))
         assert response.status_code == http_codes.HTTP_404_NOT_FOUND
 
     def test_get_by_name_found(self):
         response = self.client.get(
-            '/api/v2/collections/mynamespace/mycollection'
+            'http://testserver/api/v2/collections/mynamespace/mycollection'
             '/versions/1.2.4/artifact/')
         assert response.status_code == http_codes.HTTP_404_NOT_FOUND
 
     def test_fail_method_not_allowed(self):
-        url = '/api/v2/collection-versions/{pk}/artifact/'
+        url = 'http://testserver/api/v2/collection-versions/{pk}/artifact/'
         for method in ['POST', 'PUT', 'PATCH', 'DELETE']:
             response = self.client.generic(method, url.format(pk=42))
             assert (response.status_code
@@ -83,8 +85,9 @@ class TestCollectionArtifactView(APITestCase):
 
 
 class TestVersionDetailView(APITestCase):
-    url_id = '/api/v2/collection-versions/{pk}/'
-    url_version = '/api/v2/collections/{ns}/{name}/versions/{version}/'
+    url_id = 'http://testserver/api/v2/collection-versions/{pk}/'
+    url_version = 'http://testserver' \
+        '/api/v2/collections/{ns}/{name}/versions/{version}/'
 
     def setUp(self):
         super().setUp()
