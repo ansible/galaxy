@@ -23,12 +23,11 @@ from rest_framework import status
 
 class RepoAndCollectionList(views.APIView):
     def get(self, request):
-        # params: page, page size, namespace, name, description, type
-        # order by: name, downloads
         namespace = request.GET.get('namespace', None)
         page = int(request.GET.get('page', 1))
         page_size = int(request.GET.get('page_size', 10))
         package_type = request.GET.get('type', None)
+        order = request.GET.get('order', 'name')
 
         if not namespace:
             return response.Response(
@@ -59,14 +58,16 @@ class RepoAndCollectionList(views.APIView):
             repos = models.Repository.objects.none()
             repo_count = 0
         else:
-            repos = models.Repository.objects.filter(**repo_filter)
+            repos = models.Repository.objects.filter(
+                **repo_filter).order_by(order)
             repo_count = repos.count()
 
         if package_type == 'repository':
             collections = models.collection.objects.none()
             collection_count = 0
         else:
-            collections = models.Collection.objects.filter(**collection_filter)
+            collections = models.Collection.objects.filter(
+                **collection_filter).order_by(order)
             collection_count = collections.count()
 
         start = (page * page_size) - page_size
