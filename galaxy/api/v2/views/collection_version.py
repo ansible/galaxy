@@ -34,20 +34,6 @@ __all__ = (
 )
 
 
-# TODO(awcrosby): Move to views/utils.py and reuse across views
-def _lookup_collection(kwargs):
-    """Helper method to get collection from id, or namespace and name."""
-    pk = kwargs.get('pk', None)
-    ns_name = kwargs.get('namespace', None)
-    name = kwargs.get('name', None)
-
-    if pk:
-        return get_object_or_404(models.Collection, pk=pk)
-
-    ns = get_object_or_404(models.Namespace, name=ns_name)
-    return get_object_or_404(models.Collection, namespace=ns, name=name)
-
-
 class VersionListView(generics.ListAPIView):
     permission_classes = (AllowAny, )
     serializer_class = serializers.VersionSummarySerializer
@@ -55,7 +41,7 @@ class VersionListView(generics.ListAPIView):
 
     def get_queryset(self):
         """Return list of versions for a specific collection."""
-        collection = _lookup_collection(self.kwargs)
+        collection = self._get_collection()
         return models.CollectionVersion.objects.filter(collection=collection)
 
     def list(self, request, *args, **kwargs):
@@ -73,6 +59,17 @@ class VersionListView(generics.ListAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def _get_collection(self):
+        """Get collection from either id, or namespace and name."""
+        pk = self.kwargs.get('pk', None)
+        if pk:
+            return get_object_or_404(models.Collection, pk=pk)
+
+        ns_name = self.kwargs.get('namespace', None)
+        name = self.kwargs.get('name', None)
+        ns = get_object_or_404(models.Namespace, name=ns_name)
+        return get_object_or_404(models.Collection, namespace=ns, name=name)
 
 
 class VersionDetailView(views.APIView):
@@ -94,12 +91,19 @@ class VersionDetailView(views.APIView):
         if version_pk:
             return get_object_or_404(models.CollectionVersion, pk=version_pk)
         else:
-            collection = _lookup_collection(self.kwargs)
+            collection = self._get_collection()
             return get_object_or_404(
                 models.CollectionVersion,
                 collection=collection,
                 version=version_str,
             )
+
+    def _get_collection(self):
+        """Get collection from namespace and name."""
+        ns_name = self.kwargs.get('namespace', None)
+        name = self.kwargs.get('name', None)
+        ns = get_object_or_404(models.Namespace, name=ns_name)
+        return get_object_or_404(models.Collection, namespace=ns, name=name)
 
 
 # TODO(cutwater): Use internal redirect for nginx
