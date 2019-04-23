@@ -58,14 +58,14 @@ class RepoAndCollectionListTest(APITestCase):
                 provider_namespace=self.provider_ns
             )
 
-        # The api endpoint sorts results alphabetically by default. This causes
-        # problems because the sorting algorithm doesn't place names like
-        # Repository10 as 17th in the list (it actually appears 3rd). The
-        # solution to this problem is to use a list of sorted objects as our
-        # reference point of where items should appear in the paginated lists.
-
-        self.collections = list(models.Collection.objects.order_by('name'))
-        self.repos = list(models.Repository.objects.order_by('name'))
+        # Load a sorted reference list of repos and collections. Since the API
+        # sorts results by name, these lists should match the ordering from
+        # the API and can be used to verify that the API is returning the
+        # correct range of results for a given query.
+        self.collections = list(models.Collection.objects.filter(
+            namespace=self.namespace).order_by('name'))
+        self.repos = list(models.Repository.objects.filter(
+            provider_namespace__namespace=self.namespace).order_by('name'))
 
     def test_get_page_1(self):
         url = self.base_url + '?namespace=mynamespace'
