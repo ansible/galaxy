@@ -16,6 +16,7 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 from rest_framework.test import APITestCase
+from rest_framework import status
 
 from galaxy.main import models
 
@@ -162,3 +163,25 @@ class RepoAndCollectionListTest(APITestCase):
         assert resp['repository']['count'] == self.num_repositories
         assert resp['repository']['results'][0]['name'] == self.repos[0].name
         assert resp['repository']['results'][9]['name'] == self.repos[9].name
+
+    def test_namespace_missing(self):
+        url = self.base_url
+        resp = self.client.get(url)
+
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+        assert resp.json()['detail'] == 'The namespace parameter is required'
+
+    def test_bad_pagination(self):
+        url = self.base_url + '?namespace=mynamespace&page=One'
+        resp = self.client.get(url)
+
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+        assert resp.json()['detail'] == 'Pagination values must be numbers'
+
+    def test_bad_order(self):
+        url = self.base_url + '?namespace=mynamespace&order=66'
+        resp = self.client.get(url)
+
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+        assert 'download_count' in resp.json()['detail']
+        assert 'name' in resp.json()['detail']

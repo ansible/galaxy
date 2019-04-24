@@ -16,24 +16,19 @@
 from rest_framework import response
 from rest_framework import exceptions
 
-from galaxy.api import base
 from galaxy.main import models
 from galaxy.api.internal import serializers as internal_serializers
 from galaxy.api import serializers as v1_serializers
 
 
-class InvalidParams(exceptions.APIException):
-    status_code = 400
-    default_code = 'invalid_params'
-
-
-class RepoAndCollectionList(base.APIView):
+class RepoAndCollectionList(views.APIView):
     def get(self, request):
         try:
             page = int(request.GET.get('page', 1))
             page_size = int(request.GET.get('page_size', 10))
         except ValueError:
-            InvalidParams(detail='Pagination values must be numbers')
+            raise exceptions.ValidationError(
+                detail='Pagination values must be numbers')
 
         namespace = request.GET.get('namespace', None)
         package_type = request.GET.get('type', None)
@@ -42,7 +37,8 @@ class RepoAndCollectionList(base.APIView):
         self._validate_order(order)
 
         if not namespace:
-            raise InvalidParams(details='The namespace parameter is required')
+            raise exceptions.ValidationError(
+                detail='The namespace parameter is required')
 
         collection_filters = {
             'namespace__name': namespace,
@@ -113,6 +109,8 @@ class RepoAndCollectionList(base.APIView):
     def _validate_order(self, order):
         allowed_orders = ['download_count', 'name', '-download_count', '-name']
         if order not in allowed_orders:
-            raise InvalidParams(
-                detail="Order must be one of " + str(allowed_orders)
+            raise exceptions.ValidationError(
+                detail='Order must be one of {fields}'.format(
+                    fields=str(allowed_orders)
+                )
             )
