@@ -169,19 +169,19 @@ class RepoAndCollectionListTest(APITestCase):
         resp = self.client.get(url)
 
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
-        assert resp.json()['detail'] == 'The namespace parameter is required'
+        assert resp.json()['message'] == 'The namespace parameter is required'
 
     def test_bad_pagination(self):
         url = self.base_url + '?namespace=mynamespace&page=One'
         resp = self.client.get(url)
 
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
-        assert resp.json()['detail'] == 'Pagination values must be numbers'
+        assert resp.json()['message'] == 'Pagination values must be numbers'
 
     def test_bad_order(self):
         url = self.base_url + '?namespace=mynamespace&order=66'
         resp = self.client.get(url)
 
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
-        assert 'download_count' in resp.json()['detail']
+        assert 'download_count' in resp.json()['message']
         assert 'name' in resp.json()['detail']
