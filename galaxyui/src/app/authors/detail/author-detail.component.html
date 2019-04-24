@@ -199,7 +199,7 @@
     <div class="row repository-pagination" *ngIf="!authorNotFound">
         <div class="col-sm-12">
             <div class="pagination"
-                *ngIf="repositories && repositories.length && paginationConfig.totalItems > paginationConfig.pageSize">
+                *ngIf="paginationConfig.totalItems > paginationConfig.pageSize">
                 <pfng-pagination
                     [config]='paginationConfig'
                     (onPageSizeChange)="handlePageSizeChange($event)"
