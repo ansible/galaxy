@@ -29,6 +29,7 @@ from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import logutils
+from galaxy.worker.importers.collection import check_dependencies
 
 
 log = logging.getLogger(__name__)
@@ -80,6 +81,8 @@ def _process_collection(artifact, filename, task_logger):
                 extract_dir, filename, task_logger)
         except i_exc.ImporterError as e:
             raise exc.ImportFailed(str(e))
+
+        check_dependencies(collection_info.collection_info)
 
     _log_collection_info(collection_info)
     return collection_info
