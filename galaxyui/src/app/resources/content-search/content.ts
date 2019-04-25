@@ -1,3 +1,5 @@
+import { CollectionList } from '../collections/collection';
+
 export class Content {
     url: string;
     related: object;
@@ -42,4 +44,16 @@ export class ContentResponse {
     next: string;
     previous: string;
     results: Content[];
+}
+
+export class ContentCollectionResponse {
+    collection: {
+        count: number;
+        results: any[];
+    };
+
+    repository: {
+        count: number;
+        results: any[];
+    };
 }

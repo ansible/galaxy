@@ -211,7 +211,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
                 // If there is an error on the search API, the content search services
                 // returns nothing, so we have to check if results actually exist.
-                if (data.content.results) {
+                if (data.content.repository.results) {
                     // If no params exist, set to the default params
                     if (Object.keys(params).length === 0) {
                         params = DefaultParams.params;
@@ -231,8 +231,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     this.setPageSize(this.queryParams);
                     this.setAppliedFilters(this.queryParams);
                     this.prepareContent(
-                        data.content.results,
-                        data.content.count,
+                        data.content.repository.results,
+                        data.content.repository.count,
                     );
                     this.setUrlParams(this.queryParams);
                     this.pageLoading = false;
@@ -387,7 +387,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.pageLoading = true;
         this.setUrlParams(this.queryParams);
         this.contentSearch.query(this.queryParams).subscribe(result => {
-            this.prepareContent(result.results, result.count);
+            this.prepareContent(
+                result.repository.results,
+                result.repository.count,
+            );
             this.pageLoading = false;
         });
     }

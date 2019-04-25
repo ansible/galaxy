@@ -9,7 +9,7 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ContentResponse } from '../resources/content-search/content';
+import { ContentCollectionResponse } from '../resources/content-search/content';
 import { ContentSearchService } from '../resources/content-search/content-search.service';
 
 import { Platform } from '../resources/platforms/platform';
@@ -48,12 +48,13 @@ export class DefaultParams {
 }
 
 @Injectable()
-export class SearchContentResolver implements Resolve<ContentResponse> {
+export class SearchContentResolver
+    implements Resolve<ContentCollectionResponse> {
     constructor(private contentService: ContentSearchService) {}
     resolve(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot,
-    ): Observable<ContentResponse> {
+    ): Observable<ContentCollectionResponse> {
         let params = {};
         for (const key in route.queryParams) {
             if (route.queryParams.hasOwnProperty(key)) {
