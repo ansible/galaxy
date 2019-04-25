@@ -12,7 +12,8 @@ import { map } from 'rxjs/operators';
 import { Namespace } from '../resources/namespaces/namespace';
 import { NamespaceService } from '../resources/namespaces/namespace.service';
 import { PagedResponse } from '../resources/paged-response';
-import { RepositoryService } from '../resources/repositories/repository.service';
+import { RepoCollectionListService } from '../resources/combined/combined.service';
+import { PaginatedRepoCollection } from '../resources/combined/combined';
 
 @Injectable()
 export class NamespaceListResolver implements Resolve<PagedResponse> {
@@ -49,16 +50,17 @@ export class NamespaceDetailResolver implements Resolve<Namespace> {
 }
 
 @Injectable()
-export class RepositoryResolver implements Resolve<PagedResponse> {
-    constructor(private repositoryService: RepositoryService) {}
+export class RepositoryCollectionResolver
+    implements Resolve<PaginatedRepoCollection> {
+    constructor(private repoCollectionListService: RepoCollectionListService) {}
     resolve(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot,
-    ): Observable<PagedResponse> {
+    ): Observable<PaginatedRepoCollection> {
         const namespace = route.params['namespace'].toLowerCase();
         const params = {
-            provider_namespace__namespace__name__iexact: namespace,
+            namespace: namespace,
         };
-        return this.repositoryService.pagedQuery(params);
+        return this.repoCollectionListService.query(params);
     }
 }

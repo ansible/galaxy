@@ -13,7 +13,7 @@ import {
 
 import {
     NamespaceDetailResolver,
-    RepositoryResolver as AuthorRepositoryResolver,
+    RepositoryCollectionResolver,
 } from './authors/authors.resolver.service';
 
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
@@ -96,7 +96,7 @@ const appRoutes: Routes = [
         component: AuthorDetailComponent,
         resolve: {
             namespace: NamespaceDetailResolver,
-            repositories: AuthorRepositoryResolver,
+            content: RepositoryCollectionResolver,
         },
     },
     {

@@ -56,6 +56,7 @@ import {
     CollectionListService,
     CollectionDetailService,
 } from './resources/collections/collection.service';
+import { RepoCollectionListService } from './resources/combined/combined.service';
 
 // import { MyImportsModule }            from './my-imports/my-imports.module';
 // import { SearchModule }               from './search/search.module';
@@ -115,6 +116,7 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
         CollectionUploadService,
         CollectionListService,
         CollectionDetailService,
+        RepoCollectionListService,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     bootstrap: [AppComponent],

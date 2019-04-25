@@ -6,6 +6,67 @@
     color: @black;
     margin-bottom: 150px;
 
+    .type-heading {
+        background-color: #ebebeb;
+        font-size: 14px;
+        margin-bottom: -1px;
+
+        .counter {
+            background-color: #9c9c9c;
+            color: white;
+            display: inline-block;
+            text-align: center;
+            width: 30px;
+            margin: 5px;
+        }
+    }
+
+    .item-row {
+        padding-top: 10px;
+        padding-bottom: 10px;
+
+        border-bottom: 1px solid #ededed;
+
+        .title {
+            font-size: 16px;
+        }
+
+        .list-content {
+            margin-bottom: 5px;
+        }
+
+        .mid-font {
+            font-size: 14px;
+        }
+
+        .pull-right {
+            @media (min-width: 800px) {
+                justify-content: flex-end;
+                div {
+                    margin-left: 10px;
+                }
+            }
+
+            @media (max-width: 800px) {
+                div {
+                    margin-right: 10px;
+                }
+            }
+        }
+
+        .pull-left {
+            div {
+                margin-right: 10px;
+            }
+        }
+
+        .metric-box {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+    }
+
     .pagination {
         width: 100%;
     }

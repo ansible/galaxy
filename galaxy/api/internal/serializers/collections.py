@@ -73,20 +73,20 @@ class VersionSummarySerializer(serializers.ModelSerializer):
         fields = VERSION_LIST_FIELDS + ('content_summary', 'metadata')
 
     def get_content_summary(self, obj):
-        counts = {
-            'module': 0,
-            'role': 0,
-            'playbook': 0,
-            'plugin': 0
+        contents = {
+            'module': [],
+            'role': [],
+            'playbook': [],
+            'plugin': []
         }
 
         for content in obj.contents:
-            if content['content_type'] in counts:
-                counts[content['content_type']] += 1
+            if content['content_type'] in contents:
+                contents[content['content_type']].append(content['name'])
             else:
-                counts['plugin'] += 1
+                contents['plugin'].append(content['name'])
 
-        return {'total_count': len(obj.contents), 'type_count': counts}
+        return {'total_count': len(obj.contents), 'contents': contents}
 
 
 class CollectionListSerializer(serializers.ModelSerializer):

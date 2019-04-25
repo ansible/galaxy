@@ -3,7 +3,7 @@
 <div id="author-detail" class="container-fluid">
 
     <div class="row" *ngIf="!authorNotFound">
-        <div class="col-sm-6">
+        <div class="col-sm-9">
             <div class="namespace namespace-header-left">
                 <div class="namespace-details">
                     <div class="namespace-img">
@@ -30,17 +30,6 @@
                                 <i class="fa fa-link"></i> {{ namespace.html_url }}
                             </a>
                         </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-sm-3">
-            <div class="namespace namespace-header-right">
-                <div class="content-summary">
-                    <div *ngFor="let count of namespace.contentCounts" class="namespace-content-count">
-                         <span class="{{ count.iconClass }}"></span>
-                        <strong>{{count.count}}</strong> {{count.title}}
                     </div>
                 </div>
             </div>
@@ -95,11 +84,67 @@
         </div>
     </div>
 
-    <div class="row repository-list" *ngIf="!authorNotFound">
+    <div class="row" *ngIf="!authorNotFound && collections.length > 0">
+        <div class="col-sm-12 type-heading">Collections <div class="counter">{{ collectionCount }}</div></div>
+    </div>
+
+    <div class="row item-row" *ngFor="let item of collections">
+        <div class="col-sm-6">
+            <div class="title list-content">
+                <a [routerLink]="['/', 'collections', namespace.name, item.name]">
+                    {{item.name}}
+                </a>
+            </div>
+            <div class="description list-content">
+                <b>Description: </b>
+                {{item.latest_version.metadata.description}}
+            </div>
+            <div class="metric-box mid-font pull-left list-content">
+                <div>
+                    <b>{{item.latest_version.content_summary.contents.module.length}}</b>
+                    Modules
+                </div>
+                <div>
+                    <b>{{item.latest_version.content_summary.contents.role.length}}</b>
+                    Roles
+                </div>
+                <div>
+                    <b>{{item.latest_version.content_summary.contents.plugin.length}}</b>
+                    Plugins
+                </div>
+                <div>
+                    <b>{{item.latest_version.content_summary.contents.playbook.length}}</b>
+                    Playbooks
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+
+            <div class="metric-box mid-font pull-right list-content">
+                <div>
+                    <app-score [repo]="item"></app-score>
+                </div>
+                <div>
+                    <i class="fa fa-download"></i>
+                    {{item.download_count}} Downloads
+                </div>
+            </div>
+
+            <div class="metric-box pull-right list-content">
+                <div>
+                    <b>Current Version: </b> {{item.latest_version.version}}
+                    uploaded {{ formatDate(item.latest_version.created) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row repository-list" *ngIf="!authorNotFound && repositories.length > 0">
+        <div class="col-sm-12 type-heading">Repositories <div class="counter">{{ repoCount }}</div></div>
         <div class="col-sm-12">
             <pfng-list
                 [config]="listConfig"
-                [items]="items"
+                [items]="repositories"
                 [itemTemplate]="itemTemplate"
                 [actionTemplate]="actionTemplate"
                 (onClick)="handleListClick($event)">
@@ -133,24 +178,6 @@
                                 <span class="count-label">Downloads</span>
                             </div>
 
-                            <div class="content-count">
-                                <i class="fa fa-eye"></i>
-                                <span class="count">{{ item.watchers_count }}</span>
-                                <span class="count-label">Watchers</span>
-                            </div>
-
-                            <div class="content-count">
-                                <i class="fa fa-star"></i>
-                                <span class="count">{{ item.stargazers_count }}</span>
-                                <span class="count-label">Stars</span>
-                            </div>
-
-                            <div class="content-count">
-                                <i class="fa fa-copy"></i>
-                                <span class="count">{{ item.forks_count }}</span>
-                                <span class="count-label">Forks</span>
-                            </div>
-
                             <div *ngIf="item.travis_build_url">
                                 <div class="travis">
                                     <a [appLogEvent]='"travis: " + item.name' href="{{ item.travis_build_url }}" target="_blank" tooltip="View Travis build output. Opens in new tab or window.">
@@ -172,7 +199,7 @@
     <div class="row repository-pagination" *ngIf="!authorNotFound">
         <div class="col-sm-12">
             <div class="pagination"
-                *ngIf="items && items.length && paginationConfig.totalItems > paginationConfig.pageSize">
+                *ngIf="paginationConfig.totalItems > paginationConfig.pageSize">
                 <pfng-pagination
                     [config]='paginationConfig'
                     (onPageSizeChange)="handlePageSizeChange($event)"
