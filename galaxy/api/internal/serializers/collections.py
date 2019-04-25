@@ -96,6 +96,7 @@ class CollectionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Collection
         fields = COLLECTION_LIST_FIELDS
+        depth = 1
 
 
 class CollectionDetailSerializer(serializers.ModelSerializer):

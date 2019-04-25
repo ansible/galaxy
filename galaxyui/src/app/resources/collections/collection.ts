@@ -22,7 +22,7 @@ export class CollectionVersion {
     readme_html: string;
 }
 
-class CollectionBase {
+export class CollectionList {
     id: number;
     name: string;
     description: string;
@@ -31,14 +31,7 @@ class CollectionBase {
     community_score: number;
     community_survey_count: number;
     latest_version: CollectionVersion;
-}
 
-export class CollectionList extends CollectionBase {
-    namespace: number;
-}
-
-export class CollectionDetail extends CollectionBase {
-    all_versions: CollectionVersion[];
     namespace: {
         id: number;
         description: string;
@@ -52,4 +45,8 @@ export class CollectionDetail extends CollectionBase {
         is_vendor: boolean;
         owners: number[];
     };
+}
+
+export class CollectionDetail extends CollectionList {
+    all_versions: CollectionVersion[];
 }
