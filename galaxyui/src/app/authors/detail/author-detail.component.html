@@ -89,7 +89,10 @@
     </div>
 
     <div class="row item-row" *ngFor="let item of collections">
-        <app-collection-list-item [collection]='item'></app-collection-list-item>
+        <app-collection-list-item
+            [collection]='item'
+            [expandContent]='false'
+        ></app-collection-list-item>
     </div>
 
     <div class="row repository-list" *ngIf="!authorNotFound && repositories.length > 0">

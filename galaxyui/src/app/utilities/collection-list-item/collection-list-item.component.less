@@ -29,10 +29,47 @@
     div {
         margin-right: 10px;
     }
+
+    .wide-column {
+        max-width: 100px;
+        overflow: hidden;
+        margin-right: 20px;
+    }
 }
 
 .metric-box {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+}
+
+.content-type {
+    text-transform: capitalize;
+}
+
+.content-list {
+    list-style-type: none;
+    padding-left: 0;
+
+    .content-ellipses {
+        position: relative;
+        background-color: #ebebeb;
+        font-weight: bold;
+        width: 26px;
+        text-align: center;
+        height: 12px;
+        cursor: pointer;
+
+        .ellipses-container {
+            position: absolute;
+            top: -7px;
+            left: 8px;
+        }
+    }
+}
+
+.view-more {
+    background-color: #ebebeb;
+    padding: 0px 5px;
+    cursor: pointer;
 }

@@ -15,11 +15,48 @@ export class CollectionListItemComponent implements OnInit {
     @Input()
     collection: CollectionList;
 
+    @Input()
+    expandContent: boolean;
+
+    contentTypes: string[];
+    maxContent = 5;
+    expanded = false;
+    canExpand = false;
+
     constructor() {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.contentTypes = Object.keys(
+            this.collection.latest_version.content_summary.contents,
+        );
+
+        if (this.expandContent) {
+            for (const item of this.contentTypes) {
+                if (
+                    this.collection.latest_version.content_summary.contents[
+                        item
+                    ].length > this.maxContent
+                ) {
+                    this.canExpand = true;
+                    break;
+                }
+            }
+        }
+    }
 
     formatDate(date) {
         return moment(date).fromNow();
+    }
+
+    getSlice(items) {
+        if (this.expanded) {
+            return items;
+        }
+
+        return items.slice(0, this.maxContent);
+    }
+
+    toggleExpanded() {
+        this.expanded = !this.expanded;
     }
 }

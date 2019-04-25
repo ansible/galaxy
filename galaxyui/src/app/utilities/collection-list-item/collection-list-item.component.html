@@ -4,26 +4,41 @@
             {{collection.name}}
         </a>
     </div>
-    <div class="description list-content">
+    <div class="list-content">
         <b>Description: </b>
         {{collection.latest_version.metadata.description}}
     </div>
-    <div class="metric-box mid-font pull-left list-content">
-        <div>
-            <b>{{collection.latest_version.content_summary.contents.module.length}}</b>
-            Modules
+    <div class="metric-box pull-left list-content">
+        <div class="wide-column" *ngFor="let contentType of contentTypes">
+            <div class="mid-font">
+                <b>{{collection.latest_version.content_summary.contents[contentType].length}}</b>
+                <span class="content-type"> {{contentType}}s</span>
+            </div>
+
+            <ul class="content-list"
+                *ngIf="collection.latest_version.content_summary.contents[contentType].length > 0 && expandContent">
+                <li
+                    *ngFor="
+                        let content of getSlice(collection.latest_version.content_summary.contents[contentType])
+                    ">
+                    {{content}}
+                </li>
+                <li class="content-ellipses" *ngIf="
+                    collection.latest_version.content_summary.contents[contentType].length > maxContent
+                    && !expanded"
+                    (click)="toggleExpanded()"
+                >
+                    <div class="ellipses-container">
+                        ...
+                    </div>
+                </li>
+            </ul>
         </div>
-        <div>
-            <b>{{collection.latest_version.content_summary.contents.role.length}}</b>
-            Roles
-        </div>
-        <div>
-            <b>{{collection.latest_version.content_summary.contents.plugin.length}}</b>
-            Plugins
-        </div>
-        <div>
-            <b>{{collection.latest_version.content_summary.contents.playbook.length}}</b>
-            Playbooks
+    </div>
+    <div *ngIf="canExpand && expandContent" class="metric-box list-content pull-left">
+        <div class="view-more" (click)="toggleExpanded()">
+            <span *ngIf="!expanded">View More</span>
+            <span *ngIf="expanded">View Less</span>
         </div>
     </div>
 </div>
