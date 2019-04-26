@@ -93,7 +93,8 @@ class TestCollectionListView(APITestCase):
 
         assert response.status_code == http_codes.HTTP_400_BAD_REQUEST
         assert response.json() == {
-            'non_field_errors': ['The sha256 checksum did not match.']
+            'code': 'invalid',
+            'message': 'The sha256 checksum did not match.'
         }
 
     def test_upload_invalid_namespace(self):
@@ -105,9 +106,10 @@ class TestCollectionListView(APITestCase):
             })
 
         assert response.status_code == http_codes.HTTP_400_BAD_REQUEST
-        assert response.json() == [
-            'Namespace "wrongnamespace" does not exist.'
-        ]
+        assert response.json() == {
+            'code': 'invalid',
+            'message': 'Namespace "wrongnamespace" does not exist.'
+        }
 
     def test_upload_version_conflict(self):
         collection = models.Collection.objects.create(
@@ -123,7 +125,11 @@ class TestCollectionListView(APITestCase):
             })
 
         assert response.status_code == http_codes.HTTP_409_CONFLICT
-        assert response.json() == {'detail': 'Collection already exists.'}
+        assert response.json() == {
+            'code': 'conflict.collection_exists',
+            'message': 'Collection "mynamespace-mycollection-1.2.3"'
+                       ' already exists.'
+        }
 
     def test_fail_method_not_allowed(self):
         for method in ['GET', 'PUT', 'PATCH', 'DELETE']:
