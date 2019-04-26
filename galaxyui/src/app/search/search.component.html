@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <div class="count">
-                    ({{ contentCount }} results)
+                    ({{ contentCount + collectionCount }} results)
                 </div>
             </div>
             <div *ngIf="showFilter" class="filter">
@@ -30,6 +30,30 @@
                 </pfng-toolbar>
             </div>
             <div id="search-list">
+                <div class="row" *ngIf="collectionItems.length > 0">
+                    <div class="col-sm-12 type-heading">Collections <div class="counter">{{ collectionCount }}</div></div>
+                </div>
+
+                <div class="row item-row" *ngFor="let item of collectionItems">
+                    <div class="collection-item">
+                        <div class="namespace-container">
+                            <a [routerLink]="['/', item.namespace.name]"
+                               [tooltip]="'View more content from ' + item.namespace.name"
+                               container="body">
+                               <div class="avatar-wrapper">
+                                   <img [src]="item.namespace.avatar_url" class="avatar-image" >
+                               </div>
+                               <div class="namespace-name">{{ item.namespace.name }}</div>
+                            </a>
+                        </div>
+                        <app-collection-list-item
+                            [collection]='item'
+                            [expandContent]='true'
+                        ></app-collection-list-item>
+                    </div>
+
+                </div>
+
                 <div class="row" *ngIf="contentItems.length > 0">
                     <div class="col-sm-12 type-heading">Repositories <div class="counter">{{ contentCount }}</div></div>
                 </div>
@@ -53,9 +77,6 @@
                                 </div>
                                 <div class="list-pf-title">
                                     <div class="content-name">
-                                        <div class="icon">
-                                            <i class="{{ item['iconClass'] }}"></i>
-                                        </div>
                                         <div class="name cursor-pointer">
                                             <a
                                                 [routerLink]="[item['contentLink']]"
@@ -64,9 +85,6 @@
                                                 (appMiddleclick)="contentClick(item, index)"
                                                 tooltip="View content details"
                                             >{{ item.name }}</a>
-                                        </div>
-                                        <div class="type">
-                                            {{ item.summary_fields.content_type.name }}
                                         </div>
                                         <div class="deprecated-tag" *ngIf="item.summary_fields.repository.deprecated"  tooltip="This item has been deprecated. Use at your own risk.">
                                             Deprecated
@@ -106,30 +124,11 @@
                                             <span class="count-digits">{{ item.download_count }}</span>
                                             <span>Downloads</span>
                                         </div>
-                                        <div class="repo-count">
-                                            <i class="fa fa-eye"></i>
-                                            <span class="count-digits">{{ item.summary_fields.repository.watchers_count }}</span>
-                                            <span>Watchers</span>
-                                        </div>
-                                        <div class="repo-count">
-                                            <i class="fa fa-star"></i>
-                                            <span class="count-digits">{{ item.summary_fields.repository.stargazers_count }}</span>
-                                            <span>Stars</span>
-                                        </div>
-                                        <div class="repo-count">
-                                            <i class="fa fa-copy"></i>
-                                            <span class="count-digits">{{ item.summary_fields.repository.forks_count }}</span>
-                                            <span>Forks</span>
-                                        </div>
                                     </div>
                                     <div class="extra-detail">
                                         <div class="import">
-                                            <div class="import-text">Last Imported</div> &nbsp;
-                                            <div class="import-date">{{ item.imported }}</div>
-                                        </div>
-                                        <div class="relevance" *ngIf="showRelevance">
-                                            <span class="relevance-text">Best Match</span>
-                                            <span class="relevance-score">{{ item.relevance | number:'1.4-4' }}</span>
+                                            <b>Last Imported: </b>
+                                            {{ item.imported }}
                                         </div>
                                     </div>
                                 </div>

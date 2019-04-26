@@ -611,6 +611,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.collectionItems = result.collection.results;
         this.filterConfig.resultsCount = count;
         this.paginationConfig.totalItems = count;
+
         if (!count) {
             this.emptyStateConfig.title = this.noResultsState;
         }

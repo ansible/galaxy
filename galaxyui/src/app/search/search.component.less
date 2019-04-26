@@ -1,27 +1,12 @@
 @import '../../variables';
 
-@small-laptop: 1281px;
+@small-laptop: 800px;
 @large-phone: 450px;
 
 #search-page {
     margin-bottom: 150px;
     .pagination {
         width: 100%;
-    }
-
-    .type-heading {
-        background-color: #ebebeb;
-        font-size: 14px;
-        margin-bottom: -1px;
-
-        .counter {
-            background-color: #9c9c9c;
-            color: white;
-            display: inline-block;
-            text-align: center;
-            padding: 0px 5px;
-            margin: 5px;
-        }
     }
 
     .search-bar {
@@ -58,6 +43,28 @@
     margin-top: 20px;
     color: @black;
 
+    .type-heading {
+        background-color: #ebebeb;
+        font-size: 14px;
+        margin-bottom: -1px;
+
+        .counter {
+            background-color: #9c9c9c;
+            color: white;
+            display: inline-block;
+            text-align: center;
+            padding: 0px 5px;
+            margin: 5px;
+        }
+    }
+
+    .item-row {
+        padding-top: 10px;
+        padding-bottom: 10px;
+
+        border-bottom: 1px solid #ededed;
+    }
+
     .list-row {
         width: 100%;
     }
@@ -68,6 +75,13 @@
             display: -moz-box;
             display: -ms-flexbox;
             display: -webkit-flex;
+            display: flex;
+        }
+    }
+
+    .collection-item {
+        width: 100%;
+        @media (min-width: @large-phone) {
             display: flex;
         }
     }
@@ -104,14 +118,16 @@
         .namespace-name {
             font-size: 12px;
             padding-top: 10px;
-            width: 90px;
             text-align: center;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             min-height: 15px;
             @media (min-width: @large-phone) {
-                margin: auto;
+                width: 90px;
+            }
+            @media (max-width: @large-phone) {
+                width: 100%;
             }
         }
     }
@@ -220,11 +236,10 @@
         }
 
         .repo-count {
-            font-size: 15px;
+            font-size: 14px;
             margin-left: 10px;
 
             .count-digits {
-                font-weight: 700;
                 margin-left: 3px;
                 margin-right: 5px;
             }
@@ -249,14 +264,6 @@
         .import {
             @media (min-width: @small-laptop) {
                 text-align: right;
-            }
-
-            .import-text,
-            .import-date {
-                display: inline-block;
-            }
-            .import-text {
-                font-weight: 600;
             }
         }
     }

@@ -19,7 +19,7 @@ export class CollectionListItemComponent implements OnInit {
     expandContent: boolean;
 
     contentTypes: string[];
-    maxContent = 5;
+    maxContent = 3;
     expanded = false;
     canExpand = false;
 

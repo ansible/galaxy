@@ -77,7 +77,7 @@ class VersionSummarySerializer(serializers.ModelSerializer):
         contents = {
             'module': [],
             'role': [],
-            'playbook': [],
+            # 'playbook': [],
             'plugin': []
         }
 
