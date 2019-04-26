@@ -44,7 +44,12 @@ import {
 
 import { PopularEvent } from './popular/popular.component';
 
-import { Content } from '../resources/content-search/content';
+import {
+    Content,
+    ContentCollectionResponse,
+} from '../resources/content-search/content';
+
+import { CollectionList } from '../resources/collections/collection';
 
 import { DefaultParams } from './search.resolver.service';
 
@@ -65,7 +70,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
     toolbarConfig: ToolbarConfig;
     filterConfig: FilterConfig;
     sortConfig: SortConfig;
-    contentItems: Content[];
     listConfig: ListConfig;
     paginationConfig: PaginationConfig;
 
@@ -82,7 +86,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
     pageSize = 10;
     pageNumber = 1;
     keywords = '';
+
     contentCount: number;
+    contentItems: Content[];
+
+    collectionCount: number;
+    collectionItems: CollectionList[];
 
     appliedFilters: Filter[] = [];
 
@@ -230,10 +239,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     this.setSortConfig(this.queryParams);
                     this.setPageSize(this.queryParams);
                     this.setAppliedFilters(this.queryParams);
-                    this.prepareContent(
-                        data.content.repository.results,
-                        data.content.repository.count,
-                    );
+                    this.prepareContent(data.content);
                     this.setUrlParams(this.queryParams);
                     this.pageLoading = false;
                 } else {
@@ -387,10 +393,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.pageLoading = true;
         this.setUrlParams(this.queryParams);
         this.contentSearch.query(this.queryParams).subscribe(result => {
-            this.prepareContent(
-                result.repository.results,
-                result.repository.count,
-            );
+            this.prepareContent(result);
             this.pageLoading = false;
         });
     }
@@ -551,10 +554,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.location.replaceState(this.getBasePath(), paramString); // update browser URL
     }
 
-    private prepareContent(data: Content[], count: number) {
-        this.contentCount = count;
+    private prepareContent(result: ContentCollectionResponse) {
+        this.contentCount = result.repository.count;
+        this.collectionCount = result.collection.count;
+
         const datePattern = /^\d{4}.*$/;
-        data.forEach(item => {
+        result.repository.results.forEach(item => {
             if (item.imported === null) {
                 item.imported = 'NA';
             } else if (datePattern.exec(item.imported) !== null) {
@@ -599,7 +604,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 item['contentLink'] += `/${name}`;
             }
         });
-        this.contentItems = data;
+
+        const count = this.collectionCount + this.contentCount;
+
+        this.contentItems = result.repository.results;
+        this.collectionItems = result.collection.results;
         this.filterConfig.resultsCount = count;
         this.paginationConfig.totalItems = count;
         if (!count) {

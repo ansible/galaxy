@@ -30,6 +30,9 @@
                 </pfng-toolbar>
             </div>
             <div id="search-list">
+                <div class="row" *ngIf="contentItems.length > 0">
+                    <div class="col-sm-12 type-heading">Repositories <div class="counter">{{ contentCount }}</div></div>
+                </div>
                 <pfng-list
                     [config]="listConfig"
                     [items]="contentItems"
