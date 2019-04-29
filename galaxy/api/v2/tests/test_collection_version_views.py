@@ -51,8 +51,7 @@ class TestCollectionArtifactView(APITestCase):
 
         assert response.status_code == http_codes.HTTP_302_FOUND
         assert (response['Location']
-                == 'http://testserver'
-                '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz')
+                == '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz')
 
     def test_get_by_name(self):
         response = self.client.get(
@@ -61,8 +60,7 @@ class TestCollectionArtifactView(APITestCase):
 
         assert response.status_code == http_codes.HTTP_302_FOUND
         assert (response['Location']
-                == 'http://testserver'
-                '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz')
+                == '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz')
 
     def test_get_by_id_found(self):
         response = self.client.get(

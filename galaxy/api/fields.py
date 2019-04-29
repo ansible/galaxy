@@ -47,7 +47,7 @@ class NamespaceObjectField(serializers.Field):
             'href': reverse(
                 'api:namespace_detail',
                 kwargs={'pk': value.pk},
-                request=self.parent.context.get('request'),
+                request=self.context.get('request'),
             ),
             'name': value.name,
         }
@@ -63,5 +63,5 @@ class VersionUrlField(serializers.Field):
                 'name': value.collection.name,
                 'version': value.version,
             },
-            request=self.parent.context.get('request'),
+            request=self.context.get('request'),
         )

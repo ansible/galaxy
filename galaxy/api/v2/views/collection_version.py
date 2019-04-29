@@ -120,5 +120,4 @@ class CollectionArtifactView(base.APIView):
                 collection__name__iexact=name,
                 version__exact=version,
             )
-        absolute_path = request.build_absolute_uri(version.get_download_url())
-        return redirect(absolute_path)
+        return redirect(version.get_download_url())
