@@ -16,12 +16,13 @@
 from rest_framework import response
 from rest_framework import exceptions
 
+from galaxy.api import base
 from galaxy.main import models
 from galaxy.api.internal import serializers as internal_serializers
 from galaxy.api import serializers as v1_serializers
 
 
-class RepoAndCollectionList(views.APIView):
+class RepoAndCollectionList(base.APIView):
     def get(self, request):
         try:
             page = int(request.GET.get('page', 1))

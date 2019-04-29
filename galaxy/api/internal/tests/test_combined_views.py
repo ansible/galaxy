@@ -184,4 +184,4 @@ class RepoAndCollectionListTest(APITestCase):
 
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
         assert 'download_count' in resp.json()['message']
-        assert 'name' in resp.json()['detail']
+        assert 'name' in resp.json()['message']
