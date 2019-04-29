@@ -34,32 +34,9 @@ __all__ = (
 )
 
 
-class NamespaceObjectField(serializers.Field):
-    """Return namespace object for a serializer field."""
-    def to_representation(self, value):
-        return {
-            'id': value.pk,
-            'href': reverse('api:namespace_detail', kwargs={'pk': value.pk}),
-            'name': value.name,
-        }
-
-
-class VersionDetailUrlField(serializers.Field):
-    """Return version detail url under collection namespace and name."""
-    def to_representation(self, value):
-        return reverse(
-            'api:v2:version-detail',
-            kwargs={
-                'namespace': value.collection.namespace.name,
-                'name': value.collection.name,
-                'version': value.version,
-            }
-        )
-
-
 class VersionSummarySerializer(serializers.ModelSerializer):
     """Collection version with short summary of data."""
-    href = VersionDetailUrlField(source='*')
+    href = fields.VersionUrlField(source='*')
 
     class Meta:
         model = models.CollectionVersion
@@ -69,9 +46,9 @@ class VersionSummarySerializer(serializers.ModelSerializer):
 class VersionDetailSerializer(serializers.ModelSerializer):
     """Collection version with detailed data."""
     id = serializers.IntegerField(source='pk')
-    href = VersionDetailUrlField(source='*')
+    href = fields.VersionUrlField(source='*')
     download_url = serializers.SerializerMethodField()
-    namespace = NamespaceObjectField(source='collection.namespace')
+    namespace = fields.NamespaceObjectField(source='collection.namespace')
     collection = serializers.SerializerMethodField()
     metadata = serializers.JSONField(binary=False)
 
@@ -95,7 +72,8 @@ class VersionDetailSerializer(serializers.ModelSerializer):
                 'namespace': obj.collection.namespace.name,
                 'name': obj.collection.name,
                 'version': obj.version,
-            }
+            },
+            request=self.context.get('request'),
         )
 
     def get_collection(self, obj):
@@ -105,14 +83,16 @@ class VersionDetailSerializer(serializers.ModelSerializer):
             'id': obj.collection.pk,
             'href': reverse(
                 'api:v2:collection-detail',
-                kwargs={'namespace': ns_name, 'name': name}),
+                kwargs={'namespace': ns_name, 'name': name},
+                request=self.context.get('request'),
+            ),
             'name': name,
         }
         return result
 
 
 class CollectionSerializer(serializers.ModelSerializer):
-    namespace = NamespaceObjectField()
+    namespace = fields.NamespaceObjectField()
     href = serializers.SerializerMethodField()
     versions_url = serializers.SerializerMethodField()
     highest_version = VersionSummarySerializer()
@@ -137,7 +117,8 @@ class CollectionSerializer(serializers.ModelSerializer):
             kwargs={
                 'namespace': obj.namespace.name,
                 'name': obj.name,
-            }
+            },
+            request=self.context.get('request'),
         )
 
     def get_versions_url(self, obj):
@@ -146,7 +127,8 @@ class CollectionSerializer(serializers.ModelSerializer):
             kwargs={
                 'namespace': obj.namespace.name,
                 'name': obj.name,
-            }
+            },
+            request=self.context.get('request'),
         )
 
 
@@ -160,7 +142,7 @@ class CollectionImportSerializer(BaseTaskSerializer):
     messages = _MessageSerializer(many=True)
     lint_records = serializers.JSONField()
 
-    namespace = serializers.SerializerMethodField()
+    namespace = fields.NamespaceObjectField()
     imported_version = serializers.SerializerMethodField()
 
     class Meta:
@@ -171,21 +153,14 @@ class CollectionImportSerializer(BaseTaskSerializer):
         )
 
     # TODO(cutwater): Replace with custom field
-    def get_namespace(self, obj):
-        pk = obj.namespace.pk
-        return {
-            'id': pk,
-            'href': reverse('api:namespace_detail', kwargs={'pk': pk})
-        }
-
-    # TODO(cutwater): Replace with custom field
     def get_imported_version(self, obj):
         if obj.imported_version is None:
             return None
         return {
             'id': obj.imported_version.pk,
             'href': reverse('api:v2:version-detail',
-                            args=[obj.imported_version.pk]),
+                            args=[obj.imported_version.pk],
+                            request=self.context.get('request')),
         }
 
 

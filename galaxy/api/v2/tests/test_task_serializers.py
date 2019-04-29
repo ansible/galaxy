@@ -24,6 +24,7 @@ from django.utils import timezone
 from pulpcore import constants as pulp_const
 from pulpcore.app import models as pulp_models
 from rest_framework import exceptions as drf_exc
+from rest_framework.test import APIRequestFactory
 import semantic_version
 
 from galaxy.main import models
@@ -102,7 +103,10 @@ class TestCollectionImportSerializer:
             lint_records=lint_records
         )
 
-        serializer = serializers.CollectionImportSerializer(instance)
+        # NOTE: request hostname used for serializing urls
+        request = APIRequestFactory().post('http://testserver/')
+        serializer = serializers.CollectionImportSerializer(
+            instance, context={'request': request})
 
         assert serializer.data == {
             'id': 42,
@@ -113,7 +117,8 @@ class TestCollectionImportSerializer:
             'error': None,
             'namespace': {
                 'id': 22,
-                'href': '/api/v1/namespaces/22/',
+                'href': 'http://testserver/api/v1/namespaces/22/',
+                'name': 'testnamespace',
             },
             'name': 'testcollection',
             'version': '1.2.3',

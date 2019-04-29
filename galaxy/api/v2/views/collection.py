@@ -57,7 +57,8 @@ class CollectionDetailView(base.APIView):
     def get(self, request, *args, **kwargs):
         """Return a collection."""
         collection = self._get_collection()
-        serializer = serializers.CollectionSerializer(collection)
+        serializer = serializers.CollectionSerializer(
+            collection, context={'request': request})
         return Response(serializer.data)
 
     def _get_collection(self):
@@ -113,7 +114,7 @@ class CollectionListView(base.APIView):
             })
 
         data = {'task': reverse('api:v2:collection-import-detail',
-                                args=[task.pk], request=None)}
+                                args=[task.pk], request=request)}
         return Response(data, status=http_codes.HTTP_202_ACCEPTED)
 
     def _get_namespace(self, data):

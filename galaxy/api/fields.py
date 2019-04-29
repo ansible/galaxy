@@ -18,6 +18,7 @@
 import datetime as dt
 
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 
 
 class NativeTimestampField(serializers.DateTimeField):
@@ -36,3 +37,31 @@ class NativeTimestampField(serializers.DateTimeField):
             return None
         value = super().to_internal_value(value)
         return value.astimezone(dt.timezone.utc).timestamp()
+
+
+class NamespaceObjectField(serializers.Field):
+    """Return namespace object for a serializer field."""
+    def to_representation(self, value):
+        return {
+            'id': value.pk,
+            'href': reverse(
+                'api:namespace_detail',
+                kwargs={'pk': value.pk},
+                request=self.context.get('request'),
+            ),
+            'name': value.name,
+        }
+
+
+class VersionUrlField(serializers.Field):
+    """Return version detail url under collection namespace and name."""
+    def to_representation(self, value):
+        return reverse(
+            'api:v2:version-detail',
+            kwargs={
+                'namespace': value.collection.namespace.name,
+                'name': value.collection.name,
+                'version': value.version,
+            },
+            request=self.context.get('request'),
+        )
