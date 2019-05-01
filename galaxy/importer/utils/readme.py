@@ -91,6 +91,11 @@ def render_html(readme_file):
 
         # note on bleach coming after markdown, and bleach_whitelist
         # https://github.com/Python-Markdown/markdown/issues/225
-        html = bleach.clean(unsafe_html, tags=markdown_tags,
-                            attributes=markdown_attrs, styles=[], strip=True)
+        html = bleach.clean(
+            unsafe_html,
+            tags=markdown_tags + ['pre'],
+            attributes=markdown_attrs,
+            styles=[],
+            strip=True
+        )
     return html
