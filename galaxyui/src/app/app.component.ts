@@ -258,9 +258,8 @@ export class AppComponent implements OnInit {
     }
 
     collapseNavOnSmallScreens(screenWidth: number) {
-        console.log('collapsydoodle!!!!!!!!!!!!!!!!!!!!!!!!!!');
         if (
-            screenWidth < 1200 &&
+            screenWidth < 1300 &&
             !this.verticalNavigation.navCollapsed &&
             !this.verticalNavigation.inMobileState
         ) {
