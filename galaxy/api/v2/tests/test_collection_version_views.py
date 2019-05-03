@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+import logging
 
 from django.contrib.auth import get_user_model
 from pulpcore.app import models as pulp_models
@@ -23,6 +24,11 @@ from rest_framework.test import APITestCase
 from galaxy.main import models
 
 UserModel = get_user_model()
+
+log = logging.getLogger(__name__)
+
+mazer_user_agent = \
+    'Mazer/0.4.0 (linux; python:3.6.8) ansible_galaxy/0.4.0'
 
 
 class TestCollectionArtifactView(APITestCase):
@@ -43,6 +49,54 @@ class TestCollectionArtifactView(APITestCase):
         self.ca = pulp_models.ContentArtifact.objects.create(
             content=self.version, artifact=self.artifact,
             relative_path='mynamespace-mycollection-1.2.3.tar.gz')
+
+    def test_download(self):
+        download_path = \
+            '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz'
+
+        url = '/api/v2/collections/mynamespace/mycollection' \
+            + '/versions/1.2.3/artifact/'
+
+        # NOTE: This does not follow redirects (follow=True), so response
+        #       will be the 302. Since the redirect is to /download which isn't
+        #       a django url, a get with follow=True will 404 on the second url
+        response = self.client.get(url,
+                                   HTTP_USER_AGENT=mazer_user_agent)
+
+        assert response.status_code == http_codes.HTTP_302_FOUND
+        assert response['Location'] == download_path
+
+    def test_download_count(self):
+        download_count_before = self.collection.download_count
+        log.debug('download_count_before: %s', download_count_before)
+
+        url = '/api/v2/collections/mynamespace/mycollection' \
+            + '/versions/1.2.3/artifact/'
+
+        response = self.client.get(url,
+                                   HTTP_USER_AGENT=mazer_user_agent)
+
+        assert response.status_code == http_codes.HTTP_302_FOUND
+
+        self.collection.refresh_from_db()
+
+        assert self.collection.download_count == download_count_before + 1
+
+    def test_download_count_non_mazer_user_agent(self):
+        download_count_before = self.collection.download_count
+        log.debug('download_count_before: %s', download_count_before)
+
+        url = '/api/v2/collections/mynamespace/mycollection' \
+            + '/versions/1.2.3/artifact/'
+
+        response = \
+            self.client.get(url, HTTP_USER_AGENT='WebFetchATron3000/3.11')
+
+        assert response.status_code == http_codes.HTTP_302_FOUND
+
+        self.collection.refresh_from_db()
+
+        assert self.collection.download_count == download_count_before
 
     def test_get_by_id(self):
         response = self.client.get(
