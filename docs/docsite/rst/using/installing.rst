@@ -240,25 +240,52 @@ the Ansible doc site <https://docs.ansible.com/ansible/latest/user_guide/playboo
 
 .. _installing_multi_repos:
 
-Multi-role Repositories
+Collections
 =======================
 
-Traditionally, a role is a git repository. Galaxy v3.0 introduced multi-role repositories, providing the
-ability to combine multiple roles into a single git repository.
-
-Installing a mult-role repository requires using the ``mazer`` command line tool available at the `Ansible
+Installing collections requires using the ``mazer`` command line tool available at the `Ansible
 Mazer project <https://github.com/ansible/mazer>`_.
 
 .. note::
 
-  This is a tech-preview feature. Future releases of Galaxy may change or break support of multi-role
-  repositories.
+  This is a tech-preview feature. Future releases of Galaxy may change or break support of collections.
 
-All the roles from a multi-role repository can be installed using mazer's ``install`` command, and passing the
-*namespace.repository_name*, as demonstrated by the following command:
+Collections are installed using mazer's ``install`` command, and passing the *namespace.collection_name*,
+as demonstrated by the following command:
 
 .. code-block:: bash
 
-  $ mazer install testing.multi_role_repository
+  $ mazer install namespace.collection_name
+
+Older versions of collections can also be installed by using
+
+.. code-block:: bash
+
+  $ mazer install namespace.collection_name,version=1.0.9
+
+Collections are installed to the ``~/.ansible/collections/ansible_collections`` directory like so:
+
+::
+
+    .ansible/
+    ├── collections/
+    │   └── ansible_collections/
+    │       └── namespace/
+    │           └── collection/
+    │               ├── FILES.json
+    │               ├── MANIFEST.json
+    │               ├── README.md
+    │               ├── galaxy.yml
+    │               ├── meta
+    │               ├── plugins/
+    │               │   └── modules/
+    │               │       └── module1.py
+    │               └── roles
+    │                   └── role1/
+    │                       ├── README.md
+    │                       ├── meta
+    │                       │   └── main.yaml
+    │                       └── tasks
+    │                           └── main.yml
 
 For more on installing, configuring, and using Mazer, visit the `Ansible Mazer project <https://github.com/ansible/mazer>`_

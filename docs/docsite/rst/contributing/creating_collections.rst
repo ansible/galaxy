@@ -92,6 +92,9 @@ Optional Fields:
 Building and Distributing
 =========================
 
+Building collections requires using the ``mazer`` command line tool available at the `Ansible
+Mazer project <https://github.com/ansible/mazer>`_.
+
 Collections are built by running ``mazer build`` from inside the collection's root directory.
 This will create a ``releases`` directory inside the collection with the build artifacts,
 which can be uploaded to Galaxy.
@@ -99,6 +102,7 @@ which can be uploaded to Galaxy.
 ::
 
     collection/
+    ├── ...
     ├── releases
     │   └── namespace_name-collection_name-1.0.12.tar.gz
     └── ...
