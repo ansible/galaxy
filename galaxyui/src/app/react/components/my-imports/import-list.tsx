@@ -20,7 +20,6 @@ import {
     FilterConfig,
     FilterOption,
     AppliedFilter,
-    SortConfig,
 } from '../../shared-types/pf-toolbar';
 
 import { FilterPF, ToolBarResultsPF } from '../patternfly-filter';
@@ -276,13 +275,15 @@ export class ImportListComponent extends React.Component<IProps, {}> {
             <div className='namespace-selector-wrapper'>
                 <div className='label'>Namespace</div>
                 <div className='selector'>
-                    <FormControl value={selectedNS.id} componentClass='select'>
+                    <FormControl
+                        onChange={event =>
+                            this.props.selectNamespace(event.target.value)
+                        }
+                        value={selectedNS.id}
+                        componentClass='select'
+                    >
                         {namespaces.map(ns => (
-                            <option
-                                key={ns.id}
-                                value={ns.id}
-                                onClick={() => this.props.selectNamespace(ns)}
-                            >
+                            <option key={ns.id} value={ns.id}>
                                 {ns.name}
                             </option>
                         ))}
