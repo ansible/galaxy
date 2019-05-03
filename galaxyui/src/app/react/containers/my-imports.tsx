@@ -342,7 +342,12 @@ export class MyImportsPage extends React.Component<IProps, IState> {
         );
     }
 
-    private selectedNamespace(ns: Namespace) {
+    private selectedNamespace(nsID: number) {
+        // For some reason the value passed back by the react component isn't
+        // a number
+        // tslint:disable-next-line:triple-equals
+        const ns = this.props.namespaces.find(x => x.id == nsID);
+
         this.setState(
             {
                 selectedNS: ns,
