@@ -15,9 +15,9 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-import semantic_version
+import semantic_version as semver
 
-from galaxy.main import models
+from galaxy.main.models import Namespace, Collection
 from galaxy.worker import exceptions as exc
 
 
@@ -32,27 +32,23 @@ def check_dependencies(collection_info):
         ns_name, name = dep.split('.')
 
         try:
-            ns = models.Namespace.objects.get(name=ns_name)
-        except models.Namespace.DoesNotExist:
+            ns = Namespace.objects.get(name=ns_name)
+        except Namespace.DoesNotExist:
             _import_fail('Dependency namespace not in galaxy: %s' % dep)
         try:
-            collection = models.Collection.objects.get(
-                namespace=ns.pk,
-                name=name,
-            )
-        except models.Collection.DoesNotExist:
+            collection = Collection.objects.get(namespace=ns.pk, name=name)
+        except Collection.DoesNotExist:
             _import_fail('Dependency collection not in galaxy: %s' % dep)
 
-        spec = semantic_version.Spec(version_spec)
-        versions = models.CollectionVersion.objects.filter(
-            collection=collection)
-        for v in [item.version for item in versions]:
-            try:
-                if spec.match(semantic_version.Version(v)):
-                    return
-            except TypeError:
-                # semantic_version Spec('~1') is ok, but match throws error
-                pass
-
-        _import_fail('Dependency found in galaxy but no matching '
-                     'version found: %s %s' % (dep, version_spec))
+        spec = semver.Spec(version_spec)
+        versions = (
+            semver.Version(v.version) for v in collection.versions.all())
+        no_match_message = ('Dependency found in galaxy but no matching '
+                            'version found: %s %s' % (dep, version_spec))
+        try:
+            if not spec.select(versions):
+                _import_fail(no_match_message)
+        except TypeError:
+            # semantic_version allows a Spec('~1') but throws TypeError on
+            # attempted match to it
+            _import_fail(no_match_message)
