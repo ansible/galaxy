@@ -22,7 +22,7 @@ from galaxy.worker import exceptions as exc
 
 
 def _import_fail(msg):
-    raise exc.ImportFailed("Invalid collection metadata. %s" % msg)
+    raise exc.ImportFailed("Invalid collection metadata. %s" % msg) from None
 
 
 def check_dependencies(collection_info):

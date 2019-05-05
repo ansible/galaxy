@@ -124,7 +124,7 @@ class BaseCollectionInfo(object):
 
     @staticmethod
     def value_error(msg):
-        raise ValueError("Invalid collection metadata. %s" % msg)
+        raise ValueError("Invalid collection metadata. %s" % msg) from None
 
     @namespace.validator
     @name.validator
