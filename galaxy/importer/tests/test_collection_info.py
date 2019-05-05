@@ -208,11 +208,25 @@ def test_invalid_license(base_col_info):
         assert "Expecting 'license' to be a list of valid" in str(exc)
 
 
-def test_invalid_dep_dict(base_col_info):
+def test_invalid_dep_type(base_col_info):
+    base_col_info['dependencies'] = 'joe.role1: 3'
+    with pytest.raises(TypeError) as exc:
+        BaseCollectionInfo(**base_col_info)
+    assert "'dependencies' must be <class 'dict'>" in str(exc)
+
+
+def test_invalid_dep_name(base_col_info):
+    base_col_info['dependencies'] = {3.3: '1.0.0'}
+    with pytest.raises(ValueError) as exc:
+        BaseCollectionInfo(**base_col_info)
+    assert 'Expecting depencency to be string' in str(exc)
+
+
+def test_invalid_dep_version(base_col_info):
     base_col_info['dependencies'] = {'joe.role1': 3}
     with pytest.raises(ValueError) as exc:
         BaseCollectionInfo(**base_col_info)
-    assert 'string' in str(exc)
+    assert 'Expecting depencency version to be string' in str(exc)
 
 
 def test_non_null_str_fields(galaxy_col_info):

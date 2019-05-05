@@ -113,8 +113,10 @@ class BaseCollectionInfo(object):
         default=None,
         validator=attr.validators.optional(attr.validators.instance_of(str)))
 
-    dependencies = attr.ib(factory=dict,
-                           converter=convert_none_to_empty_dict)
+    dependencies = attr.ib(
+        factory=dict,
+        converter=convert_none_to_empty_dict,
+        validator=attr.validators.instance_of(dict))
 
     @property
     def label(self):
@@ -195,9 +197,6 @@ class BaseCollectionInfo(object):
     @dependencies.validator
     def _check_dependencies_format(self, attribute, dependencies):
         '''Check type and format of dependencies collection and version'''
-        if not isinstance(dependencies, dict) or dependencies is None:
-            self.value_error("Expecting 'dependencies' to be a dictionary")
-
         for collection, version_spec in dependencies.items():
             if not isinstance(collection, str):
                 self.value_error("Expecting depencency to be string")
