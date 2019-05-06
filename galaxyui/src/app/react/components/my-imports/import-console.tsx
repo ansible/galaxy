@@ -42,7 +42,7 @@ export class ImportConsoleComponent extends React.Component<IProps, {}> {
             );
         }
 
-        if (this.props.followMessages) {
+        if (this.props.followMessages && this.lastImport.current) {
             this.lastImport.current.scrollIntoView({ behavior: 'smooth' });
         }
         return (
