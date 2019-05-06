@@ -95,7 +95,7 @@ export class RepoListItem extends React.Component<IProps, {}> {
             this.props.namespace.id
         }?type=repository&name=${repo.name}`;
 
-        let importElement;
+        let importElement = <span className='text'>Status Unknown</span>;
 
         if (
             repo['latest_import'] &&
