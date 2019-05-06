@@ -17,14 +17,15 @@ Collections are a distribution format for Ansible content. They can be used to
 package and distribute roles, modules and plugin types.
 
 .. note::
-    This is a Tech-Preview feature. Future Galaxy releases may introduce breaking changes.
+    This is a Tech-Preview feature and is only supported by Ansible 2.8 (or greater).
+    Future Galaxy or Ansible releases may introduce breaking changes.
 
 
 Collection Metadata
 ===================
 
 Collections require a ``galaxy.yml`` at the root level of the collection. This file contains all of the metadata that Galaxy
-and mazer need in order to package and import a collection.
+and Mazer need in order to package and import a collection.
 
 .. note::
     mazer will only accept ``.yml`` extensions for galaxy.yml.
@@ -62,6 +63,9 @@ and mazer need in order to package and import a collection.
     description: "Example collection metadata"
     license:
         - "MIT"
+    tags:
+        - demo
+        - collection
     repository: "https://www.github.com/my_org/my_collection"
     documentation: "http://my-docs.example.com"
     homepage: "http://www.example.com"
@@ -78,10 +82,11 @@ Required Fields:
 
 
 Optional Fields:
-    - ``dependencies``: A list of collections that this collection depends on.
+    - ``dependencies``: A list of collections that this collection depends on. Collections only
+      allow other collections as dependencies, not traditional roles.
     - ``description``: A short summary description of the collection.
     - ``license``: Either a single license or a list of licenses for content inside of a collection.
-      Galaxy currently only accepts SPDX licenses.
+      Galaxy currently only accepts `SPDX <https://spdx.org/licenses/>`_ licenses.
     - ``tags``: a list of tags. These have the same character requirements as ``namespace`` and ``name``.
     - ``repository``: URL of originating SCM repository.
     - ``documentation``: URL for online docs.
@@ -114,7 +119,7 @@ which can be uploaded to Galaxy.
 
 
 Upload Using Mazer
-    Artifacts can be uploaded with mazer using ``mazer publish --api-key=SECRET path/to/namespace_name-collection_name-1.0.12.tar.gz``
+    Artifacts can be uploaded with Mazer using ``mazer publish --api-key=SECRET path/to/namespace_name-collection_name-1.0.12.tar.gz``
 
     Your API key can be found at `galaxy.ansible.com/me/preferences <https://galaxy.ansible.com/me/preferences>`_.
 

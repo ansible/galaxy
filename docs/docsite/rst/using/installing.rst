@@ -257,11 +257,15 @@ as demonstrated by the following command:
 
   $ mazer install namespace.collection_name
 
-Older versions of collections can also be installed by using
+Older versions of collections can be installed by using.
 
 .. code-block:: bash
 
   $ mazer install namespace.collection_name,version=1.0.9
+
+.. note::
+
+    Only one version of a collection can be installed at a time.
 
 Collections are installed to the ``~/.ansible/collections/ansible_collections`` directory like so:
 
