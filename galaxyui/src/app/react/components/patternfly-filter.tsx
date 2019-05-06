@@ -51,6 +51,7 @@ export class FilterPF extends React.Component<IProps, IState> {
 
     filterValueSelected(option: SelectorOption) {
         this.props.addFilter(option.id, this.state.field);
+        this.setState({ value: option.title });
     }
 
     renderInput() {
@@ -59,6 +60,7 @@ export class FilterPF extends React.Component<IProps, IState> {
                 <Filter.ValueSelector
                     filterValues={this.state.field.options}
                     currentValue={this.state.value}
+                    placeholder={this.state.field.placeholder}
                     onFilterValueSelected={x => this.filterValueSelected(x)}
                 />
             );
