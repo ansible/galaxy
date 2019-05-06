@@ -54,9 +54,6 @@ export class NamespaceActionComponent implements OnInit {
         if (!this.namespace.active) {
             primaryTooltip = 'Namespace is disabled';
         }
-        if (!provider_namespaces.length) {
-            primaryTooltip = 'Missing provider namespaces';
-        }
 
         this.actionConfig = {
             primaryActions: [
@@ -66,8 +63,7 @@ export class NamespaceActionComponent implements OnInit {
                     styleClass: 'btn-primary',
                     tooltip: primaryTooltip,
                     template: this.buttonTemplate,
-                    disabled:
-                        !this.namespace.active || !provider_namespaces.length,
+                    disabled: !this.namespace.active,
                 },
             ] as Action[],
             moreActions: [

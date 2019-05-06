@@ -2,20 +2,26 @@ import * as React from 'react';
 import { Button, OverlayTrigger, Tooltip } from 'patternfly-react';
 import { View } from '../../shared-types/add-repository';
 
+import { ProviderNamespace } from '../../shared-types/add-repository';
+
 interface IProps {
     setView: (v: View) => void;
+    providerNamespaces: ProviderNamespace[];
 }
 
 export class PickImportType extends React.Component<IProps, {}> {
     render() {
+        const disableGithub = this.props.providerNamespaces.length === 0;
+
         return (
             <div className='add-content-type-selector'>
                 <div className='button-container'>
                     <OverlayTrigger
                         overlay={
                             <Tooltip id='repository'>
-                                Legacy Role import. Does not support Collection
-                                format.
+                                {disableGithub
+                                    ? 'Missing provider namespaces.'
+                                    : 'Legacy Role import. Does not support Collection format.'}
                             </Tooltip>
                         }
                         placement='top'
@@ -25,6 +31,7 @@ export class PickImportType extends React.Component<IProps, {}> {
                         <Button
                             bsSize='large'
                             onClick={() => this.props.setView(View.RepoImport)}
+                            disabled={disableGithub}
                         >
                             <i className='fa fa-github' /> Import Role from
                             GitHub
