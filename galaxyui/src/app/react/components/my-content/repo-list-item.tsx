@@ -34,7 +34,7 @@ export class RepoListItem extends React.Component<IProps, {}> {
                 }
                 key={repo.name}
                 heading={<Link to={repo['detail_url']}>{repo.name}</Link>}
-                description={repo.description.slice(0, 60)}
+                description={repo.description}
                 additionalInfo={this.renderAdditional(repo)}
                 actions={this.renderActions(repo)}
             />
