@@ -53,7 +53,7 @@ def import_collection(artifact_id, repository_id):
         collection_info = _process_collection(
             artifact, filename, task_logger)
         _publish_collection(task, artifact, repository, collection_info)
-    except exc.TaskError as e:
+    except Exception as e:
         artifact.delete()
         task_logger.error('Import Task "{task_id}" failed: {message}'
                           .format(task_id=task.id, message=str(e)))
