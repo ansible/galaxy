@@ -16,14 +16,15 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
-import celery
 
-from galaxy.main import models
+import celery
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.core import mail
 from allauth.account.models import EmailAddress
+from pulpcore import constants as pulp_const
 
+from galaxy.main import models
 
 LOG = logging.getLogger(__name__)
 
@@ -110,6 +111,37 @@ def email_verification(email, code, username):
         [email],
         fail_silently=True
     )
+
+
+@celery.task
+def collection_import(task_id):
+    '''Send notification to owners based on state of collection import task.'''
+    task = models.CollectionImport.objects.get(id=task_id)
+    if task.state == pulp_const.TASK_STATES.COMPLETED:
+        preference_name = 'notify_import_success'
+    elif task.state == pulp_const.TASK_STATES.FAILED:
+        preference_name = 'notify_import_fail'
+    else:
+        return
+
+    owners = _get_preferences(task.namespace.owners.all())
+
+    subject = f'Ansible Galaxy: import of {task.name} has {task.state}'
+    webui_title = f'Import {task.state}: {task.name}'
+
+    notification = NotificationManger(
+        email_template=import_status_template,
+        preferences_name=preference_name,
+        preferences_list=owners,
+        subject=subject,
+        db_message=webui_title,
+    )
+    ctx = {
+        'status': task.state,
+        'content_name': '{}.{}'.format(task.namespace.name, task.name),
+        'import_url': '{}/my-imports'.format(notification.url),
+    }
+    notification.notify(ctx)
 
 
 @celery.task

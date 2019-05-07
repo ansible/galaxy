@@ -27,6 +27,7 @@ from galaxy.common import schema
 from galaxy.importer import collection as importer
 from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
+from galaxy.main.celerytasks import user_notifications
 from galaxy.worker import exceptions as exc
 from galaxy.worker import logutils
 from galaxy.worker.importers.collection import check_dependencies
@@ -58,6 +59,8 @@ def import_collection(artifact_id, repository_id):
         artifact.delete()
         task_logger.error(f'Import Task "{task.id}" failed: {e}')
         raise
+    finally:
+        user_notifications.collection_import.delay(task_id=task.id)
 
     errors, warnings = task.get_message_stats()
     task_logger.info(
