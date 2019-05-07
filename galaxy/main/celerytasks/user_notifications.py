@@ -151,7 +151,7 @@ def collection_import(task_id):
 
 
 @celery.task
-def import_status(task_id, user_initiated, has_failed=False):
+def repo_import(task_id, user_initiated, has_failed=False):
     task = models.ImportTask.objects.get(id=task_id)
     repo = task.repository
     owners = repo.provider_namespace.namespace.owners.all()
@@ -197,7 +197,7 @@ def import_status(task_id, user_initiated, has_failed=False):
 
 
 @celery.task
-def collection_update(repo_id):
+def repo_update(repo_id):
     followers = models.UserPreferences.objects.filter(
         repositories_followed__pk=repo_id
     )
@@ -206,7 +206,7 @@ def collection_update(repo_id):
     author = repo.provider_namespace.namespace.name
 
     notification = NotificationManger(
-        email_template=update_collection_template,
+        email_template=repo_update_template,
         preferences_name='notify_content_release',
         preferences_list=followers,
         subject='Ansible Galaxy: New version of ' + repo.name,
@@ -226,7 +226,7 @@ def collection_update(repo_id):
 
 
 @celery.task
-def author_release(repo_id):
+def repo_author_release(repo_id):
     repo = models.Repository.objects.get(id=repo_id)
     namespace = repo.provider_namespace.namespace
     followers = models.UserPreferences.objects.filter(
@@ -239,7 +239,7 @@ def author_release(repo_id):
         email_template=author_release_template,
         preferences_name='notify_author_release',
         preferences_list=followers,
-        subject='Ansible Galaxy: {} has released a new collection'.format(
+        subject='Ansible Galaxy: {} has released a new role'.format(
             author
         ),
         db_message='New release from {}: {}'.format(
@@ -251,6 +251,7 @@ def author_release(repo_id):
     path = '/{}/{}/'.format(author, repo.name)
     ctx = {
         'author_name': author,
+        'type': 'repository',
         'content_name': repo.name,
         'content_url': notification.url + path,
     }
@@ -259,7 +260,7 @@ def author_release(repo_id):
 
 
 @celery.task
-def new_survey(repo_id):
+def repo_new_survey(repo_id):
     repo = models.Repository.objects.get(id=repo_id)
     author = repo.provider_namespace.namespace.name
     owners = _get_preferences(repo.provider_namespace.namespace.owners.all())
@@ -276,6 +277,7 @@ def new_survey(repo_id):
 
     ctx = {
         'content_score': repo.community_score,
+        'type': 'repository',
         'content_name': repo.name,
         'content_url': notification.url + path,
     }
@@ -297,13 +299,13 @@ def _get_preferences(users):
 import_status_template = '''Hello,
 
 This message is to notify you that a recent import of {content_name} on \
-Ansible galaxy has {status}.
+Ansible Galaxy has {status}.
 
 To see the import log, go to: {import_url}
 '''
 
 
-update_collection_template = '''Hello,
+repo_update_template = '''Hello,
 
 {namespace_name} has just released a new version of {content_name} on \
 Ansible Galaxy.
@@ -315,7 +317,7 @@ To see the new version, visit {content_url}.
 author_release_template = '''Hello,
 
 One of the author's ({author_name}) that you are following on Ansible Galaxy \
-has just released a new collection named {content_name}.
+has just released a new {type} named {content_name}.
 
 To see it, visit {content_url}.
 '''
@@ -324,7 +326,7 @@ To see it, visit {content_url}.
 new_survey_template = '''Hello,
 
 Someone has just submitted a new survey for {content_name} on Ansible Galaxy. \
-Your collection now has a user rating of {content_score}.
+Your {type} now has a user rating of {content_score}.
 
 Visit {content_url} for more details.
 '''

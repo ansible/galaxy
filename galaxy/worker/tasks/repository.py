@@ -58,9 +58,9 @@ def import_repository(task_id, user_initiated=False):
 
     try:
         _import_repository(import_task, logger)
-        user_notifications.import_status.delay(import_task.id, user_initiated)
+        user_notifications.repo_import.delay(import_task.id, user_initiated)
     except exc.LegacyTaskError as e:
-        user_notifications.import_status.delay(
+        user_notifications.repo_import.delay(
             import_task.id,
             user_initiated,
             has_failed=True
@@ -68,7 +68,7 @@ def import_repository(task_id, user_initiated=False):
         import_task.finish_failed(
             reason='Task "{}" failed: {}'.format(import_task.id, str(e)))
     except Exception as e:
-        user_notifications.import_status.delay(
+        user_notifications.repo_import.delay(
             import_task.id,
             user_initiated,
             has_failed=True
@@ -180,7 +180,7 @@ def _import_repository(import_task, logger):
         'errors'.format(warnings, errors))
 
     if repository.is_new:
-        user_notifications.author_release.delay(repository.id)
+        user_notifications.repo_author_release.delay(repository.id)
         repository.is_new = False
         repository.save()
 
@@ -342,7 +342,7 @@ def _update_repository_versions(repository, github_repo, logger):
                'semantic version format, skipping these tag(s): {}')
         logger.warning(msg.format(', '.join(skipped_tags)))
     if tags_added:
-        user_notifications.collection_update.delay(repository.id)
+        user_notifications.repo_update.delay(repository.id)
 
     to_update = set(git_tags) & set(db_tags)
     for version in to_update:

@@ -101,7 +101,7 @@ class RepositorySurveyList(base_views.ListCreateAPIView):
         # Each question answered comes as a separate HTTP request, so delay
         # the email update by 2 minutes to allow for all the questions to be
         # submitted so that the score includes all of the submitted answers.
-        user_notifications.new_survey.apply_async(
+        user_notifications.repo_new_survey.apply_async(
             (serializer.validated_data['repository'].id,),
             countdown=120
         )
