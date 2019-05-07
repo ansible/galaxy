@@ -38,7 +38,7 @@ ARTIFACT_REL_PATH = '{namespace}-{name}-{version}.tar.gz'
 
 def import_collection(artifact_id, repository_id):
     task = models.CollectionImport.current()
-    log.info('Starting collection import task: {}'.format(task.id))
+    log.info(f'Starting collection import task: {task.id}')
 
     artifact = pulp_models.Artifact.objects.get(pk=artifact_id)
     repository = pulp_models.Repository.objects.get(pk=repository_id)
@@ -47,22 +47,21 @@ def import_collection(artifact_id, repository_id):
         task.namespace.name, task.name, task.version)
 
     task_logger = _get_task_logger(task)
-    task_logger.info('Starting import: task_id={}, artifact_id={}'
-                     .format(task.id, artifact_id))
+    task_logger.info(
+        f'Starting import: task_id={task.id}, artifact_id={artifact_id}')
+
     try:
         collection_info = _process_collection(
             artifact, filename, task_logger)
         _publish_collection(task, artifact, repository, collection_info)
     except Exception as e:
         artifact.delete()
-        task_logger.error('Import Task "{task_id}" failed: {message}'
-                          .format(task_id=task.id, message=str(e)))
+        task_logger.error(f'Import Task "{task.id}" failed: {e}')
         raise
 
     warnings, errors = task.get_message_stats()
-    msg = ('Import completed with {warnings} warnings and {errors} errors'
-           .format(warnings=warnings, errors=errors))
-    task_logger.info(msg)
+    task_logger.info(
+        f'Import completed with {warnings} warnings and {errors} errors')
 
 
 def _get_task_logger(task):
