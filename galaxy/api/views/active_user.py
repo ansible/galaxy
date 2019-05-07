@@ -87,14 +87,13 @@ class ActiveUserNotificationsView(base_views.ListAPIView):
     view_name = 'my_notifications_list'
 
     def get_queryset(self):
-        obj = self.model.objects.filter(
+        return self.model.objects.filter(
             user=self.request.user
-        )
-        return obj
+        ).order_by('-id')
 
     def list(self, request, *args, **kwargs):
-        response = super(ActiveUserNotificationsView, self)\
-            .list(request, args, kwargs)
+        '''Add key alongside list of results.'''
+        response = super().list(request, *args, **kwargs)
 
         count = models.UserNotification.objects.filter(
             user=request.user,
