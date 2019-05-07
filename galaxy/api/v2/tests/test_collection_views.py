@@ -28,7 +28,7 @@ UserModel = get_user_model()
 
 class TestCollectionListView(APITestCase):
 
-    url = 'http://testserver/api/v2/collections/'
+    url = '/api/v2/collections/'
 
     def setUp(self):
         super().setUp()
@@ -141,8 +141,8 @@ class TestCollectionListView(APITestCase):
 
 
 class TestCollectionDetailView(APITestCase):
-    url_id = 'http://testserver/api/v2/collections/{pk}/'
-    url_name = 'http://testserver/api/v2/collections/{ns}/{name}/'
+    url_id = '/api/v2/collections/{pk}/'
+    url_name = '/api/v2/collections/{ns}/{name}/'
 
     def setUp(self):
         super().setUp()
@@ -172,10 +172,11 @@ class TestCollectionDetailView(APITestCase):
             assert response.status_code == http_codes.HTTP_200_OK
             result = response.json()
             assert result['id'] == self.collection.pk
-            assert result['href'] == urls[1]
+            assert result['href'] == f'http://testserver{urls[1]}'
             assert result['name'] == self.collection.name
             assert result['namespace']['name'] == self.namespace.name
-            assert result['versions_url'] == urls[1] + 'versions/'
+            assert result['versions_url'] == \
+                f'http://testserver{urls[1]}versions/'
             assert (result['highest_version']['version'] ==
                     self.version2.version)
             assert result['deprecated'] is False
