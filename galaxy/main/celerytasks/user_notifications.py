@@ -31,7 +31,7 @@ LOG = logging.getLogger(__name__)
 
 class NotificationManger(object):
     def __init__(self, email_template, preferences_name, preferences_list,
-                 subject, db_message=None, repo=None):
+                 subject, db_message=None, repo=None, collection=None):
         self.email_template = email_template
         self.preferences_name = preferences_name
         self.preferences_list = preferences_list
@@ -41,6 +41,8 @@ class NotificationManger(object):
         )
 
         self.repo = repo
+        self.collection = collection
+
         if db_message is None:
             self.db_message = subject
         else:
@@ -64,7 +66,8 @@ class NotificationManger(object):
                         user=user.user,
                         type=self.preferences_name,
                         message=self.db_message,
-                        repository=self.repo
+                        repository=self.repo,
+                        collection=self.collection,
                     )
             except Exception as e:
                 LOG.error(e)
@@ -119,8 +122,10 @@ def collection_import(task_id):
     task = models.CollectionImport.objects.get(id=task_id)
     if task.state == pulp_const.TASK_STATES.COMPLETED:
         preference_name = 'notify_import_success'
+        collection = task.imported_version.collection
     elif task.state == pulp_const.TASK_STATES.FAILED:
         preference_name = 'notify_import_fail'
+        collection = None
     else:
         return
 
@@ -135,6 +140,7 @@ def collection_import(task_id):
         preferences_list=owners,
         subject=subject,
         db_message=webui_title,
+        collection=collection,
     )
     ctx = {
         'status': task.state,

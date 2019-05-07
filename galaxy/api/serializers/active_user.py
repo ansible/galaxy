@@ -53,12 +53,14 @@ class ActiveUserPreferencesSerializer(BaseSerializer):
 
 class ActiveUserNotificationSerializer(BaseSerializer):
     repository = serializers.SerializerMethodField()
+    collection = serializers.SerializerMethodField()
 
     class Meta:
         model = models.UserNotification
         fields = (
             'id',
             'repository',
+            'collection',
             'message',
             'type',
             'seen'
@@ -67,14 +69,23 @@ class ActiveUserNotificationSerializer(BaseSerializer):
         read_only_fields = (
             'id',
             'repository',
+            'collection',
             'message',
             'type',
         )
 
     def get_repository(self, obj):
         if not obj.repository:
-            return obj.repository
+            return None
         return {
             'name': obj.repository.name,
             'namespace': obj.repository.provider_namespace.namespace.name
+        }
+
+    def get_collection(self, obj):
+        if not obj.collection:
+            return None
+        return {
+            'name': obj.collection.name,
+            'namespace': obj.collection.namespace.name,
         }
