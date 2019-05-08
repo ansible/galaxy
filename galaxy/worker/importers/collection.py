@@ -21,8 +21,8 @@ from galaxy.main.models import Namespace, Collection
 from galaxy.worker import exceptions as exc
 
 
-def _import_fail(msg):
-    raise exc.ImportFailed("Invalid collection metadata. %s" % msg) from None
+def _raise_import_fail(msg):
+    raise exc.ImportFailed(f'Invalid collection metadata. {msg}') from None
 
 
 def check_dependencies(collection_info):
@@ -34,21 +34,21 @@ def check_dependencies(collection_info):
         try:
             ns = Namespace.objects.get(name=ns_name)
         except Namespace.DoesNotExist:
-            _import_fail('Dependency namespace not in galaxy: %s' % dep)
+            _raise_import_fail(f'Dependency namespace not in galaxy: {dep}')
         try:
             collection = Collection.objects.get(namespace=ns.pk, name=name)
         except Collection.DoesNotExist:
-            _import_fail('Dependency collection not in galaxy: %s' % dep)
+            _raise_import_fail(f'Dependency collection not in galaxy: {dep}')
 
         spec = semver.Spec(version_spec)
         versions = (
             semver.Version(v.version) for v in collection.versions.all())
         no_match_message = ('Dependency found in galaxy but no matching '
-                            'version found: %s %s' % (dep, version_spec))
+                            f'version found: {dep} {version_spec}')
         try:
             if not spec.select(versions):
-                _import_fail(no_match_message)
+                _raise_import_fail(no_match_message)
         except TypeError:
             # semantic_version allows a Spec('~1') but throws TypeError on
             # attempted match to it
-            _import_fail(no_match_message)
+            _raise_import_fail(no_match_message)
