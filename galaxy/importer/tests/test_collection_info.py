@@ -102,17 +102,22 @@ invalid_licenses = [
 
 
 def test_base_col_info(base_col_info):
-    BaseCollectionInfo(**base_col_info)
+    res = BaseCollectionInfo(**base_col_info)
+    assert type(res) == BaseCollectionInfo
 
 
 def test_galaxy_col_info(galaxy_col_info):
-    GalaxyCollectionInfo(**galaxy_col_info)
+    res = GalaxyCollectionInfo(**galaxy_col_info)
+    assert type(res) == GalaxyCollectionInfo
 
 
 def test_readme_req(galaxy_col_info):
     galaxy_col_info['readme'] = None
+
     # readme not required by BaseCollectionInfo
-    BaseCollectionInfo(**galaxy_col_info)
+    res = BaseCollectionInfo(**galaxy_col_info)
+    assert type(res) == BaseCollectionInfo
+
     # readme required by GalaxyCollectionInfo
     with pytest.raises(ValueError) as exc:
         GalaxyCollectionInfo(**galaxy_col_info)
@@ -152,18 +157,19 @@ def test_invalid_tags(base_col_info):
 def test_max_tags(galaxy_col_info):
     galaxy_col_info['tags'] = [str(i) for i in range(90, 110)]
     res = GalaxyCollectionInfo(**galaxy_col_info)
-    assert '101' in res.tags
+    assert [str(x) for x in range(90, 110)] == res.tags
 
     galaxy_col_info['tags'] = [str(i) for i in range(90, 111)]
     with pytest.raises(ValueError) as exc:
         GalaxyCollectionInfo(**galaxy_col_info)
-    assert 'tags in metadata' in str(exc)
+    assert 'Expecting no more than ' in str(exc)
 
 
 def test_valid_semver(base_col_info):
     for ver in valid_semver:
         base_col_info['version'] = ver
-        BaseCollectionInfo(**base_col_info)
+        res = BaseCollectionInfo(**base_col_info)
+        assert res.version == ver
 
 
 def test_invalid_semver(base_col_info):
@@ -171,19 +177,22 @@ def test_invalid_semver(base_col_info):
         base_col_info['version'] = ver
         with pytest.raises(ValueError) as exc:
             BaseCollectionInfo(**base_col_info)
-        assert 'version' in str(exc)
+        assert "Expecting 'version' to be in semantic version" in str(exc)
 
 
 def test_valid_license(base_col_info):
-    for lic in valid_licenses:
-        base_col_info['license'] = lic
-        BaseCollectionInfo(**base_col_info)
+    for lic_list in valid_licenses:
+        base_col_info['license'] = lic_list
+        res = BaseCollectionInfo(**base_col_info)
+        assert res.license == lic_list
 
 
 def test_license_file(base_col_info):
     base_col_info['license'] = []
     base_col_info['license_file'] = 'my_very_own_license.txt'
-    BaseCollectionInfo(**base_col_info)
+    res = BaseCollectionInfo(**base_col_info)
+    assert len(res.license) == 0
+    assert res.license_file == 'my_very_own_license.txt'
 
 
 def test_empty_lic_and_lic_file(base_col_info):
@@ -205,7 +214,10 @@ def test_invalid_license(base_col_info):
         base_col_info['license'] = lic
         with pytest.raises(ValueError) as exc:
             BaseCollectionInfo(**base_col_info)
-        assert "Expecting 'license' to be a list of valid" in str(exc)
+        msg = ("Expecting 'license' to be a list of valid SPDX license "
+               "identifiers, instead found invalid license identifiers:")
+        assert msg in str(exc)
+        assert str(lic) in str(exc)
 
 
 def test_invalid_dep_type(base_col_info):
@@ -231,15 +243,17 @@ def test_invalid_dep_version(base_col_info):
 
 def test_non_null_str_fields(galaxy_col_info):
     galaxy_col_info['description'] = None
-    GalaxyCollectionInfo(**galaxy_col_info)
+    res = GalaxyCollectionInfo(**galaxy_col_info)
+    assert res.description is None
 
     galaxy_col_info['description'] = 'description of the collection'
-    GalaxyCollectionInfo(**galaxy_col_info)
+    res = GalaxyCollectionInfo(**galaxy_col_info)
+    assert res.description == 'description of the collection'
 
     galaxy_col_info['description'] = ['should be a string not list']
     with pytest.raises(ValueError) as exc:
         GalaxyCollectionInfo(**galaxy_col_info)
-    assert 'description' in str(exc)
+    assert "'description' must be a string" in str(exc)
 
 
 def test_dependency_bad_dot_format(galaxy_col_info):
