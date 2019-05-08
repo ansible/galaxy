@@ -16,6 +16,11 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 import hashlib
 from unittest import mock
+import os
+import tempfile
+import shutil
+import tarfile
+from contextlib import contextmanager
 
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
@@ -24,6 +29,17 @@ from rest_framework import status as http_codes
 from galaxy.main import models
 
 UserModel = get_user_model()
+
+
+@contextmanager
+def tar_archive_available():
+    dir = tempfile.mkdtemp()
+    file_path = os.path.join(dir, 'mynamespace-mycollection-1.2.3.tar.gz')
+    with open(file_path, 'wb') as fp:
+        tar = tarfile.open(fileobj=fp, mode='w')
+        tar.close()
+    yield file_path
+    shutil.rmtree(dir)
 
 
 class TestCollectionListView(APITestCase):
@@ -49,12 +65,11 @@ class TestCollectionListView(APITestCase):
         task_obj = models.ImportTask(id=42)
         self.create_task_mock.return_value = task_obj
 
-        open_mock = mock.mock_open(read_data=b'Test data')
-        with open_mock() as fp:
-            fp.name = 'mynamespace-mycollection-1.2.3.tar.gz'
-            response = self.client.post(self.url, data={
-                'file': fp
-            })
+        with tar_archive_available() as file_path:
+            with open(file_path, 'r') as fp:
+                response = self.client.post(self.url, data={
+                    'file': fp,
+                })
 
         self.create_task_mock.assert_called_once()
         assert response.status_code == http_codes.HTTP_202_ACCEPTED
@@ -65,16 +80,16 @@ class TestCollectionListView(APITestCase):
         task_obj = models.ImportTask(id=42)
         self.create_task_mock.return_value = task_obj
 
-        file_data = b'Test data'
-        file_sha256 = hashlib.sha256(file_data).hexdigest()
+        with tar_archive_available() as file_path:
+            with open(file_path, 'rb') as fp:
+                bytes = fp.read()
+            file_sha256 = hashlib.sha256(bytes).hexdigest()
 
-        open_mock = mock.mock_open(read_data=file_data)
-        with open_mock() as fp:
-            fp.name = 'mynamespace-mycollection-1.2.3.tar.gz'
-            response = self.client.post(self.url, data={
-                'file': fp,
-                'sha256': file_sha256,
-            })
+            with open(file_path, 'r') as fp:
+                response = self.client.post(self.url, data={
+                    'file': fp,
+                    'sha256': file_sha256,
+                })
 
         assert response.status_code == http_codes.HTTP_202_ACCEPTED
         assert response.json() == {
@@ -82,16 +97,16 @@ class TestCollectionListView(APITestCase):
         self.create_task_mock.assert_called_once()
 
     def test_upload_w_invalid_sha(self):
-        file_data = b'Test data'
-        file_sha256 = hashlib.sha256(file_data + b'x').hexdigest
+        with tar_archive_available() as file_path:
+            with open(file_path, 'rb') as fp:
+                bytes = fp.read()
+            file_sha256 = hashlib.sha256(bytes + b'x').hexdigest()
 
-        open_mock = mock.mock_open(read_data=file_data)
-        with open_mock() as fp:
-            fp.name = 'mynamespace-mycollection-1.2.3.tar.gz'
-            response = self.client.post(self.url, data={
-                'file': fp,
-                'sha256': file_sha256,
-            })
+            with open(file_path, 'r') as fp:
+                response = self.client.post(self.url, data={
+                    'file': fp,
+                    'sha256': file_sha256,
+                })
 
         assert response.status_code == http_codes.HTTP_400_BAD_REQUEST
         assert response.json() == {
