@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+import tarfile
+
 from django.conf import settings
 from django.core import exceptions as dj_exc
 from django.shortcuts import get_object_or_404
@@ -49,6 +51,11 @@ class CollectionExistsError(exceptions.ConflictError):
 class ArtifactExistsError(exceptions.ConflictError):
     default_detail = 'Artifact already exists.'
     default_code = 'conflict.artifact_exists'
+
+
+class ArtifactInvalidError(exceptions.ValidationError):
+    default_detail = 'Artifact not a valid tar archive file.'
+    default_code = 'invalid.artifact_invalid_tarfile'
 
 
 class CollectionDetailView(base.APIView):
@@ -90,6 +97,7 @@ class CollectionListView(base.APIView):
         namespace = self._get_namespace(data)
         self._check_namespace_access(namespace, request.user)
         self._check_version_conflict(namespace, filename)
+        self._check_is_tarfile(request.data['file'].file.name)
 
         artifact_data = {'file': request.data['file']}
         if serializer.data['sha256'] is not None:
@@ -147,6 +155,11 @@ class CollectionListView(base.APIView):
             raise CollectionExistsError(
                 f'Collection "{filename.namespace}-{filename.name}'
                 f'-{filename.version}" already exists.')
+
+    def _check_is_tarfile(self, file):
+        """Validate artifact is tarfile in view, before importer starts."""
+        if not tarfile.is_tarfile(file):
+            raise ArtifactInvalidError('Artifact not valid tar archive file.')
 
     def _save_artifact(self, data):
         artifact_serializer = ArtifactSerializer(data=data)
