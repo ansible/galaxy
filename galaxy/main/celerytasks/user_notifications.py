@@ -197,6 +197,40 @@ def repo_import(task_id, user_initiated, has_failed=False):
 
 
 @celery.task
+def collection_new_version(version_pk):
+    '''Send new version notification to collection followers.'''
+    version = models.CollectionVersion.objects.get(pk=version_pk)
+    collection_followers = models.UserPreferences.objects.filter(
+        collections_followed__pk=version.collection.pk,
+    )
+
+    collection = version.collection
+    namespace_name = collection.namespace.name
+    full_name = '{}.{}'.format(namespace_name, collection.name)
+    version_number = version.version
+
+    notification = NotificationManger(
+        email_template=collection_new_version_template,
+        preferences_name='notify_content_release',
+        preferences_list=collection_followers,
+        subject=f'Ansible Galaxy: New version of {full_name}',
+        db_message=f'New version of {full_name}: {version_number}',
+        collection=collection,
+    )
+
+    path = '/collections/{}/{}'.format(namespace_name, collection.name)
+
+    ctx = {
+        'namespace_name': namespace_name,
+        'content_name': full_name,
+        'version': version_number,
+        'content_url': '{}{}'.format(notification.url, path),
+    }
+
+    notification.notify(ctx)
+
+
+@celery.task
 def repo_update(repo_id):
     followers = models.UserPreferences.objects.filter(
         repositories_followed__pk=repo_id
@@ -302,6 +336,15 @@ This message is to notify you that a recent import of {content_name} on \
 Ansible Galaxy has {status}.
 
 To see the import log, go to: {import_url}
+'''
+
+
+collection_new_version_template = '''Hello,
+
+{namespace_name} has just released {content_name} version {version} on \
+Ansible Galaxy.
+
+To see the new version, visit {content_url}.
 '''
 
 

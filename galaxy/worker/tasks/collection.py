@@ -54,7 +54,7 @@ def import_collection(artifact_id, repository_id):
 
     try:
         importer_obj = _process_collection(artifact, filename, task_logger)
-        _publish_collection(task, artifact, repository, importer_obj)
+        version = _publish_collection(task, artifact, repository, importer_obj)
     except Exception as e:
         artifact.delete()
         task_logger.error(f'Import Task "{task.id}" failed: {e}')
@@ -62,6 +62,7 @@ def import_collection(artifact_id, repository_id):
     finally:
         user_notifications.collection_import.delay(task_id=task.id)
 
+    user_notifications.collection_new_version.delay(version.pk)
     errors, warnings = task.get_message_stats()
     task_logger.info(
         f'Import completed with {warnings} warnings and {errors} errors')
@@ -140,6 +141,7 @@ def _publish_collection(task, artifact, repository, importer_obj):
 
     task.imported_version = version
     task.save()
+    return version
 
 
 def _update_collection_tags(collection, version, metadata):
