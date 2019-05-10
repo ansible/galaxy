@@ -29,6 +29,7 @@ from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import logutils
+from galaxy.worker.importers.collection import check_dependencies
 
 
 log = logging.getLogger(__name__)
@@ -51,9 +52,8 @@ def import_collection(artifact_id, repository_id):
         f'Starting import: task_id={task.id}, artifact_id={artifact_id}')
 
     try:
-        collection_info = _process_collection(
-            artifact, filename, task_logger)
-        _publish_collection(task, artifact, repository, collection_info)
+        importer_obj = _process_collection(artifact, filename, task_logger)
+        _publish_collection(task, artifact, repository, importer_obj)
     except Exception as e:
         artifact.delete()
         task_logger.error(f'Import Task "{task.id}" failed: {e}')
@@ -76,18 +76,20 @@ def _process_collection(artifact, filename, task_logger):
             pkg_tar.extractall(extract_dir)
 
         try:
-            collection_info = importer.import_collection(
+            importer_obj = importer.import_collection(
                 extract_dir, filename, task_logger)
         except i_exc.ImporterError as e:
             raise exc.ImportFailed(str(e))
 
-    _log_collection_info(collection_info)
-    return collection_info
+        check_dependencies(importer_obj.collection_info)
+
+    _log_importer_results(importer_obj)
+    return importer_obj
 
 
 @transaction.atomic
-def _publish_collection(task, artifact, repository, collection_info):
-    metadata = collection_info.collection_info
+def _publish_collection(task, artifact, repository, importer_obj):
+    metadata = importer_obj.collection_info
     collection, _ = models.Collection.objects.get_or_create(
         namespace=task.namespace, name=metadata.name)
 
@@ -95,11 +97,11 @@ def _publish_collection(task, artifact, repository, collection_info):
         version = collection.versions.create(
             version=metadata.version,
             metadata=metadata.get_json(),
-            quality_score=collection_info.quality_score,
-            contents=collection_info.contents,
-            readme_mimetype=collection_info.readme['mimetype'],
-            readme_text=collection_info.readme['text'],
-            readme_html=collection_info.readme['html'],
+            quality_score=importer_obj.quality_score,
+            contents=importer_obj.contents,
+            readme_mimetype=importer_obj.readme['mimetype'],
+            readme_text=importer_obj.readme['text'],
+            readme_html=importer_obj.readme['html'],
         )
     except IntegrityError:
         raise exc.VersionConflict(
@@ -159,12 +161,12 @@ def _update_collection_tags(collection, version, metadata):
     collection.tags.remove(*tags_not_in_metadata)
 
 
-def _log_collection_info(collection_info):
+def _log_importer_results(importer_obj):
     log.debug('Collection loaded - metadata={}, quality_score={}'.format(
-        collection_info.collection_info.__dict__,
-        collection_info.quality_score
+        importer_obj.collection_info.__dict__,
+        importer_obj.quality_score
     ))
-    for content in collection_info.contents:
+    for content in importer_obj.contents:
         log.debug('Content: type={} name={} scores={}'.format(
             content['content_type'],
             content['name'],
