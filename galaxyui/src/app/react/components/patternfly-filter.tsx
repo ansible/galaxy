@@ -51,7 +51,7 @@ export class FilterPF extends React.Component<IProps, IState> {
 
     filterValueSelected(option: SelectorOption) {
         this.props.addFilter(option.id, this.state.field);
-        this.setState({ value: option.title });
+        // this.setState({ value: option.title });
     }
 
     renderInput() {
