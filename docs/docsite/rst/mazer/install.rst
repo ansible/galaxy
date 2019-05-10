@@ -67,10 +67,10 @@ Verifying installed version of ansible supports mazer content
 The versions of ansible that support mazer content have a config option for setting the content path.
 If the install ansible has this config option, mazer content will work.
 
-To verify that, run the command ``ansible-config list | grep DEFAULT_CONTENT_PATH``.
-If 'DEFAULT_CONFIG_PATH' is found the correct branch of ansible is installed.
+To verify that, run the command ``ansible-config list | grep COLLECTIONS_PATHS``.
+If 'COLLECTIONS_PATHS' is found the correct branch of ansible is installed.
 
 .. code-block:: bash
 
-    $ ansible-config list | grep DEFAULT_CONTENT_PATH
-    DEFAULT_CONTENT_PATH:
+    $ ansible-config list | grep COLLECTIONS_PATHS
+    COLLECTIONS_PATHS:
