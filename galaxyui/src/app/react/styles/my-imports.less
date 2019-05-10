@@ -88,6 +88,15 @@
             }
         }
 
+        // Give the last element some extra height so that it doesn't cut off
+        // messages when scroling down to it.
+        .last-message {
+            height: 100px;
+            width: 5px;
+            position: relative;
+            top: -150px;
+        }
+
         .message-list {
             background-color: @black;
             padding: 10px;
@@ -95,7 +104,7 @@
             border-radius: 2px;
             color: @white;
             line-height: 18px;
-            margin-bottom: 150px;
+            margin-bottom: 50px;
 
             .log-follow-button {
                 position: relative;

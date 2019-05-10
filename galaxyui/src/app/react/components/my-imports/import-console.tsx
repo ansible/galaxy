@@ -100,13 +100,12 @@ export class ImportConsoleComponent extends React.Component<IProps, {}> {
                             </span>
                         </div>
                     ) : null}
-
-                    <div
-                        className='message'
-                        key={'last'}
-                        ref={this.lastImport}
-                    />
                 </div>
+                <div
+                    className='last-message'
+                    key={'last'}
+                    ref={this.lastImport}
+                />
             </div>
         );
     }
