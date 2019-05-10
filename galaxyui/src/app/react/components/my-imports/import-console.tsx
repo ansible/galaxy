@@ -4,6 +4,7 @@ import { OverlayTrigger, Tooltip } from 'patternfly-react';
 import { Link } from '../../lib/link';
 import { ContentFormatURLs } from '../../../enums/format';
 import { ImportMetadata } from '../../shared-types/my-imports';
+import { PulpStatus } from '../../../enums/import-state.enum';
 
 interface IProps {
     taskMessages: ImporterMessage[];
@@ -12,11 +13,12 @@ interface IProps {
     importMetadata: ImportMetadata;
     noImportsExist: boolean;
 
-    toggleFollowMessages: () => void;
+    setFollowMessages: (follow: boolean) => void;
 }
 
 export class ImportConsoleComponent extends React.Component<IProps, {}> {
     lastImport: any;
+    isLoading = false;
 
     constructor(props) {
         super(props);
@@ -24,8 +26,25 @@ export class ImportConsoleComponent extends React.Component<IProps, {}> {
         this.lastImport = React.createRef();
     }
 
+    componentDidUpdate() {
+        this.followLogs();
+    }
+
+    componentDidMount() {
+        this.followLogs();
+    }
+
     render() {
-        const { selectedImport, taskMessages, noImportsExist } = this.props;
+        const {
+            selectedImport,
+            taskMessages,
+            noImportsExist,
+            importMetadata,
+        } = this.props;
+
+        this.isLoading =
+            importMetadata.state === PulpStatus.running ||
+            importMetadata.state === PulpStatus.waiting;
 
         if (!taskMessages || !selectedImport) {
             return (
@@ -42,9 +61,6 @@ export class ImportConsoleComponent extends React.Component<IProps, {}> {
             );
         }
 
-        if (this.props.followMessages && this.lastImport.current) {
-            this.lastImport.current.scrollIntoView({ behavior: 'smooth' });
-        }
         return (
             <div className='import-console'>
                 {this.renderTitle(selectedImport)}
@@ -59,15 +75,15 @@ export class ImportConsoleComponent extends React.Component<IProps, {}> {
                         <OverlayTrigger
                             placement='left'
                             overlay={
-                                <Tooltip id='scroll-top-bottom'>
-                                    Scroll to end of log
+                                <Tooltip id='follow-logs'>
+                                    {this.isLoading
+                                        ? 'Follow Logs'
+                                        : 'Scroll to End'}
                                 </Tooltip>
                             }
                         >
                             <span
-                                onClick={() =>
-                                    this.props.toggleFollowMessages()
-                                }
+                                onClick={() => this.handleScrollClick()}
                                 className='fa fa-arrow-circle-down clickable'
                             />
                         </OverlayTrigger>
@@ -186,5 +202,25 @@ export class ImportConsoleComponent extends React.Component<IProps, {}> {
                 </div>
             </div>
         );
+    }
+
+    private handleScrollClick() {
+        if (this.isLoading) {
+            this.props.setFollowMessages(!this.props.followMessages);
+        } else {
+            this.lastImport.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    private followLogs() {
+        if (this.props.followMessages && this.lastImport.current) {
+            window.requestAnimationFrame(() => {
+                this.lastImport.current.scrollIntoView({ behavior: 'smooth' });
+
+                if (!this.isLoading) {
+                    this.props.setFollowMessages(false);
+                }
+            });
+        }
     }
 }
