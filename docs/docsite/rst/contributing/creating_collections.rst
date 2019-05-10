@@ -58,9 +58,9 @@ and Mazer need in order to package and import a collection.
         - "Author2 (http://author2.example.com)"
         - "Author3 <author3@example.com>"
     dependencies:
-        - "collection.name1"
-        - "collection.name2"
-    description: "Example collection metadata"
+        "other_namespace.collection1": ">=1.0.0"
+        "other_namespace.collection2": ">=2.0.0,<3.0.0"
+        "anderson55.my_collection": "*"    # note: "*" selects the highest version available
     license:
         - "MIT"
     tags:
@@ -76,13 +76,16 @@ Required Fields:
     - ``namespace`` and ``name`` can only contain alphanumeric characters and underscores.
       Additionally neither can start with underscores or numbers and cannot contain consecutive
       underscores.
-    - ``version`` numbers must be compatibly with semantic versioning.
+    - ``version`` numbers must be compatible with semantic versioning.
     - ``readme`` contains the filename for the readme file, which can either be markdown (.md) or
       reStructuredText (.rst).
 
 
 Optional Fields:
-    - ``dependencies``: A list of collections that this collection depends on. Collections only
+    - ``dependencies``: A dictionary where keys are collections, and values are version
+      range 'specifiers <https://python-semanticversion.readthedocs.io/en/latest/#requirement-specification>`_,
+      it is good practice to depend on a version range to minimize conflicts, and pin to a
+      major version to protect against breaking changes, ex: ``"user1.collection1": ">=1.2.2,<2.0.0"``
       allow other collections as dependencies, not traditional roles.
     - ``description``: A short summary description of the collection.
     - ``license``: Either a single license or a list of licenses for content inside of a collection.
