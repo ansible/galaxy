@@ -62,7 +62,8 @@ def import_collection(artifact_id, repository_id):
     finally:
         user_notifications.collection_import.delay(task_id=task.id)
 
-    user_notifications.collection_new_version.delay(version.pk)
+    _notify_followers(version)
+
     errors, warnings = task.get_message_stats()
     task_logger.info(
         f'Import completed with {warnings} warnings and {errors} errors')
@@ -164,6 +165,13 @@ def _update_collection_tags(collection, version, metadata):
         if tag.name not in metadata.tags
     ]
     collection.tags.remove(*tags_not_in_metadata)
+
+
+def _notify_followers(version):
+    user_notifications.collection_new_version.delay(version.pk)
+    is_first_version = (version.collection.versions.count() == 1)
+    if is_first_version:
+        user_notifications.coll_author_release.delay(version.pk)
 
 
 def _log_importer_results(importer_obj):

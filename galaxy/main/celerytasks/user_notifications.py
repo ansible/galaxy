@@ -260,6 +260,36 @@ def repo_update(repo_id):
 
 
 @celery.task
+def coll_author_release(version_pk):
+    '''Send new collection notification to author followers.'''
+    version = models.CollectionVersion.objects.get(pk=version_pk)
+    author_followers = models.UserPreferences.objects.filter(
+        namespaces_followed=version.collection.namespace,
+    )
+    author = version.collection.namespace.name
+    full_name = '{}.{}'.format(author, version.collection.name)
+
+    notification = NotificationManger(
+        email_template=author_release_template,
+        preferences_name='notify_author_release',
+        preferences_list=author_followers,
+        subject=f'Ansible Galaxy: {author} has released a new collection',
+        db_message=f'New collection from {author}: {full_name}',
+        collection=version.collection,
+    )
+
+    path = '/collections/{}/{}'.format(author, version.collection.name)
+
+    ctx = {
+        'author_name': author,
+        'type': 'collection',
+        'content_name': full_name,
+        'content_url': '{}{}'.format(notification.url, path),
+    }
+    notification.notify(ctx)
+
+
+@celery.task
 def repo_author_release(repo_id):
     repo = models.Repository.objects.get(id=repo_id)
     namespace = repo.provider_namespace.namespace
