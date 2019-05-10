@@ -72,5 +72,5 @@ If 'DEFAULT_CONFIG_PATH' is found the correct branch of ansible is installed.
 
 .. code-block:: bash
 
-    $ ansible-config list | grep DEFAULT_CONTENT_PATH
-    DEFAULT_CONTENT_PATH:
+    $ ansible-config list | grep COLLECTIONS_PATHS
+    COLLECTIONS_PATHS:
