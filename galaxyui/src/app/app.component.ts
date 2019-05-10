@@ -23,11 +23,14 @@ import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
-import { AboutModalConfig, AboutModalEvent } from 'patternfly-ng/modal';
-
 import { VerticalNavigationItem } from 'patternfly-ng/navigation/vertical-navigation/vertical-navigation-item';
-import { Notification } from 'patternfly-ng/notification';
-import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
+import {
+    Notification,
+    NotificationService,
+    AboutModalConfig,
+    AboutModalEvent,
+    VerticalNavigationComponent,
+} from 'patternfly-ng';
 
 import { AuthService } from './auth/auth.service';
 import { ApiRootService } from './resources/api-root/api-root.service';
@@ -106,6 +109,9 @@ export class AppComponent implements OnInit {
 
     @ViewChild(NotificationDrawerComponent)
     notificationList: NotificationDrawerComponent;
+
+    @ViewChild(VerticalNavigationComponent)
+    verticalNavigation: VerticalNavigationComponent;
 
     ngOnInit(): void {
         // Patternfly embeds everything not related to navigation in a div with
@@ -190,6 +196,8 @@ export class AppComponent implements OnInit {
                 this.removeContentButtons();
             }
             this.optionallyAddMobileButtons();
+
+            this.collapseNavOnSmallScreens(window.innerWidth);
         });
         this.redirectUrl = this.authService.redirectUrl;
     }
@@ -246,6 +254,16 @@ export class AppComponent implements OnInit {
             this.addMobileButtons();
         } else {
             this.removeMobileButtons();
+        }
+    }
+
+    collapseNavOnSmallScreens(screenWidth: number) {
+        if (
+            screenWidth < 1300 &&
+            !this.verticalNavigation.navCollapsed &&
+            !this.verticalNavigation.inMobileState
+        ) {
+            this.verticalNavigation.handleNavBarToggleClick();
         }
     }
 
