@@ -9,58 +9,45 @@ import {
 
 interface IProps {
     filterConfig: FilterConfig;
+    field: FilterOption;
+    value: string;
     addFilter: (value, field) => void;
+    updateParent: (state) => void;
     style?: any;
 }
 
-interface IState {
-    field: FilterOption;
-    appliedFilters: AppliedFilter[];
-    value?: string;
-}
-
-export class FilterPF extends React.Component<IProps, IState> {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            field: this.props.filterConfig.fields[0],
-            appliedFilters: this.props.filterConfig.appliedFilters,
-            value: '',
-        };
-    }
-
+export class FilterPF extends React.Component<IProps, {}> {
     selectFilter(filter: FilterOption) {
-        this.setState({ field: filter });
+        this.props.updateParent({ selectedFilter: filter, filterValue: '' });
     }
 
     updateCurrentValue(event) {
-        this.setState({ value: event.target.value });
+        this.props.updateParent({ filterValue: event.target.value });
     }
 
     pressEnter(event) {
         if (event.key === 'Enter') {
             event.stopPropagation();
             event.preventDefault();
-            if (this.state.value.length > 0) {
-                this.props.addFilter(this.state.value, this.state.field);
-                this.setState({ value: '' });
+            if (this.props.value.length > 0) {
+                this.props.addFilter(this.props.value, this.props.field);
+                this.props.updateParent({ filterValue: '' });
             }
         }
     }
 
     filterValueSelected(option: SelectorOption) {
-        this.props.addFilter(option.id, this.state.field);
-        // this.setState({ value: option.title });
+        this.props.addFilter(option.id, this.props.field);
+        this.props.updateParent({ filterValue: option.title });
     }
 
     renderInput() {
-        if (this.state.field.type === 'select') {
+        if (this.props.field.type === 'select') {
             return (
                 <Filter.ValueSelector
-                    filterValues={this.state.field.options}
-                    currentValue={this.state.value}
-                    placeholder={this.state.field.placeholder}
+                    filterValues={this.props.field.options}
+                    currentValue={this.props.value}
+                    placeholder={this.props.field.placeholder}
                     onFilterValueSelected={x => this.filterValueSelected(x)}
                 />
             );
@@ -68,23 +55,31 @@ export class FilterPF extends React.Component<IProps, IState> {
 
         return (
             <FormControl
-                type={this.state.field.type}
-                placeholder={this.state.field.placeholder}
+                type={this.props.field.type}
+                placeholder={this.props.field.placeholder}
                 onChange={e => this.updateCurrentValue(e)}
-                value={this.state.value}
+                value={this.props.value}
                 onKeyPress={e => this.pressEnter(e)}
             />
         );
     }
 
     render() {
-        const { filterConfig, addFilter, ...rest } = this.props;
+        const {
+            filterConfig,
+            addFilter,
+            updateParent,
+            value,
+            field,
+            ...rest
+        } = this.props;
+        console.log(this.props);
         return (
             <Filter className='form-group'>
                 <Filter.TypeSelector
                     {...rest}
-                    filterTypes={this.props.filterConfig.fields}
-                    currentFilterType={this.state.field}
+                    filterTypes={filterConfig.fields}
+                    currentFilterType={field}
                     onFilterTypeSelected={i => this.selectFilter(i)}
                 />
                 {this.renderInput()}

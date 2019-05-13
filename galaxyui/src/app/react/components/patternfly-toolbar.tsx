@@ -11,6 +11,8 @@ import {
     FilterOption,
 } from '../shared-types/pf-toolbar';
 
+import { cloneDeep } from 'lodash';
+
 interface IProps {
     toolbarConfig: {
         filterConfig?: FilterConfig;
@@ -21,22 +23,25 @@ interface IProps {
 }
 
 interface IState {
-    appliedFilters: AppliedFilter[];
+    filterConfig: FilterConfig;
+    selectedFilter: FilterOption;
+    filterValue: string;
 }
 
 export class ToolBarPF extends React.Component<IProps, IState> {
     constructor(props) {
         super(props);
         this.state = {
-            appliedFilters: this.props.toolbarConfig.filterConfig
-                .appliedFilters,
+            filterConfig: this.props.toolbarConfig.filterConfig,
+            selectedFilter: this.props.toolbarConfig.filterConfig.fields[0],
+            filterValue: '',
         };
     }
 
     addFilter(value: string, field: FilterOption) {
         // // Check to see if an instance of the filter has already been added
         let alreadAdded = false;
-        this.state.appliedFilters.forEach(i => {
+        this.state.filterConfig.appliedFilters.forEach(i => {
             if (i.field.id === field.id) {
                 if (i.value === value) {
                     alreadAdded = true;
@@ -53,15 +58,20 @@ export class ToolBarPF extends React.Component<IProps, IState> {
             value: value,
         } as AppliedFilter;
 
-        const newFilters = this.state.appliedFilters.concat([newFilter]);
+        const newFilters = this.state.filterConfig.appliedFilters.concat([
+            newFilter,
+        ]);
+        const newConfig = cloneDeep(this.state.filterConfig);
+
+        newConfig.appliedFilters = newFilters;
 
         this.setState(
             {
-                appliedFilters: newFilters,
+                filterConfig: newConfig,
             },
             () =>
                 this.props.onFilterChange({
-                    appliedFilters: this.state.appliedFilters,
+                    appliedFilters: this.state.filterConfig.appliedFilters,
                     field: field,
                     value: value,
                 }),
@@ -69,26 +79,40 @@ export class ToolBarPF extends React.Component<IProps, IState> {
     }
 
     removeFilter(index) {
-        const { appliedFilters } = this.state;
-        appliedFilters.splice(index.index, 1);
+        const newConfig = cloneDeep(this.state.filterConfig);
+        newConfig.appliedFilters.splice(index.index, 1);
 
-        this.setState({ appliedFilters: appliedFilters }, () =>
-            this.props.onFilterChange(this.state),
+        this.setState({ filterConfig: newConfig }, () =>
+            this.props.onFilterChange({
+                appliedFilters: this.state.filterConfig.appliedFilters,
+            }),
         );
     }
 
     removeAllFilters() {
-        this.setState({ appliedFilters: [] }, () =>
-            this.props.onFilterChange(this.state),
+        const newConfig = cloneDeep(this.state.filterConfig);
+        newConfig.appliedFilters = [];
+
+        this.setState({ filterConfig: newConfig }, () =>
+            this.props.onFilterChange({
+                appliedFilters: this.state.filterConfig.appliedFilters,
+            }),
         );
+    }
+
+    private updateFromFilter(state) {
+        this.setState(state);
     }
 
     render() {
         return (
             <Toolbar>
                 <FilterPF
-                    filterConfig={this.props.toolbarConfig.filterConfig}
+                    filterConfig={this.state.filterConfig}
                     addFilter={(v, f) => this.addFilter(v, f)}
+                    updateParent={state => this.updateFromFilter(state)}
+                    value={this.state.filterValue}
+                    field={this.state.selectedFilter}
                 />
                 {this.props.toolbarConfig.sortConfig ? (
                     <SortPF
@@ -101,7 +125,7 @@ export class ToolBarPF extends React.Component<IProps, IState> {
                     numberOfResults={
                         this.props.toolbarConfig.filterConfig.resultsCount
                     }
-                    appliedFilters={this.state.appliedFilters}
+                    appliedFilters={this.state.filterConfig.appliedFilters}
                     removeFilter={i => this.removeFilter(i)}
                     removeAllFilters={() => this.removeAllFilters()}
                 />
