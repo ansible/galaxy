@@ -18,8 +18,8 @@ interface IProps {
         filterConfig?: FilterConfig;
         sortConfig?: SortConfig;
     };
-    onFilterChange: (state) => void;
-    onSortChange: (sortEvent) => void;
+    onFilterChange?: (state) => void;
+    onSortChange?: (sortEvent) => void;
 }
 
 interface IState {
@@ -80,9 +80,14 @@ export class ToolBarPF extends React.Component<IProps, IState> {
 
     removeFilter(index) {
         const newConfig = cloneDeep(this.state.filterConfig);
-        newConfig.appliedFilters.splice(index.index, 1);
+        const removed = newConfig.appliedFilters.splice(index.index, 1);
+        let newValue = this.state.filterValue;
 
-        this.setState({ filterConfig: newConfig }, () =>
+        if (removed.field.id === this.state.selectedFilter.id) {
+            newValue = '';
+        }
+
+        this.setState({ filterConfig: newConfig, filterValue: newValue }, () =>
             this.props.onFilterChange({
                 appliedFilters: this.state.filterConfig.appliedFilters,
             }),
@@ -96,6 +101,7 @@ export class ToolBarPF extends React.Component<IProps, IState> {
         this.setState({ filterConfig: newConfig }, () =>
             this.props.onFilterChange({
                 appliedFilters: this.state.filterConfig.appliedFilters,
+                filterValue: '',
             }),
         );
     }

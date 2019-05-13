@@ -73,7 +73,6 @@ export class FilterPF extends React.Component<IProps, {}> {
             field,
             ...rest
         } = this.props;
-        console.log(this.props);
         return (
             <Filter className='form-group'>
                 <Filter.TypeSelector
