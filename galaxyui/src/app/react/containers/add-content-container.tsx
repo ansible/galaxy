@@ -97,7 +97,7 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
         this.router = this.props.injector.get(Router);
 
         let buttonState = {
-            back: true,
+            back: false,
             okay: { enabled: false, text: 'OK' },
             cancel: true,
         };
@@ -192,6 +192,7 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
                 return (
                     <PickImportType
                         setView={x => this.setDisplayedContent(x)}
+                        providerNamespaces={this.providerNamespaces}
                     />
                 );
         }
