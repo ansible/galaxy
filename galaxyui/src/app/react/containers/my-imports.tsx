@@ -7,6 +7,7 @@ import { Injector } from '@angular/core';
 import { Location } from '@angular/common';
 import { ImportsService } from '../../resources/imports/imports.service';
 import { AuthService } from '../../auth/auth.service';
+import { PFBodyService } from '../../resources/pf-body/pf-body.service';
 
 // Types
 import { ContentFormat } from '../../enums/format';
@@ -45,6 +46,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
     authService: AuthService;
     location: Location;
     polling: Subscription;
+    PFBody: PFBodyService;
 
     constructor(props) {
         super(props);
@@ -78,6 +80,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
         this.importsService = this.props.injector.get(ImportsService);
         this.authService = this.props.injector.get(AuthService);
         this.location = this.props.injector.get(Location);
+        this.PFBody = this.props.injector.get(PFBodyService);
 
         this.polling = interval(2000).subscribe(() => {
             if (
@@ -120,9 +123,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
                             selectedImport={this.state.selectedImport}
                             importMetadata={this.state.importMetadata}
                             noImportsExist={this.state.noImportsExist}
-                            toggleFollowMessages={() =>
-                                this.toggleFollowMessages()
-                            }
+                            setFollowMessages={x => this.setFollowMessages(x)}
                         />
                     </div>
                 </div>
@@ -159,7 +160,7 @@ export class MyImportsPage extends React.Component<IProps, IState> {
     private poll() {
         this.loadTaskMessages(() => {
             // Update the state of the selected import in the list if it's
-            // different from the one loaded from the API. This makes it so
+            // different from the one loaded from the API.
             if (
                 this.state.selectedImport.state !==
                 this.state.importMetadata.state
@@ -195,8 +196,8 @@ export class MyImportsPage extends React.Component<IProps, IState> {
         );
     }
 
-    private toggleFollowMessages() {
-        this.setState({ followMessages: !this.state.followMessages });
+    private setFollowMessages(follow) {
+        this.setState({ followMessages: follow });
     }
 
     private loadSelectedNS() {
@@ -332,11 +333,13 @@ export class MyImportsPage extends React.Component<IProps, IState> {
     }
 
     private selectImportDetail(item: ImportList) {
+        this.PFBody.scrollToTop();
         this.setState(
             {
                 selectedImport: item,
                 taskMessages: null,
                 importMetadata: {} as ImportMetadata,
+                followMessages: false,
             },
             () => this.loadTaskMessages(),
         );
