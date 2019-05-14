@@ -177,8 +177,6 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'build', 'static')
 
-MEDIA_ROOT = '/var/lib/galaxy/media/'
-
 # Database
 # ---------------------------------------------------------
 

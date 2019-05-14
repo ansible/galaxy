@@ -40,6 +40,13 @@ MIDDLEWARE += [  # noqa: F405
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
+# Static files
+# ---------------------------------------------------------
+
+STATIC_ROOT = ''
+
+MEDIA_ROOT = '/var/lib/galaxy/media/'
+
 # Database
 # ---------------------------------------------------------
 
@@ -107,5 +114,3 @@ WAIT_FOR = [
     {'host': 'rabbitmq', 'port': 5672},
     {'host': 'influxdb', 'port': 8086},
 ]
-
-STATIC_ROOT = ''
