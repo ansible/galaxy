@@ -324,6 +324,34 @@ def repo_author_release(repo_id):
 
 
 @celery.task
+def collection_new_survey(collection_pk):
+    '''Send new survey notification to collection namespace owners.'''
+    collection = models.Collection.objects.get(pk=collection_pk)
+    owners = _get_preferences(collection.namespace.owners.all())
+    full_name = '{}.{}'.format(collection.namespace.name, collection.name)
+
+    notification = NotificationManger(
+        email_template=new_survey_template,
+        preferences_name='notify_survey',
+        preferences_list=owners,
+        subject='Ansible Galaxy: new survey for {}'.format(full_name),
+        db_message='New survey for {}'.format(full_name),
+        collection=collection,
+    )
+
+    path = '/{}/{}/'.format(collection.namespace.name, collection.name)
+
+    ctx = {
+        'content_score': collection.community_score,
+        'type': 'collection',
+        'content_name': full_name,
+        'content_url': '{}{}'.format(notification.url, path),
+    }
+
+    notification.notify(ctx)
+
+
+@celery.task
 def repo_new_survey(repo_id):
     repo = models.Repository.objects.get(id=repo_id)
     author = repo.provider_namespace.namespace.name
