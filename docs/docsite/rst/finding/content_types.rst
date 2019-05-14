@@ -61,5 +61,5 @@ OpenShift Origin cluster running the Ansible Service Broker. The short lived con
 an Ansible runtime environment, and any files required to perform the orchestration, including: playbooks, roles, and
 dependencies. 
 
-For more details regarding the specification, and how to create and use APBs, visit the `ansibleplaybookbundle/ansible-playbook-bundle
-project <https://github.com/ansibleplaybookbundle/ansible-playbook-bundle>`_
+For more details regarding the specification, and how to create and use APBs, visit the `ansibleplaybookbundle/apb
+project <https://github.com/automationbroker/apb>`_
