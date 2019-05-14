@@ -27,6 +27,16 @@ export class ContentToolbar extends React.Component<IProps, {}> {
                     placeholder: 'Filter by Name...',
                     type: 'text',
                 },
+                {
+                    id: 'type',
+                    title: 'Type',
+                    placeholder: 'Filter by Collection Type...',
+                    type: 'select',
+                    options: [
+                        { id: 'collection', title: 'Collection' },
+                        { id: 'repository', title: 'Repository' },
+                    ],
+                },
             ] as FilterOption[],
             resultsCount: numberOfResults,
             appliedFilters: [] as AppliedFilter[],

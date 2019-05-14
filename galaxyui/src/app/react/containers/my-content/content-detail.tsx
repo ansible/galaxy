@@ -2,18 +2,19 @@ import { Namespace } from '../../../resources/namespaces/namespace';
 import { Injector } from '@angular/core';
 
 import * as React from 'react';
-import { ContentType } from '../../shared-types/my-content';
 import { RepoDetail } from './repo-detail';
 import { CollectionDetail } from './collection-detail';
 import { PaginatedRepoCollection } from '../../../resources/combined/combined';
 
 import { RepoCollectionListService } from '../../../resources/combined/combined.service';
-import { ContentToolbar } from '../../components/my-content/content-toolbar';
 
 import { CollectionList } from '../../../resources/collections/collection';
 import { Repository } from '../../../resources/repositories/repository';
 import { AppliedFilter } from '../../shared-types/pf-toolbar';
 import { ContentList } from '../../components/my-content/content-list';
+import { interval, Subscription } from 'rxjs';
+
+import { cloneDeep } from 'lodash';
 
 interface IProps {
     namespace: Namespace;
@@ -34,6 +35,8 @@ export class ContentDetailContainer extends React.Component<IProps, IState> {
     repoCollectionListService: RepoCollectionListService;
     sortBy = 'name';
     appliedFilters: AppliedFilter[] = [];
+    polling: Subscription;
+    pollingEnabled = false;
 
     constructor(props) {
         super(props);
@@ -76,17 +79,57 @@ export class ContentDetailContainer extends React.Component<IProps, IState> {
                 handleSortChange={x => this.handleSortChange(x)}
                 handleFilterChange={x => this.handleFilterChange(x)}
             >
-                <CollectionDetail
-                    injector={injector}
-                    namespace={namespace}
-                    items={collections}
-                />
+                {collectionCount > 0 ? (
+                    <CollectionDetail
+                        injector={injector}
+                        namespace={namespace}
+                        items={collections}
+                    />
+                ) : null}
+
+                {repoCount > 0 ? (
+                    <RepoDetail
+                        injector={injector}
+                        namespace={namespace}
+                        items={repos}
+                        setToLoading={x => this.toggleLoadingForRepo(x)}
+                        refreshContent={() => this.loadData()}
+                        setPolling={x => (this.pollingEnabled = x)}
+                    />
+                ) : null}
             </ContentList>
         );
     }
 
     componentDidMount() {
         if (this.props.namespace.active) {
+            this.loadData();
+
+            if (this.props.namespace.active) {
+                this.polling = interval(10000).subscribe(() => {
+                    this.pollData();
+                });
+            }
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.polling) {
+            this.polling.unsubscribe();
+        }
+    }
+
+    private toggleLoadingForRepo(repo: Repository) {
+        const items = cloneDeep(this.state.repos);
+        const repoInd = items.findIndex(x => x.id === repo.id);
+
+        items[repoInd].summary_fields.loading = true;
+
+        this.setState({ repos: items });
+    }
+
+    private pollData() {
+        if (this.pollingEnabled) {
             this.loadData();
         }
     }
@@ -124,7 +167,7 @@ export class ContentDetailContainer extends React.Component<IProps, IState> {
             query[filter.field.id] = filter.value;
         }
 
-        query['order_by'] = this.sortBy;
+        query['order'] = this.sortBy;
 
         this.repoCollectionListService
             .query(query)

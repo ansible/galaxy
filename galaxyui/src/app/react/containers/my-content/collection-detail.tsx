@@ -3,29 +3,19 @@ import * as React from 'react';
 import { CollectionList } from '../../../resources/collections/collection';
 import { CollectionListService } from '../../../resources/collections/collection.service';
 
-import { ContentToolbar } from '../../components/my-content/content-toolbar';
-import { ContentType } from '../../shared-types/my-content';
-
 import { Injector } from '@angular/core';
 
 import { BsModalService } from 'ngx-bootstrap';
 
 import { Namespace } from '../../../resources/namespaces/namespace';
-import { PagedResponse } from '../../../resources/paged-response';
 
 import { AppliedFilter } from '../../shared-types/pf-toolbar';
 
 import { CollectionListItem } from '../../components/my-content/collection-list-item';
-import { ContentList } from '../../components/my-content/content-list';
 
 import { AddContentModalComponent } from '../../../my-content/add-content-modal/add-content-modal.component';
 
-import {
-    FormControl,
-    ListView,
-    ListViewItem,
-    EmptyState,
-} from 'patternfly-react';
+import { ListView } from 'patternfly-react';
 
 interface IProps {
     injector: Injector;
@@ -51,6 +41,11 @@ export class CollectionDetail extends React.Component<IProps, {}> {
         return (
             <div className='my-content-wrapper'>
                 <ListView>
+                    <div className='type-heading'>
+                        Collections{' '}
+                        <div className='counter'>{this.props.items.length}</div>
+                    </div>
+
                     {this.props.items.map(collection => {
                         return (
                             <CollectionListItem
