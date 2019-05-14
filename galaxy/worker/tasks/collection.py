@@ -59,7 +59,7 @@ def import_collection(artifact_id, repository_id):
         task_logger.error(f'Import Task "{task.id}" failed: {e}')
         raise
 
-    warnings, errors = task.get_message_stats()
+    errors, warnings = task.get_message_stats()
     task_logger.info(
         f'Import completed with {warnings} warnings and {errors} errors')
 
