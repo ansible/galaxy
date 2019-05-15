@@ -14,9 +14,6 @@ This topic describes how to import Ansible content into the public Galaxy web si
 Getting Started
 ===============
 
-At present, Galaxy only imports content from `GitHub <https://github.com>`_, and importing content to the `public Galaxy server </>`_
-requires authentication using a GitHub account.
-
 Logging In
 ----------
 
@@ -37,6 +34,10 @@ permissions to Galaxy:
 Galaxy requires access to your email address, in case an admin needs to reach out to you, read-write access to public repositories,
 using the ``public_repo`` scope, and read access to your organizations and teams. Galaxy will never write or commit anything to a
 repository. It needs access to public repositories so that it can read commits and the list of collaborators.
+
+.. note::
+    Galaxy only needs organization access to GitHub orgs for importing Roles from GitHub. Collections are hosted by Galaxy and can't
+    be imported from GitHub. As such, Collections, don't require GitHub access outside of using a GitHub account to login to Galaxy.
 
 Be sure to click the *Grant* button next to each organization that contains Ansible content you want to import into Galaxy. The following
 image shows the *Grant* button, after clicking it, you'll see a green checkmark to the right of the ogranization name, indicating that
@@ -81,7 +82,7 @@ Web Interface
 
 Before importing content into Galaxy, you must first authenticate using your GitHub credentials as discussed in :ref:`import_get_started`.
 
-Go to `My Content </my-content/namespaces>`_, where you will see one or more Galaxy namespaces, as depected in the image below. The first
+Go to `My Content </my-content/namespaces>`_, where you will see one or more Galaxy namespaces, as depicted in the image below. The first
 time you logged in, Galaxy created a namespace matching your GitHub namespace, so you should see at least one namespace. You'll
 import content from GitHub into a Galaxy namespace.
 
@@ -99,7 +100,8 @@ To add GitHub repositories to the namespace, click the *Add Content* button, as 
 
 .. image:: mycontent-03.png
 
-In the dialog box, as shown in the image below, choose the repositories you wish to add, and click the *OK* button to add them:
+In the dialog box, as shown in the image below, click "Import Role from GitHub" and then pick the repositories you wish to add,
+and click the *OK* button to add them:
 
 .. image:: mycontent-04.png
 
@@ -119,14 +121,23 @@ from a failed import, where several issues were found by YamlLint:
 
 .. image:: myimports-01.png
 
-With the issue resolved, restart the import process by clicking the import button near the top-right corner of My Imports, as shown
-below:
-
-.. image:: myimports-02.png
-
 You can also restart the import by clicking the import button on My Content for the repository, as shown here:
 
 .. image:: mycontent-07.png
+
+Adding Collections
+------------------
+
+To add Collections to a namespace, click the *Add Content* button as shown above. From the dialogue box, select "Upload New Collection".
+This will prompt you to upload collection artifact. Collection artifacts are built using ``mazer build`` as documented
+here: :ref:`building_collections`.
+
+.. image:: mycontent-13.png
+
+Once a collection has been uploaded and accepted by Galaxy, you will be redirected to the Imports page which will display the console
+output from the import process. As with roles, this will let you know if anything is wrong with your collection.
+
+.. image:: myimports-02.png
 
 Adding GitHub Organizations
 ---------------------------

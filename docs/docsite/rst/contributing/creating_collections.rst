@@ -101,8 +101,10 @@ Optional Fields:
     - ``issues``: URL for issue tracker.
 
 
-Building and Distributing
-=========================
+.. _building_collections:
+
+Building and Distributing Collections
+=====================================
 
 Building collections requires using the ``mazer`` command line tool available at the `Ansible
 Mazer project <https://github.com/ansible/mazer>`_.
