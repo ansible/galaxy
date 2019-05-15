@@ -21,6 +21,8 @@ package and distribute roles, modules and plugin types.
     Future Galaxy or Ansible releases may introduce breaking changes.
 
 
+.. _collection_metadata:
+
 Collection Metadata
 ===================
 
@@ -73,11 +75,13 @@ and Mazer need in order to package and import a collection.
 
 
 Required Fields:
-    - ``namespace`` and ``name`` can only contain alphanumeric characters and underscores.
-      Additionally neither can start with underscores or numbers and cannot contain consecutive
-      underscores.
-    - ``version`` numbers must be compatible with semantic versioning.
-    - ``readme`` contains the filename for the readme file, which can either be markdown (.md) or
+    - ``namespace``: the galaxy namespace that the collection will get uploaded to.
+        May only contain alphanumeric characters and underscores. Additionally
+        namespaces cannot start with underscores or numbers and cannot contain consecutive
+        underscores.
+    - ``name``: the collection's name. Has the same character restrictions as ``namespace``.
+    - ``version``: the collection's version. Must be compatible with semantic versioning.
+    - ``readme``: contains the filename for the readme file, which can either be markdown (.md) or
       reStructuredText (.rst).
 
 

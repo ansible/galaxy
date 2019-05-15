@@ -265,11 +265,13 @@ Older versions of collections can be installed by using.
 
 .. note::
 
-    Only one version of a collection can be installed at a time.
+    Mazer can only install one version of a collection at a time. To change the version of a
+    collection you've already installed or install multiple versions of a collection you need to
+    manually remove or rename the collection's path in the collections directory shown bellow.
 
 Collections are installed to the ``~/.ansible/collections/ansible_collections`` directory like so:
 
-::
+.. code-block:: bash
 
     .ansible/
     ├── collections/

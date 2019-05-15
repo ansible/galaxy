@@ -10,8 +10,8 @@ This topic describes how to version Ansible content
 
 .. _create_content_versions:
 
-Creating Content Versions
-=========================
+Versioning Roles
+================
 
 Galaxy imports content from repositories on GitHub, and as part of the import process, it scans the
 repository's git tags, looking for any that match the `Semantic Version <https://semver.org>`_ format.
@@ -21,7 +21,20 @@ Once content has been pushed to a GitHub repository, it can be versioned by crea
 ``git tag`` command. For more on how to create tags, view `Git Basics - Tagging <https://git-scm.com/book/en/v2/Git-Basics-Tagging>`_.
 
 .. note::
-    
+
     Enforcing the Semantic Version format for git tags will enable future releases of Galaxy to lock
     content versions, guaranteeing the consistency of downloaded content, and paving the way for the
     `Mazer client <https://github.com/ansible/mazer>`_ to update installed content.
+
+
+Versioning Collections
+======================
+
+Version numbers are required for collections and are included in the collection's ``galaxy.yml`` file
+(see :ref:`collection_metadata` for details). Galaxy enforces uniqueness on a collection's namespace, name,
+and version number. Once a collection is uploaded, it's set in stone and changing or removing a specific
+version is no longer allowed.
+
+Galaxy displays the details for the highest version number everywhere that collections are displayed in
+the user interface. Older versions are available for download, but information about older versions is
+not currently accessible via the web interface.
