@@ -77,10 +77,8 @@ If you wish to revoke Galaxy access to an organization, click the *Revoke* butto
 logout and log back into Galaxy using your GitHub credentials, and GitHub will present the permissions page, where you can grant access
 to your organizations, and authorize access to your GitHub namespace, as discussed above in :ref:`import_get_started`.
 
-Web Interface
-=============
-
-Before importing content into Galaxy, you must first authenticate using your GitHub credentials as discussed in :ref:`import_get_started`.
+Importing Roles
+===============
 
 Go to `My Content </my-content/namespaces>`_, where you will see one or more Galaxy namespaces, as depicted in the image below. The first
 time you logged in, Galaxy created a namespace matching your GitHub namespace, so you should see at least one namespace. You'll
@@ -92,9 +90,6 @@ Click the expansion arrow, as depicted below, to view any repositories associate
 Galaxy, then there likely aren't any repositories associated with it yet.
 
 .. image:: mycontent-02.png
-
-Adding Repositories
--------------------
 
 To add GitHub repositories to the namespace, click the *Add Content* button, as depicted in the image below:
 
@@ -125,148 +120,9 @@ You can also restart the import by clicking the import button on My Content for 
 
 .. image:: mycontent-07.png
 
-Adding Collections
-------------------
 
-To add Collections to a namespace, click the *Add Content* button as shown above. From the dialogue box, select "Upload New Collection".
-This will prompt you to upload collection artifact. Collection artifacts are built using ``mazer build`` as documented
-here: :ref:`building_collections`.
-
-.. image:: mycontent-13.png
-
-Once a collection has been uploaded and accepted by Galaxy, you will be redirected to the Imports page which will display the console
-output from the import process. As with roles, this will let you know if anything is wrong with your collection.
-
-.. image:: myimports-02.png
-
-Adding GitHub Organizations
----------------------------
-
-Content from multiple GitHub organizations can be imported into a Galaxy Namespace. To add additional organizations, on My Content,
-expand the menu for the Namespace, and choose *Edit Properties*, as shown here:
-
-.. image:: mycontent-08.png
-
-On the next page, scroll to the bottom of the page, where a list of available GitHub organizations is displayed. It's labeled
-*Provider Namespaces*, and represents the list of namespaces or ogranizations you have access to in GitHub.
-
-As indicated in the image below, click on an organization to select it and add it to the *Selected Provider Namespaces* on the right.
-Clicking the *X* next to the name on the right will remove it.
-
-.. image:: mycontent-09.png
-
-At the top of the list of Provider Namespace is a search box. If you don't see an organization listed, try typing the name in the
-box and pressing Enter.
-
-Click the *Save* button at the bottom of the page to update the Namespace with your changes, as shown below:
-
-.. image:: mycontent-10.png
-
-Adding Administrators
----------------------
-
-Multiple Galaxy users can own or have administration rights to a Namespace. To add additional owners to a Namespace, expand the Namespace
-menu on My Content, and choose *Edit Properties*, as depicted below:
-
-.. image:: mycontent-11.png
-
-On the next page, scroll toward the bottom of the page, where a list of *Namespace Owners* appears. Use the search box to find
-specific users by Galaxy username. Click on a user to add them to the list of *Selected Galaxy Users* on the right, or click the *X*
-next to the username to remove them from the list. The image below provides an example:
-
-.. image:: mycontent-12.png
-
-Anyone in the list of owners can import content into the Namespace. They can also modify properties of the Namespace, remove content,
-and disable the Namespace altogether, removing content from search results, and making it unavailable for download.
-
-After making changes to the list of owners, click the *Save* button at the bottom of the page to update the Namespace with your
-changes, as shown below:
-
-.. image:: mycontent-10.png
-
-Namespace Limitations
-=====================
-
-Namespace names in Galaxy are limited to lowercase word characters (i.e., a-z, 0-9) and '_', must have a minimum length of 2
-characters, and cannot start with an '_'.
-
-No other characters are allowed, including '.', '-', and space. The first time you log into Galaxy, the server will create a Namespace
-for you, if one does not already exist, by converting your username to lowercase, and replacing any '-' characters with '_'.
-
-Content Name Limitations
-========================
-
-Prior to Galaxy v3.0, the import process would alter the GitHub repository name to create the content name. Specifically, it would
-apply a regular expression, and remove 'ansible-' and 'role-' from the repository name. For example, a repository name of
-*ansible-role-apache* would become *apache*.
-
-Starting in v3.0, Galaxy no longer perform this calculation. Instead, the default content name is the unaltered repository name, with a
-couple minor exceptions, including: converting the name to all lowercase, and replacing any '-' or '.' characters with '_'.
-
-To override the default name for an Ansible role, set the ``role_name`` attribute in the role ``meta/main.yml`` file. The following snipet
-from a ``meta/main.yml`` file provides an example of setting the *role_name* attribute:
-
-.. code-block:: yaml
-
-  galaxy_info:
-    role_name: apache
-    description: Install the httpd service
-    company: Acme, Inc.
-
-To override the default name for an APB, set the *name* attribute in the ``apb.yml`` metadata file. The following snipet from an
-``apb.yml`` file provides an example of setting the *name* attribute:
-
-.. code-block:: yaml
-
-   version: 1.0
-   name: virtualization
-   description: KubeVirt installer
-   bindable: False
-   async: optional
-   metadata:
-     displayName: Kubevirt
-     longDescription: |
-       KubeVirt enables the migration of existing virtualized workloads directly into the development workflows supported by Kubernetes.
-       This provides a path to more rapid application modernization by:
-         - Supporting development of new microservice applications in containers that interact with existing virtualized applications.
-         - Combining existing virtualized workloads with new container workloads on the same platform, thereby making it easier to decompose monolithic virtualized workloads into containers over time.
-     documentationUrl: https://github.com/kubevirt/kubevirt/blob/master/README.md
-     imageUrl: https://cdn.pbrd.co/images/H5Gutd7.png
-     providerDisplayName: "Red Hat, Inc."
-
-
-Since the *name* attribute is set to 'virtualization' in the above example, Galaxy will import the APB with the name 'virtualization',
-rather than the repository name.
-
-.. note::
-
-    Content names are limited to lowercase word characters (i.e., a-z, 0-9) and '_'. No special characters are allowed, including '.',
-    '-', and space. During import, any '.' and '-' characters contained in the repository name or role_name will be replaced with '_'.
-
-.. note::
-
-    Setting the value of *role_name* on an existing role will change the name of the role by converting it
-    to lowercase, and translating '-'  and '.' to '_'. If the name of an existing role should not be
-    altered, don't set the value of *role_name*.
-
-Creating Organizational Namespaces
-==================================
-
-In order to protect against copyright and trademark infringements, new Galaxy namespaces can only be created by submitting a
-request to the Galaxy team. A team member will review the request and create the new namespace within 1 to 2 business days.
-
-When submitting a request, please include a link to the GitHub organization and a list of Galaxy usernames to be given ownership
-rights to the new namespace. `Click here to submit a request now <https://github.com/ansible/galaxy/issues/new?template=New_namespace.md>`_.
-
-Content Versions
-================
-
-Galaxy supports versioning content through git tags that match the `Semantic Version format <https://semver.org>`_.
-
-For more on creating tags, view :ref:`versioning_content`.
-
-Travis CI
-=========
+Import Roles via Travis CI
+--------------------------
 
 After logging into Galaxy for the first time, you can initiate content imports directly from Travis. In your ``.travis.yml`` file,
 add a webhook to the notifications section, as shown below:
@@ -322,3 +178,150 @@ A ``git push`` of a git tag to the repository will always trigger an import.
    You must first log into Galaxy to create a Namespace and associate GitHub organizations with the
    Namespace. If a Namespace does not exist, or the GitHub organization where the content exists is not
    associated with a Namespace, then Galaxy will not know how to import the content.
+
+
+Content Name Limitations
+------------------------
+
+Prior to Galaxy v3.0, the import process would alter the GitHub repository name to create the content name. Specifically, it would
+apply a regular expression, and remove 'ansible-' and 'role-' from the repository name. For example, a repository name of
+*ansible-role-apache* would become *apache*.
+
+Starting in v3.0, Galaxy no longer perform this calculation. Instead, the default content name is the unaltered repository name, with a
+couple minor exceptions, including: converting the name to all lowercase, and replacing any '-' or '.' characters with '_'.
+
+To override the default name for an Ansible role, set the ``role_name`` attribute in the role ``meta/main.yml`` file. The following snipet
+from a ``meta/main.yml`` file provides an example of setting the *role_name* attribute:
+
+.. code-block:: yaml
+
+  galaxy_info:
+    role_name: apache
+    description: Install the httpd service
+    company: Acme, Inc.
+
+To override the default name for an APB, set the *name* attribute in the ``apb.yml`` metadata file. The following snippet from an
+``apb.yml`` file provides an example of setting the *name* attribute:
+
+.. code-block:: yaml
+
+   version: 1.0
+   name: virtualization
+   description: KubeVirt installer
+   bindable: False
+   async: optional
+   metadata:
+     displayName: Kubevirt
+     longDescription: |
+       KubeVirt enables the migration of existing virtualized workloads directly into the development workflows supported by Kubernetes.
+       This provides a path to more rapid application modernization by:
+         - Supporting development of new microservice applications in containers that interact with existing virtualized applications.
+         - Combining existing virtualized workloads with new container workloads on the same platform, thereby making it easier to decompose monolithic virtualized workloads into containers over time.
+     documentationUrl: https://github.com/kubevirt/kubevirt/blob/master/README.md
+     imageUrl: https://cdn.pbrd.co/images/H5Gutd7.png
+     providerDisplayName: "Red Hat, Inc."
+
+
+Since the *name* attribute is set to 'virtualization' in the above example, Galaxy will import the APB with the name 'virtualization',
+rather than the repository name.
+
+.. note::
+
+    Content names are limited to lowercase word characters (i.e., a-z, 0-9) and '_'. No special characters are allowed, including '.',
+    '-', and space. During import, any '.' and '-' characters contained in the repository name or role_name will be replaced with '_'.
+
+.. note::
+
+    Setting the value of *role_name* on an existing role will change the name of the role by converting it
+    to lowercase, and translating '-'  and '.' to '_'. If the name of an existing role should not be
+    altered, don't set the value of *role_name*.
+
+Content Versions
+----------------
+
+Galaxy supports versioning content through git tags that match the `Semantic Version format <https://semver.org>`_.
+
+For more on creating tags, view :ref:`versioning_content`.
+
+
+Uploading Collections
+=====================
+
+To add Collections to a namespace, click the *Add Content* button as shown above. From the dialogue box, select "Upload New Collection".
+This will prompt you to upload collection artifact. Collection artifacts are built using ``mazer build`` as documented
+here: :ref:`building_collections`.
+
+.. image:: mycontent-13.png
+
+Once a collection has been uploaded and accepted by Galaxy, you will be redirected to the Imports page which will display the console
+output from the import process. As with roles, this will let you know if anything is wrong with your collection.
+
+.. image:: myimports-02.png
+
+
+Managing Namespaces
+===================
+
+Adding GitHub Organizations to a Namespace
+------------------------------------------
+
+Content from multiple GitHub organizations can be imported into a Galaxy Namespace. To add additional organizations, on My Content,
+expand the menu for the Namespace, and choose *Edit Properties*, as shown here:
+
+.. image:: mycontent-08.png
+
+On the next page, scroll to the bottom of the page, where a list of available GitHub organizations is displayed. It's labeled
+*Provider Namespaces*, and represents the list of namespaces or ogranizations you have access to in GitHub.
+
+As indicated in the image below, click on an organization to select it and add it to the *Selected Provider Namespaces* on the right.
+Clicking the *X* next to the name on the right will remove it.
+
+.. image:: mycontent-09.png
+
+At the top of the list of Provider Namespace is a search box. If you don't see an organization listed, try typing the name in the
+box and pressing Enter.
+
+Click the *Save* button at the bottom of the page to update the Namespace with your changes, as shown below:
+
+.. image:: mycontent-10.png
+
+Adding Administrators to a Namespace
+------------------------------------
+
+Multiple Galaxy users can own or have administration rights to a Namespace. To add additional owners to a Namespace, expand the Namespace
+menu on My Content, and choose *Edit Properties*, as depicted below:
+
+.. image:: mycontent-11.png
+
+On the next page, scroll toward the bottom of the page, where a list of *Namespace Owners* appears. Use the search box to find
+specific users by Galaxy username. Click on a user to add them to the list of *Selected Galaxy Users* on the right, or click the *X*
+next to the username to remove them from the list. The image below provides an example:
+
+.. image:: mycontent-12.png
+
+Anyone in the list of owners can import content into the Namespace. They can also modify properties of the Namespace, remove content,
+and disable the Namespace altogether, removing content from search results, and making it unavailable for download.
+
+After making changes to the list of owners, click the *Save* button at the bottom of the page to update the Namespace with your
+changes, as shown below:
+
+.. image:: mycontent-10.png
+
+Namespace Limitations
+---------------------
+
+Namespace names in Galaxy are limited to lowercase word characters (i.e., a-z, 0-9) and '_', must have a minimum length of 2
+characters, and cannot start with an '_'.
+
+No other characters are allowed, including '.', '-', and space. The first time you log into Galaxy, the server will create a Namespace
+for you, if one does not already exist, by converting your username to lowercase, and replacing any '-' characters with '_'.
+
+
+Creating Organizational Namespaces
+----------------------------------
+
+In order to protect against copyright and trademark infringements, new Galaxy namespaces can only be created by submitting a
+request to the Galaxy team. A team member will review the request and create the new namespace within 1 to 2 business days.
+
+When submitting a request, please include a link to the GitHub organization and a list of Galaxy usernames to be given ownership
+rights to the new namespace. `Click here to submit a request now <https://github.com/ansible/galaxy/issues/new?template=New_namespace.md>`_.
