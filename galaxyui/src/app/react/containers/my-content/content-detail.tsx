@@ -84,6 +84,7 @@ export class ContentDetailContainer extends React.Component<IProps, IState> {
                         injector={injector}
                         namespace={namespace}
                         items={collections}
+                        collectionCount={collectionCount}
                     />
                 ) : null}
 
@@ -92,6 +93,7 @@ export class ContentDetailContainer extends React.Component<IProps, IState> {
                         injector={injector}
                         namespace={namespace}
                         items={repos}
+                        repoCount={repoCount}
                         setToLoading={x => this.toggleLoadingForRepo(x)}
                         refreshContent={() => this.loadData()}
                         setPolling={x => (this.pollingEnabled = x)}

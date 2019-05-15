@@ -20,6 +20,7 @@ interface IProps {
     injector: Injector;
     namespace: Namespace;
     items: Repository[];
+    repoCount: number;
 
     setToLoading: (item: Repository) => void;
     refreshContent: () => void;
@@ -51,9 +52,12 @@ export class RepoDetail extends React.Component<IProps, {}> {
         const repos = this.mapRepos(this.props.items);
         return (
             <ListView>
-                <div className='type-heading'>
-                    Repositories <div className='counter'>{repos.length}</div>
-                </div>
+                {repos.length > 0 ? (
+                    <div className='type-heading'>
+                        Repositories{' '}
+                        <div className='counter'>{this.props.repoCount}</div>
+                    </div>
+                ) : null}
 
                 {repos.map(repo => {
                     return (

@@ -21,6 +21,7 @@ interface IProps {
     injector: Injector;
     namespace: Namespace;
     items: CollectionList[];
+    collectionCount: number;
 }
 
 export class CollectionDetail extends React.Component<IProps, {}> {
@@ -41,10 +42,14 @@ export class CollectionDetail extends React.Component<IProps, {}> {
         return (
             <div className='my-content-wrapper'>
                 <ListView>
-                    <div className='type-heading'>
-                        Collections{' '}
-                        <div className='counter'>{this.props.items.length}</div>
-                    </div>
+                    {this.props.items.length > 0 ? (
+                        <div className='type-heading'>
+                            Collections{' '}
+                            <div className='counter'>
+                                {this.props.collectionCount}
+                            </div>
+                        </div>
+                    ) : null}
 
                     {this.props.items.map(collection => {
                         return (
