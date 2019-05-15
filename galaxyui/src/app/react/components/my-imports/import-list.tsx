@@ -38,9 +38,45 @@ interface IProps {
     setQueryParams: (filters) => void;
 }
 
-export class ImportListComponent extends React.Component<IProps, {}> {
-    appliedFilters = [] as AppliedFilter[];
-    filterConfig = {} as FilterConfig;
+interface IState {
+    selectedFilter: FilterOption;
+    filterValue: string;
+}
+
+export class ImportListComponent extends React.Component<IProps, IState> {
+    filterConfig: FilterConfig;
+
+    constructor(props) {
+        super(props);
+
+        this.filterConfig = {
+            fields: [
+                {
+                    id: 'name',
+                    title: 'Name',
+                    placeholder: 'Filter by Name...',
+                    type: 'text',
+                },
+                {
+                    id: 'type',
+                    title: 'Type',
+                    placeholder: 'Filter by Content Type...',
+                    type: 'select',
+                    options: [
+                        { id: 'collection', title: 'Collection' },
+                        { id: 'repository', title: 'Repository' },
+                    ],
+                },
+            ] as FilterOption[],
+            resultsCount: 0,
+            appliedFilters: [] as AppliedFilter[],
+        } as FilterConfig;
+
+        this.state = {
+            selectedFilter: this.filterConfig.fields[0],
+            filterValue: '',
+        };
+    }
 
     render() {
         const {
@@ -54,40 +90,21 @@ export class ImportListComponent extends React.Component<IProps, {}> {
             queryParams,
         } = this.props;
 
-        const pageNumber = queryParams.page || 1;
-        const pageSize = queryParams.page_size || 10;
+        const pageNumber = Number(queryParams.page) || 1;
+        const pageSize = Number(queryParams.page_size) || 10;
 
-        this.filterConfig = {
-            fields: [
-                {
-                    id: 'name',
-                    title: 'Name',
-                    placeholder: 'Filter by Name...',
-                    type: 'text',
-                },
-                {
-                    id: 'type',
-                    title: 'Type',
-                    placeholder: 'Filter by Collection Type...',
-                    type: 'select',
-                    options: [
-                        { id: 'collection', title: 'Collection' },
-                        { id: 'repository', title: 'Repository' },
-                    ],
-                },
-            ] as FilterOption[],
-            resultsCount: 0,
-            appliedFilters: [] as AppliedFilter[],
-        } as FilterConfig;
-
-        this.appliedFilters = [];
-
-        for (const key of Object.keys(queryParams)) {
+        // The applied filters on the filter widget are determined by the
+        // page's query params, so rather than holding applied filters in state
+        // we're going to dynamically generate it from query params each time
+        // the page is re-rendered so as to maintain a definitive source of
+        // truth for the page
+        this.filterConfig.appliedFilters = [];
+        for (const key of Object.keys(this.props.queryParams)) {
             const field = this.filterConfig.fields.find(x => x.id === key);
             if (field) {
-                this.appliedFilters.push({
+                this.filterConfig.appliedFilters.push({
                     field: field,
-                    value: queryParams[key],
+                    value: this.props.queryParams[key],
                 });
             }
         }
@@ -98,12 +115,15 @@ export class ImportListComponent extends React.Component<IProps, {}> {
                 <FilterPF
                     filterConfig={this.filterConfig}
                     addFilter={(v, f) => this.addFilter(v, f)}
+                    field={this.state.selectedFilter}
+                    value={this.state.filterValue}
+                    updateParent={x => this.updateParent(x)}
                 />
 
-                {this.appliedFilters.length > 0 ? (
+                {this.filterConfig.appliedFilters.length > 0 ? (
                     <ToolBarResultsPF
                         numberOfResults={numberOfResults}
-                        appliedFilters={this.appliedFilters}
+                        appliedFilters={this.filterConfig.appliedFilters}
                         removeFilter={i => this.removeFilter(i)}
                         removeAllFilters={() => this.removeAllFilters()}
                     />
@@ -133,6 +153,10 @@ export class ImportListComponent extends React.Component<IProps, {}> {
         );
     }
 
+    private updateParent(state) {
+        this.setState(state);
+    }
+
     private setPageSize(size) {
         const params = cloneDeep(this.props.queryParams);
 
@@ -148,7 +172,7 @@ export class ImportListComponent extends React.Component<IProps, {}> {
     }
 
     private addFilter(value: string, field: FilterOption) {
-        // // Check to see if an instance of the filter has already been added
+        // Check to see if an instance of the filter has already been added
         const params = cloneDeep(this.props.queryParams);
         params[field.id] = value;
         params['page'] = 1;
@@ -157,12 +181,16 @@ export class ImportListComponent extends React.Component<IProps, {}> {
     }
 
     private removeFilter(index) {
-        const filter = this.appliedFilters[index.index];
+        const filter = this.filterConfig.appliedFilters[index.index];
         const params = cloneDeep(this.props.queryParams);
         delete params[filter.field.id];
         params['page'] = 1;
 
         this.props.setQueryParams(params);
+
+        if (filter.field.id === this.state.selectedFilter.id) {
+            this.setState({ filterValue: '' });
+        }
     }
 
     private removeAllFilters() {
@@ -174,6 +202,7 @@ export class ImportListComponent extends React.Component<IProps, {}> {
         params['page'] = 1;
 
         this.props.setQueryParams(params);
+        this.setState({ filterValue: '' });
     }
 
     private renderList(
