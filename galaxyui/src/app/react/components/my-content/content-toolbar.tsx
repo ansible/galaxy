@@ -8,8 +8,6 @@ import {
     SortFieldOption,
 } from '../../shared-types/pf-toolbar';
 
-import { ContentType } from '../../shared-types/my-content';
-
 interface IProps {
     numberOfResults: number;
     onSortChange: (sortEvent) => void;
