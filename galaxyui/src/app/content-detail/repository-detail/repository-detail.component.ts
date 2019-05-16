@@ -149,7 +149,7 @@ export class RepositoryDetailComponent implements OnInit {
                 contentParams['name'] = name.toLowerCase();
             }
 
-            const contentObs = this.contentService.query();
+            const contentObs = this.contentService.query(contentParams);
 
             const namespaceObs = this.namespaceService
                 .query({
@@ -161,6 +161,8 @@ export class RepositoryDetailComponent implements OnInit {
                 this.repository = data[0];
                 this.content = data[1];
                 this.namespace = data[2];
+
+                console.log(params);
 
                 if (this.repository) {
                     this.repoType = RepoFormats[this.repository.format];
@@ -205,12 +207,12 @@ export class RepositoryDetailComponent implements OnInit {
                     // Append author namespace and repository name to breadcrumb
                     this.pageTitle += `${this.namespace.name};/${
                         this.namespace.name
-                    };${params['repository']};`;
+                    };${params['name']};`;
 
                     // If content is specified, append it to the breadcrumb
                     if (this.selectedContent) {
                         this.pageTitle += `/${this.namespace.name}/${
-                            params['repository']
+                            params['name']
                         };${req_content_name}`;
                     }
                     this.repository.last_import = 'NA';
