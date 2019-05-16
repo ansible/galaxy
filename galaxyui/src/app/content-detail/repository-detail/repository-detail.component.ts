@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 
 import { forkJoin, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
 import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
@@ -24,6 +25,7 @@ import { Version } from '../../resources/repositories/version';
 
 import { ContentService } from '../../resources/content/content.service';
 import { RepositoryService } from '../../resources/repositories/repository.service';
+import { NamespaceService } from '../../resources/namespaces/namespace.service';
 
 import { CommunityDetails, DetailMessage } from '../cards/survey/types';
 
@@ -49,6 +51,7 @@ export class RepositoryDetailComponent implements OnInit {
         private route: ActivatedRoute,
         private contentService: ContentService,
         private repoService: RepositoryService,
+        private namespaceService: NamespaceService,
     ) {}
 
     pageTitle = '';
@@ -126,10 +129,38 @@ export class RepositoryDetailComponent implements OnInit {
         } as EmptyStateConfig;
 
         this.route.params.subscribe(params => {
-            this.route.data.subscribe(data => {
-                this.repository = data['repository'];
-                this.namespace = data['namespace'];
-                this.content = data['content'];
+            const namespace = params['namespace'].toLowerCase();
+            const repository = params['repository'].toLowerCase();
+            const name = params['content_name'];
+
+            const reposObs = this.repoService
+                .query({
+                    name__iexact: repository,
+                    provider_namespace__namespace__name__iexact: namespace,
+                })
+                .pipe(map(results => results[0]));
+
+            const contentParams = {
+                repository__name__iexact: repository,
+                repository__provider_namespace__namespace__name__iexact: namespace,
+            };
+
+            if (name) {
+                contentParams['name'] = name.toLowerCase();
+            }
+
+            const contentObs = this.contentService.query();
+
+            const namespaceObs = this.namespaceService
+                .query({
+                    name__iexact: namespace,
+                })
+                .pipe(map(results => results[0]));
+
+            forkJoin([reposObs, contentObs, namespaceObs]).subscribe(data => {
+                this.repository = data[0];
+                this.content = data[1];
+                this.namespace = data[2];
 
                 if (this.repository) {
                     this.repoType = RepoFormats[this.repository.format];

@@ -4,12 +4,7 @@ import { RepositoryDetailComponent } from './content-detail/repository-detail/re
 import { CollectionDetailComponent } from './content-detail/collection-detail/collection-detail.component';
 import { NotFoundComponent } from './exception-pages/not-found/not-found.component';
 
-import {
-    ContentResolver,
-    NamespaceResolver,
-    RepositoryResolver as ContentRepositoryResolver,
-    CollectionResolver,
-} from './content-detail/content-detail.resolver.service';
+import { CollectionResolver } from './content-detail/content-detail.resolver.service';
 
 import {
     NamespaceDetailResolver,
@@ -41,20 +36,10 @@ const appRoutes: Routes = [
     {
         path: 'repositories/:namespace/:repository/:content_name',
         component: RepositoryDetailComponent,
-        resolve: {
-            content: ContentResolver,
-            repository: ContentRepositoryResolver,
-            namespace: NamespaceResolver,
-        },
     },
     {
         path: 'repositories/:namespace/:repository',
         component: RepositoryDetailComponent,
-        resolve: {
-            content: ContentResolver,
-            repository: ContentRepositoryResolver,
-            namespace: NamespaceResolver,
-        },
     },
     {
         path: 'repositories/:namespace',
