@@ -162,8 +162,6 @@ export class RepositoryDetailComponent implements OnInit {
                 this.content = data[1];
                 this.namespace = data[2];
 
-                console.log(params);
-
                 if (this.repository) {
                     this.repoType = RepoFormats[this.repository.format];
                     if (this.repoType !== RepoFormats.apb) {
