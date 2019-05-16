@@ -37,7 +37,7 @@ export class CollectionDetailComponent implements OnInit {
     ngOnInit() {
         this.route.params.subscribe(params => {
             const namespace = params['namespace'].toLowerCase();
-            const collection = params['collection'].toLowerCase();
+            const collection = params['name'].toLowerCase();
 
             this.collectionDetailService
                 .get(namespace, collection)

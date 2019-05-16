@@ -30,6 +30,7 @@ import { ModulesComponent } from './content/modules/modules.component';
 import { PluginsComponent } from './content/plugins/plugins.component';
 import { RolesComponent } from './content/roles/roles.component';
 import { ContentHeaderComponent } from './content-header/content-header.component';
+import { DetailLoaderComponent } from './detail-loader.component';
 
 import { ScoreBarComponent } from './shared/score-bar/score-bar.component';
 
@@ -64,6 +65,7 @@ import { ScoreBarComponent } from './shared/score-bar/score-bar.component';
         PluginsComponent,
         ScoreBarComponent,
         QualityDetailsComponent,
+        DetailLoaderComponent,
     ],
 })
 export class ContentDetailModule {}

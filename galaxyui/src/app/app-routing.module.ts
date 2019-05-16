@@ -1,13 +1,14 @@
 import { NgModule } from '@angular/core';
 import { AuthorDetailComponent } from './authors/detail/author-detail.component';
-import { RepositoryDetailComponent } from './content-detail/repository-detail/repository-detail.component';
-import { CollectionDetailComponent } from './content-detail/collection-detail/collection-detail.component';
+import { DetailLoaderComponent } from './content-detail/detail-loader.component';
 import { NotFoundComponent } from './exception-pages/not-found/not-found.component';
 
 import {
     NamespaceDetailResolver,
     RepositoryCollectionResolver,
 } from './authors/authors.resolver.service';
+
+import { TypeCheckResolver } from './content-detail/content-detail.resolver.service';
 
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
@@ -30,46 +31,20 @@ const appRoutes: Routes = [
     // that they are resolved between the static routes ('/search', '/my-content' etc)
     // and the wildcard ('**')
 
-    // Repository Routes
-    {
-        path: 'repositories/:namespace/:repository/:content_name',
-        component: RepositoryDetailComponent,
-    },
-    {
-        path: 'repositories/:namespace/:repository',
-        component: RepositoryDetailComponent,
-    },
-    {
-        path: 'repositories/:namespace',
-        redirectTo: ':namespace',
-    },
-    {
-        path: 'repositories',
-        redirectTo: 'search',
-    },
-
-    // Collection Routes
-    {
-        path: 'collections/:namespace/:collection',
-        component: CollectionDetailComponent,
-    },
-    {
-        path: 'collections/:namespace',
-        redirectTo: ':namespace',
-    },
-    {
-        path: 'collections',
-        redirectTo: 'search',
-    },
-
     // Legacy repository routes
     {
-        path: ':namespace/:repository/:content_name',
-        redirectTo: 'repositories/:namespace/:repository/:content_name',
+        path: ':namespace/:name/:content_name',
+        component: DetailLoaderComponent,
+        resolve: {
+            contentType: TypeCheckResolver,
+        },
     },
     {
-        path: ':namespace/:repository',
-        redirectTo: 'repositories/:namespace/:repository',
+        path: ':namespace/:name',
+        component: DetailLoaderComponent,
+        resolve: {
+            contentType: TypeCheckResolver,
+        },
     },
     {
         path: ':namespace',

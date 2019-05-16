@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -130,7 +130,7 @@ export class RepositoryDetailComponent implements OnInit {
 
         this.route.params.subscribe(params => {
             const namespace = params['namespace'].toLowerCase();
-            const repository = params['repository'].toLowerCase();
+            const repository = params['name'].toLowerCase();
             const name = params['content_name'];
 
             const reposObs = this.repoService

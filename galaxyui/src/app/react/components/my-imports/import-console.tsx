@@ -2,7 +2,6 @@ import * as React from 'react';
 import { ImporterMessage, ImportList } from '../../../resources/imports/import';
 import { OverlayTrigger, Tooltip } from 'patternfly-react';
 import { Link } from '../../lib/link';
-import { ContentFormatURLs } from '../../../enums/format';
 import { ImportMetadata } from '../../shared-types/my-imports';
 import { PulpStatus } from '../../../enums/import-state.enum';
 
@@ -127,9 +126,9 @@ export class ImportConsoleComponent extends React.Component<IProps, {}> {
                 <div className='title-container'>
                     <Link
                         className='title'
-                        to={`/${ContentFormatURLs[selectedImport.type]}/${
-                            selectedImport.namespace.name
-                        }/${selectedImport.name}`}
+                        to={`/${selectedImport.namespace.name}/${
+                            selectedImport.name
+                        }`}
                     >
                         {selectedImport.namespace.name}.{selectedImport.name}
                     </Link>
