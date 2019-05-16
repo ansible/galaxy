@@ -82,7 +82,7 @@ Importing Roles
 
 Go to `My Content </my-content/namespaces>`_, where you will see one or more Galaxy namespaces, as depicted in the image below. The first
 time you logged in, Galaxy created a namespace matching your GitHub namespace, so you should see at least one namespace. You'll
-import content from GitHub into a Galaxy namespace.
+import roles from GitHub into a Galaxy namespace.
 
 .. image:: mycontent-01.png
 
@@ -106,7 +106,7 @@ updated every few seconds.
 .. image:: mycontent-05.png
 
 The import process analyzes metadata and performs static analysis on the repository contents, so it's quite possible it will find
-an issue that prevents the content from bein imported. If this happens, and the status of the import shows *Failed*, click on the
+an issue that prevents the role from being imported. If this happens, and the status of the import shows *Failed*, click on the
 import status message, as shown below, to view more details:
 
 .. image:: mycontent-06.png
@@ -124,7 +124,7 @@ You can also restart the import by clicking the import button on My Content for 
 Import Roles via Travis CI
 --------------------------
 
-After logging into Galaxy for the first time, you can initiate content imports directly from Travis. In your ``.travis.yml`` file,
+After logging into Galaxy for the first time, you can initiate role imports directly from Travis. In your ``.travis.yml`` file,
 add a webhook to the notifications section, as shown below:
 
 
@@ -176,18 +176,18 @@ A ``git push`` of a git tag to the repository will always trigger an import.
 .. note::
 
    You must first log into Galaxy to create a Namespace and associate GitHub organizations with the
-   Namespace. If a Namespace does not exist, or the GitHub organization where the content exists is not
-   associated with a Namespace, then Galaxy will not know how to import the content.
+   Namespace. If a Namespace does not exist, or the GitHub organization where the role exists is not
+   associated with a Namespace, then Galaxy will not know how to import the role.
 
 
-Content Name Limitations
-------------------------
+Role Name Limitations
+---------------------
 
-Prior to Galaxy v3.0, the import process would alter the GitHub repository name to create the content name. Specifically, it would
+Prior to Galaxy v3.0, the import process would alter the GitHub repository name to create the role name. Specifically, it would
 apply a regular expression, and remove 'ansible-' and 'role-' from the repository name. For example, a repository name of
 *ansible-role-apache* would become *apache*.
 
-Starting in v3.0, Galaxy no longer perform this calculation. Instead, the default content name is the unaltered repository name, with a
+Starting in v3.0, Galaxy no longer perform this calculation. Instead, the default role name is the unaltered repository name, with a
 couple minor exceptions, including: converting the name to all lowercase, and replacing any '-' or '.' characters with '_'.
 
 To override the default name for an Ansible role, set the ``role_name`` attribute in the role ``meta/main.yml`` file. The following snipet
@@ -236,10 +236,10 @@ rather than the repository name.
     to lowercase, and translating '-'  and '.' to '_'. If the name of an existing role should not be
     altered, don't set the value of *role_name*.
 
-Content Versions
-----------------
+Role Versions
+--------------
 
-Galaxy supports versioning content through git tags that match the `Semantic Version format <https://semver.org>`_.
+Galaxy supports versioning roles through git tags that match the `Semantic Version format <https://semver.org>`_.
 
 For more on creating tags, view :ref:`versioning_content`.
 
