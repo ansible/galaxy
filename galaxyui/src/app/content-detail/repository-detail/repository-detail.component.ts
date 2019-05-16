@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import * as moment from 'moment';
 
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';

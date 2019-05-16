@@ -4,6 +4,8 @@ import { CollectionDetail } from '../../resources/collections/collection';
 import { ViewTypes } from '../../enums/view-types.enum';
 import * as moment from 'moment';
 import { CommunityDetails, DetailMessage } from '../cards/survey/types';
+import { forkJoin } from 'rxjs';
+import { CollectionDetailService } from '../../resources/collections/collection.service';
 
 @Component({
     selector: 'app-collection-detail',
@@ -26,37 +28,48 @@ export class CollectionDetailComponent implements OnInit {
     // For binding to the survey
     mappedNamespaceOwners: any[];
 
-    constructor(private route: ActivatedRoute, private router: Router) {}
+    constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+        private collectionDetailService: CollectionDetailService,
+    ) {}
 
     ngOnInit() {
-        this.route.data.subscribe(data => {
-            if (data.collection['name']) {
-                this.collection = data.collection;
-                this.collection.latest_version.created = moment(
-                    this.collection.latest_version.created,
-                ).fromNow();
-                this.pageLoading = false;
+        this.route.params.subscribe(params => {
+            const namespace = params['namespace'].toLowerCase();
+            const collection = params['collection'].toLowerCase();
 
-                if (this.collection.namespace.is_vendor) {
-                    this.pageTitle = 'Vendors;/vendors;';
-                    this.pageIcon = 'fa fa-star';
-                } else {
-                    this.pageTitle = 'Community Authors;/community;';
-                    this.pageIcon = 'fa fa-users';
-                }
+            this.collectionDetailService
+                .get(namespace, collection)
+                .subscribe(data => {
+                    if (data['name']) {
+                        this.collection = data;
+                        this.collection.latest_version.created = moment(
+                            this.collection.latest_version.created,
+                        ).fromNow();
+                        this.pageLoading = false;
 
-                // Append author namespace and repository name to breadcrumb
-                this.pageTitle += `${this.collection.namespace.name};/${
-                    this.collection.namespace.name
-                };${this.collection.name};`;
+                        if (this.collection.namespace.is_vendor) {
+                            this.pageTitle = 'Vendors;/vendors;';
+                            this.pageIcon = 'fa fa-star';
+                        } else {
+                            this.pageTitle = 'Community Authors;/community;';
+                            this.pageIcon = 'fa fa-users';
+                        }
 
-                this.mappedNamespaceOwners = [];
-                this.collection.namespace.owners.forEach(id => {
-                    this.mappedNamespaceOwners.push({ id: id });
+                        // Append author namespace and repository name to breadcrumb
+                        this.pageTitle += `${this.collection.namespace.name};/${
+                            this.collection.namespace.name
+                        };${this.collection.name};`;
+
+                        this.mappedNamespaceOwners = [];
+                        this.collection.namespace.owners.forEach(id => {
+                            this.mappedNamespaceOwners.push({ id: id });
+                        });
+                    } else {
+                        this.router.navigate(['not-found']);
+                    }
                 });
-            } else {
-                this.router.navigate(['not-found']);
-            }
         });
     }
 

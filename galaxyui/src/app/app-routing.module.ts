@@ -4,8 +4,6 @@ import { RepositoryDetailComponent } from './content-detail/repository-detail/re
 import { CollectionDetailComponent } from './content-detail/collection-detail/collection-detail.component';
 import { NotFoundComponent } from './exception-pages/not-found/not-found.component';
 
-import { CollectionResolver } from './content-detail/content-detail.resolver.service';
-
 import {
     NamespaceDetailResolver,
     RepositoryCollectionResolver,
@@ -54,9 +52,6 @@ const appRoutes: Routes = [
     {
         path: 'collections/:namespace/:collection',
         component: CollectionDetailComponent,
-        resolve: {
-            collection: CollectionResolver,
-        },
     },
     {
         path: 'collections/:namespace',
