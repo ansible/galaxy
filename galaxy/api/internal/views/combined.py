@@ -108,7 +108,15 @@ class RepoAndCollectionList(base.APIView):
         return response.Response(result)
 
     def _validate_order(self, order):
-        allowed_orders = ['download_count', 'name', '-download_count', '-name']
+        allowed_orders = [
+            'download_count',
+            '-download_count',
+            'name',
+            '-name',
+            'modified',
+            '-modified'
+        ]
+
         if order not in allowed_orders:
             raise exceptions.ValidationError(
                 detail='Order must be one of {fields}'.format(

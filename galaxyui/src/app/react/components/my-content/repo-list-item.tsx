@@ -53,6 +53,10 @@ export class RepoListItem extends React.Component<IProps, {}> {
             importing = true;
         }
 
+        if (repo['summary_fields']['loading']) {
+            importing = true;
+        }
+
         return (
             <div>
                 <Button
