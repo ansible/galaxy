@@ -118,6 +118,12 @@ def _import_repository(import_task, logger):
                 .format(old_name=old_name, new_name=new_name))
             repository.name = new_name
 
+    # NOTE: upon successful import, the role's namespace will get assigned
+    # the repo's provider_namespace -> namespace, so that is checked here
+    _check_collection_name_conflict(
+        ns=repository.provider_namespace.namespace,
+        name=repository.name)
+
     context = utils.Context(
         repository=repository, github_token=token,
         github_client=gh_api, github_repo=gh_repo)
@@ -197,6 +203,20 @@ def _import_repository(import_task, logger):
         'measurement': 'content_score',
         'fields': fields
     })
+
+
+def _check_collection_name_conflict(ns, name):
+    collections = models.Collection.objects.filter(
+        namespace=ns,
+        name=name,
+    )
+    if not collections:
+        return
+    raise exc.ImportFailed(
+        f'A collection ({ns.name}.{name}) under the namespace {ns.name} '
+        'already exists, please use a different name for the role '
+        'via the meta/main.yml role_name attribute'
+    )
 
 
 def _update_task_msg_content_id(import_task):
