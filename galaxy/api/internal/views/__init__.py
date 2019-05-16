@@ -27,9 +27,14 @@ from .combined import (  # noqa: F401
     RepoAndCollectionList
 )
 
+from .content_type import (
+    ContentTypeView
+)
+
 __all__ = (
     'CollectionList',
     'CollectionDetail',
     'NamespaceImportsList',
-    'RepoAndCollectionList'
+    'RepoAndCollectionList',
+    'ContentTypeView'
 )
