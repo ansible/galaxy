@@ -4,7 +4,6 @@ import { CollectionDetail } from '../../resources/collections/collection';
 import { ViewTypes } from '../../enums/view-types.enum';
 import * as moment from 'moment';
 import { CommunityDetails, DetailMessage } from '../cards/survey/types';
-import { forkJoin } from 'rxjs';
 import { CollectionDetailService } from '../../resources/collections/collection.service';
 
 @Component({

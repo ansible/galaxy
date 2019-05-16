@@ -91,7 +91,7 @@
     <div class="row item-row" *ngFor="let item of collections">
         <div class="col-sm-6">
             <div class="title list-content">
-                <a [routerLink]="['/', 'collections', namespace.name, item.name]">
+                <a [routerLink]="['/', namespace.name, item.name]">
                     {{item.name}}
                 </a>
             </div>
