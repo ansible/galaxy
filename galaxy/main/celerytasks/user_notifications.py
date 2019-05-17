@@ -218,7 +218,7 @@ def collection_new_version(version_pk):
         collection=collection,
     )
 
-    path = '/collections/{}/{}'.format(namespace_name, collection.name)
+    path = '/{}/{}'.format(namespace_name, collection.name)
 
     ctx = {
         'namespace_name': namespace_name,
@@ -278,7 +278,7 @@ def coll_author_release(version_pk):
         collection=version.collection,
     )
 
-    path = '/collections/{}/{}'.format(author, version.collection.name)
+    path = '/{}/{}'.format(author, version.collection.name)
 
     ctx = {
         'author_name': author,
@@ -315,7 +315,7 @@ def repo_author_release(repo_id):
     path = '/{}/{}/'.format(author, repo.name)
     ctx = {
         'author_name': author,
-        'type': 'repository',
+        'type': 'role',
         'content_name': repo.name,
         'content_url': notification.url + path,
     }
