@@ -164,7 +164,7 @@ export class ContentHeaderComponent implements OnInit {
         }
 
         this.headerData = {
-            formatType: 'Repository',
+            formatType: 'Role',
             repoType: RepoFormats[this.repository.format],
             iconClass: RepoFormatsIconClasses[this.repository.format],
             tooltip: RepoFormatsTooltips[this.repository.format],
