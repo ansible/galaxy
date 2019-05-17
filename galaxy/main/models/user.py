@@ -4,6 +4,7 @@ from django.db import models
 
 from .base import BaseModel, PrimordialModel
 from .repository import Repository
+from .collection import Collection
 
 
 class UserPreferences(BaseModel):
@@ -128,6 +129,12 @@ class UserNotification(BaseModel):
         Repository,
         on_delete=models.SET_NULL,
         null=True
+    )
+
+    collection = models.ForeignKey(
+        Collection,
+        on_delete=models.SET_NULL,
+        null=True,
     )
 
     message = models.CharField(

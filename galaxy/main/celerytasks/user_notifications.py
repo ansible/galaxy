@@ -16,21 +16,21 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
-import celery
 
-from galaxy.main import models
+import celery
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.core import mail
 from allauth.account.models import EmailAddress
 
+from galaxy.main import models
 
 LOG = logging.getLogger(__name__)
 
 
 class NotificationManger(object):
     def __init__(self, email_template, preferences_name, preferences_list,
-                 subject, db_message=None, repo=None):
+                 subject, db_message=None, repo=None, collection=None):
         self.email_template = email_template
         self.preferences_name = preferences_name
         self.preferences_list = preferences_list
@@ -40,6 +40,8 @@ class NotificationManger(object):
         )
 
         self.repo = repo
+        self.collection = collection
+
         if db_message is None:
             self.db_message = subject
         else:
@@ -63,7 +65,8 @@ class NotificationManger(object):
                         user=user.user,
                         type=self.preferences_name,
                         message=self.db_message,
-                        repository=self.repo
+                        repository=self.repo,
+                        collection=self.collection,
                     )
             except Exception as e:
                 LOG.error(e)
@@ -113,7 +116,41 @@ def email_verification(email, code, username):
 
 
 @celery.task
-def import_status(task_id, user_initiated, has_failed=False):
+def collection_import(task_id, has_failed=False):
+    '''Send notification to owners from result of collection import task.'''
+    task = models.CollectionImport.objects.get(id=task_id)
+    if has_failed:
+        status = 'failed'
+        preference_name = 'notify_import_fail'
+        collection = None
+    else:
+        status = 'completed'
+        preference_name = 'notify_import_success'
+        collection = task.imported_version.collection
+
+    owners = _get_preferences(task.namespace.owners.all())
+
+    subject = f'Ansible Galaxy: import of {task.name} has {status}'
+    webui_title = f'Import {status}: {task.name} {task.version}'
+
+    notification = NotificationManger(
+        email_template=import_status_template,
+        preferences_name=preference_name,
+        preferences_list=owners,
+        subject=subject,
+        db_message=webui_title,
+        collection=collection,
+    )
+    ctx = {
+        'status': status,
+        'content_name': '{}.{}'.format(task.namespace.name, task.name),
+        'import_url': '{}/my-imports'.format(notification.url),
+    }
+    notification.notify(ctx)
+
+
+@celery.task
+def repo_import(task_id, user_initiated, has_failed=False):
     task = models.ImportTask.objects.get(id=task_id)
     repo = task.repository
     owners = repo.provider_namespace.namespace.owners.all()
@@ -159,7 +196,41 @@ def import_status(task_id, user_initiated, has_failed=False):
 
 
 @celery.task
-def collection_update(repo_id):
+def collection_new_version(version_pk):
+    '''Send new version notification to collection followers.'''
+    version = models.CollectionVersion.objects.get(pk=version_pk)
+    collection_followers = models.UserPreferences.objects.filter(
+        collections_followed__pk=version.collection.pk,
+    )
+
+    collection = version.collection
+    namespace_name = collection.namespace.name
+    full_name = '{}.{}'.format(namespace_name, collection.name)
+    version_number = version.version
+
+    notification = NotificationManger(
+        email_template=collection_new_version_template,
+        preferences_name='notify_content_release',
+        preferences_list=collection_followers,
+        subject=f'Ansible Galaxy: New version of {full_name}',
+        db_message=f'New version of {full_name}: {version_number}',
+        collection=collection,
+    )
+
+    path = '/{}/{}'.format(namespace_name, collection.name)
+
+    ctx = {
+        'namespace_name': namespace_name,
+        'content_name': full_name,
+        'version': version_number,
+        'content_url': '{}{}'.format(notification.url, path),
+    }
+
+    notification.notify(ctx)
+
+
+@celery.task
+def repo_update(repo_id):
     followers = models.UserPreferences.objects.filter(
         repositories_followed__pk=repo_id
     )
@@ -168,7 +239,7 @@ def collection_update(repo_id):
     author = repo.provider_namespace.namespace.name
 
     notification = NotificationManger(
-        email_template=update_collection_template,
+        email_template=repo_update_template,
         preferences_name='notify_content_release',
         preferences_list=followers,
         subject='Ansible Galaxy: New version of ' + repo.name,
@@ -188,7 +259,37 @@ def collection_update(repo_id):
 
 
 @celery.task
-def author_release(repo_id):
+def coll_author_release(version_pk):
+    '''Send new collection notification to author followers.'''
+    version = models.CollectionVersion.objects.get(pk=version_pk)
+    author_followers = models.UserPreferences.objects.filter(
+        namespaces_followed=version.collection.namespace,
+    )
+    author = version.collection.namespace.name
+    full_name = '{}.{}'.format(author, version.collection.name)
+
+    notification = NotificationManger(
+        email_template=author_release_template,
+        preferences_name='notify_author_release',
+        preferences_list=author_followers,
+        subject=f'Ansible Galaxy: {author} has released a new collection',
+        db_message=f'New collection from {author}: {full_name}',
+        collection=version.collection,
+    )
+
+    path = '/{}/{}'.format(author, version.collection.name)
+
+    ctx = {
+        'author_name': author,
+        'type': 'collection',
+        'content_name': full_name,
+        'content_url': '{}{}'.format(notification.url, path),
+    }
+    notification.notify(ctx)
+
+
+@celery.task
+def repo_author_release(repo_id):
     repo = models.Repository.objects.get(id=repo_id)
     namespace = repo.provider_namespace.namespace
     followers = models.UserPreferences.objects.filter(
@@ -201,7 +302,7 @@ def author_release(repo_id):
         email_template=author_release_template,
         preferences_name='notify_author_release',
         preferences_list=followers,
-        subject='Ansible Galaxy: {} has released a new collection'.format(
+        subject='Ansible Galaxy: {} has released a new role'.format(
             author
         ),
         db_message='New release from {}: {}'.format(
@@ -213,6 +314,7 @@ def author_release(repo_id):
     path = '/{}/{}/'.format(author, repo.name)
     ctx = {
         'author_name': author,
+        'type': 'role',
         'content_name': repo.name,
         'content_url': notification.url + path,
     }
@@ -221,7 +323,35 @@ def author_release(repo_id):
 
 
 @celery.task
-def new_survey(repo_id):
+def collection_new_survey(collection_pk):
+    '''Send new survey notification to collection namespace owners.'''
+    collection = models.Collection.objects.get(pk=collection_pk)
+    owners = _get_preferences(collection.namespace.owners.all())
+    full_name = '{}.{}'.format(collection.namespace.name, collection.name)
+
+    notification = NotificationManger(
+        email_template=new_survey_template,
+        preferences_name='notify_survey',
+        preferences_list=owners,
+        subject='Ansible Galaxy: new survey for {}'.format(full_name),
+        db_message='New survey for {}'.format(full_name),
+        collection=collection,
+    )
+
+    path = '/{}/{}/'.format(collection.namespace.name, collection.name)
+
+    ctx = {
+        'content_score': collection.community_score,
+        'type': 'collection',
+        'content_name': full_name,
+        'content_url': '{}{}'.format(notification.url, path),
+    }
+
+    notification.notify(ctx)
+
+
+@celery.task
+def repo_new_survey(repo_id):
     repo = models.Repository.objects.get(id=repo_id)
     author = repo.provider_namespace.namespace.name
     owners = _get_preferences(repo.provider_namespace.namespace.owners.all())
@@ -238,6 +368,7 @@ def new_survey(repo_id):
 
     ctx = {
         'content_score': repo.community_score,
+        'type': 'repository',
         'content_name': repo.name,
         'content_url': notification.url + path,
     }
@@ -259,13 +390,22 @@ def _get_preferences(users):
 import_status_template = '''Hello,
 
 This message is to notify you that a recent import of {content_name} on \
-Ansible galaxy has {status}.
+Ansible Galaxy has {status}.
 
 To see the import log, go to: {import_url}
 '''
 
 
-update_collection_template = '''Hello,
+collection_new_version_template = '''Hello,
+
+{namespace_name} has just released {content_name} version {version} on \
+Ansible Galaxy.
+
+To see the new version, visit {content_url}.
+'''
+
+
+repo_update_template = '''Hello,
 
 {namespace_name} has just released a new version of {content_name} on \
 Ansible Galaxy.
@@ -277,7 +417,7 @@ To see the new version, visit {content_url}.
 author_release_template = '''Hello,
 
 One of the author's ({author_name}) that you are following on Ansible Galaxy \
-has just released a new collection named {content_name}.
+has just released a new {type} named {content_name}.
 
 To see it, visit {content_url}.
 '''
@@ -286,7 +426,7 @@ To see it, visit {content_url}.
 new_survey_template = '''Hello,
 
 Someone has just submitted a new survey for {content_name} on Ansible Galaxy. \
-Your collection now has a user rating of {content_score}.
+Your {type} now has a user rating of {content_score}.
 
 Visit {content_url} for more details.
 '''
