@@ -22,7 +22,6 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 from django.core import mail
 from allauth.account.models import EmailAddress
-from pulpcore import constants as pulp_const
 
 from galaxy.main import models
 
