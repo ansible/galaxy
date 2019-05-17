@@ -51,15 +51,11 @@ export class RepositoryDetailComponent implements OnInit {
         private route: ActivatedRoute,
         private contentService: ContentService,
         private repoService: RepositoryService,
-        private namespaceService: NamespaceService,
     ) {}
 
     pageTitle = '';
     pageIcon = '';
-    content: Content[];
-    repository: Repository;
     repositoryVersions: Version[] = [];
-    namespace: Namespace;
     showEmptyState = false;
     actionConfig: ActionConfig;
     emptyStateConfig: EmptyStateConfig;
@@ -92,6 +88,15 @@ export class RepositoryDetailComponent implements OnInit {
     } as ContentTypeCounts;
 
     qualityListConfig: ListConfig;
+
+    @Input()
+    repository: Repository;
+
+    @Input()
+    content: Content[];
+
+    @Input()
+    namespace: Namespace;
 
     ngOnInit() {
         this.qualityListConfig = {
@@ -129,127 +134,87 @@ export class RepositoryDetailComponent implements OnInit {
         } as EmptyStateConfig;
 
         this.route.params.subscribe(params => {
-            const namespace = params['namespace'].toLowerCase();
-            const repository = params['name'].toLowerCase();
-            const name = params['content_name'];
-
-            const reposObs = this.repoService
-                .query({
-                    name__iexact: repository,
-                    provider_namespace__namespace__name__iexact: namespace,
-                })
-                .pipe(map(results => results[0]));
-
-            const contentParams = {
-                repository__name__iexact: repository,
-                repository__provider_namespace__namespace__name__iexact: namespace,
-            };
-
-            if (name) {
-                contentParams['name'] = name.toLowerCase();
+            if (this.repository) {
+                this.repoType = RepoFormats[this.repository.format];
+                if (this.repoType !== RepoFormats.apb) {
+                    this.getRepoVersions();
+                }
             }
 
-            const contentObs = this.contentService.query(contentParams);
+            const req_content_name = params['content_name'];
 
-            const namespaceObs = this.namespaceService
-                .query({
-                    name__iexact: namespace,
-                })
-                .pipe(map(results => results[0]));
-
-            forkJoin([reposObs, contentObs, namespaceObs]).subscribe(data => {
-                this.repository = data[0];
-                this.content = data[1];
-                this.namespace = data[2];
-
-                if (this.repository) {
-                    this.repoType = RepoFormats[this.repository.format];
-                    if (this.repoType !== RepoFormats.apb) {
-                        this.getRepoVersions();
-                    }
-                }
-
-                const req_content_name = params['content_name'];
-
-                if (
+            if (req_content_name && this.content && this.content.length) {
+                this.selectedContent = this.findSelectedContent(
+                    req_content_name,
+                );
+            }
+            if (
+                !this.repository ||
+                !this.content ||
+                (this.repository.format === RepoFormats.multi &&
                     req_content_name &&
-                    data['content'] &&
-                    data['content'].length
-                ) {
-                    this.selectedContent = this.findSelectedContent(
-                        req_content_name,
-                    );
-                }
-                if (
-                    !this.repository ||
-                    !this.content ||
-                    (this.repository.format === RepoFormats.multi &&
-                        req_content_name &&
-                        !this.selectedContent)
-                ) {
-                    // Requested content from a multicontent repo not found || No content found
-                    this.showEmptyState = true;
-                    this.pageTitle =
-                        '<i class="fa fa-frown-o"></i> Content Not Found';
-                    this.pageLoading = false;
+                    !this.selectedContent)
+            ) {
+                // Requested content from a multicontent repo not found || No content found
+                this.showEmptyState = true;
+                this.pageTitle =
+                    '<i class="fa fa-frown-o"></i> Content Not Found';
+                this.pageLoading = false;
+            } else {
+                // Append author type to breadcrumb
+                if (this.namespace.is_vendor) {
+                    this.pageTitle = 'Vendors;/vendors;';
+                    this.pageIcon = 'fa fa-star';
                 } else {
-                    // Append author type to breadcrumb
-                    if (this.namespace.is_vendor) {
-                        this.pageTitle = 'Vendors;/vendors;';
-                        this.pageIcon = 'fa fa-star';
-                    } else {
-                        this.pageTitle = 'Community Authors;/community;';
-                        this.pageIcon = 'fa fa-users';
-                    }
+                    this.pageTitle = 'Community Authors;/community;';
+                    this.pageIcon = 'fa fa-users';
+                }
 
-                    // Append author namespace and repository name to breadcrumb
-                    this.pageTitle += `${this.namespace.name};/${
-                        this.namespace.name
-                    };${params['name']};`;
+                // Append author namespace and repository name to breadcrumb
+                this.pageTitle += `${this.namespace.name};/${
+                    this.namespace.name
+                };${params['name']};`;
 
-                    // If content is specified, append it to the breadcrumb
-                    if (this.selectedContent) {
-                        this.pageTitle += `/${this.namespace.name}/${
-                            params['name']
-                        };${req_content_name}`;
-                    }
-                    this.repository.last_import = 'NA';
-                    this.repository.last_commit = 'NA';
-                    if (
-                        this.repository.summary_fields['latest_import'] &&
+                // If content is specified, append it to the breadcrumb
+                if (this.selectedContent) {
+                    this.pageTitle += `/${this.namespace.name}/${
+                        params['name']
+                    };${req_content_name}`;
+                }
+                this.repository.last_import = 'NA';
+                this.repository.last_commit = 'NA';
+                if (
+                    this.repository.summary_fields['latest_import'] &&
+                    this.repository.summary_fields['latest_import']['finished']
+                ) {
+                    this.repository.last_import = moment(
                         this.repository.summary_fields['latest_import'][
                             'finished'
-                        ]
-                    ) {
-                        this.repository.last_import = moment(
-                            this.repository.summary_fields['latest_import'][
-                                'finished'
-                            ],
-                        ).fromNow();
-                    }
-
-                    if (this.repository.commit_created) {
-                        this.repository.last_commit = moment(
-                            this.repository.commit_created,
-                        ).fromNow();
-                    }
-
-                    if (this.repository.quality_score_date) {
-                        this.repository.quality_score_date = moment(
-                            this.repository.quality_score_date,
-                        ).fromNow();
-                    }
-
-                    if (this.content && this.content.length) {
-                        this.repoContent = this.content[0];
-                        this.fetchContentDetail(this.repoContent.id);
-                    } else {
-                        // Repo has no child Content Objects
-                        this.pageLoading = false;
-                        this.showEmptyState = true;
-                    }
+                        ],
+                    ).fromNow();
                 }
-            });
+
+                if (this.repository.commit_created) {
+                    this.repository.last_commit = moment(
+                        this.repository.commit_created,
+                    ).fromNow();
+                }
+
+                if (this.repository.quality_score_date) {
+                    this.repository.quality_score_date = moment(
+                        this.repository.quality_score_date,
+                    ).fromNow();
+                }
+
+                if (this.content && this.content.length) {
+                    this.repoContent = this.content[0];
+                    this.fetchContentDetail(this.repoContent.id);
+                } else {
+                    // Repo has no child Content Objects
+                    this.pageLoading = false;
+                    this.showEmptyState = true;
+                }
+            }
         });
     }
 

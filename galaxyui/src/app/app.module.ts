@@ -58,7 +58,7 @@ import {
 } from './resources/collections/collection.service';
 import {
     RepoCollectionListService,
-    ContentFormatService,
+    RepoOrCollectionService,
 } from './resources/combined/combined.service';
 
 // import { MyImportsModule }            from './my-imports/my-imports.module';
@@ -120,7 +120,7 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
         CollectionListService,
         CollectionDetailService,
         RepoCollectionListService,
-        ContentFormatService,
+        RepoOrCollectionService,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     bootstrap: [AppComponent],

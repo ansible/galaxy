@@ -2,13 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { NotificationService } from 'patternfly-ng';
-import { PaginatedRepoCollection } from './combined';
-import { ContentFormat } from '../../enums/format';
+import { PaginatedRepoCollection, RepoOrCollectionResponse } from './combined';
 
 import { ServiceBase } from '../base/service-base';
 
 import { Observable } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
 @Injectable()
 export class RepoCollectionListService extends ServiceBase {
@@ -34,25 +33,19 @@ export class RepoCollectionListService extends ServiceBase {
 }
 
 @Injectable()
-export class ContentFormatService extends ServiceBase {
+export class RepoOrCollectionService extends ServiceBase {
     constructor(http: HttpClient, notificationService: NotificationService) {
         super(
             http,
             notificationService,
-            '/api/internal/ui/type-checker',
+            '/api/internal/ui/repo-or-collection-detail/',
             'content-format',
         );
     }
 
-    query(namespace, name): Observable<ContentFormat> {
-        return this.http
-            .get<ContentFormat>(this.url, {
-                params: { namespace: namespace, name: name },
-            })
-            .pipe(
-                tap(_ => this.log('fetched object type')),
-                map(result => result['type']),
-                catchError(this.handleError('Get', {} as ContentFormat)),
-            );
+    query(namespace, name): Observable<RepoOrCollectionResponse> {
+        return this.http.get<RepoOrCollectionResponse>(this.url, {
+            params: { namespace: namespace, name: name },
+        });
     }
 }
