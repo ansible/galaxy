@@ -182,13 +182,13 @@ class TestCollectionNotifications(TestCase):
             pulp_task=pulp_task,
             imported_version=version,
         )
-        user_notifications.collection_import(task.pk)
+        user_notifications.collection_import(task.pk, has_failed=False)
 
         notifications = models.UserNotification.objects.filter(
             user=self.user_1)
         assert notifications.count() == 1
         assert notifications[0].message == \
-            'Import completed: apache'
+            'Import completed: apache 1.2.4'
         assert notifications[0].collection.name == self.collection_1.name
 
         notifications = models.UserNotification.objects.filter(
@@ -210,13 +210,13 @@ class TestCollectionNotifications(TestCase):
             pulp_task=pulp_task,
             imported_version=version,
         )
-        user_notifications.collection_import(task.pk)
+        user_notifications.collection_import(task.pk, has_failed=True)
 
         notifications = models.UserNotification.objects.filter(
             user=self.user_1)
         assert notifications.count() == 1
         assert notifications[0].message == \
-            'Import failed: apache'
+            'Import failed: apache 1.2.4'
 
         notifications = models.UserNotification.objects.filter(
             user__in=[self.user_2, self.user_3, self.user_4, self.user_5])

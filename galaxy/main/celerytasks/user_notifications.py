@@ -117,22 +117,22 @@ def email_verification(email, code, username):
 
 
 @celery.task
-def collection_import(task_id):
-    '''Send notification to owners based on state of collection import task.'''
+def collection_import(task_id, has_failed=False):
+    '''Send notification to owners from result of collection import task.'''
     task = models.CollectionImport.objects.get(id=task_id)
-    if task.state == pulp_const.TASK_STATES.COMPLETED:
-        preference_name = 'notify_import_success'
-        collection = task.imported_version.collection
-    elif task.state == pulp_const.TASK_STATES.FAILED:
+    if has_failed:
+        status = 'failed'
         preference_name = 'notify_import_fail'
         collection = None
     else:
-        return
+        status = 'completed'
+        preference_name = 'notify_import_success'
+        collection = task.imported_version.collection
 
     owners = _get_preferences(task.namespace.owners.all())
 
-    subject = f'Ansible Galaxy: import of {task.name} has {task.state}'
-    webui_title = f'Import {task.state}: {task.name}'
+    subject = f'Ansible Galaxy: import of {task.name} has {status}'
+    webui_title = f'Import {status}: {task.name} {task.version}'
 
     notification = NotificationManger(
         email_template=import_status_template,
@@ -143,7 +143,7 @@ def collection_import(task_id):
         collection=collection,
     )
     ctx = {
-        'status': task.state,
+        'status': status,
         'content_name': '{}.{}'.format(task.namespace.name, task.name),
         'import_url': '{}/my-imports'.format(notification.url),
     }
