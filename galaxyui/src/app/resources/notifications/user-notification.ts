@@ -1,6 +1,7 @@
 export class UserNotification {
     id: number;
     repository: any;
+    collection: any;
     message: string;
     type: string;
     seen: boolean;
