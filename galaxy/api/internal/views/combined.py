@@ -15,6 +15,7 @@
 # You should have received a copy of the Apache License
 from rest_framework import response
 from rest_framework import exceptions
+from django.core import exceptions as django_exceptions
 
 from galaxy.api import base
 from galaxy.main import models
@@ -114,4 +115,59 @@ class RepoAndCollectionList(base.APIView):
                 detail='Order must be one of {fields}'.format(
                     fields=str(allowed_orders)
                 )
+            )
+
+
+class CombinedDetail(base.APIView):
+    '''
+    This is intendended to provide all of the information for the content
+    detail pages. For repos, it returns the repository, namespace and list of
+    content items.
+
+    For collections it returns a collection object
+    '''
+    def get(self, request):
+        namespace = request.GET.get('namespace', None)
+        name = request.GET.get('name', None)
+
+        if not name or not namespace:
+            raise exceptions.ValidationError(
+                detail='namespace and name parameters are required')
+
+        try:
+            repo = models.Repository.objects.get(
+                provider_namespace__namespace__name=namespace,
+                name=name
+            )
+            namespace_obj = models.Namespace.objects.get(name=namespace)
+            content = models.Content.objects.filter(
+                repository__name__iexact=name,
+                repository__provider_namespace__namespace__name__iexact=namespace # noqa
+            )
+
+            data = {
+                'repository': v1_serializers.RepositorySerializer(repo).data,
+                'namespace': v1_serializers.NamespaceSerializer(
+                    namespace_obj).data,
+                'content': v1_serializers.ContentSerializer(
+                    content, many=True).data
+            }
+            return response.Response({'type': 'repository', 'data': data})
+        except django_exceptions.ObjectDoesNotExist:
+            pass
+
+        try:
+            collection = models.Collection.objects.get(
+                namespace__name=namespace,
+                name=name
+            )
+            data = {
+                'collection': internal_serializers.CollectionDetailSerializer(
+                    collection).data
+            }
+            return response.Response({'type': 'collection', 'data': data})
+        except django_exceptions.ObjectDoesNotExist:
+            raise exceptions.NotFound(
+                detail="No collection or repository could be found " +
+                "matching the name {}.{}".format(namespace, name)
             )

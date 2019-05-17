@@ -28,7 +28,7 @@ ui_urls = [
         'namespaces/<int:namespace_id>/imports/',
         views.NamespaceImportsList.as_view()),
     path('repos-and-collections/', views.RepoAndCollectionList.as_view()),
-    path('type-checker/', views.ContentTypeView.as_view())
+    path('repo-or-collection-detail/', views.CombinedDetail.as_view())
 ]
 
 
