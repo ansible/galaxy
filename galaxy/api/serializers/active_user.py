@@ -45,9 +45,20 @@ class ActiveUserPreferencesSerializer(BaseSerializer):
                 'avatar': ns.avatar_url
             })
 
+        followed_collections = []
+        for col in obj.collections_followed.all():
+            followed_collections.append({
+                'id': col.id,
+                'name': col.name,
+                'namespace': col.namespace.name,
+                'description': col.latest_version.metadata['description'],
+                'avatar': col.namespace.avatar_url
+            })
+
         return {
             'repositories_followed': followed_repos,
             'namespaces_followed': followed_ns,
+            'collections_followed': followed_collections
         }
 
 
