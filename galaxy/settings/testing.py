@@ -86,3 +86,5 @@ WAIT_FOR = [
 ]
 
 STATIC_ROOT = ''
+
+MEDIA_ROOT = '/var/lib/galaxy/media/'
