@@ -14,13 +14,13 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+from unittest import mock
+
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import UserManager
 from django.db.utils import DataError, IntegrityError
 from django.utils import timezone
 from django.test import TestCase
-
-import mock
 import pytest
 
 from galaxy.accounts.models import CustomUser

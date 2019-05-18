@@ -14,13 +14,13 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+from unittest import mock
 
 from django.core.exceptions import ValidationError
 from django.db.models.manager import Manager
 from django.db.utils import DataError, IntegrityError
 from django.test import TestCase
 
-import mock
 import pytest
 
 from galaxy.main.models import ContentType
