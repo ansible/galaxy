@@ -26,7 +26,7 @@ from galaxy.main.models import ContentBlock
 from galaxy.common.testing import NOW, LATER
 
 
-class ContentBlockModelTest(TestCase):
+class TestContentBlockModel(TestCase):
     # letters, numbers, underscores or hyphens
     VALID_NAME = "NAME"
     VALID_CONTENT = "CONTENT"

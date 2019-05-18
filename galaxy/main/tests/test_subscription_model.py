@@ -28,7 +28,7 @@ from galaxy.accounts.models import CustomUser
 from galaxy.common.testing import NOW, LATER
 
 
-class SubscriptionModelTest(TestCase):
+class TestSubscriptionModel(TestCase):
     VALID_NAME = "NAME"
     # FIXME: Need to be validated
     VALID_DESCRIPTION = "DESCRIPTION"

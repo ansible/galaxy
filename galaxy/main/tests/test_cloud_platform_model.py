@@ -27,7 +27,7 @@ from galaxy.main.models import CloudPlatform
 from galaxy.common.testing import NOW, LATER
 
 
-class CloudPlatformModelTest(TestCase):
+class TestCloudPlatformModel(TestCase):
     VALID_NAME = "NAME"
 
     NAME_MAX_LENGTH = 512

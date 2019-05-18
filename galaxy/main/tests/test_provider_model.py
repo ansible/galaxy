@@ -27,7 +27,7 @@ from galaxy.main.models import Provider
 from galaxy.common.testing import NOW, LATER
 
 
-class ProviderModelTest(TestCase):
+class TestProviderModel(TestCase):
     VALID_NAME = "NAME"
     # FIXME: Need to be validated
     VALID_DOWNLOAD_URL = "URL"

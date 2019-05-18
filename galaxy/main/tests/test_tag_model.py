@@ -27,7 +27,7 @@ from galaxy.main.models import Tag
 from galaxy.common.testing import NOW, LATER
 
 
-class TagModelTest(TestCase):
+class TestTagModel(TestCase):
     VALID_NAME = "NAME"
 
     NAME_MAX_LENGTH = 512

@@ -27,7 +27,7 @@ from galaxy.main.models import Platform
 from galaxy.common.testing import NOW, LATER
 
 
-class PlatformModelTest(TestCase):
+class TestPlatformModel(TestCase):
     VALID_NAME = "NAME"
     VALID_RELEASE = "RELEASE"
     VALID_ALIAS = "ALIAS"

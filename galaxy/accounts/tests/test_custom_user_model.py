@@ -27,7 +27,7 @@ from galaxy.accounts.models import CustomUser
 from galaxy.common.testing import NOW
 
 
-class CustomUserModelTest(TestCase):
+class TestCustomUserModel(TestCase):
     VALID_EMAIL = "user@example.com"
     VALID_PASSWORD = "****"
     VALID_USERNAME = "USERNAME"

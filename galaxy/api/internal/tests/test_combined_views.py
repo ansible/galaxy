@@ -21,7 +21,7 @@ from rest_framework import status
 from galaxy.main import models
 
 
-class RepoAndCollectionListTest(APITestCase):
+class TestRepoAndCollectionList(APITestCase):
     base_url = '/api/internal/ui/repos-and-collections/'
 
     def setUp(self):

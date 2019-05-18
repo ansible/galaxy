@@ -21,7 +21,7 @@ from rest_framework import status as http_codes
 from galaxy.main import models
 
 
-class CollectionViewTests(APITestCase):
+class TestCollectionView(APITestCase):
 
     def setUp(self):
         super().setUp()

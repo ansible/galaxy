@@ -28,7 +28,7 @@ from galaxy.common.testing import NOW, LATER
 from galaxy import constants
 
 
-class ContentTypeModelTest(TestCase):
+class TestContentTypeModel(TestCase):
     VALID_NAME_ENUM = constants.ContentType.ROLE
     VALID_NAME = constants.ContentType.ROLE.value
     VALID_NAME_OTHER = constants.ContentType.MODULE.value
