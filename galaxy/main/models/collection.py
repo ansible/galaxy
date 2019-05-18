@@ -25,7 +25,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.db import models
 from pulpcore.app import models as pulp_models
-import semantic_version
 
 from galaxy.importer.utils import lint as lintutils
 from . import mixins
@@ -58,6 +57,12 @@ class Collection(mixins.TimestampsMixin, models.Model):
     community_survey_count = models.IntegerField(default=0)
 
     # References
+    latest_version = models.ForeignKey(
+        'CollectionVersion',
+        on_delete=models.PROTECT,
+        related_name='+',
+        null=True,
+    )
     tags = models.ManyToManyField('Tag')
 
     class Meta:
@@ -68,23 +73,6 @@ class Collection(mixins.TimestampsMixin, models.Model):
         indexes = [
             psql_indexes.GinIndex(fields=['search_vector'])
         ]
-
-    @property
-    def latest_version(self):
-        versions = self.versions.filter(hidden=False)
-        if not versions:
-            return None
-        return versions.latest('pk')
-
-    @property
-    def highest_version(self):
-        versions = self.versions.filter(hidden=False)
-        if not versions:
-            return None
-
-        d = {semantic_version.Version(v.version): v for v in versions}
-        highest = semantic_version.Spec('*').select(d.keys())
-        return d[highest]
 
 
 class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):

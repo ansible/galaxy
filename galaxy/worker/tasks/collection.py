@@ -22,6 +22,7 @@ import tarfile
 from django.db import transaction
 from django.db.utils import IntegrityError
 from pulpcore.app import models as pulp_models
+import semantic_version as semver
 
 from galaxy.common import schema
 from galaxy.importer import collection as importer
@@ -113,6 +114,7 @@ def _publish_collection(task, artifact, repository, importer_obj):
             'Collection version "{version}" already exists.'
             .format(version=metadata.version))
 
+    _update_latest_version(collection, version)
     _update_collection_tags(collection, version, metadata)
 
     rel_path = ARTIFACT_REL_PATH.format(
@@ -145,10 +147,18 @@ def _publish_collection(task, artifact, repository, importer_obj):
     return version
 
 
-def _update_collection_tags(collection, version, metadata):
-    '''Update tags at collection-level, only if highest version'''
+def _update_latest_version(collection, new_version):
+    latest_version = collection.latest_version
+    if latest_version is None or (semver.Version(latest_version.version)
+                                  < semver.Version(new_version.version)):
+        collection.latest_version = new_version
+        collection.save()
 
-    if collection.highest_version != version:
+
+def _update_collection_tags(collection, version, metadata):
+    """Update tags at collection-level, only if highest version"""
+
+    if collection.latest_version != version:
         return
 
     tags_not_in_db = [

@@ -172,6 +172,8 @@ class TestCollectionDetailView(APITestCase):
             collection=self.collection, version='1.1.12')
         self.version3 = models.CollectionVersion.objects.create(
             collection=self.collection, version='1.0.1')
+        self.collection.latest_version = self.version2
+        self.collection.save()
 
     def test_view_success(self):
         urls = [
@@ -192,7 +194,7 @@ class TestCollectionDetailView(APITestCase):
             assert result['namespace']['name'] == self.namespace.name
             assert result['versions_url'] == \
                 f'http://testserver{urls[1]}versions/'
-            assert (result['highest_version']['version'] ==
+            assert (result['latest_version']['version'] ==
                     self.version2.version)
             assert result['deprecated'] is False
 
