@@ -156,7 +156,7 @@ def _update_latest_version(collection, new_version):
 
 
 def _update_collection_tags(collection, version, metadata):
-    """Update tags at collection-level, only if highest version"""
+    """Update tags at collection-level, only if highest version."""
 
     if collection.latest_version != version:
         return

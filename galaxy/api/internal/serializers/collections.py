@@ -62,10 +62,11 @@ class VersionDetailSerializer(serializers.ModelSerializer):
 
 
 class VersionSummarySerializer(serializers.ModelSerializer):
-    '''
-    Returns summary information for a collection version. Returning all of a
-    collection's contents in a list is too much data to surface.
-    '''
+    """Returns summary information for a collection version.
+
+    Returning all of a collection's contents in a list is too much
+    data to surface.
+    """
     content_summary = serializers.SerializerMethodField()
 
     class Meta:

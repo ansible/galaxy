@@ -25,10 +25,10 @@ SURVEY_FIElDS = (
 
 
 def calculate_survey_score(surveys):
-    '''
-    :var surveys: queryset container all of the surveys for a collection or a
+    """
+    :param surveys: queryset container all of the surveys for a collection or a
     repository
-    '''
+    """
     score = 0
 
     answer_count = 0

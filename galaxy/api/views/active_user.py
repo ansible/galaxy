@@ -92,7 +92,7 @@ class ActiveUserNotificationsView(base_views.ListAPIView):
         ).order_by('-id')
 
     def list(self, request, *args, **kwargs):
-        '''Add key alongside list of results.'''
+        """Add key alongside list of results."""
         response = super().list(request, *args, **kwargs)
 
         count = models.UserNotification.objects.filter(
