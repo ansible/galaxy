@@ -255,7 +255,7 @@ class _FieldLookupBackend(BaseFilterBackend):
 
 class FieldLookupBackend(_FieldLookupBackend):
     def filter_queryset(self, request, queryset, view):
-        qs = super(FieldLookupBackend, self).filter_queryset(
+        qs = super().filter_queryset(
             request, queryset, view)
         return qs.distinct()
 

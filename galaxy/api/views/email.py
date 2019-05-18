@@ -39,7 +39,7 @@ class UserEmailList(base_views.SubListAPIView):
             if self.request.user.id != int(user_id):
                 # Non-admin access own email addresses only
                 raise PermissionDenied()
-        return super(UserEmailList, self).get_queryset()
+        return super().get_queryset()
 
 
 class EmailList(base_views.ListCreateAPIView):
@@ -48,7 +48,7 @@ class EmailList(base_views.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        qs = super(EmailList, self).get_queryset()
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(user=self.request.user)
         return qs
@@ -60,7 +60,7 @@ class EmailDetail(base_views.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_object(self, qs=None):
-        obj = super(EmailDetail, self).get_object()
+        obj = super().get_object()
         if not self.request.user.is_staff:
             if obj.user != self.request.user:
                 # Non-admin access own email addresses only

@@ -30,7 +30,7 @@ class TokenSerializer(BaseSerializer):
     def get_related(self, obj):
         if obj is None or isinstance(obj, AnonymousUser):
             return {}
-        res = super(TokenSerializer, self).get_related(obj)
+        res = super().get_related(obj)
         res.update({
             'user': reverse(
                 'api:user_detail', kwargs={'pk': obj.user.pk})
@@ -40,7 +40,7 @@ class TokenSerializer(BaseSerializer):
     def get_summary_fields(self, obj):
         if obj is None or isinstance(obj, AnonymousUser):
             return {}
-        res = super(TokenSerializer, self).get_summary_fields(obj)
+        res = super().get_summary_fields(obj)
         res['user'] = {
             'id': obj.user.id,
             'username': obj.user.username,

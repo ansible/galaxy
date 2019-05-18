@@ -274,8 +274,7 @@ class RoleLoader(base.BaseLoader):
         """
         :param str path: Path to role directory within repository
         """
-        super(RoleLoader, self).__init__(
-            content_type, path, root, logger=logger)
+        super().__init__(content_type, path, root, logger=logger)
 
         self.meta_file = metadata_path
         self.data = {}

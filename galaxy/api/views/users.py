@@ -32,7 +32,7 @@ class UserDetail(base_views.RetrieveUpdateAPIView):
     serializer_class = serializers.UserSerializer
 
     def get_object(self, qs=None):
-        obj = super(UserDetail, self).get_object()
+        obj = super().get_object()
         if not obj.is_active:
             raise exceptions.PermissionDenied()
         return obj
@@ -43,7 +43,7 @@ class UserList(base_views.ListAPIView):
     serializer_class = serializers.UserSerializer
 
     def get_queryset(self):
-        qs = super(UserList, self).get_queryset()
+        qs = super().get_queryset()
         return qs.filter(is_active=True)
 
 
@@ -74,7 +74,7 @@ class UserRolesList(base_views.SubListAPIView):
     relationship = 'roles'
 
     def get_queryset(self):
-        qs = super(UserRolesList, self).get_queryset()
+        qs = super().get_queryset()
         return qs.filter(active=True, is_valid=True)
 
 

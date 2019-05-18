@@ -63,14 +63,14 @@ class EmailSerializer(BaseSerializer):
         return reverse('api:email_detail', args=(obj.pk,))
 
     def get_related(self, obj):
-        d = super(EmailSerializer, self).get_related(obj)
+        d = super().get_related(obj)
         d['user'] = reverse('api:user_detail', args=(obj.user.pk,))
         return d
 
     def get_summary_fields(self, obj):
         if obj is None:
             return {}
-        d = super(EmailSerializer, self).get_summary_fields(obj)
+        d = super().get_summary_fields(obj)
         d['user'] = OrderedDict([
             ('id', obj.user.id),
             ('username', obj.user.username)

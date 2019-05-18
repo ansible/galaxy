@@ -39,7 +39,7 @@ class ActiveUserSerializer(BaseSerializer):
     def get_summary_fields(self, obj):
         if not obj or not obj.is_authenticated:
             return {}
-        d = super(ActiveUserSerializer, self).get_summary_fields(obj)
+        d = super().get_summary_fields(obj)
         return d
 
     def get_authenticated(self, obj):
@@ -63,7 +63,7 @@ class UserSerializer(BaseSerializer):
     def get_related(self, obj):
         if not obj or not obj.is_authenticated:
             return {}
-        res = super(UserSerializer, self).get_related(obj)
+        res = super().get_related(obj)
         res.update(dict(
             subscriptions=reverse(
                 'api:user_subscription_list', args=(obj.pk,)),
@@ -79,7 +79,7 @@ class UserSerializer(BaseSerializer):
     def get_summary_fields(self, obj):
         if not obj or not obj.is_authenticated:
             return {}
-        d = super(UserSerializer, self).get_summary_fields(obj)
+        d = super().get_summary_fields(obj)
         d['subscriptions'] = [
             OrderedDict([
                 ('id', g.id),

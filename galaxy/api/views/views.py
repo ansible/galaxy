@@ -253,7 +253,7 @@ class RoleDependenciesList(base_views.SubListAPIView):
     relationship = 'dependencies'
 
     def get_queryset(self):
-        qs = super(RoleDependenciesList, self).get_queryset()
+        qs = super().get_queryset()
         return filter_role_queryset(qs)
 
 
@@ -264,7 +264,7 @@ class RoleUsersList(base_views.SubListAPIView):
     relationship = 'created_by'
 
     def get_queryset(self):
-        qs = super(RoleUsersList, self).get_queryset()
+        qs = super().get_queryset()
         return filter_user_queryset(qs)
 
 
@@ -349,7 +349,7 @@ class ImportTaskList(base_views.ListCreateAPIView):
         # NOTE(cutwater): This is for compatibility with ansible-galaxy client.
         if 'id' in self.request.GET:
             return serializers.ImportTaskDetailSerializer
-        return super(ImportTaskList, self).get_serializer_class()
+        return super().get_serializer_class()
 
     def list(self, request, *args, **kwargs):
         github_user = request.GET.get('github_user')
@@ -449,7 +449,7 @@ class ImportTaskDetail(base_views.RetrieveAPIView):
     serializer_class = serializers.ImportTaskDetailSerializer
 
     def get_object(self, qs=None):
-        obj = super(ImportTaskDetail, self).get_object()
+        obj = super().get_object()
         if not obj.active:
             raise Http404()
         return obj
@@ -581,7 +581,7 @@ class SubscriptionDetail(base_views.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.SubscriptionSerializer
 
     def destroy(self, request, *args, **kwargs):
-        obj = super(SubscriptionDetail, self).get_object()
+        obj = super().get_object()
 
         try:
             token = SocialToken.objects.get(

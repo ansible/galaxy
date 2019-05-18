@@ -61,7 +61,7 @@ class APIView(views.APIView):
             if (resp_hdr.split()[0]
                     and resp_hdr.split()[0] == req_hdr.split()[0]):
                 return resp_hdr
-        return super(APIView, self).get_authenticate_header(request)
+        return super().get_authenticate_header(request)
 
     def get_description_context(self):
         return {
@@ -97,7 +97,7 @@ class GenericAPIView(generics.GenericAPIView, APIView):
             self.request = None
         if not hasattr(self, 'format_kwarg'):
             self.format_kwarg = 'format'
-        d = super(GenericAPIView, self).get_description_context()
+        d = super().get_description_context()
         d.update({
             'model_verbose_name':
                 str(self.model._meta.verbose_name),
@@ -112,7 +112,7 @@ class GenericAPIView(generics.GenericAPIView, APIView):
         Add field information for GET requests (so field names/labels are
         available even when we can't POST/PUT).
         """
-        ret = super(GenericAPIView, self).metadata(request)
+        ret = super().metadata(request)
         actions = ret.get('actions', {})
         # Remove read only fields from PUT/POST data.
         for method in ('POST', 'PUT'):
@@ -161,7 +161,7 @@ class ListAPIView(generics.ListAPIView, GenericAPIView):
             order_field = 'username'
         else:
             order_field = 'name'
-        d = super(ListAPIView, self).get_description_context()
+        d = super().get_description_context()
         d.update({
             'order_field': order_field,
         })
@@ -208,7 +208,7 @@ class SubListAPIView(ListAPIView):
     """
 
     def get_description_context(self):
-        d = super(SubListAPIView, self).get_description_context()
+        d = super().get_description_context()
         d.update({
             'parent_model_verbose_name':
                 str(self.parent_model._meta.verbose_name),
@@ -250,13 +250,13 @@ class RetrieveAPIView(generics.RetrieveAPIView, GenericAPIView):
 class RetrieveUpdateAPIView(RetrieveAPIView, generics.RetrieveUpdateAPIView):
 
     def pre_save(self, obj):
-        super(RetrieveUpdateAPIView, self).pre_save(obj)
+        super().pre_save(obj)
         if hasattr(obj, 'owner'):
             obj.owner = self.request.user
 
     def update(self, request, *args, **kwargs):
         self.update_filter(request, *args, **kwargs)
-        return super(RetrieveUpdateAPIView, self).update(
+        return super().update(
             request, *args, **kwargs)
 
     def update_filter(self, request, *args, **kwargs):
