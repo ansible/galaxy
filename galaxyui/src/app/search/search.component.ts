@@ -25,9 +25,7 @@ import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
 import { NotificationType } from 'patternfly-ng/notification/notification-type';
 
-import { ContentTypes } from '../enums/content-types.enum';
 import { CloudPlatform } from '../resources/cloud-platforms/cloud-platform';
-import { ContentType } from '../resources/content-types/content-type';
 import { EventLoggerService } from '../resources/logger/event-logger.service';
 import { PFBodyService } from '../resources/pf-body/pf-body.service';
 import { Platform } from '../resources/platforms/platform';
@@ -154,13 +152,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     ],
                 },
                 {
-                    id: 'content_type',
-                    title: 'Content Type',
-                    placeholder: 'Content Type',
-                    type: FilterType.TYPEAHEAD,
-                    queries: [],
-                },
-                {
                     id: 'platforms',
                     title: 'Platform',
                     placeholder: 'Platform',
@@ -211,7 +202,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 this.pageNumber = 1;
 
                 this.preparePlatforms(data.platforms);
-                this.prepareContentTypes(data.contentTypes);
                 this.prepareCloudPlatforms(data.cloudPlatforms);
 
                 // If there is an error on the search API, the content search services
@@ -639,30 +629,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     this.toolbarConfig.filterConfig.fields[idx].queries.push({
                         id: key,
                         value: key,
-                    });
-                }
-            }
-        }
-    }
-
-    private prepareContentTypes(contentTypes: ContentType[]): void {
-        // Add Content Types to filterConfig
-        const idx = this.getFilterConfigFieldIdx('content_type');
-        if (idx !== null) {
-            const contentTypeMap = {};
-            contentTypes.forEach(ct => {
-                if (ct.name === ContentTypes.apb) {
-                    contentTypeMap[ct.name] = 'APB';
-                } else {
-                    contentTypeMap[ct.name] = ct.description;
-                }
-            });
-            this.toolbarConfig.filterConfig.fields[idx].queries = [];
-            for (const key in contentTypeMap) {
-                if (contentTypeMap.hasOwnProperty(key)) {
-                    this.toolbarConfig.filterConfig.fields[idx].queries.push({
-                        id: key,
-                        value: contentTypeMap[key],
                     });
                 }
             }
