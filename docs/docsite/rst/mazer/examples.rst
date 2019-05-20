@@ -39,100 +39,143 @@ the complete directory tree created on the local file system by Mazer:
 .. code-block:: bash
 
 
-    $ tree ~/.ansible/content/
-    /home/user/.ansible/content/
-    └── testing
-        └── ansible_testing_content
-            └── roles
-                ├── ansible-role-foobar
-                │   ├── defaults
-                │   │   └── main.yml
-                │   ├── handlers
-                │   │   └── main.yml
-                │   ├── meta
-                │   │   └── main.yml
-                │   ├── README.md
-                │   ├── tasks
-                │   │   └── main.yml
-                │   ├── tests
-                │   │   ├── inventory
-                │   │   └── test.yml
-                │   └── vars
-                │       └── main.yml
-                ├── ansible-test-role-1
-                │   ├── defaults
-                │   │   └── main.yml
-                │   ├── handlers
-                │   │   └── main.yml
-                │   ├── meta
-                │   │   └── main.yml
-                │   ├── README.md
-                │   ├── tasks
-                │   │   └── main.yml
-                │   ├── tests
-                │   │   ├── inventory
-                │   │   └── test.yml
-                │   └── vars
-                │       └── main.yml
-                ├── test-role-a
-                │   ├── defaults
-                │   │   └── main.yml
-                │   ├── handlers
-                │   │   └── main.yml
-                │   ├── meta
-                │   │   └── main.yml
-                │   ├── tasks
-                │   │   └── main.yml
-                │   ├── tests
-                │   │   ├── inventory
-                │   │   └── test.yml
-                │   └── vars
-                │       └── main.yml
-                ├── test-role-b
-                │   ├── defaults
-                │   │   └── main.yml
-                │   ├── handlers
-                │   │   └── main.yml
-                │   ├── meta
-                │   │   └── main.yml
-                │   ├── README.md
-                │   ├── tasks
-                │   │   └── main.yml
-                │   ├── tests
-                │   │   ├── inventory
-                │   │   └── test.yml
-                │   └── vars
-                │       └── main.yml
-                ├── test-role-c
-                │   ├── defaults
-                │   │   └── main.yml
-                │   ├── handlers
-                │   │   └── main.yml
-                │   ├── meta
-                │   │   └── main.yml
-                │   ├── README.md
-                │   ├── tasks
-                │   │   └── main.yml
-                │   ├── tests
-                │   │   ├── inventory
-                │   │   └── test.yml
-                │   └── vars
-                │       └── main.yml
-                └── test-role-d
-                    ├── defaults
-                    │   └── main.yml
-                    ├── handlers
-                    │   └── main.yml
-                    ├── meta
-                    │   └── main.yml
-                    ├── README.md
-                    ├── tasks
-                    │   └── main.yml
-                    ├── tests
-                    │   ├── inventory
-                    │   └── test.yml
-                    └── vars
-                        └── main.yml
+    /home/user/.ansible/collections
+    └── ansible_collections
+        └── testing
+            └── ansible_testing_content
+                ├── FILES.json
+                ├── galaxy.yml
+                ├── __init__.py
+                ├── LICENSE
+                ├── MANIFEST.json
+                ├── meta
+                ├── plugins
+                │   ├── action
+                │   │   └── add_host.py
+                │   ├── filter
+                │   │   ├── json_query.py
+                │   │   ├── mathstuff.py
+                │   │   └── newfilter.py
+                │   ├── lookup
+                │   │   ├── fileglob.py
+                │   │   ├── k8s.py
+                │   │   ├── newlookup.py
+                │   │   └── openshift.py
+                │   ├── modules
+                │   │   ├── elasticsearch_plugin.py
+                │   │   ├── kibana_plugin.py
+                │   │   ├── module_in_bash.sh
+                │   │   ├── mysql_db.py
+                │   │   ├── mysql_replication.py
+                │   │   ├── mysql_user.py
+                │   │   ├── mysql_variables.py
+                │   │   ├── newmodule.py
+                │   │   ├── redis.py
+                │   │   └── riak.py
+                │   ├── module_utils
+                │   │   ├── common.py
+                │   │   ├── helper.py
+                │   │   ├── inventory.py
+                │   │   ├── lookup.py
+                │   │   ├── newutil.py
+                │   │   ├── raw.py
+                │   │   └── scale.py
+                │   └── strategy
+                │       ├── debug.py
+                │       ├── free.py
+                │       └── linear.py
+                ├── README.md
+                └── roles
+                    ├── ansible-role-foobar
+                    │   ├── defaults
+                    │   │   └── main.yml
+                    │   ├── handlers
+                    │   │   └── main.yml
+                    │   ├── meta
+                    │   │   └── main.yml
+                    │   ├── README.md
+                    │   ├── tasks
+                    │   │   └── main.yml
+                    │   ├── tests
+                    │   │   ├── inventory
+                    │   │   └── test.yml
+                    │   └── vars
+                    │       └── main.yml
+                    ├── ansible-test-role-1
+                    │   ├── defaults
+                    │   │   └── main.yml
+                    │   ├── handlers
+                    │   │   └── main.yml
+                    │   ├── meta
+                    │   │   └── main.yml
+                    │   ├── README.md
+                    │   ├── tasks
+                    │   │   └── main.yml
+                    │   ├── tests
+                    │   │   ├── inventory
+                    │   │   └── test.yml
+                    │   └── vars
+                    │       └── main.yml
+                    ├── test-role-a
+                    │   ├── defaults
+                    │   │   └── main.yml
+                    │   ├── handlers
+                    │   │   └── main.yml
+                    │   ├── meta
+                    │   │   └── main.yml
+                    │   ├── tasks
+                    │   │   └── main.yml
+                    │   ├── tests
+                    │   │   ├── inventory
+                    │   │   └── test.yml
+                    │   └── vars
+                    │       └── main.yml
+                    ├── test-role-b
+                    │   ├── defaults
+                    │   │   └── main.yml
+                    │   ├── handlers
+                    │   │   └── main.yml
+                    │   ├── meta
+                    │   │   └── main.yml
+                    │   ├── README.md
+                    │   ├── tasks
+                    │   │   └── main.yml
+                    │   ├── tests
+                    │   │   ├── inventory
+                    │   │   └── test.yml
+                    │   └── vars
+                    │       └── main.yml
+                    ├── test-role-c
+                    │   ├── defaults
+                    │   │   └── main.yml
+                    │   ├── handlers
+                    │   │   └── main.yml
+                    │   ├── meta
+                    │   │   └── main.yml
+                    │   ├── README.md
+                    │   ├── tasks
+                    │   │   └── main.yml
+                    │   ├── tests
+                    │   │   ├── inventory
+                    │   │   └── test.yml
+                    │   └── vars
+                    │       └── main.yml
+                    └── test-role-d
+                        ├── defaults
+                        │   └── main.yml
+                        ├── handlers
+                        │   └── main.yml
+                        ├── meta
+                        │   └── main.yml
+                        ├── README.md
+                        ├── tasks
+                        │   └── main.yml
+                        ├── tests
+                        │   ├── inventory
+                        │   └── test.yml
+                        └── vars
+                            └── main.yml
+
 
 Setting the Collections path
 ----------------------------
@@ -144,8 +187,6 @@ Mazer installs content to ``~/.ansible/collections``. To override the default pa
 
     version: '1.0'
     collections_path: /usr/ansible/collections
-    options:
-        verbosity: 0
 
 On the command line, use the ``--content-path`` option to force installing content to a specific path. The following shows
 the command line option in use:
