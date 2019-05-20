@@ -37,11 +37,13 @@ class CollectionViewTests(APITestCase):
             version='1.0.0',
             contents={},
         )
-        self.version = models.CollectionVersion.objects.create(
+        self.version1 = models.CollectionVersion.objects.create(
             collection=self.collection,
             version='1.0.1',
             contents={},
         )
+        self.collection.latest_version = self.version1
+        self.collection.save()
 
     def test_get_collections(self):
         resp = self.client.get("/api/internal/ui/collections/")
@@ -51,7 +53,7 @@ class CollectionViewTests(APITestCase):
 
         assert collection['namespace'] == self.namespace.id
         assert collection['name'] == self.collection.name
-        assert collection['latest_version']['version'] == self.version.version
+        assert collection['latest_version']['version'] == self.version1.version
 
     def test_get_collections2(self):
         resp = self.client.get("/api/internal/ui/collections/")
@@ -61,7 +63,7 @@ class CollectionViewTests(APITestCase):
 
         assert collection['namespace'] == self.namespace.id
         assert collection['name'] == self.collection.name
-        assert collection['latest_version']['version'] == self.version.version
+        assert collection['latest_version']['version'] == self.version1.version
 
     def test_get_collection_details(self):
         url = "/api/internal/ui/collections/mynamespace/mycollection/"
@@ -72,7 +74,7 @@ class CollectionViewTests(APITestCase):
         assert collection['namespace']['id'] == self.namespace.id
         assert collection['namespace']['name'] == self.namespace.name
         assert collection['name'] == self.collection.name
-        assert collection['latest_version']['version'] == self.version.version
+        assert collection['latest_version']['version'] == self.version1.version
         assert len(collection['all_versions']) == 2
 
         # We want to make sure that contents aren't returned for all versions

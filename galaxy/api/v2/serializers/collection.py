@@ -95,7 +95,7 @@ class CollectionSerializer(serializers.ModelSerializer):
     namespace = fields.NamespaceObjectField()
     href = serializers.SerializerMethodField()
     versions_url = serializers.SerializerMethodField()
-    highest_version = VersionSummarySerializer()
+    latest_version = VersionSummarySerializer()
 
     class Meta:
         model = models.Collection
@@ -105,7 +105,7 @@ class CollectionSerializer(serializers.ModelSerializer):
             'name',
             'namespace',
             'versions_url',
-            'highest_version',
+            'latest_version',
             'deprecated',
             'created',
             'modified',
