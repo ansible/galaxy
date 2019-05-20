@@ -265,9 +265,9 @@ The fully qualified name for the ``testing.ansible_testing_content`` role ``test
 would be ``testing.ansible_testing_content.test_role_a``. That is *namespace.collection_name.role_name*.
 
 For example, for the collection ``testing.ansible_testing_content`` that
-has a role named ``test-role-b`` in it, a playbook will need to use the *fully qualified name*
-``testing.ansible_testing_content.test-role-b`` to load the role installed at
-``~/.ansible/collections/ansible_collections/testing/testing_ansible_content/roles/test-role-b``
+has a role named ``test_role_b`` in it, a playbook will need to use the *fully qualified name*
+``testing.ansible_testing_content.test_role_b`` to load the role installed at
+``~/.ansible/collections/ansible_collections/testing/testing_ansible_content/roles/test_role_b``
 
 An example playbook:
 
@@ -347,9 +347,9 @@ Inside the *collection* level dir, there are two main directories. One
 for ``roles`` and one for ``plugins``.
 
 Inside the ``roles`` directory, each subdirectory is a *role* directory. For the ``testing`` example above,
-the ``test-role-a`` *role* will be installed to ``~/.ansible/collections/ansible_galaxy/testing/ansible_testing_content/roles/test-role-a``
+the ``test_role_a`` *role* will be installed to ``~/.ansible/collections/ansible_galaxy/testing/ansible_testing_content/roles/test_role_a``
 
-To use ``test-role-a`` in a playbook, it can be referenced as
-``testing.ansible_testing_content.test-role-a``
+To use ``test_role_a`` in a playbook, it can be referenced as
+``testing.ansible_testing_content.test_role_a``
 
 
