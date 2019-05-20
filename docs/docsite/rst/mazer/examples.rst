@@ -10,48 +10,10 @@ Examples
 
 This topic provides examples for using Mazer CLI.
 
-Installing Roles
-----------------
+.. _installing_collections:
 
-To install a role found on `Galaxy <https://galaxy.ansible.com>`_, pass the *namespace.role_name*. For example,
-the following install the role `geerlingguy.nginx <https://galaxy.ansible.com/geerlingguy/nginx/>`_ from the
-Galaxy server:
-
-.. code-block:: bash
-
-    $ mazer install geerlingguy.nginx
-
-.. note::
-
-    Before installing roles with Mazer, review :ref:`using_mazer_content`. Mazer installs content different from
-    the way ``ansible-galaxy`` does.
-
-To install a specific version of the Galaxy role, append `,<semantic version>` to the name, as demonstrated by the
-following:
-
-.. code-block:: bash
-
-    $ mazer install geerlingguy.nginx,2.6.0
-
-Roles can also be installed directly from GitHub, by passing the git URL of the repository, and a namespace value. Use
-the required *--namespace* option to provide the namespace. The following installs the same role, but bypasses the Galaxy server,
-and goes directly to GitHub.
-
-.. code-block:: bash
-
-    $ mazer install --namespace geerlingguy git+https://github.com/geerlingguy/ansible-role-nginx
-
-A version number can also be passed using the same ',' separated format. For example:
-
-.. code-block:: bash
-
-    $ mazer install git+https://github.com/geerlingguy/ansible-role-nginx,2.6.0
-
-
-.. _installing_repositories_with_multiple_roles:
-
-Installing Repositories With Multiple Roles
--------------------------------------------
+Installing Collections
+----------------------
 
 Starting with version 3.0 of the Galaxy server, many roles can be combined into a single git repository. Prior to this role repositories
 were structured to only contain a single role. Mazer is able extract all of the roles from the repostory, and install them to the
