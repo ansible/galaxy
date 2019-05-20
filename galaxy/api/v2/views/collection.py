@@ -153,7 +153,7 @@ class CollectionListView(base.APIView):
     def _check_role_name_conflict(self, ns, name):
         roles = models.Content.objects.filter(
             content_type__name=constants.ContentType.ROLE,
-            namespace=ns,
+            repository__provider_namespace__namespace=ns,
             name=name,
         )
         if not roles:
