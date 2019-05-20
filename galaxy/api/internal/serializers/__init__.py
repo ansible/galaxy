@@ -24,6 +24,10 @@ from .imports import (  # noqa: F401
     CollectionImportTaskItem,
     RepositoryImportTaskItem,
 )
+from .search import (  # noqa: F401
+    CollectionSearchSerializer,
+    SearchRequestSerializer,
+)
 
 __all__ = (
     'CollectionListSerializer',
@@ -31,4 +35,6 @@ __all__ = (
     'RepositoryImportTaskItem',
     'CollectionImportTaskItem',
     'CollectionUpdateSerializer',
+    'CollectionSearchSerializer',
+    'SearchRequestSerializer',
 )

@@ -37,11 +37,13 @@ class Collection(mixins.TimestampsMixin, models.Model):
     """
     A model representing an Ansible Content Collection.
 
-    :var name: Collection name.
     :var namespace: Reference to a collection nanespace.
+    :var name: Collection name.
     :var deprecated: Indicates if a collection is deprecated.
+    :var download_count: Number of collection downloads.
+    :var comminity_score: Total community score.
+    :var community_survey_count: Number of community surveys.
     :var tags: List of a last collection version tags.
-    :var dependencies: List a last collection version direct??? dependencies.
     """
 
     namespace = models.ForeignKey(Namespace, on_delete=models.PROTECT)
@@ -49,8 +51,6 @@ class Collection(mixins.TimestampsMixin, models.Model):
 
     deprecated = models.BooleanField(default=False)
 
-    # Search vector
-    search_vector = psql_search.SearchVectorField(default='')
     # Community and quality score
     download_count = models.IntegerField(default=0)
     community_score = models.FloatField(null=True)
@@ -64,6 +64,9 @@ class Collection(mixins.TimestampsMixin, models.Model):
         null=True,
     )
     tags = models.ManyToManyField('Tag')
+
+    # Search indexes
+    search_vector = psql_search.SearchVectorField(default='')
 
     class Meta:
         unique_together = (
