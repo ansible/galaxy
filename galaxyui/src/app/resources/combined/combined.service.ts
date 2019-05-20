@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { NotificationService } from 'patternfly-ng';
-import { PaginatedRepoCollection, RepoOrCollectionResponse } from './combined';
+import {
+    PaginatedRepoCollection,
+    RepoOrCollectionResponse,
+    PaginatedCombinedSearch,
+} from './combined';
 
 import { ServiceBase } from '../base/service-base';
 
@@ -27,6 +31,29 @@ export class RepoCollectionListService extends ServiceBase {
                 tap(_ => this.log('fetched collection and repository list')),
                 catchError(
                     this.handleError('Get', {} as PaginatedRepoCollection),
+                ),
+            );
+    }
+}
+
+@Injectable()
+export class RepoCollectionSearchService extends ServiceBase {
+    constructor(http: HttpClient, notificationService: NotificationService) {
+        super(
+            http,
+            notificationService,
+            '/api/internal/ui/search/',
+            'collection',
+        );
+    }
+
+    query(params): Observable<PaginatedCombinedSearch> {
+        return this.http
+            .get<PaginatedCombinedSearch>(this.url, { params: params })
+            .pipe(
+                tap(_ => this.log('search repos and collections')),
+                catchError(
+                    this.handleError('Get', {} as PaginatedCombinedSearch),
                 ),
             );
     }

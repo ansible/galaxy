@@ -27,11 +27,16 @@ import { NotificationType } from 'patternfly-ng/notification/notification-type';
 
 import { ContentTypes } from '../enums/content-types.enum';
 import { CloudPlatform } from '../resources/cloud-platforms/cloud-platform';
-import { ContentSearchService } from '../resources/content-search/content-search.service';
 import { ContentType } from '../resources/content-types/content-type';
 import { EventLoggerService } from '../resources/logger/event-logger.service';
 import { PFBodyService } from '../resources/pf-body/pf-body.service';
 import { Platform } from '../resources/platforms/platform';
+import { RepoCollectionSearchService } from '../resources/combined/combined.service';
+import {
+    Content,
+    PaginatedCombinedSearch,
+} from '../resources/combined/combined';
+import { CollectionList } from '../resources/collections/collection';
 
 import { ContentTypesIconClasses } from '../enums/content-types.enum';
 
@@ -43,13 +48,6 @@ import {
 } from '../enums/contributor-types.enum';
 
 import { PopularEvent } from './popular/popular.component';
-
-import {
-    Content,
-    ContentCollectionResponse,
-} from '../resources/content-search/content';
-
-import { CollectionList } from '../resources/collections/collection';
 
 import { DefaultParams } from './search.resolver.service';
 
@@ -97,7 +95,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     constructor(
         private route: ActivatedRoute,
-        private contentSearch: ContentSearchService,
+        private searchService: RepoCollectionSearchService,
         private location: Location,
         private notificationService: NotificationService,
         private pfBody: PFBodyService,
@@ -198,7 +196,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         } as ToolbarConfig;
 
         this.listConfig = {
-            emptyStateConfig: this.emptyStateConfig,
+            // emptyStateConfig: this.emptyStateConfig,
         } as ListConfig;
 
         this.paginationConfig = {
@@ -220,11 +218,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
                 // If there is an error on the search API, the content search services
                 // returns nothing, so we have to check if results actually exist.
-                if (data.content.repository.results) {
+                if (data.content.content && data.content.collection) {
                     // If no params exist, set to the default params
                     if (Object.keys(params).length === 0) {
                         params = DefaultParams.params;
                     }
+
+                    console.log(data);
 
                     // queryParams represents the complete query that will be made to the database
                     // and as such it essentially represents the state of the search page. When
@@ -392,7 +392,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     searchContent() {
         this.pageLoading = true;
         this.setUrlParams(this.queryParams);
-        this.contentSearch.query(this.queryParams).subscribe(result => {
+        this.searchService.query(this.queryParams).subscribe(result => {
             this.prepareContent(result);
             this.pageLoading = false;
         });
@@ -554,12 +554,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.location.replaceState(this.getBasePath(), paramString); // update browser URL
     }
 
-    private prepareContent(result: ContentCollectionResponse) {
-        this.contentCount = result.repository.count;
+    private prepareContent(result: PaginatedCombinedSearch) {
+        this.contentCount = result.content.count;
         this.collectionCount = result.collection.count;
 
         const datePattern = /^\d{4}.*$/;
-        result.repository.results.forEach(item => {
+        result.content.results.forEach(item => {
             if (item.imported === null) {
                 item.imported = 'NA';
             } else if (datePattern.exec(item.imported) !== null) {
@@ -607,7 +607,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
         const count = this.collectionCount + this.contentCount;
 
-        this.contentItems = result.repository.results;
+        this.contentItems = result.content.results;
         this.collectionItems = result.collection.results;
         this.filterConfig.resultsCount = count;
         this.paginationConfig.totalItems = count;
