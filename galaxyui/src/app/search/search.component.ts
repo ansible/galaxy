@@ -663,29 +663,19 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 sortType: 'numeric',
             },
             {
-                id: 'namespace__name,name',
-                title: 'Contributor Name',
+                id: 'name',
+                title: 'Content Name',
                 sortType: 'alpha',
             },
             {
-                id: 'repository__download_count',
+                id: 'download_count',
                 title: 'Download Count',
                 sortType: 'numeric',
             },
             {
-                id: 'repository__forks_count',
-                title: 'Forks',
-                sortType: 'numeric',
-            },
-            {
-                id: 'repository__stargazers_count',
-                title: 'Stars',
-                sortType: 'numeric',
-            },
-            {
-                id: 'repository__watchers_count',
-                title: 'Watchers',
-                sortType: 'numeric',
+                id: 'qualname',
+                title: 'Namespace Name',
+                sortType: 'alpha',
             },
         ] as SortField[];
 
