@@ -280,46 +280,48 @@ An example playbook:
 
 .. code-block:: yaml
 
-
     ---
-    - name: The first play
+    - name: Use a role from a collection
       hosts: localhost
+      gather_facts: false
       roles:
-
         # A role from a collection using fully qualified name.
         # This is the recomended way to reference roles from collections
-        - testing.ansible_testing_content.test-role-a
+        - testing.ansible_testing_content.test_role_a
 
-        # FIXME FIXME add examples of short name use in collections
-        # FIXME FIXME add examples of using 'collections_path' playbook directive
-        # FIXME FIXME add examples of using ansible.legacy
+    - name: Use a role via include_role from a collection
+      hosts: localhost
+      gather_facts: false
+      tasks:
+        - name: Use 'test_role_b'
+          include_role:
+            name: testing.ansible_testing_content.test_role_b
 
-        # The traditional way to refer to roles installed to  ~/.ansible/roles or ANSIBLE_ROLES_PATH
-        # Traditional role referenced with the style namespace.rolename style
-        - GROG.debug-variable.debug-variable
+    - name: Use a module from a collection
+      hosts: localhost
+      gather_facts: false
+      tasks:
+        - name: Use 'newmodule' from a collection
+          testing.ansible_testing_content.newmodule:
+          register: newmodule_results
 
-        # a traditional role referenced via the traditional name
-        # (namespace.reponame)
-        - f500.dumpall
+        - name: Show 'newmodule' results
+          debug:
+            var: newmodule_results
 
-        # traditional role specified as dict with role vars
-        - {role: GROG.debug-variable.debug-variable, debug_variable_dump_location: '/tmp/ansible-GROG-dict-style-debug.dump', dir: '/opt/b', app_port: 5001}
+    - name: Use a module from a collection with a collections path list set and 'short' name
+      hosts: localhost
+      gather_facts: false
+      collections:
+        - testing.ansible_testing_content
+      tasks:
+        - name: Use 'newmodule' from a collection with 'short' name
+          newmodule:
+          register: newmodule_results
 
-        - role: f500.dumpall
-          tags:
-            - debug
-          dumpall_host_destination: '/tmp/ansible-f500-dumpall/'
-
-        # traditional role in ~/.ansible/roles
-        - some_role_from_tidle_dot_ansible
-
-        # FIXME verify
-        # traditional role that is install "everywhere"
-        # including ~/.ansible/collections/ansible_collections/alikins/mycollection/roles/everywhere
-        #           ~/.ansible/roles/everywhere
-        #           ./roles/everywhere.
-        # Will find it in playbook local roles/everywhere
-        - everywhere
+        - name: Show 'newmodule' results
+          debug:
+            var: newmodule_results
 
 
 Collection Path Details
