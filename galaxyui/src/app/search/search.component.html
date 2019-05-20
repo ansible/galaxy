@@ -30,6 +30,12 @@
                 </pfng-toolbar>
             </div>
             <div id="search-list">
+                <pfng-empty-state
+                    *ngIf="contentCount + collectionCount === 0"
+                    [config]="emptyStateConfig"
+                >
+                </pfng-empty-state>
+
                 <div class="row" *ngIf="collectionItems.length > 0">
                     <div class="col-sm-12 type-heading">Collections <div class="counter">{{ collectionCount }}</div></div>
                 </div>
@@ -58,6 +64,7 @@
                     <div class="col-sm-12 type-heading">Repositories <div class="counter">{{ contentCount }}</div></div>
                 </div>
                 <pfng-list
+                    *ngIf="contentItems.length > 0"
                     [config]="listConfig"
                     [items]="contentItems"
                     [itemTemplate]="itemTemplate">
@@ -138,7 +145,7 @@
                     </ng-template>
                 </pfng-list>
             </div>
-            <div class="pagination" *ngIf="contentItems && contentItems.length && paginationConfig.totalItems > paginationConfig.pageSize">
+            <div class="pagination" *ngIf="contentCount + collectionCount > 0">
                 <pfng-pagination
                     [config]='paginationConfig'
                     (onPageSizeChange)="handlePageChange($event)"

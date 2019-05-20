@@ -195,9 +195,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
             sortConfig: this.sortConfig,
         } as ToolbarConfig;
 
-        this.listConfig = {
-            // emptyStateConfig: this.emptyStateConfig,
-        } as ListConfig;
+        this.listConfig = {} as ListConfig;
 
         this.paginationConfig = {
             pageSize: 10,
