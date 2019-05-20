@@ -15,27 +15,29 @@ This topic provides examples for using Mazer CLI.
 Installing Collections
 ----------------------
 
-Starting with version 3.0 of the Galaxy server, many roles can be combined into a single git repository. Prior to this role repositories
-were structured to only contain a single role. Mazer is able extract all of the roles from the repostory, and install them to the
-local file system.
+Collections are a new way to package and distribute ansible related content.
+See :ref:`creating_collections` for examples.
 
-To install a multi-role repository from Galaxy, pass the *namespace.repository_name* to the install command. The following
-installs the `testing.ansible-testing-content repository <https://galaxy.ansible.com/testing/ansible-testing-content>`_ from
+Collections are available starting with version 3.2 of the Galaxy server and version 2.9 of ansible.
+
+To install a collection from Galaxy, pass the *namespace.repository_name* to the install command. The following
+installs the `testing.ansible_testing_content collection <https://galaxy.ansible.com/testing/ansible-testing-content>`_ from
 Galaxy:
 
 .. code-block:: bash
 
-    $ mazer install testing.ansible-testing-content
+    $ mazer install testing.ansible_testing_content
 
 .. note::
 
     Before installing roles with Mazer, review :ref:`using_mazer_content`. Mazer installs content different from
     the way ``ansible-galaxy`` does.
 
-This will install all of the roles to ``~/.ansible/content/testing/ansible-testing-content/roles/``. The following shows
+This will install the collection to ``~/.ansible/collections/ansible_collections/testing/ansible_testing_content/``. The following shows
 the complete directory tree created on the local file system by Mazer:
 
 .. code-block:: bash
+
 
     $ tree ~/.ansible/content/
     /home/user/.ansible/content/
@@ -132,16 +134,16 @@ the complete directory tree created on the local file system by Mazer:
                     └── vars
                         └── main.yml
 
-Setting the Content path
-------------------------
+Setting the Collections path
+----------------------------
 
-Mazer installs content to ``~/.ansible/content``. To override the default path, set *content_path* in Mazer's configuration file,
-``~/.ansible/mazer.yml``. The following shows an example configuration file that sets the value of *content_path*:
+Mazer installs content to ``~/.ansible/collections``. To override the default path, set *collections_path* in Mazer's configuration file,
+``~/.ansible/mazer.yml``. The following shows an example configuration file that sets the value of *collections_path*:
 
 .. code-block:: yaml
 
     version: '1.0'
-    content_path: /usr/ansible/content
+    collections_path: /usr/ansible/collections
     options:
         verbosity: 0
 
@@ -150,12 +152,12 @@ the command line option in use:
 
 .. code-block:: bash
 
-    $ mazer install --content-path /usr/ansible/content geerlingguy.nginx
+    $ mazer install --content-path /usr/ansible/collections geerlingguy.nginx
 
 Viewing Installed Content
 -------------------------
 
-To see what's installed in the *content_path*, use the ``list`` command. The following will list all installed
+To see what's installed in the *collections_path*, use the ``list`` command. The following will list all installed
 content:
 
 .. code-block:: bash
@@ -178,7 +180,7 @@ To list the contents of a specific repository, pass the *namespace.repository_na
 Removing Installed Content
 --------------------------
 
-Use the ``remove`` command to uninstall Ansible content from the *content_path*.
+Use the ``remove`` command to uninstall Ansible content from the *collections_path*.
 
 To remove a previously installed role, pass *namespace.role_name*. For example, the following demonstrates
 uninstalling the role *geerlingguy.apache*:
@@ -242,7 +244,7 @@ role *geerlingguy.apache* with Mazer creates the following directory structure:
         │                   ├── Solaris.yml
         │                   └── Suse.yml
 
-In the above example, the actual role *apache* is located inside the directory ``~/.ansible/content/geerlingguy/apache/roles`` in the ``apache`` subdir.
+In the above example, the actual role *apache* is located inside the directory ``~/.ansible/collections/geerlingguy/apache/roles`` in the ``apache`` subdir.
 
 
 With The Companion Ansible Branch
@@ -325,83 +327,10 @@ An example playbook:
         - testing.ansible_testing_content.test-role-a
 
 
-With Ansible Versions That Do Not Support Content Path
-======================================================
-
-Ansible releases ``2.7`` and earlier do not support the mazer *content path*.
-If you are using one of these versions, there are two ways mazer installed
-roles can be used.
-
-
-Adding Each Role On Content Path To Roles Path
-______________________________________________
-
-To reference a role installed in the content path (``geerlingguy.apache for example``) in a playbook, *ANSIBLE_ROLES_PATH* must include
-the path to the *repository* role directory (``~/.ansible/content/geerlingguy/apache/roles``), and the playbook must use ``apache`` as the role name.
-
-It's possible to use roles installed by Mazer, but obviously, having to update *ANSIBLE_ROLES_PATH* for each role, and change
-the role name in existing playbooks is less than ideal. In the mean time, the
-`'mazer_role_loader' branch of ansible <https://github.com/ansible/ansible/tree/mazer_role_loader>`__ is available to try.
-
-Stay tuned for updates.
-
-
-Using Content Path Relative Paths To Roles
-__________________________________________
-
-
-For versions of ansible that do not support mazer content paths, there is another
-option: adding ``~/.ansible/content`` to *ANSIBLE_ROLES_PATH* and using relative paths to reference roles.
-
-In a playbook, ansible supports using the path to the role directory in addition to using the symbolic role
-name. For example, a role referenced like ``apps/apache`` will look for a ``app`` sub dir in ansible role paths and
-for a role dir name ``apache`` in that subdir.
-
-Since mazer installed roles live in subdirectories of ``~/.ansible/content``, then ``~/.ansible/content`` can
-be added to *ANSIBLE_ROLES_PATH*. Then a playbook can reference ``geerlingguy/apache/roles/apache`` to load
-the ``geerlingguy.apache`` role installed with mazer.
-
-To use the ``test-role-a`` role from the ``testing.ansible_testing_content`` *repository*, that
-role could be referenced as ``testing/ansible_testing_content/roles/test-role-a`` which would use the
-role installed to ``~/.ansible/content/testing/ansible_testing_content/roles/test-role-a``.
-
-For an example of a ansible config file to set this up:
-
-.. code-block:: ini
-
-    [defaults]
-    roles_path = $HOME/.ansible/content:$HOME/deploy/roles
-
-And an example playbook:
-
-.. code-block:: yaml
-
-    ---
-    - name: The first play
-      hosts: localhost
-      roles:
-        - geerlingguy/apache/roles/apache
-        - testing/ansible_testing_content/roles/test-role-a
-      tasks:
-        - name: import the role called testing.ansible_testing_content.test-role-a
-          include_role:
-            name: testing/ansible_testing_content/roles/test-role-a
-
-.. note::
-
-    When using relative (or full) paths as role names in ansible-playbook, all potential roles paths
-    will be search. This include default role paths (``/etc/ansible/roles`` for example) and playbook local
-    ``roles/`` directories. If there are multiple paths that match the role name used in the playbook, it
-    is possible the wrong role will be used.
-
-    To minimize this possibility it is recommended to add ``~/.ansible/content`` to the front of
-    *ANSIBLE_ROLES_PATH* so ``~/.ansible/content`` relative paths will be searched first.
-
-
 Content Path Details
 --------------------
 
-Mazer installed content lives in the ansible *content_path* ``~/.ansible/content/``
+Mazer installed content lives in the ansible *collections_path* ``~/.ansible/content/``
 
 Inside of ``~/.ansible/content``, there are directories for
 each galaxy namespace (typically the same name as the the github user name used in galaxy roles).
