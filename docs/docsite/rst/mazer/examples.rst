@@ -261,15 +261,8 @@ or *namespace.collection_name*
 To reference roles included in a collection in a playbook, there is a *fully qualified
 name* and a *short name*.
 
-The fully qualified name for the ``testing.ansible_testing_content`` role ``test-role-a``
-would be ``testing.ansible_testing_content.test-role-a``. That is *namespace.collection_name.role_name*.
-
-FIXME FIXME verify this FIXME
-
-For example, ``mynamespace.myrole`` will match the role with the *fully qualified name*
-``mynamespace.myrole.myrole`` and find it at ``~/.ansible/collections/ansible_collections/mynamespace/myrole/roles/myrole``
-
-FIXME FIXME
+The fully qualified name for the ``testing.ansible_testing_content`` role ``test_role_a``
+would be ``testing.ansible_testing_content.test_role_a``. That is *namespace.collection_name.role_name*.
 
 For example, for the collection ``testing.ansible_testing_content`` that
 has a role named ``test-role-b`` in it, a playbook will need to use the *fully qualified name*
