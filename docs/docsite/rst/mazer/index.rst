@@ -9,7 +9,7 @@ Mazer is a new command-line tool for managing `Ansible <https://github.com/ansib
 on GitHub at `ansible/mazer <https://github.com/ansible/mazer>`_.
 
 .. note::
-    
+
     Mazer is experimental, and currently only available for tech-preview. Use with lots of caution! It is not intended for use in
     production environments, nor is it currently intended to replace the `ansible-galaxy` command-line tool.
 
@@ -17,14 +17,12 @@ on GitHub at `ansible/mazer <https://github.com/ansible/mazer>`_.
     or the `Ansible docs site <https://docs.ansible.com>`_.
 
 .. note::
-    
+
     Before installing roles with Mazer, review :ref:`using_collections_in_playbooks`. Mazer installs content different from
     the way ``ansible-galaxy`` does.
 
-    FIXMEFIXME point to ansible 2.9 FIXMEFIXME
-    Mazer is most useful when used with a version of Ansible that understands mazer installed content.
-    Currently that means the `'mazer_role_loader' branch of ansible <https://github.com/ansible/ansible/tree/mazer_role_loader>`_.
-    See :ref:`installing_the_companion_branch_of_ansible` for details.
+    Mazer is most useful when used with a version of Ansible that understands *collections*.
+    That means Ansible versions 2.8 or higher.
 
 .. toctree::
    :maxdepth: 2
