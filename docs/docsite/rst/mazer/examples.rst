@@ -188,114 +188,61 @@ Mazer installs content to ``~/.ansible/collections``. To override the default pa
     version: '1.0'
     collections_path: /usr/ansible/collections
 
-On the command line, use the ``--content-path`` option to force installing content to a specific path. The following shows
+On the command line, use the ``--collections-path`` option to force installing content to a specific path. The following shows
 the command line option in use:
 
 .. code-block:: bash
 
-    $ mazer install --content-path /usr/ansible/collections geerlingguy.nginx
+    $ mazer install --collections-path /usr/ansible/collections geerlingguy.nginx
 
-Viewing Installed Content
--------------------------
+Viewing Installed Collections
+-----------------------------
 
 To see what's installed in the *collections_path*, use the ``list`` command. The following will list all installed
-content:
+collections:
 
 .. code-block:: bash
 
     $ mazer list
 
-To list all the content installed in a specific path, pass the ``--content-path`` option. For example, the following
-lists content installed at ``/usr/data/ansible``:
+To list all the collections installed in a specific path, pass the ``--collections-path`` option. For example, the following
+lists collections installed at ``/usr/data/ansible``:
 
 .. code-block:: bash
 
-    $ mazer list --content-path /usr/data/ansible
+    $ mazer list --collections-path /usr/data/ansible
 
-To list the contents of a specific repository, pass the *namespace.repository_name*, as demonstrated by the following:
-
-.. code-block:: bash
-
-    $ mazer list testing.ansible-testing-content
-
-Removing Installed Content
---------------------------
-
-Use the ``remove`` command to uninstall Ansible content from the *collections_path*.
-
-To remove a previously installed role, pass *namespace.role_name*. For example, the following demonstrates
-uninstalling the role *geerlingguy.apache*:
+To list the contents of a specific collection, pass the *namespace.collection_name*, as demonstrated by the following:
 
 .. code-block:: bash
 
-    $ mazer remove geerlingguy.apache
+    $ mazer list testing.ansible_testing_content
 
-To remove all the content intalled from a multi-role repository, pass *namespace.repository_name*, as demonstrated
-by the following:
+Removing Installed Collections
+------------------------------
+
+Use the ``remove`` command to uninstall Ansible collections from the *collections_path*.
+
+To remove a previously installed collection, pass *namespace.collection_name*. For example, the following demonstrates
+uninstalling the collection *testing.ansible_testing_content*:
 
 .. code-block:: bash
 
-    $ mazer remove testing.ansible-testing-content
+    $ mazer remove testing.ansible_testing_content
 
 .. _using_mazer_content:
 
-Using Content in Playbooks
---------------------------
-
-Mazer places roles on the filesystem differently from the way ``ansible-galaxy`` does. For example, installing the
-role *geerlingguy.apache* with Mazer creates the following directory structure:
-
-.. code-block:: bash
-
-    $ tree ~/.ansible/content/
-        /home/user/.ansible/content/
-        ├── geerlingguy
-        │   └── apache
-        │       └── roles
-        │           └── apache
-        │               ├── defaults
-        │               │   └── main.yml
-        │               ├── handlers
-        │               │   └── main.yml
-        │               ├── LICENSE
-        │               ├── meta
-        │               │   └── main.yml
-        │               ├── README.md
-        │               ├── tasks
-        │               │   ├── configure-Debian.yml
-        │               │   ├── configure-RedHat.yml
-        │               │   ├── configure-Solaris.yml
-        │               │   ├── configure-Suse.yml
-        │               │   ├── main.yml
-        │               │   ├── setup-Debian.yml
-        │               │   ├── setup-RedHat.yml
-        │               │   ├── setup-Solaris.yml
-        │               │   └── setup-Suse.yml
-        │               ├── templates
-        │               │   └── vhosts.conf.j2
-        │               ├── tests
-        │               │   ├── README.md
-        │               │   └── test.yml
-        │               └── vars
-        │                   ├── AmazonLinux.yml
-        │                   ├── apache-22.yml
-        │                   ├── apache-24.yml
-        │                   ├── Debian.yml
-        │                   ├── RedHat.yml
-        │                   ├── Solaris.yml
-        │                   └── Suse.yml
-
-In the above example, the actual role *apache* is located inside the directory ``~/.ansible/collections/geerlingguy/apache/roles`` in the ``apache`` subdir.
+Using Collections in Playbooks
+------------------------------
 
 
-With The Companion Ansible Branch
-=================================
+With Ansible 2.8 or higher
+==========================
 
-If the `companion branch of ansible <https://github.com/ansible/ansible/tree/mazer_role_loader>`__ is installed
-roles can be referenced, found, and loaded by using a galaxy/mazer style role name like  ``geerlingguy.nginx.nginx``
-or *namespace.repository_name.role_name*
+Collections can be referenced, found, and loaded by using a galaxy/mazer style collection name like  ``testing.ansible_testing_content``
+or *namespace.collection_name*
 
-To reference that role in a playbook, there is a *fully qualified
+To reference roles included in a collection in a playbook, there is a *fully qualified
 name* and a *short name*.
 
 The fully qualified name for the ``geerlingguy.apache`` role
@@ -368,42 +315,38 @@ An example playbook:
         - testing.ansible_testing_content.test-role-a
 
 
-Content Path Details
---------------------
+Collection Path Details
+-----------------------
 
-Mazer installed content lives in the ansible *collections_path* ``~/.ansible/content/``
+Mazer installed content lives in the ansible *collections_path* ``~/.ansible/collections/``
 
-Inside of ``~/.ansible/content``, there are directories for
+Inside of ``~/.ansible/collections``, there is a ``ansible_collections`` directory. This
+directory is the root ansible namespace for collections.
+
+Inside of ``~/.ansible/collections/ansible_collections`` there are directories for
 each galaxy namespace (typically the same name as the the github user name used in galaxy roles).
 For an example of a namespace directory, the galaxy content from the
-'alikins' github user will be installed to ``~/.ansible/content/alikins``
+'alikins' github user will be installed to ``~/.ansible/collections/ansible_collections/alikins``
 
 Inside each namespace directory, there will be a directory
-for each galaxy *repository* installed. For a traditional galaxy
-role, this *repository* dir will have a name that matches the role
-name. See :ref:`installing_roles` for examples.
+for each ansible *collection* installed.
 
-For new multi-content style repos (see :ref:`installing_repositories_with_multiple_roles`)
-the *repository* level directory name with match the name of the git repo
-imported to galaxy. For example, for the github repo
+For new multi-content style repos (see :ref:`installing_collections`)
+the *collection* level directory name will match the name of the collection
+in Galaxy.
+
+For example, for the github repo
 at https://github.com/atestuseraccount/ansible-testing-content imported
 to galaxy-qa at https://galaxy-qa.ansible.com/testing/ansible_testing_content, the
-*repository* level directory name is ``ansible_testing_content``.
+*collection* name and the *collection* level directory name is ``ansible_testing_content``.
 
-Inside the *repository* level dir, there are directories for each *content
-type* supported by galaxy. For example, ``roles``.
+Inside the *collection* level dir, there are two main directories. One
+for ``roles`` and one for ``plugins``.
 
-Inside each *content type* directory, there will be a directory named for the
-each *content* of that *content type*. For the ``testing`` example above,
-the ``test-role-a`` *role* will be installed to ``~/.ansible/content/testing/ansible_testing_content/roles/test-role-a``
+Inside the ``roles`` directory, each subdirectory is a *role* directory. For the ``testing`` example above,
+the ``test-role-a`` *role* will be installed to ``~/.ansible/collections/ansible_galaxy/testing/ansible_testing_content/roles/test-role-a``
 
 To use ``test-role-a`` in a playbook, it can be referenced as
 ``testing.ansible_testing_content.test-role-a``
-
-For a traditional role (a *role* where the upstream git repo contains only
-a single role) like `geerlingguy.apache`, mazer will install it
-to ``~/.ansible/content/geerlingguy/apache/roles/apache``
-
-
 
 
