@@ -30,7 +30,7 @@ Galaxy:
 
 .. note::
 
-    Before installing roles with Mazer, review :ref:`using_mazer_content`. Mazer installs content different from
+    Before installing roles with Mazer, review :ref:`using_collections_in_playbooks`. Mazer installs content different from
     the way ``ansible-galaxy`` does.
 
 This will install the collection to ``~/.ansible/collections/ansible_collections/testing/ansible_testing_content/``. The following shows
@@ -180,7 +180,7 @@ the complete directory tree created on the local file system by Mazer:
 Setting the Collections path
 ----------------------------
 
-Mazer installs content to ``~/.ansible/collections``. To override the default path, set *collections_path* in Mazer's configuration file,
+Mazer installs collections to ``~/.ansible/collections``. To override the default path, set *collections_path* in Mazer's configuration file,
 ``~/.ansible/mazer.yml``. The following shows an example configuration file that sets the value of *collections_path*:
 
 .. code-block:: yaml
@@ -188,12 +188,12 @@ Mazer installs content to ``~/.ansible/collections``. To override the default pa
     version: '1.0'
     collections_path: /usr/ansible/collections
 
-On the command line, use the ``--collections-path`` option to force installing content to a specific path. The following shows
+On the command line, use the ``--collections-path`` option to force installing collections to a specific path. The following shows
 the command line option in use:
 
 .. code-block:: bash
 
-    $ mazer install --collections-path /usr/ansible/collections geerlingguy.nginx
+    $ mazer install --collections-path /usr/ansible/collections testing.ansible_testing_content
 
 Viewing Installed Collections
 -----------------------------
@@ -230,7 +230,7 @@ uninstalling the collection *testing.ansible_testing_content*:
 
     $ mazer remove testing.ansible_testing_content
 
-.. _using_mazer_content:
+.. _using_collections_in_playbooks:
 
 Using Collections in Playbooks
 ------------------------------
@@ -245,28 +245,20 @@ or *namespace.collection_name*
 To reference roles included in a collection in a playbook, there is a *fully qualified
 name* and a *short name*.
 
-The fully qualified name for the ``geerlingguy.apache`` role
-would be ``geerlingguy.apache.apache``. That is *namespace.repository_name.role_name*.
+The fully qualified name for the ``testing.ansible_testing_content`` role ``test-role-a``
+would be ``testing.ansible_testing_content.test-role-a``. That is *namespace.collection_name.role_name*.
 
-With traditional style roles, the short name ``geerlingguy.apache`` can also be used.
-Note that this name format is compatible with using roles installed with ``ansible-galaxy``.
+FIXME FIXME verify this FIXME
 
 For example, ``mynamespace.myrole`` will match the role with the *fully qualified name*
-``mynamespace.myrole.myrole`` and find it at ``~/.ansible/content/mynamespace/myrole/roles/myrole``
+``mynamespace.myrole.myrole`` and find it at ``~/.ansible/collections/ansible_collections/mynamespace/myrole/roles/myrole``
 
-Traditional style roles can be referenced by the *short name* or the *fully qualified name*.
+FIXME FIXME
 
-For example, ``geerlingguy.apache`` will refer to the role installed at
-``~/.ansible/content/geerlingguy/apache/roles/apache`` as well as the
-more specific name ``geerlingguy.apache.apache``.
-
-For a galaxy *repository* that has multiple roles, the *fully qualified name*
-needs to be used since the repository name is different from the role name.
-
-For example, for the multiple role repository ``testing.some_multi_content_repo`` that
-has a role named ``some_role`` in it, a playbook will need to use the *fully qualified name*
-``testing.some_multi_content_repo.some_role`` to load the role installed at
-``~/.ansible/content/testing/some_multi_content_repo/roles/some_role``
+For example, for the collection ``testing.ansible_testing_content`` that
+has a role named ``test-role-b`` in it, a playbook will need to use the *fully qualified name*
+``testing.ansible_testing_content.test-role-b`` to load the role installed at
+``~/.ansible/collections/ansible_collections/testing/testing_ansible_content/roles/test-role-b``
 
 An example playbook:
 
@@ -277,8 +269,17 @@ An example playbook:
     - name: The first play
       hosts: localhost
       roles:
-        # This will load from ~/.ansible/content
-        # Traditional role referenced with the style namespace.reponame.rolename style
+
+        # A role from a collection using fully qualified name.
+        # This is the recomended way to reference roles from collections
+        - testing.ansible_testing_content.test-role-a
+
+        # FIXME FIXME add examples of short name use in collections
+        # FIXME FIXME add examples of using 'collections_path' playbook directive
+        # FIXME FIXME add examples of using ansible.legacy
+
+        # The traditional way to refer to roles installed to  ~/.ansible/roles or ANSIBLE_ROLES_PATH
+        # Traditional role referenced with the style namespace.rolename style
         - GROG.debug-variable.debug-variable
 
         # a traditional role referenced via the traditional name
@@ -296,44 +297,35 @@ An example playbook:
         # traditional role in ~/.ansible/roles
         - some_role_from_tidle_dot_ansible
 
+        # FIXME verify
         # traditional role that is install "everywhere"
-        # including ~/.ansible/content/alikins/everywhere/roles/everywhere
+        # including ~/.ansible/collections/ansible_collections/alikins/mycollection/roles/everywhere
         #           ~/.ansible/roles/everywhere
         #           ./roles/everywhere.
         # Will find it in playbook local roles/everywhere
         - everywhere
 
-        # traditional role (everywhere) but using namespace.repo.rolename dotted name
-        # will find in ~/.ansible/content
-        - alikins.everywhere.everywhere
-
-        # traditional role (everywhere) but using gal trad style namespace.repo dotted name
-        # will find in ~/.ansible/content
-        - alikins.everywhere
-
-        # A role from a multi-content repo
-        - testing.ansible_testing_content.test-role-a
-
 
 Collection Path Details
 -----------------------
 
-Mazer installed content lives in the ansible *collections_path* ``~/.ansible/collections/``
+Mazer installed collections live in the ansible *collections_path* ``~/.ansible/collections/``
 
 Inside of ``~/.ansible/collections``, there is a ``ansible_collections`` directory. This
 directory is the root ansible namespace for collections.
 
 Inside of ``~/.ansible/collections/ansible_collections`` there are directories for
 each galaxy namespace (typically the same name as the the github user name used in galaxy roles).
-For an example of a namespace directory, the galaxy content from the
+For an example of a namespace directory, the galaxy collection from the
 'alikins' github user will be installed to ``~/.ansible/collections/ansible_collections/alikins``
 
 Inside each namespace directory, there will be a directory
 for each ansible *collection* installed.
 
-For new multi-content style repos (see :ref:`installing_collections`)
+For collections (see :ref:`installing_collections`)
 the *collection* level directory name will match the name of the collection
-in Galaxy.
+in Galaxy. This name is set in ``galaxy.yml`` field ``name``, as descibed
+in :ref:`collection_metadata`.
 
 For example, for the github repo
 at https://github.com/atestuseraccount/ansible-testing-content imported

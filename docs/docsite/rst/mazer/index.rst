@@ -18,7 +18,7 @@ on GitHub at `ansible/mazer <https://github.com/ansible/mazer>`_.
 
 .. note::
     
-    Before installing roles with Mazer, review :ref:`using_mazer_content`. Mazer installs content different from
+    Before installing roles with Mazer, review :ref:`using_collections_in_playbooks`. Mazer installs content different from
     the way ``ansible-galaxy`` does.
 
     FIXMEFIXME point to ansible 2.9 FIXMEFIXME
