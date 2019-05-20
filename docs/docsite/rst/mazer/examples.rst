@@ -38,7 +38,6 @@ the complete directory tree created on the local file system by Mazer:
 
 .. code-block:: bash
 
-
     /home/user/.ansible/collections
     └── ansible_collections
         └── testing
@@ -85,96 +84,113 @@ the complete directory tree created on the local file system by Mazer:
                 │       ├── free.py
                 │       └── linear.py
                 ├── README.md
-                └── roles
-                    ├── ansible-role-foobar
-                    │   ├── defaults
-                    │   │   └── main.yml
-                    │   ├── handlers
-                    │   │   └── main.yml
-                    │   ├── meta
-                    │   │   └── main.yml
-                    │   ├── README.md
-                    │   ├── tasks
-                    │   │   └── main.yml
-                    │   ├── tests
-                    │   │   ├── inventory
-                    │   │   └── test.yml
-                    │   └── vars
-                    │       └── main.yml
-                    ├── ansible-test-role-1
-                    │   ├── defaults
-                    │   │   └── main.yml
-                    │   ├── handlers
-                    │   │   └── main.yml
-                    │   ├── meta
-                    │   │   └── main.yml
-                    │   ├── README.md
-                    │   ├── tasks
-                    │   │   └── main.yml
-                    │   ├── tests
-                    │   │   ├── inventory
-                    │   │   └── test.yml
-                    │   └── vars
-                    │       └── main.yml
-                    ├── test-role-a
-                    │   ├── defaults
-                    │   │   └── main.yml
-                    │   ├── handlers
-                    │   │   └── main.yml
-                    │   ├── meta
-                    │   │   └── main.yml
-                    │   ├── tasks
-                    │   │   └── main.yml
-                    │   ├── tests
-                    │   │   ├── inventory
-                    │   │   └── test.yml
-                    │   └── vars
-                    │       └── main.yml
-                    ├── test-role-b
-                    │   ├── defaults
-                    │   │   └── main.yml
-                    │   ├── handlers
-                    │   │   └── main.yml
-                    │   ├── meta
-                    │   │   └── main.yml
-                    │   ├── README.md
-                    │   ├── tasks
-                    │   │   └── main.yml
-                    │   ├── tests
-                    │   │   ├── inventory
-                    │   │   └── test.yml
-                    │   └── vars
-                    │       └── main.yml
-                    ├── test-role-c
-                    │   ├── defaults
-                    │   │   └── main.yml
-                    │   ├── handlers
-                    │   │   └── main.yml
-                    │   ├── meta
-                    │   │   └── main.yml
-                    │   ├── README.md
-                    │   ├── tasks
-                    │   │   └── main.yml
-                    │   ├── tests
-                    │   │   ├── inventory
-                    │   │   └── test.yml
-                    │   └── vars
-                    │       └── main.yml
-                    └── test-role-d
-                        ├── defaults
-                        │   └── main.yml
-                        ├── handlers
-                        │   └── main.yml
-                        ├── meta
-                        │   └── main.yml
-                        ├── README.md
-                        ├── tasks
-                        │   └── main.yml
-                        ├── tests
-                        │   ├── inventory
-                        │   └── test.yml
-                        └── vars
-                            └── main.yml
+                ├── roles
+                │   ├── foobar
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── README.md
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   ├── test_role_1
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── README.md
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   ├── test_role_a
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   ├── testrolea
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   ├── test_role_b
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── README.md
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   ├── test_role_c
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── README.md
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   └── test_role_d
+                │       ├── defaults
+                │       │   └── main.yml
+                │       ├── handlers
+                │       │   └── main.yml
+                │       ├── meta
+                │       │   └── main.yml
+                │       ├── README.md
+                │       ├── tasks
+                │       │   └── main.yml
+                │       ├── tests
+                │       │   ├── inventory
+                │       │   └── test.yml
+                │       └── vars
+                │           └── main.yml
+                └── tests
+                    ├── inventory
+                    └── test.yml
 
 
 Setting the Collections path
