@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
 import * as moment from 'moment';
 
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { CardConfig } from 'patternfly-ng/card/basic-card/card-config';
 import { EmptyStateConfig } from 'patternfly-ng/empty-state/empty-state-config';
@@ -24,6 +25,7 @@ import { Version } from '../../resources/repositories/version';
 
 import { ContentService } from '../../resources/content/content.service';
 import { RepositoryService } from '../../resources/repositories/repository.service';
+import { NamespaceService } from '../../resources/namespaces/namespace.service';
 
 import { CommunityDetails, DetailMessage } from '../cards/survey/types';
 
@@ -53,10 +55,7 @@ export class RepositoryDetailComponent implements OnInit {
 
     pageTitle = '';
     pageIcon = '';
-    content: Content[];
-    repository: Repository;
     repositoryVersions: Version[] = [];
-    namespace: Namespace;
     showEmptyState = false;
     actionConfig: ActionConfig;
     emptyStateConfig: EmptyStateConfig;
@@ -89,6 +88,15 @@ export class RepositoryDetailComponent implements OnInit {
     } as ContentTypeCounts;
 
     qualityListConfig: ListConfig;
+
+    @Input()
+    repository: Repository;
+
+    @Input()
+    content: Content[];
+
+    @Input()
+    namespace: Namespace;
 
     ngOnInit() {
         this.qualityListConfig = {
@@ -126,99 +134,87 @@ export class RepositoryDetailComponent implements OnInit {
         } as EmptyStateConfig;
 
         this.route.params.subscribe(params => {
-            this.route.data.subscribe(data => {
-                this.repository = data['repository'];
-                this.namespace = data['namespace'];
-                this.content = data['content'];
-
-                if (this.repository) {
-                    this.repoType = RepoFormats[this.repository.format];
-                    if (this.repoType !== RepoFormats.apb) {
-                        this.getRepoVersions();
-                    }
+            if (this.repository) {
+                this.repoType = RepoFormats[this.repository.format];
+                if (this.repoType !== RepoFormats.apb) {
+                    this.getRepoVersions();
                 }
+            }
 
-                const req_content_name = params['content_name'];
+            const req_content_name = params['content_name'];
 
-                if (
+            if (req_content_name && this.content && this.content.length) {
+                this.selectedContent = this.findSelectedContent(
+                    req_content_name,
+                );
+            }
+            if (
+                !this.repository ||
+                !this.content ||
+                (this.repository.format === RepoFormats.multi &&
                     req_content_name &&
-                    data['content'] &&
-                    data['content'].length
-                ) {
-                    this.selectedContent = this.findSelectedContent(
-                        req_content_name,
-                    );
-                }
-                if (
-                    !this.repository ||
-                    !this.content ||
-                    (this.repository.format === RepoFormats.multi &&
-                        req_content_name &&
-                        !this.selectedContent)
-                ) {
-                    // Requested content from a multicontent repo not found || No content found
-                    this.showEmptyState = true;
-                    this.pageTitle =
-                        '<i class="fa fa-frown-o"></i> Content Not Found';
-                    this.pageLoading = false;
+                    !this.selectedContent)
+            ) {
+                // Requested content from a multicontent repo not found || No content found
+                this.showEmptyState = true;
+                this.pageTitle =
+                    '<i class="fa fa-frown-o"></i> Content Not Found';
+                this.pageLoading = false;
+            } else {
+                // Append author type to breadcrumb
+                if (this.namespace.is_vendor) {
+                    this.pageTitle = 'Vendors;/vendors;';
+                    this.pageIcon = 'fa fa-star';
                 } else {
-                    // Append author type to breadcrumb
-                    if (this.namespace.is_vendor) {
-                        this.pageTitle = 'Vendors;/vendors;';
-                        this.pageIcon = 'fa fa-star';
-                    } else {
-                        this.pageTitle = 'Community Authors;/community;';
-                        this.pageIcon = 'fa fa-users';
-                    }
+                    this.pageTitle = 'Community Authors;/community;';
+                    this.pageIcon = 'fa fa-users';
+                }
 
-                    // Append author namespace and repository name to breadcrumb
-                    this.pageTitle += `${this.namespace.name};/${
-                        this.namespace.name
-                    };${params['repository']};`;
+                // Append author namespace and repository name to breadcrumb
+                this.pageTitle += `${this.namespace.name};/${
+                    this.namespace.name
+                };${params['name']};`;
 
-                    // If content is specified, append it to the breadcrumb
-                    if (this.selectedContent) {
-                        this.pageTitle += `/${this.namespace.name}/${
-                            params['repository']
-                        };${req_content_name}`;
-                    }
-                    this.repository.last_import = 'NA';
-                    this.repository.last_commit = 'NA';
-                    if (
-                        this.repository.summary_fields['latest_import'] &&
+                // If content is specified, append it to the breadcrumb
+                if (this.selectedContent) {
+                    this.pageTitle += `/${this.namespace.name}/${
+                        params['name']
+                    };${req_content_name}`;
+                }
+                this.repository.last_import = 'NA';
+                this.repository.last_commit = 'NA';
+                if (
+                    this.repository.summary_fields['latest_import'] &&
+                    this.repository.summary_fields['latest_import']['finished']
+                ) {
+                    this.repository.last_import = moment(
                         this.repository.summary_fields['latest_import'][
                             'finished'
-                        ]
-                    ) {
-                        this.repository.last_import = moment(
-                            this.repository.summary_fields['latest_import'][
-                                'finished'
-                            ],
-                        ).fromNow();
-                    }
-
-                    if (this.repository.commit_created) {
-                        this.repository.last_commit = moment(
-                            this.repository.commit_created,
-                        ).fromNow();
-                    }
-
-                    if (this.repository.quality_score_date) {
-                        this.repository.quality_score_date = moment(
-                            this.repository.quality_score_date,
-                        ).fromNow();
-                    }
-
-                    if (this.content && this.content.length) {
-                        this.repoContent = this.content[0];
-                        this.fetchContentDetail(this.repoContent.id);
-                    } else {
-                        // Repo has no child Content Objects
-                        this.pageLoading = false;
-                        this.showEmptyState = true;
-                    }
+                        ],
+                    ).fromNow();
                 }
-            });
+
+                if (this.repository.commit_created) {
+                    this.repository.last_commit = moment(
+                        this.repository.commit_created,
+                    ).fromNow();
+                }
+
+                if (this.repository.quality_score_date) {
+                    this.repository.quality_score_date = moment(
+                        this.repository.quality_score_date,
+                    ).fromNow();
+                }
+
+                if (this.content && this.content.length) {
+                    this.repoContent = this.content[0];
+                    this.fetchContentDetail(this.repoContent.id);
+                } else {
+                    // Repo has no child Content Objects
+                    this.pageLoading = false;
+                    this.showEmptyState = true;
+                }
+            }
         });
     }
 

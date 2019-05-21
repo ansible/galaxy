@@ -30,9 +30,7 @@ export class CollectionListItem extends React.Component<IProps, {}> {
                 }
                 key={collection.name}
                 heading={
-                    <Link
-                        to={`/collections/${namespace.name}/${collection.name}`}
-                    >
+                    <Link to={`/${namespace.name}/${collection.name}`}>
                         {collection.name}
                     </Link>
                 }

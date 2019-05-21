@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { NotificationService } from 'patternfly-ng';
-import { PaginatedRepoCollection } from './combined';
+import { PaginatedRepoCollection, RepoOrCollectionResponse } from './combined';
 
 import { ServiceBase } from '../base/service-base';
 
@@ -29,5 +29,23 @@ export class RepoCollectionListService extends ServiceBase {
                     this.handleError('Get', {} as PaginatedRepoCollection),
                 ),
             );
+    }
+}
+
+@Injectable()
+export class RepoOrCollectionService extends ServiceBase {
+    constructor(http: HttpClient, notificationService: NotificationService) {
+        super(
+            http,
+            notificationService,
+            '/api/internal/ui/repo-or-collection-detail/',
+            'content-format',
+        );
+    }
+
+    query(namespace, name): Observable<RepoOrCollectionResponse> {
+        return this.http.get<RepoOrCollectionResponse>(this.url, {
+            params: { namespace: namespace, name: name },
+        });
     }
 }

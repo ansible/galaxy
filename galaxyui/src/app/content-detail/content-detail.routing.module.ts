@@ -1,13 +1,7 @@
 import { NgModule } from '@angular/core';
 
 import { RouterModule, Routes } from '@angular/router';
-
-import {
-    ContentResolver,
-    NamespaceResolver,
-    RepositoryResolver,
-    CollectionResolver,
-} from './content-detail.resolver.service';
+import { TypeCheckResolver } from './content-detail.resolver.service';
 
 const routes: Routes = [
     // ':namespace/:repository/:content_name' and ':namespace/:repository/ moved
@@ -17,11 +11,6 @@ const routes: Routes = [
 @NgModule({
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
-    providers: [
-        ContentResolver,
-        RepositoryResolver,
-        NamespaceResolver,
-        CollectionResolver,
-    ],
+    providers: [TypeCheckResolver],
 })
 export class ContentDetailRoutingModule {}
