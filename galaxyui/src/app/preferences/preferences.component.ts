@@ -40,6 +40,7 @@ export class PreferencesComponent implements OnInit {
     apiKeyCard: CardConfig;
     authorsFollowedCard: CardConfig;
     collectionsFollowedCard: CardConfig;
+    rolesFollowedCard: CardConfig;
     emails: Email[];
     notificationSettings: any;
     apiKey: string;
@@ -76,6 +77,10 @@ export class PreferencesComponent implements OnInit {
             title: 'Authors Followed',
         } as CardConfig;
 
+        this.rolesFollowedCard = {
+            title: 'Roles Followed',
+        } as CardConfig;
+
         this.collectionsFollowedCard = {
             title: 'Collections Followed',
         } as CardConfig;
@@ -97,6 +102,11 @@ export class PreferencesComponent implements OnInit {
                 x['iconClass'] = 'fa fa-user-times';
             }
 
+            for (const x of this.followed.collections_followed) {
+                x['hasFollowed'] = true;
+                x['iconClass'] = 'fa fa-user-times';
+            }
+
             for (const x of this.followed.namespaces_followed) {
                 x['hasFollowed'] = true;
                 x['iconClass'] = 'fa fa-user-times';
@@ -106,16 +116,17 @@ export class PreferencesComponent implements OnInit {
                 {
                     key: 'notify_survey',
                     description:
-                        'Someone submits a new survey for one of your roles',
+                        'Someone submits a new survey for one of your repos or collections',
                 },
                 {
                     key: 'notify_content_release',
                     description:
-                        'There is a new release of a collection you follow',
+                        'There is a new release of a repo or collection you follow',
                 },
                 {
                     key: 'notify_author_release',
-                    description: 'An author you follow releases a new role',
+                    description:
+                        'An author you follow releases a new repo or collection',
                 },
                 {
                     key: 'notify_import_fail',

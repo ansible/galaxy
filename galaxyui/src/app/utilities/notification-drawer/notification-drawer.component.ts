@@ -78,11 +78,11 @@ export class NotificationDrawerComponent implements OnInit, OnDestroy {
     }
 
     handleAction($event, notify) {
-        const repo = notify.repo;
+        const content = notify.content;
         if ($event.id === 'author') {
-            this.router.navigate(['/', repo.namespace]);
-        } else if ($event.id === 'collection') {
-            this.router.navigate(['/', repo.namespace, repo.name]);
+            this.router.navigate(['/', content.namespace]);
+        } else if ($event.id === 'content') {
+            this.router.navigate(['/', content.namespace, content.name]);
         }
     }
 
@@ -185,8 +185,8 @@ export class NotificationDrawerComponent implements OnInit, OnDestroy {
         const actionConfig = {
             moreActions: [
                 {
-                    id: 'collection',
-                    title: 'Go to Collection',
+                    id: 'content',
+                    title: 'Go to Content',
                 },
                 {
                     id: 'author',
@@ -200,8 +200,11 @@ export class NotificationDrawerComponent implements OnInit, OnDestroy {
                 type: notification.type,
                 isViewing: notification.seen,
                 timeStamp: notification.created,
-                moreActions: notification.repository ? actionConfig : null,
-                repo: notification.repository,
+                moreActions:
+                    notification.repository || notification.collection
+                        ? actionConfig
+                        : null,
+                content: notification.repository || notification.collection,
                 id: notification.id,
             });
         }
