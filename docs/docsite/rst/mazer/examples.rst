@@ -18,9 +18,9 @@ Installing Collections
 Collections are a new way to package and distribute ansible related content.
 See :ref:`creating_collections` for examples.
 
-Collections are available starting with version 3.2 of the Galaxy server and version 2.9 of ansible.
+Collections are available starting with version 3.2 of the Galaxy server and version 2.8 of ansible.
 
-To install a collection from Galaxy, pass the *namespace.repository_name* to the install command. The following
+To install a collection from Galaxy, pass the *namespace.collection_name* to the install command. The following
 installs the `testing.ansible_testing_content collection <https://galaxy.ansible.com/testing/ansible-testing-content>`_ from
 Galaxy:
 
