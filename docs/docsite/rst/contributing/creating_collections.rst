@@ -14,7 +14,7 @@ Collections
 ===========
 
 Collections are a distribution format for Ansible content. They can be used to
-package and distribute roles, modules and plugin types.
+package and distribute playbooks, roles, modules, and plugins.
 
 .. note::
     This is a Tech-Preview feature and is only supported by Ansible 2.8 (or greater).
@@ -100,6 +100,22 @@ Optional Fields:
     - ``homepage``: URL for project homepage.
     - ``issues``: URL for issue tracker.
 
+Role Names
+==========
+
+For roles within a collection the Galaxy import process requires that role names:
+
+- Contain only lowercase alphanumeric characters, plus ``_``
+- Start with an alpha character
+
+The directory name of the role is used as the role name, so therefore the directory name must comply with the
+above rules. If a role name is encountered that does not match the above rules, the collection import will fail. 
+
+.. note::
+
+    For roles imported into Galaxy directly from a GitHub repository, setting the ``role_name`` value in the role's
+    metadata overrides the role name used by Galaxy. For collections, that value is ignored. When importing a
+    collection, Galaxy uses the role directory as the name of the role and ignores the ``role_name`` metadata value.
 
 .. _building_collections:
 
@@ -126,27 +142,40 @@ which can be uploaded to Galaxy.
         Changing the filename of the tarball in the release directory so that it doesn't match
         the data in ``galaxy.yml`` will cause the import to fail.
 
+Upload From the Galaxy Website 
+``````````````````````````````
+
+Go to the `My Content </my-content/namespaces>`_ page, and click the *Add Content* button on one of your namespaces. From 
+the *Add Content* dialogue, click *Upload New Collection*, and select the collection archive file from your local
+filesystem.
+
+When uploading collections it doesn't actually matter which namespace you select. The collection will be uploaded to the
+namespace specified in the collection metadata specified in the ``galaxy.yml`` file. If you're not an owner of the
+namespace, the upload request will fail.
+
+Once a collection has been uploaded and accepted by Galaxy, you will be redirected to the My Imports page, displaying output from the
+import process, including any errors or warnings about the metadata and content contained in the collection.
 
 Upload Using Mazer
-    Artifacts can be uploaded with Mazer using ``mazer publish --api-key=SECRET path/to/namespace_name-collection_name-1.0.12.tar.gz``
+``````````````````
 
-    Your API key can be found at `galaxy.ansible.com/me/preferences <https://galaxy.ansible.com/me/preferences>`_.
+Collection artifacts can be uploaded with Mazer, as shown in the following example: 
+
+.. code-block:: bash
+
+    mazer publish --api-key=SECRET path/to/namespace_name-collection_name-1.0.12.tar.gz
+
+The above will trigger an import process, just as if the collection had been uploaded through the Galaxy website. Use the My Imports
+page to view the output from the import process.
+
+Your API key can be found on `the preferences page in Galaxy </me/preferences>`_.
+
+To learn more about Mazer, view :doc:`../mazer/index`.
 
 
-Upload Using Galaxy UI
-    Go to the `My Content <https://galaxy.ansible.com/my-content/namespaces>`_ page and
-    click the Add Content button on one of your namespaces. When the Add Content
-    dialogue pops up, select Upload New Collection and select your collection from
-    the files on your computer.
+Collection Versions
+```````````````````
 
-    When uploading collections it doesn't actually matter which namespace you select in the UI.
-    The collection will get uploaded to whichever namespace is specified by the collection's
-    ``galaxy.yml`` file. If you're not an owner of the namespace the upload request will
-    fail.
-
-
-Once a version of a collection has been uploaded it cannot be deleted or modified, so make
-sure that everything looks okay before uploading them. The only way to change a collection
-is to release a new version of it. The latest version of the collection (by highest version number)
-will be the version that is displayed everywhere in Galaxy, but users will
-also be able to download any older versions of the collection that have been uploaded.
+Once a version of a collection has been uploaded it cannot be deleted or modified, so make sure that everything looks okay before
+uploading. The only way to change a collection is to release a new version. The latest version of a collection (by highest version number)
+will be the version displayed everywhere in Galaxy; however, users will still be able to download older versions.

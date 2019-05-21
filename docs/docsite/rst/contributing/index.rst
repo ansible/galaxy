@@ -14,3 +14,4 @@ Contributing Content
    importing
    content_scoring
    deprecate
+   namespaces

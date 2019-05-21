@@ -53,11 +53,6 @@ To see the available versions, locate the role on the search page, and click on 
 can also navigate directly to the role using the */<namespace>/<role name>*. For example, to view the
 role *geerlingguy.apache*, go to `https://galaxy.ansible.com/geerlingguy/apache <https://galaxy.ansible.com/geerlingguy/apache>`_.
 
-.. note::
-
-    For multi-role repositories, now supported in Galaxy v3.0+, the direct path to an individual role
-    contained in the repository is */<namespace>/<repository_name>/<role_name>*.
-
 Install a specific version of a role by appending a comma and a version tag. For example, the following installs *v1.0.0* of the
 role.
 
@@ -241,10 +236,11 @@ the Ansible doc site <https://docs.ansible.com/ansible/latest/user_guide/playboo
 .. _installing_multi_repos:
 
 Collections
-=======================
+===========
 
 Installing collections requires using the ``mazer`` command line tool available at the `Ansible
-Mazer project <https://github.com/ansible/mazer>`_.
+Mazer project <https://github.com/ansible/mazer>`_. View :doc:`../mazer/index` for additional information about
+installing and using Mazer.
 
 .. note::
 
@@ -265,11 +261,12 @@ Older versions of collections can be installed by using.
 
 .. note::
 
-    Mazer can only install one version of a collection at a time. To change the version of a
-    collection you've already installed or install multiple versions of a collection you need to
-    manually remove or rename the collection's path in the collections directory shown bellow.
+    Mazer can only install one version of a collection at a time. To change the version of an
+    already installed collection or install multiple versions of the same collection,
+    manually remove the collection, or use the ``--collections-path`` option to override the
+    default install path.
 
-Collections are installed to the ``~/.ansible/collections/ansible_collections`` directory like so:
+By default, collections are installed to ``~/.ansible/collections/ansible_collections``, as shown below:
 
 .. code-block:: bash
 
@@ -294,4 +291,6 @@ Collections are installed to the ``~/.ansible/collections/ansible_collections`` 
     │                       └── tasks
     │                           └── main.yml
 
-For more on installing, configuring, and using Mazer, visit the `Ansible Mazer project <https://github.com/ansible/mazer>`_
+Use the ``--collections-path`` option, or set the ``collections_path`` value in the
+``~/.ansible/mazer.yml`` config file to override the default install path. For more on installing, configuring,
+and using Mazer, view :doc:`../mazer/index`.
