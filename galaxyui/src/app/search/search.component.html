@@ -52,10 +52,13 @@
                                <div class="namespace-name">{{ item.namespace.name }}</div>
                             </a>
                         </div>
-                        <app-collection-list-item
-                            [collection]='item'
-                            [expandContent]='true'
-                        ></app-collection-list-item>
+                        <div class="collection-container">
+                            <app-collection-list-item
+                                [collection]='item'
+                                [expandContent]='true'
+                            ></app-collection-list-item>
+                        </div>
+
                     </div>
 
                 </div>
