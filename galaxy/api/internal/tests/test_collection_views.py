@@ -35,12 +35,10 @@ class CollectionViewTests(APITestCase):
         self.version0 = models.CollectionVersion.objects.create(
             collection=self.collection,
             version='1.0.0',
-            contents={},
         )
         self.version1 = models.CollectionVersion.objects.create(
             collection=self.collection,
             version='1.0.1',
-            contents={},
         )
         self.collection.latest_version = self.version1
         self.collection.save()

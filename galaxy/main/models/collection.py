@@ -94,7 +94,7 @@ class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
     hidden = models.BooleanField(default=False)
 
     metadata = psql_fields.JSONField(default=dict)
-    contents = psql_fields.JSONField(default=dict)
+    contents = psql_fields.JSONField(default=list)
     quality_score = models.FloatField(
         null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
