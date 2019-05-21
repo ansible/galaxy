@@ -291,20 +291,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
             });
             for (const key in filterby) {
                 if (filterby.hasOwnProperty(key)) {
-                    if (key === 'contributor_type') {
-                        if (filterby[key].length === 1) {
-                            switch (filterby[key][0]) {
-                                case ContributorTypes.community:
-                                    params['vendor'] = false;
-                                    break;
-                                case ContributorTypes.vendor:
-                                    params['vendor'] = true;
-                                    break;
-                            }
-                        }
-                    } else {
-                        params[key] = filterby[key].join(' ');
-                    }
+                    params[key] = filterby[key].join(' ');
                 }
             }
             this.appliedFilters = JSON.parse(

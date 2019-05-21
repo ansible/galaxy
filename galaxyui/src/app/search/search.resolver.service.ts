@@ -30,7 +30,7 @@ import { ContributorTypes } from '../enums/contributor-types.enum';
 // page is loaded without any params specified
 export class DefaultParams {
     static params = {
-        // vendor: 'false',
+        // contributor_type: 'community',
         deprecated: 'false',
     };
 
@@ -56,17 +56,7 @@ export class SearchContentResolver implements Resolve<PaginatedCombinedSearch> {
         let params = {};
         for (const key in route.queryParams) {
             if (route.queryParams.hasOwnProperty(key)) {
-                if (key === 'contributor_type') {
-                    switch (route.queryParams[key]) {
-                        case ContributorTypes.community:
-                            params['vendor'] = false;
-                            break;
-                        case ContributorTypes.vendor:
-                            params['vendor'] = true;
-                    }
-                } else {
-                    params[key] = route.queryParams[key];
-                }
+                params[key] = route.queryParams[key];
             }
         }
         if (Object.keys(params).length === 0) {
