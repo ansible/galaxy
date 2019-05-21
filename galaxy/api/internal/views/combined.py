@@ -158,8 +158,8 @@ class CombinedDetail(base.APIView):
 
         try:
             collection = models.Collection.objects.get(
-                namespace__name=namespace,
-                name=name
+                namespace__name__iexact=namespace,
+                name__iexact=name
             )
             data = {
                 'collection': internal_serializers.CollectionDetailSerializer(

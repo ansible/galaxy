@@ -16,8 +16,8 @@ export class TypeCheckResolver implements Resolve<RepoOrCollectionResponse> {
     ) {}
 
     resolve(route: ActivatedRouteSnapshot) {
-        const namespace = route.params['namespace'].toLowerCase();
-        const collection = route.params['name'].toLowerCase();
+        const namespace = route.params['namespace'];
+        const collection = route.params['name'];
 
         return this.repoOrCollectionService.query(namespace, collection).pipe(
             catchError(err => {
