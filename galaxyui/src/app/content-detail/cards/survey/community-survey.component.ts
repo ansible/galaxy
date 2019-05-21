@@ -43,6 +43,7 @@ export class CardCommunitySurveyComponent implements OnInit {
     waitingForId = false;
     canSubmitSurvey = true;
     loggedIn = false;
+    displayFormat: string;
 
     @Input()
     contentFormat: ContentFormat;
@@ -72,6 +73,12 @@ export class CardCommunitySurveyComponent implements OnInit {
     emitDetails = new EventEmitter<DetailMessage>();
 
     ngOnInit() {
+        if (this.contentFormat === ContentFormat.collection) {
+            this.displayFormat = 'collection';
+        } else {
+            this.displayFormat = 'role';
+        }
+
         this.config = {
             titleBorder: true,
             topBorder: true,
