@@ -112,3 +112,10 @@ class CollectionDetailSerializer(serializers.ModelSerializer):
             hidden=False
         )
         return VersionListSerializer(versions, many=True).data
+
+
+class CollectionUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Collection
+        fields = ('id', 'name', 'deprecated',)
+        read_only_fields = ('id', 'name',)
