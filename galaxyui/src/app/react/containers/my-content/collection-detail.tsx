@@ -2,26 +2,23 @@ import * as React from 'react';
 
 import { CollectionList } from '../../../resources/collections/collection';
 import { CollectionListService } from '../../../resources/collections/collection.service';
-
 import { Injector } from '@angular/core';
-
 import { BsModalService } from 'ngx-bootstrap';
-
 import { Namespace } from '../../../resources/namespaces/namespace';
-
 import { AppliedFilter } from '../../shared-types/pf-toolbar';
-
 import { CollectionListItem } from '../../components/my-content/collection-list-item';
-
 import { AddContentModalComponent } from '../../../my-content/add-content-modal/add-content-modal.component';
-
 import { ListView } from 'patternfly-react';
+
+import { cloneDeep } from 'lodash';
 
 interface IProps {
     injector: Injector;
     namespace: Namespace;
     items: CollectionList[];
     collectionCount: number;
+
+    refreshContent: () => void;
 }
 
 export class CollectionDetail extends React.Component<IProps, {}> {
@@ -84,7 +81,12 @@ export class CollectionDetail extends React.Component<IProps, {}> {
 
     private deprecate(isDeprecated, collection) {
         // Todo once API is available
-        console.log('Set deprection status for ' + collection.name);
+        const newCollection = cloneDeep(collection);
+        newCollection.deprecated = isDeprecated;
+
+        this.collectionListService
+            .save(newCollection)
+            .subscribe(() => this.props.refreshContent());
     }
 
     private importCollection(collection) {

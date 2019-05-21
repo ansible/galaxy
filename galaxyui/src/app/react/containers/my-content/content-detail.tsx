@@ -85,6 +85,7 @@ export class ContentDetailContainer extends React.Component<IProps, IState> {
                         namespace={namespace}
                         items={collections}
                         collectionCount={collectionCount}
+                        refreshContent={() => this.loadData()}
                     />
                 ) : null}
 
