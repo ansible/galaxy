@@ -82,36 +82,3 @@ class TruncatingCharField(models.CharField):
         if value and len(value) > self.max_length:
             return value[:self.max_length - 3] + '...'
         return value
-
-
-class KeyTransform(models.Transform):
-
-    def __init__(self, key_name, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.key_name = key_name
-
-    def as_sql(self, compiler, connection):
-        key_transforms = [self.key_name]
-        previous = self.lhs
-        while isinstance(previous, KeyTransform):
-            key_transforms.insert(0, previous.key_name)
-            previous = previous.lhs
-        lhs, params = compiler.compile(previous)
-        if len(key_transforms) > 1:
-            return "{} #> %s".format(lhs), [key_transforms] + params
-        try:
-            int(self.key_name)
-        except ValueError:
-            lookup = "'{}'".format(self.key_name)
-        else:
-            lookup = "{}".format(self.key_name)
-        return "{} -> {}".format(lhs, lookup), params
-
-
-class KeyTransformFactory(object):
-
-    def __init__(self, key_name):
-        self.key_name = key_name
-
-    def __call__(self, *args, **kwargs):
-        return KeyTransform(self.key_name, *args, **kwargs)
