@@ -86,6 +86,7 @@ export class ContentDetailContainer extends React.Component<IProps, IState> {
                         items={collections}
                         collectionCount={collectionCount}
                         refreshContent={() => this.loadData()}
+                        setToLoading={x => this.toggleLoadingForCollection(x)}
                     />
                 ) : null}
 
@@ -129,6 +130,16 @@ export class ContentDetailContainer extends React.Component<IProps, IState> {
         items[repoInd].summary_fields.loading = true;
 
         this.setState({ repos: items });
+    }
+
+    private toggleLoadingForCollection(collection: CollectionList) {
+        const items = cloneDeep(this.state.collections);
+        const ind = items.findIndex(x => x.id === collection.id);
+
+        // I should make this an actual property of the CollectionList object...
+        items[ind]['loading'] = true;
+
+        this.setState({ collections: items });
     }
 
     private pollData() {

@@ -26,7 +26,11 @@ export class CollectionListItem extends React.Component<IProps, {}> {
         return (
             <ListViewItem
                 leftContent={
-                    <i className='pficon-repository list-pf-icon list-pf-icon-small' />
+                    collection['loading'] ? (
+                        <div className='spinner spin-wrapper' />
+                    ) : (
+                        <i className='pficon-repository list-pf-icon list-pf-icon-small' />
+                    )
                 }
                 key={collection.name}
                 heading={

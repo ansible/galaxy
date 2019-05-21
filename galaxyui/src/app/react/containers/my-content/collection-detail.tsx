@@ -19,6 +19,7 @@ interface IProps {
     collectionCount: number;
 
     refreshContent: () => void;
+    setToLoading: (item: CollectionList) => void;
 }
 
 export class CollectionDetail extends React.Component<IProps, {}> {
@@ -80,7 +81,7 @@ export class CollectionDetail extends React.Component<IProps, {}> {
     }
 
     private deprecate(isDeprecated, collection) {
-        // Todo once API is available
+        this.props.setToLoading(collection);
         const newCollection = cloneDeep(collection);
         newCollection.deprecated = isDeprecated;
 
