@@ -18,7 +18,10 @@
 import abc
 import logging
 import os
+import re
 
+from galaxy import constants
+from galaxy.importer import exceptions as exc
 from galaxy.importer.utils import readme as readmeutils
 from galaxy.importer.utils import lint as lintutils
 from galaxy.worker import logutils
@@ -46,10 +49,25 @@ class BaseLoader(metaclass=abc.ABCMeta):
 
         self.log = logutils.ContentTypeAdapter(
             logger or default_logger, self.content_type, self.name)
+        self._validate_name()
 
     @property
     def path(self):
         return os.path.join(self.root, self.rel_path)
+
+    def _validate_name(self):
+        """Validate content name if one found from directory path.
+
+        A repository role exists at root, so content name will not exist yet.
+        """
+        if not self.name:
+            return
+        if not re.match(constants.NAME_REGEXP, self.name):
+            raise exc.ContentNameError(
+                f"{self.content_type} has invalid name: '{self.name}', "
+                "expecting name to contain only lowercase "
+                "alphanumeric characters or '_'"
+            )
 
     def make_name(self):
         """Returns content name if it can be generated from it's path.
