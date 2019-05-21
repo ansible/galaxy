@@ -38,5 +38,11 @@
                 {{ tag }}
             </span>
         </div>
+        <div *ngIf="getContentTypeClass(item.content_type) === 'plugin'" class="tags">
+            Type:
+            <b>
+                {{ item.content_type }}
+            </b>
+        </div>
     </li>
 </ul>
