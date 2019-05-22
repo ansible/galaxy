@@ -33,7 +33,7 @@ class VersionField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('max_length', 64)
-        super(VersionField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def from_db_value(self, value, expression, connection, context):
         if value is None:
@@ -78,40 +78,7 @@ class LooseVersionField(models.Field):
 # From: http://stackoverflow.com/questions/3459843/auto-truncating-fields-at-max-length-in-django-charfields # noqa: E501
 class TruncatingCharField(models.CharField):
     def get_prep_value(self, value):
-        value = super(TruncatingCharField, self).get_prep_value(value)
+        value = super().get_prep_value(value)
         if value and len(value) > self.max_length:
             return value[:self.max_length - 3] + '...'
         return value
-
-
-class KeyTransform(models.Transform):
-
-    def __init__(self, key_name, *args, **kwargs):
-        super(KeyTransform, self).__init__(*args, **kwargs)
-        self.key_name = key_name
-
-    def as_sql(self, compiler, connection):
-        key_transforms = [self.key_name]
-        previous = self.lhs
-        while isinstance(previous, KeyTransform):
-            key_transforms.insert(0, previous.key_name)
-            previous = previous.lhs
-        lhs, params = compiler.compile(previous)
-        if len(key_transforms) > 1:
-            return "{} #> %s".format(lhs), [key_transforms] + params
-        try:
-            int(self.key_name)
-        except ValueError:
-            lookup = "'{}'".format(self.key_name)
-        else:
-            lookup = "{}".format(self.key_name)
-        return "{} -> {}".format(lhs, lookup), params
-
-
-class KeyTransformFactory(object):
-
-    def __init__(self, key_name):
-        self.key_name = key_name
-
-    def __call__(self, *args, **kwargs):
-        return KeyTransform(self.key_name, *args, **kwargs)

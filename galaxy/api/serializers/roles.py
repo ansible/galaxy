@@ -56,7 +56,7 @@ class BaseRoleSerializer(BaseSerializer):
 
     def to_representation(self, instance):
         result = (
-            super(BaseRoleSerializer, self)
+            super()
             .to_representation(instance))
         result.update(self._get_repository_moved_fields(instance))
         return result
@@ -74,13 +74,13 @@ class RoleListSerializer(BaseRoleSerializer):
         )
 
     def to_native(self, obj):
-        ret = super(RoleListSerializer, self).to_native(obj)
+        ret = super().to_native(obj)
         return ret
 
     def get_related(self, obj):
         if obj is None:
             return {}
-        res = super(RoleListSerializer, self).get_related(obj)
+        res = super().get_related(obj)
         res.update(dict(
             content_type=reverse(
                 'api:content_type_detail', args=(obj.content_type.pk,)),
@@ -102,7 +102,7 @@ class RoleListSerializer(BaseRoleSerializer):
     def get_summary_fields(self, obj):
         if obj is None:
             return {}
-        d = super(RoleListSerializer, self).get_summary_fields(obj)
+        d = super().get_summary_fields(obj)
         d['content_type'] = dict(
             id=obj.content_type.id,
             name=obj.content_type.name,
@@ -166,13 +166,13 @@ class RoleDetailSerializer(BaseRoleSerializer):
             'created', 'modified', 'download_count', 'imported')
 
     def to_native(self, obj):
-        ret = super(RoleDetailSerializer, self).to_native(obj)
+        ret = super().to_native(obj)
         return ret
 
     def get_related(self, obj):
         if obj is None:
             return {}
-        res = super(RoleDetailSerializer, self).get_related(obj)
+        res = super().get_related(obj)
         res.update(dict(
             dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
             imports=reverse('api:role_import_task_list', args=(obj.pk,)),
@@ -190,7 +190,7 @@ class RoleDetailSerializer(BaseRoleSerializer):
     def get_summary_fields(self, obj):
         if obj is None:
             return {}
-        d = super(RoleDetailSerializer, self).get_summary_fields(obj)
+        d = super().get_summary_fields(obj)
         d['dependencies'] = [dict(id=g.id, name=str(g))
                              for g in obj.dependencies.all()]
         d['namespace'] = dict(

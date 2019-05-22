@@ -49,8 +49,7 @@ class PluginLoader(base.BaseLoader):
     linters = linters.Flake8Linter
 
     def __init__(self, content_type, path, root, logger=None):
-        super(PluginLoader, self).__init__(
-            content_type, path, root, logger=logger)
+        super().__init__(content_type, path, root, logger=logger)
 
         self.documentation = None
 

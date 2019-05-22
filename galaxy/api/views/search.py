@@ -284,7 +284,7 @@ class ContentSearchView(base.ListAPIView):
 
 class RoleSearchView(ContentSearchView):
     def get_queryset(self):
-        queryset = super(RoleSearchView, self).get_queryset()
+        queryset = super().get_queryset()
         role_type = models.ContentType.get(constants.ContentType.ROLE)
         return queryset.filter(content_type=role_type)
 
@@ -316,7 +316,7 @@ class PlatformsSearchView(base.ListAPIView):
     filter_backends = [filters.OrderByFilter]
 
     def get_queryset(self):
-        return (super(PlatformsSearchView, self).get_queryset()
+        return (super().get_queryset()
                 .annotate(roles_count=Count('roles')))
 
     def list(self, request, *args, **kwargs):
@@ -355,7 +355,7 @@ class CloudPlatformsSearchView(base.ListAPIView):
     filter_backends = [filters.OrderByFilter]
 
     def get_queryset(self):
-        return (super(CloudPlatformsSearchView, self).get_queryset()
+        return (super().get_queryset()
                 .annotate(roles_count=Count('roles')))
 
     def list(self, request, *args, **kwargs):
@@ -382,7 +382,7 @@ class TagsSearchView(base.ListAPIView):
     filter_backends = [filters.OrderByFilter]
 
     def get_queryset(self):
-        return (super(TagsSearchView, self).get_queryset()
+        return (super().get_queryset()
                 .annotate(roles_count=Count('roles')))
 
     def list(self, request, *args, **kwargs):

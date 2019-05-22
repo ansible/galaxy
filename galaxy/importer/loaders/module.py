@@ -32,8 +32,7 @@ class ModuleLoader(base.BaseLoader):
     linters = linters.Flake8Linter
 
     def __init__(self, content_type, path, root, logger=None):
-        super(ModuleLoader, self).__init__(
-            content_type, path, root, logger=logger)
+        super().__init__(content_type, path, root, logger=logger)
 
         self.documentation = None
         self.metadata = None

@@ -46,7 +46,7 @@ class ContentList(base.ListAPIView):
 
     def get_queryset(self):
         return (
-            super(ContentList, self).get_queryset()
+            super().get_queryset()
             .filter(
                 repository__provider_namespace__namespace__isnull=False,
                 repository__provider_namespace__namespace__active=True
@@ -78,6 +78,6 @@ class ContentDetail(base.RetrieveAPIView):
 
     def get_queryset(self):
         return (
-            super(ContentDetail, self).get_queryset()
+            super().get_queryset()
             .select_related('readme')
         )

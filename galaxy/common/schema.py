@@ -25,7 +25,7 @@ from galaxy import constants
 
 class Enum(fields.Field):
     def __init__(self, enum, *args, **kwargs):
-        super(Enum, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.enum = enum
 
     def _deserialize(self, value, attr, data):

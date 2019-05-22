@@ -78,7 +78,7 @@ class NotificationSerializer(BaseSerializer):
     def get_summary_fields(self, obj):
         if obj is None:
             return {}
-        d = super(NotificationSerializer, self).get_summary_fields(obj)
+        d = super().get_summary_fields(obj)
         d['owner'] = OrderedDict([
             ('id', obj.owner.id),
             ('username', obj.owner.username)
@@ -88,7 +88,7 @@ class NotificationSerializer(BaseSerializer):
     def get_related(self, obj):
         if obj is None:
             return {}
-        res = super(NotificationSerializer, self).get_related(obj)
+        res = super().get_related(obj)
         res.update(dict(
             owner=reverse('api:user_detail', args=(obj.owner.id,)),
         ))

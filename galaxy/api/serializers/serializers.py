@@ -84,14 +84,14 @@ class BaseSerializer(serializers.ModelSerializer):
     active = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
-        super(BaseSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.Meta.fields += ('url', 'related', 'summary_fields',
                              'created', 'modified', 'active')
 
     def get_fields(self):
         # opts = get_concrete_model(self.Meta.model)._meta
         opts = self.Meta.model._meta.concrete_model._meta
-        ret = super(BaseSerializer, self).get_fields()
+        ret = super().get_fields()
         for key, field in ret.items():
             if key == 'id' and not getattr(field, 'help_text', None):
                 field.help_text = u'Database ID for this {}.'.format(
@@ -332,7 +332,7 @@ class ImportTaskSerializer(BaseSerializer):
         )
 
     def to_native(self, obj):
-        ret = super(ImportTaskSerializer, self).to_native(obj)
+        ret = super().to_native(obj)
         return ret
 
     def get_url(self, obj):
@@ -345,7 +345,7 @@ class ImportTaskSerializer(BaseSerializer):
     def get_related(self, obj):
         if obj is None:
             return {}
-        res = super(ImportTaskSerializer, self).get_related(obj)
+        res = super().get_related(obj)
 
         # for repository import task
         res.update({
@@ -368,7 +368,7 @@ class ImportTaskSerializer(BaseSerializer):
         if obj is None or getattr(obj, 'repository') is None:
             return {}
 
-        summary = super(ImportTaskSerializer, self).get_summary_fields(obj)
+        summary = super().get_summary_fields(obj)
 
         # Support ansible-galaxy <= 2.6 by excluding unsupported messges
         summary['role'] = {
@@ -398,8 +398,7 @@ class ImportTaskSerializer(BaseSerializer):
 class ImportTaskDetailSerializer(ImportTaskSerializer):
 
     def get_summary_fields(self, obj):
-        summary = super(
-            ImportTaskDetailSerializer, self).get_summary_fields(obj)
+        summary = super().get_summary_fields(obj)
 
         supported_types = ('INFO', 'WARNING', 'ERROR', 'SUCCESS', 'FAILED')
         # FIXME(cutwater): Why OrderedDict here?
@@ -450,7 +449,7 @@ class ImportTaskLatestSerializer(BaseSerializer):
         )
 
     def get_related(self, obj):
-        res = super(ImportTaskLatestSerializer, self).get_related(obj)
+        res = super().get_related(obj)
         res.update({'repository': reverse(
             'api:repository_detail', args=(obj['repository__id'],))})
         return res
@@ -508,7 +507,7 @@ class RoleTopSerializer(BaseSerializer):
     def get_related(self, obj):
         if obj is None:
             return {}
-        res = super(RoleTopSerializer, self).get_related(obj)
+        res = super().get_related(obj)
         res.update(dict(
             dependencies=reverse('api:role_dependencies_list', args=(obj.pk,)),
             imports=reverse('api:role_import_task_list', args=(obj.pk,)),

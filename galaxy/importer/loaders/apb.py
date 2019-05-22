@@ -209,9 +209,7 @@ class APBLoader(base.BaseLoader):
     linters = (linters.YamlLinter,)
 
     def __init__(self, content_type, path, root, metadata_path, logger=None):
-        super(APBLoader, self).__init__(
-            content_type, path, root, logger=logger
-        )
+        super().__init__(content_type, path, root, logger=logger)
         self.metadata_file = metadata_path
         self.data = None
 

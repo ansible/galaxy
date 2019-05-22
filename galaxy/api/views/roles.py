@@ -83,10 +83,10 @@ class RoleList(ListAPIView):
                 return self.get_paginated_response(serializer.data)
             serializer = self.get_serializer(qs, many=True)
             return Response(serializer.data)
-        return super(RoleList, self).list(self, request, *args, **kwargs)
+        return super().list(self, request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = super(RoleList, self).get_queryset()
+        qs = super().get_queryset()
         qs = qs.prefetch_related(
             'platforms', 'tags', 'repository__versions', 'dependencies')
         return filter_role_queryset(qs)
@@ -97,7 +97,7 @@ class RoleDetail(RetrieveAPIView):
     serializer_class = serializers.RoleDetailSerializer
 
     def get_object(self, qs=None):
-        obj = super(RoleDetail, self).get_object()
+        obj = super().get_object()
         if not obj.is_valid or not obj.active:
             raise Http404()
         return obj

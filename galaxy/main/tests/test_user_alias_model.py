@@ -26,7 +26,7 @@ from galaxy.main.models import UserAlias
 from galaxy.accounts.models import CustomUser
 
 
-class UserAliasModelTest(TestCase):
+class TestUserAliasModel(TestCase):
     VALID_ALIAS_NAME = "NAME"
 
     ALIAS_NAME_MAX_LENGTH = 30

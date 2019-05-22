@@ -117,7 +117,7 @@ def email_verification(email, code, username):
 
 @celery.task
 def collection_import(task_id, has_failed=False):
-    '''Send notification to owners from result of collection import task.'''
+    """Send notification to owners from result of collection import task."""
     task = models.CollectionImport.objects.get(id=task_id)
     if has_failed:
         status = 'failed'
@@ -197,7 +197,7 @@ def repo_import(task_id, user_initiated, has_failed=False):
 
 @celery.task
 def collection_new_version(version_pk):
-    '''Send new version notification to collection followers.'''
+    """Send new version notification to collection followers."""
     version = models.CollectionVersion.objects.get(pk=version_pk)
     collection_followers = models.UserPreferences.objects.filter(
         collections_followed__pk=version.collection.pk,
@@ -260,7 +260,7 @@ def repo_update(repo_id):
 
 @celery.task
 def coll_author_release(version_pk):
-    '''Send new collection notification to author followers.'''
+    """Send new collection notification to author followers."""
     version = models.CollectionVersion.objects.get(pk=version_pk)
     author_followers = models.UserPreferences.objects.filter(
         namespaces_followed=version.collection.namespace,
@@ -324,7 +324,7 @@ def repo_author_release(repo_id):
 
 @celery.task
 def collection_new_survey(collection_pk):
-    '''Send new survey notification to collection namespace owners.'''
+    """Send new survey notification to collection namespace owners."""
     collection = models.Collection.objects.get(pk=collection_pk)
     owners = _get_preferences(collection.namespace.owners.all())
     full_name = '{}.{}'.format(collection.namespace.name, collection.name)

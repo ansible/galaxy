@@ -93,7 +93,7 @@ class RepositoryList(views.ListCreateAPIView):
     filter_backends = (FieldLookupBackend, SearchFilter, OrderByBackend)
 
     def get_queryset(self):
-        qs = super(RepositoryList, self).get_queryset()
+        qs = super().get_queryset()
         return qs.annotate(content_count=Count('content_objects'))
 
     def post(self, request, *args, **kwargs):

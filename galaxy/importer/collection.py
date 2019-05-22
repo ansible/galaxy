@@ -174,7 +174,7 @@ class CollectionLoader(object):
             yield content
 
     def _serialize_contents(self, loader_contents):
-        '''Serialize into json content objects with nested objects'''
+        """Serialize into json content objects with nested objects"""
 
         serialized_contents = []
         for content in loader_contents:
@@ -184,7 +184,7 @@ class CollectionLoader(object):
         return serialized_contents
 
     def _get_subset_contents(self, full_contents):
-        '''Return subset of content fields for storage in a collection'''
+        """Return subset of content fields for storage in a collection"""
 
         content_keys = ['name', 'content_type', 'description',
                         'scores', 'metadata', 'role_meta']

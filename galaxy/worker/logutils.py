@@ -29,12 +29,12 @@ class BaseLoggerAdapter(logging.LoggerAdapter):
 
 class ImportTaskAdapter(BaseLoggerAdapter):
     def __init__(self, logger, task):
-        super(ImportTaskAdapter, self).__init__(logger, {'task': task})
+        super().__init__(logger, {'task': task})
 
 
 class ContentTypeAdapter(BaseLoggerAdapter):
     def __init__(self, logger, content_type, content_name=None):
-        super(ContentTypeAdapter, self).__init__(logger, {
+        super().__init__(logger, {
             'content_type': content_type,
             'content_name': content_name,
         })
