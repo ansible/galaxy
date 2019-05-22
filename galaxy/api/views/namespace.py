@@ -254,8 +254,10 @@ class NamespaceList(base_views.ListCreateAPIView):
                 data['id'], request.user.id):
             owners.append(request.user.id)
 
+        sanitized_name = data['name'].lower().replace('-', '_')
+
         namespace_attributes = {
-            'name': data['name'],
+            'name': sanitized_name,
             'description':
                 data['description']
                 if data.get('description') is not None else ''
