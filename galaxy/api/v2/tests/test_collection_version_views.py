@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
-import logging
 
 from django.contrib.auth import get_user_model
 from pulpcore.app import models as pulp_models
@@ -24,8 +23,6 @@ from rest_framework.test import APITestCase
 from galaxy.main import models
 
 UserModel = get_user_model()
-
-log = logging.getLogger(__name__)
 
 mazer_user_agent = \
     'Mazer/0.4.0 (linux; python:3.6.8) ansible_galaxy/0.4.0'
@@ -68,7 +65,6 @@ class TestCollectionArtifactView(APITestCase):
 
     def test_download_count(self):
         download_count_before = self.collection.download_count
-        log.debug('download_count_before: %s', download_count_before)
 
         url = '/api/v2/collections/mynamespace/mycollection' \
             + '/versions/1.2.3/artifact/'
@@ -84,7 +80,6 @@ class TestCollectionArtifactView(APITestCase):
 
     def test_download_count_non_mazer_user_agent(self):
         download_count_before = self.collection.download_count
-        log.debug('download_count_before: %s', download_count_before)
 
         url = '/api/v2/collections/mynamespace/mycollection' \
             + '/versions/1.2.3/artifact/'
