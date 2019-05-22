@@ -35,7 +35,7 @@ class VersionField(models.CharField):
         kwargs.setdefault('max_length', 64)
         super().__init__(*args, **kwargs)
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         if value is None:
             return value
         return semantic_version.Version(value)
