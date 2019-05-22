@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CollectionList } from '../../../resources/collections/collection';
+import { ModifiedCollectionList } from '../../shared-types/my-content';
 import { Namespace } from '../../../resources/namespaces/namespace';
 import { Link } from '../../lib/link';
 
@@ -14,9 +14,9 @@ import {
 import { Score } from '../score';
 
 interface IProps {
-    collection: CollectionList;
+    collection: ModifiedCollectionList;
     namespace: Namespace;
-    handleAction: (event, collection: CollectionList) => void;
+    handleAction: (event, collection: ModifiedCollectionList) => void;
 }
 
 export class CollectionListItem extends React.Component<IProps, {}> {

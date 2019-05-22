@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { CollectionList } from '../../../resources/collections/collection';
+import { ModifiedCollectionList } from '../../shared-types/my-content';
 import { CollectionListService } from '../../../resources/collections/collection.service';
 import { Injector } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap';
@@ -15,11 +15,11 @@ import { cloneDeep } from 'lodash';
 interface IProps {
     injector: Injector;
     namespace: Namespace;
-    items: CollectionList[];
+    items: ModifiedCollectionList[];
     collectionCount: number;
 
     refreshContent: () => void;
-    setToLoading: (item: CollectionList) => void;
+    setToLoading: (item: ModifiedCollectionList) => void;
 }
 
 export class CollectionDetail extends React.Component<IProps, {}> {

@@ -8,7 +8,7 @@ import { PaginatedRepoCollection } from '../../../resources/combined/combined';
 
 import { RepoCollectionListService } from '../../../resources/combined/combined.service';
 
-import { CollectionList } from '../../../resources/collections/collection';
+import { ModifiedCollectionList } from '../../shared-types/my-content';
 import { Repository } from '../../../resources/repositories/repository';
 import { AppliedFilter } from '../../shared-types/pf-toolbar';
 import { ContentList } from '../../components/my-content/content-list';
@@ -28,7 +28,7 @@ interface IState {
     page: number;
     pageSize: number;
     repos: Repository[];
-    collections: CollectionList[];
+    collections: ModifiedCollectionList[];
 }
 
 export class ContentDetailContainer extends React.Component<IProps, IState> {
@@ -132,12 +132,11 @@ export class ContentDetailContainer extends React.Component<IProps, IState> {
         this.setState({ repos: items });
     }
 
-    private toggleLoadingForCollection(collection: CollectionList) {
+    private toggleLoadingForCollection(collection: ModifiedCollectionList) {
         const items = cloneDeep(this.state.collections);
         const ind = items.findIndex(x => x.id === collection.id);
 
-        // I should make this an actual property of the CollectionList object...
-        items[ind]['loading'] = true;
+        items[ind].loading = true;
 
         this.setState({ collections: items });
     }
