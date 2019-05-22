@@ -18,7 +18,6 @@
 import logging
 import re
 
-from galaxy import constants
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -64,12 +63,10 @@ class ContentImporter(object):
             original_name = self.data.original_name
 
         # Check name
-        if not re.match(constants.NAME_REGEXP, name):
+        if not re.match(r'^[a-zA-Z0-9_-]+$', name):
             raise exc.LegacyTaskError(
-                f"Role has invalid name: '{name}', "
-                "expecting name to contain only lowercase "
-                "alphanumeric characters or '_'"
-            )
+                'Invalid name, only aplhanumeric characters, '
+                '"-" and "_" symbols are allowed.')
 
         try:
             # Check for an existing Content object matching name
