@@ -131,10 +131,10 @@
         </div>
 
         <div class="row detail">
-            <!-- <div class="col-sm-6"
-                *ngIf="repoContent && repoContent['hasVersions']">
-                <card-versions [versions]="repoContent['versions']"></card-versions>
-            </div> -->
+            <div class="col-sm-6"
+                *ngIf="collection && collection.all_versions">
+                <card-versions [versions]="collection.all_versions"></card-versions>
+            </div>
             <div class="col-sm-6"
                 *ngIf="collection && collection.latest_version.metadata.dependencies">
                 <card-dependencies

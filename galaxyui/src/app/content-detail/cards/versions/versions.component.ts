@@ -15,14 +15,18 @@ export class CardVersionsComponent implements OnInit {
 
     constructor() {}
 
-    _versions: any[];
+    _versions: any[] = [];
 
     @Input()
     set versions(data: any[]) {
-        this._versions = data;
         if (data) {
             data.forEach(version => {
-                version['date'] = moment(version['commit_date']).fromNow();
+                this._versions.push({
+                    date: moment(
+                        version['commit_date'] || version['created'],
+                    ).fromNow(),
+                    tag: version['tag'] || version['version'],
+                });
             });
         }
     }
