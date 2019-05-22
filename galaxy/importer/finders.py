@@ -114,7 +114,7 @@ class FileSystemFinder(BaseFinder):
             for content in func(content_type, content_path):
                 yield content
 
-    def _find_modules(self, content_type, content_dir):
+    def _find_plugins(self, content_type, content_dir):
         for file_name in os.listdir(content_dir):
             file_path = os.path.join(content_dir, file_name)
             if os.path.isdir(file_path):
@@ -146,10 +146,10 @@ class FileSystemFinder(BaseFinder):
             if content_type == constants.ContentType.ROLE:
                 yield content_type, 'roles', self._find_roles
             elif content_type == constants.ContentType.MODULE:
-                yield content_type, 'plugins/modules', self._find_modules
+                yield content_type, 'plugins/modules', self._find_plugins
             else:
                 yield (content_type, 'plugins/' + content_type.value,
-                       self._find_modules)
+                       self._find_plugins)
 
 
 class MetadataFinder(BaseFinder):

@@ -101,18 +101,16 @@ class RepositoryLoader(object):
 
     def _load_contents(self, contents):
         for content_type, rel_path, extra in contents:
+            self.log.info(f'===== LOADING {content_type.name} =====')
             loader_cls = loaders.get_loader(content_type)
             loader = loader_cls(content_type, rel_path, self.path,
                                 logger=self.log, **extra)
 
-            self.log.info('===== LOADING {} ====='.format(
-                          content_type.name))
             content = loader.load()
             self.log.info(' ')
 
             name = ': {}'.format(content.name) if content.name else ''
-            self.log.info('===== LINTING {}{} ====='.format(
-                          content_type.name, name))
+            self.log.info(f'===== LINTING {content_type.name}{name} =====')
             lint_result = loader.lint()
             content.scores = loader.score()
             self.log.info(' ')

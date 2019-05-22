@@ -284,7 +284,7 @@ class RoleLoader(base.BaseLoader):
         meta_parser = self._get_meta_parser()
         galaxy_info = meta_parser.metadata
         original_name = self.name
-        self.name = self._get_name(galaxy_info)
+        self.name = self._get_metadata_role_name(galaxy_info)
 
         tox_data = self._load_tox()
         meta_parser.set_tox(tox_data)
@@ -369,10 +369,17 @@ class RoleLoader(base.BaseLoader):
         meta = self._load_metadata()
         return RoleMetaParser(meta, logger=self.log)
 
-    def _get_name(self, galaxy_info):
-        name = self.name
+    def _get_metadata_role_name(self, galaxy_info):
+        """Get role_name from repository role metadata, if it exists.
 
-        if name:
+        Collections do not support role_name.
+        Collections have self.name already set via directory path.
+        """
+
+        name = self.name
+        is_collection = bool(self.name)
+
+        if is_collection:
             if galaxy_info.get('role_name'):
                 self.log.warning("Role in collection gets name from directory,"
                                  " ignoring the 'role_name' attribute")
