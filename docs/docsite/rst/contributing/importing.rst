@@ -247,81 +247,29 @@ For more on creating tags, view :ref:`versioning_content`.
 Uploading Collections
 =====================
 
-To add Collections to a namespace, click the *Add Content* button as shown above. From the dialogue box, select "Upload New Collection".
-This will prompt you to upload collection artifact. Collection artifacts are built using ``mazer build`` as documented
-here: :ref:`building_collections`.
+To add Collections to a namespace, click the *Add Content* button as shown above, and from the dialogue box select *Upload New Collection*.
+This will prompt you to upload a collection artifact. Collection artifacts are built using ``mazer build``, as described in :ref:`building_collections`.
 
 .. image:: mycontent-13.png
 
-Once a collection has been uploaded and accepted by Galaxy, you will be redirected to the Imports page which will display the console
-output from the import process. As with roles, this will let you know if anything is wrong with your collection.
+Once a collection has been uploaded and accepted by Galaxy, you will be redirected to the My Imports page, displaying output from the
+import process, including any errors or warnings about the metadata and content contained in the collection.
 
 .. image:: myimports-02.png
 
+Uploading Collections with Mazer
+--------------------------------
 
-Managing Namespaces
-===================
+Collection artifacts can also be uploaded from the commandline using Mazer, as shown in the following example:
 
-Adding GitHub Organizations to a Namespace
-------------------------------------------
+.. code-block:: bash
 
-Content from multiple GitHub organizations can be imported into a Galaxy Namespace. To add additional organizations, on My Content,
-expand the menu for the Namespace, and choose *Edit Properties*, as shown here:
+    mazer publish --api-key=SECRET path/to/namespace_name-collection_name-1.0.12.tar.gz
 
-.. image:: mycontent-08.png
+The above will trigger an import process, just as if the collection had been uploaded through the Galaxy website. Use the My Imports
+page to view the output from the import process.
 
-On the next page, scroll to the bottom of the page, where a list of available GitHub organizations is displayed. It's labeled
-*Provider Namespaces*, and represents the list of namespaces or ogranizations you have access to in GitHub.
+Your API key can be found `on the Prefences page in Galaxy </me/preferences>`_.
 
-As indicated in the image below, click on an organization to select it and add it to the *Selected Provider Namespaces* on the right.
-Clicking the *X* next to the name on the right will remove it.
+To learn more about Mazer, view :doc:`../mazer/index`.
 
-.. image:: mycontent-09.png
-
-At the top of the list of Provider Namespace is a search box. If you don't see an organization listed, try typing the name in the
-box and pressing Enter.
-
-Click the *Save* button at the bottom of the page to update the Namespace with your changes, as shown below:
-
-.. image:: mycontent-10.png
-
-Adding Administrators to a Namespace
-------------------------------------
-
-Multiple Galaxy users can own or have administration rights to a Namespace. To add additional owners to a Namespace, expand the Namespace
-menu on My Content, and choose *Edit Properties*, as depicted below:
-
-.. image:: mycontent-11.png
-
-On the next page, scroll toward the bottom of the page, where a list of *Namespace Owners* appears. Use the search box to find
-specific users by Galaxy username. Click on a user to add them to the list of *Selected Galaxy Users* on the right, or click the *X*
-next to the username to remove them from the list. The image below provides an example:
-
-.. image:: mycontent-12.png
-
-Anyone in the list of owners can import content into the Namespace. They can also modify properties of the Namespace, remove content,
-and disable the Namespace altogether, removing content from search results, and making it unavailable for download.
-
-After making changes to the list of owners, click the *Save* button at the bottom of the page to update the Namespace with your
-changes, as shown below:
-
-.. image:: mycontent-10.png
-
-Namespace Limitations
----------------------
-
-Namespace names in Galaxy are limited to lowercase word characters (i.e., a-z, 0-9) and '_', must have a minimum length of 2
-characters, and cannot start with an '_'.
-
-No other characters are allowed, including '.', '-', and space. The first time you log into Galaxy, the server will create a Namespace
-for you, if one does not already exist, by converting your username to lowercase, and replacing any '-' characters with '_'.
-
-
-Creating Organizational Namespaces
-----------------------------------
-
-In order to protect against copyright and trademark infringements, new Galaxy namespaces can only be created by submitting a
-request to the Galaxy team. A team member will review the request and create the new namespace within 1 to 2 business days.
-
-When submitting a request, please include a link to the GitHub organization and a list of Galaxy usernames to be given ownership
-rights to the new namespace. `Click here to submit a request now <https://github.com/ansible/galaxy/issues/new?template=New_namespace.md>`_.

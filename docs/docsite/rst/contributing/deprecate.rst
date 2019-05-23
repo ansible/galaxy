@@ -5,14 +5,10 @@
 Deprecating Content
 *******************
 
-You can deprecate repositories that you own from the 'My Content' page. To do
-this select the namespace that contains the repository, and select the
-'Deprecate' option in the dropdown menu next to the import button. Repos
-can be undeprecated by selecting 'Un-Deprecate' from the same dropdown menu.
-
-.. note::
-    Currently deprecation is only supported at the repository level. At the moment
-    it is impossible to deprecate a single item in a multi-content repository.
+You can deprecate Collections and Role repositories that you own from the
+'My Content' page. To do this, select the Namespace that contains the Collection or
+Role, and select the *Deprecate* option in the dropdown menu next to the import button.
+Conversely, undeprecate by selecting *Un-Deprecate* from the same dropdown menu.
 
 .. image:: deprecate-01.png
 
