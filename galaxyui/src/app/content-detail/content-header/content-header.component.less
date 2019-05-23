@@ -50,7 +50,25 @@
     .description-box {
         min-width: 200px;
         .repo-description {
+            position: relative;
+            overflow: hidden;
+            max-height: 85px;
             max-width: 400px;
+        }
+
+        .fade-out {
+            position: absolute;
+            z-index: 1;
+            bottom: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0),
+                rgba(255, 255, 255, 1) 90%
+            );
+            width: 100%;
+            height: 20px;
         }
     }
 
