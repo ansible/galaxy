@@ -18,6 +18,7 @@
 from .collections import (  # noqa: F401
     CollectionList,
     CollectionDetail,
+    CollectionUpdate,
 )
 from .imports import (  # noqa: F401
     NamespaceImportsList,
@@ -25,7 +26,7 @@ from .imports import (  # noqa: F401
 
 from .combined import (  # noqa: F401
     RepoAndCollectionList,
-    CombinedDetail
+    CombinedDetail,
 )
 
 
@@ -34,5 +35,6 @@ __all__ = (
     'CollectionDetail',
     'NamespaceImportsList',
     'RepoAndCollectionList',
-    'CombinedDetail'
+    'CombinedDetail',
+    'CollectionUpdate',
 )

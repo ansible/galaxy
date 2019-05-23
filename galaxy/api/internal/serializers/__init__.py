@@ -17,7 +17,8 @@
 
 from .collections import (  # noqa: F401
     CollectionListSerializer,
-    CollectionDetailSerializer
+    CollectionDetailSerializer,
+    CollectionUpdateSerializer,
 )
 from .imports import (  # noqa: F401
     CollectionImportTaskItem,
@@ -29,4 +30,5 @@ __all__ = (
     'CollectionDetailSerializer',
     'RepositoryImportTaskItem',
     'CollectionImportTaskItem',
+    'CollectionUpdateSerializer',
 )

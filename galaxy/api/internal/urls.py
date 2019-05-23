@@ -21,6 +21,7 @@ from galaxy.api.internal import views
 
 ui_urls = [
     path('collections/', views.CollectionList.as_view()),
+    path('collections/<int:pk>/', views.CollectionUpdate.as_view()),
     path(
         'collections/<slug:namespace__name>/<slug:name>/',
         views.CollectionDetail.as_view()),

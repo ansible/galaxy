@@ -9,7 +9,7 @@ import {
 } from './collection';
 
 import { ServiceBase } from '../base/service-base';
-import { GenericQuery } from '../base/generic-query';
+import { GenericQuerySave } from '../base/generic-query-save';
 import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -39,7 +39,7 @@ export class CollectionUploadService extends ServiceBase {
 }
 
 @Injectable()
-export class CollectionListService extends GenericQuery<CollectionList> {
+export class CollectionListService extends GenericQuerySave<CollectionList> {
     constructor(http: HttpClient, notificationService: NotificationService) {
         super(
             http,

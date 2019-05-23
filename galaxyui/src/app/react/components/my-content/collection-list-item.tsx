@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CollectionList } from '../../../resources/collections/collection';
+import { ModifiedCollectionList } from '../../shared-types/my-content';
 import { Namespace } from '../../../resources/namespaces/namespace';
 import { Link } from '../../lib/link';
 
@@ -14,9 +14,9 @@ import {
 import { Score } from '../score';
 
 interface IProps {
-    collection: CollectionList;
+    collection: ModifiedCollectionList;
     namespace: Namespace;
-    handleAction: (event, collection: CollectionList) => void;
+    handleAction: (event, collection: ModifiedCollectionList) => void;
 }
 
 export class CollectionListItem extends React.Component<IProps, {}> {
@@ -26,7 +26,11 @@ export class CollectionListItem extends React.Component<IProps, {}> {
         return (
             <ListViewItem
                 leftContent={
-                    <i className='pficon-repository list-pf-icon list-pf-icon-small' />
+                    collection['loading'] ? (
+                        <div className='spinner spin-wrapper' />
+                    ) : (
+                        <i className='pficon-repository list-pf-icon list-pf-icon-small' />
+                    )
                 }
                 key={collection.name}
                 heading={
