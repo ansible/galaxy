@@ -118,7 +118,8 @@ export class CardInfoComponent implements OnInit {
         } as CardConfig;
     }
 
-    updateVersion(version) {
+    updateVersion($event) {
+        const version = $event.target.value;
         const cmd = this.infoData.install_cmd.split(',')[0];
 
         if (version === '') {
