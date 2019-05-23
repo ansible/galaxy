@@ -47,7 +47,7 @@
                                [tooltip]="'View more content from ' + item.namespace.name"
                                container="body">
                                <div class="avatar-wrapper">
-                                   <img [src]="item.namespace.avatar_url" class="avatar-image" >
+                                   <img [src]="item.namespace.avatar_url || '/assets/avatar.png'" class="avatar-image" >
                                </div>
                                <div class="namespace-name">{{ item.namespace.name }}</div>
                             </a>
