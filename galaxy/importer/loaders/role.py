@@ -30,7 +30,6 @@ from galaxy.importer.loaders import base
 from galaxy.importer.utils import lint as lintutils
 from galaxy.importer import exceptions as exc
 from galaxy.common import sanitize_content_name
-from galaxy.main import models as m_models
 
 
 ROLE_META_FILES = [
@@ -310,9 +309,6 @@ class RoleLoader(base.BaseLoader):
         readme = self._get_readme()
 
         self._check_tags()
-        self._check_platforms()
-        self._check_cloud_platforms()
-        self._check_dependencies()
 
         return models.Content(
             name=self.name,
@@ -483,67 +479,3 @@ class RoleLoader(base.BaseLoader):
                 'Only first {0} will be used'
                 .format(constants.MAX_TAGS_COUNT))
             self.data['tags'] = tags[:constants.MAX_TAGS_COUNT]
-
-    def _check_platforms(self):
-        self.log.info('Checking role platforms')
-        confirmed_platforms = []
-
-        for platform in self.data['platforms']:
-            name = platform.name
-            versions = platform.versions
-            if 'all' in versions:
-                platform_objs = m_models.Platform.objects.filter(
-                    name__iexact=name
-                )
-                if not platform_objs:
-                    msg = u'Invalid platform: "{}-all", skipping.'.format(name)
-                    self._on_lint_issue('importer', 'IMPORTER101', msg)
-                    continue
-                for p in platform_objs:
-                    confirmed_platforms.append(p)
-                continue
-
-            for version in versions:
-                try:
-                    p = m_models.Platform.objects.get(
-                        name__iexact=name, release__iexact=str(version)
-                    )
-                except m_models.Platform.DoesNotExist:
-                    msg = (u'Invalid platform: "{0}-{1}", skipping.'
-                           .format(name, version))
-                    self._on_lint_issue('importer', 'IMPORTER101', msg)
-                else:
-                    confirmed_platforms.append(p)
-
-        self.data['platforms'] = confirmed_platforms
-
-    def _check_cloud_platforms(self):
-        self.log.info('Checking role cloud platforms')
-        confirmed_platforms = []
-
-        for name in self.data['cloud_platforms']:
-            try:
-                c = m_models.CloudPlatform.objects.get(name__iexact=name)
-            except m_models.CloudPlatform.DoesNotExist:
-                msg = u'Invalid cloud platform: "{0}", skipping'.format(name)
-                self._on_lint_issue('importer', 'IMPORTER102', msg)
-            else:
-                confirmed_platforms.append(c)
-
-        self.data['cloud_platforms'] = confirmed_platforms
-
-    def _check_dependencies(self):
-        self.log.info('Checking role dependencies')
-        confirmed_deps = []
-
-        for dep in self.data['dependencies'] or []:
-            try:
-                dep_role = m_models.Content.objects.get(
-                    namespace__name=dep.namespace, name=dep.name)
-                confirmed_deps.append(dep_role)
-            except Exception:
-                msg = u"Error loading dependency: '{}'".format(
-                    '.'.join([d for d in dep]))
-                self._on_lint_issue('importer', 'IMPORTER103', msg)
-
-        self.data['dependencies'] = confirmed_deps
