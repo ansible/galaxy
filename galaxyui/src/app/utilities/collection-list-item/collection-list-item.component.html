@@ -3,6 +3,9 @@
         <a [routerLink]="['/', 'collections', collection.namespace.name, collection.name]">
             {{collection.name}}
         </a>
+        <div class="deprecated-tag" *ngIf="collection.deprecated"  tooltip="This item has been deprecated. Use at your own risk.">
+            Deprecated
+        </div>
     </div>
     <div class="list-content">
         <b>Description: </b>
