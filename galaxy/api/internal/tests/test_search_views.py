@@ -15,29 +15,9 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from .collections import (  # noqa: F401
-    CollectionList,
-    CollectionDetail,
-    CollectionUpdate,
-)
-from .imports import (  # noqa: F401
-    NamespaceImportsList,
-)
-
-from .combined import (  # noqa: F401
-    RepoAndCollectionList,
-    CombinedDetail,
-)
-from .search import (  # noqa: F401
-    SearchView,
-)
+from rest_framework.test import APITestCase
 
 
-__all__ = (
-    'CollectionList',
-    'CollectionDetail',
-    'NamespaceImportsList',
-    'RepoAndCollectionList',
-    'CombinedDetail',
-    'CollectionUpdate',
-)
+class TestSearchView(APITestCase):
+    def setUp(self):
+        pass
