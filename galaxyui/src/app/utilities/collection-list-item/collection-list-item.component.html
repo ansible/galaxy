@@ -1,6 +1,6 @@
 <div class="col-sm-7">
     <div class="title list-content">
-        <a [routerLink]="['/', 'collections', collection.namespace.name, collection.name]">
+        <a [routerLink]="['/', collection.namespace.name, collection.name]">
             {{collection.name}}
         </a>
         <div class="deprecated-tag" *ngIf="collection.deprecated"  tooltip="This item has been deprecated. Use at your own risk.">
