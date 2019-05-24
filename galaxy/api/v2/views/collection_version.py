@@ -15,6 +15,7 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+
 from django.shortcuts import redirect, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -120,4 +121,12 @@ class CollectionArtifactView(base.APIView):
                 collection__name__iexact=name,
                 version__exact=version,
             )
+
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+
+        # count downloads by mazer
+        if user_agent.startswith('Mazer/'):
+            version.collection.download_count += 1
+            version.collection.save()
+
         return redirect(version.get_download_url())
