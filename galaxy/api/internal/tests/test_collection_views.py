@@ -62,7 +62,7 @@ class TestCollectionView(APITestCase):
 
         collection = results[0]
 
-        assert collection['namespace'] == self.namespace.id
+        assert collection['namespace']['id'] == self.namespace.id
         assert collection['name'] == self.collection.name
         assert collection['latest_version']['version'] == self.version1.version
 
@@ -72,7 +72,7 @@ class TestCollectionView(APITestCase):
 
         collection = results[0]
 
-        assert collection['namespace'] == self.namespace.id
+        assert collection['namespace']['id'] == self.namespace.id
         assert collection['name'] == self.collection.name
         assert collection['latest_version']['version'] == self.version1.version
 
