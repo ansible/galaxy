@@ -10,6 +10,7 @@
     <div class="list-content">
         {{collection.latest_version.metadata.description}}
     </div>
+
     <div class="metric-box pull-left list-content">
         <div class="wide-column" *ngFor="let contentType of contentTypes">
             <div class="mid-font">
@@ -41,6 +42,16 @@
         <div class="view-more" (click)="toggleExpanded()">
             <span *ngIf="!expanded">View More</span>
             <span *ngIf="expanded">View Less</span>
+        </div>
+    </div>
+    <div class="metric-box list-content pull-left">
+        <div class="content-tags">
+            <div class="icon"><i class="fa fa-tag fa-2x"></i></div>
+            <div class="tags">
+                <div class="tag" *ngFor="let tag of collection.latest_version.metadata.tags">
+                    {{ tag }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
