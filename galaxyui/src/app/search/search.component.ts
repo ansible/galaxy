@@ -25,13 +25,16 @@ import { PaginationEvent } from 'patternfly-ng/pagination/pagination-event';
 import { NotificationService } from 'patternfly-ng/notification/notification-service/notification.service';
 import { NotificationType } from 'patternfly-ng/notification/notification-type';
 
-import { ContentTypes } from '../enums/content-types.enum';
 import { CloudPlatform } from '../resources/cloud-platforms/cloud-platform';
-import { ContentSearchService } from '../resources/content-search/content-search.service';
-import { ContentType } from '../resources/content-types/content-type';
 import { EventLoggerService } from '../resources/logger/event-logger.service';
 import { PFBodyService } from '../resources/pf-body/pf-body.service';
 import { Platform } from '../resources/platforms/platform';
+import { RepoCollectionSearchService } from '../resources/combined/combined.service';
+import {
+    Content,
+    PaginatedCombinedSearch,
+} from '../resources/combined/combined';
+import { CollectionList } from '../resources/collections/collection';
 
 import { ContentTypesIconClasses } from '../enums/content-types.enum';
 
@@ -43,8 +46,6 @@ import {
 } from '../enums/contributor-types.enum';
 
 import { PopularEvent } from './popular/popular.component';
-
-import { Content } from '../resources/content-search/content';
 
 import { DefaultParams } from './search.resolver.service';
 
@@ -65,7 +66,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
     toolbarConfig: ToolbarConfig;
     filterConfig: FilterConfig;
     sortConfig: SortConfig;
-    contentItems: Content[];
     listConfig: ListConfig;
     paginationConfig: PaginationConfig;
 
@@ -82,13 +82,18 @@ export class SearchComponent implements OnInit, AfterViewInit {
     pageSize = 10;
     pageNumber = 1;
     keywords = '';
+
     contentCount: number;
+    contentItems: Content[];
+
+    collectionCount: number;
+    collectionItems: CollectionList[];
 
     appliedFilters: Filter[] = [];
 
     constructor(
         private route: ActivatedRoute,
-        private contentSearch: ContentSearchService,
+        private searchService: RepoCollectionSearchService,
         private location: Location,
         private notificationService: NotificationService,
         private pfBody: PFBodyService,
@@ -147,13 +152,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     ],
                 },
                 {
-                    id: 'content_type',
-                    title: 'Content Type',
-                    placeholder: 'Content Type',
-                    type: FilterType.TYPEAHEAD,
-                    queries: [],
-                },
-                {
                     id: 'platforms',
                     title: 'Platform',
                     placeholder: 'Platform',
@@ -188,9 +186,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
             sortConfig: this.sortConfig,
         } as ToolbarConfig;
 
-        this.listConfig = {
-            emptyStateConfig: this.emptyStateConfig,
-        } as ListConfig;
+        this.listConfig = {} as ListConfig;
 
         this.paginationConfig = {
             pageSize: 10,
@@ -206,16 +202,17 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 this.pageNumber = 1;
 
                 this.preparePlatforms(data.platforms);
-                this.prepareContentTypes(data.contentTypes);
                 this.prepareCloudPlatforms(data.cloudPlatforms);
 
                 // If there is an error on the search API, the content search services
                 // returns nothing, so we have to check if results actually exist.
-                if (data.content.results) {
+                if (data.content.content && data.content.collection) {
                     // If no params exist, set to the default params
                     if (Object.keys(params).length === 0) {
                         params = DefaultParams.params;
                     }
+
+                    console.log(data);
 
                     // queryParams represents the complete query that will be made to the database
                     // and as such it essentially represents the state of the search page. When
@@ -230,10 +227,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     this.setSortConfig(this.queryParams);
                     this.setPageSize(this.queryParams);
                     this.setAppliedFilters(this.queryParams);
-                    this.prepareContent(
-                        data.content.results,
-                        data.content.count,
-                    );
+                    this.prepareContent(data.content);
                     this.setUrlParams(this.queryParams);
                     this.pageLoading = false;
                 } else {
@@ -297,20 +291,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
             });
             for (const key in filterby) {
                 if (filterby.hasOwnProperty(key)) {
-                    if (key === 'contributor_type') {
-                        if (filterby[key].length === 1) {
-                            switch (filterby[key][0]) {
-                                case ContributorTypes.community:
-                                    params['vendor'] = false;
-                                    break;
-                                case ContributorTypes.vendor:
-                                    params['vendor'] = true;
-                                    break;
-                            }
-                        }
-                    } else {
-                        params[key] = filterby[key].join(' ');
-                    }
+                    params[key] = filterby[key].join(' ');
                 }
             }
             this.appliedFilters = JSON.parse(
@@ -386,8 +367,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
     searchContent() {
         this.pageLoading = true;
         this.setUrlParams(this.queryParams);
-        this.contentSearch.query(this.queryParams).subscribe(result => {
-            this.prepareContent(result.results, result.count);
+        this.searchService.query(this.queryParams).subscribe(result => {
+            this.prepareContent(result);
             this.pageLoading = false;
         });
     }
@@ -548,10 +529,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.location.replaceState(this.getBasePath(), paramString); // update browser URL
     }
 
-    private prepareContent(data: Content[], count: number) {
-        this.contentCount = count;
+    private prepareContent(result: PaginatedCombinedSearch) {
+        this.contentCount = result.content.count;
+        this.collectionCount = result.collection.count;
+
         const datePattern = /^\d{4}.*$/;
-        data.forEach(item => {
+        result.content.results.forEach(item => {
             if (item.imported === null) {
                 item.imported = 'NA';
             } else if (datePattern.exec(item.imported) !== null) {
@@ -596,9 +579,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 item['contentLink'] += `/${name}`;
             }
         });
-        this.contentItems = data;
+
+        const count = this.collectionCount + this.contentCount;
+
+        this.contentItems = result.content.results;
+        this.collectionItems = result.collection.results;
         this.filterConfig.resultsCount = count;
         this.paginationConfig.totalItems = count;
+
         if (!count) {
             this.emptyStateConfig.title = this.noResultsState;
         }
@@ -634,30 +622,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
     }
 
-    private prepareContentTypes(contentTypes: ContentType[]): void {
-        // Add Content Types to filterConfig
-        const idx = this.getFilterConfigFieldIdx('content_type');
-        if (idx !== null) {
-            const contentTypeMap = {};
-            contentTypes.forEach(ct => {
-                if (ct.name === ContentTypes.apb) {
-                    contentTypeMap[ct.name] = 'APB';
-                } else {
-                    contentTypeMap[ct.name] = ct.description;
-                }
-            });
-            this.toolbarConfig.filterConfig.fields[idx].queries = [];
-            for (const key in contentTypeMap) {
-                if (contentTypeMap.hasOwnProperty(key)) {
-                    this.toolbarConfig.filterConfig.fields[idx].queries.push({
-                        id: key,
-                        value: contentTypeMap[key],
-                    });
-                }
-            }
-        }
-    }
-
     private prepareCloudPlatforms(contentTypes: CloudPlatform[]): void {
         // Add Cloud Platforms to filterConfig
         const idx = this.getFilterConfigFieldIdx('cloud_platforms');
@@ -686,29 +650,19 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 sortType: 'numeric',
             },
             {
-                id: 'namespace__name,name',
-                title: 'Contributor Name',
+                id: 'name',
+                title: 'Content Name',
                 sortType: 'alpha',
             },
             {
-                id: 'repository__download_count',
+                id: 'download_count',
                 title: 'Download Count',
                 sortType: 'numeric',
             },
             {
-                id: 'repository__forks_count',
-                title: 'Forks',
-                sortType: 'numeric',
-            },
-            {
-                id: 'repository__stargazers_count',
-                title: 'Stars',
-                sortType: 'numeric',
-            },
-            {
-                id: 'repository__watchers_count',
-                title: 'Watchers',
-                sortType: 'numeric',
+                id: 'qualname',
+                title: 'Namespace Name',
+                sortType: 'alpha',
             },
         ] as SortField[];
 

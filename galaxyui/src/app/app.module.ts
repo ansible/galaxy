@@ -34,7 +34,6 @@ import { AuthService } from './auth/auth.service';
 import { ApiRootService } from './resources/api-root/api-root.service';
 import { CloudPlatformService } from './resources/cloud-platforms/cloud-platform.service';
 import { ContentBlocksService } from './resources/content-blocks/content-blocks.service';
-import { ContentSearchService } from './resources/content-search/content-search.service';
 import { ContentTypeService } from './resources/content-types/content-type.service';
 import { ContentService } from './resources/content/content.service';
 import { EmailService } from './resources/emails/email.service';
@@ -59,6 +58,7 @@ import {
 import {
     RepoCollectionListService,
     RepoOrCollectionService,
+    RepoCollectionSearchService,
 } from './resources/combined/combined.service';
 
 // import { MyImportsModule }            from './my-imports/my-imports.module';
@@ -97,7 +97,6 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
         AuthService,
         CloudPlatformService,
         ContentBlocksService,
-        ContentSearchService,
         ContentTypeService,
         ImportsService,
         NamespaceService,
@@ -121,6 +120,7 @@ import { UserNotificationsComponent } from './user-notifications/user-notificati
         CollectionDetailService,
         RepoCollectionListService,
         RepoOrCollectionService,
+        RepoCollectionSearchService,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     bootstrap: [AppComponent],

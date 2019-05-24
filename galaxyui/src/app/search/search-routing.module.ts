@@ -22,7 +22,6 @@ const routes: Routes = [
         resolve: {
             cloudPlatforms: SearchCloudPlatformResolver,
             content: SearchContentResolver,
-            contentTypes: SearchContentTypeResolver,
             platforms: SearchPlatformResolver,
             popularTags: PopularTagsResolver,
             popularCloudPlatforms: PopularCloudPlatformsResolver,

@@ -9,8 +9,8 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ContentResponse } from '../resources/content-search/content';
-import { ContentSearchService } from '../resources/content-search/content-search.service';
+import { RepoCollectionSearchService } from '../resources/combined/combined.service';
+import { PaginatedCombinedSearch } from '../resources/combined/combined';
 
 import { Platform } from '../resources/platforms/platform';
 import { PlatformService } from '../resources/platforms/platform.service';
@@ -30,9 +30,8 @@ import { ContributorTypes } from '../enums/contributor-types.enum';
 // page is loaded without any params specified
 export class DefaultParams {
     static params = {
-        // vendor: 'false',
+        // contributor_type: 'community',
         deprecated: 'false',
-        order_by: '-relevance',
     };
 
     static getParamString(): string {
@@ -48,36 +47,22 @@ export class DefaultParams {
 }
 
 @Injectable()
-export class SearchContentResolver implements Resolve<ContentResponse> {
-    constructor(private contentService: ContentSearchService) {}
+export class SearchContentResolver implements Resolve<PaginatedCombinedSearch> {
+    constructor(private searchService: RepoCollectionSearchService) {}
     resolve(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot,
-    ): Observable<ContentResponse> {
+    ): Observable<PaginatedCombinedSearch> {
         let params = {};
         for (const key in route.queryParams) {
             if (route.queryParams.hasOwnProperty(key)) {
-                if (key === 'contributor_type') {
-                    switch (route.queryParams[key]) {
-                        case ContributorTypes.community:
-                            params['vendor'] = false;
-                            break;
-                        case ContributorTypes.vendor:
-                            params['vendor'] = true;
-                    }
-                } else {
-                    params[key] = route.queryParams[key];
-                }
+                params[key] = route.queryParams[key];
             }
         }
         if (Object.keys(params).length === 0) {
             params = DefaultParams.params;
         }
-        // if order_by has not been specified yet, make sure it gets set
-        if (!route.queryParams['order_by']) {
-            params['order_by'] = '-relevance';
-        }
-        return this.contentService.query(params);
+        return this.searchService.query(params);
     }
 }
 

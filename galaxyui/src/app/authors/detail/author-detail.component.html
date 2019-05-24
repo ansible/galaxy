@@ -89,54 +89,10 @@
     </div>
 
     <div class="row item-row" *ngFor="let item of collections">
-        <div class="col-sm-6">
-            <div class="title list-content">
-                <a [routerLink]="['/', namespace.name, item.name]">
-                    {{item.name}}
-                </a>
-            </div>
-            <div class="description list-content">
-                <b>Description: </b>
-                {{item.latest_version.metadata.description}}
-            </div>
-            <div class="metric-box mid-font pull-left list-content">
-                <div>
-                    <b>{{item.latest_version.content_summary.contents.module.length}}</b>
-                    Modules
-                </div>
-                <div>
-                    <b>{{item.latest_version.content_summary.contents.role.length}}</b>
-                    Roles
-                </div>
-                <div>
-                    <b>{{item.latest_version.content_summary.contents.plugin.length}}</b>
-                    Plugins
-                </div>
-                <div>
-                    <b>{{item.latest_version.content_summary.contents.playbook.length}}</b>
-                    Playbooks
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6">
-
-            <div class="metric-box mid-font pull-right list-content">
-                <div>
-                    <app-score [repo]="item"></app-score>
-                </div>
-                <div>
-                    <i class="fa fa-download"></i>
-                    {{item.download_count}} Downloads
-                </div>
-            </div>
-
-            <div class="metric-box pull-right list-content">
-                <div>
-                    <b>Current Version: </b> {{item.latest_version.version}}
-                    uploaded {{ formatDate(item.latest_version.created) }}
-                </div>
-            </div>
-        </div>
+        <app-collection-list-item
+            [collection]='item'
+            [expandContent]='false'
+        ></app-collection-list-item>
     </div>
 
     <div class="row repository-list" *ngIf="!authorNotFound && repositories.length > 0">
@@ -190,7 +146,9 @@
                     </div>
                 </ng-template>
                 <ng-template #actionTemplate let-item="item" let-index="index">
-                    <author-detail-actions [repository]="item"></author-detail-actions>
+                    <author-detail-actions
+                        [repository]="item"
+                    ></author-detail-actions>
                 </ng-template>
             </pfng-list>
         </div>

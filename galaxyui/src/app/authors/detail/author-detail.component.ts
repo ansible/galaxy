@@ -277,10 +277,6 @@ export class AuthorDetailComponent implements OnInit {
         });
     }
 
-    formatDate(date) {
-        return moment(date).fromNow();
-    }
-
     // private
 
     private setStateFromResponse(data: PaginatedRepoCollection) {
