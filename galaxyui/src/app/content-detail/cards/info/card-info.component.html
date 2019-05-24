@@ -50,11 +50,11 @@
                     Version
                 </div>
                 <div class="info-data" >
-                    <select>
-                        <option (click)="updateVersion('')" value="infoData.latest_version.version" selected>
+                    <select (change)="updateVersion($event)">
+                        <option value="" selected>
                             {{infoData.latest_version.version}} released {{infoData.latest_version.created}} (latest)
                         </option>
-                        <option (click)="updateVersion(item.version)" *ngFor="let item of infoData.versions" [value]="item.version">
+                        <option *ngFor="let item of infoData.versions" [value]="item.version">
                             {{item.version}}
                             released {{item.created}}
                         <option>
