@@ -18,7 +18,7 @@ on GitHub at `ansible/mazer <https://github.com/ansible/mazer>`_.
 
 .. note::
 
-    Before installing roles with Mazer, review :ref:`using_collections_in_playbooks`. Mazer installs content different from
+    Before installing collections with Mazer, review :ref:`using_collections_in_playbooks`. Mazer installs content differently from
     the way ``ansible-galaxy`` does.
 
     Mazer is most useful when used with a version of Ansible that understands *collections*.
