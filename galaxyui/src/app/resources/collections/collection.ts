@@ -4,6 +4,15 @@ export class CollectionUpload {
     sha256: string;
 }
 
+class ContentSummary {
+    total_count: number;
+    contents: {
+        module: string[];
+        role: string[];
+        plugin: string[];
+    };
+}
+
 export class CollectionVersion {
     id: number;
     quality_score: number;
@@ -16,7 +25,7 @@ export class CollectionVersion {
         description: string;
     };
     contents: any;
-    content_summary: any;
+    content_summary?: ContentSummary;
     created: string;
     modified: string;
     readme_html: string;
@@ -31,6 +40,7 @@ export class CollectionList {
     community_score: number;
     community_survey_count: number;
     latest_version: CollectionVersion;
+    content_match?: ContentSummary;
 
     namespace: {
         id: number;

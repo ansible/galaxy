@@ -11,23 +11,23 @@
         {{collection.latest_version.metadata.description}}
     </div>
 
-    <div class="metric-box pull-left list-content">
+    <div *ngIf="collection.content_match" class="metric-box pull-left list-content">
         <div class="wide-column" *ngFor="let contentType of contentTypes">
             <div class="mid-font">
-                <b>{{collection.latest_version.content_summary.contents[contentType].length}}</b>
+                <b>{{collection.content_match.contents[contentType].length}}</b>
                 <span class="content-type"> {{contentType}}s</span>
             </div>
 
             <ul class="content-list"
-                *ngIf="collection.latest_version.content_summary.contents[contentType].length > 0 && expandContent">
+                *ngIf="collection.content_match.contents[contentType].length > 0 && expandContent">
                 <li
                     *ngFor="
-                        let content of getSlice(collection.latest_version.content_summary.contents[contentType])
+                        let content of getSlice(collection.content_match.contents[contentType])
                     ">
                     {{content}}
                 </li>
                 <li class="content-ellipses" *ngIf="
-                    collection.latest_version.content_summary.contents[contentType].length > maxContent
+                    collection.content_match.contents[contentType].length > maxContent
                     && !expanded"
                     (click)="toggleExpanded()"
                 >

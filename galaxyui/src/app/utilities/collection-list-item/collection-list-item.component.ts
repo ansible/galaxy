@@ -26,16 +26,18 @@ export class CollectionListItemComponent implements OnInit {
     constructor() {}
 
     ngOnInit() {
-        this.contentTypes = Object.keys(
-            this.collection.latest_version.content_summary.contents,
-        );
+        if (!this.collection.content_match) {
+            this.expandContent = false;
+        }
 
         if (this.expandContent) {
+            this.contentTypes = Object.keys(
+                this.collection.content_match.contents,
+            );
             for (const item of this.contentTypes) {
                 if (
-                    this.collection.latest_version.content_summary.contents[
-                        item
-                    ].length > this.maxContent
+                    this.collection.content_match.contents[item].length >
+                    this.maxContent
                 ) {
                     this.canExpand = true;
                     break;
