@@ -22,10 +22,10 @@ from rest_framework.test import APITestCase
 
 from galaxy.main import models
 
+
 UserModel = get_user_model()
 
-mazer_user_agent = \
-    'Mazer/0.4.0 (linux; python:3.6.8) ansible_galaxy/0.4.0'
+mazer_user_agent = 'Mazer/0.4.0 (linux; python:3.6.8) ansible_galaxy/0.4.0'
 
 
 class TestCollectionArtifactView(APITestCase):
@@ -42,82 +42,49 @@ class TestCollectionArtifactView(APITestCase):
             namespace=self.namespace, name='mycollection')
         self.version = models.CollectionVersion.objects.create(
             collection=self.collection, version='1.2.3')
-        self.artifact = pulp_models.Artifact.objects.create(size=42)
+        self.artifact = pulp_models.Artifact.objects.create(
+            size=427611,
+            sha256='01ba4719c80b6fe911b091a7c05124b6'
+                   '4eeece964e09c058ef8f9805daca546b'
+        )
         self.ca = pulp_models.ContentArtifact.objects.create(
             content=self.version, artifact=self.artifact,
             relative_path='mynamespace-mycollection-1.2.3.tar.gz')
 
-    def test_download(self):
-        download_path = \
-            '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz'
-
-        url = '/api/v2/collections/mynamespace/mycollection' \
-            + '/versions/1.2.3/artifact/'
-
-        # NOTE: This does not follow redirects (follow=True), so response
-        #       will be the 302. Since the redirect is to /download which isn't
-        #       a django url, a get with follow=True will 404 on the second url
-        response = self.client.get(url,
-                                   HTTP_USER_AGENT=mazer_user_agent)
-
-        assert response.status_code == http_codes.HTTP_302_FOUND
-        assert response['Location'] == download_path
-
-    def test_download_count(self):
-        download_count_before = self.collection.download_count
-
-        url = '/api/v2/collections/mynamespace/mycollection' \
-            + '/versions/1.2.3/artifact/'
-
-        response = self.client.get(url,
-                                   HTTP_USER_AGENT=mazer_user_agent)
-
-        assert response.status_code == http_codes.HTTP_302_FOUND
-
-        self.collection.refresh_from_db()
-
-        assert self.collection.download_count == download_count_before + 1
-
-    def test_download_count_non_mazer_user_agent(self):
-        download_count_before = self.collection.download_count
-
-        url = '/api/v2/collections/mynamespace/mycollection' \
-            + '/versions/1.2.3/artifact/'
-
-        response = \
-            self.client.get(url, HTTP_USER_AGENT='WebFetchATron3000/3.11')
-
-        assert response.status_code == http_codes.HTTP_302_FOUND
-
-        self.collection.refresh_from_db()
-
-        assert self.collection.download_count == download_count_before
-
     def test_get_by_id(self):
         response = self.client.get(
-            '/api/v2/collection-versions/{pk}/artifact/'
-            .format(pk=self.version.pk))
+            f'/api/v2/collection-versions/{self.version.pk}/artifact/')
 
-        assert response.status_code == http_codes.HTTP_302_FOUND
-        assert (response['Location']
-                == '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz')
+        assert response.status_code == http_codes.HTTP_200_OK
+        assert response.json() == {
+            'filename': 'mynamespace-mycollection-1.2.3.tar.gz',
+            'size': 427611,
+            'sha256': self.artifact.sha256,
+            'download_url': 'http://testserver/download'
+                            '/mynamespace-mycollection-1.2.3.tar.gz',
+        }
 
     def test_get_by_name(self):
         response = self.client.get(
             '/api/v2/collections/mynamespace/mycollection'
             '/versions/1.2.3/artifact/')
 
-        assert response.status_code == http_codes.HTTP_302_FOUND
-        assert (response['Location']
-                == '/download/galaxy/mynamespace-mycollection-1.2.3.tar.gz')
+        assert response.status_code == http_codes.HTTP_200_OK
+        assert response.json() == {
+            'filename': 'mynamespace-mycollection-1.2.3.tar.gz',
+            'size': 427611,
+            'sha256': self.artifact.sha256,
+            'download_url': 'http://testserver/download'
+                            '/mynamespace-mycollection-1.2.3.tar.gz',
+        }
 
-    def test_get_by_id_found(self):
+    def test_get_by_id_not_found(self):
+        pk = self.version.pk + 1
         response = self.client.get(
-            '/api/v2/collection-versions/{pk}/artifact/'
-            .format(pk=self.version.pk + 1))
+            f'/api/v2/collection-versions/{pk}/artifact/')
         assert response.status_code == http_codes.HTTP_404_NOT_FOUND
 
-    def test_get_by_name_found(self):
+    def test_get_by_name_not_found(self):
         response = self.client.get(
             '/api/v2/collections/mynamespace/mycollection'
             '/versions/1.2.4/artifact/')
@@ -150,34 +117,60 @@ class TestVersionDetailView(APITestCase):
                 'version': '1.0.0',
             },
         )
+        self.artifact = pulp_models.Artifact.objects.create(
+            size=427611,
+            sha256='01ba4719c80b6fe911b091a7c05124b6'
+                   '4eeece964e09c058ef8f9805daca546b'
+        )
+        self.ca = pulp_models.ContentArtifact.objects.create(
+            content=self.version, artifact=self.artifact,
+            relative_path='mynamespace-mycollection-1.0.0.tar.gz')
 
-    def test_view_success(self):
-        urls = [
-            self.url_id.format(pk=self.version.pk),
-            self.url_version.format(
-                ns=self.namespace.name,
-                name=self.collection.name,
-                version=self.version.version,
-            ),
-        ]
+    def test_get_by_id(self):
+        url = self.url_id.format(pk=self.version.pk)
 
-        for url in urls:
-            response = self.client.get(url)
-            assert response.status_code == http_codes.HTTP_200_OK
-            result = response.json()
-            assert result['id'] == self.version.pk
-            assert result['href'] == f'http://testserver{urls[1]}'
-            assert result['download_url'] == \
-                f'http://testserver{urls[1]}artifact/'
-            assert result['namespace']['name'] == self.namespace.name
-            assert result['collection']['name'] == self.collection.name
-            assert result['version'] == self.version.version
-            assert result['hidden'] is False
-            assert result['metadata']['name'] == self.collection.name
-            assert result['metadata']['version'] == self.version.version
+        response = self.client.get(url)
+        self._assert_response_valid(response)
+
+    def test_get_by_name(self):
+        url = self.url_version.format(
+            ns=self.namespace.name,
+            name=self.collection.name,
+            version=self.version.version,
+        )
+
+        response = self.client.get(url)
+        self._assert_response_valid(response)
+
+    def _assert_response_valid(self, response):
+        assert response.status_code == http_codes.HTTP_200_OK
+        assert response.json() == {
+            'id': self.version.pk,
+            'href': 'http://testserver/api/v2/collections/mynamespace'
+                    '/mycollection/versions/1.0.0/',
+            'download_url': 'http://testserver/download/'
+                            'mynamespace-mycollection-1.0.0.tar.gz',
+            'namespace': {
+                'id': self.namespace.pk,
+                'name': 'mynamespace',
+                'href': f'http://testserver/api/v1'
+                        f'/namespaces/{self.namespace.pk}/',
+            },
+            'collection': {
+                'id': self.collection.pk,
+                'name': 'mycollection',
+                'href': 'http://testserver/api/v2/collections'
+                        '/mynamespace/mycollection/',
+            },
+            'version': '1.0.0',
+            'hidden': False,
+            'metadata': {
+                'name': 'mycollection', 'version': '1.0.0'
+            }
+        }
 
     def test_view_404(self):
-        response = self.client.get(self.url_id.format(pk=self.version.pk+1))
+        response = self.client.get(self.url_id.format(pk=self.version.pk + 1))
         assert response.status_code == http_codes.HTTP_404_NOT_FOUND
 
 
@@ -223,5 +216,6 @@ class TestVersionListView(APITestCase):
             assert results[4]['version'] == self.version5.version
 
     def test_view_404(self):
-        response = self.client.get(self.url_id.format(pk=self.collection.pk+1))
+        response = self.client.get(
+            self.url_id.format(pk=self.collection.pk + 1))
         assert response.status_code == http_codes.HTTP_404_NOT_FOUND
