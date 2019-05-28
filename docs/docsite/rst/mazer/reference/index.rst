@@ -30,6 +30,10 @@ Provide the Galaxy server URL to use when accessing the API. For example, to use
 
 Run in verbose mode. Use *-vvv* for more, or *-vvvv* to enable connection debugging.
 
+.. option:: --config
+
+Provide a path to an alternate mazer config. Default is `~/.ansible/mazer.yml`.
+
 
 Commands
 ========
@@ -39,9 +43,18 @@ Use ``mazer <command> --help`` to see help information for a specific command.
 .. toctree::
    :maxdepth: 2
 
+   build
    info
-   init
    install
    list
+   migrate_role
+   publish
    remove
    version
+
+Environment variables
+=====================
+
+MAZER_HOME
+    Set the paths where the mazer.yml and mazer-logging.yml config
+    files are loaded from. The default is ~/.ansible.
