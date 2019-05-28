@@ -21,8 +21,7 @@ on GitHub at `ansible/mazer <https://github.com/ansible/mazer>`_.
     Before installing collections with Mazer, review :ref:`using_collections_in_playbooks`. Mazer installs content differently from
     the way ``ansible-galaxy`` does.
 
-    Mazer is most useful when used with a version of Ansible that understands *collections*.
-    That means Ansible versions 2.8 or higher.
+    Mazer requires Ansible versions 2.8 or higher.
 
 .. toctree::
    :maxdepth: 2
