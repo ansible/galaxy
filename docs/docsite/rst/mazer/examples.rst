@@ -192,11 +192,49 @@ the complete directory tree created on the local file system by Mazer:
                     ├── inventory
                     └── test.yml
 
+Installing collections in 'editable' mode for development
+---------------------------------------------------------
+
+To enable development of collections, it is possible to install a
+local checkout of a collection in 'editable' mode.
+
+Instead of copying a collection into ``~/.ansible/collections/ansible_collections``, this mode will
+create a symlink from ``~/.ansible/collections/ansible_collections/my_namespace/my_colllection``
+to the directory where the collection being worked on lives.
+
+For example, if ``~/src/collections/my_new_collection`` is being worked on, to install
+the collection in editable mode under the namespace 'my_namespace':
+
+.. code-block:: bash
+
+    $ mazer install --namespace my_namespace --editable ~/src/collections/my_new_collection
+
+This will result in 'my_namespace.my_new_collection' being "installed".
+The above command symlinks ``~/.ansble/collections/ansible_collections/my_namespace/my_new_collection`` to
+``~/src/collections/my_new_collection``.
+
+The install option ``--editable`` or the short ``-e`` can be used.
+
+Note that ``--namespace`` option is required.
+
+Installing collections specified in a collections lockfile
+----------------------------------------------------------
+
+Mazer supports specifying a list of collections to be installed
+from a file (a 'collections lockfile').
+
+To install collections specified in a lockfile, use the
+``--collections-lock`` option of the ``install`` subcommand:
+
+.. code-block:: bash
+
+    $ mazer install --collections-lock collections_lockfile.yml
+
 
 Setting the Collections path
 ----------------------------
 
-Mazer installs collections to ``~/.ansible/collections``. To override the default path, set *collections_path* in Mazer's configuration file,
+Mazer installs collections to ``~/.ansible/collections`` by default. To override the default path, set *collections_path* in Mazer's configuration file,
 ``~/.ansible/mazer.yml``. The following shows an example configuration file that sets the value of *collections_path*:
 
 .. code-block:: yaml
@@ -234,6 +272,53 @@ To list the contents of a specific collection, pass the *namespace.collection_na
 
     $ mazer list testing.ansible_testing_content
 
+Generate a collections lockfile based on installed collections
+--------------------------------------------------------------
+
+To create a collections lockfile representing the currently installed
+collections:
+
+.. code-block:: bash
+
+    $ mazer list --lockfile
+
+To create a lockfile that matches current versions exactly, add
+the ``--frozen`` flag:
+
+.. code-block:: bash
+
+    $ mazer list --lockfile --frozen
+
+
+To reproduce an existing installed collection path, redirect the 'list --lockfile'
+output to a file and use that file with 'install --collections-lock':
+
+.. code-block:: bash
+
+    $ mazer list --lockfile  > collections_lockfile.yml
+    $ mazer install --collections-path /tmp/somenewplace --collections-lock collections_lockfile.yml
+
+Building ansible content collection artifacts
+---------------------------------------------
+
+Ansible collections can be publish to galaxy as ansible collection artifacts.
+The artifacts are collection archives with the addition of
+a generated MANIFEST.json providing a manifest of the content (files) in the archive
+as well as additional metadata.
+
+For example, to build the test 'hello' collection included in mazer
+source code in tests/ansible_galaxy/collection_examples/hello/
+
+.. code-block:: bash
+
+    $ # From a source tree checkout of mazer
+    $ cd tests/ansible_galaxy/collection_examples/hello/
+    $ mazer build
+
+This will build a collection artifact and save in the ``releases/``
+directory.
+
+
 Removing Installed Collections
 ------------------------------
 
@@ -245,6 +330,17 @@ uninstalling the collection *testing.ansible_testing_content*:
 .. code-block:: bash
 
     $ mazer remove testing.ansible_testing_content
+
+Migrating an existing traditional style role to a collection with 'mazer migrate_role'
+--------------------------------------------------------------------------------------
+
+.. code-block:: bash
+
+    $ mazer migrate_role --role roles/some_trad_role/ --output-dir collections/roles/some_trad_role --namespace some_ns --version=1.2.3
+
+The above command will create an ansible content collection
+at ``collections/roles/some_trad_role/``
+
 
 .. _using_collections_in_playbooks:
 
@@ -351,5 +447,43 @@ the ``test_role_a`` *role* will be installed to ``~/.ansible/collections/ansible
 
 To use ``test_role_a`` in a playbook, it can be referenced as
 ``testing.ansible_testing_content.test_role_a``
+
+
+Collections lockfile format
+---------------------------
+
+The contents of collections lock file is a yaml file, containing a dictionary.
+
+The dictionary is the same format as the 'dependencies' dict in
+```galaxy.yml``.
+
+The keys are collection labels (the namespace and the name
+dot separated ala 'alikins.collection_inspect').
+
+The values are a version spec string. For ex, `*` or "==1.0.0".
+
+Example contents of a collections lockfile:
+
+.. code-block::  yaml
+
+    alikins.collection_inspect: "*"
+    alikins.collection_ntp: "*"
+
+
+Example contents of a collections lockfile specifying
+version specs:
+
+.. code-block:: yaml
+
+    alikins.collection_inspect: "1.0.0"
+    alikins.collection_ntp: ">0.0.1,!=0.0.2"
+
+Example contents of a collections lockfile specifying
+exact "frozen" versions:
+
+.. code-block:: yaml
+
+    alikins.collection_inspect: "1.0.0"
+    alikins.collection_ntp: "2.3.4"
 
 
