@@ -1,6 +1,35 @@
 Ansible Galaxy Changes by Release
 =================================
 
+3.2 - Released 3-Jun-2019
+-------------------------
+
+Changes
+```````
+- Added full support for Ansible Collections, the new packaging format for delivering Ansible content.
+- With a little help from `Pulp <https://pulpproject.org>`_, added Galaxy hosted Collection artifacts. Using `Mazer <https://github.com/ansible/mazer>`_, users can now upload and download Ansible content directly to and from Galaxy.
+- Removed support for multi-content repositories.
+- Started Galaxy API V2, the future stable API for Galaxy server.
+- Introduced an internal API for UI use only. Breaking changes will occur in future releases, so seriously, don’t use this.
+- Introduced React into the Galaxy UI with the intention of building new components using React and migrating existing components over time.
+
+
+3.1.8 - Released 15-Mar-2019
+----------------------------
+
+Changes
+```````
+- Set default Namespace email to blank when user has opted in GitHub to keep their email address private
+- Filter GH Repo API request by user's namespace. Handles cases where user belongs to many GitHub orgs and thus has lots of repos.
+- Add TokenAuthentication to the default auth classes
+
+Closed PRs
+``````````
+- `1628 Set default namespace email to blank <https://github.com/ansible/galaxy/pull/1628>`_.
+- `1631 Filter GH repos api request by user namespace <https://github.com/ansible/galaxy/pull/1631>`_.
+- `1642 Fix auth token use on artifact publish API <https://github.com/ansible/galaxy/pull/1642>`_.
+
+
 3.1.7 - Released 1-Mar-2019
 ---------------------------
 
