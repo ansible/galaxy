@@ -17,11 +17,13 @@
 
 from rest_framework.test import APITestCase
 from rest_framework import status
+from pulpcore import constants as pulp_const
+from pulpcore.app import models as pulp_models
 
 from galaxy.main import models
 
 
-class RepoAndCollectionListTest(APITestCase):
+class RepoOrCollectionTest(APITestCase):
     base_url = '/api/internal/ui/repo-or-collection-detail/'
 
     def setUp(self):
@@ -47,6 +49,20 @@ class RepoAndCollectionListTest(APITestCase):
             contents={},
         )
 
+        pulp_task = pulp_models.Task.objects.create(
+            pk=24,
+            job_id='0c978c4e-7aba-4a22-be39-de3a433fb687',
+            state=pulp_const.TASK_STATES.WAITING,
+        )
+        models.CollectionImport.objects.create(
+            pk=42,
+            namespace=self.namespace,
+            name='collection',
+            version='1.0.0',
+            pulp_task=pulp_task,
+            imported_version=collection.latest_version,
+        )
+
         models.Repository.objects.create(
             name='repo',
             original_name='repo',
@@ -58,6 +74,7 @@ class RepoAndCollectionListTest(APITestCase):
         resp = self.client.get(url).json()
         assert resp['type'] == 'collection'
         assert resp['data']['collection']['name'] == 'collection'
+        assert resp['data']['collection_import']['id'] == 42
 
     def test_get_repo(self):
         url = self.base_url + '?namespace=mynamespace&name=repo'
