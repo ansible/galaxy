@@ -20,7 +20,7 @@ const PROXY_CONFIG = {
         'secure': false
     },
     "/download": {
-        'target': "http://localhost:8080",
+        'target': "http://localhost:8888",
         'secure': false
     }
 }

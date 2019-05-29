@@ -313,9 +313,7 @@ internal_urls = [
     url(r'^me/', include(me_urls)),
 ]
 
-
-app_name = 'api'
-urlpatterns = [
+api_urls = [
     # TODO(cutwater): Remove ApiRootView
     url(r'^$', views.ApiRootView.as_view(), name='api_root_view'),
     # TODO(cutwater): Move old urls from `api` to `api.v1` package.
@@ -327,4 +325,11 @@ urlpatterns = [
     # url(r'^v1/', include('galaxy.api.v1.urls')),
     path('v2/', include('galaxy.api.v2.urls', namespace='v2')),
     path('internal/', include('galaxy.api.internal.urls', namespace='int')),
+]
+
+
+app_name = 'api'
+urlpatterns = [
+    path('', include('galaxy.api.download.urls')),
+    path('api/', include(api_urls)),
 ]

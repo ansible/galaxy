@@ -77,6 +77,10 @@ class Collection(mixins.TimestampsMixin, models.Model):
             psql_indexes.GinIndex(fields=['search_vector'])
         ]
 
+    def inc_download_count(self):
+        Collection.objects.filter(pk=self.pk).update(
+            download_count=models.F('download_count') + 1)
+
 
 class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
     """
