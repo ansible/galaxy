@@ -39,14 +39,6 @@ run_celery_beat() {
         --loglevel WARNING
 }
 
-run_pulp_content_app() {
-    _exec_cmd "${GALAXY_VENV}/bin/gunicorn" \
-          pulpcore.content:server \
-          --bind '0.0.0.0:8080' \
-          --worker-class 'aiohttp.GunicornWebWorker' \
-          --workers "${GALAXY_NUM_WORKERS}"
-}
-
 run_pulp_resource_manager() {
     _exec_cmd "${GALAXY_VENV}/bin/rq" worker \
         -w 'pulpcore.tasking.worker.PulpWorker' \
@@ -73,9 +65,6 @@ run_service() {
         ;;
         'celery-beat')
             run_celery_beat
-        ;;
-        'pulp-content-app')
-            run_pulp_content_app
         ;;
         'pulp-resource-manager')
             run_pulp_resource_manager

@@ -8,7 +8,6 @@ services:
 #      - galaxy-celery-worker
 #      - galaxy-pulp-rm
 #      - galaxy-pulp-worker
-#      - galaxy-pulp-content-app
 #
 #  galaxy-headless:
 #    depends_on:
@@ -79,18 +78,6 @@ services:
     links:
       - postgres
       - redis
-
-  galaxy-pulp-worker:
-    image: galaxy:latest
-    command: ['run', 'pulp-content-app']
-    environment:
-      - GALAXY_SECRET_KEY=secret
-      - GALAXY_DB_URL=postgres://galaxy:galaxy@postgres:5432/galaxy
-      - C_FORCE_ROOT=1
-    links:
-      - postgres
-      - redis
-
 
   galaxy-ui:
     image: galaxy-static:latest
