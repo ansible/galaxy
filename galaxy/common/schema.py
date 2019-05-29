@@ -50,6 +50,9 @@ class CollectionFilename(object):
     name = attr.ib()
     version = attr.ib(converter=semver.Version)
 
+    def __str__(self):
+        return f'{self.namespace}-{self.name}-{self.version}.tar.gz'
+
     @classmethod
     def parse(cls, filename):
         match = _FILENAME_RE.match(filename)

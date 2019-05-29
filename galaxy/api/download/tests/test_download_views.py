@@ -126,3 +126,25 @@ class TestArtifactDownloadView(APITestCase):
 
         assert response.status_code == http_codes.HTTP_200_OK
         assert response.getvalue() == b'CONTENT'
+
+    def test_invalid_filename(self):
+        filename = 'invalidfilename.tar.gz'
+        url = self.download_url.format(filename=filename)
+        response = self.client.get(url)
+
+        assert response.status_code == http_codes.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            'code': 'not_found',
+            'message': f'Artifact "{filename}" does not exist.',
+        }
+
+    def test_not_found(self):
+        filename = 'wrongnamespace-mycollection-1.2.3.tar.gz'
+        url = self.download_url.format(filename=filename)
+        response = self.client.get(url)
+
+        assert response.status_code == http_codes.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            'code': 'not_found',
+            'message': f'Artifact "{filename}" does not exist.',
+        }
