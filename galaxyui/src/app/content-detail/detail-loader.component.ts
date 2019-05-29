@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ContentFormat } from '../enums/format';
 import { CollectionDetail } from '../resources/collections/collection';
+import { CollectionImport } from '../resources/imports/import';
+
 import { Repository } from '../resources/repositories/repository';
 import { Content } from '../resources/content/content';
 import { Namespace } from '../resources/namespaces/namespace';
@@ -18,6 +20,7 @@ import { Namespace } from '../resources/namespaces/namespace';
         <app-collection-detail
             *ngIf="contentType === ContentFormat.collection"
             [collection]="collection"
+            [collectionImport]="collection_import"
         ></app-collection-detail>
     `,
     styles: [''],
@@ -27,6 +30,7 @@ export class DetailLoaderComponent implements OnInit {
     contentType: ContentFormat;
     repository: Repository;
     collection: CollectionDetail;
+    collection_import: CollectionImport;
     content: Content[];
     namespace: Namespace;
 
@@ -37,6 +41,8 @@ export class DetailLoaderComponent implements OnInit {
         this.route.data.subscribe(data => {
             this.contentType = data.contentType['type'];
             this.collection = data.contentType['data']['collection'];
+            this.collection_import =
+                data.contentType['data']['collection_import'];
             this.repository = data.contentType['data']['repository'];
             this.content = data.contentType['data']['content'];
             this.namespace = data.contentType['data']['namespace'];

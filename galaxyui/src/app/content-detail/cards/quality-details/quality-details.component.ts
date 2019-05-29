@@ -31,41 +31,91 @@ export class QualityDetailsComponent implements OnInit {
     constructor() {}
 
     @Input()
-    content: any;
+    set content(content) {
+        this.contentWarn = new Warning();
+        this.metaWarn = new Warning();
+        this.compatibilityWarn = new Warning();
+
+        this.syntaxScore = this.convertScore(content.content_score);
+        this.metadataScore = this.convertScore(content.metadata_score);
+
+        for (const el of content.summary_fields.task_messages) {
+            if (el.is_linter_rule_violation && el.rule_severity > 0) {
+                if (el.score_type === 'content') {
+                    this.addWarning(
+                        this.contentWarn,
+                        el.linter_rule_id,
+                        el.rule_desc,
+                        el.rule_severity,
+                    );
+                }
+                if (el.score_type === 'metadata') {
+                    this.addWarning(
+                        this.metaWarn,
+                        el.linter_rule_id,
+                        el.rule_desc,
+                        el.rule_severity,
+                    );
+                }
+                if (el.score_type === 'compatibility') {
+                    this.addWarning(
+                        this.compatibilityWarn,
+                        el.linter_rule_id,
+                        el.rule_desc,
+                        el.rule_severity,
+                    );
+                }
+            }
+        }
+    }
+
+    @Input()
+    set collection(collection) {
+        this.contentWarn = new Warning();
+        this.metaWarn = new Warning();
+        this.compatibilityWarn = new Warning();
+
+        this.syntaxScore = '';
+        this.metadataScore = '';
+
+        for (const el of collection.lint_records) {
+            if (el.severity > 0) {
+                if (el.score_type === 'content') {
+                    this.addWarning(
+                        this.contentWarn,
+                        `${el.type} ${el.code}`,
+                        el.message,
+                        el.severity,
+                    );
+                }
+                if (el.score_type === 'metadata') {
+                    this.addWarning(
+                        this.metaWarn,
+                        `${el.type} ${el.code}`,
+                        el.message,
+                        el.severity,
+                    );
+                }
+                if (el.score_type === 'compatibility') {
+                    this.addWarning(
+                        this.compatibilityWarn,
+                        `${el.type} ${el.code}`,
+                        el.message,
+                        el.severity,
+                    );
+                }
+            }
+        }
+    }
 
     contentWarn: Warning;
     metaWarn: Warning;
     compatibilityWarn: Warning;
 
-    ngOnInit() {
-        this.contentWarn = new Warning();
-        this.metaWarn = new Warning();
-        this.compatibilityWarn = new Warning();
+    syntaxScore: any;
+    metadataScore: any;
 
-        this.content.content_score = this.convertScore(
-            this.content.content_score,
-        );
-        this.content.metadata_score = this.convertScore(
-            this.content.metadata_score,
-        );
-        this.content.compatibility_score = this.convertScore(
-            this.content.compatibility_score,
-        );
-
-        for (const el of this.content.summary_fields.task_messages) {
-            if (el.is_linter_rule_violation && el.rule_severity > 0) {
-                if (el.score_type === 'content') {
-                    this.addWarning(this.contentWarn, el);
-                }
-                if (el.score_type === 'metadata') {
-                    this.addWarning(this.metaWarn, el);
-                }
-                if (el.score_type === 'compatibility') {
-                    this.addWarning(this.compatibilityWarn, el);
-                }
-            }
-        }
-    }
+    ngOnInit() {}
 
     getWarningClass(severity: number): string {
         if (severity >= 4) {
@@ -100,21 +150,19 @@ export class QualityDetailsComponent implements OnInit {
         return Math.round(score * 10) / 10;
     }
 
-    private addWarning(warning, task) {
+    private addWarning(warning, linter_rule_id, rule_desc, rule_severity) {
         warning.count += 1;
-        if (warning.ruleDetails[task.linter_rule_id]) {
-            warning.ruleDetails[task.linter_rule_id].violationsCount += 1;
-            warning.ruleDetails[task.linter_rule_id].message.add(
-                task.rule_desc,
-            );
+        if (warning.ruleDetails[linter_rule_id]) {
+            warning.ruleDetails[linter_rule_id].violationsCount += 1;
+            warning.ruleDetails[linter_rule_id].message.add(rule_desc);
         } else {
-            const messages = new Set([task.rule_desc]);
-            warning.rulesViolated.push(task.linter_rule_id);
-            warning.ruleDetails[task.linter_rule_id] = {
+            const messages = new Set([rule_desc]);
+            warning.rulesViolated.push(linter_rule_id);
+            warning.ruleDetails[linter_rule_id] = {
                 violationsCount: 1,
                 message: messages,
-                severityText: this.getWarningText(task.rule_severity),
-                severityIcon: this.getWarningClass(task.rule_severity),
+                severityText: this.getWarningText(rule_severity),
+                severityIcon: this.getWarningClass(rule_severity),
             } as WarningType;
         }
     }
