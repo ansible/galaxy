@@ -33,6 +33,12 @@ CONTENT_ONLY_FILTERS = [
     'cloud_platforms',
 ]
 
+ALLOWED_CONTENT_TYPES = [
+    'collection',
+    'role',
+    None
+]
+
 
 def _ensure_positive_int(string, field, cutoff=None):
     msg = f'{field} must be a positive integer'
@@ -67,13 +73,15 @@ class SearchView(base.APIView):
         page = self.get_page(request)
         page_size = self.get_page_size(request)
         order_by, order = self.get_order_by(request)
+        format_type = self.get_format_type(request)
         filters = self._parse_query_params(request.query_params)
 
         start = page_size * (page - 1)
         end = page_size * page
 
         # Collections
-        if any(filters[k] for k in CONTENT_ONLY_FILTERS):
+        if format_type == 'role' \
+                or any(filters[k] for k in CONTENT_ONLY_FILTERS):
             collections_count = 0
             collections = []
         else:
@@ -88,14 +96,18 @@ class SearchView(base.APIView):
             collection_search._add_content_match(collections)
 
         # Contents
-        content_search = ContentSearch(filters, order_by, order)
-        content_count = content_search.count()
-        if len(collections) >= page_size:
-            contents = models.Content.objects.none()
+        if format_type == 'collection':
+            content_count = 0
+            contents = []
         else:
-            c_start = max(0, start - collections_count)
-            c_end = end - collections_count
-            contents = content_search.search()[c_start:c_end]
+            content_search = ContentSearch(filters, order_by, order)
+            content_count = content_search.count()
+            if len(collections) >= page_size:
+                contents = models.Content.objects.none()
+            else:
+                c_start = max(0, start - collections_count)
+                c_end = end - collections_count
+                contents = content_search.search()[c_start:c_end]
 
         result = {
             'collection': {
@@ -132,6 +144,14 @@ class SearchView(base.APIView):
             raise exceptions.ValidationError(
                 f'{repr(param)} is not a valid ordering parameter value.')
         return param, order
+
+    def get_format_type(self, request):
+        format = request.query_params.get('type', None)
+        if format not in ALLOWED_CONTENT_TYPES:
+            raise exceptions.ValidationError(
+                f'{repr(format)} is not a valid format type.')
+
+        return format
 
     @staticmethod
     def _parse_query_params(params):
