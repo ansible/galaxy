@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 from storages.backends import s3boto3
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny
@@ -29,14 +29,16 @@ class ArtifactDownloadView(APIView):
         try:
             filename = CollectionFilename.parse(filename)
         except ValueError:
-            raise NotFound
+            raise NotFound(f'Artifact "{filename}" does not exist.')
 
-        version = get_object_or_404(
-            models.CollectionVersion,
-            collection__namespace__name__iexact=filename.namespace,
-            collection__name__iexact=filename.name,
-            version__exact=filename.version,
-        )
+        try:
+            version = models.CollectionVersion.objects.get(
+                collection__namespace__name__iexact=filename.namespace,
+                collection__name__iexact=filename.name,
+                version__exact=filename.version,
+            )
+        except models.CollectionVersion.DoesNotExist:
+            raise NotFound(f'Artifact "{filename}" does not exist.')
 
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         if user_agent.startswith('Mazer/'):
