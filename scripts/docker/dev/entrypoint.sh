@@ -79,12 +79,6 @@ run_celery_worker() {
         --loglevel INFO
 }
 
-run_pulp_content_app() {
-    exec "${GALAXY_VENV}/bin/gunicorn" \
-          pulpcore.content:server --bind 'localhost:8080' \
-          --worker-class 'aiohttp.GunicornWebWorker' -w 2
-}
-
 run_pulp_resource_manager() {
     exec "${GALAXY_VENV}/bin/rq" worker \
         -w 'pulpcore.tasking.worker.PulpWorker' \
@@ -118,9 +112,6 @@ run() {
         ;;
         'celery-worker')
             run_celery_worker
-        ;;
-        'pulp-content-app')
-            run_pulp_content_app
         ;;
         'pulp-resource-manager')
             run_pulp_resource_manager
