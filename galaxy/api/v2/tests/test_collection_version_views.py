@@ -150,6 +150,12 @@ class TestVersionDetailView(APITestCase):
                     '/mycollection/versions/1.0.0/',
             'download_url': 'http://testserver/download/'
                             'mynamespace-mycollection-1.0.0.tar.gz',
+            'artifact': {
+                'filename': 'mynamespace-mycollection-1.0.0.tar.gz',
+                'size': 427611,
+                'sha256': '01ba4719c80b6fe911b091a7c05124b6'
+                          '4eeece964e09c058ef8f9805daca546b',
+            },
             'namespace': {
                 'id': self.namespace.pk,
                 'name': 'mynamespace',
