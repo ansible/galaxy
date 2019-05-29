@@ -33,10 +33,9 @@ CONTENT_ONLY_FILTERS = [
     'cloud_platforms',
 ]
 
-ALLOWED_CONTENT_TYPES = [
+ALLOWED_FORMAT_TYPES = [
     'collection',
     'role',
-    None
 ]
 
 
@@ -146,10 +145,12 @@ class SearchView(base.APIView):
         return param, order
 
     def get_format_type(self, request):
-        format = request.query_params.get('type', None)
-        if format:
-            format = format.lower()
-        if format not in ALLOWED_CONTENT_TYPES:
+        format = request.query_params.get('type')
+        if format is None:
+            return None
+
+        format = format.lower()
+        if format not in ALLOWED_FORMAT_TYPES:
             raise exceptions.ValidationError(
                 f'{repr(format)} is not a valid format type.')
 
