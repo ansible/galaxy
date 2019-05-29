@@ -105,6 +105,22 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.filterConfig = {
             fields: [
                 {
+                    id: 'type',
+                    title: 'Type',
+                    placeholder: 'Filter by Collection or Role...',
+                    type: FilterType.SELECT,
+                    queries: [
+                        {
+                            id: 'collection',
+                            value: 'Collection',
+                        },
+                        {
+                            id: 'role',
+                            value: 'Role',
+                        },
+                    ],
+                },
+                {
                     id: 'cloud_platforms',
                     title: 'Cloud Platform',
                     placeholder: 'Cloud Platform',
@@ -121,7 +137,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     id: 'contributor_type',
                     title: 'Contributor Type',
                     placeholder: 'Contributor Type',
-                    type: FilterType.TYPEAHEAD,
+                    type: FilterType.SELECT,
                     queries: [
                         {
                             id: ContributorTypes.community,
@@ -139,7 +155,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 {
                     id: 'deprecated',
                     title: 'Deprecated',
-                    type: FilterType.TYPEAHEAD,
+                    type: FilterType.SELECT,
+                    placeholder: 'Filter by deprecation status...',
                     queries: [
                         {
                             id: 'true',
@@ -211,8 +228,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
                     if (Object.keys(params).length === 0) {
                         params = DefaultParams.params;
                     }
-
-                    console.log(data);
 
                     // queryParams represents the complete query that will be made to the database
                     // and as such it essentially represents the state of the search page. When
@@ -453,7 +468,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
                         ffield.field = field;
                         if (field.type === FilterType.TEXT) {
                             ffield.value = v;
-                        } else if (field.type === FilterType.TYPEAHEAD) {
+                        } else if (
+                            field.type === FilterType.TYPEAHEAD ||
+                            field.type === FilterType.SELECT
+                        ) {
                             field.queries.forEach((query: FilterQuery) => {
                                 if (query.id === v) {
                                     ffield.query = query;
