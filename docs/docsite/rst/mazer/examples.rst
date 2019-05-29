@@ -10,468 +10,480 @@ Examples
 
 This topic provides examples for using Mazer CLI.
 
-Installing Roles
-----------------
+.. _installing_collections:
 
-To install a role found on `Galaxy <https://galaxy.ansible.com>`_, pass the *namespace.role_name*. For example,
-the following install the role `geerlingguy.nginx <https://galaxy.ansible.com/geerlingguy/nginx/>`_ from the
-Galaxy server:
+Installing Collections
+----------------------
 
-.. code-block:: bash
+Collections are a new way to package and distribute ansible related content.
+See :ref:`creating_collections` for examples.
 
-    $ mazer install geerlingguy.nginx
+Collections are available starting with version 3.2 of the Galaxy server and version 2.8 of ansible.
 
-.. note::
-
-    Before installing roles with Mazer, review :ref:`using_mazer_content`. Mazer installs content different from
-    the way ``ansible-galaxy`` does.
-
-To install a specific version of the Galaxy role, append `,<semantic version>` to the name, as demonstrated by the
-following:
-
-.. code-block:: bash
-
-    $ mazer install geerlingguy.nginx,2.6.0
-
-Roles can also be installed directly from GitHub, by passing the git URL of the repository, and a namespace value. Use
-the required *--namespace* option to provide the namespace. The following installs the same role, but bypasses the Galaxy server,
-and goes directly to GitHub.
-
-.. code-block:: bash
-
-    $ mazer install --namespace geerlingguy git+https://github.com/geerlingguy/ansible-role-nginx
-
-A version number can also be passed using the same ',' separated format. For example:
-
-.. code-block:: bash
-
-    $ mazer install git+https://github.com/geerlingguy/ansible-role-nginx,2.6.0
-
-
-.. _installing_repositories_with_multiple_roles:
-
-Installing Repositories With Multiple Roles
--------------------------------------------
-
-Starting with version 3.0 of the Galaxy server, many roles can be combined into a single git repository. Prior to this role repositories
-were structured to only contain a single role. Mazer is able extract all of the roles from the repostory, and install them to the
-local file system.
-
-To install a multi-role repository from Galaxy, pass the *namespace.repository_name* to the install command. The following
-installs the `testing.ansible-testing-content repository <https://galaxy.ansible.com/testing/ansible-testing-content>`_ from
+To install a collection from Galaxy, pass the *namespace.collection_name* to the install command. The following
+installs the `testing.ansible_testing_content collection <https://galaxy.ansible.com/testing/ansible-testing-content>`_ from
 Galaxy:
 
 .. code-block:: bash
 
-    $ mazer install testing.ansible-testing-content
+    $ mazer install testing.ansible_testing_content
 
 .. note::
 
-    Before installing roles with Mazer, review :ref:`using_mazer_content`. Mazer installs content different from
+    Before installing roles with Mazer, review :ref:`using_collections_in_playbooks`. Mazer installs content different from
     the way ``ansible-galaxy`` does.
 
-This will install all of the roles to ``~/.ansible/content/testing/ansible-testing-content/roles/``. The following shows
+This will install the collection to ``~/.ansible/collections/ansible_collections/testing/ansible_testing_content/``. The following shows
 the complete directory tree created on the local file system by Mazer:
 
 .. code-block:: bash
 
-    $ tree ~/.ansible/content/
-    /home/user/.ansible/content/
-    └── testing
-        └── ansible_testing_content
-            └── roles
-                ├── ansible-role-foobar
-                │   ├── defaults
-                │   │   └── main.yml
-                │   ├── handlers
-                │   │   └── main.yml
-                │   ├── meta
-                │   │   └── main.yml
-                │   ├── README.md
-                │   ├── tasks
-                │   │   └── main.yml
-                │   ├── tests
-                │   │   ├── inventory
-                │   │   └── test.yml
-                │   └── vars
-                │       └── main.yml
-                ├── ansible-test-role-1
-                │   ├── defaults
-                │   │   └── main.yml
-                │   ├── handlers
-                │   │   └── main.yml
-                │   ├── meta
-                │   │   └── main.yml
-                │   ├── README.md
-                │   ├── tasks
-                │   │   └── main.yml
-                │   ├── tests
-                │   │   ├── inventory
-                │   │   └── test.yml
-                │   └── vars
-                │       └── main.yml
-                ├── test-role-a
-                │   ├── defaults
-                │   │   └── main.yml
-                │   ├── handlers
-                │   │   └── main.yml
-                │   ├── meta
-                │   │   └── main.yml
-                │   ├── tasks
-                │   │   └── main.yml
-                │   ├── tests
-                │   │   ├── inventory
-                │   │   └── test.yml
-                │   └── vars
-                │       └── main.yml
-                ├── test-role-b
-                │   ├── defaults
-                │   │   └── main.yml
-                │   ├── handlers
-                │   │   └── main.yml
-                │   ├── meta
-                │   │   └── main.yml
-                │   ├── README.md
-                │   ├── tasks
-                │   │   └── main.yml
-                │   ├── tests
-                │   │   ├── inventory
-                │   │   └── test.yml
-                │   └── vars
-                │       └── main.yml
-                ├── test-role-c
-                │   ├── defaults
-                │   │   └── main.yml
-                │   ├── handlers
-                │   │   └── main.yml
-                │   ├── meta
-                │   │   └── main.yml
-                │   ├── README.md
-                │   ├── tasks
-                │   │   └── main.yml
-                │   ├── tests
-                │   │   ├── inventory
-                │   │   └── test.yml
-                │   └── vars
-                │       └── main.yml
-                └── test-role-d
-                    ├── defaults
-                    │   └── main.yml
-                    ├── handlers
-                    │   └── main.yml
-                    ├── meta
-                    │   └── main.yml
-                    ├── README.md
-                    ├── tasks
-                    │   └── main.yml
-                    ├── tests
-                    │   ├── inventory
-                    │   └── test.yml
-                    └── vars
-                        └── main.yml
+    /home/user/.ansible/collections
+    └── ansible_collections
+        └── testing
+            └── ansible_testing_content
+                ├── FILES.json
+                ├── galaxy.yml
+                ├── __init__.py
+                ├── LICENSE
+                ├── MANIFEST.json
+                ├── meta
+                ├── plugins
+                │   ├── action
+                │   │   └── add_host.py
+                │   ├── filter
+                │   │   ├── json_query.py
+                │   │   ├── mathstuff.py
+                │   │   └── newfilter.py
+                │   ├── lookup
+                │   │   ├── fileglob.py
+                │   │   ├── k8s.py
+                │   │   ├── newlookup.py
+                │   │   └── openshift.py
+                │   ├── modules
+                │   │   ├── elasticsearch_plugin.py
+                │   │   ├── kibana_plugin.py
+                │   │   ├── module_in_bash.sh
+                │   │   ├── mysql_db.py
+                │   │   ├── mysql_replication.py
+                │   │   ├── mysql_user.py
+                │   │   ├── mysql_variables.py
+                │   │   ├── newmodule.py
+                │   │   ├── redis.py
+                │   │   └── riak.py
+                │   ├── module_utils
+                │   │   ├── common.py
+                │   │   ├── helper.py
+                │   │   ├── inventory.py
+                │   │   ├── lookup.py
+                │   │   ├── newutil.py
+                │   │   ├── raw.py
+                │   │   └── scale.py
+                │   └── strategy
+                │       ├── debug.py
+                │       ├── free.py
+                │       └── linear.py
+                ├── README.md
+                ├── roles
+                │   ├── foobar
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── README.md
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   ├── test_role_1
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── README.md
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   ├── test_role_a
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   ├── testrolea
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   ├── test_role_b
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── README.md
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   ├── test_role_c
+                │   │   ├── defaults
+                │   │   │   └── main.yml
+                │   │   ├── handlers
+                │   │   │   └── main.yml
+                │   │   ├── meta
+                │   │   │   └── main.yml
+                │   │   ├── README.md
+                │   │   ├── tasks
+                │   │   │   └── main.yml
+                │   │   ├── tests
+                │   │   │   ├── inventory
+                │   │   │   └── test.yml
+                │   │   └── vars
+                │   │       └── main.yml
+                │   └── test_role_d
+                │       ├── defaults
+                │       │   └── main.yml
+                │       ├── handlers
+                │       │   └── main.yml
+                │       ├── meta
+                │       │   └── main.yml
+                │       ├── README.md
+                │       ├── tasks
+                │       │   └── main.yml
+                │       ├── tests
+                │       │   ├── inventory
+                │       │   └── test.yml
+                │       └── vars
+                │           └── main.yml
+                └── tests
+                    ├── inventory
+                    └── test.yml
 
-Setting the Content path
-------------------------
+Installing collections in 'editable' mode for development
+---------------------------------------------------------
 
-Mazer installs content to ``~/.ansible/content``. To override the default path, set *content_path* in Mazer's configuration file,
-``~/.ansible/mazer.yml``. The following shows an example configuration file that sets the value of *content_path*:
+To enable development of collections, it is possible to install a
+local checkout of a collection in 'editable' mode.
+
+Instead of copying a collection into ``~/.ansible/collections/ansible_collections``, this mode will
+create a symlink from ``~/.ansible/collections/ansible_collections/my_namespace/my_colllection``
+to the directory where the collection being worked on lives.
+
+For example, if ``~/src/collections/my_new_collection`` is being worked on, to install
+the collection in editable mode under the namespace 'my_namespace':
+
+.. code-block:: bash
+
+    $ mazer install --namespace my_namespace --editable ~/src/collections/my_new_collection
+
+This will result in 'my_namespace.my_new_collection' being "installed".
+The above command symlinks ``~/.ansble/collections/ansible_collections/my_namespace/my_new_collection`` to
+``~/src/collections/my_new_collection``.
+
+The install option ``--editable`` or the short ``-e`` can be used.
+
+Note that ``--namespace`` option is required.
+
+Installing collections specified in a collections lockfile
+----------------------------------------------------------
+
+Mazer supports specifying a list of collections to be installed
+from a file (a 'collections lockfile').
+
+To install collections specified in a lockfile, use the
+``--collections-lock`` option of the ``install`` subcommand:
+
+.. code-block:: bash
+
+    $ mazer install --collections-lock collections_lockfile.yml
+
+
+Setting the Collections path
+----------------------------
+
+Mazer installs collections to ``~/.ansible/collections`` by default. To override the default path, set *collections_path* in Mazer's configuration file,
+``~/.ansible/mazer.yml``. The following shows an example configuration file that sets the value of *collections_path*:
 
 .. code-block:: yaml
 
     version: '1.0'
-    content_path: /usr/ansible/content
-    options:
-        verbosity: 0
+    collections_path: /usr/ansible/collections
 
-On the command line, use the ``--content-path`` option to force installing content to a specific path. The following shows
+On the command line, use the ``--collections-path`` option to force installing collections to a specific path. The following shows
 the command line option in use:
 
 .. code-block:: bash
 
-    $ mazer install --content-path /usr/ansible/content geerlingguy.nginx
+    $ mazer install --collections-path /usr/ansible/collections testing.ansible_testing_content
 
-Viewing Installed Content
--------------------------
+Viewing Installed Collections
+-----------------------------
 
-To see what's installed in the *content_path*, use the ``list`` command. The following will list all installed
-content:
+To see what's installed in the *collections_path*, use the ``list`` command. The following will list all installed
+collections:
 
 .. code-block:: bash
 
     $ mazer list
 
-To list all the content installed in a specific path, pass the ``--content-path`` option. For example, the following
-lists content installed at ``/usr/data/ansible``:
+To list all the collections installed in a specific path, pass the ``--collections-path`` option. For example, the following
+lists collections installed at ``/usr/data/ansible``:
 
 .. code-block:: bash
 
-    $ mazer list --content-path /usr/data/ansible
+    $ mazer list --collections-path /usr/data/ansible
 
-To list the contents of a specific repository, pass the *namespace.repository_name*, as demonstrated by the following:
-
-.. code-block:: bash
-
-    $ mazer list testing.ansible-testing-content
-
-Removing Installed Content
---------------------------
-
-Use the ``remove`` command to uninstall Ansible content from the *content_path*.
-
-To remove a previously installed role, pass *namespace.role_name*. For example, the following demonstrates
-uninstalling the role *geerlingguy.apache*:
+To list the contents of a specific collection, pass the *namespace.collection_name*, as demonstrated by the following:
 
 .. code-block:: bash
 
-    $ mazer remove geerlingguy.apache
+    $ mazer list testing.ansible_testing_content
 
-To remove all the content intalled from a multi-role repository, pass *namespace.repository_name*, as demonstrated
-by the following:
+Generate a collections lockfile based on installed collections
+--------------------------------------------------------------
 
-.. code-block:: bash
-
-    $ mazer remove testing.ansible-testing-content
-
-.. _using_mazer_content:
-
-Using Content in Playbooks
---------------------------
-
-Mazer places roles on the filesystem differently from the way ``ansible-galaxy`` does. For example, installing the
-role *geerlingguy.apache* with Mazer creates the following directory structure:
+To create a collections lockfile representing the currently installed
+collections:
 
 .. code-block:: bash
 
-    $ tree ~/.ansible/content/
-        /home/user/.ansible/content/
-        ├── geerlingguy
-        │   └── apache
-        │       └── roles
-        │           └── apache
-        │               ├── defaults
-        │               │   └── main.yml
-        │               ├── handlers
-        │               │   └── main.yml
-        │               ├── LICENSE
-        │               ├── meta
-        │               │   └── main.yml
-        │               ├── README.md
-        │               ├── tasks
-        │               │   ├── configure-Debian.yml
-        │               │   ├── configure-RedHat.yml
-        │               │   ├── configure-Solaris.yml
-        │               │   ├── configure-Suse.yml
-        │               │   ├── main.yml
-        │               │   ├── setup-Debian.yml
-        │               │   ├── setup-RedHat.yml
-        │               │   ├── setup-Solaris.yml
-        │               │   └── setup-Suse.yml
-        │               ├── templates
-        │               │   └── vhosts.conf.j2
-        │               ├── tests
-        │               │   ├── README.md
-        │               │   └── test.yml
-        │               └── vars
-        │                   ├── AmazonLinux.yml
-        │                   ├── apache-22.yml
-        │                   ├── apache-24.yml
-        │                   ├── Debian.yml
-        │                   ├── RedHat.yml
-        │                   ├── Solaris.yml
-        │                   └── Suse.yml
+    $ mazer list --lockfile
 
-In the above example, the actual role *apache* is located inside the directory ``~/.ansible/content/geerlingguy/apache/roles`` in the ``apache`` subdir.
+To create a lockfile that matches current versions exactly, add
+the ``--frozen`` flag:
+
+.. code-block:: bash
+
+    $ mazer list --lockfile --frozen
 
 
-With The Companion Ansible Branch
-=================================
+To reproduce an existing installed collection path, redirect the 'list --lockfile'
+output to a file and use that file with 'install --collections-lock':
 
-If the `companion branch of ansible <https://github.com/ansible/ansible/tree/mazer_role_loader>`__ is installed
-roles can be referenced, found, and loaded by using a galaxy/mazer style role name like  ``geerlingguy.nginx.nginx``
-or *namespace.repository_name.role_name*
+.. code-block:: bash
 
-To reference that role in a playbook, there is a *fully qualified
+    $ mazer list --lockfile  > collections_lockfile.yml
+    $ mazer install --collections-path /tmp/somenewplace --collections-lock collections_lockfile.yml
+
+Building ansible content collection artifacts
+---------------------------------------------
+
+Ansible collections can be publish to galaxy as ansible collection artifacts.
+The artifacts are collection archives with the addition of
+a generated MANIFEST.json providing a manifest of the content (files) in the archive
+as well as additional metadata.
+
+For example, to build the test 'hello' collection included in mazer
+source code in tests/ansible_galaxy/collection_examples/hello/
+
+.. code-block:: bash
+
+    $ # From a source tree checkout of mazer
+    $ cd tests/ansible_galaxy/collection_examples/hello/
+    $ mazer build
+
+This will build a collection artifact and save in the ``releases/``
+directory.
+
+
+Removing Installed Collections
+------------------------------
+
+Use the ``remove`` command to uninstall Ansible collections from the *collections_path*.
+
+To remove a previously installed collection, pass *namespace.collection_name*. For example, the following demonstrates
+uninstalling the collection *testing.ansible_testing_content*:
+
+.. code-block:: bash
+
+    $ mazer remove testing.ansible_testing_content
+
+Migrating an existing traditional style role to a collection with 'mazer migrate_role'
+--------------------------------------------------------------------------------------
+
+.. code-block:: bash
+
+    $ mazer migrate_role --role roles/some_trad_role/ --output-dir collections/roles/some_trad_role --namespace some_ns --version=1.2.3
+
+The above command will create an ansible content collection
+at ``collections/roles/some_trad_role/``
+
+
+.. _using_collections_in_playbooks:
+
+Using Collections in Playbooks
+------------------------------
+
+
+With Ansible 2.8 or higher
+==========================
+
+Collections can be referenced, found, and loaded by using a galaxy/mazer style collection name like  ``testing.ansible_testing_content``
+or *namespace.collection_name*
+
+To reference roles included in a collection in a playbook, there is a *fully qualified
 name* and a *short name*.
 
-The fully qualified name for the ``geerlingguy.apache`` role
-would be ``geerlingguy.apache.apache``. That is *namespace.repository_name.role_name*.
+The fully qualified name for the ``testing.ansible_testing_content`` role ``test_role_a``
+would be ``testing.ansible_testing_content.test_role_a``. That is *namespace.collection_name.role_name*.
 
-With traditional style roles, the short name ``geerlingguy.apache`` can also be used.
-Note that this name format is compatible with using roles installed with ``ansible-galaxy``.
-
-For example, ``mynamespace.myrole`` will match the role with the *fully qualified name*
-``mynamespace.myrole.myrole`` and find it at ``~/.ansible/content/mynamespace/myrole/roles/myrole``
-
-Traditional style roles can be referenced by the *short name* or the *fully qualified name*.
-
-For example, ``geerlingguy.apache`` will refer to the role installed at
-``~/.ansible/content/geerlingguy/apache/roles/apache`` as well as the
-more specific name ``geerlingguy.apache.apache``.
-
-For a galaxy *repository* that has multiple roles, the *fully qualified name*
-needs to be used since the repository name is different from the role name.
-
-For example, for the multiple role repository ``testing.some_multi_content_repo`` that
-has a role named ``some_role`` in it, a playbook will need to use the *fully qualified name*
-``testing.some_multi_content_repo.some_role`` to load the role installed at
-``~/.ansible/content/testing/some_multi_content_repo/roles/some_role``
+For example, for the collection ``testing.ansible_testing_content`` that
+has a role named ``test_role_b`` in it, a playbook will need to use the *fully qualified name*
+``testing.ansible_testing_content.test_role_b`` to load the role installed at
+``~/.ansible/collections/ansible_collections/testing/testing_ansible_content/roles/test_role_b``
 
 An example playbook:
 
 .. code-block:: yaml
 
-
     ---
-    - name: The first play
+    - name: Use a role from a collection
       hosts: localhost
+      gather_facts: false
       roles:
-        # This will load from ~/.ansible/content
-        # Traditional role referenced with the style namespace.reponame.rolename style
-        - GROG.debug-variable.debug-variable
+        # A role from a collection using fully qualified name.
+        # This is the recomended way to reference roles from collections
+        - testing.ansible_testing_content.test_role_a
 
-        # a traditional role referenced via the traditional name
-        # (namespace.reponame)
-        - f500.dumpall
+    - name: Use a role via include_role from a collection
+      hosts: localhost
+      gather_facts: false
+      tasks:
+        - name: Use 'test_role_b'
+          include_role:
+            name: testing.ansible_testing_content.test_role_b
 
-        # traditional role specified as dict with role vars
-        - {role: GROG.debug-variable.debug-variable, debug_variable_dump_location: '/tmp/ansible-GROG-dict-style-debug.dump', dir: '/opt/b', app_port: 5001}
+    - name: Use a module from a collection
+      hosts: localhost
+      gather_facts: false
+      tasks:
+        - name: Use 'newmodule' from a collection
+          testing.ansible_testing_content.newmodule:
+          register: newmodule_results
 
-        - role: f500.dumpall
-          tags:
-            - debug
-          dumpall_host_destination: '/tmp/ansible-f500-dumpall/'
+        - name: Show 'newmodule' results
+          debug:
+            var: newmodule_results
 
-        # traditional role in ~/.ansible/roles
-        - some_role_from_tidle_dot_ansible
+    - name: Use a module from a collection with a collections path list set and 'short' name
+      hosts: localhost
+      gather_facts: false
+      collections:
+        - testing.ansible_testing_content
+      tasks:
+        - name: Use 'newmodule' from a collection with 'short' name
+          newmodule:
+          register: newmodule_results
 
-        # traditional role that is install "everywhere"
-        # including ~/.ansible/content/alikins/everywhere/roles/everywhere
-        #           ~/.ansible/roles/everywhere
-        #           ./roles/everywhere.
-        # Will find it in playbook local roles/everywhere
-        - everywhere
-
-        # traditional role (everywhere) but using namespace.repo.rolename dotted name
-        # will find in ~/.ansible/content
-        - alikins.everywhere.everywhere
-
-        # traditional role (everywhere) but using gal trad style namespace.repo dotted name
-        # will find in ~/.ansible/content
-        - alikins.everywhere
-
-        # A role from a multi-content repo
-        - testing.ansible_testing_content.test-role-a
-
-
-With Ansible Versions That Do Not Support Content Path
-======================================================
-
-Ansible releases ``2.7`` and earlier do not support the mazer *content path*.
-If you are using one of these versions, there are two ways mazer installed
-roles can be used.
+        - name: Show 'newmodule' results
+          debug:
+            var: newmodule_results
 
 
-Adding Each Role On Content Path To Roles Path
-______________________________________________
+Collection Path Details
+-----------------------
 
-To reference a role installed in the content path (``geerlingguy.apache for example``) in a playbook, *ANSIBLE_ROLES_PATH* must include
-the path to the *repository* role directory (``~/.ansible/content/geerlingguy/apache/roles``), and the playbook must use ``apache`` as the role name.
+Mazer installed collections live in the ansible *collections_path* ``~/.ansible/collections/``
 
-It's possible to use roles installed by Mazer, but obviously, having to update *ANSIBLE_ROLES_PATH* for each role, and change
-the role name in existing playbooks is less than ideal. In the mean time, the
-`'mazer_role_loader' branch of ansible <https://github.com/ansible/ansible/tree/mazer_role_loader>`__ is available to try.
+Inside of ``~/.ansible/collections``, there is a ``ansible_collections`` directory. This
+directory is the root ansible namespace for collections.
 
-Stay tuned for updates.
+Inside of ``~/.ansible/collections/ansible_collections`` there are directories for
+each galaxy namespace (typically the same name as the the github user name used in galaxy roles).
+For an example of a namespace directory, the galaxy collection from the
+'alikins' github user will be installed to ``~/.ansible/collections/ansible_collections/alikins``
+
+Inside each namespace directory, there will be a directory
+for each ansible *collection* installed.
+
+For collections (see :ref:`installing_collections`)
+the *collection* level directory name will match the name of the collection
+in Galaxy. This name is set in ``galaxy.yml`` field ``name``, as descibed
+in :ref:`collection_metadata`.
+
+For example, for the github repo
+at https://github.com/atestuseraccount/ansible-testing-content imported
+to galaxy-qa at https://galaxy-qa.ansible.com/testing/ansible_testing_content, the
+*collection* name and the *collection* level directory name is ``ansible_testing_content``.
+
+Inside the *collection* level dir, there are two main directories. One
+for ``roles`` and one for ``plugins``.
+
+Inside the ``roles`` directory, each subdirectory is a *role* directory. For the ``testing`` example above,
+the ``test_role_a`` *role* will be installed to ``~/.ansible/collections/ansible_galaxy/testing/ansible_testing_content/roles/test_role_a``
+
+To use ``test_role_a`` in a playbook, it can be referenced as
+``testing.ansible_testing_content.test_role_a``
 
 
-Using Content Path Relative Paths To Roles
-__________________________________________
+Collections lockfile format
+---------------------------
+
+The contents of collections lock file is a yaml file, containing a dictionary.
+
+The dictionary is the same format as the 'dependencies' dict in
+```galaxy.yml``.
+
+The keys are collection labels (the namespace and the name
+dot separated ala 'alikins.collection_inspect').
+
+The values are a version spec string. For ex, `*` or "==1.0.0".
+
+Example contents of a collections lockfile:
+
+.. code-block::  yaml
+
+    alikins.collection_inspect: "*"
+    alikins.collection_ntp: "*"
 
 
-For versions of ansible that do not support mazer content paths, there is another
-option: adding ``~/.ansible/content`` to *ANSIBLE_ROLES_PATH* and using relative paths to reference roles.
-
-In a playbook, ansible supports using the path to the role directory in addition to using the symbolic role
-name. For example, a role referenced like ``apps/apache`` will look for a ``app`` sub dir in ansible role paths and
-for a role dir name ``apache`` in that subdir.
-
-Since mazer installed roles live in subdirectories of ``~/.ansible/content``, then ``~/.ansible/content`` can
-be added to *ANSIBLE_ROLES_PATH*. Then a playbook can reference ``geerlingguy/apache/roles/apache`` to load
-the ``geerlingguy.apache`` role installed with mazer.
-
-To use the ``test-role-a`` role from the ``testing.ansible_testing_content`` *repository*, that
-role could be referenced as ``testing/ansible_testing_content/roles/test-role-a`` which would use the
-role installed to ``~/.ansible/content/testing/ansible_testing_content/roles/test-role-a``.
-
-For an example of a ansible config file to set this up:
-
-.. code-block:: ini
-
-    [defaults]
-    roles_path = $HOME/.ansible/content:$HOME/deploy/roles
-
-And an example playbook:
+Example contents of a collections lockfile specifying
+version specs:
 
 .. code-block:: yaml
 
-    ---
-    - name: The first play
-      hosts: localhost
-      roles:
-        - geerlingguy/apache/roles/apache
-        - testing/ansible_testing_content/roles/test-role-a
-      tasks:
-        - name: import the role called testing.ansible_testing_content.test-role-a
-          include_role:
-            name: testing/ansible_testing_content/roles/test-role-a
+    alikins.collection_inspect: "1.0.0"
+    alikins.collection_ntp: ">0.0.1,!=0.0.2"
 
-.. note::
+Example contents of a collections lockfile specifying
+exact "frozen" versions:
 
-    When using relative (or full) paths as role names in ansible-playbook, all potential roles paths
-    will be search. This include default role paths (``/etc/ansible/roles`` for example) and playbook local
-    ``roles/`` directories. If there are multiple paths that match the role name used in the playbook, it
-    is possible the wrong role will be used.
+.. code-block:: yaml
 
-    To minimize this possibility it is recommended to add ``~/.ansible/content`` to the front of
-    *ANSIBLE_ROLES_PATH* so ``~/.ansible/content`` relative paths will be searched first.
-
-
-Content Path Details
---------------------
-
-Mazer installed content lives in the ansible *content_path* ``~/.ansible/content/``
-
-Inside of ``~/.ansible/content``, there are directories for
-each galaxy namespace (typically the same name as the the github user name used in galaxy roles).
-For an example of a namespace directory, the galaxy content from the
-'alikins' github user will be installed to ``~/.ansible/content/alikins``
-
-Inside each namespace directory, there will be a directory
-for each galaxy *repository* installed. For a traditional galaxy
-role, this *repository* dir will have a name that matches the role
-name. See :ref:`installing_roles` for examples.
-
-For new multi-content style repos (see :ref:`installing_repositories_with_multiple_roles`)
-the *repository* level directory name with match the name of the git repo
-imported to galaxy. For example, for the github repo
-at https://github.com/atestuseraccount/ansible-testing-content imported
-to galaxy-qa at https://galaxy-qa.ansible.com/testing/ansible_testing_content, the
-*repository* level directory name is ``ansible_testing_content``.
-
-Inside the *repository* level dir, there are directories for each *content
-type* supported by galaxy. For example, ``roles``.
-
-Inside each *content type* directory, there will be a directory named for the
-each *content* of that *content type*. For the ``testing`` example above,
-the ``test-role-a`` *role* will be installed to ``~/.ansible/content/testing/ansible_testing_content/roles/test-role-a``
-
-To use ``test-role-a`` in a playbook, it can be referenced as
-``testing.ansible_testing_content.test-role-a``
-
-For a traditional role (a *role* where the upstream git repo contains only
-a single role) like `geerlingguy.apache`, mazer will install it
-to ``~/.ansible/content/geerlingguy/apache/roles/apache``
-
-
+    alikins.collection_inspect: "1.0.0"
+    alikins.collection_ntp: "2.3.4"
 
 
