@@ -108,7 +108,7 @@ class CollectionSearch(BaseSearch):
             qs = qs.distinct().filter(tags__in=tags_qs)
 
         deprecated = self.filters.get('deprecated')
-        if deprecated:
+        if deprecated is not None:
             qs = qs.filter(deprecated=deprecated)
 
         return qs
@@ -251,7 +251,7 @@ class ContentSearch(BaseSearch):
             qs = qs.distinct().filter(tags__in=tags_qs)
 
         deprecated = self.filters.get('deprecated')
-        if deprecated:
+        if deprecated is not None:
             qs = qs.filter(repository__deprecated=deprecated)
 
         platforms = self.filters.get('platforms')
