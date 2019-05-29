@@ -21,8 +21,11 @@ export class CollectionVersion {
         tags: string[];
         authors: string[];
         license: string;
-        homepage: string;
         description: string;
+        homepage?: string;
+        documentation?: string;
+        issues?: string;
+        repository?: string;
     };
     contents: any;
     content_summary?: ContentSummary;

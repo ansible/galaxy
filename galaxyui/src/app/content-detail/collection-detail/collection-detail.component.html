@@ -128,6 +128,20 @@
                     </pfng-card>
                 </div>
             </div>
+
+            <div class="row detail">
+                <div class="col-sm-6"
+                    *ngIf="collection && collection.all_versions">
+                    <card-versions [versions]="collection.all_versions"></card-versions>
+                </div>
+                <div class="col-sm-6"
+                    *ngIf="collection && collection.latest_version.metadata.dependencies">
+                    <card-dependencies
+                        [dependencies]="collection.latest_version.metadata.dependencies"
+                    >
+                    </card-dependencies>
+                </div>
+            </div>
         </div>
 
         <div class="row row-readme" *ngIf="showingView === ViewTypes.readme">

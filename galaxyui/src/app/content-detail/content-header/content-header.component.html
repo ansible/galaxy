@@ -25,7 +25,9 @@
                     </div>
                     <div class="repo-description">
                         {{ headerData.description }}
+                        <div *ngIf="headerData.description.length > 250" class="fade-out"></div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -67,22 +69,29 @@
                     </a>
                 </div>
 
-                <div class="header-button">
-                    <a [href]="headerData.issueTrackerUrl" *ngIf="headerData.issueTrackerUrl"
+                <div class="header-button" *ngIf="headerData.issueTrackerUrl" >
+                    <a [href]="headerData.issueTrackerUrl"
                         target="_blank"
-                        tooltip="Visit the issue tracker. Opens in a new browser tab."
                         class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
 
-                    <a *ngIf="!headerData.issueTrackerUrl"
-                        disabled
-                        tooltip="No issue tracker available."
-                        class="btn btn-default"><i class="fa fa-bug"></i> Issue Tracker</a>
                 </div>
 
                 <div class="header-button" *ngIf="headerData.scmUrl">
                     <a [href]="headerData.scmUrl" target="_blank"
-                        tooltip="Visit the repository. Opens in a new browser tab." class="btn btn-default">
+                        tooltip="Look at the source code." class="btn btn-default">
                             <i [ngClass]="headerData.scmIconClass"></i> {{ headerData.scmName }} Repo</a>
+                </div>
+
+                <div class="header-button" *ngIf="headerData.website">
+                    <a [href]="headerData.website" target="_blank"
+                        class="btn btn-default">
+                        <i class="fa fa-external-link"></i> Website</a>
+                </div>
+
+                <div class="header-button" *ngIf="headerData.documentationLink">
+                    <a [href]="headerData.documentationLink" target="_blank"
+                        class="btn btn-default">
+                            <i class="fa fa-external-link"></i> Docs Site</a>
                 </div>
 
                 <div class="header-button">
