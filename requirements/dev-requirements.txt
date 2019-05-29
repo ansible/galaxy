@@ -43,7 +43,7 @@ django-prometheus==1.0.15
 django-storages[boto3]==1.7.1
 django==2.1.7
 djangorestframework-queryfields==1.0.0  # via pulpcore
-djangorestframework==3.7.7
+djangorestframework==3.9.4
 docutils==0.14            # via botocore, rst2html5-tools, sphinx
 drf-nested-routers==0.91  # via pulpcore
 drf-yasg==1.12.1          # via pulpcore
