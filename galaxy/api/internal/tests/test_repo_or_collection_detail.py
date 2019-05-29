@@ -23,7 +23,7 @@ from pulpcore.app import models as pulp_models
 from galaxy.main import models
 
 
-class RepoOrCollectionTest(APITestCase):
+class TestRepoOrCollection(APITestCase):
     base_url = '/api/internal/ui/repo-or-collection-detail/'
 
     def setUp(self):
