@@ -3,6 +3,7 @@ import { CollectionDetail } from '../../resources/collections/collection';
 import { ViewTypes } from '../../enums/view-types.enum';
 import * as moment from 'moment';
 import { CommunityDetails, DetailMessage } from '../cards/survey/types';
+import { CollectionImport } from '../../resources/imports/import';
 
 @Component({
     selector: 'app-collection-detail',
@@ -26,6 +27,9 @@ export class CollectionDetailComponent implements OnInit {
 
     @Input()
     collection: CollectionDetail;
+
+    @Input()
+    collectionImport: CollectionImport;
 
     constructor() {}
 
@@ -71,11 +75,12 @@ export class CollectionDetailComponent implements OnInit {
         this[key] = !this[key];
     }
 
-    convertScore(score: number) {
+    convertScore(score) {
+        console.log(score);
+
         if (score === null) {
             return 'NA';
         }
-
         return Math.round(score * 10) / 10;
     }
 }

@@ -21,6 +21,7 @@ from galaxy.api import base
 from galaxy.main import models
 from galaxy.api.internal import serializers as internal_serializers
 from galaxy.api import serializers as v1_serializers
+from galaxy.api.v2 import serializers as v2_serializers
 
 
 class RepoAndCollectionList(base.APIView):
@@ -169,9 +170,17 @@ class CombinedDetail(base.APIView):
                 namespace__name__iexact=namespace,
                 name__iexact=name
             )
+
+            collection_import = models.CollectionImport.objects.get(
+                imported_version=collection.latest_version)
+
             data = {
                 'collection': internal_serializers.CollectionDetailSerializer(
-                    collection).data
+                    collection).data,
+                'collection_import':
+                    v2_serializers.CollectionImportSerializer(
+                        collection_import
+                    ).data
             }
             return response.Response({'type': 'collection', 'data': data})
         except django_exceptions.ObjectDoesNotExist:
