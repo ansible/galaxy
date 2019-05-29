@@ -13,6 +13,9 @@
                     <td class="name">
                         <a [routerLink]="dependency['url']">{{ dependency['name'] }}</a>
                     </td>
+                    <td class="version" *ngIf="dependency['version']">
+                        {{dependency['version']}}
+                    </td>
                 </tr>
             </table>
         </div>

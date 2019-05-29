@@ -63,7 +63,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="title">Tell us about this collection</div>
+                    <div class="title">Tell us about this {{displayFormat}}</div>
 
                     <div *ngFor="let key of surveyKeys" class="input">
                         <div class="input-title" [tooltip]="surveyConfig[key].tooltip" >{{surveyConfig[key].question}}</div>

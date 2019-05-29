@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the Apache License
 from django import shortcuts
+from rest_framework import exceptions
 
 from galaxy.api import base
 from galaxy.api.internal import serializers
@@ -32,3 +33,15 @@ class CollectionDetail(base.RetrieveAPIView):
 
     def get_object(self):
         return shortcuts.get_object_or_404(self.model, **self.kwargs)
+
+
+class CollectionUpdate(base.UpdateAPIView):
+    model = models.Collection
+    serializer_class = serializers.CollectionUpdateSerializer
+    queryset = models.Collection.objects.all()
+
+    def check_object_permissions(self, request, obj):
+        is_owner = obj.namespace.owners.filter(pk=request.user.id).exists()
+
+        if not is_owner:
+            raise exceptions.PermissionDenied()

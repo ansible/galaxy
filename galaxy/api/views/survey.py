@@ -52,14 +52,13 @@ class CollectionSurveyList(base_views.ListCreateAPIView):
 
         headers = self.get_success_headers(serializer.data)
 
-        # TODO(newswangerd): make notifications work with collections
         # Each question answered comes as a separate HTTP request, so delay
         # the email update by 2 minutes to allow for all the questions to be
         # submitted so that the score includes all of the submitted answers.
-        # user_notifications.new_survey.apply_async(
-        #     (serializer.validated_data['repository'].id,),
-        #     countdown=120
-        # )
+        user_notifications.collection_new_survey.apply_async(
+            (serializer.validated_data['collection'].id,),
+            countdown=120
+        )
 
         return Response(serializer.data, headers=headers)
 
@@ -101,7 +100,7 @@ class RepositorySurveyList(base_views.ListCreateAPIView):
         # Each question answered comes as a separate HTTP request, so delay
         # the email update by 2 minutes to allow for all the questions to be
         # submitted so that the score includes all of the submitted answers.
-        user_notifications.new_survey.apply_async(
+        user_notifications.repo_new_survey.apply_async(
             (serializer.validated_data['repository'].id,),
             countdown=120
         )

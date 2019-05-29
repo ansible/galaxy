@@ -14,7 +14,12 @@
             font-weight: 700;
         }
     }
-    .name {
+    table {
+        width: 100%;
+    }
+
+    .name,
+    .version {
         font-size: 14px;
         font-weight: normal;
         color: @white;
@@ -22,6 +27,14 @@
         background-color: @blue;
         /*min-width: 200px;*/
         border-bottom: 2px solid @white;
+    }
+    .name {
+        background-color: @blue;
+        border-right: 4px solid @white;
+    }
+    .version {
+        background-color: @ansible-dark-grey;
+        text-align: right;
     }
     a,
     a:visited,

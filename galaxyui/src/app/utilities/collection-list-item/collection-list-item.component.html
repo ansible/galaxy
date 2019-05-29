@@ -1,0 +1,77 @@
+<div class="col-sm-7">
+    <div class="title list-content">
+        <a [routerLink]="['/', collection.namespace.name, collection.name]">
+            {{collection.name}}
+        </a>
+        <div class="deprecated-tag" *ngIf="collection.deprecated"  tooltip="This item has been deprecated. Use at your own risk.">
+            Deprecated
+        </div>
+    </div>
+    <div class="list-content">
+        {{collection.latest_version.metadata.description}}
+    </div>
+
+    <div *ngIf="collection.content_match" class="metric-box pull-left list-content">
+        <div class="wide-column" *ngFor="let contentType of contentTypes">
+            <div class="mid-font">
+                <b>{{collection.content_match.contents[contentType].length}}</b>
+                <span class="content-type"> {{contentType}}s</span>
+            </div>
+
+            <ul class="content-list"
+                *ngIf="collection.content_match.contents[contentType].length > 0 && expandContent">
+                <li
+                    *ngFor="
+                        let content of getSlice(collection.content_match.contents[contentType])
+                    ">
+                    {{content}}
+                </li>
+                <li class="content-ellipses" *ngIf="
+                    collection.content_match.contents[contentType].length > maxContent
+                    && !expanded"
+                    (click)="toggleExpanded()"
+                >
+                    <div class="ellipses-container">
+                        ...
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div *ngIf="canExpand && expandContent" class="metric-box list-content pull-left">
+        <div class="view-more" (click)="toggleExpanded()">
+            <span *ngIf="!expanded">View More</span>
+            <span *ngIf="expanded">View Less</span>
+        </div>
+    </div>
+    <div class="metric-box list-content pull-left">
+        <div class="content-tags">
+            <div class="icon"><i class="fa fa-tag fa-2x"></i></div>
+            <div class="tags">
+                <div class="tag" *ngFor="let tag of collection.latest_version.metadata.tags">
+                    {{ tag }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-sm-5">
+
+    <div class="metric-box mid-font pull-right list-content">
+        <div>
+            <app-score [repo]="collection"></app-score>
+        </div>
+        <div>
+            <i class="fa fa-download"></i>
+            {{collection.download_count}} Downloads
+        </div>
+    </div>
+
+    <div class="metric-box pull-right list-content">
+        <div>
+            <b>Current Version: </b> {{collection.latest_version.version}}
+            uploaded {{ formatDate(collection.latest_version.created) }}
+        </div>
+    </div>
+</div>

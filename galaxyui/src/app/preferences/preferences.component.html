@@ -132,7 +132,7 @@
     </pfng-card>
 </div>
 
-<div class="row" id="followersCards">
+<div class="row followers-cards">
     <pfng-card [config]="authorsFollowedCard" id="authorsFollowedCard" class="col-lg-6">
         <div class="card-content">
             <pfng-list
@@ -152,16 +152,13 @@
                         <div class="list-pf-main-content">
                             <div class="list-pf-title">
                                 <div [ngClass]="{'unfollowed': !item.hasFollowed}">
-                                    <div class="name">
-                                        <a [routerLink]="['/', item.name]">
+                                    <div class="name" [tooltip]='item.description'>
+                                        <a [routerLink]="['/', item.name]" >
                                             {{ item.name }}
                                         </a>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="list-pf-additional-content" [ngClass]="{'unfollowed': !item.hasFollowed}">
-                            {{ item.description }}
                         </div>
                         <div class="action list-pf-actions">
                             <div class="action list-pf-actions">
@@ -176,10 +173,51 @@
         </div>
     </pfng-card>
 
-    <pfng-card [config]="collectionsFollowedCard" id="collectionsFollowedCard" class="col-lg-6">
+    <pfng-card [config]="rolesFollowedCard" id="rolesFollowedCard" class="col-lg-6">
         <div class="card-content">
             <pfng-list
                 [items]="followed.repositories_followed"
+                [itemTemplate]="rolesFollowedListTemplate"
+                *ngIf="preferences"
+            >
+                <ng-template #rolesFollowedListTemplate let-item="item" let-index="index">
+                    <div class="list-pf-left">
+                        <div class="avatar-container" [ngClass]="{'unfollowed': !item.hasFollowed}">
+                            <a [routerLink]="['/', item.name]">
+                                <img class="avatar" src="{{ item.avatar }}" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="list-pf-content-wrapper">
+                        <div class="list-pf-main-content">
+                            <div class="list-pf-title" [tooltip]='item.description'>
+                                <div [ngClass]="{'unfollowed': !item.hasFollowed}">
+                                    <div class="name">
+                                        <a [routerLink]="['/', item.namespace, item.name]" >
+                                            {{ item.namespace }}.{{ item.name }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="action list-pf-actions">
+                            <div class="btn btn-default" (click)="followToggle('repositories_followed', index)">
+                                <span class="{{item.iconClass}}"></span> {{ item.hasFollowed ? 'Unfollow' : 'Follow'}}
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </pfng-list>
+        </div>
+    </pfng-card>
+</div>
+
+<div class="row followers-cards">
+    <pfng-card [config]="collectionsFollowedCard" id="collectionsFollowedCard" class="col-lg-6">
+        <div class="card-content">
+            <pfng-list
+                [items]="followed.collections_followed"
                 [itemTemplate]="collectionsFollowedListTemplate"
                 *ngIf="preferences"
             >
@@ -193,22 +231,19 @@
                     </div>
                     <div class="list-pf-content-wrapper">
                         <div class="list-pf-main-content">
-                            <div class="list-pf-title">
+                            <div class="list-pf-title" [tooltip]='item.description'>
                                 <div [ngClass]="{'unfollowed': !item.hasFollowed}">
                                     <div class="name">
-                                        <a [routerLink]="['/', item.namespace, item.name]">
+                                        <a [routerLink]="['/', item.namespace, item.name]" >
                                             {{ item.namespace }}.{{ item.name }}
                                         </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="list-pf-additional-content" [ngClass]="{'unfollowed': !item.hasFollowed}">
-                            {{ item.description }}
-                        </div>
 
                         <div class="action list-pf-actions">
-                            <div class="btn btn-default" (click)="followToggle('repositories_followed', index)">
+                            <div class="btn btn-default" (click)="followToggle('collections_followed', index)">
                                 <span class="{{item.iconClass}}"></span> {{ item.hasFollowed ? 'Unfollow' : 'Follow'}}
                             </div>
                         </div>

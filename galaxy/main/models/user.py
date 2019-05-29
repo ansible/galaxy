@@ -4,6 +4,7 @@ from django.db import models
 
 from .base import BaseModel, PrimordialModel
 from .repository import Repository
+from .collection import Collection
 
 
 class UserPreferences(BaseModel):
@@ -72,7 +73,7 @@ class UserPreferences(BaseModel):
     )
 
     def __init__(self, *args, **kwargs):
-        super(UserPreferences, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.update_defaults()
 
     def __str__(self):
@@ -80,7 +81,7 @@ class UserPreferences(BaseModel):
 
     @classmethod
     def from_db(cls, db, field_names, values):
-        new = super(UserPreferences, cls).from_db(db, field_names, values)
+        new = super().from_db(db, field_names, values)
         new.update_defaults()
         return new
 
@@ -128,6 +129,12 @@ class UserNotification(BaseModel):
         Repository,
         on_delete=models.SET_NULL,
         null=True
+    )
+
+    collection = models.ForeignKey(
+        Collection,
+        on_delete=models.SET_NULL,
+        null=True,
     )
 
     message = models.CharField(

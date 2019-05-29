@@ -1,4 +1,4 @@
-<div id="content-detail-page">
+<div id="content-detail-page" *ngIf="collection">
     <app-page-header [headerTitle]="pageTitle" [headerIcon]="pageIcon"></app-page-header>
 
     <div class="container-fluid content-detail-container">
@@ -101,31 +101,51 @@
                         </ng-template>
 
                         <div class="card-body">
+                            <h2>Warnings</h2>
+                            <app-quality-details
+                                [collection]="collectionImport"
+                            >
+                            </app-quality-details>
+
+                            <h2>Individual Scores</h2>
                             <table>
                                 <tr>
                                     <th>Name </th>
                                     <th>Quality Score </th>
-                                    <th>Content Score </th>
+                                    <th>Syntax Score </th>
                                     <th>Metadata Score </th>
                                 </tr>
                                 <tr *ngFor="let item of collection.latest_version.contents">
-                                    <td>{{item.name}}</td>
-                                    <td>
-                                        <span *ngIf="item.scores && item.scores.quality">{{item.scores.quality}}</span>
-                                        <span *ngIf="!(item.scores && item.scores.quality)">NA</span>
+                                    <th>{{item.name}}</th>
+                                    <td *ngIf="item.scores">
+                                        {{convertScore(item.scores.quality)}}
                                     </td>
-                                    <td>
-                                        <span *ngIf="item.scores && item.scores.content">{{item.scores.content}}</span>
-                                        <span *ngIf="!(item.scores && item.scores.content)">NA</span>
+                                    <td *ngIf="item.scores">
+                                        {{convertScore(item.scores.content)}}
                                     </td>
-                                    <td>
-                                        <span *ngIf="item.scores && item.scores.metadata">{{item.scores.metadata}}</span>
-                                        <span *ngIf="!(item.scores && item.scores.metadata)">NA</span>
+                                    <td *ngIf="item.scores">
+                                        {{convertScore(item.scores.metadata)}}
                                     </td>
+
+                                    <td *ngIf="!item.scores" colspan="3">Not Scored</td>
                                 </tr>
                             </table>
                         </div>
                     </pfng-card>
+                </div>
+            </div>
+
+            <div class="row detail">
+                <div class="col-sm-6"
+                    *ngIf="collection && collection.all_versions">
+                    <card-versions [versions]="collection.all_versions"></card-versions>
+                </div>
+                <div class="col-sm-6"
+                    *ngIf="collection && collection.latest_version.metadata.dependencies">
+                    <card-dependencies
+                        [dependencies]="collection.latest_version.metadata.dependencies"
+                    >
+                    </card-dependencies>
                 </div>
             </div>
         </div>

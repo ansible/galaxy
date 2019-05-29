@@ -16,7 +16,8 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import unittest
-import mock
+from unittest import mock
+
 import yaml
 import pytest
 

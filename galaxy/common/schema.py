@@ -25,7 +25,7 @@ from galaxy import constants
 
 class Enum(fields.Field):
     def __init__(self, enum, *args, **kwargs):
-        super(Enum, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.enum = enum
 
     def _deserialize(self, value, attr, data):
@@ -49,6 +49,9 @@ class CollectionFilename(object):
     namespace = attr.ib()
     name = attr.ib()
     version = attr.ib(converter=semver.Version)
+
+    def __str__(self):
+        return f'{self.namespace}-{self.name}-{self.version}.tar.gz'
 
     @classmethod
     def parse(cls, filename):

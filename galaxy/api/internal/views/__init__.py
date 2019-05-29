@@ -18,18 +18,26 @@
 from .collections import (  # noqa: F401
     CollectionList,
     CollectionDetail,
+    CollectionUpdate,
 )
 from .imports import (  # noqa: F401
     NamespaceImportsList,
 )
 
 from .combined import (  # noqa: F401
-    RepoAndCollectionList
+    RepoAndCollectionList,
+    CombinedDetail,
 )
+from .search import (  # noqa: F401
+    SearchView,
+)
+
 
 __all__ = (
     'CollectionList',
     'CollectionDetail',
     'NamespaceImportsList',
-    'RepoAndCollectionList'
+    'RepoAndCollectionList',
+    'CombinedDetail',
+    'CollectionUpdate',
 )

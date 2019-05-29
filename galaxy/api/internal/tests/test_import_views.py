@@ -30,7 +30,7 @@ from galaxy import constants as const
 UserModel = get_user_model()
 
 
-class NamespaceImportsList(APITestCase):
+class TestNamespaceImportsList(APITestCase):
     url = '/api/internal/ui/namespaces/{ns}/imports/'
 
     def setUp(self):

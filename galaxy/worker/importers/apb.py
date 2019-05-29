@@ -22,7 +22,7 @@ from galaxy.main import models
 
 class APBImporter(base.ContentImporter):
     def update_content(self, content):
-        super(APBImporter, self).update_content(content)
+        super().update_content(content)
         role_meta = self.data.role_meta
         self._add_tags(content, role_meta['tags'])
 

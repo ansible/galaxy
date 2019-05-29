@@ -21,13 +21,16 @@ from galaxy.api.internal import views
 
 ui_urls = [
     path('collections/', views.CollectionList.as_view()),
+    path('collections/<int:pk>/', views.CollectionUpdate.as_view()),
     path(
         'collections/<slug:namespace__name>/<slug:name>/',
         views.CollectionDetail.as_view()),
     path(
         'namespaces/<int:namespace_id>/imports/',
         views.NamespaceImportsList.as_view()),
-    path('repos-and-collections/', views.RepoAndCollectionList.as_view())
+    path('repos-and-collections/', views.RepoAndCollectionList.as_view()),
+    path('repo-or-collection-detail/', views.CombinedDetail.as_view()),
+    path('search/', views.SearchView.as_view()),
 ]
 
 

@@ -22,11 +22,13 @@ import tarfile
 from django.db import transaction
 from django.db.utils import IntegrityError
 from pulpcore.app import models as pulp_models
+import semantic_version as semver
 
 from galaxy.common import schema
 from galaxy.importer import collection as importer
 from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
+from galaxy.main.celerytasks import user_notifications
 from galaxy.worker import exceptions as exc
 from galaxy.worker import logutils
 from galaxy.worker.importers.collection import check_dependencies
@@ -53,13 +55,17 @@ def import_collection(artifact_id, repository_id):
 
     try:
         importer_obj = _process_collection(artifact, filename, task_logger)
-        _publish_collection(task, artifact, repository, importer_obj)
+        version = _publish_collection(task, artifact, repository, importer_obj)
     except Exception as e:
-        artifact.delete()
         task_logger.error(f'Import Task "{task.id}" failed: {e}')
+        user_notifications.collection_import.delay(task.id, has_failed=True)
+        artifact.delete()
         raise
 
-    warnings, errors = task.get_message_stats()
+    _notify_followers(version)
+
+    user_notifications.collection_import.delay(task.id, has_failed=False)
+    errors, warnings = task.get_message_stats()
     task_logger.info(
         f'Import completed with {warnings} warnings and {errors} errors')
 
@@ -108,6 +114,7 @@ def _publish_collection(task, artifact, repository, importer_obj):
             'Collection version "{version}" already exists.'
             .format(version=metadata.version))
 
+    _update_latest_version(collection, version)
     _update_collection_tags(collection, version, metadata)
 
     rel_path = ARTIFACT_REL_PATH.format(
@@ -137,12 +144,21 @@ def _publish_collection(task, artifact, repository, importer_obj):
 
     task.imported_version = version
     task.save()
+    return version
+
+
+def _update_latest_version(collection, new_version):
+    latest_version = collection.latest_version
+    if latest_version is None or (semver.Version(latest_version.version)
+                                  < semver.Version(new_version.version)):
+        collection.latest_version = new_version
+        collection.save()
 
 
 def _update_collection_tags(collection, version, metadata):
-    '''Update tags at collection-level, only if highest version'''
+    """Update tags at collection-level, only if highest version."""
 
-    if collection.highest_version != version:
+    if collection.latest_version != version:
         return
 
     tags_not_in_db = [
@@ -159,6 +175,13 @@ def _update_collection_tags(collection, version, metadata):
         if tag.name not in metadata.tags
     ]
     collection.tags.remove(*tags_not_in_metadata)
+
+
+def _notify_followers(version):
+    user_notifications.collection_new_version.delay(version.pk)
+    is_first_version = (version.collection.versions.count() == 1)
+    if is_first_version:
+        user_notifications.coll_author_release.delay(version.pk)
 
 
 def _log_importer_results(importer_obj):

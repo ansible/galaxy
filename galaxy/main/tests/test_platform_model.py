@@ -14,20 +14,20 @@
 #
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
+from unittest import mock
 
 from django.core.exceptions import ValidationError
 from django.db.models.manager import Manager
 from django.db.utils import DataError
 from django.test import TestCase
 
-import mock
 import pytest
 
 from galaxy.main.models import Platform
 from galaxy.common.testing import NOW, LATER
 
 
-class PlatformModelTest(TestCase):
+class TestPlatformModel(TestCase):
     VALID_NAME = "NAME"
     VALID_RELEASE = "RELEASE"
     VALID_ALIAS = "ALIAS"

@@ -4,6 +4,15 @@ export class CollectionUpload {
     sha256: string;
 }
 
+class ContentSummary {
+    total_count: number;
+    contents: {
+        module: string[];
+        role: string[];
+        plugin: string[];
+    };
+}
+
 export class CollectionVersion {
     id: number;
     quality_score: number;
@@ -12,17 +21,20 @@ export class CollectionVersion {
         tags: string[];
         authors: string[];
         license: string;
-        homepage: string;
         description: string;
+        homepage?: string;
+        documentation?: string;
+        issues?: string;
+        repository?: string;
     };
     contents: any;
-    content_summary: any;
+    content_summary?: ContentSummary;
     created: string;
     modified: string;
     readme_html: string;
 }
 
-class CollectionBase {
+export class CollectionList {
     id: number;
     name: string;
     description: string;
@@ -31,14 +43,8 @@ class CollectionBase {
     community_score: number;
     community_survey_count: number;
     latest_version: CollectionVersion;
-}
+    content_match?: ContentSummary;
 
-export class CollectionList extends CollectionBase {
-    namespace: number;
-}
-
-export class CollectionDetail extends CollectionBase {
-    all_versions: CollectionVersion[];
     namespace: {
         id: number;
         description: string;
@@ -52,4 +58,8 @@ export class CollectionDetail extends CollectionBase {
         is_vendor: boolean;
         owners: number[];
     };
+}
+
+export class CollectionDetail extends CollectionList {
+    all_versions: CollectionVersion[];
 }

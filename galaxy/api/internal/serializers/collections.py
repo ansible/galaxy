@@ -62,10 +62,11 @@ class VersionDetailSerializer(serializers.ModelSerializer):
 
 
 class VersionSummarySerializer(serializers.ModelSerializer):
-    '''
-    Returns summary information for a collection version. Returning all of a
-    collection's contents in a list is too much data to surface.
-    '''
+    """Returns summary information for a collection version.
+
+    Returning all of a collection's contents in a list is too much
+    data to surface.
+    """
     content_summary = serializers.SerializerMethodField()
 
     class Meta:
@@ -76,7 +77,7 @@ class VersionSummarySerializer(serializers.ModelSerializer):
         contents = {
             'module': [],
             'role': [],
-            'playbook': [],
+            # 'playbook': [],
             'plugin': []
         }
 
@@ -95,6 +96,7 @@ class CollectionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Collection
         fields = COLLECTION_LIST_FIELDS
+        depth = 1
 
 
 class CollectionDetailSerializer(serializers.ModelSerializer):
@@ -112,3 +114,10 @@ class CollectionDetailSerializer(serializers.ModelSerializer):
             hidden=False
         )
         return VersionListSerializer(versions, many=True).data
+
+
+class CollectionUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Collection
+        fields = ('id', 'name', 'deprecated',)
+        read_only_fields = ('id', 'name',)

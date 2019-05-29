@@ -7,6 +7,8 @@ import { Repository } from '../../../resources/repositories/repository';
 import { CollectionDetail } from '../../../resources/collections/collection';
 import { ViewTypes } from '../../../enums/view-types.enum';
 
+import { cloneDeep } from 'lodash';
+
 import * as moment from 'moment';
 
 class InfoData {
@@ -77,8 +79,10 @@ export class CardInfoComponent implements OnInit {
     }
 
     @Input()
-    set collection(collection: CollectionDetail) {
+    set collection(col: CollectionDetail) {
         const versions = [];
+
+        const collection = cloneDeep(col);
 
         for (const version of collection.all_versions) {
             if (version.version !== collection.latest_version.version) {
@@ -118,7 +122,8 @@ export class CardInfoComponent implements OnInit {
         } as CardConfig;
     }
 
-    updateVersion(version) {
+    updateVersion($event) {
+        const version = $event.target.value;
         const cmd = this.infoData.install_cmd.split(',')[0];
 
         if (version === '') {

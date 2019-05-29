@@ -25,7 +25,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.db import models
 from pulpcore.app import models as pulp_models
-import semantic_version
 
 from galaxy.importer.utils import lint as lintutils
 from . import mixins
@@ -38,11 +37,13 @@ class Collection(mixins.TimestampsMixin, models.Model):
     """
     A model representing an Ansible Content Collection.
 
-    :var name: Collection name.
     :var namespace: Reference to a collection nanespace.
+    :var name: Collection name.
     :var deprecated: Indicates if a collection is deprecated.
+    :var download_count: Number of collection downloads.
+    :var comminity_score: Total community score.
+    :var community_survey_count: Number of community surveys.
     :var tags: List of a last collection version tags.
-    :var dependencies: List a last collection version direct??? dependencies.
     """
 
     namespace = models.ForeignKey(Namespace, on_delete=models.PROTECT)
@@ -50,15 +51,22 @@ class Collection(mixins.TimestampsMixin, models.Model):
 
     deprecated = models.BooleanField(default=False)
 
-    # Search vector
-    search_vector = psql_search.SearchVectorField(default='')
     # Community and quality score
     download_count = models.IntegerField(default=0)
     community_score = models.FloatField(null=True)
     community_survey_count = models.IntegerField(default=0)
 
     # References
+    latest_version = models.ForeignKey(
+        'CollectionVersion',
+        on_delete=models.PROTECT,
+        related_name='+',
+        null=True,
+    )
     tags = models.ManyToManyField('Tag')
+
+    # Search indexes
+    search_vector = psql_search.SearchVectorField(default='')
 
     class Meta:
         unique_together = (
@@ -69,22 +77,9 @@ class Collection(mixins.TimestampsMixin, models.Model):
             psql_indexes.GinIndex(fields=['search_vector'])
         ]
 
-    @property
-    def latest_version(self):
-        versions = self.versions.filter(hidden=False)
-        if not versions:
-            return None
-        return versions.latest('pk')
-
-    @property
-    def highest_version(self):
-        versions = self.versions.filter(hidden=False)
-        if not versions:
-            return None
-
-        d = {semantic_version.Version(v.version): v for v in versions}
-        highest = semantic_version.Spec('*').select(d.keys())
-        return d[highest]
+    def inc_download_count(self):
+        Collection.objects.filter(pk=self.pk).update(
+            download_count=models.F('download_count') + 1)
 
 
 class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
@@ -106,7 +101,7 @@ class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
     hidden = models.BooleanField(default=False)
 
     metadata = psql_fields.JSONField(default=dict)
-    contents = psql_fields.JSONField(default=dict)
+    contents = psql_fields.JSONField(default=list)
     quality_score = models.FloatField(
         null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],

@@ -29,6 +29,14 @@ NAME_REGEXP = re.compile(r'^(?!.*__)[a-z]+[0-9a-z_]*$')
 MATCH_LEADING_NUMBER_REGEXP = re.compile(r'^[0-9]')
 
 
+NS_TYPE_COMMUNITY = 'community'
+NS_TYPE_PARTNER = 'partner'
+NS_TYPES = [
+    NS_TYPE_COMMUNITY,
+    NS_TYPE_PARTNER,
+]
+
+
 class Enum(enum.Enum):
     """
     Values stored as `value`, `description` tuples to be used as `choices`

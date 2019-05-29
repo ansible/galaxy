@@ -43,3 +43,7 @@ class ContentLoadError(ImporterError):
 
 class APBContentLoadError(ContentLoadError):
     pass
+
+
+class ContentNameError(ImporterError):
+    pass

@@ -75,7 +75,7 @@ class CustomUserCreationForm(forms.ModelForm):
     def save(self, commit=True):
         # Make sure we pass back in our CustomUserCreationForm and not the
         # default `UserCreationForm`
-        user = super(CustomUserCreationForm, self).save(commit=False)
+        user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
@@ -106,7 +106,7 @@ class CustomUserChangeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         # Make sure we pass back in our CustomUserChangeForm and not the
         # default `UserChangeForm`
-        super(CustomUserChangeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         f = self.fields.get('user_permissions', None)
         if f is not None:
             f.queryset = f.queryset.select_related('content_type')

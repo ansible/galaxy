@@ -187,8 +187,7 @@ class ContentDetailSerializer(ContentSerializer):
         )
 
     def get_summary_fields(self, instance):
-        result = super(
-            ContentDetailSerializer, self).get_summary_fields(instance)
+        result = super().get_summary_fields(instance)
         result.update({
             'platforms': self.get_platforms(instance),
             'cloud_platforms': [

@@ -29,6 +29,7 @@ from rest_framework import status as http_codes
 from pulpcore.app.serializers import ArtifactSerializer
 from pulpcore.app import models as pulp_models
 
+from galaxy import constants
 from galaxy.api import base
 from galaxy.api import exceptions
 from galaxy.api.v2 import serializers
@@ -46,6 +47,11 @@ __all__ = (
 class CollectionExistsError(exceptions.ConflictError):
     default_detail = 'Collection already exists.'
     default_code = 'conflict.collection_exists'
+
+
+class RepositoryNameError(exceptions.ConflictError):
+    default_detail = 'Repository already uses namespace and name.'
+    default_code = 'conflict.repository_name_conflict'
 
 
 class ArtifactExistsError(exceptions.ConflictError):
@@ -96,6 +102,7 @@ class CollectionListView(base.APIView):
         # TODO(cutwater): Merge Artifact and UploadCollectionSerializers
         namespace = self._get_namespace(data)
         self._check_namespace_access(namespace, request.user)
+        self._check_role_name_conflict(namespace, filename.name)
         self._check_version_conflict(namespace, filename)
         self._check_is_tarfile(request.data['file'].file.name)
 
@@ -142,6 +149,21 @@ class CollectionListView(base.APIView):
                 'The namespace listed on your filename must match one of '
                 'the namespaces you have access to.'
             )
+
+    def _check_role_name_conflict(self, ns, name):
+        roles = models.Content.objects.filter(
+            content_type__name=constants.ContentType.ROLE,
+            repository__provider_namespace__namespace=ns,
+            name=name,
+        )
+        if not roles:
+            return
+        raise RepositoryNameError(
+            f'A role ({ns.name}.{name}) under the namespace {ns.name} '
+            'already exists, please use a different name for the collection, '
+            'or delete the role, '
+            'or rename the role via the meta/main.yml role_name attribute'
+        )
 
     def _check_version_conflict(self, namespace, filename):
         """Validate that uploaded collection version does not exist."""

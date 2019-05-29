@@ -25,7 +25,7 @@ from . import base
 class RoleImporter(base.ContentImporter):
 
     def update_content(self, content):
-        super(RoleImporter, self).update_content(content)
+        super().update_content(content)
         gh_repo = self.ctx.github_repo
 
         if not content.description:

@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+
 import { CommonModule } from '@angular/common';
 
 import { EmailActionComponent } from './email-action/email-action.component';
@@ -17,6 +19,7 @@ import { FormsModule } from '@angular/forms';
 
 @NgModule({
     imports: [
+        TooltipModule.forRoot(),
         CommonModule,
         PreferencesRoutingModule,
         SharedModule,

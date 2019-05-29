@@ -1,0 +1,126 @@
+@import '../../../variables';
+
+.title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.list-content {
+    margin-bottom: 5px;
+}
+
+.mid-font {
+    font-size: 14px;
+}
+
+.pull-right {
+    @media (min-width: 800px) {
+        justify-content: flex-end;
+        text-align: right;
+        div {
+            margin-left: 10px;
+        }
+    }
+
+    @media (max-width: 800px) {
+        div {
+            margin-right: 10px;
+        }
+    }
+}
+
+.pull-left {
+    div {
+        margin-right: 10px;
+    }
+
+    .wide-column {
+        max-width: 100px;
+        overflow: hidden;
+        margin-right: 20px;
+    }
+}
+
+.metric-box {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.content-type {
+    text-transform: capitalize;
+}
+
+.content-list {
+    list-style-type: none;
+    padding-left: 0;
+
+    .content-ellipses {
+        position: relative;
+        background-color: #ebebeb;
+        font-weight: bold;
+        width: 26px;
+        text-align: center;
+        height: 12px;
+        cursor: pointer;
+
+        .ellipses-container {
+            position: absolute;
+            top: -7px;
+            left: 8px;
+        }
+    }
+}
+
+.view-more {
+    background-color: #ebebeb;
+    padding: 0px 5px;
+    cursor: pointer;
+}
+
+.deprecated-tag {
+    display: inline-block;
+    color: @white;
+    background-color: #c00;
+    padding: 1px 3px;
+    border-radius: 1px;
+    border-color: #c00;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 5px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.content-tags {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: no-wrap;
+    align-items: flex-start;
+
+    .icon,
+    .tags {
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .icon {
+        width: 32px;
+        text-align: center;
+        margin-right: 5px;
+    }
+    .tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: normal;
+        margin-right: 5px;
+        margin-top: 5px;
+        padding: 1px 5px;
+        background-color: @blue;
+        color: @white;
+        border-radius: 1px;
+    }
+    .tag:hover {
+        cursor: default;
+    }
+}

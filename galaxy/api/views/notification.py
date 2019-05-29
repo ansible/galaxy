@@ -157,7 +157,7 @@ class NotificationSecretDetail(base_views.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def destroy(self, request, *args, **kwargs):
-        obj = super(NotificationSecretDetail, self).get_object()
+        obj = super().get_object()
         obj.delete()
         return Response(dict(detail="Requested secret deleted."),
                         status=status.HTTP_202_ACCEPTED)

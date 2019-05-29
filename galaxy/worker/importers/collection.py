@@ -26,7 +26,7 @@ def _raise_import_fail(msg):
 
 
 def check_dependencies(collection_info):
-    '''Check collection dependencies and matching version are in database'''
+    """Check collection dependencies and matching version are in database."""
     dependencies = collection_info.dependencies
     for dep, version_spec in dependencies.items():
         ns_name, name = dep.split('.')

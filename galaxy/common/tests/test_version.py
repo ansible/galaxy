@@ -17,7 +17,7 @@
 
 import pkg_resources
 import unittest
-import mock
+from unittest import mock
 
 from galaxy.common import version
 

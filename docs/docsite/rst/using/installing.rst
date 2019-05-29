@@ -53,11 +53,6 @@ To see the available versions, locate the role on the search page, and click on 
 can also navigate directly to the role using the */<namespace>/<role name>*. For example, to view the
 role *geerlingguy.apache*, go to `https://galaxy.ansible.com/geerlingguy/apache <https://galaxy.ansible.com/geerlingguy/apache>`_.
 
-.. note::
-
-    For multi-role repositories, now supported in Galaxy v3.0+, the direct path to an individual role
-    contained in the repository is */<namespace>/<repository_name>/<role_name>*.
-
 Install a specific version of a role by appending a comma and a version tag. For example, the following installs *v1.0.0* of the
 role.
 
@@ -240,25 +235,62 @@ the Ansible doc site <https://docs.ansible.com/ansible/latest/user_guide/playboo
 
 .. _installing_multi_repos:
 
-Multi-role Repositories
-=======================
+Collections
+===========
 
-Traditionally, a role is a git repository. Galaxy v3.0 introduced multi-role repositories, providing the
-ability to combine multiple roles into a single git repository.
-
-Installing a mult-role repository requires using the ``mazer`` command line tool available at the `Ansible
-Mazer project <https://github.com/ansible/mazer>`_.
+Installing collections requires using the ``mazer`` command line tool available at the `Ansible
+Mazer project <https://github.com/ansible/mazer>`_. View :doc:`../mazer/index` for additional information about
+installing and using Mazer.
 
 .. note::
 
-  This is a tech-preview feature. Future releases of Galaxy may change or break support of multi-role
-  repositories.
+  This is a tech-preview feature. Future releases of Galaxy may change or break support of collections.
 
-All the roles from a multi-role repository can be installed using mazer's ``install`` command, and passing the
-*namespace.repository_name*, as demonstrated by the following command:
+Collections are installed using mazer's ``install`` command, and passing the *namespace.collection_name*,
+as demonstrated by the following command:
 
 .. code-block:: bash
 
-  $ mazer install testing.multi_role_repository
+  $ mazer install namespace.collection_name
 
-For more on installing, configuring, and using Mazer, visit the `Ansible Mazer project <https://github.com/ansible/mazer>`_
+Older versions of collections can be installed by using.
+
+.. code-block:: bash
+
+  $ mazer install namespace.collection_name,version=1.0.9
+
+.. note::
+
+    Mazer can only install one version of a collection at a time. To change the version of an
+    already installed collection or install multiple versions of the same collection,
+    manually remove the collection, or use the ``--collections-path`` option to override the
+    default install path.
+
+By default, collections are installed to ``~/.ansible/collections/ansible_collections``, as shown below:
+
+.. code-block:: bash
+
+    .ansible/
+    ├── collections/
+    │   └── ansible_collections/
+    │       └── namespace/
+    │           └── collection/
+    │               ├── FILES.json
+    │               ├── MANIFEST.json
+    │               ├── README.md
+    │               ├── galaxy.yml
+    │               ├── meta
+    │               ├── plugins/
+    │               │   └── modules/
+    │               │       └── module1.py
+    │               └── roles
+    │                   └── role1/
+    │                       ├── README.md
+    │                       ├── meta
+    │                       │   └── main.yaml
+    │                       └── tasks
+    │                           └── main.yml
+
+Use the ``--collections-path`` option, or set the ``collections_path`` value in the
+``~/.ansible/mazer.yml`` config file to override the default install path. For more on installing, configuring,
+and using Mazer, view :doc:`../mazer/index`.

@@ -4,7 +4,7 @@
             Syntax Score:
         </div>
         <div class="score">
-            {{ content.content_score }}
+            {{ syntaxScore }}
         </div>
 
         <div>Warnings: {{ contentWarn.count }}</div>
@@ -17,7 +17,7 @@
                         <span class="{{contentWarn.ruleDetails[rule].severityIcon}}"
                             tooltip="{{contentWarn.ruleDetails[rule].severityText}}"></span>
                         <div class="violation-count">{{ contentWarn.ruleDetails[rule].violationsCount }}</div>
-                        {{ rule }}:
+                        <span class="rule-id">{{ rule }}:</span>
                     </div>
                     {{ message }}
                 </div>
@@ -32,7 +32,7 @@
             Metadata Score:
         </div>
         <div class="score">
-            {{ content.metadata_score }}
+            {{ metadataScore }}
         </div>
 
         <div>Warnings: {{ metaWarn.count }}</div>

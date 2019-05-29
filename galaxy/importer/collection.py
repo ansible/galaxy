@@ -152,29 +152,26 @@ class CollectionLoader(object):
 
     def _load_contents(self, content_list):
         for content_type, rel_path, extra in content_list:
+            self.log.info(f'===== LOADING {content_type.name} =====')
             loader_cls = loaders.get_loader(content_type)
             loader = loader_cls(content_type, rel_path, self.path,
                                 logger=self.log, **extra)
-
-            self.log.info('===== LOADING {} ====='.format(
-                          content_type.name))
             content = loader.load()
             self.log.info(' ')
 
             name = ': {}'.format(content.name) if content.name else ''
-            self.log.info('===== LINTING {}{} ====='.format(
-                          content_type.name, name))
+            self.log.info(f'===== LINTING {content_type.name}{name} =====')
             loader.lint()
             content.scores = loader.score()
             self.log.info(' ')
-            self.log.info('===== IMPORTING {}{} ====='.format(
-                          content_type.name, name))
+
+            self.log.info(f'===== IMPORTING {content_type.name}{name} =====')
             self.log.info(' ')
 
             yield content
 
     def _serialize_contents(self, loader_contents):
-        '''Serialize into json content objects with nested objects'''
+        """Serialize into json content objects with nested objects"""
 
         serialized_contents = []
         for content in loader_contents:
@@ -184,7 +181,7 @@ class CollectionLoader(object):
         return serialized_contents
 
     def _get_subset_contents(self, full_contents):
-        '''Return subset of content fields for storage in a collection'''
+        """Return subset of content fields for storage in a collection"""
 
         content_keys = ['name', 'content_type', 'description',
                         'scores', 'metadata', 'role_meta']

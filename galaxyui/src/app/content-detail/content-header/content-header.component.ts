@@ -37,6 +37,8 @@ class HeaderData {
     travis_status_url: string;
     follow_type: string;
     content_id: number;
+    website: string;
+    documentationLink: string;
 }
 
 export class RepoChangeEvent {
@@ -146,7 +148,12 @@ export class ContentHeaderComponent implements OnInit {
             },
             follow_type: 'collections_followed',
             content_id: this.collection.id,
-            scmUrl: null,
+            scmUrl: this.collection.latest_version.metadata.repository,
+            issueTrackerUrl: this.collection.latest_version.metadata.issues,
+            scmIconClass: 'pficon-repository',
+            documentationLink: this.collection.latest_version.metadata
+                .documentation,
+            website: this.collection.latest_version.metadata.homepage,
         } as HeaderData;
     }
 
@@ -164,7 +171,7 @@ export class ContentHeaderComponent implements OnInit {
         }
 
         this.headerData = {
-            formatType: 'Repository',
+            formatType: 'Role',
             repoType: RepoFormats[this.repository.format],
             iconClass: RepoFormatsIconClasses[this.repository.format],
             tooltip: RepoFormatsTooltips[this.repository.format],

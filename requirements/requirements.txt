@@ -101,7 +101,7 @@ sphinxcontrib-websupport==1.1.0  # via sphinx
 toml==0.10.0              # via dynaconf
 typing-extensions==3.7.2  # via aiohttp
 uritemplate==3.0.0        # via coreapi, drf-yasg
-urllib3==1.24.1           # via botocore, requests
+urllib3==1.24.3           # via botocore, requests
 webencodings==0.5.1       # via bleach
 whitenoise==4.1.2         # via pulpcore
 wrapt==1.10.11            # via deprecated

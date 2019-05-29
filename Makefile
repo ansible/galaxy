@@ -212,7 +212,7 @@ dev/test/changed:
 	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
 		source $(GALAXY_VENV)/bin/activate; \
 		export DJANGO_SETTINGS_MODULE="galaxy.settings.testing"; \
-		git status | grep test | cut -d: -f2 > /tmp/tests_changed ;\
+		git status --untracked-files=no | grep "galaxy\/.*test" | cut -d: -f2 > /tmp/tests_changed; \
 		if [[ -s /tmp/tests_changed ]]; then \
 				cat /tmp/tests_changed | xargs pytest -s -vvv --reuse-db \
 		;else \

@@ -15,6 +15,8 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+from pathlib import PurePath
+
 from rest_framework import exceptions as drf_exc
 from rest_framework import serializers
 from rest_framework.reverse import reverse
@@ -26,6 +28,7 @@ from .tasks import BaseTaskSerializer
 
 
 __all__ = (
+    'CollectionArtifactSerializer',
     'CollectionImportSerializer',
     'CollectionUploadSerializer',
     'CollectionSerializer',
@@ -66,13 +69,10 @@ class VersionDetailSerializer(serializers.ModelSerializer):
         )
 
     def get_download_url(self, obj):
+        ca = obj.get_content_artifact()
         return reverse(
-            'api:v2:version-artifact',
-            kwargs={
-                'namespace': obj.collection.namespace.name,
-                'name': obj.collection.name,
-                'version': obj.version,
-            },
+            'api:artifact-download',
+            kwargs={'filename': ca.relative_path},
             request=self.context.get('request'),
         )
 
@@ -95,7 +95,7 @@ class CollectionSerializer(serializers.ModelSerializer):
     namespace = fields.NamespaceObjectField()
     href = serializers.SerializerMethodField()
     versions_url = serializers.SerializerMethodField()
-    highest_version = VersionSummarySerializer()
+    latest_version = VersionSummarySerializer()
 
     class Meta:
         model = models.Collection
@@ -105,7 +105,7 @@ class CollectionSerializer(serializers.ModelSerializer):
             'name',
             'namespace',
             'versions_url',
-            'highest_version',
+            'latest_version',
             'deprecated',
             'created',
             'modified',
@@ -186,3 +186,20 @@ class CollectionUploadSerializer(serializers.Serializer):
             raise drf_exc.ValidationError(str(e))
 
         return data
+
+
+class CollectionArtifactSerializer(serializers.Serializer):
+    filename = serializers.SerializerMethodField()
+    size = serializers.IntegerField(source='artifact.size')
+    sha256 = serializers.CharField(source='artifact.sha256')
+    download_url = serializers.SerializerMethodField()
+
+    def get_filename(self, obj):
+        return PurePath(obj.relative_path).name
+
+    def get_download_url(self, obj):
+        return reverse(
+            'api:artifact-download',
+            kwargs={'filename': obj.relative_path},
+            request=self.context.get('request'),
+        )

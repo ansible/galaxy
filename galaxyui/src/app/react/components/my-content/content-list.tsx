@@ -10,10 +10,10 @@ import {
 import { Namespace } from '../../../resources/namespaces/namespace';
 
 import { Paginator } from 'patternfly-react';
+import { ContentToolbar } from './content-toolbar';
 
 interface IProps {
     itemCount: number;
-    emptyStateText: string;
     loading: boolean;
     namespace: Namespace;
     pageNumber: number;
@@ -21,6 +21,8 @@ interface IProps {
 
     setPageNumber: (x: number) => void;
     setPageSize: (x: number) => void;
+    handleSortChange: (sortEvent) => void;
+    handleFilterChange: (state) => void;
 }
 
 export class ContentList extends React.Component<IProps, {}> {
@@ -53,7 +55,13 @@ export class ContentList extends React.Component<IProps, {}> {
         }
 
         return (
-            <ListView>
+            <div className='my-content-wrapper'>
+                <ContentToolbar
+                    onSortChange={x => this.props.handleSortChange(x)}
+                    onFilterChange={x => this.props.handleFilterChange(x)}
+                    numberOfResults={itemCount}
+                />
+
                 {itemCount > 0 ? this.props.children : this.renderEmpty()}
 
                 {loading ? (
@@ -75,7 +83,7 @@ export class ContentList extends React.Component<IProps, {}> {
                     onPageSet={i => setPageNumber(i)}
                     onPerPageSelect={i => setPageSize(i)}
                 />
-            </ListView>
+            </div>
         );
     }
 
@@ -87,9 +95,7 @@ export class ContentList extends React.Component<IProps, {}> {
                 ) : (
                     <div>
                         <EmptyState.Icon name='warning-triangle-o' />
-                        <EmptyState.Title>
-                            {this.props.emptyStateText}
-                        </EmptyState.Title>
+                        <EmptyState.Title>No Content</EmptyState.Title>
 
                         <EmptyState.Info>
                             Add conent by clicking the "Add Content" button
