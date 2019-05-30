@@ -63,7 +63,7 @@ class SearchRequestSerializer(serializers.Serializer):
     )
     platforms = SeparatedStringField(default=None)
     cloud_platforms = SeparatedStringField(default=None)
-    deprecated = fields.NullBooleanField(default=False)
+    deprecated = fields.NullBooleanField(default=None)
 
 
 class CollectionSearchSerializer(CollectionListSerializer):
