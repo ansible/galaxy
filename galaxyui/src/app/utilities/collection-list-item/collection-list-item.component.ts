@@ -18,26 +18,35 @@ export class CollectionListItemComponent implements OnInit {
     @Input()
     expandContent: boolean;
 
+    // Used on the search page to override the list of contents show with the
+    // list of matched items.
+    @Input()
+    matchList?: any;
+
     contentTypes: string[];
     maxContent = 3;
     expanded = false;
     canExpand = false;
+    contentSummary: any;
 
     constructor() {}
 
     ngOnInit() {
-        if (!this.collection.content_match) {
-            this.expandContent = false;
+        // If the matchList arg is provided to the component, use that as the
+        // list of contents to display. Otherwise, use the list of all contents
+        // If match list is undefined that means that the parameter hasn't been
+        // set. It can still be set but still be null.
+        if (this.matchList !== undefined) {
+            this.contentSummary = this.matchList;
+        } else {
+            this.contentSummary = this.collection.latest_version.content_summary;
         }
 
-        if (this.expandContent) {
-            this.contentTypes = Object.keys(
-                this.collection.content_match.contents,
-            );
+        if (this.contentSummary) {
+            this.contentTypes = Object.keys(this.contentSummary.contents);
             for (const item of this.contentTypes) {
                 if (
-                    this.collection.content_match.contents[item].length >
-                    this.maxContent
+                    this.contentSummary.contents[item].length > this.maxContent
                 ) {
                     this.canExpand = true;
                     break;
