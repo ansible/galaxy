@@ -46,11 +46,33 @@ class VersionSummarySerializer(serializers.ModelSerializer):
         fields = ('version', 'href')
 
 
+class BaseArtifactSerializer(serializers.Serializer):
+    filename = serializers.SerializerMethodField()
+    size = serializers.IntegerField(source='artifact.size')
+    sha256 = serializers.CharField(source='artifact.sha256')
+
+    def get_filename(self, obj):
+        return PurePath(obj.relative_path).name
+
+
+# TODO(cutwater): Whith #1858 this class is considered for removal.
+class CollectionArtifactSerializer(BaseArtifactSerializer):
+    download_url = serializers.SerializerMethodField()
+
+    def get_download_url(self, obj):
+        return reverse(
+            'api:artifact-download',
+            kwargs={'filename': obj.relative_path},
+            request=self.context.get('request'),
+        )
+
+
 class VersionDetailSerializer(serializers.ModelSerializer):
     """Collection version with detailed data."""
     id = serializers.IntegerField(source='pk')
     href = fields.VersionUrlField(source='*')
     download_url = serializers.SerializerMethodField()
+    artifact = serializers.SerializerMethodField()
     namespace = fields.NamespaceObjectField(source='collection.namespace')
     collection = serializers.SerializerMethodField()
     metadata = serializers.JSONField(binary=False)
@@ -61,6 +83,7 @@ class VersionDetailSerializer(serializers.ModelSerializer):
             'id',
             'href',
             'download_url',
+            'artifact',
             'namespace',
             'collection',
             'version',
@@ -75,6 +98,10 @@ class VersionDetailSerializer(serializers.ModelSerializer):
             kwargs={'filename': ca.relative_path},
             request=self.context.get('request'),
         )
+
+    def get_artifact(self, obj):
+        ca = obj.get_content_artifact()
+        return BaseArtifactSerializer(ca).data
 
     def get_collection(self, obj):
         ns_name = obj.collection.namespace.name
@@ -186,20 +213,3 @@ class CollectionUploadSerializer(serializers.Serializer):
             raise drf_exc.ValidationError(str(e))
 
         return data
-
-
-class CollectionArtifactSerializer(serializers.Serializer):
-    filename = serializers.SerializerMethodField()
-    size = serializers.IntegerField(source='artifact.size')
-    sha256 = serializers.CharField(source='artifact.sha256')
-    download_url = serializers.SerializerMethodField()
-
-    def get_filename(self, obj):
-        return PurePath(obj.relative_path).name
-
-    def get_download_url(self, obj):
-        return reverse(
-            'api:artifact-download',
-            kwargs={'filename': obj.relative_path},
-            request=self.context.get('request'),
-        )

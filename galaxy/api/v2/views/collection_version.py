@@ -107,6 +107,7 @@ class VersionDetailView(base.APIView):
         return get_object_or_404(models.Collection, namespace=ns, name=name)
 
 
+# TODO(cutwater): Whith #1858 this view is considered for removal.
 class CollectionArtifactView(base.RetrieveAPIView):
     permission_classes = (AllowAny, )
     serializer_class = serializers.CollectionArtifactSerializer
