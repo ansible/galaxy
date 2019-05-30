@@ -77,6 +77,7 @@ class VersionSummarySerializer(serializers.ModelSerializer):
         contents = {
             'module': [],
             'role': [],
+            # Playbooks not supported yet
             # 'playbook': [],
             'plugin': []
         }

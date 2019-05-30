@@ -82,7 +82,8 @@ class CollectionSearchSerializer(CollectionListSerializer):
         contents = {
             'module': [],
             'role': [],
-            'playbook': [],
+            # Playbooks not supported yet
+            # 'playbook': [],
             'plugin': []
         }
 
