@@ -42,7 +42,7 @@
 
                 <div class="row item-row" *ngFor="let item of collectionItems">
                     <div class="collection-item">
-                        <div class="namespace-container">
+                        <div class="namespace-container collection-namespace">
                             <a [routerLink]="['/', item.namespace.name]"
                                [tooltip]="'View more content from ' + item.namespace.name"
                                container="body">
