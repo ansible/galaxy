@@ -38,6 +38,14 @@ export class RepoCollectionListService extends ServiceBase {
 
 @Injectable()
 export class RepoCollectionSearchService extends ServiceBase {
+    LOWER_CASE_PARAMS = [
+        'namespaces',
+        'tags',
+        'contributor_type',
+        'deprecated',
+        'type',
+    ];
+
     constructor(http: HttpClient, notificationService: NotificationService) {
         super(
             http,
@@ -48,6 +56,11 @@ export class RepoCollectionSearchService extends ServiceBase {
     }
 
     query(params): Observable<PaginatedCombinedSearch> {
+        for (const k of this.LOWER_CASE_PARAMS) {
+            if (params[k]) {
+                params[k] = params[k].toLowerCase();
+            }
+        }
         return this.http
             .get<PaginatedCombinedSearch>(this.url, { params: params })
             .pipe(
