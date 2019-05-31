@@ -13,9 +13,13 @@
 # Apache License for more details.
 #
 # You should have received a copy of the Apache License
+import functools
+import operator
+
 from rest_framework import response
 from rest_framework import exceptions
 from django.core import exceptions as django_exceptions
+from django.db.models.query_utils import Q
 
 from galaxy.api import base
 from galaxy.main import models
@@ -51,9 +55,13 @@ class RepoAndCollectionList(base.APIView):
             'provider_namespace__namespace__name': namespace
         }
 
+        # Names are split by ' ' and then applied as an AND filter, so
+        # name="bob the angry" is interpreted as "bob" & "the" & "angry"
+        name_filter = []
         if 'name' in request.GET:
-            collection_filters['name__icontains'] = request.GET['name']
-            repo_filters['name__icontains'] = request.GET['name']
+            name_filter = [
+                Q(name__icontains=name) for name in request.GET['name'].split()
+            ]
 
         # Avoid loading models if the type is set.
         if package_type == 'collection':
@@ -62,6 +70,9 @@ class RepoAndCollectionList(base.APIView):
         else:
             repos = models.Repository.objects.filter(
                 **repo_filters).order_by(order)
+            if len(name_filter) > 0:
+                repos = repos.filter(
+                    functools.reduce(operator.and_, name_filter))
             repo_count = repos.count()
 
         if package_type == 'repository':
@@ -70,6 +81,10 @@ class RepoAndCollectionList(base.APIView):
         else:
             collections = models.Collection.objects.filter(
                 **collection_filters).order_by(order)
+            if len(name_filter) > 0:
+                collections = collections.filter(
+                    functools.reduce(operator.and_, name_filter))
+
             collection_count = collections.count()
 
         start = (page * page_size) - page_size
