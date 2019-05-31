@@ -298,7 +298,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
                 if (filterby[filter.field.id] === undefined) {
                     filterby[filter.field.id] = [];
                 }
-                if (filter.field.type === FilterType.TYPEAHEAD) {
+                if (
+                    filter.field.type === FilterType.TYPEAHEAD ||
+                    filter.field.type === FilterType.SELECT
+                ) {
                     filterby[filter.field.id].push(filter.query.id);
                 } else {
                     filterby[filter.field.id].push(filter.value);
@@ -473,7 +476,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
                             field.type === FilterType.SELECT
                         ) {
                             field.queries.forEach((query: FilterQuery) => {
-                                if (query.id === v) {
+                                if (
+                                    query.id.toLowerCase() === v.toLowerCase()
+                                ) {
                                     ffield.query = query;
                                     ffield.value = query.value;
                                 }
