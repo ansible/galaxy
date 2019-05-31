@@ -58,9 +58,18 @@ export class ToolBarPF extends React.Component<IProps, IState> {
             value: value,
         } as AppliedFilter;
 
-        const newFilters = this.state.filterConfig.appliedFilters.concat([
-            newFilter,
-        ]);
+        const newFilters = cloneDeep(this.state.filterConfig.appliedFilters);
+
+        if (field.type === 'select') {
+            for (let i = 0; i < newFilters.length; i++) {
+                if (newFilters[i].field.id === field.id) {
+                    newFilters.splice(i, 1);
+                }
+            }
+        }
+
+        newFilters.push(newFilter);
+
         const newConfig = cloneDeep(this.state.filterConfig);
 
         newConfig.appliedFilters = newFilters;
