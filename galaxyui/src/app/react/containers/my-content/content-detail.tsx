@@ -177,7 +177,11 @@ export class ContentDetailContainer extends React.Component<IProps, IState> {
         };
 
         for (const filter of this.appliedFilters) {
-            query[filter.field.id] = filter.value;
+            if (query[filter.field.id]) {
+                query[filter.field.id] += ' ' + filter.value.trim();
+            } else {
+                query[filter.field.id] = filter.value.trim();
+            }
         }
 
         query['order'] = this.sortBy;
