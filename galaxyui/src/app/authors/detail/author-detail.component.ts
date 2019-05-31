@@ -221,7 +221,25 @@ export class AuthorDetailComponent implements OnInit {
     filterChanged($event: FilterEvent): void {
         this.filterBy = {};
         if ($event.appliedFilters.length) {
+            const newApplied = [];
             $event.appliedFilters.forEach((filter: Filter) => {
+                if (filter.field.type !== 'select') {
+                    for (const val of filter.value.split(' ')) {
+                        if (val !== '') {
+                            newApplied.push({
+                                field: filter.field,
+                                value: val,
+                            });
+                        }
+                    }
+                } else {
+                    newApplied.push(filter);
+                }
+            });
+
+            this.filterConfig.appliedFilters = newApplied;
+
+            this.filterConfig.appliedFilters.forEach((filter: Filter) => {
                 if (filter.field.type === 'select') {
                     this.filterBy[filter.field.id] = filter.query.id.trim();
                 } else {

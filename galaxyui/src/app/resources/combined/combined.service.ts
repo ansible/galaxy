@@ -19,7 +19,7 @@ export class RepoCollectionListService extends ServiceBase {
         super(
             http,
             notificationService,
-            '/api/internal/ui/repos-and-collections',
+            '/api/internal/ui/repos-and-collections/',
             'collection',
         );
     }
