@@ -111,7 +111,7 @@ export class AuthorDetailComponent implements OnInit {
                 {
                     id: 'type',
                     title: 'Type',
-                    placeholder: 'Filter by Collection or Repository...',
+                    placeholder: 'Filter by Collection or Role...',
                     type: FilterType.SELECT,
                     queries: [
                         {
@@ -120,7 +120,7 @@ export class AuthorDetailComponent implements OnInit {
                         },
                         {
                             id: 'repository',
-                            value: 'Repository',
+                            value: 'Role',
                         },
                     ],
                 },
@@ -219,14 +219,23 @@ export class AuthorDetailComponent implements OnInit {
     }
 
     filterChanged($event: FilterEvent): void {
+        const newFilters = {};
         if ($event.appliedFilters.length) {
             $event.appliedFilters.forEach((filter: Filter) => {
                 if (filter.field.type === 'select') {
-                    this.filterBy[filter.field.id] = filter.query.id;
+                    this.filterBy[filter.field.id] = filter.query.id.trim();
                 } else {
-                    this.filterBy[filter.field.id] = filter.value;
+                    if (newFilters[filter.field.id]) {
+                        newFilters[filter.field.id] +=
+                            ' ' + filter.value.trim();
+                    } else {
+                        newFilters[filter.field.id] = filter.value.trim();
+                    }
                 }
             });
+            for (const k of Object.keys(newFilters)) {
+                this.filterBy[k] = newFilters[k];
+            }
         } else {
             this.filterBy = {};
         }
