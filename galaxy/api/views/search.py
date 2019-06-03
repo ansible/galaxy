@@ -77,7 +77,7 @@ class ContentSearchView(base.ListAPIView):
 
     def get_queryset(self):
         return (
-            models.Content.objects.distinct()
+            models.Content.objects
             .select_related(
                 'content_type',
                 'namespace',
@@ -221,8 +221,9 @@ class ContentSearchView(base.ListAPIView):
     def add_tags_filter(queryset, tags):
         if not tags:
             return queryset
-        return queryset.filter(
-            tags__in=models.Tag.objects.filter(name__in=tags))
+        tags_qs = models.Content.objects.only('pk').filter(
+            tags__name__in=tags)
+        return queryset.filter(pk__in=tags_qs)
 
     @staticmethod
     def add_namespaces_filter(queryset, namespaces):
@@ -236,16 +237,17 @@ class ContentSearchView(base.ListAPIView):
     def add_platforms_filter(queryset, platforms):
         if not platforms:
             return queryset
-        return queryset.filter(
-            platforms__in=models.Platform.objects.filter(name__in=platforms))
+        platforms_qs = models.Content.objects.only('pk').filter(
+            platforms__name__in=platforms)
+        return queryset.filter(pk__in=platforms_qs)
 
     @staticmethod
     def add_cloud_platforms_filter(queryset, cloud_platforms):
         if not cloud_platforms:
             return queryset
-        return queryset.filter(
-            cloud_platforms__in=models.CloudPlatform.objects.filter(
-                name__in=cloud_platforms))
+        cloud_qs = models.Content.objects.only('pk').filter(
+            cloud_platforms__name__in=cloud_platforms)
+        return queryset.filter(pk__in=cloud_qs)
 
     @staticmethod
     def add_keywords_filter(queryset, keywords):
