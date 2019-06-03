@@ -48,11 +48,11 @@ class RepoAndCollectionList(base.APIView):
                 detail='The namespace parameter is required')
 
         collection_filters = {
-            'namespace__name': namespace,
+            'namespace__name__iexact': namespace,
         }
 
         repo_filters = {
-            'provider_namespace__namespace__name': namespace
+            'provider_namespace__namespace__name__iexact': namespace
         }
 
         # Names are split by ' ' and then applied as an AND filter, so
@@ -160,10 +160,11 @@ class CombinedDetail(base.APIView):
 
         try:
             repo = models.Repository.objects.get(
-                provider_namespace__namespace__name=namespace,
-                name=name
+                provider_namespace__namespace__name__iexact=namespace,
+                name__iexact=name
             )
-            namespace_obj = models.Namespace.objects.get(name=namespace)
+            namespace_obj = models.Namespace.objects.get(
+                name__iexact=namespace)
             content = models.Content.objects.filter(
                 repository__name__iexact=name,
                 repository__provider_namespace__namespace__name__iexact=namespace # noqa
