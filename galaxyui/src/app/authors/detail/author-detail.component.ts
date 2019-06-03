@@ -111,7 +111,7 @@ export class AuthorDetailComponent implements OnInit {
                 {
                     id: 'type',
                     title: 'Type',
-                    placeholder: 'Filter by Collection or Repository...',
+                    placeholder: 'Filter by Collection or Role...',
                     type: FilterType.SELECT,
                     queries: [
                         {
@@ -120,7 +120,7 @@ export class AuthorDetailComponent implements OnInit {
                         },
                         {
                             id: 'repository',
-                            value: 'Repository',
+                            value: 'Role',
                         },
                     ],
                 },
@@ -219,16 +219,38 @@ export class AuthorDetailComponent implements OnInit {
     }
 
     filterChanged($event: FilterEvent): void {
+        this.filterBy = {};
         if ($event.appliedFilters.length) {
+            const newApplied = [];
             $event.appliedFilters.forEach((filter: Filter) => {
-                if (filter.field.type === 'select') {
-                    this.filterBy[filter.field.id] = filter.query.id;
+                if (filter.field.type !== 'select') {
+                    for (const val of filter.value.split(' ')) {
+                        if (val !== '') {
+                            newApplied.push({
+                                field: filter.field,
+                                value: val,
+                            });
+                        }
+                    }
                 } else {
-                    this.filterBy[filter.field.id] = filter.value;
+                    newApplied.push(filter);
                 }
             });
-        } else {
-            this.filterBy = {};
+
+            this.filterConfig.appliedFilters = newApplied;
+
+            this.filterConfig.appliedFilters.forEach((filter: Filter) => {
+                if (filter.field.type === 'select') {
+                    this.filterBy[filter.field.id] = filter.query.id.trim();
+                } else {
+                    if (this.filterBy[filter.field.id]) {
+                        this.filterBy[filter.field.id] +=
+                            ' ' + filter.value.trim();
+                    } else {
+                        this.filterBy[filter.field.id] = filter.value.trim();
+                    }
+                }
+            });
         }
         this.pageNumber = 1;
         this.searchRepositories();

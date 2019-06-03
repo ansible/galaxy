@@ -69,7 +69,7 @@ class CollectionSearch(BaseSearch):
 
     def count(self):
         """Returns number of matching collections."""
-        return self._base_queryset().count()
+        return self._base_queryset().only('pk').count()
 
     def search(self):
         qs = self._base_queryset().select_related('latest_version')
@@ -104,8 +104,9 @@ class CollectionSearch(BaseSearch):
 
         tags = self.filters.get('tags')
         if tags:
-            tags_qs = models.Tag.objects.filter(name__in=tags)
-            qs = qs.distinct().filter(tags__in=tags_qs)
+            tags_qs = models.Collection.objects.only('pk').filter(
+                tags__name__in=tags)
+            qs = qs.filter(pk__in=tags_qs)
 
         deprecated = self.filters.get('deprecated')
         if deprecated is not None:
@@ -197,7 +198,7 @@ class ContentSearch(BaseSearch):
 
     def count(self):
         """Returns number of matching content items."""
-        return self._base_queryset().count()
+        return self._base_queryset().only('pk').count()
 
     def search(self):
         qs = self._base_queryset().select_related(
@@ -247,8 +248,9 @@ class ContentSearch(BaseSearch):
 
         tags = self.filters.get('tags')
         if tags:
-            tags_qs = models.Tag.objects.filter(name__in=tags)
-            qs = qs.distinct().filter(tags__in=tags_qs)
+            tags_qs = models.Content.objects.only('pk').filter(
+                tags__name__in=tags)
+            qs = qs.filter(pk__in=tags_qs)
 
         deprecated = self.filters.get('deprecated')
         if deprecated is not None:
@@ -256,15 +258,15 @@ class ContentSearch(BaseSearch):
 
         platforms = self.filters.get('platforms')
         if platforms:
-            platforms_qs = models.Platform.objects.filter(
-                name__in=platforms)
-            qs = qs.distinct().filter(platforms__in=platforms_qs)
+            platforms_qs = models.Content.objects.only('pk').filter(
+                platforms__name__in=platforms)
+            qs = qs.filter(pk__in=platforms_qs)
 
         clouds = self.filters.get('cloud_platforms')
         if clouds:
-            clouds_qs = models.CloudPlatform.objects.filter(
-                name__in=clouds)
-            qs = qs.distinct().filter(cloud_platforms__in=clouds_qs)
+            cloud_qs = models.Content.objects.only('pk').filter(
+                cloud_platforms__name__in=clouds)
+            qs = qs.filter(pk__in=cloud_qs)
 
         return qs
 
