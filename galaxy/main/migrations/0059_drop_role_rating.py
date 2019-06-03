@@ -4,7 +4,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0058_stargazer_role_not_null'),
+        ('main', 'v2_4_0'),
     ]
 
     operations = [
