@@ -35,8 +35,10 @@
                     [itemTemplate]="itemTemplate"
                     (onActionSelect)="handleListAction($event)">
                     <ng-template #itemTemplate let-item="item">
-                        <div class="list-pf-left">
-                            <span class="fa fa-folder-o list-pf-icon list-pf-icon-bordered list-pf-icon-small"></span>
+                        <div class="list-pf-left center-icon">
+                            <div>
+                                <span class="fa fa-folder-o list-pf-icon list-pf-icon-bordered list-pf-icon-small"></span>
+                            </div>
                         </div>
                         <div class="list-pf-content-wrapper">
                             <div class="list-pf-main-content">
