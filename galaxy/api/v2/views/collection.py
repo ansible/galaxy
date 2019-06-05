@@ -103,6 +103,7 @@ class CollectionListView(base.APIView):
         namespace = self._get_namespace(data)
         self._check_namespace_access(namespace, request.user)
         self._check_role_name_conflict(namespace, filename.name)
+        self._check_multi_repo_name_conflict(namespace, filename.name)
         self._check_version_conflict(namespace, filename)
         self._check_is_tarfile(request.data['file'].file.name)
 
@@ -163,6 +164,22 @@ class CollectionListView(base.APIView):
             'already exists, please use a different name for the collection, '
             'or delete the role, '
             'or rename the role via the meta/main.yml role_name attribute'
+        )
+
+    def _check_multi_repo_name_conflict(self, ns, name):
+        multi_content_repos = models.Repository.objects.filter(
+            format='multi',
+            provider_namespace__namespace=ns,
+            name__iexact=name,
+        )
+        if not multi_content_repos:
+            return
+        raise RepositoryNameError(
+            f'A multi-content repo ({ns.name}.{name}) under the '
+            f'namespace {ns.name} already exists. '
+            'Multi-content repos are deprecated in favor of collections. '
+            'You can delete the multi-content repo and '
+            're-import the collection.'
         )
 
     def _check_version_conflict(self, namespace, filename):
