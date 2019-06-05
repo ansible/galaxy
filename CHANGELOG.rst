@@ -1,8 +1,21 @@
 Ansible Galaxy Changes by Release
 =================================
 
-3.2 - Released 3-Jun-2019
--------------------------
+3.2.1 - Released 5-Jun-2019
+---------------------------
+
+Changes
+```````
+- Perform case insensitive namespace lookups. Issue `1879 <https://github.com/ansible/galaxy/issues/1879>`_.
+- Fix legacy search API performance deficiencies. Issue `1876 <https://github.com/ansible/galaxy/issues/1876>`_. 
+
+Closed PRs
+``````````
+- `1878 Fix inefficient queries in legacy search API <https://github.com/ansible/galaxy/pull/1878>`_.
+- `1880 Make combined API perform case insensitive lookups <https://github.com/ansible/galaxy/pull/1880>`_.
+
+3.2.0 - Released 3-Jun-2019
+---------------------------
 
 Changes
 ```````
