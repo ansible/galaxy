@@ -23,6 +23,7 @@ from django.db.models.expressions import Func, F, Case, When, Value, \
     ExpressionWrapper as Expr, RawSQL
 from django.db.models.functions.comparison import Coalesce
 from django.db.models.query_utils import Q
+from django.db.models.aggregates import Count
 
 from galaxy import constants
 from galaxy.main import models
@@ -102,10 +103,15 @@ class CollectionSearch(BaseSearch):
             filters = [Q(name__icontains=name) for name in names]
             qs = qs.filter(functools.reduce(operator.or_, filters))
 
-        tags = self.filters.get('tags')
+        # AND tags
+        tags = set(self.filters.get('tags') or [])
         if tags:
-            tags_qs = models.Collection.objects.only('pk').filter(
-                tags__name__in=tags)
+            tags_qs = (
+                models.Collection.objects.only('pk')
+                .filter(tags__name__in=tags)
+                .annotate(cnt=Count('tags__id'))
+                .filter(cnt=len(tags))
+            )
             qs = qs.filter(pk__in=tags_qs)
 
         deprecated = self.filters.get('deprecated')
@@ -246,27 +252,42 @@ class ContentSearch(BaseSearch):
             filters = [Q(name__icontains=name) for name in names]
             qs = qs.filter(functools.reduce(operator.or_, filters))
 
-        tags = self.filters.get('tags')
+        # AND tags
+        tags = set(self.filters.get('tags') or [])
         if tags:
-            tags_qs = models.Content.objects.only('pk').filter(
-                tags__name__in=tags)
+            tags_qs = (
+                models.Content.objects.only('pk')
+                .filter(tags__name__in=tags)
+                .annotate(cnt=Count('tags__id'))
+                .filter(cnt=len(tags))
+            )
             qs = qs.filter(pk__in=tags_qs)
 
         deprecated = self.filters.get('deprecated')
         if deprecated is not None:
             qs = qs.filter(repository__deprecated=deprecated)
 
-        platforms = self.filters.get('platforms')
+        # AND platforms
+        platforms = set(self.filters.get('platforms') or [])
         if platforms:
-            platforms_qs = models.Content.objects.only('pk').filter(
-                platforms__name__in=platforms)
+            platforms_qs = (
+                models.Content.objects.order_by().only('pk')
+                .filter(platforms__name__in=platforms)
+                .annotate(cnt=Count('platforms__name', distinct=True))
+                .filter(cnt=len(platforms))
+            )
             qs = qs.filter(pk__in=platforms_qs)
 
-        clouds = self.filters.get('cloud_platforms')
+        # AND clouds
+        clouds = set(self.filters.get('cloud_platforms') or [])
         if clouds:
-            cloud_qs = models.Content.objects.only('pk').filter(
-                cloud_platforms__name__in=clouds)
-            qs = qs.filter(pk__in=cloud_qs)
+            clouds_qs = (
+                models.Content.objects.only('pk')
+                .filter(cloud_platforms__name__in=clouds)
+                .annotate(cnt=Count('cloud_platforms__id'))
+                .filter(cnt=len(clouds))
+            )
+            qs = qs.filter(pk__in=clouds_qs)
 
         return qs
 
