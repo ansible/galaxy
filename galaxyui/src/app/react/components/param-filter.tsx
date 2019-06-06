@@ -21,6 +21,9 @@ interface IProps {
     params: Object;
     count: number;
     orderParam?: string;
+    // This gives you the choice of whether or not to use the patternfly toolbar
+    // wrapper, which adds a lot of annoying styling
+    usePFToolbar?: boolean;
     updateParams: (params) => void;
 }
 
@@ -32,6 +35,7 @@ interface IState {
 export class ParamFilter extends React.Component<IProps, IState> {
     static defaultProps = {
         orderParam: 'order_by',
+        usePFToolbar: true,
     };
     constructor(props) {
         super(props);
@@ -144,7 +148,13 @@ export class ParamFilter extends React.Component<IProps, IState> {
     }
 
     render() {
-        const { count, filterFields, sortFields, params } = this.props;
+        const {
+            count,
+            filterFields,
+            sortFields,
+            params,
+            usePFToolbar,
+        } = this.props;
 
         // Derive the child configurations from the params object
         const appliedFilters = this.paramsToAppliedFilters(params);
@@ -166,32 +176,48 @@ export class ParamFilter extends React.Component<IProps, IState> {
             } as SortConfig;
         }
 
-        return (
-            <Toolbar>
-                {filterConfig ? (
-                    <FilterPF
-                        filterConfig={filterConfig}
-                        addFilter={(v, f) => this.addFilter(v, f)}
-                        updateParent={state => this.updateFromFilter(state)}
-                        value={this.state.filterValue}
-                        field={this.state.selectedFilter}
-                    />
-                ) : null}
+        const filterCom = filterConfig ? (
+            <FilterPF
+                filterConfig={filterConfig}
+                addFilter={(v, f) => this.addFilter(v, f)}
+                updateParent={state => this.updateFromFilter(state)}
+                value={this.state.filterValue}
+                field={this.state.selectedFilter}
+            />
+        ) : null;
 
-                {sortConfig ? (
-                    <SortPF
-                        config={sortConfig}
-                        onSortChange={x => this.onSortChange(x)}
-                    />
-                ) : null}
+        const sortCom = sortConfig ? (
+            <SortPF
+                config={sortConfig}
+                onSortChange={x => this.onSortChange(x)}
+            />
+        ) : null;
 
-                <ToolBarResultsPF
-                    numberOfResults={count}
-                    appliedFilters={appliedFilters}
-                    removeFilter={i => this.removeFilter(i)}
-                    removeAllFilters={() => this.removeAllFilters()}
-                />
-            </Toolbar>
+        const resultCom = (
+            <ToolBarResultsPF
+                numberOfResults={count}
+                appliedFilters={appliedFilters}
+                removeFilter={i => this.removeFilter(i)}
+                removeAllFilters={() => this.removeAllFilters()}
+            />
         );
+
+        if (usePFToolbar) {
+            return (
+                <Toolbar>
+                    {filterCom}
+                    {sortCom}
+                    {resultCom}
+                </Toolbar>
+            );
+        } else {
+            return (
+                <div>
+                    {filterCom}
+                    {sortCom}
+                    {resultCom}
+                </div>
+            );
+        }
     }
 }

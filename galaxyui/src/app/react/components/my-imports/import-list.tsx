@@ -87,6 +87,7 @@ export class ImportListComponent extends React.Component<IProps, IState> {
                     filterFields={this.filterFields}
                     params={queryParams}
                     count={numberOfResults}
+                    usePFToolbar={false}
                     updateParams={x => this.props.setQueryParams(x)}
                 />
 
