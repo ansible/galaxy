@@ -59,7 +59,7 @@ class Collection(mixins.TimestampsMixin, models.Model):
     # References
     latest_version = models.ForeignKey(
         'CollectionVersion',
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         related_name='+',
         null=True,
     )
@@ -76,6 +76,9 @@ class Collection(mixins.TimestampsMixin, models.Model):
         indexes = [
             psql_indexes.GinIndex(fields=['search_vector'])
         ]
+
+    def __str__(self):
+        return '{}.{}'.format(self.namespace.name, self.name)
 
     def inc_download_count(self):
         Collection.objects.filter(pk=self.pk).update(
@@ -113,7 +116,7 @@ class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
 
     # References
     collection = models.ForeignKey(
-        Collection, on_delete=models.PROTECT, related_name='versions')
+        Collection, on_delete=models.CASCADE, related_name='versions')
     _parent_ref = models.OneToOneField(
         pulp_models.Content, on_delete=models.CASCADE,
         parent_link=True, db_column='id'

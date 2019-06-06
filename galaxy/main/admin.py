@@ -39,6 +39,22 @@ class ContentBlockAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(models.Tag)
+class TagAdmin(admin.ModelAdmin):
+    search_fields = ('name', )
+
+
+@admin.register(models.Namespace)
+class NamespaceAdmin(admin.ModelAdmin):
+    autocomplete_fields = ('owners', )
+
+
+@admin.register(models.Collection)
+class CollectionAdmin(admin.ModelAdmin):
+    exclude = ('search_vector', )
+    autocomplete_fields = ('tags', )
+
+
 admin.site.register(models.Platform, PlatformAdmin)
 admin.site.register(models.CloudPlatform, CloudPlatformAdmin)
 admin.site.register(models.Content, RoleAdmin)
