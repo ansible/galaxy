@@ -3,10 +3,10 @@ import { cloneDeep } from 'lodash';
 export class ParamHelper {
     // Helper class for managing param object.
     // Param object is just a dictionary of lists where the keys map to
-    // parameter names that contain a list of values for the given parameter
+    // parameter names that contain a value or list of values
     static setParam(p, key, value) {
         const params = cloneDeep(p);
-        params[key] = [value];
+        params[key] = value;
 
         return params;
     }
@@ -14,9 +14,13 @@ export class ParamHelper {
     static appendParam(p, key, value) {
         const params = cloneDeep(p);
         if (params[key]) {
-            params[key].push(value);
+            if (Array.isArray(params[key])) {
+                params[key].push(value);
+            } else {
+                params[key] = [params[key], value];
+            }
         } else {
-            params[key] = [value];
+            params[key] = value;
         }
 
         return params;
@@ -24,7 +28,7 @@ export class ParamHelper {
 
     static deleteParam(p, key, value?) {
         const params = cloneDeep(p);
-        if (value && params[key].length > 1) {
+        if (value && Array.isArray(params[key]) && params[key].length > 1) {
             const i = params[key].indexOf(value);
             if (i !== -1) {
                 params[key].splice(i, 1);

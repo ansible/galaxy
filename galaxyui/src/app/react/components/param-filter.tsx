@@ -20,7 +20,7 @@ interface IProps {
     sortFields?: SortFieldOption[];
     params: Object;
     count: number;
-    orderParam: string;
+    orderParam?: string;
     updateParams: (params) => void;
 }
 
@@ -29,8 +29,10 @@ interface IState {
     filterValue: string;
 }
 
-export class ToolBarPF extends React.Component<IProps, IState> {
-    static defaultProps;
+export class ParamFilter extends React.Component<IProps, IState> {
+    static defaultProps = {
+        orderParam: 'order_by',
+    };
     constructor(props) {
         super(props);
         this.state = {
@@ -58,13 +60,20 @@ export class ToolBarPF extends React.Component<IProps, IState> {
     }
 
     private removeFilter(filter: AppliedFilter) {
-        this.props.updateParams(
-            ParamHelper.deleteParam(
-                this.props.params,
-                filter.field.id,
-                filter.value,
-            ),
-        );
+        let newValue = this.state.filterValue;
+        if (filter.field.id === this.state.selectedFilter.id) {
+            newValue = '';
+        }
+
+        this.setState({ filterValue: newValue }, () => {
+            this.props.updateParams(
+                ParamHelper.deleteParam(
+                    this.props.params,
+                    filter.field.id,
+                    filter.value,
+                ),
+            );
+        });
     }
 
     private removeAllFilters() {
@@ -73,7 +82,9 @@ export class ToolBarPF extends React.Component<IProps, IState> {
             delete params[field.id];
         }
 
-        this.props.updateParams(params);
+        this.setState({ filterValue: '' }, () => {
+            this.props.updateParams(params);
+        });
     }
 
     private updateFromFilter(state) {
