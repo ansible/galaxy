@@ -154,21 +154,21 @@
             </div>
 
             <div class="row detail">
-                <div class="col-sm-3"
+                <div class="col-lg-3"
                     *ngIf="repoContent && repoContent['hasPlatforms']">
                     <card-platforms [platforms]="repoContent['platforms']"></card-platforms>
                 </div>
-                <div class="col-sm-3"
+                <div class="col-lg-3"
                     *ngIf="repoContent && repoContent['hasVersions']">
                     <card-versions [versions]="repoContent['versions']"></card-versions>
                 </div>
-                <div class="col-sm-3"
+                <div class="col-lg-3"
                     *ngIf="repoContent && repoContent['hasCloudPlatforms']">
                     <card-cloud-platforms
                         [cloudPlatforms]="repoContent['cloud_platforms']">
                     </card-cloud-platforms>
                 </div>
-                <div class="col-sm-3"
+                <div class="col-lg-3"
                     *ngIf="repoContent && repoContent['hasDependencies']">
                     <card-dependencies
                         [dependencies]="repoContent['dependencies']">
