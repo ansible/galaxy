@@ -49,5 +49,20 @@ export class ParamHelper {
         }
     }
 
-    static getQueryString(params) {}
+    static getQueryString(params) {
+        let paramString = '';
+        for (const key of Object.keys(params)) {
+            if (Array.isArray(params[key])) {
+                for (const val of params[key]) {
+                    paramString += key + '=' + val + '&';
+                }
+            } else {
+                paramString += key + '=' + params[key] + '&';
+            }
+        }
+
+        // Remove trailing '&'
+        paramString = paramString.substring(0, paramString.length - 1);
+        return paramString;
+    }
 }
