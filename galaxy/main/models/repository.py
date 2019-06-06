@@ -175,7 +175,10 @@ class RepositoryVersion(BaseModel):
 
     def __str__(self):
         return "{}.{}-{}".format(
-            self.content.namespace, self.content.name, self.version)
+            self.repository.provider_namespace.name,
+            self.repository.name,
+            self.version
+        )
 
 
 class RepositorySurvey(SurveyBase):
