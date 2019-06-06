@@ -128,6 +128,13 @@ class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
             'version',
         )
 
+    def __str__(self):
+        return '{}.{}-{}'.format(
+            self.collection.namespace.name,
+            self.collection.name,
+            self.version
+        )
+
     def get_content_artifact(self) -> pulp_models.ContentArtifact:
         """Returns a ContentArtifact object related to collection version."""
         return pulp_models.ContentArtifact.objects.filter(content=self).first()

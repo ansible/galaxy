@@ -58,3 +58,4 @@ class NamespaceAdmin(admin.ModelAdmin):
 class CollectionAdmin(admin.ModelAdmin):
     exclude = ('search_vector', )
     autocomplete_fields = ('tags', )
+    readonly_fields = ('latest_version', )
