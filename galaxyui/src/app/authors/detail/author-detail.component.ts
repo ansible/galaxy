@@ -86,6 +86,7 @@ export class AuthorDetailComponent implements OnInit {
     sortBy = 'name';
     isFollower = false;
     followerClass = 'fa fa-user-plus';
+    maxDescriptionLength = 150;
 
     preferences: UserPreferences = null;
 
