@@ -35,13 +35,15 @@
                     [itemTemplate]="itemTemplate"
                     (onActionSelect)="handleListAction($event)">
                     <ng-template #itemTemplate let-item="item">
-                        <div class="list-pf-left">
-                            <span class="fa fa-folder-o list-pf-icon list-pf-icon-bordered list-pf-icon-small"></span>
+                        <div class="list-pf-left center-icon">
+                            <div>
+                                <span class="fa fa-folder-o list-pf-icon list-pf-icon-bordered list-pf-icon-small"></span>
+                            </div>
                         </div>
                         <div class="list-pf-content-wrapper">
                             <div class="list-pf-main-content">
                                 <div class="list-pf-title">{{item.name}}</div>
-                                <div class="list-pf-description text-overflow-pf">{{item.description }}</div>
+                                <div class="list-pf-description">{{item.description }}</div>
                             </div>
                             <div class="list-pf-additional-content">
                                 <pfng-list-expand-toggle [expandId]="'owners'" [item]="item" [template]="ownersTemplate">
