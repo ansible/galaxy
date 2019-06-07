@@ -13,10 +13,14 @@
                             </tr>
                         </table>
                     </div>
-                    <div class="namespace-bio text-overflow-pf">
+                    <div class="namespace-bio">
                         <p class="name">{{ namespace.name }}</p>
-                        <p>{{ namespace.description }}</p>
-                        <p *ngIf="namespace.company">{{ namespace.company }}</p>
+                        <div class="description">
+                            {{
+                                namespace.description.length > maxDescriptionLength ? (namespace.description | slice:0:maxDescriptionLength) + '...' : namespace.description}}
+                            <div class="fade-out"></div>
+                        </div>
+                        <p *ngIf="namespace.company"><i class="fa fa-building"></i> {{ namespace.company }}</p>
                         <p *ngIf="namespace.location"><i class="fa fa-map-marker"></i> {{ namespace.location }}</p>
                         <p *ngIf="namespace.email">
                             <a [appLogEvent]='namespace.email' [href]="'mailto:'+ namespace.email" tooltip="Send an email">
