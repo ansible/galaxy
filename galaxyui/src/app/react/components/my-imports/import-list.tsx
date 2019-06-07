@@ -9,16 +9,14 @@ import {
     ListView,
     ListViewItem,
     EmptyState,
-    Paginator,
 } from 'patternfly-react';
 
 import { FilterOption } from '../../shared-types/pf-toolbar';
-
 import { ParamFilter } from '../param-filter';
-
 import { PulpStatus } from '../../../enums/import-state.enum';
-
 import { cloneDeep } from 'lodash';
+
+import { ParamPaginator } from '../param-paginator';
 
 interface IProps {
     namespaces: Namespace[];
@@ -100,16 +98,10 @@ export class ImportListComponent extends React.Component<IProps, IState> {
                     )}
                 </div>
 
-                <Paginator
-                    viewType={'list'}
-                    pagination={{
-                        page: pageNumber,
-                        perPage: pageSize,
-                        perPageOptions: [10, 20, 40, 80, 100],
-                    }}
-                    itemCount={numberOfResults}
-                    onPageSet={i => this.setPageNumber(i)}
-                    onPerPageSelect={i => this.setPageSize(i)}
+                <ParamPaginator
+                    params={queryParams}
+                    count={numberOfResults}
+                    updateParams={x => this.props.setQueryParams(x)}
                 />
             </div>
         );
