@@ -137,7 +137,8 @@ export class ContentHeaderComponent implements OnInit {
             iconClass: 'pficon-repository',
             tooltip: 'Collection',
             name: this.collection.name,
-            description: this.collection.latest_version.metadata.description,
+            description:
+                this.collection.latest_version.metadata.description || '',
             downloadCount: this.collection.download_count,
             formatType: 'Collection',
             deprecated: this.collection.deprecated,
