@@ -87,16 +87,19 @@ export class ToolBarPF extends React.Component<IProps, IState> {
         );
     }
 
-    removeFilter(index) {
+    removeFilter(removed) {
         const newConfig = cloneDeep(this.state.filterConfig);
-        const removed = newConfig.appliedFilters[index.index];
 
         let newValue = this.state.filterValue;
         if (removed.field.id === this.state.selectedFilter.id) {
             newValue = '';
         }
 
-        newConfig.appliedFilters.splice(index.index, 1);
+        const index = this.state.filterConfig.appliedFilters.findIndex(
+            x => x.field.id === removed.field.id && x.value === removed.value,
+        );
+
+        newConfig.appliedFilters.splice(index, 1);
 
         this.setState({ filterConfig: newConfig, filterValue: newValue }, () =>
             this.props.onFilterChange({

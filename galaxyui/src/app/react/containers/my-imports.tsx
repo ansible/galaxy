@@ -21,6 +21,8 @@ import { ImportListComponent } from '../components/my-imports/import-list';
 import { PageHeader } from '../components/page-header';
 import { ImportConsoleComponent } from '../components/my-imports/import-console';
 
+import { ParamHelper } from '../lib/param-helper';
+
 interface IProps {
     injector: Injector;
     namespaces: Namespace[];
@@ -139,15 +141,10 @@ export class MyImportsPage extends React.Component<IProps, IState> {
             const params = newState.queryParams || this.state.queryParams;
             const ns = newState.selectedNS || this.state.selectedNS;
 
-            let paramString = '';
-            for (const key of Object.keys(params)) {
-                paramString += key + '=' + params[key] + '&';
-            }
-
-            // Remove trailing '&'
-            paramString = paramString.substring(0, paramString.length - 1);
-
-            this.location.replaceState(`my-imports/${ns.id}`, paramString);
+            this.location.replaceState(
+                `my-imports/${ns.id}`,
+                ParamHelper.getQueryString(params),
+            );
         }
     }
 
