@@ -32,7 +32,7 @@ all: docs
 
 docs: clean htmldocs
 
-generate_rst: staticmin
+generate_rst:
 
 htmldocs: generate_rst
 	CPUS=$(CPUS) $(MAKE) -f Makefile.sphinx html
@@ -63,9 +63,6 @@ clean:
 	@echo "Cleaning up generated rst"
 
 .PHONY: docs clean
-
-staticmin:
-	cat _themes/srtd/static/css/theme.css | sed -e 's/^[ 	]*//g; s/[ 	]*$$//g; s/\([:{;,]\) /\1/g; s/ {/{/g; s/\/\*.*\*\///g; /^$$/d' | sed -e :a -e '$$!N; s/\n\(.\)/\1/; ta' > _themes/srtd/static/css/theme.min.css
 
 epub:
 	(CPUS=$(CPUS) $(MAKE) -f Makefile.sphinx epub)
