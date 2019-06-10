@@ -17,9 +17,6 @@ class Migration(migrations.Migration):
     dependencies = [
         ('main', '0090_issue_tracker_url')
     ]
-    replaces = [
-        ('main', '0091_remove_customuser_github_user'),
-    ]
 
     operations = [
         migrations.AlterField(
