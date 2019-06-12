@@ -44,19 +44,19 @@ def user_logged_in_handler(request, user, **kwargs):
     sanitized_username = username.lower().replace('-', '_')
 
     try:
-        namespace = models.ProviderNamespace.objects.get(name=username)
+        models.ProviderNamespace.objects.get(name=username)
         return
     except models.ProviderNamespace.DoesNotExist:
-        namespace = None
+        pass
 
-    # User is not associated with any Namespaces, so we'll attempt
-    # to create one, along with associated Provider Namespaces.
-    provider = models.Provider.objects.get(name__iexact="github")
+    # User is not associated with any Provider Namespaces, so we'll attempt
+    # to create one, along with associated Namespace.
 
     # if name doesn't exist, set it to login
     name = social.extra_data.get('name') or username
 
     defaults = {
+        'name': sanitized_username,
         'description': name,
         'avatar_url': social.extra_data.get('avatar_url'),
         'location': social.extra_data.get('location'),
@@ -64,15 +64,19 @@ def user_logged_in_handler(request, user, **kwargs):
         'email': None,
         'html_url': social.extra_data.get('blog'),
     }
-    if not namespace:
-        # Only create one Namespace
-        namespace, _ = models.Namespace.objects.get_or_create(
-            name=sanitized_username, defaults=defaults)
-        namespace.owners.add(user)
+
+    # Create lowercase namespace if case insensitive get does not find match
+    namespace, _ = models.Namespace.objects.get_or_create(
+        name__iexact=sanitized_username, defaults=defaults)
+
+    namespace.owners.add(user)
+
+    defaults.pop('name')
     defaults['description'] = social.extra_data.get('bio') or name
     defaults['followers'] = social.extra_data.get('followers')
     defaults['display_name'] = name
-    defaults['avatar_url'] = social.extra_data.get('avatar_url')
+    provider = models.Provider.objects.get(name__iexact="github")
+
     models.ProviderNamespace.objects.get_or_create(
         namespace=namespace, name=username, provider=provider,
         defaults=defaults)
