@@ -1,6 +1,21 @@
 Ansible Galaxy Changes by Release
 =================================
 
+3.2.2 - Released 7-Jun-2019
+---------------------------
+
+Changes
+```````
+- Platforms card is too narrow with reduced-width window. Issue `1740 <https://github.com/ansible/galaxy/issues/1740>`_.
+- Partially visible personal information. Issue `1826 <https://github.com/ansible/galaxy/issues/1826>`_. 
+- Prevents importing a collection with a name that conflicts with a multi-content repository name.
+
+Closed PRs
+``````````
+- `1895 Set columns to large on content detail cards <https://github.com/ansible/galaxy/pull/1895>`_.
+- `1897 Check collection name conflict with multi-content repo name  <https://github.com/ansible/galaxy/pull/1897>`_.
+- `1889 Improve handling of long namespace descriptions <https://github.com/ansible/galaxy/pull/1889>`_.
+
 3.2.1 - Released 5-Jun-2019
 ---------------------------
 
