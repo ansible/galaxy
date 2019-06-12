@@ -43,11 +43,8 @@ def user_logged_in_handler(request, user, **kwargs):
     username = social.extra_data.get('login')
     sanitized_username = username.lower().replace('-', '_')
 
-    try:
-        models.ProviderNamespace.objects.get(name=username)
+    if models.ProviderNamespace.objects.filter(name=username).exists():
         return
-    except models.ProviderNamespace.DoesNotExist:
-        pass
 
     # User is not associated with any Provider Namespaces, so we'll attempt
     # to create one, along with associated Namespace.
@@ -56,7 +53,6 @@ def user_logged_in_handler(request, user, **kwargs):
     name = social.extra_data.get('name') or username
 
     defaults = {
-        'name': sanitized_username,
         'description': name,
         'avatar_url': social.extra_data.get('avatar_url'),
         'location': social.extra_data.get('location'),
@@ -65,21 +61,25 @@ def user_logged_in_handler(request, user, **kwargs):
         'html_url': social.extra_data.get('blog'),
     }
 
+    ns_defaults = {'name': sanitized_username, **defaults}
+
     # Create lowercase namespace if case insensitive get does not find match
     namespace, _ = models.Namespace.objects.get_or_create(
-        name__iexact=sanitized_username, defaults=defaults)
+        name__iexact=sanitized_username, defaults=ns_defaults)
 
     namespace.owners.add(user)
 
-    defaults.pop('name')
-    defaults['description'] = social.extra_data.get('bio') or name
-    defaults['followers'] = social.extra_data.get('followers')
-    defaults['display_name'] = name
+    provider_ns_defaults = {
+        'description': social.extra_data.get('bio') or name,
+        'followers': social.extra_data.get('followers'),
+        'display_name': name,
+        **defaults,
+    }
     provider = models.Provider.objects.get(name__iexact="github")
 
     models.ProviderNamespace.objects.get_or_create(
         namespace=namespace, name=username, provider=provider,
-        defaults=defaults)
+        defaults=provider_ns_defaults)
 
 
 @receiver(post_save, sender=models.ImportTask)
