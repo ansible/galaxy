@@ -63,9 +63,13 @@ def user_logged_in_handler(request, user, **kwargs):
 
     ns_defaults = {'name': sanitized_username, **defaults}
 
-    # Create lowercase namespace if case insensitive get does not find match
-    namespace, _ = models.Namespace.objects.get_or_create(
-        name__iexact=sanitized_username, defaults=ns_defaults)
+    # Create lowercase namespace if case insensitive search does not find match
+    qs = models.Namespace.objects.filter(
+        name__iexact=sanitized_username).order_by('name')
+    if qs.exists():
+        namespace = qs[0]
+    else:
+        namespace = models.Namespace.objects.create(**ns_defaults)
 
     namespace.owners.add(user)
 

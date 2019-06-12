@@ -85,3 +85,28 @@ class TestNoDuplicateNamespace(TestCase):
         assert self.user.namespaces.all().count() == 2
         new_ns = models.Namespace.objects.get(name__iexact=NAME_MIXED + '2')
         assert new_ns.name.islower()
+
+    def test_already_duplicate_ns_no_additional_ns(self):
+        dup_ns = models.Namespace.objects.create(name=NAME_MIXED.lower())
+        dup_ns.owners.add(self.user)
+        auth_models.SocialAccount.objects.create(
+            provider='github', user=self.user, extra_data={
+                'avatar_url': '',
+                'login': NAME_UPPER,
+            })
+
+        assert models.ProviderNamespace.objects.filter(
+            name__iexact=NAME_MIXED).count() == 1
+        assert models.Namespace.objects.filter(
+            name__iexact=NAME_MIXED).count() == 2
+
+        handlers.user_logged_in_handler(request=None, user=self.user)
+
+        assert models.ProviderNamespace.objects.filter(
+            name__iexact=NAME_MIXED).count() == 2
+        assert models.Namespace.objects.filter(
+            name__iexact=NAME_MIXED).count() == 2
+
+        new_provider_ns = models.ProviderNamespace.objects.get(
+            name=NAME_UPPER)
+        assert new_provider_ns.namespace.name.islower()
