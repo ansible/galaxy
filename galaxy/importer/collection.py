@@ -17,7 +17,6 @@
 
 import os
 import logging
-import json
 
 import semantic_version
 
@@ -26,7 +25,6 @@ from galaxy.importer.utils import readme as readmeutils
 from galaxy.importer.finders import FileSystemFinder
 from galaxy.importer import loaders
 from galaxy.importer import exceptions as exc
-from galaxy.main.models import Platform
 
 
 default_logger = logging.getLogger(__name__)
@@ -37,23 +35,6 @@ ALLOWED_TYPES = ['text/markdown', 'text/x-rst']
 def import_collection(directory, filename, logger=None):
     logger = logger or default_logger
     return CollectionLoader(directory, filename, logger=logger).load()
-
-
-class _ContentJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        try:
-            return json.JSONEncoder.default(self, obj)
-        except TypeError:
-            pass
-
-        if isinstance(obj, Platform):
-            return {'name': obj.name.lower(),
-                    'release': obj.release.lower()}
-
-        try:
-            return obj.name.lower()
-        except AttributeError:
-            return str(obj).lower()
 
 
 class CollectionLoader(object):
@@ -75,8 +56,7 @@ class CollectionLoader(object):
 
         found_contents = self._find_contents()
         loader_contents = list(self._load_contents(found_contents))
-        serialized_contents = self._serialize_contents(loader_contents)
-        self.contents = self._get_subset_contents(serialized_contents)
+        self.contents = loader_contents
 
         quality_score = self._get_collection_quality_score()
 
@@ -169,35 +149,6 @@ class CollectionLoader(object):
             self.log.info(' ')
 
             yield content
-
-    def _serialize_contents(self, loader_contents):
-        """Serialize into json content objects with nested objects"""
-
-        serialized_contents = []
-        for content in loader_contents:
-            data = json.dumps(content.__dict__, cls=_ContentJSONEncoder)
-            serialized_contents.append(json.loads(data))
-
-        return serialized_contents
-
-    def _get_subset_contents(self, full_contents):
-        """Return subset of content fields for storage in a collection"""
-
-        content_keys = ['name', 'content_type', 'description',
-                        'scores', 'metadata', 'role_meta']
-        role_meta_keys = ['author', 'company', 'licenese',
-                          'min_ansible_version', 'dependencies',
-                          'tags', 'platforms', 'cloud_platforms']
-
-        subset_contents = []
-        for content in full_contents:
-            data = {k: content.get(k, None) for k in content_keys}
-            if data['role_meta']:
-                role_meta = data.pop('role_meta')
-                data['role_meta'] = {k: role_meta.get(k, None)
-                                     for k in role_meta_keys}
-            subset_contents.append(data)
-        return subset_contents
 
     def _get_collection_quality_score(self):
         coll_points = 0.0

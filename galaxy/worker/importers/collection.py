@@ -15,9 +15,11 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import json
+
 import semantic_version as semver
 
-from galaxy.main.models import Namespace, Collection
+from galaxy.main.models import Namespace, Collection, Platform
 from galaxy.worker import exceptions as exc
 
 
@@ -52,3 +54,60 @@ def check_dependencies(collection_info):
             # semantic_version allows a Spec('~1') but throws TypeError on
             # attempted match to it
             _raise_import_fail(no_match_message)
+
+
+class _ContentJSONEncoder(json.JSONEncoder):
+    """Custom JSON encoder for galaxy.importer.models.Content objects."""
+    def default(self, obj):
+        try:
+            return json.JSONEncoder.default(self, obj)
+        except TypeError:
+            pass
+
+        if isinstance(obj, Platform):
+            return {'name': obj.name.lower(),
+                    'release': obj.release.lower()}
+
+        try:
+            return obj.name.lower()
+        except AttributeError:
+            return str(obj).lower()
+
+
+def serialize_contents(content_list):
+    """Serialize content objects with nested data into json.
+
+    :param content_list: list of galaxy.importer.models.Content
+    :return: list of nested dictionaries with content data
+    """
+
+    serialized_contents = []
+    for content in content_list:
+        data = json.dumps(content.__dict__, cls=_ContentJSONEncoder)
+        serialized_contents.append(json.loads(data))
+
+    return serialized_contents
+
+
+def get_subset_contents(content_list):
+    """Return subset of content fields for storage in a collection.
+
+    :param content_list: list of dictionaries with content data
+    :return: list of dictionaries with content data
+    """
+
+    content_keys = ['name', 'content_type', 'description',
+                    'scores', 'metadata', 'role_meta']
+    role_meta_keys = ['author', 'company', 'license',
+                      'min_ansible_version', 'dependencies',
+                      'tags', 'platforms', 'cloud_platforms']
+
+    content_list_subset = []
+    for content in content_list:
+        data = {k: content.get(k, None) for k in content_keys}
+        if data['role_meta']:
+            role_meta = data.pop('role_meta')
+            data['role_meta'] = {k: role_meta.get(k, None)
+                                 for k in role_meta_keys}
+        content_list_subset.append(data)
+    return content_list_subset
