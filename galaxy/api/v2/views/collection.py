@@ -159,10 +159,12 @@ class CollectionListView(base.APIView):
 
     def _check_max_file_size(self, file_size):
         """Validate artifact file size does not exceed maximum."""
-        if file_size > constants.MAX_IMPORT_FILE_SIZE:
+        # NOTE: this method does not check the file size before upload,
+        # but checks after the file is uploaded to the server
+        if file_size > constants.MAX_UPLOAD_FILE_SIZE_BYTES:
             raise ArtifactMaxSizeError(
                 f'Artifact size ({file_size}) exceeds maximum file size: '
-                f'{constants.MAX_IMPORT_FILE_SIZE}'
+                f'{constants.MAX_UPLOAD_FILE_SIZE_BYTES} bytes'
             )
 
     def _check_role_name_conflict(self, ns, name):

@@ -23,7 +23,7 @@ from pulpcore import constants as pulp_const
 
 
 MAX_TAGS_COUNT = 20
-MAX_IMPORT_FILE_SIZE = 2000000
+MAX_UPLOAD_FILE_SIZE_BYTES = 2 * 1000 * 1000  # 2MB
 PROVIDER_GITHUB = 'GitHub'
 TAG_REGEXP = re.compile('^[a-z0-9]+$')
 NAME_REGEXP = re.compile(r'^(?!.*__)[a-z]+[0-9a-z_]*$')
