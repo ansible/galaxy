@@ -148,8 +148,18 @@ class TestCollectionListView(APITestCase):
                        ' already exists.'
         }
 
+    def test_get_collection_list(self):
+        self.collection = models.Collection.objects.create(
+            namespace=self.namespace,
+            name='mycollection')
+        response = self.client.get(self.url)
+        result = response.json()
+        assert response.status_code == http_codes.HTTP_200_OK
+        assert result['count'] == 1
+        assert result['results'][0]['name'] == 'mycollection'
+
     def test_fail_method_not_allowed(self):
-        for method in ['GET', 'PUT', 'PATCH', 'DELETE']:
+        for method in ['PUT', 'PATCH', 'DELETE']:
             response = self.client.generic(method, self.url)
             assert (response.status_code
                     == http_codes.HTTP_405_METHOD_NOT_ALLOWED)
