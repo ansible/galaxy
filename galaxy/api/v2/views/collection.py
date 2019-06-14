@@ -86,9 +86,21 @@ class CollectionDetailView(base.APIView):
         return get_object_or_404(models.Collection, namespace=ns, name=name)
 
 
-class CollectionListView(base.APIView):
+class CollectionListView(base.ListAPIView):
+    queryset = models.Collection.objects.all()
+    serializer_class = serializers.CollectionSerializer
 
-    permission_classes = (IsAuthenticated, )
+    def get(self, request, *args, **kwargs):
+        """List Ansible Collections."""
+        queryset = self.get_queryset()
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         """Upload an Ansible Collection."""
@@ -132,6 +144,14 @@ class CollectionListView(base.APIView):
         data = {'task': reverse('api:v2:collection-import-detail',
                                 args=[task.pk], request=request)}
         return Response(data, status=http_codes.HTTP_202_ACCEPTED)
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            permission_classes = [IsAuthenticated]
+        else:
+            # OPTIONS and GET requests
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
 
     def _get_namespace(self, data):
         """Get collecton namespace from filename."""
