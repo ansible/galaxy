@@ -31,8 +31,8 @@ from galaxy.main import models
 from galaxy.main.celerytasks import user_notifications
 from galaxy.worker import exceptions as exc
 from galaxy.worker import logutils
-from galaxy.worker.importers.collection import check_dependencies
-
+from galaxy.worker.importers import collection as i_collection
+from galaxy.worker.importers.content_validator import validate_contents
 
 log = logging.getLogger(__name__)
 
@@ -54,8 +54,8 @@ def import_collection(artifact_id, repository_id):
         f'Starting import: task_id={task.id}, artifact_id={artifact_id}')
 
     try:
-        importer_obj = _process_collection(artifact, filename, task_logger)
-        version = _publish_collection(task, artifact, repository, importer_obj)
+        data = _process_collection(artifact, filename, task_logger)
+        version = _publish_collection(task, artifact, repository, data)
     except Exception as e:
         task_logger.error(f'Import Task "{task.id}" failed: {e}')
         user_notifications.collection_import.delay(task.id, has_failed=True)
@@ -87,15 +87,27 @@ def _process_collection(artifact, filename, task_logger):
         except i_exc.ImporterError as e:
             raise exc.ImportFailed(str(e))
 
-        check_dependencies(importer_obj.collection_info)
+        i_collection.check_dependencies(importer_obj.collection_info)
+
+        contents_validated = validate_contents(
+            importer_obj.contents, log=task_logger)
+        contents_json = i_collection.serialize_contents(contents_validated)
+        contents_json = i_collection.get_subset_contents(contents_json)
 
     _log_importer_results(importer_obj)
-    return importer_obj
+
+    collection_data = {
+        'metadata': importer_obj.collection_info,
+        'quality_score': importer_obj.quality_score,
+        'readme': importer_obj.readme,
+        'contents_json': contents_json,
+    }
+    return collection_data
 
 
 @transaction.atomic
-def _publish_collection(task, artifact, repository, importer_obj):
-    metadata = importer_obj.collection_info
+def _publish_collection(task, artifact, repository, collection_data):
+    metadata = collection_data['metadata']
     collection, _ = models.Collection.objects.get_or_create(
         namespace=task.namespace, name=metadata.name)
 
@@ -103,11 +115,11 @@ def _publish_collection(task, artifact, repository, importer_obj):
         version = collection.versions.create(
             version=metadata.version,
             metadata=metadata.get_json(),
-            quality_score=importer_obj.quality_score,
-            contents=importer_obj.contents,
-            readme_mimetype=importer_obj.readme['mimetype'],
-            readme_text=importer_obj.readme['text'],
-            readme_html=importer_obj.readme['html'],
+            quality_score=collection_data['quality_score'],
+            contents=collection_data['contents_json'],
+            readme_mimetype=collection_data['readme']['mimetype'],
+            readme_text=collection_data['readme']['text'],
+            readme_html=collection_data['readme']['html'],
         )
     except IntegrityError:
         raise exc.VersionConflict(
@@ -185,13 +197,12 @@ def _notify_followers(version):
 
 
 def _log_importer_results(importer_obj):
-    log.debug('Collection loaded - metadata={}, quality_score={}'.format(
+    log.debug('Collection loaded - metadata={}'.format(
         importer_obj.collection_info.__dict__,
-        importer_obj.quality_score
     ))
     for content in importer_obj.contents:
         log.debug('Content: type={} name={} scores={}'.format(
-            content['content_type'],
-            content['name'],
-            content['scores'],
+            content.content_type,
+            content.name,
+            content.scores,
         ))
