@@ -163,8 +163,15 @@ class CombinedDetail(base.APIView):
                 provider_namespace__namespace__name__iexact=namespace,
                 name__iexact=name
             )
-            namespace_obj = models.Namespace.objects.get(
-                name__iexact=namespace)
+
+            # NOTE: in legacy data setup, there may be mutiple namespaces with
+            # the same name under different case, this chooses the lower case
+            namespace_obj = None
+            namespace_objects = models.Namespace.objects.filter(
+                name__iexact=namespace).order_by('name')
+            if namespace_objects.exists():
+                namespace_obj = namespace_objects[0]
+
             content = models.Content.objects.filter(
                 repository__name__iexact=name,
                 repository__provider_namespace__namespace__name__iexact=namespace # noqa
