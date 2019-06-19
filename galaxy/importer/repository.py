@@ -74,8 +74,6 @@ class RepositoryLoader(object):
         if result[0][0].description:
             description = result[0][0].description
 
-        quality_score = self._get_repo_quality_score(result)
-
         return models.Repository(
             branch=branch,
             commit=commit,
@@ -83,7 +81,6 @@ class RepositoryLoader(object):
             contents=[v[0] for v in result],
             name=name,
             description=description,
-            quality_score=quality_score,
         )
 
     def _find_contents(self):
@@ -112,17 +109,7 @@ class RepositoryLoader(object):
             name = ': {}'.format(content.name) if content.name else ''
             self.log.info(f'===== LINTING {content_type.name}{name} =====')
             lint_result = loader.lint()
-            content.scores = loader.score()
+            content.scores = loader.get_score_stats()
             self.log.info(' ')
 
             yield content, lint_result
-
-    def _get_repo_quality_score(self, result):
-        repo_points = 0.0
-        count = 0
-        for content, _ in result:
-            if content.scores:
-                repo_points += content.scores['quality']
-                count += 1
-        quality_score = None if count == 0 else repo_points / count
-        return quality_score

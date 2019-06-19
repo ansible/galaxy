@@ -46,6 +46,7 @@ class BaseLoader(metaclass=abc.ABCMeta):
         self.rel_path = path
         self.root = root
         self.name = self.make_name()
+        self._score_stats = {}
 
         self.log = logutils.ContentTypeAdapter(
             logger or default_logger, self.content_type, self.name)
@@ -113,8 +114,8 @@ class BaseLoader(metaclass=abc.ABCMeta):
 
         return all_linters_ok
 
-    def score(self):
-        return None
+    def get_score_stats(self):
+        return self._score_stats
 
     def _on_lint_issue(self, linter_type, rule_id, rule_desc, message=None):
         lint_record = lintutils.LintRecord(linter_type, rule_id, rule_desc)

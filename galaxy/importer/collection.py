@@ -58,13 +58,10 @@ class CollectionLoader(object):
         loader_contents = list(self._load_contents(found_contents))
         self.contents = loader_contents
 
-        quality_score = self._get_collection_quality_score()
-
         return Collection(
             collection_info=self.collection_info,
             contents=self.contents,
             readme=self.readme,
-            quality_score=quality_score,
         )
 
     def _load_collection_manifest(self):
@@ -142,20 +139,10 @@ class CollectionLoader(object):
             name = ': {}'.format(content.name) if content.name else ''
             self.log.info(f'===== LINTING {content_type.name}{name} =====')
             loader.lint()
-            content.scores = loader.score()
+            content.scores = loader.get_score_stats()
             self.log.info(' ')
 
             self.log.info(f'===== IMPORTING {content_type.name}{name} =====')
             self.log.info(' ')
 
             yield content
-
-    def _get_collection_quality_score(self):
-        coll_points = 0.0
-        count = 0
-        for content in self.contents:
-            if content['scores']:
-                coll_points += content['scores']['quality']
-                count += 1
-        quality_score = None if count == 0 else coll_points / count
-        return quality_score
