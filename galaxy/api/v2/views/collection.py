@@ -64,6 +64,11 @@ class ArtifactInvalidError(exceptions.ValidationError):
     default_code = 'invalid.artifact_invalid_tarfile'
 
 
+class ArtifactMaxSizeError(exceptions.ValidationError):
+    default_detail = 'Artifact exceeds maximum size.'
+    default_code = 'invalid.artifact_exceeds_max_size'
+
+
 class CollectionDetailView(base.APIView):
     permission_classes = (AllowAny, )
 
@@ -102,6 +107,7 @@ class CollectionListView(base.APIView):
         # TODO(cutwater): Merge Artifact and UploadCollectionSerializers
         namespace = self._get_namespace(data)
         self._check_namespace_access(namespace, request.user)
+        self._check_max_file_size(request.data['file'].size)
         self._check_role_name_conflict(namespace, filename.name)
         self._check_multi_repo_name_conflict(namespace, filename.name)
         self._check_version_conflict(namespace, filename)
@@ -149,6 +155,16 @@ class CollectionListView(base.APIView):
             raise exceptions.PermissionDenied(
                 'The namespace listed on your filename must match one of '
                 'the namespaces you have access to.'
+            )
+
+    def _check_max_file_size(self, file_size):
+        """Validate artifact file size does not exceed maximum."""
+        # NOTE: this method does not check the file size before upload,
+        # but checks after the file is uploaded to the server
+        if file_size > constants.MAX_UPLOAD_FILE_SIZE_BYTES:
+            raise ArtifactMaxSizeError(
+                f'Artifact size ({file_size}) exceeds maximum file size: '
+                f'{constants.MAX_UPLOAD_FILE_SIZE_BYTES} bytes'
             )
 
     def _check_role_name_conflict(self, ns, name):

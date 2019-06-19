@@ -43,15 +43,11 @@ def user_logged_in_handler(request, user, **kwargs):
     username = social.extra_data.get('login')
     sanitized_username = username.lower().replace('-', '_')
 
-    try:
-        namespace = models.ProviderNamespace.objects.get(name=username)
+    if models.ProviderNamespace.objects.filter(name=username).exists():
         return
-    except models.ProviderNamespace.DoesNotExist:
-        namespace = None
 
-    # User is not associated with any Namespaces, so we'll attempt
-    # to create one, along with associated Provider Namespaces.
-    provider = models.Provider.objects.get(name__iexact="github")
+    # User is not associated with any Provider Namespaces, so we'll attempt
+    # to create one, along with associated Namespace.
 
     # if name doesn't exist, set it to login
     name = social.extra_data.get('name') or username
@@ -64,18 +60,30 @@ def user_logged_in_handler(request, user, **kwargs):
         'email': None,
         'html_url': social.extra_data.get('blog'),
     }
-    if not namespace:
-        # Only create one Namespace
-        namespace, _ = models.Namespace.objects.get_or_create(
-            name=sanitized_username, defaults=defaults)
-        namespace.owners.add(user)
-    defaults['description'] = social.extra_data.get('bio') or name
-    defaults['followers'] = social.extra_data.get('followers')
-    defaults['display_name'] = name
-    defaults['avatar_url'] = social.extra_data.get('avatar_url')
+
+    ns_defaults = {'name': sanitized_username, **defaults}
+
+    # Create lowercase namespace if case insensitive search does not find match
+    qs = models.Namespace.objects.filter(
+        name__iexact=sanitized_username).order_by('name')
+    if qs.exists():
+        namespace = qs[0]
+    else:
+        namespace = models.Namespace.objects.create(**ns_defaults)
+
+    namespace.owners.add(user)
+
+    provider_ns_defaults = {
+        'description': social.extra_data.get('bio') or name,
+        'followers': social.extra_data.get('followers'),
+        'display_name': name,
+        **defaults,
+    }
+    provider = models.Provider.objects.get(name__iexact="github")
+
     models.ProviderNamespace.objects.get_or_create(
         namespace=namespace, name=username, provider=provider,
-        defaults=defaults)
+        defaults=provider_ns_defaults)
 
 
 @receiver(post_save, sender=models.ImportTask)
