@@ -56,6 +56,18 @@ def check_dependencies(collection_info):
             _raise_import_fail(no_match_message)
 
 
+def get_quality_score(contents_json):
+    '''Calculate collection quality score from content scores.'''
+    coll_points = 0.0
+    count = 0
+    for content in contents_json:
+        if content['scores']:
+            coll_points += content['scores']['quality']
+            count += 1
+    quality_score = None if count == 0 else coll_points / count
+    return quality_score
+
+
 class _ContentJSONEncoder(json.JSONEncoder):
     """Custom JSON encoder for galaxy.importer.models.Content objects."""
     def default(self, obj):

@@ -94,11 +94,13 @@ def _process_collection(artifact, filename, task_logger):
         contents_json = i_collection.serialize_contents(contents_validated)
         contents_json = i_collection.get_subset_contents(contents_json)
 
+    quality_score = i_collection.get_quality_score(contents_json)
+
     _log_importer_results(importer_obj)
 
     collection_data = {
         'metadata': importer_obj.collection_info,
-        'quality_score': importer_obj.quality_score,
+        'quality_score': quality_score,
         'readme': importer_obj.readme,
         'contents_json': contents_json,
     }

@@ -18,6 +18,29 @@
 from galaxy import constants
 from galaxy.main import models
 
+# TODO: move this to common
+from galaxy.importer.utils.lint import LintRecord
+
+
+# TODO: pull out of here and importer/loaders/role into constants
+BASE_SCORE = 50.0
+SEVERITY_TO_WEIGHT = {
+    0: 0.0,
+    1: 0.75,
+    2: 1.25,
+    3: 2.5,
+    4: 5.0,
+    5: 10.0,
+}
+CONTENT_SEVERITY_TYPE = 'content'
+METADATA_SEVERITY_TYPE = 'metadata'
+
+METADATA_SEVERITY = {
+    'importer_importer101': 3,
+    'importer_importer102': 3,
+    'importer_importer103': 4,
+}
+
 
 def validate_contents(content_list, log=None):
     """Database checks for content-level metadata.
@@ -41,6 +64,10 @@ class ContentValidator():
     def check_contents(self):
         if self.content.content_type == constants.ContentType.ROLE:
             self._check_role()
+            self._score()
+        else:
+            self.content.scores = None
+
         return self.content
 
     def _check_role(self):
@@ -73,9 +100,8 @@ class ContentValidator():
                     name__iexact=name
                 )
                 if not platform_objs:
-                    # TODO: add 'IMPORTER101' linter violation here
                     msg = f'Invalid platform: "{name}-all", skipping.'
-                    self.log.warning(msg)
+                    self._on_lint_issue('IMPORTER101', msg)
                     continue
                 for p in platform_objs:
                     confirmed_platforms.append(p)
@@ -87,9 +113,8 @@ class ContentValidator():
                         name__iexact=name, release__iexact=str(version)
                     )
                 except models.Platform.DoesNotExist:
-                    # TODO: add 'IMPORTER101' linter violation here
                     msg = f'Invalid platform: "{name}-{version}", skipping.'
-                    self.log.warning(msg)
+                    self._on_lint_issue('IMPORTER101', msg)
                 else:
                     confirmed_platforms.append(p)
 
@@ -104,9 +129,8 @@ class ContentValidator():
             try:
                 c = models.CloudPlatform.objects.get(name__iexact=name)
             except models.CloudPlatform.DoesNotExist:
-                # TODO: add 'IMPORTER102' linter violation here
                 msg = f'Invalid cloud platform: "{name}", skipping.'
-                self.log.warning(msg)
+                self._on_lint_issue('IMPORTER102', msg)
             else:
                 confirmed_platforms.append(c)
 
@@ -123,9 +147,45 @@ class ContentValidator():
                     namespace__name=dep.namespace, name=dep.name)
                 confirmed_deps.append(dep_role)
             except Exception:
-                # TODO: add 'IMPORTER103' linter violation here
                 msg = 'Error loading dependency: "{}"'.format(
                     '.'.join([d for d in dep]))
-                self.log.warning(msg)
+                self._on_lint_issue('IMPORTER103', msg)
 
         self.content.role_meta['dependencies'] = confirmed_deps
+
+    def _on_lint_issue(self, rule_id, rule_desc):
+        """Appends linter violations of type metadata to content."""
+        lint_record = LintRecord(
+            type='importer',
+            code=rule_id,
+            message=rule_desc,
+            score_type=METADATA_SEVERITY_TYPE,
+            severity=METADATA_SEVERITY[f'importer_{rule_id.lower()}'],
+        )
+
+        self.content.scores[METADATA_SEVERITY_TYPE] = (
+            self.content.scores.get(METADATA_SEVERITY_TYPE, 0.0)
+            + SEVERITY_TO_WEIGHT[lint_record.severity])
+        self.log.warning(rule_desc,
+                         extra={'lint_record': lint_record})
+
+    def _score(self):
+        """Calculate content score from running total of score violations.
+
+        Score violations can come from importer (via linters),
+        and from worker (via database validation).
+        """
+
+        content_w = self.content.scores.get(CONTENT_SEVERITY_TYPE, 0.0)
+        content_score = max(0.0, (BASE_SCORE - content_w) / 10)
+
+        metadata_w = self.content.scores.get(METADATA_SEVERITY_TYPE, 0.0)
+        metadata_score = max(0.0, (BASE_SCORE - metadata_w) / 10)
+
+        # TODO: rename scores and score_stats
+        self.content.scores = {
+            'content': content_score,
+            'metadata': metadata_score,
+            'compatibility': None,
+            'quality': sum([content_score, metadata_score]) / 2.0
+        }

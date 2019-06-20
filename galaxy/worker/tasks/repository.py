@@ -32,6 +32,7 @@ from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import importers
+from galaxy.worker.importers.content_validator import validate_contents
 from galaxy.worker import logutils
 from galaxy.worker import utils
 from galaxy.main.celerytasks import user_notifications
@@ -106,8 +107,6 @@ def _import_repository(import_task, logger):
     repository.format = repo_info.format.value
     repository.travis_status_url = import_task.travis_status_url
     repository.travis_build_url = import_task.travis_build_url
-    repository.quality_score = repo_info.quality_score
-    repository.quality_score_date = timezone.now()
 
     if repo_info.name:
         old_name = repository.name
@@ -142,6 +141,10 @@ def _import_repository(import_task, logger):
         elif gh_repo.has_issues:
             issue_tracker_url = gh_repo.html_url + '/issues'
         repository.issue_tracker_url = issue_tracker_url
+
+        # NOTE: send importer.models.Content obj to check against db
+        content_info = validate_contents([content_info], log=content_logger)[0]
+
         content_obj = importer.do_import()
 
         if content_info.scores:
@@ -153,6 +156,9 @@ def _import_repository(import_task, logger):
             content_obj.save()
 
         new_content_objs.append(content_obj.id)
+
+    repository.quality_score = repo_info.contents[0].scores['quality']
+    repository.quality_score_date = timezone.now()
 
     for obj in repository.content_objects.exclude(id__in=new_content_objs):
         logger.info(
