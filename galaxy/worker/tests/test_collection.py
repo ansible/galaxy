@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from galaxy.worker.exceptions import ImportFailed
 from galaxy.importer.models import GalaxyCollectionInfo
-from galaxy.worker.importers.collection import check_dependencies
+from galaxy.worker.importers.validation import check_dependencies
 from galaxy.main import models
 
 

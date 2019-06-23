@@ -17,55 +17,7 @@
 
 import json
 
-import semantic_version as semver
-
-from galaxy.main.models import Namespace, Collection, Platform
-from galaxy.worker import exceptions as exc
-
-
-def _raise_import_fail(msg):
-    raise exc.ImportFailed(f'Invalid collection metadata. {msg}') from None
-
-
-def check_dependencies(collection_info):
-    """Check collection dependencies and matching version are in database."""
-    dependencies = collection_info.dependencies
-    for dep, version_spec in dependencies.items():
-        ns_name, name = dep.split('.')
-
-        try:
-            ns = Namespace.objects.get(name=ns_name)
-        except Namespace.DoesNotExist:
-            _raise_import_fail(f'Dependency namespace not in galaxy: {dep}')
-        try:
-            collection = Collection.objects.get(namespace=ns.pk, name=name)
-        except Collection.DoesNotExist:
-            _raise_import_fail(f'Dependency collection not in galaxy: {dep}')
-
-        spec = semver.Spec(version_spec)
-        versions = (
-            semver.Version(v.version) for v in collection.versions.all())
-        no_match_message = ('Dependency found in galaxy but no matching '
-                            f'version found: {dep} {version_spec}')
-        try:
-            if not spec.select(versions):
-                _raise_import_fail(no_match_message)
-        except TypeError:
-            # semantic_version allows a Spec('~1') but throws TypeError on
-            # attempted match to it
-            _raise_import_fail(no_match_message)
-
-
-def get_quality_score(contents_json):
-    '''Calculate collection quality score from content scores.'''
-    coll_points = 0.0
-    count = 0
-    for content in contents_json:
-        if content['scores']:
-            coll_points += content['scores']['quality']
-            count += 1
-    quality_score = None if count == 0 else coll_points / count
-    return quality_score
+from galaxy.main.models import Platform
 
 
 class _ContentJSONEncoder(json.JSONEncoder):

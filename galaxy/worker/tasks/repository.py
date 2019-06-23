@@ -32,7 +32,7 @@ from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
 from galaxy.worker import exceptions as exc
 from galaxy.worker import importers
-from galaxy.worker.importers.content_validator import validate_contents
+from galaxy.worker.importers.validation import validate_contents
 from galaxy.worker import logutils
 from galaxy.worker import utils
 from galaxy.main.celerytasks import user_notifications

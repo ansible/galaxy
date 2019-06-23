@@ -15,8 +15,12 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
+import semantic_version as semver
+
 from galaxy import constants
 from galaxy.main import models
+from galaxy.worker import exceptions as exc
+
 
 # TODO: move this to common
 from galaxy.importer.utils.lint import LintRecord
@@ -42,6 +46,40 @@ METADATA_SEVERITY = {
 }
 
 
+def check_dependencies(collection_info):
+    """Check collection dependencies and a matching version are in database."""
+    dependencies = collection_info.dependencies
+    for dep, version_spec in dependencies.items():
+        ns_name, name = dep.split('.')
+
+        try:
+            ns = models.Namespace.objects.get(name=ns_name)
+        except models.Namespace.DoesNotExist:
+            _raise_import_fail(f'Dependency namespace not in galaxy: {dep}')
+        try:
+            collection = models.Collection.objects.get(
+                namespace=ns.pk, name=name)
+        except models.Collection.DoesNotExist:
+            _raise_import_fail(f'Dependency collection not in galaxy: {dep}')
+
+        spec = semver.Spec(version_spec)
+        versions = (
+            semver.Version(v.version) for v in collection.versions.all())
+        no_match_message = ('Dependency found in galaxy but no matching '
+                            f'version found: {dep} {version_spec}')
+        try:
+            if not spec.select(versions):
+                _raise_import_fail(no_match_message)
+        except TypeError:
+            # semantic_version allows a Spec('~1') but throws TypeError on
+            # attempted match to it
+            _raise_import_fail(no_match_message)
+
+
+def _raise_import_fail(msg):
+    raise exc.ImportFailed(f'Invalid collection metadata. {msg}') from None
+
+
 def validate_contents(content_list, log=None):
     """Database checks for content-level metadata.
 
@@ -51,26 +89,19 @@ def validate_contents(content_list, log=None):
 
     validated_contents = []
     for content in content_list:
-        validator = ContentValidator(content, log)
-        validated_contents.append(validator.check_contents())
+        if content.content_type == constants.ContentType.ROLE:
+            validator = RoleValidator(content, log)
+            validator.check_role()
+        validated_contents.append(content)
     return validated_contents
 
 
-class ContentValidator():
+class RoleValidator():
     def __init__(self, content, log):
         self.content = content
         self.log = log
 
-    def check_contents(self):
-        if self.content.content_type == constants.ContentType.ROLE:
-            self._check_role()
-            self._score()
-        else:
-            self.content.scores = None
-
-        return self.content
-
-    def _check_role(self):
+    def check_role(self):
         """Database check role_meta platforms, cloud platforms, dependencies.
 
         Checks edit role_meta to values present in database.
@@ -168,24 +199,3 @@ class ContentValidator():
             + SEVERITY_TO_WEIGHT[lint_record.severity])
         self.log.warning(rule_desc,
                          extra={'lint_record': lint_record})
-
-    def _score(self):
-        """Calculate content score from running total of score violations.
-
-        Score violations can come from importer (via linters),
-        and from worker (via database validation).
-        """
-
-        content_w = self.content.scores.get(CONTENT_SEVERITY_TYPE, 0.0)
-        content_score = max(0.0, (BASE_SCORE - content_w) / 10)
-
-        metadata_w = self.content.scores.get(METADATA_SEVERITY_TYPE, 0.0)
-        metadata_score = max(0.0, (BASE_SCORE - metadata_w) / 10)
-
-        # TODO: rename scores and score_stats
-        self.content.scores = {
-            'content': content_score,
-            'metadata': metadata_score,
-            'compatibility': None,
-            'quality': sum([content_score, metadata_score]) / 2.0
-        }

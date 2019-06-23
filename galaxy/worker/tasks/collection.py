@@ -32,7 +32,8 @@ from galaxy.main.celerytasks import user_notifications
 from galaxy.worker import exceptions as exc
 from galaxy.worker import logutils
 from galaxy.worker.importers import collection as i_collection
-from galaxy.worker.importers.content_validator import validate_contents
+from galaxy.worker.importers import validation
+from galaxy.worker.importers import scoring
 
 log = logging.getLogger(__name__)
 
@@ -87,14 +88,16 @@ def _process_collection(artifact, filename, task_logger):
         except i_exc.ImporterError as e:
             raise exc.ImportFailed(str(e))
 
-        i_collection.check_dependencies(importer_obj.collection_info)
+        validation.check_dependencies(importer_obj.collection_info)
 
-        contents_validated = validate_contents(
+        contents = validation.validate_contents(
             importer_obj.contents, log=task_logger)
-        contents_json = i_collection.serialize_contents(contents_validated)
+        contents = scoring.score_contents(contents)
+
+        contents_json = i_collection.serialize_contents(contents)
         contents_json = i_collection.get_subset_contents(contents_json)
 
-    quality_score = i_collection.get_quality_score(contents_json)
+    quality_score = scoring.score_collection(contents_json)
 
     _log_importer_results(importer_obj)
 
