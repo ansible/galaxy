@@ -168,10 +168,7 @@ class TestRoleLoader(unittest.TestCase):
         dependencies = role.role_meta['dependencies']
 
         assert role.name == 'test_role'
-
-        # dependencies only exist if confirmed to be in database
-        assert len(dependencies) == 0
-
+        assert len(dependencies) == 1
         assert role.description == 'A test role'
         assert role_meta['role_type'] == constants.RoleType.ANSIBLE
         assert role_meta['author'] == 'John Smith'
