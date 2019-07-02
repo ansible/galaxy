@@ -265,7 +265,7 @@ class TestCollectionSearch(CommonSearchTestMixin, TestCase):
         self._assert_search_results(query, ['apache2', 'nginx', 'uwsgi'])
 
         query = CollectionSearch({'tags': ['web', 'nginx']})
-        self._assert_search_results(query, ['apache2', 'nginx', 'uwsgi'])
+        self._assert_search_results(query, ['nginx'])
 
     def test_filter_by_deprecated(self):
         query = CollectionSearch({'deprecated': True})
@@ -454,9 +454,9 @@ class TestContentSearch(CommonSearchTestMixin, TestCase):
         query = ContentSearch({'platforms': ['debian']})
         self._assert_search_results(query, ['docker', 'openstack'])
 
-        query = ContentSearch({'platforms': ['debian', 'ubuntu', 'centos']})
+        query = ContentSearch({'platforms': ['debian', 'ubuntu']})
         self._assert_search_results(
-            query, ['docker', 'openstack', 'kubernetes'])
+            query, ['docker', 'openstack'])
 
     def test_filter_by_cloud_platform(self):
         query = ContentSearch({'cloud_platforms': ['aws']})
@@ -468,7 +468,7 @@ class TestContentSearch(CommonSearchTestMixin, TestCase):
         query = ContentSearch({'cloud_platforms': ['aws', 'gcloud']})
         print(query.search())
         self._assert_search_results(
-            query, ['kubernetes', 'openstack', 'nginx'])
+            query, ['kubernetes'])
 
     def test_order_by_relevance(self):
         query = ContentSearch(
