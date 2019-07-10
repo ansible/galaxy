@@ -210,7 +210,7 @@ the collection in editable mode under the namespace 'my_namespace':
     $ mazer install --namespace my_namespace --editable ~/src/collections/my_new_collection
 
 This will result in 'my_namespace.my_new_collection' being "installed".
-The above command symlinks ``~/.ansble/collections/ansible_collections/my_namespace/my_new_collection`` to
+The above command symlinks ``~/.ansible/collections/ansible_collections/my_namespace/my_new_collection`` to
 ``~/src/collections/my_new_collection``.
 
 The install option ``--editable`` or the short ``-e`` can be used.
