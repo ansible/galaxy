@@ -455,7 +455,7 @@ Collections lockfile format
 The contents of collections lock file is a yaml file, containing a dictionary.
 
 The dictionary is the same format as the 'dependencies' dict in
-```galaxy.yml``.
+``galaxy.yml``.
 
 The keys are collection labels (the namespace and the name
 dot separated ala 'alikins.collection_inspect').
