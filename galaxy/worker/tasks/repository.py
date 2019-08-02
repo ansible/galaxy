@@ -90,12 +90,14 @@ def _import_repository(import_task, logger):
     logger.info(' ')
 
     token = _get_social_token(import_task)
-    gh_api = github.Github(token)
+    gh_api = github.Github(base_url=settings.GITHUB_SERVER, login_or_token=token)
     gh_repo = gh_api.get_repo(repo_full_name)
 
     try:
         repo_info = i_repo.import_repository(
-            repository.clone_url,
+            gh_repo.clone_url.replace("https://", "https://{token}@".format(
+                token=token
+            )),
             branch=import_task.import_branch,
             temp_dir=settings.CONTENT_DOWNLOAD_DIR,
             logger=logger)
@@ -315,8 +317,8 @@ def _update_repo_info(repository, gh_repo, commit_info, repo_description):
     repository.commit = commit_info.sha
     repository.commit_message = commit_info.message[:255]
     repository.commit_url = \
-        'https://api.github.com/repos/{0}/git/commits/{1}'.format(
-            gh_repo.full_name, commit_info.sha)
+        '{0}/repos/{1}/git/commits/{2}'.format(
+            settings.GITHUB_SERVER, gh_repo.full_name, commit_info.sha)
     repository.commit_created = commit_info.committer_date
 
 

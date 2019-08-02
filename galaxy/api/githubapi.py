@@ -23,6 +23,7 @@ from github import Github
 from github.GithubException import GithubException
 
 from allauth.socialaccount.models import SocialToken
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from galaxy.main.models import Provider
 
@@ -58,7 +59,7 @@ class GithubAPI(object):
                 "User does not have a GitHub OAuth token"
             )
         try:
-            client = Github(gh_token.token)
+            client = Github(base_url=settings.GITHUB_SERVER, login_or_token=gh_token.token)
         except GithubException as exc:
             raise Exception("Failed to connect to the GitHub API {0} - {1}"
                             .format(exc.data, exc.status))
