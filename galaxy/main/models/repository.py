@@ -1,7 +1,6 @@
 import operator
 
 from django.conf import settings
-from django.conf.settings import SOCIALACCOUNT_PROVIDERS as providers
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.urls import reverse
@@ -107,6 +106,7 @@ class Repository(BaseModel):
 
     @property
     def clone_url(self):
+        providers = settings.SOCIALACCOUNT_PROVIDERS
         return "{server}/{user}/{repo}.git".format(
             server=(
                 'https://github.com',
@@ -126,6 +126,7 @@ class Repository(BaseModel):
 
     @property
     def github_server(self):
+        providers = settings.SOCIALACCOUNT_PROVIDERS
         return ('https://github.com',
                 providers.github.GITHUB_URL)['GITHUB_URL' in providers.github]
 
