@@ -106,12 +106,18 @@ class Repository(BaseModel):
 
     @property
     def clone_url(self):
-        providers = settings.SOCIALACCOUNT_PROVIDERS
+        server = ''
+        if 'github' in settings.SOCIALACCOUNT_PROVIDERS:
+            if 'GITHUB_URL' in settings.SOCIALACCOUNT_PROVIDERS['github']:
+                server = settings \
+                    .SOCIALACCOUNT_PROVIDERS['github'] \
+                    .GITHUB_URL
+            else:
+                server = 'https://github.com'
+        else:
+            server = 'https://github.com'
         return "{server}/{user}/{repo}.git".format(
-            server=(
-                'https://github.com',
-                providers.github.GITHUB_URL
-            )['GITHUB_URL' in providers.github],
+            server=server,
             user=self.provider_namespace.name,
             repo=self.original_name
         )
@@ -126,9 +132,17 @@ class Repository(BaseModel):
 
     @property
     def github_server(self):
-        providers = settings.SOCIALACCOUNT_PROVIDERS
-        return ('https://github.com',
-                providers.github.GITHUB_URL)['GITHUB_URL' in providers.github]
+        server = ''
+        if 'github' in settings.SOCIALACCOUNT_PROVIDERS:
+            if 'GITHUB_URL' in settings.SOCIALACCOUNT_PROVIDERS['github']:
+                server = settings \
+                    .SOCIALACCOUNT_PROVIDERS['github'] \
+                    .GITHUB_URL
+            else:
+                server = 'https://github.com'
+        else:
+            server = 'https://github.com'
+        return server
 
     @property
     def content_counts(self):
