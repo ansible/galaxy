@@ -108,7 +108,10 @@ class Repository(BaseModel):
     @property
     def clone_url(self):
         return "{server}/{user}/{repo}.git".format(
-            server=('https://github.com', providers.github.GITHUB_URL)['GITHUB_URL' in providers.github],
+            server=(
+                'https://github.com',
+                providers.github.GITHUB_URL
+            )['GITHUB_URL' in providers.github],
             user=self.provider_namespace.name,
             repo=self.original_name
         )
@@ -123,7 +126,8 @@ class Repository(BaseModel):
 
     @property
     def github_server(self):
-        return ('https://github.com', providers.github.GITHUB_URL)['GITHUB_URL' in providers.github]
+        return ('https://github.com',
+                providers.github.GITHUB_URL)['GITHUB_URL' in providers.github]
 
     @property
     def content_counts(self):

@@ -90,7 +90,8 @@ def _import_repository(import_task, logger):
     logger.info(' ')
 
     token = _get_social_token(import_task)
-    gh_api = github.Github(base_url=settings.GITHUB_SERVER, login_or_token=token)
+    gh_api = github.Github(base_url=settings.GITHUB_SERVER,
+                           login_or_token=token)
     gh_repo = gh_api.get_repo(repo_full_name)
 
     try:

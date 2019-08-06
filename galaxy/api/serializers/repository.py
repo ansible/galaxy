@@ -167,7 +167,10 @@ class RepositorySerializer(serializers.BaseSerializer):
     def get_external_url(self, instance):
         server = ''
         if instance.provider_namespace.provider.name.lower() == 'github':
-            server = ('https://github.com', providers.github.GITHUB_URL)['GITHUB_URL' in providers.github]
+            server = (
+                'https://github.com',
+                providers.github.GITHUB_URL
+            )['GITHUB_URL' in providers.github]
         return '{0}/{1}/{2}'.format(
             server,
             instance.provider_namespace.name,
