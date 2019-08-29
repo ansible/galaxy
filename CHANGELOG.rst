@@ -1,6 +1,29 @@
 Ansible Galaxy Changes by Release
 =================================
 
+3.2.4 - Released 28-Jun-2019
+----------------------------
+
+Closed PRs
+``````````
+- `1929 Fix broken doc link <https://github.com/ansible/galaxy/pull/1929>`_.
+- `1939 Add collections list action to API <https://github.com/ansible/galaxy/pull/1939>`_.
+
+
+3.2.3 - Released 19-Jun-2019
+---------------------------
+
+Closed PRs
+``````````
+- `1903 Fixes UI typo in my-content/content-list component <https://github.com/ansible/galaxy/pull/1903>`_.
+- `1904 Add ParamPaginator and ParamFilter React component <https://github.com/ansible/galaxy/pull/1904>`__.
+- `1906 Fix collection detail breaking when no description is set <https://github.com/ansible/galaxy/pull/1906>`__.
+- `1909 Add link back to Galaxy site from /docs <https://github.com/ansible/galaxy/pull/1909>`_.
+- `1910 Fix collection detail breaking when no description is set <https://github.com/ansible/galaxy/pull/1910>`_.
+- `1919 Prevent duplicate namespace on login when github username case changes <https://github.com/ansible/galaxy/pull/1910>`_.
+- `1923 Check file size on Collection import <https://github.com/ansible/galaxy/pull/1923>`_.
+
+
 3.2.2 - Released 7-Jun-2019
 ---------------------------
 
