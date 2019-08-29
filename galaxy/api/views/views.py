@@ -120,7 +120,8 @@ class ApiRootView(base_views.APIView):
             description='GALAXY REST API',
             current_version='v1',
             available_versions=dict(
-                v1=current
+                v1=current,
+                v2='/api/v2',
             ),
             server_version=version.get_package_version('galaxy'),
             version_name=version.get_version_name(),
