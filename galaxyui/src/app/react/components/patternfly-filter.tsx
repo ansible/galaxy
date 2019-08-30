@@ -110,7 +110,11 @@ export const ToolBarResultsPF: React.FunctionComponent<
                         <Filter.Item
                             key={index}
                             filterData={{ index: index }}
-                            onRemove={i => props.removeFilter(i)}
+                            onRemove={i =>
+                                props.removeFilter(
+                                    props.appliedFilters[i.index],
+                                )
+                            }
                         >
                             {item.field.title}: {item.value}
                         </Filter.Item>

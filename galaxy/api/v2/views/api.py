@@ -15,28 +15,22 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from .collection import (  # noqa: F401
-    CollectionListView,
-    CollectionDetailView,
-)
-from .collection_import import (  # noqa: F401
-    CollectionImportView
-)
-from .collection_version import (  # noqa: F401
-    CollectionArtifactView,
-    VersionListView,
-    VersionDetailView,
-)
+from collections import OrderedDict
 
-from .api import (  # noqa: F401
-    ApiV2RootView,
-)
-__all__ = (
-    'ApiV2RootView',
-    'CollectionListView',
-    'CollectionDetailView',
-    'CollectionImportView',
-    'CollectionArtifactView',
-    'VersionListView',
-    'VersionDetailView',
-)
+from django.urls import reverse
+
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from galaxy.api.views import base_views
+
+
+class ApiV2RootView(base_views.APIView):
+    permission_classes = (AllowAny,)
+    view_name = 'Version 2'
+
+    def get(self, request, format=None):
+        # list top level resources
+        data = OrderedDict()
+        data['collections'] = reverse('api:v2:collection-list')
+
+        return Response(data)

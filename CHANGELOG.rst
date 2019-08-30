@@ -1,8 +1,59 @@
 Ansible Galaxy Changes by Release
 =================================
 
-3.2 - Released 3-Jun-2019
--------------------------
+3.2.4 - Released 28-Jun-2019
+----------------------------
+
+Closed PRs
+``````````
+- `1929 Fix broken doc link <https://github.com/ansible/galaxy/pull/1929>`_.
+- `1939 Add collections list action to API <https://github.com/ansible/galaxy/pull/1939>`_.
+
+
+3.2.3 - Released 19-Jun-2019
+---------------------------
+
+Closed PRs
+``````````
+- `1903 Fixes UI typo in my-content/content-list component <https://github.com/ansible/galaxy/pull/1903>`_.
+- `1904 Add ParamPaginator and ParamFilter React component <https://github.com/ansible/galaxy/pull/1904>`__.
+- `1906 Fix collection detail breaking when no description is set <https://github.com/ansible/galaxy/pull/1906>`__.
+- `1909 Add link back to Galaxy site from /docs <https://github.com/ansible/galaxy/pull/1909>`_.
+- `1910 Fix collection detail breaking when no description is set <https://github.com/ansible/galaxy/pull/1910>`_.
+- `1919 Prevent duplicate namespace on login when github username case changes <https://github.com/ansible/galaxy/pull/1910>`_.
+- `1923 Check file size on Collection import <https://github.com/ansible/galaxy/pull/1923>`_.
+
+
+3.2.2 - Released 7-Jun-2019
+---------------------------
+
+Changes
+```````
+- Platforms card is too narrow with reduced-width window. Issue `1740 <https://github.com/ansible/galaxy/issues/1740>`_.
+- Partially visible personal information. Issue `1826 <https://github.com/ansible/galaxy/issues/1826>`_. 
+- Prevents importing a collection with a name that conflicts with a multi-content repository name.
+
+Closed PRs
+``````````
+- `1895 Set columns to large on content detail cards <https://github.com/ansible/galaxy/pull/1895>`_.
+- `1897 Check collection name conflict with multi-content repo name  <https://github.com/ansible/galaxy/pull/1897>`_.
+- `1889 Improve handling of long namespace descriptions <https://github.com/ansible/galaxy/pull/1889>`_.
+
+3.2.1 - Released 5-Jun-2019
+---------------------------
+
+Changes
+```````
+- Perform case insensitive namespace lookups. Issue `1879 <https://github.com/ansible/galaxy/issues/1879>`_.
+- Fix legacy search API performance deficiencies. Issue `1876 <https://github.com/ansible/galaxy/issues/1876>`_. 
+
+Closed PRs
+``````````
+- `1878 Fix inefficient queries in legacy search API <https://github.com/ansible/galaxy/pull/1878>`_.
+- `1880 Make combined API perform case insensitive lookups <https://github.com/ansible/galaxy/pull/1880>`_.
+
+3.2.0 - Released 3-Jun-2019
+---------------------------
 
 Changes
 ```````

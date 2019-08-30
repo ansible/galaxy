@@ -25,6 +25,7 @@ export class AppliedFilter {
 // Configuration for sort widget on patternfly toolbar
 export class SortConfig {
     fields: SortFieldOption[];
+    // isAscending -> true = '', false ='-'
     isAscending: boolean;
 }
 

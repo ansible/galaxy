@@ -19,28 +19,43 @@ from django.contrib import admin
 from galaxy.main import models
 
 
+@admin.register(models.Platform)
 class PlatformAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(models.CloudPlatform)
 class CloudPlatformAdmin(admin.ModelAdmin):
     pass
 
 
-class RoleAdmin(admin.ModelAdmin):
+@admin.register(models.Content)
+class ContentAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(models.RepositoryVersion)
 class RepositoryVersionAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(models.ContentBlock)
 class ContentBlockAdmin(admin.ModelAdmin):
     pass
 
 
-admin.site.register(models.Platform, PlatformAdmin)
-admin.site.register(models.CloudPlatform, CloudPlatformAdmin)
-admin.site.register(models.Content, RoleAdmin)
-admin.site.register(models.RepositoryVersion, RepositoryVersionAdmin)
-admin.site.register(models.ContentBlock, ContentBlockAdmin)
+@admin.register(models.Tag)
+class TagAdmin(admin.ModelAdmin):
+    search_fields = ('name', )
+
+
+@admin.register(models.Namespace)
+class NamespaceAdmin(admin.ModelAdmin):
+    autocomplete_fields = ('owners', )
+
+
+@admin.register(models.Collection)
+class CollectionAdmin(admin.ModelAdmin):
+    exclude = ('search_vector', )
+    autocomplete_fields = ('tags', )
+    readonly_fields = ('latest_version', )

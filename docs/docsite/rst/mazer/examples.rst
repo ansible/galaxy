@@ -210,7 +210,7 @@ the collection in editable mode under the namespace 'my_namespace':
     $ mazer install --namespace my_namespace --editable ~/src/collections/my_new_collection
 
 This will result in 'my_namespace.my_new_collection' being "installed".
-The above command symlinks ``~/.ansble/collections/ansible_collections/my_namespace/my_new_collection`` to
+The above command symlinks ``~/.ansible/collections/ansible_collections/my_namespace/my_new_collection`` to
 ``~/src/collections/my_new_collection``.
 
 The install option ``--editable`` or the short ``-e`` can be used.
@@ -224,11 +224,11 @@ Mazer supports specifying a list of collections to be installed
 from a file (a 'collections lockfile').
 
 To install collections specified in a lockfile, use the
-``--collections-lock`` option of the ``install`` subcommand:
+``--lockfile`` option of the ``install`` subcommand:
 
 .. code-block:: bash
 
-    $ mazer install --collections-lock collections_lockfile.yml
+    $ mazer install --lockfile=collections_lockfile.yml
 
 
 Setting the Collections path
@@ -291,12 +291,12 @@ the ``--frozen`` flag:
 
 
 To reproduce an existing installed collection path, redirect the 'list --lockfile'
-output to a file and use that file with 'install --collections-lock':
+output to a file and use that file with 'install --lockfile':
 
 .. code-block:: bash
 
     $ mazer list --lockfile  > collections_lockfile.yml
-    $ mazer install --collections-path /tmp/somenewplace --collections-lock collections_lockfile.yml
+    $ mazer install --collections-path /tmp/somenewplace --lockfile=collections_lockfile.yml
 
 Building ansible content collection artifacts
 ---------------------------------------------
@@ -455,7 +455,7 @@ Collections lockfile format
 The contents of collections lock file is a yaml file, containing a dictionary.
 
 The dictionary is the same format as the 'dependencies' dict in
-```galaxy.yml``.
+``galaxy.yml``.
 
 The keys are collection labels (the namespace and the name
 dot separated ala 'alikins.collection_inspect').
