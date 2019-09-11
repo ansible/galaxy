@@ -6,6 +6,7 @@ from django.db import models
 from django.urls import reverse
 
 from galaxy import constants
+from galaxy.common.github import get_github_web_url
 from galaxy.main import fields
 
 from .base import BaseModel
@@ -106,18 +107,8 @@ class Repository(BaseModel):
 
     @property
     def clone_url(self):
-        server = ''
-        if 'github' in settings.SOCIALACCOUNT_PROVIDERS:
-            if 'GITHUB_URL' in settings.SOCIALACCOUNT_PROVIDERS['github']:
-                server = settings \
-                    .SOCIALACCOUNT_PROVIDERS['github'] \
-                    .GITHUB_URL
-            else:
-                server = 'https://github.com'
-        else:
-            server = 'https://github.com'
         return "{server}/{user}/{repo}.git".format(
-            server=server,
+            server=get_github_web_url(),
             user=self.provider_namespace.name,
             repo=self.original_name
         )
@@ -132,17 +123,7 @@ class Repository(BaseModel):
 
     @property
     def github_server(self):
-        server = ''
-        if 'github' in settings.SOCIALACCOUNT_PROVIDERS:
-            if 'GITHUB_URL' in settings.SOCIALACCOUNT_PROVIDERS['github']:
-                server = settings \
-                    .SOCIALACCOUNT_PROVIDERS['github'] \
-                    .GITHUB_URL
-            else:
-                server = 'https://github.com'
-        else:
-            server = 'https://github.com'
-        return server
+        return get_github_web_url()
 
     @property
     def content_counts(self):

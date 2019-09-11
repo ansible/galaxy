@@ -27,6 +27,7 @@ from django.utils import timezone
 from allauth.socialaccount import models as auth_models
 
 from galaxy import constants
+from galaxy.common.github import get_github_api_url
 from galaxy.importer import repository as i_repo
 from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
@@ -90,7 +91,7 @@ def _import_repository(import_task, logger):
     logger.info(' ')
 
     token = _get_social_token(import_task)
-    gh_api = github.Github(base_url=settings.GITHUB_SERVER,
+    gh_api = github.Github(base_url=get_github_api_url(),
                            login_or_token=token)
     gh_repo = gh_api.get_repo(repo_full_name)
 
@@ -319,7 +320,7 @@ def _update_repo_info(repository, gh_repo, commit_info, repo_description):
     repository.commit_message = commit_info.message[:255]
     repository.commit_url = \
         '{0}/repos/{1}/git/commits/{2}'.format(
-            settings.GITHUB_SERVER, gh_repo.full_name, commit_info.sha)
+            get_github_api_url(), gh_repo.full_name, commit_info.sha)
     repository.commit_created = commit_info.committer_date
 
 

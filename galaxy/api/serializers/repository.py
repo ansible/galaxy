@@ -15,10 +15,10 @@
 # You should have received a copy of the Apache License
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
-from django.conf import settings
 from django.urls import reverse
 from rest_framework import serializers as drf_serializers
 
+from galaxy.common.github import get_github_web_url
 from galaxy.main.models import Repository
 from . import serializers
 
@@ -165,19 +165,8 @@ class RepositorySerializer(serializers.BaseSerializer):
         }
 
     def get_external_url(self, instance):
-        server = ''
-        if instance.provider_namespace.provider.name.lower() == 'github':
-            if 'github' in settings.SOCIALACCOUNT_PROVIDERS:
-                if 'GITHUB_URL' in settings.SOCIALACCOUNT_PROVIDERS['github']:
-                    server = settings \
-                        .SOCIALACCOUNT_PROVIDERS['github'] \
-                        .GITHUB_URL
-                else:
-                    server = 'https://github.com'
-            else:
-                server = 'https://github.com'
         return '{0}/{1}/{2}'.format(
-            server,
+            get_github_web_url(),
             instance.provider_namespace.name,
             instance.original_name)
 
