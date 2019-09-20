@@ -5,7 +5,7 @@ Creating Collections
 ********************
 
 Collections are a distribution format for Ansible content. They can be used to
-package and distribute playbooks, roles, modules, and plugins. See  To learn how to develop collections, see  :ref:`Developing collections <ansible:developing_collections>`.
+package and distribute playbooks, roles, modules, and plugins. To learn how to develop collections, see  :ref:`Developing collections <ansible:developing_collections>`.
 
 
 .. _collection_metadata:
