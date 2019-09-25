@@ -431,8 +431,8 @@ for each ansible *collection* installed.
 
 For collections (see :ref:`installing_collections`)
 the *collection* level directory name will match the name of the collection
-in Galaxy. This name is set in ``galaxy.yml`` field ``name``, as descibed
-in :ref:`collection_metadata`.
+in Galaxy. This name is set in ``galaxy.yml`` field ``name``, as described
+in :ref:`collections metadata in the Ansible documentation <ansible:collections_galaxy_meta>`.
 
 For example, for the github repo
 at https://github.com/atestuseraccount/ansible-testing-content imported
@@ -485,5 +485,3 @@ exact "frozen" versions:
 
     alikins.collection_inspect: "1.0.0"
     alikins.collection_ntp: "2.3.4"
-
-

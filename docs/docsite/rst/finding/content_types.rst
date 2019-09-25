@@ -54,9 +54,9 @@ For more on using roles, view the `Roles topic at the Ansible docs site <https:/
 Ansible Collections
 ===================
 
-Ansible 2.8 introduced support for a new packaging format for creating and sharing Ansible content. This new format is called a Collection, and it lets you combine
+Ansible 2.8 introduced support for a new packaging format for creating and sharing Ansible content. This new format is called a :dfn:`collection`, and it lets you combine
 multiple playbooks, roles, modules, and plugins into a single artifact.
-To learn more about using Collections with Ansible, visit :ref:`Using collections <ansible:collections>`.
+To learn more about using collections, visit :ref:`Using collections in the Ansible documentation <ansible:collections>`.
 
 .. _ansible_playbook_bundles:
 

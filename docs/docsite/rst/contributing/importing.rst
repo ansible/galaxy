@@ -247,29 +247,4 @@ For more on creating tags, view :ref:`versioning_content`.
 Uploading Collections
 =====================
 
-To add Collections to a namespace, click the *Add Content* button as shown above, and from the dialogue box select *Upload New Collection*.
-This will prompt you to upload a collection artifact. Collection artifacts are built using ``mazer build``, as described in :ref:`building_collections`.
-
-.. image:: mycontent-13.png
-
-Once a collection has been uploaded and accepted by Galaxy, you will be redirected to the My Imports page, displaying output from the
-import process, including any errors or warnings about the metadata and content contained in the collection.
-
-.. image:: myimports-02.png
-
-Uploading Collections with Mazer
---------------------------------
-
-Collection artifacts can also be uploaded from the commandline using Mazer, as shown in the following example:
-
-.. code-block:: bash
-
-    mazer publish --api-key=SECRET path/to/namespace_name-collection_name-1.0.12.tar.gz
-
-The above will trigger an import process, just as if the collection had been uploaded through the Galaxy website. Use the My Imports
-page to view the output from the import process.
-
-Your API key can be found `on the Prefences page in Galaxy </me/preferences>`_.
-
-To learn more about Mazer, view :doc:`../mazer/index`.
-
+To upload a collection to Galaxy, see :ref:`Uploading a collection to Galaxy in the Ansible documentation <ansible:upload_collection_galaxy>`. 

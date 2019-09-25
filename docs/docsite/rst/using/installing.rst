@@ -238,4 +238,4 @@ the Ansible doc site <https://docs.ansible.com/ansible/latest/user_guide/playboo
 Collections
 ===========
 
-See :ref:`Installing collections <ansible:collections>` for detailed information about installing and using collections from Galaxy.
+See :ref:`Installing collections in the Ansible documentation <ansible:collections>` for detailed information about installing and using collections from Galaxy.
