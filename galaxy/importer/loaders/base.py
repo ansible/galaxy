@@ -62,7 +62,7 @@ class BaseLoader(metaclass=abc.ABCMeta):
         """
         if not self.name:
             return
-        if not re.match(constants.NAME_REGEXP, self.name):
+        if not re.match(constants.CONTENT_NAME_REGEXP, self.name):
             raise exc.ContentNameError(
                 f"{self.content_type} has invalid name: '{self.name}', "
                 "expecting name to contain only lowercase "
