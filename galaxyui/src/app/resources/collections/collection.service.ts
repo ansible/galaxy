@@ -31,7 +31,7 @@ export class CollectionUploadService extends ServiceBase {
         return this.http
             .request(req)
             .pipe(
-                tap((newObject: CollectionUpload) =>
+                tap((newObject: any) =>
                     this.log(`Uploaded new ${this.serviceName}`),
                 ),
             );
