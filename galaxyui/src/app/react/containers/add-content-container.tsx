@@ -298,9 +298,7 @@ export class AddContentModalContainer extends React.Component<IProps, IState> {
                     } else if (response instanceof HttpResponse) {
                         // Upload succeeds
                         this.router.navigateByUrl(
-                            `/my-imports/${
-                                this.props.namespace.id
-                            }?type=collection`,
+                            `/my-imports/${this.props.namespace.id}?type=collection`,
                         );
                         this.bsModalRef.hide();
                     }
