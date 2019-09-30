@@ -54,13 +54,9 @@ For more on using roles, view the `Roles topic at the Ansible docs site <https:/
 Ansible Collections
 ===================
 
-Ansible 2.8 introduced support for a new packaging format for creating and sharing Ansible content. This new format is called a Collection, and it enables the combining of
-multiple playbooks, roles, modules, and plugins into a single artifact. To learn more about the Collection package format, view :doc:`../contributing/creating_collections`.
-To learn more about using Collections with Ansible, visit `the Ansible doc site <https://docs.ansible.com>`_.
-
-The new Mazer command-line tool can be used to create a Collection, publish a Collection to Galaxy, and download and install Collections from Galaxy to your local
-filesystem. View :doc:`../mazer/index` to learn more about using Mazer to manage Collections. 
-
+Ansible 2.8 introduced support for a new packaging format for creating and sharing Ansible content. This new format is called a :dfn:`collection`, and it lets you combine
+multiple playbooks, roles, modules, and plugins into a single artifact.
+To learn more about using collections, visit :ref:`Using collections in the Ansible documentation <ansible:collections>`.
 
 .. _ansible_playbook_bundles:
 
