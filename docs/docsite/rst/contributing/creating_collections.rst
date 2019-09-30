@@ -87,7 +87,7 @@ Required Fields:
 
 Optional Fields:
     - ``dependencies``: A dictionary where keys are collections, and values are version
-      range 'specifiers <https://python-semanticversion.readthedocs.io/en/latest/#requirement-specification>`_,
+      range `specifiers <https://python-semanticversion.readthedocs.io/en/latest/#requirement-specification>`_,
       it is good practice to depend on a version range to minimize conflicts, and pin to a
       major version to protect against breaking changes, ex: ``"user1.collection1": ">=1.2.2,<2.0.0"``
       allow other collections as dependencies, not traditional roles.
