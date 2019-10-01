@@ -228,9 +228,7 @@ class BaseCollectionInfo(object):
     def _check_tags(self, attribute, value):
         """Check value against tag regular expression."""
         for tag in value:
-            # TODO update tag format once resolved
-            # https://github.com/ansible/galaxy/issues/1563
-            if not re.match(constants.TAG_REGEXP, tag):
+            if not re.match(constants.NAME_REGEXP, tag):
                 self.value_error(f"'tag' has invalid format: {tag}")
 
     def __attrs_post_init__(self):
