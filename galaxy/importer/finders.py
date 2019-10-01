@@ -135,7 +135,7 @@ class FileSystemFinder(BaseFinder):
                 continue
             meta_path = _find_metadata(file_path, ROLE_META_FILES)
             if not meta_path:
-                continue
+                raise exc.RoleMetadataNotFound('Role metadata not found')
             rel_path = os.path.relpath(file_path, self.path)
             yield Result(content_type, rel_path,
                          extra={'metadata_path': meta_path})
