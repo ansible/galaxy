@@ -129,6 +129,7 @@ class BaseCollectionInfo(object):
     @namespace.validator
     @name.validator
     @version.validator
+    @repository.validator
     def _check_required(self, attribute, value):
         """Check that value is present."""
         if not value:

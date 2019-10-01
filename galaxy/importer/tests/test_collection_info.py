@@ -12,6 +12,7 @@ def base_col_info():
         'name': 'jenkins',
         'version': '3.5.0',
         'license': ['MIT'],
+        'repository': 'https://github.com/ansible/orion/',
         # 'min_ansible_version': '2.4',
         'tags': ['testcases']
     }
