@@ -171,15 +171,11 @@ export class RepositoryDetailComponent implements OnInit {
                 }
 
                 // Append author namespace and repository name to breadcrumb
-                this.pageTitle += `${this.namespace.name};/${
-                    this.namespace.name
-                };${params['name']};`;
+                this.pageTitle += `${this.namespace.name};/${this.namespace.name};${params['name']};`;
 
                 // If content is specified, append it to the breadcrumb
                 if (this.selectedContent) {
-                    this.pageTitle += `/${this.namespace.name}/${
-                        params['name']
-                    };${req_content_name}`;
+                    this.pageTitle += `/${this.namespace.name}/${params['name']};${req_content_name}`;
                 }
                 this.repository.last_import = 'NA';
                 this.repository.last_commit = 'NA';

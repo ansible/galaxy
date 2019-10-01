@@ -48,9 +48,7 @@ export class CollectionDetailComponent implements OnInit {
         }
 
         // Append author namespace and repository name to breadcrumb
-        this.pageTitle += `${this.collection.namespace.name};/${
-            this.collection.namespace.name
-        };${this.collection.name};`;
+        this.pageTitle += `${this.collection.namespace.name};/${this.collection.namespace.name};${this.collection.name};`;
 
         this.mappedNamespaceOwners = [];
         this.collection.namespace.owners.forEach(id => {

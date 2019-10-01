@@ -62,14 +62,12 @@ export class CardInfoComponent implements OnInit {
             let cmd;
             if (this.repoType === 'multi') {
                 cmd =
-                    `mazer install ${
-                        repoContent.summary_fields['namespace']['name']
-                    }.` + `${repoContent.summary_fields['repository']['name']}`;
+                    `mazer install ${repoContent.summary_fields['namespace']['name']}.` +
+                    `${repoContent.summary_fields['repository']['name']}`;
             } else {
                 cmd =
-                    `ansible-galaxy install ${
-                        repoContent.summary_fields['namespace']['name']
-                    }.` + `${repoContent.name}`;
+                    `ansible-galaxy install ${repoContent.summary_fields['namespace']['name']}.` +
+                    `${repoContent.name}`;
             }
 
             this.infoData.install_cmd = cmd;
@@ -91,9 +89,7 @@ export class CardInfoComponent implements OnInit {
             }
         }
         this.infoData = {
-            install_cmd: `mazer install ${collection.namespace.name}.${
-                collection.name
-            }`,
+            install_cmd: `mazer install ${collection.namespace.name}.${collection.name}`,
             tags: collection.latest_version.metadata.tags,
             latest_version: collection.latest_version,
             versions: versions,
