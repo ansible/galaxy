@@ -115,12 +115,13 @@ class ApiRootView(base_views.APIView):
 
     def get(self, request, format=None):
         # list supported API versions
+        current = reverse('api:api_v1_root_view', args=[])
         data = dict(
             description='GALAXY REST API',
             current_version='v1',
             available_versions=dict(
-                v1="v1/",
-                v2="v2/",
+                v1=current,
+                v2=reverse('api:v2:api_v2_root_view'),
             ),
             server_version=version.get_package_version('galaxy'),
             version_name=version.get_version_name(),
