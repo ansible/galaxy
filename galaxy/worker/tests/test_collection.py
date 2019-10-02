@@ -33,6 +33,7 @@ class TestDependencies(TestCase):
             'license': ['MIT'],
             # 'min_ansible_version': '2.4',
             'authors': ['Bob Smith <b.smith@acme.com>'],
+            'repository': 'https://github.com/ansible/orion/',
             'tags': ['testcases'],
             'readme': 'README.rst',
             'dependencies': {}
