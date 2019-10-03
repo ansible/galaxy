@@ -37,6 +37,10 @@ class ContentNotFound(ImporterError):
     pass
 
 
+class RoleMetadataNotFound(ImporterError):
+    pass
+
+
 class ContentLoadError(ImporterError):
     pass
 

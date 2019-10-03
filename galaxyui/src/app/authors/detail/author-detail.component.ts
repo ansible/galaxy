@@ -189,14 +189,10 @@ export class AuthorDetailComponent implements OnInit {
                     }
                 });
                 if (this.namespace.is_vendor) {
-                    this.pageTitle = `Partners;/partners;${
-                        this.namespace.name
-                    }`;
+                    this.pageTitle = `Partners;/partners;${this.namespace.name}`;
                     this.pageIcon = 'fa fa-star';
                 } else {
-                    this.pageTitle = `Community Authors;/community;${
-                        this.namespace.name
-                    }`;
+                    this.pageTitle = `Community Authors;/community;${this.namespace.name}`;
                     this.pageIcon = 'fa fa-users';
                 }
                 this.parepareNamespace();
