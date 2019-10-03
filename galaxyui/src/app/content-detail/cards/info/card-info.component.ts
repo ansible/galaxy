@@ -21,6 +21,7 @@ class InfoData {
     install_cmd: string;
     min_ansible_version: any;
     readme: string;
+    install_warn: string;
 }
 
 @Component({
@@ -89,11 +90,13 @@ export class CardInfoComponent implements OnInit {
             }
         }
         this.infoData = {
-            install_cmd: `mazer install ${collection.namespace.name}.${collection.name}`,
+            install_cmd: `ansible-galaxy collection install ${collection.namespace.name}.${collection.name}`,
             tags: collection.latest_version.metadata.tags,
             latest_version: collection.latest_version,
             versions: versions,
             readme: collection.latest_version.readme_html,
+            install_warn:
+                'Installing collections with ansible-galaxy is only supported in ansible 2.9+',
         } as InfoData;
     }
 
@@ -108,6 +111,7 @@ export class CardInfoComponent implements OnInit {
         apb_metadata: null,
         install_cmd: null,
         min_ansible_version: null,
+        install_warn: null,
     } as InfoData;
 
     ngOnInit() {
@@ -125,7 +129,7 @@ export class CardInfoComponent implements OnInit {
         if (version === '') {
             this.infoData.install_cmd = cmd;
         } else {
-            this.infoData.install_cmd = `${cmd},version=${version}`;
+            this.infoData.install_cmd = `${cmd}:${version}`;
         }
     }
 
