@@ -126,9 +126,7 @@ export class ImportConsoleComponent extends React.Component<IProps, {}> {
                 <div className='title-container'>
                     <Link
                         className='title'
-                        to={`/${selectedImport.namespace.name}/${
-                            selectedImport.name
-                        }`}
+                        to={`/${selectedImport.namespace.name}/${selectedImport.name}`}
                     >
                         {selectedImport.namespace.name}.{selectedImport.name}
                     </Link>

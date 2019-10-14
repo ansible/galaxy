@@ -25,9 +25,4 @@ Versioning Collections
 ======================
 
 Version numbers are required for collections and are included in the collection's ``galaxy.yml`` file
-(see :ref:`collection_metadata` for details). Galaxy enforces uniqueness on a collection's namespace, name,
-and version number. Once a collection version is uploaded, it cannot be altered or removed. Changes are made
-by releasing a new version.
-
-The Galaxy website displays the details for the highest (or latest) version available; however, older versions
-of a collection are still available for download.
+(see :ref:`collection versions in the Ansible documentation <ansible:collection_versions>` for details).

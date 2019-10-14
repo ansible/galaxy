@@ -40,10 +40,6 @@ and services from your company. Whatever it is, use Galaxy to share it with the 
 
    contributing/index
 
-.. toctree::
-   :maxdepth: 3
-   :caption: Mazer
-
    mazer/index
 
 .. toctree::

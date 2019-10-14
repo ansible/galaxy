@@ -95,9 +95,7 @@ export class RepoListItem extends React.Component<IProps, {}> {
     private renderAdditional(repo) {
         const items = [];
 
-        const importLink = `/my-imports/${
-            this.props.namespace.id
-        }?type=repository&name=${repo.name}`;
+        const importLink = `/my-imports/${this.props.namespace.id}?type=repository&name=${repo.name}`;
 
         let importElement = <span className='text'>Status Unknown</span>;
 

@@ -54,7 +54,6 @@ class SearchRequestSerializer(serializers.Serializer):
         default=None,
     )
     tags = SeparatedStringField(
-        child=fields.RegexField(regex=constants.TAG_REGEXP),
         default=None,
     )
     contributor_type = fields.ChoiceField(

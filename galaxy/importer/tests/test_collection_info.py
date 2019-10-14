@@ -12,6 +12,7 @@ def base_col_info():
         'name': 'jenkins',
         'version': '3.5.0',
         'license': ['MIT'],
+        'repository': 'https://github.com/ansible/orion/',
         # 'min_ansible_version': '2.4',
         'tags': ['testcases']
     }
@@ -50,21 +51,24 @@ invalid_names = [
 
 valid_tags = [
     'deployment',
-    'fedora',
-    'fedora29'
-    '4ubuntu',
+    'fedora_29',
+    'fedora29',
     'alloneword',
-    '007',
-    '0x4e3'
+    'a007',
+    'good_tag',
+    'deploy_',
 ]
 
 invalid_tags = [
-    'bad_tag',
+    'bad__tag',
     'bad-tag',
     'bad tag',
     'bad.tag',
-    '_deploy',
+    '__deploy',
     'inv@lid/char',
+    '007',
+    '0x4e3',
+    '4ubuntu',
 ]
 
 valid_semver = [
@@ -155,11 +159,11 @@ def test_invalid_tags(base_col_info):
 
 
 def test_max_tags(galaxy_col_info):
-    galaxy_col_info['tags'] = [str(i) for i in range(90, 110)]
+    galaxy_col_info['tags'] = [f'a{i}' for i in range(90, 110)]
     res = GalaxyCollectionInfo(**galaxy_col_info)
-    assert [str(x) for x in range(90, 110)] == res.tags
+    assert [f'a{x}' for x in range(90, 110)] == res.tags
 
-    galaxy_col_info['tags'] = [str(i) for i in range(90, 111)]
+    galaxy_col_info['tags'] = [f'a{i}' for i in range(90, 111)]
     with pytest.raises(ValueError) as exc:
         GalaxyCollectionInfo(**galaxy_col_info)
     assert 'Expecting no more than ' in str(exc)
