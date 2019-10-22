@@ -78,6 +78,12 @@ class TokenView(base_views.APIView):
         try:
             git_status = requests.get(get_github_api_url())
             git_status.raise_for_status()
+        except requests.exceptions.RequestException as err:
+            if err.response.status_code == 101:
+
+            raise ValidationError({
+                'detail': "Error accessing GitHub API. Please try again later."
+            })
         except Exception:
             raise ValidationError({
                 'detail': "Error accessing GitHub API. Please try again later."

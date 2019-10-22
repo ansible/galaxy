@@ -278,8 +278,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['r_emailaddress']
     },
     'github': {
-        'SCOPE': ['user:email', 'read:org'],
-        'GITHUB_URL': 'https://github.ibm.com'
+        'SCOPE': ['user:email', 'read:org']
     },
 }
 
