@@ -14,11 +14,11 @@ Roles
 =====
 
 Use the ``ansible-galaxy`` command to download roles from the `Galaxy server <https://galaxy.ansible.com>`_.
-For example, the following downloads the `debops.apt role <https://galaxy.ansible.com/debops/apt/>`_:
+For example, the following downloads the `debops.debops role <https://galaxy.ansible.com/debops/debops/>`_:
 
 .. code-block:: bash
 
-    $ ansible-galaxy install debops.apt
+    $ ansible-galaxy install debops.debops
 
 Determining Where Roles Are Installed
 -------------------------------------
@@ -31,7 +31,7 @@ demonstrated by the following example:
 
 .. code-block:: bash
 
-    $ ansible-galaxy install --roles-path ~/ansible-roles debops.apt
+    $ ansible-galaxy install --roles-path ~/ansible-roles debops.debops
 
 Override the default behavior by setting the environment variable ``ANSIBLE_ROLES_PATH``. When set, the
 *ANSIBLE_ROLES_PATH* variable is used during playbook execution to locate installed roles, and by ``ansible-galaxy``
