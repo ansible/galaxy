@@ -1,12 +1,13 @@
+---
 language: python
 python: 3.6
 sudo: required
 
 env:
-- PYTHONUNBUFFERED=1
+  - PYTHONUNBUFFERED=1
 
 services:
-- docker
+  - docker
 
 # TODO(cutwater): Do we need this?
 # before_install:
@@ -14,49 +15,52 @@ services:
 # - sudo apt-get update -qq
 
 install:
-- pip install ansible flake8
+  - pip install ansible flake8 yamllint
 
 script:
-# run flake8
-- make test/flake8
+  # run flake8
+  - make test/flake8
 
-# build images
-- make build/docker-dev
+  # run yamllint
+  - make test/yamllint
 
-# TODO(cutwater): Run tests locally
-# start the application
-- make dev/up_detached
-- make dev/waitenv
-- make dev/shellcheck
-- make dev/checkmigrations
-- make dev/test
+  # build images
+  - make build/docker-dev
 
-# check images running
-- docker ps -a
-- docker images
-- docker-compose -f scripts/docker/dev/compose.yml -p galaxy logs galaxy
+  # TODO(cutwater): Run tests locally
+  # start the application
+  - make dev/up_detached
+  - make dev/waitenv
+  - make dev/shellcheck
+  - make dev/checkmigrations
+  - make dev/test
 
-# Run simple web server test
-- pushd testing/simple
-- ansible-playbook -i inventory test.yml
-- popd
+  # check images running
+  - docker ps -a
+  - docker images
+  - docker-compose -f scripts/docker/dev/compose.yml -p galaxy logs galaxy
 
-# Run JavaScript test
-- make dev/jslint
-- make test/prettier
+  # Run simple web server test
+  - pushd testing/simple
+  - ansible-playbook -i inventory test.yml
+  - popd
 
-# Check the logs
-- docker ps -a
-- make dev/log
+  # Run JavaScript test
+  - make dev/jslint
+  - make test/prettier
 
-# Stop the application
-- make dev/down
+  # Check the logs
+  - docker ps -a
+  - make dev/log
 
-# Build release image
-- |
-  if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-    make build/release
-  fi
+  # Stop the application
+  - make dev/down
+
+  # Build release image
+  - |
+    if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
+      make build/release
+    fi
 
 after_success:
-- scripts/travis-publish-image.sh
+  - scripts/travis-publish-image.sh

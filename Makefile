@@ -107,6 +107,10 @@ test/changed:
 test/flake8:
 	flake8 galaxy
 
+.PHONY: test/yamllint
+test/yamllint:
+	yamllint -s .
+
 .PHONY: test/jslint
 test/jslint:
 	cd galaxyui; ng lint
