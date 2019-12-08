@@ -138,6 +138,11 @@ dev/createsuperuser:
 	@echo "Create Superuser"
 	@$(DOCKER_COMPOSE) exec galaxy $(GALAXY_VENV)/bin/python ./manage.py createsuperuser
 
+.PHONY: dev/createusertoken
+dev/createusertoken:
+	@echo "Create user token"
+	@$(DOCKER_COMPOSE) exec -T galaxy $(GALAXY_VENV)/bin/python ./manage.py drf_create_token $(USERNAME)
+
 .PHONY: dev/migrate
 dev/migrate:
 	@$(DOCKER_COMPOSE) exec galaxy $(GALAXY_VENV)/bin/python ./manage.py migrate --noinput
