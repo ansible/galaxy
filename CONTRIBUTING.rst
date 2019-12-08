@@ -334,6 +334,18 @@ the creation process. You'll be prompted for the vital details as depicted below
 
 The Django admin site can be accessed at `http://localhost:8000/admin <http://localhost:8000/admin>`_.
 
+Create a namespace
+^^^^^^^^^^^^^^^^^^
+
+From the root of the project tree, run ``make dev/namespace`` to start
+the creation process. You'll see the details as depicted below:
+
+.. code-block:: console
+
+    $ make USERNAME=admin NAMESPACE=demo dev/createnamespace
+    Create namespace
+    Namespace created successfully
+
 Connect to GitHub
 -----------------
 

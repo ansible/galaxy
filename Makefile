@@ -133,6 +133,11 @@ docker/test-flake8:
 .PHONY: dev/build
 dev/build: build/docker-dev
 
+.PHONY: dev/createnamespace
+dev/createnamespace:
+	@echo "Create namespace"
+	@$(DOCKER_COMPOSE) exec -T galaxy $(GALAXY_VENV)/bin/python ./manage.py create_namespace $(NAMESPACE) $(USERNAME)
+
 .PHONY: dev/createsuperuser
 dev/createsuperuser:
 	@echo "Create Superuser"
