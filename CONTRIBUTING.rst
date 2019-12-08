@@ -346,6 +346,18 @@ the creation process. You'll see the details as depicted below:
     Create user token
     Generated token ea40be900297ece22f782be651144251f59ac487 for user admin
 
+Create a namespace
+^^^^^^^^^^^^^^^^^^
+
+From the root of the project tree, run ``make USERNAME=admin NAMESPACE=demo dev/namespace`` to start
+the creation process. You'll see the details as depicted below:
+
+.. code-block:: console
+
+    $ make USERNAME=admin NAMESPACE=demo dev/createnamespace
+    Create namespace
+    Namespace created successfully
+
 Connect to GitHub
 -----------------
 
