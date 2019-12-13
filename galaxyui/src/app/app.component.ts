@@ -157,7 +157,7 @@ export class AppComponent implements OnInit {
             {
                 title: 'Community',
                 iconStyleClass: 'fa fa-users',
-                url: '/community',
+                url: '/authors',
             },
         ] as VerticalNavigationItem[];
 

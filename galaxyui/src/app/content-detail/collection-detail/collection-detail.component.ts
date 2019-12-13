@@ -43,7 +43,7 @@ export class CollectionDetailComponent implements OnInit {
             this.pageTitle = 'Vendors;/vendors;';
             this.pageIcon = 'fa fa-star';
         } else {
-            this.pageTitle = 'Community Authors;/community;';
+            this.pageTitle = 'Community Authors;/authors;';
             this.pageIcon = 'fa fa-users';
         }
 
