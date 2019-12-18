@@ -1,15 +1,19 @@
 ---
 name: Request a Namespace
 about: Request a new namespace for one of your GitHub Orgs
-title: ''
-labels: ''
+title: 'namespace: FIXME'
+labels: area/namespace
 assignees: chouseknecht
 
 ---
 
 ## Namespace Request
+Namespace: 
 
-##### Github Org Link
+##### Description
+<!--- One line description, will be visible in Galaxy--->
+
+##### GitHub Org Link
 <!--- Please provide us with a link to your GitHub org -->
 
 ##### Admins
