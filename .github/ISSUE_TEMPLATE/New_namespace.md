@@ -18,4 +18,4 @@ Namespace:
 
 ##### Admins
 <!--- Please provide us with a list of Galaxy users who you would like to set up as admins on this namespace -->
-<!--- Please ensure they have logged into galaxy.ansible.com, which will create their user account -->
+<!--- Please ensure each admin has logged into galaxy.ansible.com, which will create their user account -->
