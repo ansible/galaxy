@@ -192,7 +192,7 @@ export class AuthorDetailComponent implements OnInit {
                     this.pageTitle = `Partners;/partners;${this.namespace.name}`;
                     this.pageIcon = 'fa fa-star';
                 } else {
-                    this.pageTitle = `Community Authors;/community;${this.namespace.name}`;
+                    this.pageTitle = `Community Authors;/authors;${this.namespace.name}`;
                     this.pageIcon = 'fa fa-users';
                 }
                 this.parepareNamespace();

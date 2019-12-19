@@ -12,7 +12,7 @@ import { AuthorsComponent } from './authors.component';
 
 const routes: Routes = [
     {
-        path: 'community',
+        path: 'authors',
         component: AuthorsComponent,
         resolve: {
             namespaces: NamespaceListResolver,
