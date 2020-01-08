@@ -18,7 +18,7 @@ For example, the following downloads the `debops.apt role <https://galaxy.ansibl
 
 .. code-block:: bash
 
-    $ ansible-galaxy install debops.apt
+    $ ansible-galaxy collection install debops.debops
 
 Determining Where Roles Are Installed
 -------------------------------------
@@ -31,7 +31,7 @@ demonstrated by the following example:
 
 .. code-block:: bash
 
-    $ ansible-galaxy install --roles-path ~/ansible-roles debops.apt
+    $ ansible-galaxy collection install --roles-path ~/ansible-roles debops.debops
 
 Override the default behavior by setting the environment variable ``ANSIBLE_ROLES_PATH``. When set, the
 *ANSIBLE_ROLES_PATH* variable is used during playbook execution to locate installed roles, and by ``ansible-galaxy``
@@ -58,7 +58,7 @@ role.
 
 .. code-block:: bash
 
-   $ ansible-galaxy install geerlingguy.apache,v1.0.0
+   $ ansible-galaxy install geerlingguy.apache,1.0.0
 
 It's also possible to point directly to the git repository and specify a branch name or commit hash as the version.
 For example, the following installs a specific commit:
