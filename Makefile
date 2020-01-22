@@ -262,6 +262,10 @@ dev/rm:
 	$(DOCKER_COMPOSE) stop
 	$(DOCKER_COMPOSE) rm -f
 
+.PHONY: dev/logs
+dev/logs:
+	$(DOCKER_COMPOSE) logs -f $(GALAXY_SERVICE)
+
 .PHONY: dev/export-test-data
 export-test-data:
 	@echo Export data to test-data/role_data.dmp.gz

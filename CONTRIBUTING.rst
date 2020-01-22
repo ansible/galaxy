@@ -203,10 +203,9 @@ background, run the following command:
 
 
 Since the ``stdout`` and ``stderr`` are not streaming to your terminal
-session, you'll need to use the ``docker logs`` command to view logging output.
-As pictured above in `Quick start`_, use ``docker ps`` to see
-the list of running containers, then use ``docker logs -f <container name>``
-to stream a container's output. Use ``<Ctrl-C>`` to stop the streaming output.
+session, you'll need to use the ``make dev/logs`` command to view logging output.
+Feel free to e.g. use ``make dev/logs GALAXY_SERVICE=galaxy`` to see
+the streaming logs from only that service. Use ``<Ctrl-C>`` to stop the streaming output.
 
 Running through tmux
 ^^^^^^^^^^^^^^^^^^^^
