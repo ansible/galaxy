@@ -1,3 +1,4 @@
+---
 accelerate: "*DEPRECATED*, set to True to use accelerate connection plugin."
 accelerate_ipv6: "*DEPRECATED*, set to True to force accelerate plugin to use ipv6 for its connection."
 accelerate_port: "*DEPRECATED*, set to override default port use for accelerate connection."

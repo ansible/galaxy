@@ -1,19 +1,20 @@
+---
 version: '3'
 services:
-#  galaxy:
-#    depends_on:
-#      - galaxy-ui
-#      - galaxy-api
-#      - galaxy-celery-beat
-#      - galaxy-celery-worker
-#      - galaxy-pulp-rm
-#      - galaxy-pulp-worker
-#
-#  galaxy-headless:
-#    depends_on:
-#      - influxdb
-#      - rabbitmq
-#      - postgres
+  #  galaxy:
+  #    depends_on:
+  #      - galaxy-ui
+  #      - galaxy-api
+  #      - galaxy-celery-beat
+  #      - galaxy-celery-worker
+  #      - galaxy-pulp-rm
+  #      - galaxy-pulp-worker
+  #
+  #  galaxy-headless:
+  #    depends_on:
+  #      - influxdb
+  #      - rabbitmq
+  #      - postgres
 
   galaxy-api:
     image: galaxy:latest
