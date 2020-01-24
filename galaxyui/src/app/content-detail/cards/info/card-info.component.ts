@@ -22,6 +22,7 @@ class InfoData {
     min_ansible_version: any;
     readme: string;
     install_warn: string;
+    download_url: string;
 }
 
 @Component({
@@ -32,6 +33,7 @@ class InfoData {
 export class CardInfoComponent implements OnInit {
     // Used to track which component is being loaded
     componentName = 'CardInfoComponent';
+    all_versions = [];
 
     constructor() {}
 
@@ -82,11 +84,16 @@ export class CardInfoComponent implements OnInit {
         const versions = [];
 
         const collection = cloneDeep(col);
+        let download_url;
+
+        this.all_versions = collection.all_versions;
 
         for (const version of collection.all_versions) {
             if (version.version !== collection.latest_version.version) {
                 version.created = moment(version.created).fromNow();
                 versions.push(version);
+            } else {
+                download_url = version.download_url;
             }
         }
         this.infoData = {
@@ -97,6 +104,7 @@ export class CardInfoComponent implements OnInit {
             readme: collection.latest_version.readme_html,
             install_warn:
                 'Installing collections with ansible-galaxy is only supported in ansible 2.9+',
+            download_url: download_url,
         } as InfoData;
     }
 
@@ -112,6 +120,7 @@ export class CardInfoComponent implements OnInit {
         install_cmd: null,
         min_ansible_version: null,
         install_warn: null,
+        download_url: null,
     } as InfoData;
 
     ngOnInit() {
@@ -124,7 +133,16 @@ export class CardInfoComponent implements OnInit {
 
     updateVersion($event) {
         const version = $event.target.value;
-        const cmd = this.infoData.install_cmd.split(',')[0];
+        const cmd = this.infoData.install_cmd.split(':')[0];
+
+        const versionObj = this.all_versions.find(
+            x =>
+                x.version === (version || this.infoData.latest_version.version),
+        );
+
+        if (versionObj) {
+            this.infoData.download_url = versionObj.download_url;
+        }
 
         if (version === '') {
             this.infoData.install_cmd = cmd;

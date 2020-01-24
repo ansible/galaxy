@@ -43,9 +43,14 @@ VERSION_LIST_FIELDS = (
 
 
 class VersionListSerializer(serializers.ModelSerializer):
+    download_url = serializers.SerializerMethodField()
+
     class Meta:
         model = models.CollectionVersion
-        fields = VERSION_LIST_FIELDS
+        fields = VERSION_LIST_FIELDS + ('download_url',)
+
+    def get_download_url(self, obj):
+        return obj.get_download_url()
 
 
 class VersionDetailSerializer(serializers.ModelSerializer):

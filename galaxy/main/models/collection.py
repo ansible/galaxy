@@ -142,10 +142,9 @@ class CollectionVersion(mixins.TimestampsMixin, pulp_models.Content):
     def get_download_url(self) -> str:
         """Builds artifact download url pointing to Pulp's content app."""
         prefix = settings.GALAXY_DOWNLOAD_URL
-        repository = settings.GALAXY_PULP_REPOSITORY
         ca = self.get_content_artifact()
         return '/' + '/'.join(
-            s.strip('/') for s in (prefix, repository, ca.relative_path))
+            s.strip('/') for s in (prefix, ca.relative_path))
 
 
 class CollectionImport(Task):

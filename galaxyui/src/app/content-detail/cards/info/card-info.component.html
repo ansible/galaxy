@@ -52,6 +52,13 @@
                 </div>
             </div>
 
+            <div class="info-row" *ngIf="infoData.download_url">
+                <div class="info-title"></div>
+                <div class="info-data">
+                    <div><a [href]="infoData.download_url"><i class="fa fa-download"></i> Download tarball</a></div>
+                </div>
+            </div>
+
             <div class="info-row" *ngIf="infoData.latest_version">
                 <div class="info-title">
                     Install Version

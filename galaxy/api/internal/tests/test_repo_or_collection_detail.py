@@ -43,10 +43,21 @@ class TestRepoOrCollection(APITestCase):
             name='collection'
         )
 
-        models.CollectionVersion.objects.create(
+        version = models.CollectionVersion.objects.create(
             collection=collection,
             version='1.0.0',
             contents={},
+        )
+
+        artifact = pulp_models.Artifact.objects.create(
+            size=427611,
+            sha256='01ba4719c80b6fe911b091a7c05124b6'
+                   '4eeece964e09c058ef8f9805daca546b'
+        )
+
+        pulp_models.ContentArtifact.objects.create(
+            content=version, artifact=artifact,
+            relative_path='mynamespace-mycollection-1.0.0.tar.gz'
         )
 
         pulp_task = pulp_models.Task.objects.create(
@@ -75,6 +86,11 @@ class TestRepoOrCollection(APITestCase):
         assert resp['type'] == 'collection'
         assert resp['data']['collection']['name'] == 'collection'
         assert resp['data']['collection_import']['id'] == 42
+
+        versions = resp['data']['collection']['all_versions']
+        assert len(versions) == 1
+        assert versions[0]['download_url'] == \
+            '/download/mynamespace-mycollection-1.0.0.tar.gz'
 
     def test_get_repo(self):
         url = self.base_url + '?namespace=mynamespace&name=repo'
