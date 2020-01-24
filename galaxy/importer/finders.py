@@ -118,8 +118,10 @@ class FileSystemFinder(BaseFinder):
         for file_name in os.listdir(content_dir):
             file_path = os.path.join(content_dir, file_name)
             if os.path.isdir(file_path):
-                self.log.warning("Directory detected: '{0}'. "
-                                 "Nested modules are not supported.".format(file_path))
+                self.log.warning(
+                    "Directory detected: '{0}'. "
+                    "Nested modules are not supported.".format(
+                        file_path))
                 continue
             if (not os.path.isfile(file_path)
                     or not file_name.endswith('.py')
