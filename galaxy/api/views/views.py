@@ -51,14 +51,6 @@ from galaxy.main.celerytasks import tasks as celerytasks
 from galaxy.main import models
 from galaxy.common import version, sanitize_content_name
 
-# monitor
-from kombu import Connection as RabbitMQ
-from django.db.migrations.executor import MigrationExecutor
-from django.db import connections, DatabaseError, DEFAULT_DB_ALIAS
-import influxdb
-import redis
-
-
 logger = logging.getLogger(__name__)
 
 __all__ = [
@@ -73,7 +65,6 @@ __all__ = [
     'ImportTaskLatestList',
     'ImportTaskList',
     'ImportTaskNotificationList',
-    'MonitorRootView',
     'PlatformDetail',
     'PlatformList',
     'ProviderRootView',
@@ -115,71 +106,6 @@ def filter_rating_queryset(qs):
     )
 
 # -----------------------------------------------------------------------------
-
-
-class MonitorRootView(base_views.APIView):
-    """ Monitor resources """
-    permission_classes = (AllowAny,)
-
-    monitor_response = OrderedDict()
-
-    def get(self, request, format=None):
-        if not settings.GALAXY_METRICS_ENABLED:
-            self.monitor_response['influx'] = 'n/a'
-        else:
-            influxdb_client = influxdb.InfluxDBClient(
-                host=settings.INFLUX_DB_HOST,
-                port=settings.INFLUX_DB_PORT,
-                username=settings.INFLUX_DB_USERNAME,
-                password=settings.INFLUX_DB_PASSWORD
-            )
-
-            try:
-                influxdb_client.ping()
-                self.monitor_response['influx'] = 'ok'
-            except influxdb.client.InfluxDBClientError:
-                self.monitor_response['influx'] = 'error'
-
-            influxdb_client.close()
-
-        try:
-            connection = connections[DEFAULT_DB_ALIAS]
-            connection.prepare_database()
-            executor = MigrationExecutor(connection)
-            targets = executor.loader.graph.leaf_nodes()
-
-            if not executor.migration_plan(targets):
-                self.monitor_response['migrations'] = 'ok'
-            else:
-                self.monitor_response['migrations'] = 'needed'
-
-            self.monitor_response['postgresql'] = 'ok'
-        except DatabaseError:
-            self.monitor_response['postgresql'] = 'error'
-
-        redis_client = redis.Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            db=0
-        )
-
-        try:
-            redis_client.ping()
-            self.monitor_response['redis'] = 'ok'
-        except redis.exceptions.RedisError:
-            self.monitor_response['redis'] = 'error'
-
-        rabbit_client = RabbitMQ(settings.BROKER_URL)
-
-        rabbit_client.connect()
-        if rabbit_client.connected:
-            self.monitor_response['rabbitmq'] = 'ok'
-        else:
-            self.monitor_response['rabbitmq'] = 'error'
-
-        rabbit_client.close()
-
-        return Response(self.monitor_response)
 
 
 class ApiRootView(base_views.APIView):

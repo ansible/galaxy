@@ -34,3 +34,4 @@ from .views import *                # noqa
 from .survey import *               # noqa
 from .influx import *               # noqa
 from .active_user import *          # noqa
+from .monitor import *              # noqa
