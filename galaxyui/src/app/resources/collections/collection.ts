@@ -17,6 +17,7 @@ export class CollectionVersion {
     id: number;
     quality_score: number;
     version: string;
+    download_url?: string;
     metadata: {
         tags: string[];
         authors: string[];

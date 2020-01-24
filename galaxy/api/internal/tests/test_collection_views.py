@@ -20,6 +20,7 @@ from rest_framework import status as http_codes
 from django.contrib.auth import get_user_model
 
 from galaxy.main import models
+from pulpcore.app import models as pulp_models
 
 UserModel = get_user_model()
 
@@ -53,6 +54,19 @@ class TestCollectionView(APITestCase):
             collection=self.collection,
             version='1.0.1',
         )
+        artifact = pulp_models.Artifact.objects.create(
+            size=427611,
+            sha256='01ba4719c80b6fe911b091a7c05124b6'
+                   '4eeece964e09c058ef8f9805daca546b'
+        )
+
+        for version in [self.version0, self.version1]:
+            pulp_models.ContentArtifact.objects.create(
+                content=version, artifact=artifact,
+                relative_path='mynamespace-mycollection-{v}.tar.gz'.format(
+                    v=version.version
+                ))
+
         self.collection.latest_version = self.version1
         self.collection.save()
 
