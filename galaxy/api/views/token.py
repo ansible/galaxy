@@ -2,7 +2,6 @@ import logging
 import requests
 
 from allauth.socialaccount.models import SocialAccount
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 
@@ -14,6 +13,7 @@ from rest_framework.authentication import SessionAuthentication
 
 from galaxy.api.views import base_views
 from galaxy.api.serializers import TokenSerializer
+from galaxy.common.github import get_github_api_url
 
 __all__ = [
     'TokenView',
@@ -76,7 +76,7 @@ class TokenView(base_views.APIView):
             raise ValidationError({'detail': "Invalid request."})
 
         try:
-            git_status = requests.get(settings.GITHUB_SERVER)
+            git_status = requests.get(get_github_api_url())
             git_status.raise_for_status()
         except Exception:
             raise ValidationError({
@@ -86,7 +86,7 @@ class TokenView(base_views.APIView):
         try:
             header = dict(Authorization='token ' + github_token)
             gh_user = requests.get(
-                settings.GITHUB_SERVER + '/user', headers=header
+                get_github_api_url() + '/user', headers=header
             )
             gh_user.raise_for_status()
             gh_user = gh_user.json()
