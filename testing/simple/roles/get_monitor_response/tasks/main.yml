@@ -1,0 +1,7 @@
+---
+- name: Access the monitor endpoint
+  uri:
+    url: "http://{{ galaxy_host }}:{{ galaxy_port }}/api/monitor"
+    return_content: true
+    body_format: json
+  register: monitor_response

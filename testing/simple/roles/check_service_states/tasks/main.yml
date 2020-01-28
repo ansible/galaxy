@@ -1,0 +1,28 @@
+---
+- name: A service is expected to be down
+  block:
+    - name: Check service is down
+      assert:
+        that:
+          - item.value == 'error'
+      loop: "{{ monitor_response.json|dict2items }}"
+      when: item.key == expected_down
+
+    - name: Check remaining services are up
+      assert:
+        that:
+          - item.value == 'ok'
+      loop: "{{ monitor_response.json|dict2items }}"
+      when: item.key != expected_down
+
+  when: expected_down != ''
+
+- name: All services should be up
+  block:
+    - name: Check service is up
+      assert:
+        that:
+          - item.value == 'ok'
+      loop: "{{ monitor_response.json|dict2items }}"
+
+  when: expected_down == ''
