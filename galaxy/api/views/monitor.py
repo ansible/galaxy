@@ -86,10 +86,11 @@ def get_postgres_status():
 
 
 def get_redis_status():
-    client = redis.Redis(
+    pool = redis.ConnectionPool(
         host=settings.REDIS_HOST,
         port=settings.REDIS_PORT
     )
+    client = redis.Redis(connection_pool=pool)
     try:
         client.ping()
     except redis.RedisError:
@@ -98,7 +99,7 @@ def get_redis_status():
         logger.exception('Unexpected error when trying to connect to Redis')
         return 'error'
     finally:
-        del client
+        pool.disconnect()
     return 'ok'
 
 

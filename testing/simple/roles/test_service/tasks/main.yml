@@ -1,0 +1,27 @@
+---
+- debug:
+    msg: "Testing service {{ service_item.service_name }}"
+
+- name: Get the container name
+  include_role:
+    name: get_container_name
+  vars:
+    name_contains: "{{ service_item.service_name }}"
+
+- name: Stop the service
+  command: docker stop {{ container_name }}
+
+- include_role:
+    name: get_monitor_response
+
+- include_role:
+    name: check_service_states
+  vars:
+    expected_down: "{{ service_item.expected_down }}"
+
+- name: Restart the service
+  command: docker restart {{ container_name }}
+
+- name: Wait for service to start
+  wait_for:
+    timeout: 15

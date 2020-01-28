@@ -21,3 +21,7 @@
       assert:
         that:
           - "'<title>Ansible Galaxy</title>' in homeout.content"
+
+    # Test the /api/monitor endpoint
+    - include_role:
+        name: make_monitor_assertions
