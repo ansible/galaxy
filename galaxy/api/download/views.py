@@ -41,7 +41,7 @@ class ArtifactDownloadView(APIView):
             raise NotFound(f'Artifact "{filename}" does not exist.')
 
         user_agent = request.META.get('HTTP_USER_AGENT', '')
-        if user_agent.startswith('Mazer/'):
+        if user_agent.startswith('ansible-galaxy/'):
             version.collection.inc_download_count()
 
         ca = version.get_content_artifact()
