@@ -34,7 +34,7 @@ UserModel = get_user_model()
 
 class TestArtifactDownloadView(APITestCase):
     download_url = '/download/{filename}'
-    mazer_user_agent = 'Mazer/0.4.0 (linux; python:3.6.8) ansible_galaxy/0.4.0'
+    user_agent = 'ansible-galaxy/2.9.4.post0 (Linux; python:3.6.10)'
 
     @classmethod
     def setUpClass(cls):
@@ -95,7 +95,7 @@ class TestArtifactDownloadView(APITestCase):
 
         old_download_count = self.collection.download_count
         url = self.download_url.format(filename=self.filename)
-        response = self.client.get(url, HTTP_USER_AGENT=self.mazer_user_agent)
+        response = self.client.get(url, HTTP_USER_AGENT=self.user_agent)
         assert response.status_code == http_codes.HTTP_302_FOUND
 
         location = response['Location']
