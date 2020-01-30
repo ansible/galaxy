@@ -50,7 +50,7 @@ class Flake8Linter(BaseLinter):
 
     def _check_files(self, paths):
         cmd = [self.cmd, '--exit-zero', '--isolated',
-               '--ignore', FLAKE8_IGNORE_ERRORS,
+               '--extend-ignore', FLAKE8_IGNORE_ERRORS,
                '--select', FLAKE8_SELECT_ERRORS,
                '--max-line-length', str(FLAKE8_MAX_LINE_LENGTH),
                '--'] + paths
