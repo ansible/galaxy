@@ -51,7 +51,6 @@ from galaxy.main.celerytasks import tasks as celerytasks
 from galaxy.main import models
 from galaxy.common import version, sanitize_content_name
 
-
 logger = logging.getLogger(__name__)
 
 __all__ = [

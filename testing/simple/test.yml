@@ -1,6 +1,7 @@
+---
 - name: Confirm the web server up
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
   connection: local
   vars:
     galaxy_host: 0.0.0.0
@@ -14,10 +15,14 @@
     - name: Access the home page
       uri:
         url: "http://{{ galaxy_host }}:{{ galaxy_port }}"
-        return_content: yes
+        return_content: true
       register: homeout
 
     - name: Assert expected output found
       assert:
         that:
           - "'<title>Ansible Galaxy</title>' in homeout.content"
+
+    # Test the /api/monitor endpoint
+    - include_role:
+        name: make_monitor_assertions

@@ -1,0 +1,9 @@
+---
+- shell: "docker ps --format {% raw %}'{{.Names}}' {% endraw %} | grep {{ name_contains }}"
+  register: docker_output
+
+- set_fact:
+    container_name: "{{ docker_output.stdout_lines[0] }}"
+
+- debug:
+    msg: "Service container name is: {{ container_name }}"

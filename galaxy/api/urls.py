@@ -325,6 +325,9 @@ api_urls = [
     # url(r'^v1/', include('galaxy.api.v1.urls')),
     path('v2/', include('galaxy.api.v2.urls', namespace='v2')),
     path('internal/', include('galaxy.api.internal.urls', namespace='int')),
+
+    # Monitoring endpoint
+    url(r'^monitor/', views.MonitorRootView.as_view()),
 ]
 
 

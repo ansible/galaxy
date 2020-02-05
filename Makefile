@@ -107,6 +107,10 @@ test/changed:
 test/flake8:
 	flake8 galaxy
 
+.PHONY: test/yamllint
+test/yamllint:
+	yamllint -s .
+
 .PHONY: test/jslint
 test/jslint:
 	cd galaxyui; ng lint
@@ -261,6 +265,10 @@ dev/rm:
 	# Remove services
 	$(DOCKER_COMPOSE) stop
 	$(DOCKER_COMPOSE) rm -f
+
+.PHONY: dev/logs
+dev/logs:
+	$(DOCKER_COMPOSE) logs -f $(GALAXY_SERVICE)
 
 .PHONY: dev/export-test-data
 export-test-data:

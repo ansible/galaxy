@@ -1,0 +1,18 @@
+---
+- include_role:
+    name: get_monitor_response
+
+- include_role:
+    name: check_service_states
+  vars:
+    expected_down: ''
+
+- include_role:
+    name: test_service
+  loop:
+    - {service_name: 'postgres', expected_down: 'postgresql'}
+    - {service_name: 'influxdb', expected_down: 'influx'}
+    - {service_name: 'redis', expected_down: 'redis'}
+    - {service_name: 'rabbit', expected_down: 'rabbit'}
+  loop_control:
+    loop_var: service_item
