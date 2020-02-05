@@ -76,14 +76,6 @@ class TokenView(base_views.APIView):
             raise ValidationError({'detail': "Invalid request."})
 
         try:
-            git_status = requests.get(get_github_api_url())
-            git_status.raise_for_status()
-        except Exception:
-            raise ValidationError({
-                'detail': "Error accessing GitHub API. Please try again later."
-            })
-
-        try:
             header = dict(Authorization='token ' + github_token)
             gh_user = requests.get(
                 get_github_api_url() + '/user', headers=header
