@@ -320,6 +320,11 @@ Create an admin user
 From the root of the project tree, run ``make dev/createsuperuser`` to start
 the creation process. You'll be prompted for the vital details as depicted below:
 
+.. note:: Do **NOT** create an admin user with the same email account as any GitHub
+          accounts you wish to use to login to your local galaxy. Doing so will
+          prevent galaxy from adding any GitHub accounts with the same email as the
+          admin account.
+
 .. code-block:: console
 
     $ make dev/createsuperuser
