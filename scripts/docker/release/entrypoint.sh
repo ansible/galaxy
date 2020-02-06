@@ -5,6 +5,8 @@ set -o errexit
 
 readonly GALAXY_VENV=${GALAXY_VENV:-/usr/share/galaxy/venv}
 readonly GALAXY_NUM_WORKERS=${GALAXY_NUM_WORKERS:-1}
+readonly GUNICORN_MAX_REQUESTS="${GUNICORN_MAX_REQUESTS:-4000}"
+readonly GUNICORN_MAX_REQUESTS_JITTER="${GUNICORN_MAX_REQUESTS_JITTER:-200}"
 
 # shellcheck disable=SC2034
 VIRTUAL_ENV_DISABLE_PROMPT=1
@@ -22,6 +24,8 @@ run_api() {
     _exec_cmd "${GALAXY_VENV}/bin/gunicorn" \
         --bind 0.0.0.0:8000 \
         --workers "${GALAXY_NUM_WORKERS}" \
+        --max-requests "${GUNICORN_MAX_REQUESTS}" \
+        --max-requests-jitter "${GUNICORN_MAX_REQUESTS_JITTER}" \
         --access-logfile '-' \
         --error-logfile '-' \
         galaxy.wsgi:application
