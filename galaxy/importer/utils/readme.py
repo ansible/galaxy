@@ -93,7 +93,7 @@ def render_html(readme_file):
         # https://github.com/Python-Markdown/markdown/issues/225
         html = bleach.clean(
             unsafe_html,
-            tags=markdown_tags + ['pre'],
+            tags=markdown_tags + ['pre', 'table', 'thead', 'th', 'tr', 'td'],
             attributes=markdown_attrs,
             styles=[],
             strip=True
