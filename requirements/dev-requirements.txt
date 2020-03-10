@@ -8,28 +8,27 @@ aiohttp==3.5.4            # via -r requirements/requirements.in
 alabaster==0.7.12         # via sphinx
 amqp==1.4.9               # via kombu
 ansible-lint==4.2.0       # via -r requirements/requirements.in
-ansible==2.7.12           # via -r requirements/requirements.in, ansible-lint
+ansible==2.9.6            # via -r requirements/requirements.in, ansible-lint
 anyjson==0.3.3            # via kombu
 asn1crypto==0.24.0        # via cryptography
 async-timeout==3.0.1      # via aiohttp
 atomicwrites==1.2.1       # via pytest
 attrs==18.2.0             # via aiohttp, pytest
 babel==2.6.0              # via sphinx
-bcrypt==3.1.4             # via paramiko
 billiard==3.3.0.23        # via celery
 bleach-whitelist==0.0.10  # via -r requirements/requirements.in
-bleach==3.0.2             # via -r requirements/requirements.in
+bleach==3.1.1             # via -r requirements/requirements.in
 boto3==1.9.107            # via django-storages
 botocore==1.12.107        # via boto3, s3transfer
 celery==3.1.24            # via -r requirements/requirements.in, django-celery
 certifi==2018.11.29       # via requests
-cffi==1.11.5              # via bcrypt, cryptography, pynacl
+cffi==1.11.5              # via cryptography
 chardet==3.0.4            # via aiohttp, requests
 click==7.0                # via dynaconf, rq
 coreapi==2.3.3            # via drf-yasg, pulpcore
 coreschema==0.0.4         # via coreapi, drf-yasg
 coverage==4.5.2           # via pytest-cov
-cryptography==2.4.2       # via ansible, paramiko, pyopenssl
+cryptography==2.4.2       # via ansible, pyopenssl
 defusedxml==0.5.0         # via python3-openid
 deprecated==1.2.4         # via pygithub
 dj-database-url==0.5.0    # via -r requirements/requirements.in
@@ -41,7 +40,7 @@ django-filter==2.0.0      # via -r requirements/requirements.in, pulpcore
 django-log-request-id==1.3.2  # via -r requirements/requirements.in
 django-prometheus==1.0.15  # via -r requirements/requirements.in
 django-storages[boto3]==1.7.1  # via -r requirements/requirements.in
-django==2.1.11            # via -r requirements/requirements.in, django-allauth, django-bootstrap-form, django-celery, django-debug-toolbar, django-filter, django-log-request-id, django-storages, drf-nested-routers, drf-yasg, pulpcore
+django==2.2.11            # via -r requirements/requirements.in, django-allauth, django-bootstrap-form, django-celery, django-debug-toolbar, django-filter, django-log-request-id, django-storages, drf-nested-routers, drf-yasg, pulpcore
 djangorestframework-queryfields==1.0.0  # via pulpcore
 djangorestframework==3.7.7  # via -r requirements/requirements.in, drf-nested-routers, drf-yasg, pulpcore
 docutils==0.14            # via botocore, rst2html5-tools, sphinx
@@ -70,7 +69,6 @@ more-itertools==4.3.0     # via pytest
 multidict==4.5.2          # via aiohttp, yarl
 oauthlib==2.1.0           # via requests-oauthlib
 packaging==18.0           # via sphinx
-paramiko==2.4.2           # via ansible
 pathspec==0.5.9           # via yamllint
 pbr==5.1.1                # via mock
 pluggy==0.8.0             # via pytest
@@ -78,14 +76,12 @@ prometheus-client==0.5.0  # via -r requirements/requirements.in, django-promethe
 psycopg2-binary==2.7.6.1  # via -r requirements/requirements.in, pulpcore
 pulpcore==3.0.0b21        # via -r requirements/requirements.in
 py==1.7.0                 # via pytest
-pyasn1==0.4.4             # via paramiko
 pycodestyle==2.5.0        # via flake8
 pycparser==2.19           # via cffi
 pyflakes==2.1.0           # via flake8
 pygithub==1.43.3          # via -r requirements/requirements.in
 pygments==2.3.0           # via sphinx
 pyjwt==1.7.1              # via pygithub
-pynacl==1.3.0             # via paramiko
 pyopenssl==18.0.0         # via -r requirements/requirements.in
 pyparsing==2.3.0          # via packaging
 pytest-cov==2.5.1         # via -r requirements/dev-requirements.in
@@ -106,11 +102,11 @@ rst2html5-tools==0.5.3    # via -r requirements/requirements.in
 ruamel.yaml==0.15.85      # via ansible-lint, drf-yasg
 s3transfer==0.2.0         # via boto3
 semantic-version==2.6.0   # via -r requirements/requirements.in
-six==1.12.0               # via ansible-lint, bcrypt, bleach, cryptography, drf-yasg, dynaconf, influxdb, mock, more-itertools, packaging, pynacl, pyopenssl, pytest, python-dateutil, sphinx
+six==1.12.0               # via ansible-lint, bleach, cryptography, drf-yasg, dynaconf, influxdb, mock, more-itertools, packaging, pyopenssl, pytest, python-dateutil, sphinx
 snowballstemmer==1.2.1    # via sphinx
 sphinx==1.7.9             # via -r requirements/requirements.in
 sphinxcontrib-websupport==1.1.0  # via sphinx
-sqlparse==0.2.4           # via django-debug-toolbar
+sqlparse==0.2.4           # via django, django-debug-toolbar
 toml==0.10.0              # via dynaconf
 uritemplate==3.0.0        # via coreapi, drf-yasg
 urllib3==1.24.3           # via botocore, requests
