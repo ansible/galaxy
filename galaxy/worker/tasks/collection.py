@@ -85,7 +85,7 @@ def _process_collection(artifact, filename, task_logger):
 
     importer_data = _transform_importer_data(importer_data)
 
-    check_dependencies(importer_data['metadata'])
+    check_dependencies(importer_data['metadata']['dependencies'])
 
     return importer_data
 

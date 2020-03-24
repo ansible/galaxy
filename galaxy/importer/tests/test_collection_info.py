@@ -302,11 +302,10 @@ def test_self_dependency(galaxy_col_info):
 def test_dep_bad_version_spec(galaxy_col_info):
     bad_version_specs = [
         {'alice.apache': 'bad_version'},
-        {'alice.apache': '1.2.*'},
         {'alice.apache': ''},
-        {'alice.apache': '*.*.*'},
         {'alice.apache': '>=1.0.0, <=2.0.0'},
         {'alice.apache': '>1 <2'},
+        {'alice.apache': '>1, <2'},
     ]
     for dep in bad_version_specs:
         galaxy_col_info['dependencies'] = dep

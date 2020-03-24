@@ -59,7 +59,7 @@ class TestDependencies(TestCase):
             self.metadata['dependencies'] = dep
             collection_info = GalaxyCollectionInfo(**self.metadata)
             with pytest.raises(ImportFailed) as exc:
-                check_dependencies(collection_info)
+                check_dependencies(collection_info.dependencies)
             assert 'namespace not in galaxy' in str(exc)
 
     def test_dep_cannot_find_col(self):
@@ -81,7 +81,7 @@ class TestDependencies(TestCase):
             self.metadata['dependencies'] = dep
             collection_info = GalaxyCollectionInfo(**self.metadata)
             with pytest.raises(ImportFailed) as exc:
-                check_dependencies(collection_info)
+                check_dependencies(collection_info.dependencies)
             assert 'collection not in galaxy' in str(exc)
 
     def test_fail_on_unfound_version(self):
@@ -89,7 +89,7 @@ class TestDependencies(TestCase):
             {'alice.apache': '1.0.1'},
             {'alice.apache': '!=1.0.0'},
             {'gunjan.gunicorn': '^1.5'},
-            {'alice.apache': '~1'},  # semantic_version error
+            {'alice.apache': '~1'},
             {
                 'alice.apache': '2',
                 'gunjan.gunicorn': '<1.2.3',
@@ -121,7 +121,7 @@ class TestDependencies(TestCase):
             self.metadata['dependencies'] = dep
             collection_info = GalaxyCollectionInfo(**self.metadata)
             with pytest.raises(ImportFailed) as exc:
-                check_dependencies(collection_info)
+                check_dependencies(collection_info.dependencies)
             assert 'no matching version found' in str(exc)
 
     def test_pass_find_all_versions(self):
@@ -132,7 +132,6 @@ class TestDependencies(TestCase):
                 'gunjan.gnu_app': '3.0.0',
             },
             {
-                'alice.apache': '^1.0',
                 'gunjan.gunicorn': '^1.1',
             },
             {
@@ -144,7 +143,6 @@ class TestDependencies(TestCase):
                 'alice.apache': '>0.9.1',
             },
             {},
-            {'alice.apache': '1.0.0'},
             {'gunjan.gunicorn': '1.2.4'},
             {'gunjan.gunicorn': '>=1.0.0,<=2.0.0'},
             {'gunjan.gunicorn': '>=1.0.0,!=1.0.5'},
@@ -152,5 +150,5 @@ class TestDependencies(TestCase):
         for dep in findable_versions:
             self.metadata['dependencies'] = dep
             collection_info = GalaxyCollectionInfo(**self.metadata)
-            check_dependencies(collection_info)
+            check_dependencies(collection_info.dependencies)
             assert isinstance(collection_info, GalaxyCollectionInfo)
