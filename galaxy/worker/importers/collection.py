@@ -25,9 +25,9 @@ def _raise_import_fail(msg):
     raise exc.ImportFailed(f'Invalid collection metadata. {msg}') from None
 
 
-def check_dependencies(collection_info):
+def check_dependencies(metadata):
     """Check collection dependencies and matching version are in database."""
-    dependencies = collection_info.dependencies
+    dependencies = metadata['dependencies']
     for dep, version_spec in dependencies.items():
         ns_name, name = dep.split('.')
 
