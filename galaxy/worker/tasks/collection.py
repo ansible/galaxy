@@ -53,7 +53,8 @@ def import_collection(artifact_id, repository_id):
 
     try:
         importer_data = _process_collection(artifact, filename, task_logger)
-        version = _publish_collection(task, artifact, repository, importer_data)
+        version = _publish_collection(
+            task, artifact, repository, importer_data)
     except Exception as e:
         task_logger.error(f'Import Task "{task.id}" failed: {e}')
         user_notifications.collection_import.delay(task.id, has_failed=True)
@@ -139,7 +140,8 @@ def _publish_collection(task, artifact, repository, importer_data):
             contents=importer_data['contents'],
             readme_mimetype='text/markdown',
             readme_text='',
-            readme_html=importer_data['docs_blob']['collection_readme']['html'])
+            readme_html=importer_data['docs_blob']['collection_readme']['html']
+        )
     except IntegrityError:
         raise exc.VersionConflict(
             'Collection version "{version}" already exists.'
