@@ -31,6 +31,9 @@ from galaxy.common import sanitize_content_name
 from galaxy.main import models as m_models
 
 
+# NOTE: ansible calls linux username which is incompatible
+# with our container setup for openshift
+# see: https://github.com/ansible/galaxy/issues/2303
 SKIP_PARSE_DEPENDENCIES = False
 try:
     from ansible.playbook.role import requirement as ansible_req
