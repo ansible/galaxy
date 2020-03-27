@@ -22,8 +22,6 @@ import re
 import yaml
 import configparser
 
-from ansible.playbook.role import requirement as ansible_req
-
 from galaxy import constants
 from galaxy.importer import models, linters
 from galaxy.importer.loaders import base
@@ -31,6 +29,13 @@ from galaxy.importer.utils import lint as lintutils
 from galaxy.importer import exceptions as exc
 from galaxy.common import sanitize_content_name
 from galaxy.main import models as m_models
+
+
+SKIP_PARSE_DEPENDENCIES = False
+try:
+    from ansible.playbook.role import requirement as ansible_req
+except KeyError:
+    SKIP_PARSE_DEPENDENCIES = True
 
 
 ROLE_META_FILES = [
@@ -215,6 +220,8 @@ class RoleMetaParser(object):
     # TODO: Extend dependencies support with format used
     # in .galaxy-metadata.yml
     def parse_dependencies(self):
+        if SKIP_PARSE_DEPENDENCIES:
+            return []
         if not self.dependencies:
             return []
         dependencies = []
