@@ -187,16 +187,9 @@ class CombinedDetail(base.APIView):
                 name__iexact=name
             )
 
-            collection_import = models.CollectionImport.objects.get(
-                imported_version=collection.latest_version)
-
             data = {
                 'collection': internal_serializers.CollectionDetailSerializer(
                     collection).data,
-                'collection_import':
-                    v2_serializers.CollectionImportSerializer(
-                        collection_import
-                    ).data
             }
             return response.Response({'type': 'collection', 'data': data})
         except django_exceptions.ObjectDoesNotExist:
