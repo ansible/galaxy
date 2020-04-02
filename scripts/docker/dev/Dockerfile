@@ -56,6 +56,8 @@ RUN python3.6 -m venv "${GALAXY_VENV}" \
 
 COPY scripts/docker/dev/entrypoint.sh /entrypoint
 
+COPY scripts/docker/galaxy-importer.cfg /etc/galaxy-importer/galaxy-importer.cfg
+
 WORKDIR /galaxy
 ENTRYPOINT ["/entrypoint"]
 CMD ["start", "tmux"]

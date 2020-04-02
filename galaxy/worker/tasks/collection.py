@@ -16,17 +16,15 @@
 # along with Galaxy.  If not, see <http://www.apache.org/licenses/>.
 
 import logging
-import tempfile
-import tarfile
 
 from django.db import transaction
 from django.db.utils import IntegrityError
+from galaxy_importer.collection import import_collection as process_collection
+from galaxy_importer.collection import CollectionFilename
+from galaxy_importer.exceptions import ImporterError
 from pulpcore.app import models as pulp_models
 import semantic_version as semver
 
-from galaxy.common import schema
-from galaxy.importer import collection as importer
-from galaxy.importer import exceptions as i_exc
 from galaxy.main import models
 from galaxy.main.celerytasks import user_notifications
 from galaxy.worker import exceptions as exc
@@ -38,6 +36,29 @@ log = logging.getLogger(__name__)
 
 ARTIFACT_REL_PATH = '{namespace}-{name}-{version}.tar.gz'
 
+CONTENT_TYPE_MAP = {
+    'role': 'role',
+    'module': 'module',
+    'module_utils': 'module_utils',
+    'action': 'action_plugin',
+    'become': 'become_plugin',
+    'cache': 'cache_plugin',
+    'callback': 'callback_plugin',
+    'cliconf': 'cliconf_plugin',
+    'connection': 'connection_plugin',
+    'doc_fragments': 'doc_fragments_plugin',
+    'filter': 'filter_plugin',
+    'httpapi': 'httpapi_plugin',
+    'inventory': 'inventory_plugin',
+    'lookup': 'lookup_plugin',
+    'netconf': 'netconf_plugin',
+    'shell': 'shell_plugin',
+    'strategy': 'strategy_plugin',
+    'terminal': 'terminal_plugin',
+    'test': 'test_plugin',
+    'vars': 'vars_plugin',
+}
+
 
 def import_collection(artifact_id, repository_id):
     task = models.CollectionImport.current()
@@ -46,7 +67,7 @@ def import_collection(artifact_id, repository_id):
     artifact = pulp_models.Artifact.objects.get(pk=artifact_id)
     repository = pulp_models.Repository.objects.get(pk=repository_id)
 
-    filename = schema.CollectionFilename(
+    filename = CollectionFilename(
         task.namespace.name, task.name, task.version)
 
     task_logger = _get_task_logger(task)
@@ -54,8 +75,9 @@ def import_collection(artifact_id, repository_id):
         f'Starting import: task_id={task.id}, artifact_id={artifact_id}')
 
     try:
-        importer_obj = _process_collection(artifact, filename, task_logger)
-        version = _publish_collection(task, artifact, repository, importer_obj)
+        importer_data = _process_collection(artifact, filename, task_logger)
+        version = _publish_collection(
+            task, artifact, repository, importer_data)
     except Exception as e:
         task_logger.error(f'Import Task "{task.id}" failed: {e}')
         user_notifications.collection_import.delay(task.id, has_failed=True)
@@ -76,50 +98,63 @@ def _get_task_logger(task):
 
 
 def _process_collection(artifact, filename, task_logger):
-    with tempfile.TemporaryDirectory() as extract_dir:
-        with artifact.file.open() as pkg_file, \
-                tarfile.open(fileobj=pkg_file) as pkg_tar:
-            pkg_tar.extractall(extract_dir)
+    try:
+        with artifact.file.open() as artifact_file:
+            importer_data = process_collection(
+                artifact_file, filename=filename, logger=task_logger
+            )
+    except ImporterError as e:
+        log.error(f'Collection processing was not successfull: {e}')
+        raise
 
-        try:
-            importer_obj = importer.import_collection(
-                extract_dir, filename, task_logger)
-        except i_exc.ImporterError as e:
-            raise exc.ImportFailed(str(e))
+    importer_data = _transform_importer_data(importer_data)
 
-        check_dependencies(importer_obj.collection_info)
+    check_dependencies(importer_data['metadata']['dependencies'])
 
-    _log_importer_results(importer_obj)
-    return importer_obj
+    return importer_data
+
+
+def _transform_importer_data(data):
+    """Update data from galaxy_importer to match values in Community Galaxy."""
+
+    for c in data['contents']:
+        c['content_type'] = CONTENT_TYPE_MAP.get(
+            c['content_type'], c['content_type'])
+        c['scores'] = None
+        c['metadata'] = {}
+        c['role_meta'] = None
+        c['description'] = c['description'] or ''
+
+    return data
 
 
 @transaction.atomic
-def _publish_collection(task, artifact, repository, importer_obj):
-    metadata = importer_obj.collection_info
+def _publish_collection(task, artifact, repository, importer_data):
     collection, _ = models.Collection.objects.get_or_create(
-        namespace=task.namespace, name=metadata.name)
+        namespace=task.namespace, name=importer_data['metadata']['name'])
 
     try:
         version = collection.versions.create(
-            version=metadata.version,
-            metadata=metadata.get_json(),
-            quality_score=importer_obj.quality_score,
-            contents=importer_obj.contents,
-            readme_mimetype=importer_obj.readme['mimetype'],
-            readme_text=importer_obj.readme['text'],
-            readme_html=importer_obj.readme['html'],
+            version=importer_data['metadata']['version'],
+            metadata=importer_data['metadata'],
+            quality_score=None,
+            contents=importer_data['contents'],
+            readme_mimetype='text/markdown',
+            readme_text='',
+            readme_html=importer_data['docs_blob']['collection_readme']['html']
         )
     except IntegrityError:
         raise exc.VersionConflict(
             'Collection version "{version}" already exists.'
-            .format(version=metadata.version))
+            .format(version=importer_data['metadata']['version']))
 
     _update_latest_version(collection, version)
-    _update_collection_tags(collection, version, metadata)
+    _update_collection_tags(collection, version, importer_data['metadata'])
 
     rel_path = ARTIFACT_REL_PATH.format(
-        namespace=metadata.namespace, name=metadata.name,
-        version=metadata.version)
+        namespace=importer_data['metadata']['namespace'],
+        name=importer_data['metadata']['name'],
+        version=importer_data['metadata']['version'])
     pulp_models.ContentArtifact.objects.create(
         artifact=artifact,
         content=version,
@@ -163,16 +198,16 @@ def _update_collection_tags(collection, version, metadata):
 
     tags_not_in_db = [
         {'name': tag, 'description': tag, 'active': True}
-        for tag in metadata.tags
+        for tag in metadata['tags']
         if models.Tag.objects.filter(name=tag).count() == 0]
     models.Tag.objects.bulk_create([models.Tag(**t) for t in tags_not_in_db])
 
-    tags_qs = models.Tag.objects.filter(name__in=metadata.tags)
+    tags_qs = models.Tag.objects.filter(name__in=metadata['tags'])
     collection.tags.add(*tags_qs)
 
     tags_not_in_metadata = [
         tag for tag in collection.tags.all()
-        if tag.name not in metadata.tags
+        if tag.name not in metadata['tags']
     ]
     collection.tags.remove(*tags_not_in_metadata)
 
@@ -182,16 +217,3 @@ def _notify_followers(version):
     is_first_version = (version.collection.versions.count() == 1)
     if is_first_version:
         user_notifications.coll_author_release.delay(version.pk)
-
-
-def _log_importer_results(importer_obj):
-    log.debug('Collection loaded - metadata={}, quality_score={}'.format(
-        importer_obj.collection_info.__dict__,
-        importer_obj.quality_score
-    ))
-    for content in importer_obj.contents:
-        log.debug('Content: type={} name={} scores={}'.format(
-            content['content_type'],
-            content['name'],
-            content['scores'],
-        ))

@@ -22,6 +22,7 @@ RUN mkdir -p /etc/galaxy \
              /var/tmp/galaxy/uploads
 
 COPY scripts/docker/release/entrypoint.sh /entrypoint
+COPY scripts/docker/galaxy-importer.cfg /etc/galaxy-importer/galaxy-importer.cfg
 COPY --from=galaxy-build:latest /galaxy/dist/VERSION /usr/share/galaxy/
 COPY --from=galaxy-build:latest /galaxy/dist/*.whl /tmp
 COPY --from=galaxy-build:latest /galaxy/build/static /usr/share/galaxy/public/
