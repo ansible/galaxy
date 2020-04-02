@@ -36,6 +36,29 @@ log = logging.getLogger(__name__)
 
 ARTIFACT_REL_PATH = '{namespace}-{name}-{version}.tar.gz'
 
+CONTENT_TYPE_MAP = {
+    'role': 'role',
+    'module': 'module',
+    'module_utils': 'module_utils',
+    'action': 'action_plugin',
+    'become': 'become_plugin',
+    'cache': 'cache_plugin',
+    'callback': 'callback_plugin',
+    'cliconf': 'cliconf_plugin',
+    'connection': 'connection_plugin',
+    'doc_fragments': 'doc_fragments_plugin',
+    'filter': 'filter_plugin',
+    'httpapi': 'httpapi_plugin',
+    'inventory': 'inventory_plugin',
+    'lookup': 'lookup_plugin',
+    'netconf': 'netconf_plugin',
+    'shell': 'shell_plugin',
+    'strategy': 'strategy_plugin',
+    'terminal': 'terminal_plugin',
+    'test': 'test_plugin',
+    'vars': 'vars_plugin',
+}
+
 
 def import_collection(artifact_id, repository_id):
     task = models.CollectionImport.current()
@@ -94,31 +117,9 @@ def _process_collection(artifact, filename, task_logger):
 def _transform_importer_data(data):
     """Update data from galaxy_importer to match values in Community Galaxy."""
 
-    type_map = {
-        'role': 'role',
-        'module': 'module',
-        'module_utils': 'module_utils',
-        'action': 'action_plugin',
-        'become': 'become_plugin',
-        'cache': 'cache_plugin',
-        'callback': 'callback_plugin',
-        'cliconf': 'cliconf_plugin',
-        'connection': 'connection_plugin',
-        'doc_fragments': 'doc_fragments_plugin',
-        'filter': 'filter_plugin',
-        'httpapi': 'httpapi_plugin',
-        'inventory': 'inventory_plugin',
-        'lookup': 'lookup_plugin',
-        'netconf': 'netconf_plugin',
-        'shell': 'shell_plugin',
-        'strategy': 'strategy_plugin',
-        'terminal': 'terminal_plugin',
-        'test': 'test_plugin',
-        'vars': 'vars_plugin',
-    }
-
     for c in data['contents']:
-        c['content_type'] = type_map.get(c['content_type'], c['content_type'])
+        c['content_type'] = CONTENT_TYPE_MAP.get(
+            c['content_type'], c['content_type'])
         c['scores'] = None
         c['metadata'] = {}
         c['role_meta'] = None
