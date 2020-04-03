@@ -8,7 +8,7 @@ aiohttp==3.5.4            # via -r requirements/requirements.in
 alabaster==0.7.12         # via sphinx
 amqp==1.4.9               # via kombu
 ansible-lint==4.2.0       # via -r requirements/requirements.in, galaxy-importer
-ansible==2.9.6            # via -r requirements/requirements.in, ansible-lint, galaxy-importer
+ansible==2.9.2            # via -r requirements/requirements.in, ansible-lint, galaxy-importer
 anyjson==0.3.3            # via kombu
 asn1crypto==0.24.0        # via cryptography
 async-timeout==3.0.1      # via aiohttp
