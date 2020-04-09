@@ -76,8 +76,10 @@ def import_collection(artifact_id, repository_id):
 
     try:
         importer_data = _process_collection(artifact, filename, task_logger)
+        task_logger.info('Publishing collection')
         version = _publish_collection(
             task, artifact, repository, importer_data)
+        task_logger.info('Collection published')
     except Exception as e:
         task_logger.error(f'Import Task "{task.id}" failed: {e}')
         user_notifications.collection_import.delay(task.id, has_failed=True)
@@ -106,9 +108,11 @@ def _process_collection(artifact, filename, task_logger):
     except ImporterError as e:
         log.error(f'Collection processing was not successfull: {e}')
         raise
+    task_logger.info('Processing via galaxy-importer complete')
 
     importer_data = _transform_importer_data(importer_data)
 
+    task_logger.info('Checking dependencies in importer data')
     check_dependencies(importer_data['metadata']['dependencies'])
 
     return importer_data
@@ -149,8 +153,10 @@ def _publish_collection(task, artifact, repository, importer_data):
             .format(version=importer_data['metadata']['version']))
 
     _update_latest_version(collection, version)
+    log.info('Updating collection tags')
     _update_collection_tags(collection, version, importer_data['metadata'])
 
+    log.info('Creating pulp_models.ContentArtifact')
     rel_path = ARTIFACT_REL_PATH.format(
         namespace=importer_data['metadata']['namespace'],
         name=importer_data['metadata']['name'],
@@ -161,16 +167,19 @@ def _publish_collection(task, artifact, repository, importer_data):
         relative_path=rel_path,
     )
 
+    log.info('Creating pulp_models.RepositoryVersion')
     with pulp_models.RepositoryVersion.create(repository) as new_version:
         new_version.add_content(
             pulp_models.Content.objects.filter(pk=version.pk)
         )
 
+    log.info('Creating pulp_models.publication')
     publication = pulp_models.Publication.objects.create(
         repository_version=new_version,
         complete=True,
         pass_through=True,
     )
+    log.info('Creating pulp_models.publication')
     pulp_models.Distribution.objects.update_or_create(
         name='galaxy',
         base_path='galaxy',
@@ -178,7 +187,9 @@ def _publish_collection(task, artifact, repository, importer_data):
     )
 
     task.imported_version = version
+    log.info('Saving task')
     task.save()
+    log.info('task saved')
     return version
 
 
