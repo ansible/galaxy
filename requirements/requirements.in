@@ -19,7 +19,7 @@ rst2html5-tools
 semantic_version
 
 # Django
-Django>=2.1.15,<3.0
+Django>=2.2.10,<3.0
 django-allauth>=0.37,<0.38
 # TODO(cutwater): Review usage of this package
 django-bootstrap-form
