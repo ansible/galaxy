@@ -25,7 +25,6 @@ from galaxy.api import base
 from galaxy.main import models
 from galaxy.api.internal import serializers as internal_serializers
 from galaxy.api import serializers as v1_serializers
-from galaxy.api.v2 import serializers as v2_serializers
 
 
 class RepoAndCollectionList(base.APIView):
