@@ -17,6 +17,7 @@
             </div>
 
             <div *ngIf="!loading">
+              <div *ngIf="displayFormat!=='collection'">
                 <app-score-bar
                     [score]="qualityScore"
                     [barText]="qualityBarText"
@@ -32,6 +33,8 @@
                         (click)="toggleDetails('showQualityDetails')"
                     ><span *ngIf="!showQualityDetails">Show</span><span *ngIf="showQualityDetails">Hide</span> Details</a>
                 </div>
+              </div>
+
                 <app-score-bar
                     [score]="communityScore"
                     [barText]="communityBarText"

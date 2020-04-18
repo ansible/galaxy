@@ -3,7 +3,6 @@ import { CollectionDetail } from '../../resources/collections/collection';
 import { ViewTypes } from '../../enums/view-types.enum';
 import * as moment from 'moment';
 import { CommunityDetails, DetailMessage } from '../cards/survey/types';
-import { CollectionImport } from '../../resources/imports/import';
 
 @Component({
     selector: 'app-collection-detail',
@@ -18,7 +17,6 @@ export class CollectionDetailComponent implements OnInit {
     pageIcon: string;
     ViewTypes: typeof ViewTypes = ViewTypes;
     showingView: string = ViewTypes.detail;
-    showQualityDetails = false;
     showComunityDetails = false;
     communityScoreDetails: CommunityDetails[];
 
@@ -27,9 +25,6 @@ export class CollectionDetailComponent implements OnInit {
 
     @Input()
     collection: CollectionDetail;
-
-    @Input()
-    collectionImport: CollectionImport;
 
     constructor() {}
 
@@ -64,8 +59,6 @@ export class CollectionDetailComponent implements OnInit {
         if (detailData.type === 'community') {
             this.communityScoreDetails = detailData.payload;
             this.showComunityDetails = detailData.visible;
-        } else if (detailData.type === 'quality') {
-            this.showQualityDetails = detailData.visible;
         }
     }
 

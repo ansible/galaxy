@@ -85,7 +85,6 @@ class TestRepoOrCollection(APITestCase):
         resp = self.client.get(url).json()
         assert resp['type'] == 'collection'
         assert resp['data']['collection']['name'] == 'collection'
-        assert resp['data']['collection_import']['id'] == 42
 
         versions = resp['data']['collection']['all_versions']
         assert len(versions) == 1
