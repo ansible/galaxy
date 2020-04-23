@@ -33,7 +33,6 @@ class BaseRoleSerializer(BaseSerializer):
     REPOSITORY_MOVED_FIELDS = (
         'github_user',
         'github_repo',
-        'github_server',
         ('github_branch', 'import_branch'),
         'stargazers_count',
         'forks_count',
