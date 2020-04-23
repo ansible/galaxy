@@ -18,7 +18,6 @@
 from django.urls import reverse
 from rest_framework import serializers as drf_serializers
 
-from galaxy.common.github import get_github_web_url
 from galaxy.main.models import Repository
 from . import serializers
 
@@ -165,8 +164,11 @@ class RepositorySerializer(serializers.BaseSerializer):
         }
 
     def get_external_url(self, instance):
+        server = ''
+        if instance.provider_namespace.provider.name.lower() == 'github':
+            server = 'https://github.com'
         return '{0}/{1}/{2}'.format(
-            get_github_web_url(),
+            server,
             instance.provider_namespace.name,
             instance.original_name)
 
