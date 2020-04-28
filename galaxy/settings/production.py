@@ -211,8 +211,9 @@ WAIT_FOR = [
 ADMIN_URL_PATH = os.environ.get('GALAXY_ADMIN_PATH', 'admin')
 ADMIN_URL_PATTERN = r'^{}/'.format(ADMIN_URL_PATH)
 
-GITHUB_TASK_USERS = ['galaxytasks01', 'galaxytasks02', 'galaxytasks03',
-                     'galaxytasks04', 'galaxytasks05']
+GITHUB_TASK_USERS = ['galaxytasks02', 'galaxytasks03',
+                     'galaxytasks04', 'galaxytasks05',
+                     'galaxytasks09']
 
 GALAXY_URL = 'https://{site}'
 
