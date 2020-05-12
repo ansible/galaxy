@@ -133,6 +133,6 @@ class Command(BaseCommand):
         )
         seconds = elapsed - (hours * 3600) - (minutes * 60)
         logger.info(
-            u"Elapsed time {0:0=2d}.{0:0=2d}.{0:0=2d}"
+            u"Elapsed time {0:0=2d}.{1:0=2d}.{2:0=2d}"
             .format(hours, minutes, seconds)
         )
