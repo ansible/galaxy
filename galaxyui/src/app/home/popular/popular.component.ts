@@ -71,6 +71,7 @@ export class PopularComponent implements OnInit {
 
     handleCategoryClick(category: Category) {
         const params = {};
+        params['deprecated'] = 'false';
         this.logger.logLink('Most Popular: ' + category.name, '/search');
         if (category.name === 'Playbook Bundles') {
             params['content_type'] = ContentTypes.apb;

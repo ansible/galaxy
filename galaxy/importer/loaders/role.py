@@ -19,10 +19,9 @@ import collections
 import os
 import re
 
+from ansible.playbook.role import requirement as ansible_req
 import yaml
 import configparser
-
-from ansible.playbook.role import requirement as ansible_req
 
 from galaxy import constants
 from galaxy.importer import models, linters

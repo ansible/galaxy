@@ -25,9 +25,8 @@ def _raise_import_fail(msg):
     raise exc.ImportFailed(f'Invalid collection metadata. {msg}') from None
 
 
-def check_dependencies(collection_info):
+def check_dependencies(dependencies):
     """Check collection dependencies and matching version are in database."""
-    dependencies = collection_info.dependencies
     for dep, version_spec in dependencies.items():
         ns_name, name = dep.split('.')
 
@@ -45,10 +44,6 @@ def check_dependencies(collection_info):
             semver.Version(v.version) for v in collection.versions.all())
         no_match_message = ('Dependency found in galaxy but no matching '
                             f'version found: {dep} {version_spec}')
-        try:
-            if not spec.select(versions):
-                _raise_import_fail(no_match_message)
-        except TypeError:
-            # semantic_version allows a Spec('~1') but throws TypeError on
-            # attempted match to it
+
+        if not spec.select(versions):
             _raise_import_fail(no_match_message)

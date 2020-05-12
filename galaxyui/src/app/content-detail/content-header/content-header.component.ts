@@ -145,7 +145,7 @@ export class ContentHeaderComponent implements OnInit {
             score: {
                 community_survey_count: this.collection.community_survey_count,
                 community_score: this.collection.community_score,
-                quality_score: this.collection.latest_version.quality_score,
+                quality_score: null,
             },
             follow_type: 'collections_followed',
             content_id: this.collection.id,

@@ -4,9 +4,6 @@ interface IRepoScore {
     community_score: any;
     quality_score?: any;
     community_survey_count: number;
-    latest_version?: {
-        quality_score: number;
-    };
 }
 
 @Component({
@@ -23,9 +20,6 @@ export class ScoreComponent implements OnInit {
     _repo: IRepoScore;
     @Input()
     set repo(r: any) {
-        if (r.latest_version) {
-            r['quality_score'] = r.latest_version.quality_score;
-        }
         this._repo = r as IRepoScore;
     }
     get repo() {
@@ -37,6 +31,9 @@ export class ScoreComponent implements OnInit {
     scoreClass: string;
 
     ngOnInit() {
+        if (this.repo.quality_score === undefined) {
+            this.repo.quality_score = null;
+        }
         let survey_count;
 
         if (this.repo.community_survey_count > 3) {

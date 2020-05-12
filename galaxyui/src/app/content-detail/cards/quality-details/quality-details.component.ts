@@ -69,45 +69,6 @@ export class QualityDetailsComponent implements OnInit {
         }
     }
 
-    @Input()
-    set collection(collection) {
-        this.contentWarn = new Warning();
-        this.metaWarn = new Warning();
-        this.compatibilityWarn = new Warning();
-
-        this.syntaxScore = '';
-        this.metadataScore = '';
-
-        for (const el of collection.lint_records) {
-            if (el.severity > 0) {
-                if (el.score_type === 'content') {
-                    this.addWarning(
-                        this.contentWarn,
-                        `${el.type} ${el.code}`,
-                        el.message,
-                        el.severity,
-                    );
-                }
-                if (el.score_type === 'metadata') {
-                    this.addWarning(
-                        this.metaWarn,
-                        `${el.type} ${el.code}`,
-                        el.message,
-                        el.severity,
-                    );
-                }
-                if (el.score_type === 'compatibility') {
-                    this.addWarning(
-                        this.compatibilityWarn,
-                        `${el.type} ${el.code}`,
-                        el.message,
-                        el.severity,
-                    );
-                }
-            }
-        }
-    }
-
     contentWarn: Warning;
     metaWarn: Warning;
     compatibilityWarn: Warning;
