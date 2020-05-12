@@ -252,7 +252,6 @@ class TestSubscriptionModel(TestCase):
         assert str(subscription) == (
             "subscription-{subscription_id}"
         ).format(
-            name=self.VALID_NAME,
             subscription_id=subscription.id
         )
 
