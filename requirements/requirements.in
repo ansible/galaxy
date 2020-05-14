@@ -20,7 +20,8 @@ semantic_version
 
 # Django
 Django>=2.2.10,<3.0
-django-allauth>=0.37,<0.38
+# django-allauth>=0.37,<0.38
+-e git+https://github.com/pennersr/django-allauth.git@83a0f77688f7d89939db454e3708d34e523accf3#egg=django-allauth
 # TODO(cutwater): Review usage of this package
 django-bootstrap-form
 django-filter
