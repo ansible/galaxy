@@ -4,6 +4,7 @@
 #
 #    pip-compile --output-file=requirements/requirements.txt requirements/requirements.in
 #
+-e git+https://github.com/pennersr/django-allauth.git@83a0f77688f7d89939db454e3708d34e523accf3#egg=django-allauth  # via -r requirements/requirements.in
 aiohttp==3.5.4            # via -r requirements/requirements.in
 alabaster==0.7.12         # via sphinx
 amqp==1.4.9               # via kombu
@@ -30,7 +31,6 @@ cryptography==2.4.2       # via ansible, pyopenssl
 defusedxml==0.5.0         # via python3-openid
 deprecated==1.2.4         # via pygithub
 dj-database-url==0.5.0    # via -r requirements/requirements.in
-django-allauth==0.37.1    # via -r requirements/requirements.in
 django-bootstrap-form==3.4  # via -r requirements/requirements.in
 django-celery==3.2.2      # via -r requirements/requirements.in
 django-filter==2.0.0      # via -r requirements/requirements.in, pulpcore
@@ -46,9 +46,10 @@ drf-yasg==1.12.1          # via pulpcore
 dynaconf==1.2.0           # via pulpcore
 entrypoints==0.3          # via flake8
 flake8==3.7.9             # via -r requirements/requirements.in, galaxy-importer
-galaxy-importer==0.2.3
+galaxy-importer==0.2.3    # via -r requirements/requirements.in
 gunicorn==19.7.1          # via -r requirements/requirements.in, pulpcore
-idna==2.7                 # via cryptography, requests, yarl
+idna-ssl==1.1.0           # via aiohttp
+idna==2.7                 # via cryptography, idna-ssl, requests, yarl
 imagesize==1.1.0          # via sphinx
 inflection==0.3.1         # via drf-yasg
 influxdb==5.2.1           # via -r requirements/requirements.in
@@ -96,6 +97,7 @@ sphinx==1.7.9             # via -r requirements/requirements.in
 sphinxcontrib-websupport==1.1.0  # via sphinx
 sqlparse==0.3.1           # via django
 toml==0.10.0              # via dynaconf
+typing-extensions==3.7.4.2  # via aiohttp
 uritemplate==3.0.0        # via coreapi, drf-yasg
 urllib3==1.24.3           # via botocore, requests
 webencodings==0.5.1       # via bleach
