@@ -92,7 +92,18 @@ class CollectionDetailView(base.APIView):
 
 
 class CollectionListView(base.ListAPIView):
-    queryset = models.Collection.objects.all()
+    queryset = models.Collection.objects.only(
+        'id',
+        'name',
+        'deprecated',
+        'created',
+        'modified',
+        'namespace__name',
+        'latest_version__version'
+    ).select_related(
+        'namespace',
+        'latest_version',
+    ).all()
     serializer_class = serializers.CollectionSerializer
 
     def get(self, request, *args, **kwargs):
