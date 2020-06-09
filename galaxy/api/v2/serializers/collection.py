@@ -122,7 +122,7 @@ class CollectionSerializer(serializers.ModelSerializer):
     namespace = fields.NamespaceObjectField()
     href = serializers.SerializerMethodField()
     versions_url = serializers.SerializerMethodField()
-    latest_version = VersionSummarySerializer()
+    latest_version = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Collection
@@ -157,6 +157,23 @@ class CollectionSerializer(serializers.ModelSerializer):
             },
             request=self.context.get('request'),
         )
+
+    def get_latest_version(self, obj):
+        if not obj.latest_version:
+            return None
+        version = obj.latest_version.version
+        return {
+            "version": version,
+            "href": reverse(
+                'api:v2:version-detail',
+                kwargs={
+                    'namespace': obj.namespace.name,
+                    'name': obj.name,
+                    'version': version,
+                },
+                request=self.context.get('request'),
+            )
+        }
 
 
 class _MessageSerializer(serializers.Serializer):
