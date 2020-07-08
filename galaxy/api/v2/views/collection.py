@@ -257,3 +257,26 @@ class CollectionListView(base.ListAPIView):
                 raise ArtifactExistsError()
             raise
         return artifact_serializer.save()
+
+
+class SubscribedListView(CollectionListView):
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            raise exceptions.NotAuthenticated()
+        user_prefs, created = models.UserPreferences.objects.get_or_create(
+            pk=self.request.user.pk
+        )
+
+        return user_prefs.collections_followed.only(
+            'id',
+            'name',
+            'deprecated',
+            'created',
+            'modified',
+            'namespace__name',
+            'latest_version__version'
+        ).select_related(
+            'namespace',
+            'latest_version',
+        ).all()

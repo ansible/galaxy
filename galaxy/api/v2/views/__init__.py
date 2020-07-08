@@ -18,6 +18,7 @@
 from .collection import (  # noqa: F401
     CollectionListView,
     CollectionDetailView,
+    SubscribedListView,
 )
 from .collection_import import (  # noqa: F401
     CollectionImportView
@@ -39,4 +40,5 @@ __all__ = (
     'CollectionArtifactView',
     'VersionListView',
     'VersionDetailView',
+    'SubscribedListView',
 )
