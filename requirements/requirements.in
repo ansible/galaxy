@@ -4,7 +4,7 @@
 ansible>=2.9.7
 bleach>=3.1.1
 bleach-whitelist==0.0.10
-galaxy-importer==0.2.3
+galaxy-importer==0.2.7
 gunicorn==19.7.1
 markdown
 marshmallow
