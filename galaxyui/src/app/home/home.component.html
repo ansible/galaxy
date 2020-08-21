@@ -1,6 +1,14 @@
 <app-page-header [headerTitle]="headerTitle" [headerIcon]='headerIcon'></app-page-header>
 <div id="home-page" class="container-fluid" (window:resize)="onResize($event)">
 
+    <div class="row fest-banner"> 
+        <div class="col-md-12">
+            <a target="_blank" href="https://www.ansible.com/ansiblefest?sc_cid=7013a000002gyQ2AAI">
+                <img src="assets/Docs-AnsibleFest-homepage-banner.png" alt="AnsibleFest 2020 Information" width="100%" height="auto">
+            </a>
+        </div>
+    </div>
+
     <carousel-component [vendors]="vendors"></carousel-component>
 
     <popular-component></popular-component>
