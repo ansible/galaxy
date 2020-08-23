@@ -36,7 +36,7 @@ For the [galaxy.ansible.com](https://galaxy.ansible.com) site, get alerted when 
  * The *master* branch corresponds to the latest stable release.
  * Submit pull requests for bug fixes and new features to *devel*.
  * Various [release/X.Y.Z branches exist for previous releases](https://github.com/ansible/galaxy/tags).
- * Contributors welcome! Get started by reviewing [CONTRIBUTING.md](./CONTRIBUTING.rst).
+ * Contributors welcome! Get started by reviewing [CONTRIBUTING.rst](./CONTRIBUTING.rst).
 
 ## Authors
 
