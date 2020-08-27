@@ -60,12 +60,15 @@ role.
 
    $ ansible-galaxy install geerlingguy.apache,v1.0.0
 
-It's also possible to point directly to the git repository and specify a branch name or commit hash as the version.
-For example, the following installs a specific commit:
+It's also possible to point directly to the git repository and specify a branch name or commit hash as the version. For example, 
+the following installs a specific commit:
 
 .. code-block:: bash
 
    $ ansible-galaxy install git+https://github.com/geerlingguy/ansible-role-apache.git,0b7cd353c0250e87a26e0499e59e7fd265cc2f25
+
+Note that if you install using a branch name with the intent of tracking that branch HEAD, you must use the `--force` argument 
+to ansible-galaxy. Without `--force`, subsequent installs will not update the role install.
 
 Listing Your Installed Roles
 ----------------------------
@@ -102,7 +105,9 @@ Each role in the file will have one or more of the following attributes:
      If the *src* is a URL, specify the SCM. Only *git* or *hg* are supported. Defaults to *git*.
    version:
      The version of the role to download. Provide a tag value, commit hash, or branch name.
-     Defaults to *master*.
+     Defaults to *master*. Note that if you install using a branch name with the intent of tracking 
+     that branch HEAD, you must use the `--force` argument to ansible-galaxy. Without `--force`, 
+     subsequent installs will not update the role install.
    name:
      Download the role to a specific name. Defaults to the Galaxy name when downloading from Galaxy,
      or the name of the repository, when *src* is a URL.
