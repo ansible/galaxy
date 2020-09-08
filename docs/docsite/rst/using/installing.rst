@@ -111,6 +111,8 @@ The following example provides a guide for listing roles in a *requirements.yml*
 
 .. code-block:: yaml
 
+    roles:
+
     # from galaxy
     - src: yatesr.timezone
 
@@ -148,7 +150,9 @@ file. For large projects, this provides the ability to split a large file into m
 For example, a project may have a *requirements.yml* file, and a *webserver.yml* file. The following
 shows the contents of the *requirements.yml* file:
 
-.. code-block:: bash
+.. code-block:: yaml
+
+    roles:
 
     # from galaxy
     - src: yatesr.timezone
@@ -156,7 +160,9 @@ shows the contents of the *requirements.yml* file:
 
 Below are the contents of the *webserver.yml* file:
 
-.. code-block:: bash
+.. code-block:: yaml
+
+    roles:
 
     # from github
     - src: https://github.com/bennojoy/nginx
