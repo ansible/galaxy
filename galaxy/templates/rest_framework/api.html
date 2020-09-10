@@ -1,12 +1,19 @@
 {% extends 'rest_framework/base.html' %}
 {% load i18n %}
+{% load rest_framework %}
+
+{% block meta %}
+{{ block.super }}
+        <meta http-equiv="Content-Security-Policy"
+              content="default-src 'self'; child-src 'none'; style-src 'self' 'nonce-{{ csp_nonce }}'; script-src 'self' 'nonce-{{ csp_nonce }}'">
+{% endblock %}
 
 {% block title %}{% trans 'Galaxy REST API' %}{% endblock %}
 
 {% block style %}
 {{ block.super }}
 <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
-<style type="text/css">
+<style type="text/css" nonce="{{ csp_nonce }}">
 
 html body {
   background: #ddd;
@@ -129,17 +136,73 @@ html body #push {
   <a class="brand" href="/api/"><img src="/assets/galaxy-logo-02.svg"></a>
 {% endblock %}
 
-{% block userlinks %}
-{{ block.super }}
-{% endblock %}
+{% block content %}
+  <div class="region"  aria-label="{% trans "request form" %}">
+  {% if 'GET' in allowed_methods %}
+    <form id="get-form" class="pull-right">
+      <fieldset>
+        {% if api_settings.URL_FORMAT_OVERRIDE %}
+          <div class="btn-group format-selection">
+            <a class="btn btn-primary js-tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
 
-{% block footer %}
-{{ block.super }}
-{% endblock %}
+            <button class="btn btn-primary dropdown-toggle js-tooltip" data-toggle="dropdown" title="Specify a format for the GET request">
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              {% for format in available_formats %}
+                <li>
+                  <a class="js-tooltip format-option" href="{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}" rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% else %}
+          <a class="btn btn-primary js-tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
+        {% endif %}
+      </fieldset>
+    </form>
+  {% endif %}
+
+  {% if filter_form %}
+    <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
+      <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+      {% trans "Filters" %}
+    </button>
+  {% endif %}
+  </div>
+
+    <div class="content-main" role="main"  aria-label="{% trans "main content" %}">
+      <div class="page-header">
+        <h1>{{ name }}</h1>
+      </div>
+      <div style="float:left">
+        {% block description %}
+          {{ description }}
+        {% endblock %}
+      </div>
+
+      {% if paginator %}
+        <nav style="float: right">
+          {% get_pagination_html paginator %}
+        </nav>
+      {% endif %}
+
+      <div class="request-info" style="clear: both" aria-label="{% trans "request info" %}">
+        <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
+      </div>
+
+      <div class="response-info" aria-label="{% trans "response info" %}">
+        <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}{% for key, val in response_headers|items %}
+  <b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize_quoted_links }}</span>{% endfor %}
+
+  </span>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
+      </div>
+    </div>
+{% endblock content %}
 
 {% block script %}
 {{ block.super }}
-<script type="text/javascript">
+<script type="text/javascript" nonce="{{ csp_nonce }}">
 $(function() {
   // Make links from relative URLs to resources.
   $('span.str').each(function() {
