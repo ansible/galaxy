@@ -107,6 +107,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
+                'galaxy.common.context_processors.template_metadata',
             ],
         },
     },
