@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file=requirements/requirements.txt requirements/requirements.in
 #
--e git+https://github.com/pennersr/django-allauth.git@83a0f77688f7d89939db454e3708d34e523accf3#egg=django-allauth  # via -r requirements/requirements.in
 aiohttp==3.5.4            # via -r requirements/requirements.in
 alabaster==0.7.12         # via sphinx
 amqp==1.4.9               # via kombu
@@ -27,10 +26,11 @@ chardet==3.0.4            # via aiohttp, requests
 click==7.0                # via dynaconf, rq
 coreapi==2.3.3            # via drf-yasg, pulpcore
 coreschema==0.0.4         # via coreapi, drf-yasg
-cryptography==2.4.2       # via ansible, pyopenssl
+cryptography==2.4.2       # via ansible, pyjwt, pyopenssl
 defusedxml==0.5.0         # via python3-openid
 deprecated==1.2.4         # via pygithub
 dj-database-url==0.5.0    # via -r requirements/requirements.in
+django-allauth==0.43.0    # via -r requirements/requirements.in
 django-bootstrap-form==3.4  # via -r requirements/requirements.in
 django-celery==3.2.2      # via -r requirements/requirements.in
 django-filter==2.0.0      # via -r requirements/requirements.in, pulpcore
@@ -74,7 +74,7 @@ pycparser==2.19           # via cffi
 pyflakes==2.1.0           # via flake8
 pygithub==1.43.3          # via -r requirements/requirements.in
 pygments==2.3.0           # via sphinx
-pyjwt==1.7.1              # via pygithub
+pyjwt[crypto]==1.7.1      # via django-allauth, pygithub
 pyopenssl==18.0.0         # via -r requirements/requirements.in
 pyparsing==2.3.0          # via packaging
 python-box==3.2.3         # via dynaconf
