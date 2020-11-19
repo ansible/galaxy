@@ -135,7 +135,7 @@ The following example provides a guide for listing roles in a *requirements.yml*
       scm: hg
 
     # from GitLab or other git-based scm
-    - src: git@gitlab.company.com:mygroup/ansible-base.git
+    - src: git+ssh://git@gitlab.company.com/mygroup/ansible-base.git
       scm: git
       version: "0.1"  # quoted, so YAML doesn't parse this as a floating-point value
 
