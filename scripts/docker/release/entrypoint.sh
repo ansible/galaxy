@@ -5,6 +5,7 @@ set -o errexit
 
 readonly GALAXY_VENV=${GALAXY_VENV:-/usr/share/galaxy/venv}
 readonly GALAXY_NUM_WORKERS=${GALAXY_NUM_WORKERS:-1}
+readonly GUNICORN_CONFIG="${GUNICORN_CONFIG:-}"
 readonly GUNICORN_MAX_REQUESTS="${GUNICORN_MAX_REQUESTS:-4000}"
 readonly GUNICORN_MAX_REQUESTS_JITTER="${GUNICORN_MAX_REQUESTS_JITTER:-200}"
 
@@ -21,14 +22,20 @@ _exec_cmd() {
 }
 
 run_api() {
-    _exec_cmd "${GALAXY_VENV}/bin/gunicorn" \
-        --bind 0.0.0.0:8000 \
-        --workers "${GALAXY_NUM_WORKERS}" \
-        --max-requests "${GUNICORN_MAX_REQUESTS}" \
-        --max-requests-jitter "${GUNICORN_MAX_REQUESTS_JITTER}" \
-        --access-logfile '-' \
-        --error-logfile '-' \
-        galaxy.wsgi:application
+    local gunicorn_opts=(
+        --bind '0.0.0.0:8000'
+        --workers "${GALAXY_NUM_WORKERS}"
+        --max-requests "${GUNICORN_MAX_REQUESTS}"
+        --max-requests-jitter "${GUNICORN_MAX_REQUESTS_JITTER}"
+        --access-logfile '-'
+        --error-logfile '-'
+    )
+
+    if [[ -n "${GUNICORN_CONFIG}" ]]; then
+        gunicorn_opts+=(--config "${GUNICORN_CONFIG}")
+    fi
+
+    _exec_cmd "${GALAXY_VENV}/bin/gunicorn" "${gunicorn_opts[@]}" 'galaxy.wsgi:application'
 }
 
 run_celery_worker() {
