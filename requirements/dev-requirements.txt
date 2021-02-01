@@ -48,7 +48,7 @@ drf-yasg==1.12.1          # via pulpcore
 dynaconf==1.2.0           # via pulpcore
 entrypoints==0.3          # via flake8
 flake8==3.7.9             # via -r requirements/requirements.in, galaxy-importer
-galaxy-importer==0.2.7    # via -r requirements/requirements.in
+galaxy-importer==0.2.14   # via -r requirements/requirements.in
 gunicorn==19.7.1          # via -r requirements/requirements.in, pulpcore
 honcho==1.0.1             # via -r requirements/dev-requirements.in
 idna-ssl==1.1.0           # via aiohttp
