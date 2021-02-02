@@ -34,7 +34,7 @@ README_MIMETYPES = {
     '.md': 'text/markdown',
     '.rst': 'text/x-rst',
 }
-README_MAX_SIZE = 512 ** 2  # 512 KiB
+README_MAX_SIZE = 512 * 1024  # 512 KiB
 
 ReadmeFile = collections.namedtuple(
     'ReadmeFile', ['text', 'mimetype', 'hash']
@@ -66,8 +66,11 @@ def get_readme(directory, root_dir=None, filename=None):
 
     if os.path.getsize(filename) > README_MAX_SIZE:
         raise FileSizeError(
-            'Readme file "{0}" is bigger than 512 KiB.'
-            .format(os.path.relpath(filename, root_dir or directory)))
+            'Readme file "{0}" is bigger than {1} KiB.'.format(
+                os.path.relpath(filename, root_dir or directory),
+                int(README_MAX_SIZE / 1024),
+            )
+        )
 
     mimetype, encoding = mimetypes.guess_type(filename)
 
