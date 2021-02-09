@@ -23,8 +23,6 @@ ansible==2.9.7
     #   galaxy-importer
 anyjson==0.3.3
     # via kombu
-asn1crypto==0.24.0
-    # via cryptography
 async-timeout==3.0.1
     # via aiohttp
 attrs==19.3.0
@@ -55,7 +53,7 @@ celery==3.1.24
     #   django-celery
 certifi==2018.11.29
     # via requests
-cffi==1.11.5
+cffi==1.14.4
     # via cryptography
 chardet==3.0.4
     # via
@@ -73,7 +71,7 @@ coreschema==0.0.4
     # via
     #   coreapi
     #   drf-yasg
-cryptography==2.4.2
+cryptography==3.4.3
     # via
     #   ansible
     #   pyjwt
@@ -147,7 +145,6 @@ idna-ssl==1.1.0
     # via aiohttp
 idna==2.7
     # via
-    #   cryptography
     #   idna-ssl
     #   requests
     #   yarl
@@ -283,7 +280,6 @@ six==1.12.0
     # via
     #   ansible-lint
     #   bleach
-    #   cryptography
     #   drf-yasg
     #   dynaconf
     #   influxdb
