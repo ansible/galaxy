@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=requirements/requirements.txt requirements/requirements.in
 #
-aiohttp==3.5.4
+aiohttp==3.7.4
     # via -r requirements/requirements.in
 alabaster==0.7.12
     # via sphinx
@@ -292,6 +292,8 @@ sqlparse==0.3.1
     # via django
 toml==0.10.0
     # via dynaconf
+typing-extensions==3.7.4.3
+    # via aiohttp
 uritemplate==3.0.0
     # via
     #   coreapi
