@@ -22,7 +22,7 @@ import os
 
 import markdown
 import bleach
-from bleach_whitelist import markdown_tags, markdown_attrs
+from bleach_allowlist import markdown_tags, markdown_attrs
 
 README_NAME = 'README'
 README_EXTENSIONS = [
@@ -92,7 +92,7 @@ def render_html(readme_file):
     elif readme_file.mimetype == 'text/markdown':
         unsafe_html = markdown.markdown(readme_file.text, extensions=['extra'])
 
-        # note on bleach coming after markdown, and bleach_whitelist
+        # note on bleach coming after markdown, and bleach_allowlist
         # https://github.com/Python-Markdown/markdown/issues/225
         html = bleach.clean(
             unsafe_html,
