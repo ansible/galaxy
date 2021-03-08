@@ -28,7 +28,6 @@ from galaxy.importer import models, linters
 from galaxy.importer.loaders import base
 from galaxy.importer.utils import lint as lintutils
 from galaxy.importer import exceptions as exc
-from galaxy.common import sanitize_content_name
 from galaxy.main import models as m_models
 
 
@@ -282,8 +281,7 @@ class RoleLoader(base.BaseLoader):
     def load(self):
         meta_parser = self._get_meta_parser()
         galaxy_info = meta_parser.metadata
-        original_name = self.name
-        self.name = self._get_metadata_role_name(galaxy_info)
+        self.name = galaxy_info.get('role_name')
 
         tox_data = self._load_tox()
         meta_parser.set_tox(tox_data)
@@ -315,7 +313,7 @@ class RoleLoader(base.BaseLoader):
 
         return models.Content(
             name=self.name,
-            original_name=original_name,
+            original_name=None,
             path=self.rel_path,
             content_type=self.content_type,
             description=description,
@@ -367,26 +365,6 @@ class RoleLoader(base.BaseLoader):
     def _get_meta_parser(self):
         meta = self._load_metadata()
         return RoleMetaParser(meta, logger=self.log)
-
-    def _get_metadata_role_name(self, galaxy_info):
-        """Get role_name from repository role metadata, if it exists.
-
-        Collections do not support role_name.
-        Collections have self.name already set via directory path.
-        """
-
-        name = self.name
-        is_collection = bool(self.name)
-
-        if is_collection:
-            if galaxy_info.get('role_name'):
-                self.log.warning("Role in collection gets name from directory,"
-                                 " ignoring the 'role_name' attribute")
-            return name
-
-        if galaxy_info.get('role_name'):
-            name = sanitize_content_name(galaxy_info['role_name'])
-        return name
 
     def _load_string_attrs(self, metadata):
         attrs = {}

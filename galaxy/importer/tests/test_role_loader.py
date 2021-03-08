@@ -152,6 +152,7 @@ class TestRoleLoader(unittest.TestCase):
         load_metadata_mock.return_value = ({
             'galaxy_info': {
                 'description': 'A test role',
+                'role_name': 'test_role',
                 'author': 'John Smith',
                 'license': 'foo',
                 'min_ansible_version': '2.4.0',
