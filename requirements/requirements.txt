@@ -10,16 +10,13 @@ alabaster==0.7.12
     # via sphinx
 amqp==1.4.9
     # via kombu
-ansible-builder==0.5.1
-    # via galaxy-importer
-ansible-lint==4.2.0
+ansible-lint==5.0.3
     # via
     #   -r requirements/requirements.in
     #   galaxy-importer
 ansible==2.9.7
     # via
     #   -r requirements/requirements.in
-    #   ansible-lint
     #   galaxy-importer
 anyjson==0.3.3
     # via kombu
@@ -43,6 +40,8 @@ botocore==1.12.107
     # via
     #   boto3
     #   s3transfer
+bracex==2.1.1
+    # via wcmatch
 celery==3.1.24
     # via
     #   -r requirements/requirements.in
@@ -59,6 +58,10 @@ click==7.0
     # via
     #   dynaconf
     #   rq
+colorama==0.4.4
+    # via rich
+commonmark==0.9.1
+    # via rich
 coreapi==2.3.3
     # via
     #   drf-yasg
@@ -125,13 +128,15 @@ drf-yasg==1.12.1
     # via pulpcore
 dynaconf==1.2.0
     # via pulpcore
+enrich==1.2.6
+    # via ansible-lint
 entrypoints==0.3
     # via flake8
 flake8==3.7.9
     # via
     #   -r requirements/requirements.in
     #   galaxy-importer
-galaxy-importer==0.2.15
+galaxy-importer==0.3.0
     # via -r requirements/requirements.in
 gunicorn==19.7.1
     # via
@@ -180,6 +185,7 @@ oauthlib==2.1.0
     # via requests-oauthlib
 packaging==18.0
     # via
+    #   ansible-lint
     #   bleach
     #   sphinx
 pathspec==0.5.9
@@ -202,8 +208,10 @@ pyflakes==2.1.0
     # via flake8
 pygithub==1.43.3
     # via -r requirements/requirements.in
-pygments==2.3.0
-    # via sphinx
+pygments==2.8.1
+    # via
+    #   rich
+    #   sphinx
 pyjwt[crypto]==1.7.1
     # via
     #   django-allauth
@@ -234,7 +242,6 @@ pyyaml==5.3.1
     # via
     #   -r requirements/requirements.in
     #   ansible
-    #   ansible-builder
     #   ansible-lint
     #   galaxy-importer
     #   pulpcore
@@ -255,8 +262,10 @@ requests==2.23.0
     #   pygithub
     #   requests-oauthlib
     #   sphinx
-requirements-parser==0.2.0
-    # via ansible-builder
+rich==9.13.0
+    # via
+    #   ansible-lint
+    #   enrich
 rq==0.13.0
     # via pulpcore
 rst2html5-tools==0.5.3
@@ -273,7 +282,6 @@ semantic-version==2.8.4
     #   galaxy-importer
 six==1.12.0
     # via
-    #   ansible-lint
     #   bleach
     #   drf-yasg
     #   dynaconf
@@ -293,7 +301,9 @@ sqlparse==0.3.1
 toml==0.10.0
     # via dynaconf
 typing-extensions==3.7.4.3
-    # via aiohttp
+    # via
+    #   aiohttp
+    #   rich
 uritemplate==3.0.0
     # via
     #   coreapi
@@ -302,6 +312,8 @@ urllib3==1.24.3
     # via
     #   botocore
     #   requests
+wcmatch==8.1.2
+    # via ansible-lint
 webencodings==0.5.1
     # via bleach
 whitenoise==4.1.2
