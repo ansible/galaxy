@@ -44,6 +44,7 @@ def user_logged_in_handler(request, user, **kwargs):
     sanitized_username = username.lower().replace('-', '_')
 
     if models.ProviderNamespace.objects.filter(name=username).exists():
+        logger.debug('Found ProviderNamespace name=username (%s)', username)
         return
 
     # User is not associated with any Provider Namespaces, so we'll attempt
@@ -63,15 +64,10 @@ def user_logged_in_handler(request, user, **kwargs):
 
     ns_defaults = {'name': sanitized_username, **defaults}
 
-    # Create lowercase namespace if case insensitive search does not find match
+    # Look for case insensitive search namespace match, if not found
+    # we need to create one
     qs = models.Namespace.objects.filter(
         name__iexact=sanitized_username).order_by('name')
-    if qs.exists():
-        namespace = qs[0]
-    else:
-        namespace = models.Namespace.objects.create(**ns_defaults)
-
-    namespace.owners.add(user)
 
     provider_ns_defaults = {
         'description': social.extra_data.get('bio') or name,
@@ -81,9 +77,29 @@ def user_logged_in_handler(request, user, **kwargs):
     }
     provider = models.Provider.objects.get(name__iexact="github")
 
-    models.ProviderNamespace.objects.get_or_create(
-        namespace=namespace, name=username, provider=provider,
-        defaults=provider_ns_defaults)
+    if qs.exists():
+        # Namespace already exists, don't add it to the ProviderNamespace,
+        # it is someone elses.
+
+        msg = 'Creating ProviderNamespace for %s, ' \
+            'but without references to any Namespaces ' \
+            'since the Namespace %s already exists'
+        logger.warning(msg, username, sanitized_username)
+
+        models.ProviderNamespace.objects.get_or_create(
+            name=username, provider=provider,
+            defaults=provider_ns_defaults)
+    else:
+        # Creating a new Namespace
+
+        namespace = models.Namespace.objects.create(**ns_defaults)
+
+        # Add new user to namespace
+        namespace.owners.add(user)
+
+        models.ProviderNamespace.objects.get_or_create(
+            namespace=namespace, name=username, provider=provider,
+            defaults=provider_ns_defaults)
 
 
 @receiver(post_save, sender=models.ImportTask)
