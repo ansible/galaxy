@@ -1,5 +1,5 @@
 # vim: set ft=Dockerfile:
-FROM centos:7
+FROM quay.io/centos/centos:7
 
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
