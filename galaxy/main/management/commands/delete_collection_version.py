@@ -14,13 +14,16 @@ class Command(BaseCommand):
             "be removed, if you want to remove all CollectionVersion for a "
             "Collection, more analysis should be done. Call bump_repo_version "
             "with list of CollectionVersion ids then "
-            "after task is complete call delete_old_repo_versions.")
+            "after task is complete call delete_old_repo_versions, "
+            "then call run_orphan_cleanup to delete CollectionVersion "
+            "not part of any RepositoryVersion.")
 
     def add_arguments(self, parser):
         parser.add_argument(
             'subcommand',
             type=str,
-            help='bump_repo_version or delete_old_repo_versions')
+            help='Options: bump_repo_version, delete_old_repo_versions, '
+                 'run_orphan_cleanup')
         parser.add_argument(
             '--collection-version-ids',
             nargs='+',
@@ -45,6 +48,8 @@ class Command(BaseCommand):
             self._bump_repo_version(repo, resources, collection_versions)
         elif subcommand == 'delete_old_repo_versions':
             self._delete_old_repo_versions(repo, resources)
+        elif subcommand == 'run_orphan_cleanup':
+            self._run_orphan_cleanup(resources)
         else:
             exit('Unknown subcommand')
 
@@ -63,8 +68,7 @@ class Command(BaseCommand):
         print(f'task created: {task}')
 
     def _delete_old_repo_versions(self, repo, resources):
-        """ Delete all but latest RepositoryVersion and run orphan_cleanup.
-            To be run after task from _bump_repo_version() completes."""
+        """ Delete all but latest RepositoryVersion."""
         latest_repo_version = \
             RepositoryVersion.objects.filter(repository=repo).latest()
         repo_versions_to_delete = [
@@ -73,8 +77,9 @@ class Command(BaseCommand):
         for rv_pk in repo_versions_to_delete:
             RepositoryVersion.objects.get(pk=rv_pk).delete()
 
-        # run orphan_cleanup to delete all CollectionVersions that are
-        # not part of any RepositoryVersion
+    def _run_orphan_cleanup(self, resources):
+        """ Run orphan_cleanup to delete all CollectionVersions that are
+            not part of any RepositoryVersion."""
         task = create_task(
             orphan_cleanup,
             params={},
