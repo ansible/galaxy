@@ -61,6 +61,3 @@ script:
     if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
       make build/release
     fi
-
-after_success:
-  - scripts/travis-publish-image.sh
