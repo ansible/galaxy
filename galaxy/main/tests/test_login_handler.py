@@ -109,4 +109,4 @@ class TestNoDuplicateNamespace(TestCase):
 
         new_provider_ns = models.ProviderNamespace.objects.get(
             name=NAME_UPPER)
-        assert new_provider_ns.namespace.name.islower()
+        assert new_provider_ns.namespace is None

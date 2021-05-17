@@ -2,9 +2,7 @@
 # NOTE(cutwater): Probably some of requirements below are obsolete.
 #                 Review required.
 ansible>=2.9.7
-bleach>=3.1.1
-bleach-whitelist==0.0.10
-galaxy-importer==0.2.14
+galaxy-importer==0.3.0
 gunicorn==19.7.1
 markdown
 marshmallow
@@ -19,7 +17,7 @@ rst2html5-tools
 semantic_version
 
 # Django
-Django>=2.2.10,<3.0
+Django>=2.2.18,<3.0
 django-allauth==0.43.0
 # TODO(cutwater): Review usage of this package
 django-bootstrap-form

@@ -24,7 +24,7 @@ services:
       - POSTGRES_PASSWORD=galaxy
 
   influxdb:
-    image: influxdb:latest
+    image: influxdb:1.8.4
     ports:
       - '8086:8086'
     environment:

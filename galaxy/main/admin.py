@@ -54,6 +54,16 @@ class NamespaceAdmin(admin.ModelAdmin):
     autocomplete_fields = ('owners', )
 
 
+@admin.register(models.ProviderNamespace)
+class ProviderNamespaceAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.Provider)
+class ProviderAdmin(admin.ModelAdmin):
+    pass
+
+
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):
     exclude = ('search_vector', )
