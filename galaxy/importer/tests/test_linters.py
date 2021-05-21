@@ -151,24 +151,23 @@ def test_ansiblelint_ok(temp_root):
     assert result == []
 
 
-ANSIBLELINT_TEST_FILE_FAIL = """---
+ANSIBLELINT_TASK_WARN = """---
 - name: edit vimrc
-  sudo: true
   lineinfile:
     path: /etc/vimrc
-    line: '# added via ansible'
+    line: "{{var_spacing_problem}}"
 """
 
 
 def test_ansiblelint_fail(temp_root):
     with open(get_ansiblelint_filename(temp_root), 'w') as fp:
-        fp.write(ANSIBLELINT_TEST_FILE_FAIL)
+        fp.write(ANSIBLELINT_TASK_WARN)
         fp.flush()
 
         linter = linters.AnsibleLinter()
         linter.root = get_ansiblelint_root(temp_root)
         result = list(linter.check_files(['.']))
-        expected = 'deprecated sudo'
+        expected = 'variables should have spaces before and after'
     assert expected in ' '.join(result).lower()
 
 
