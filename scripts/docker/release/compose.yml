@@ -89,7 +89,7 @@ services:
 
 
   postgres:
-    image: postgres:9.5
+    image: postgres:12
     ports:
       - '2345:5432'
     environment:
