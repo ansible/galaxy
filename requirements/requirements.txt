@@ -136,7 +136,7 @@ flake8==3.9.2
     # via
     #   -r requirements/requirements.in
     #   galaxy-importer
-galaxy-importer==0.3.3
+galaxy-importer==0.3.4
     # via -r requirements/requirements.in
 gunicorn==19.7.1
     # via
