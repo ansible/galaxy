@@ -1,8 +1,8 @@
 # Common
 # NOTE(cutwater): Probably some of requirements below are obsolete.
 #                 Review required.
-ansible>=2.9.7
-galaxy-importer==0.3.0
+ansible-core>=2.11,<2.12
+galaxy-importer==0.3.4
 gunicorn==19.7.1
 markdown
 marshmallow
