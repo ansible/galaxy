@@ -20,10 +20,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
     downloadConfig: CardConfig;
     shareConfig: CardConfig;
     featureConfig: CardConfig;
+    legalConfig: CardConfig;
 
     downloadContent: string;
     shareContent: string;
     featuredBlogContent: string;
+
     headerTitle = 'Home';
     headerIcon = 'fa fa-home';
     searchText = '';
@@ -59,6 +61,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
         } as CardConfig;
 
         this.featureConfig = {
+            titleBorder: true,
+        } as CardConfig;
+
+        this.legalConfig = {
             titleBorder: true,
         } as CardConfig;
     }

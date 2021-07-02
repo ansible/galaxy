@@ -52,5 +52,21 @@
                 </pfng-card>
             </div>
         </div>
+        <div class="col-md-12">
+            <div class="home-card" id="card-4">
+                <pfng-card
+                    [headerTemplate]="legalHeader"
+                    [config]="legalConfig">
+                    <ng-template #legalHeader>
+                        <div class="card-header">
+                            <span class="header-icon"><i class="fa fa-gavel fa-2x"></i></span> <span class="header-text">Legal</span>
+                        </div>
+                    </ng-template>
+                    <div class="card-content">
+                      By contributing to and/or downloading Ansible Galaxy content, you acknowledge that you understand all of the following: Ansible Galaxy software and technical information may be subject to the U.S. Export Administration Regulations (the "EAR") and other U.S. and foreign laws and may not be exported, re-exported or transferred (a) to a prohibited destination country under the EAR or U.S. sanctions regulations (currently Cuba, Iran, North Korea, Syria, and the Crimea Region of Ukraine, subject to change as posted by the United States government); (b) to any prohibited destination or to any end user who has been prohibited from participating in U.S. export transactions by any federal agency of the U.S. government; or (c) for use in connection with the design, development or production of nuclear, chemical or biological weapons, or rocket systems, space launch vehicles, or sounding rockets, or unmanned air vehicle systems. You may not contribute to Ansible Galaxy or download Ansible Galaxy software or technical information if you are located in one of these countries or otherwise subject to these restrictions. You may not provide Ansible Galaxy software or technical information to individuals or entities located in one of these countries or otherwise subject to these restrictions. You are also responsible for compliance with foreign law requirements applicable to the import, export and use of Ansible Galaxy software and technical information.
+                    </div>
+                </pfng-card>
+            </div>
+        </div>
     </div>
 </div>
