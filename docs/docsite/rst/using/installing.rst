@@ -58,7 +58,7 @@ role.
 
 .. code-block:: bash
 
-   $ ansible-galaxy install geerlingguy.apache,v1.0.0
+   $ ansible-galaxy install geerlingguy.apache,1.0.0
 
 It's also possible to point directly to the git repository and specify a branch name or commit hash as the version.
 For example, the following installs a specific commit:
@@ -66,6 +66,15 @@ For example, the following installs a specific commit:
 .. code-block:: bash
 
    $ ansible-galaxy install git+https://github.com/geerlingguy/ansible-role-apache.git,0b7cd353c0250e87a26e0499e59e7fd265cc2f25
+
+The name of a role installed from a repository defaults to the name of the repository (in this case ``ansible-role-apache``).
+A different name can be specified after the version:
+
+.. code-block:: bash
+
+   $ ansible-galaxy install git+https://github.com/geerlingguy/ansible-role-apache.git,master,geerlingguy.apache
+
+This command installs the latest commit from ``master`` with the same role name ``geerlingguy.apache`` used by Galaxy.
 
 Listing Your Installed Roles
 ----------------------------
