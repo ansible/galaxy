@@ -51,7 +51,7 @@ RUN python3.6 -m venv "${GALAXY_VENV}" \
     && "${GALAXY_VENV}/bin/pip" install -U \
         'pip' \
         'wheel' \
-        'setuptools' \
+        'setuptools>=57,<58' \
     && "${GALAXY_VENV}/bin/pip" install -r /tmp/requirements.txt
 
 COPY scripts/docker/dev/entrypoint.sh /entrypoint
