@@ -3,7 +3,7 @@ name: Request a Namespace
 about: Request a new namespace for one of your GitHub Orgs
 title: 'namespace: FIXME'
 labels: area/namespace
-assignees: anshulbehl, JohnLieske, thedoubl3j
+assignees: JohnLieske, thedoubl3j
 
 ---
 
