@@ -55,6 +55,8 @@ available, as depicted below:
 
 .. image:: login-06.png
 
+.. _updating_github_permissions:
+
 Updating GitHub Permissions
 ---------------------------
 
