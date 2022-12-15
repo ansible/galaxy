@@ -109,10 +109,11 @@ class RoleListSerializer(BaseRoleSerializer):
             description=obj.content_type.description)
         d['dependencies'] = [str(g) for g in obj.dependencies.all()]
         if obj.repository.provider_namespace.namespace is not None:
+            a_url = obj.repository.provider_namespace.namespace.avatar_url,
             d['namespace'] = dict(
                 id=obj.repository.provider_namespace.namespace.pk,
                 name=obj.repository.provider_namespace.namespace.name,
-                avatar_url=obj.repository.provider_namespace.namespace.avatar_url,
+                avatar_url=a_url,
                 location=obj.repository.provider_namespace.namespace.location,
                 company=obj.repository.provider_namespace.namespace.company,
                 email=obj.repository.provider_namespace.namespace.email,
