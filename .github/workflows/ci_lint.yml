@@ -14,13 +14,20 @@ on:
 jobs:
 
   linters:
-    runs-on: ubuntu-latest
+
+    # https://github.com/actions/setup-python/issues/355#issuecomment-1335042510
+    runs-on: ubuntu-20.04
+
     steps:
       - uses: actions/checkout@v2
 
       - uses: actions/setup-python@v2
         with:
-          python-version: "3.10"
+          python-version: "3.6"
+
+      # https://stackoverflow.com/a/72611356
+      - name: downgrade setuptools
+        run: pip install setuptools~=57.5.0
 
       - name: install requirements
         run: pip install -r requirements/dev-requirements.txt
