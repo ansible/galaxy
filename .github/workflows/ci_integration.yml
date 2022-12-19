@@ -37,3 +37,9 @@ jobs:
 
       - name: start the containers
         run: make dev/up_detached
+
+      - name: wait for stack to settle
+        run: sleep 360
+
+      - name: start the tests
+        run: make dev/test
