@@ -199,16 +199,19 @@ dev/test:
 # Other option are:
 # - install side packages globally or
 # - call tools using python api instead of shell commands.
-	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
-		source $(GALAXY_VENV)/bin/activate; \
-		export DJANGO_SETTINGS_MODULE=galaxy.settings.testing; \
-		pytest galaxy \
-		--cov galaxy \
-		--cov-report xml \
-		--cov-report term \
-		--cov-report html \
-		--cov-config setup.cfg \
-		'
+	@$(DOCKER_COMPOSE) exec galaxy bash -c 'pwd'
+
+#	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
+#		source $(GALAXY_VENV)/bin/activate; \
+#		export DJANGO_SETTINGS_MODULE=galaxy.settings.testing; \
+#		pytest galaxy \
+#		--cov galaxy \
+#		--cov-report xml \
+#		--cov-report term \
+#		--cov-report html \
+#		--cov-config setup.cfg \
+#		'
+
 
 .PHONY: dev/test/changed
 dev/test/changed:
