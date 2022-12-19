@@ -37,9 +37,3 @@ jobs:
 
       - name: yaml lint
         run: make test/yamllint
-
-      # - name: javascript lint
-      #  run: make test/jslint
-
-      # - name: javascript prettier lint
-      #  run: make test/prettier
