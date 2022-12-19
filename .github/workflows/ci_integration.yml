@@ -1,5 +1,5 @@
 ---
-name: Integration
+name: Unit & Functional
 on:
   pull_request:
     branches:
@@ -13,7 +13,8 @@ on:
 
 jobs:
 
-  integration:
+  unit_and_functional:
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,3 +31,9 @@ jobs:
 
       - name: Install docker-compose
         run: pip3 install --upgrade docker-compose
+
+      - name: build the image
+        run: make dev/build
+
+      - name: start the containers
+        run: make dev/up_detached
