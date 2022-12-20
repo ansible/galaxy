@@ -186,7 +186,7 @@ dev/prettier:
 .PHONY: dev/shellcheck
 dev/shellcheck:
 	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
-		find ./scripts -name *.sh | xargs shellcheck'v
+		find ./scripts -name *.sh | xargs shellcheck'
 
 .PHONY: dev/test
 dev/test:
