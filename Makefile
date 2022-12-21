@@ -199,7 +199,7 @@ dev/test:
 # Other option are:
 # - install side packages globally or
 # - call tools using python api instead of shell commands.
-	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
+	@$(DOCKER_COMPOSE) exec -T galaxy bash -c '\
 		source $(GALAXY_VENV)/bin/activate; \
 		export DJANGO_SETTINGS_MODULE=galaxy.settings.testing; \
 		pytest galaxy \
