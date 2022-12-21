@@ -6,3 +6,4 @@ ignore: |
 
 rules:
   line-length: disable
+  truthy: disable
