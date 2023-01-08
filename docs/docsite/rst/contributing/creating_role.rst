@@ -20,7 +20,7 @@ For example, the following will create a role directory structure called ``test-
 
 .. code-block:: bash
 
-    $ ansible-galaxy init test-role-1
+    $ ansible-galaxy role init test-role-1
 
 The *test-role-1* directory will contain the following:
 
