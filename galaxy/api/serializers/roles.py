@@ -108,29 +108,15 @@ class RoleListSerializer(BaseRoleSerializer):
             name=obj.content_type.name,
             description=obj.content_type.description)
         d['dependencies'] = [str(g) for g in obj.dependencies.all()]
-        if obj.repository.provider_namespace.namespace is not None:
-            a_url = obj.repository.provider_namespace.namespace.avatar_url,
-            d['namespace'] = dict(
-                id=obj.repository.provider_namespace.namespace.pk,
-                name=obj.repository.provider_namespace.namespace.name,
-                avatar_url=a_url,
-                location=obj.repository.provider_namespace.namespace.location,
-                company=obj.repository.provider_namespace.namespace.company,
-                email=obj.repository.provider_namespace.namespace.email,
-                html_url=obj.repository.provider_namespace.namespace.html_url,
-                is_vendor=obj.repository.provider_namespace.namespace.is_vendor
-            )
-        else:
-            d['namespace'] = dict(
-                id=None,
-                name=None,
-                avatar_url=None,
-                location=None,
-                company=None,
-                email=None,
-                html_url=None,
-                is_vendor=None
-            )
+        d['namespace'] = dict(
+            id=obj.repository.provider_namespace.namespace.pk,
+            name=obj.repository.provider_namespace.namespace.name,
+            avatar_url=obj.repository.provider_namespace.namespace.avatar_url,
+            location=obj.repository.provider_namespace.namespace.location,
+            company=obj.repository.provider_namespace.namespace.company,
+            email=obj.repository.provider_namespace.namespace.email,
+            html_url=obj.repository.provider_namespace.namespace.html_url,
+            is_vendor=obj.repository.provider_namespace.namespace.is_vendor)
         d['platforms'] = [
             dict(name=g.name, release=g.release) for g in obj.platforms.all()]
         d['provider_namespace'] = dict(
