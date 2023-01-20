@@ -2,7 +2,7 @@
 # NOTE(cutwater): Probably some of requirements below are obsolete.
 #                 Review required.
 ansible-core>=2.11,<2.12
-galaxy-importer==0.4.0
+galaxy-importer==0.4.0.post1
 gunicorn==19.7.1
 markdown
 marshmallow
