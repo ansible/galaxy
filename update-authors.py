@@ -5,7 +5,10 @@ import subprocess
 
 author_re = re.compile(r'(?<=\t).*')
 
-git_log = subprocess.check_output(['git', 'shortlog', '--summary', '--email'])
+# Without the HEAD argument, git shortlog will fail when run during a pre-commit hook.
+# Thanks to Michał Górny (https://stackoverflow.com/users/165333/micha%c5%82-g%c3%b3rny)
+# for pointing this out: <https://stackoverflow.com/a/12133752/7593853>
+git_log = subprocess.check_output(['git', 'shortlog', '--summary', '--email', 'HEAD'])
 log_entries = git_log.decode('utf-8').strip().split('\n')
 
 
