@@ -4,6 +4,9 @@ GALAXY_RELEASE_TAG ?= latest
 GALAXY_VENV=/usr/share/galaxy/venv
 DOCKER_COMPOSE=docker-compose -p galaxy -f ./scripts/docker/dev/compose.yml
 
+PYTEST_TARGET ?= galaxy
+PYTEST_ARGS ?=
+
 .PHONY: help
 help:
 	@echo "Prints help"
@@ -92,12 +95,18 @@ build/release:
 
 .PHONY: test
 test:
-	@pytest galaxy \
+	pytest $(PYTEST_TARGET) \
 	--cov galaxy \
 	--cov-report xml \
 	--cov-report term \
 	--cov-report html \
 	--cov-config setup.cfg \
+	$(PYTEST_ARGS)
+
+.PHONY: test/quick
+test/quick:
+	pytest $(PYTEST_TARGET) \
+	$(PYTEST_ARGS) --reuse-db
 
 .PHONY: test/changed
 test/changed:
@@ -202,13 +211,22 @@ dev/test:
 	@$(DOCKER_COMPOSE) exec -T galaxy bash -c '\
 		source $(GALAXY_VENV)/bin/activate; \
 		export DJANGO_SETTINGS_MODULE=galaxy.settings.testing; \
-		pytest galaxy \
+		pytest $(PYTEST_TARGET) \
 		--cov galaxy \
 		--cov-report xml \
 		--cov-report term \
 		--cov-report html \
 		--cov-config setup.cfg \
-		'
+		$(PYTEST_ARGS)'
+
+.PHONY: dev/test/quick
+dev/test/quick:
+	@echo "Running quick tests"
+	@$(DOCKER_COMPOSE) exec galaxy bash -c '\
+		source $(GALAXY_VENV)/bin/activate; \
+		export DJANGO_SETTINGS_MODULE=galaxy.settings.testing; \
+		pytest $(PYTEST_TARGET) \
+		$(PYTEST_ARGS) --reuse-db'
 
 .PHONY: dev/test/changed
 dev/test/changed:
