@@ -68,6 +68,14 @@
         </div>
     </pfng-vertical-navigation>
     <div #contentContainer id="app-container" class="app-container container-fluid container-pf-nav-pf-vertical">
+        <h3>
+            <div class="alert alert-success">
+                <span class="pficon pficon-info"></span>
+                <a href="https://beta-galaxy.ansible.com">
+                    A new Galaxy is coming: Click Here to Experience the New and Improved Ansible Galaxy Website!
+                </a>
+            </div>
+        </h3>
         <router-outlet (activate)='routerActivate($event)'></router-outlet>
         <user-notifications></user-notifications>
     </div>
