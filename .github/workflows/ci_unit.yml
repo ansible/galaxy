@@ -29,8 +29,8 @@ jobs:
       # - name: Install LDAP requirements
       #  run: sudo apt-get install -y libsasl2-dev python3 libldap2-dev libssl-dev build-essential
 
-      - name: Install docker-compose
-        run: pip3 install --upgrade docker-compose
+      # - name: Install docker-compose
+      #   run: pip3 install --upgrade docker-compose
 
       - name: build the image
         run: make dev/build
