@@ -20,7 +20,6 @@ User = get_user_model()
 USER_FIELDS = (
     'id', 'url', 'related', 'summary_fields', 'created', 'modified',
     'username', 'staff', 'full_name', 'date_joined', 'avatar_url',
-    'github_id'
 )
 
 __all__ = [
@@ -61,7 +60,7 @@ class UserSerializer(BaseSerializer):
 
     class Meta:
         model = User
-        fields = USER_FIELDS
+        fields = USER_FIELDS + ('github_id',)
 
     def get_related(self, obj):
         if not obj or not obj.is_authenticated:
