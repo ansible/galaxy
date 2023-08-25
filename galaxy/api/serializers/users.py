@@ -3,6 +3,7 @@ import logging
 from collections import OrderedDict
 
 from allauth.account.models import EmailAddress
+from allauth.socialaccount.models import SocialAccount
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -18,7 +19,8 @@ User = get_user_model()
 
 USER_FIELDS = (
     'id', 'url', 'related', 'summary_fields', 'created', 'modified',
-    'username', 'staff', 'full_name', 'date_joined', 'avatar_url'
+    'username', 'staff', 'full_name', 'date_joined', 'avatar_url',
+    'github_id'
 )
 
 __all__ = [
@@ -55,6 +57,7 @@ class ActiveUserSerializer(BaseSerializer):
 
 class UserSerializer(BaseSerializer):
     staff = serializers.ReadOnlyField(source='is_staff')
+    github_id = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -93,3 +96,9 @@ class UserSerializer(BaseSerializer):
                 ('github_repo', g.repository.github_repo)
             ]) for g in obj.starred.select_related('repository').all()]
         return d
+
+    def get_github_id(self, obj):
+        social_user = SocialAccount.objects.filter(user_id=obj.id).first()
+        if social_user is None:
+            return None
+        return social_user.extra_data.get('id')
