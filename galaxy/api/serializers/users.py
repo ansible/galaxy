@@ -97,7 +97,9 @@ class UserSerializer(BaseSerializer):
         return d
 
     def get_github_id(self, obj):
-        social_user = SocialAccount.objects.filter(user_id=obj.id, provider='github').first()
+        social_user = SocialAccount.objects.filter(
+            user_id=obj.id, provider='github'
+        ).first()
         if social_user is None:
             return None
         return social_user.extra_data.get('id')
