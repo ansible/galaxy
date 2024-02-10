@@ -5,7 +5,7 @@ Contributor Guide
 Hi! We're excited to have you as a contributor.
 
 Have questions about this document or anything not covered here?
-Come chat with us at ``#ansible-community`` on ``irc.freenode.net``.
+Come chat with us at ``#ansible-community`` on ``irc.libera.chat``.
 
 Things to know prior to submitting code
 =======================================
@@ -18,7 +18,7 @@ Things to know prior to submitting code
 * Take care to make sure no merge commits are in the submission,
   and use `git rebase` vs `git merge` for this reason.
 * If submitting a large code change, it's a good idea to join the
-  ``#ansible-community`` channel on ``irc.freenode.net``, and talk about
+  ``#ansible-community`` channel on ``irc.libera.chat``, and talk about
   what you would like to do or add first.
   This not only helps everyone know what's going on, it also helps save
   time and effort, if the community decides some changes are needed.
