@@ -36,7 +36,8 @@ Clicking the *X* next to the name on the right will remove it.
 .. image:: mycontent-09.png
 
 At the top of the list of Provider namespace is a search box. If you don't see an organization listed, try typing the name in the
-box and pressing Enter.
+box and pressing Enter. (In case the organization is still missing, please ensure that the Ansible Galaxy GitHub app has access to
+your organization as described in :ref:`updating_github_permissions`.)
 
 Click the *Save* button at the bottom of the page to update the namespace with your changes, as shown below:
 
