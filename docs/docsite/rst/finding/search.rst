@@ -126,7 +126,7 @@ Reversing the Order
 
 To the right of the search order dropdown is an  ascending / descending arrow, as indicated in the image below.
 The arrow points down to indicate results are being shown in descending order, and up for ascending order. Click
-the arrow to reverse the order. As the arrow is clicked, search results will be immediately re-orded.
+the arrow to reverse the order. As the arrow is clicked, search results will be immediately re-ordered.
 
 .. image:: search-toolbar-07.png
 
