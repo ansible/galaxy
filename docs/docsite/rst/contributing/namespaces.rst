@@ -73,8 +73,8 @@ changes, as shown below:
 Namespace Limitations
 ---------------------
 
-Namespace names in Galaxy are limited to lowercase word characters (i.e., a-z, 0-9) and '_', must have a minimum length of 2
-characters, and cannot start with an '_'. No other characters are allowed, including '.', '-', and space.
+Namespace names in Galaxy are limited to lowercase word characters (i.e., a-z, 0-9) and '_', must have a minimum length of 3
+characters, and cannot start with an '_' or an integer (0-9). No other characters are allowed, including '.', '-', and space.
 
 The first time you log into Galaxy, the server will create a Namespace for you, if one does not already exist, by converting
 your username to lowercase, and replacing any '-' characters with '_'.
