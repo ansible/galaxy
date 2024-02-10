@@ -187,10 +187,4 @@ To override the default name, set the ``role_name`` attribute in the role ``meta
 
 .. note::
 
-    Setting the value of *role_name* on an existing role will change the name of the role by converting it
-    to lowercase, and translating '-'  and '.' to '_'. If the name of an existing role should not be
-    altered, don't set the value of *role_name*.
-
-.. note::
-
     `role_name` is not used at all if the role is installed using its Git URL. Instead, the name of the repo is used.
