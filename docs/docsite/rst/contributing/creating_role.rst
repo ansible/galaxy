@@ -143,11 +143,11 @@ platforms
     is paginated. Click on the ``next_link`` value to get to view the next page. It's not the prettiest interface, but for now, it works.
 
     You can also search by name. For example, to search for all Ubuntu versions by adding ``?name__icontains=ubuntu`` to the query. The full
-    URL will be `https://galaxy.ansible.com/api/v1/platforms/?name__icontains=ubuntu <https://galaxy.ansible.com/api/v1/platforms/?name__icontains=ubuntu>`.
+    URL will be `https://galaxy.ansible.com/api/v1/platforms/?name__icontains=ubuntu <https://galaxy.ansible.com/api/v1/platforms/?name__icontains=ubuntu>`_.
 
 galaxy_tags
     Optional. Provide a list of tags. A tag is a single word that helps categorize your role. You can invent tags, or guess at tags other might be
-    using to describe similar roles, but why do that, when you can see what others are using by `browsing existing tags here <https://galaxy-qa.ansible.com/api/v1/tags/>`_.
+    using to describe similar roles, but why do that, when you can see what others are using by `browsing existing tags here <https://galaxy.ansible.com/api/v1/tags/>`_.
 
     As with *platforms*, you can search by name here as well. For example, to see if the 'database' tag exists, add ``?name_icontains=database``
     to the query. The full URL will be `https://galaxy.ansible.com/api/v1/tags/?name__icontains=database <https://galaxy.ansible.com/api/v1/tags/?name__icontains=database>`_.
