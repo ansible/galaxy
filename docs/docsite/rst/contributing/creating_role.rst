@@ -166,7 +166,7 @@ Prior to Galaxy v3.0, the role import process would alter the GitHub repository 
 apply a regular expression, and remove 'ansible-' and 'role-' from the repository name. For example, a repository name of
 *ansible-role-apache* would become *apache*.
 
-Starting in v3.0, Galaxy no longer perform this calculation. Instead, the default role name is the unaltered repository name, with a
+Starting in v3.0, Galaxy no longer performs this calculation. Instead, the default role name is the unaltered repository name, with a
 couple minor exceptions, including: converting the name to all lowercase, and replacing any '-' or '.' characters with '_'.
 
 To override the default name, set the ``role_name`` attribute in the role ``meta/main.yml`` file. The following snippet from a
@@ -193,4 +193,4 @@ To override the default name, set the ``role_name`` attribute in the role ``meta
 
 .. note::
 
-    `role_name` is not used at all if the role is installed using its Git URL. Instead, the name of the repo is used.
+    `role_name` is ignored when installing a role using its Git URL. Instead, the role name defaults to the repository name.
